@@ -41,6 +41,45 @@ Every file is a YAML mapping with `version: 1` and one list key (`systems`,
 
 IDs are permanent once merged. Never reuse one for a different meaning.
 
+## Verified tables and pending derivations
+
+Tables use a separate mapping: `version`, `id` (matching the filename),
+`status`, `verified: true`, `instrument`, `clause`, `primary_source` (HTTPS),
+`checked_on`, `inputs`, `outputs`, `scope`, `exclusions`, and `rows`.
+Every row supplies all outputs. Table inputs reference determinants. A verified
+transcription remains `status: draft` until the owner reviews it. Verification
+does not implement exceptions or establish applicability to a project.
+
+A rule awaiting an authoritative table keeps its `derives` contract with
+`pending: true` and a `reason`. Code must return unknown for that derivation;
+it must never execute seed numbers or substitute a default. Active derivations
+must reference an existing verified table. The strict checker enforces this.
+
+Verified rule clauses and numeric claims include `primary_source` next to their
+verification flag. A verified clause locator does not verify every claim in
+the rule. Corrections retain the rejected seed claim in notes or the verification
+report rather than marking a contradictory claim verified.
+
+## Determinant evidence contract
+
+An extracted fact belongs to a building, part, storey, compartment or element;
+retain that scope with its document and passage provenance. Never merge facts
+from different physical scopes into one project-wide scalar. Missing evidence
+and contradictory evidence both remain unresolved.
+
+For boolean determinants, use Choice with `stated_true`, `stated_false` and
+`not_stated`; code maps only the first two to booleans. Silence is not false.
+For `multi_choice`, compile one independent option-presence question per option
+in the same fan-out, using the question as a wording template; one Choice cannot
+return a set. An option not mentioned remains unknown, not explicitly excluded.
+For `pre_parsed`, include the candidates for that determinant in state; code
+builds Choice criteria from those candidates plus `none`, and copies the selected
+source value. The empty criteria maps in these templates are not API requests.
+Scope, units, conflicts, thresholds and option generation are code responsibilities.
+See [pre-parsed extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook),
+[primitives](https://docs.typesafe.ai/primitives), and
+[fan-out](https://docs.typesafe.ai/patterns/fan-out).
+
 ## Common fields
 
 - `sources` (required): list of `{seed: <file in clerk/data/seed>, anchor: "<exact heading line, including the #s>"}`. The checker verifies the anchor exists.

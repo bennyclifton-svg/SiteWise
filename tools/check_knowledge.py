@@ -186,6 +186,13 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
             report.error(where, f"value must be one of {sorted(VALUE_TYPES)}")
         if item.get("derived"):
             refs.append(("rule", where, item.get("by")))
+        elif "question" not in item:
+            report.error(where, "extracted determinant needs a question")
+        elif item.get("value") == "boolean":
+            q = item["question"]
+            if (not isinstance(q, dict) or q.get("type") != "choice"
+                    or set(q.get("criteria") or {}) != {"stated_true", "stated_false", "not_stated"}):
+                report.error(where, "boolean evidence needs explicit true, false and not_stated choices")
         if "question" in item:
             check_question(where, item["question"], report, refs)
     elif kind == "rules":
@@ -196,8 +203,19 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
             if not isinstance(derives, dict) or not {"table", "inputs", "gives"} <= derives.keys():
                 report.error(where, "derives needs table, inputs and gives")
             else:
+                if "pending" in derives and not isinstance(derives["pending"], bool):
+                    report.error(where, "derivation pending must be a boolean")
                 for d in derives["inputs"] + [derives["gives"]]:
                     refs.append(("determinant", where, d))
+                if derives.get("pending") is True:
+                    if not str(derives.get("reason", "")).strip():
+                        report.error(where, "pending derivation needs a reason")
+                else:
+                    refs.append(("table", where, derives["table"]))
+        if not isinstance(item.get("clause_verified"), bool):
+            report.error(where, "clause_verified must be a boolean")
+        if item.get("clause_verified") is True and not item.get("primary_source"):
+            report.error(where, "verified clause needs primary_source")
         if "evidence" in item:
             check_question(where, item["evidence"], report, refs)
         for r in item.get("related_rules") or []:
@@ -205,6 +223,10 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
         for n in item.get("numbers") or []:
             if not isinstance(n, dict) or "claim" not in n or "verified" not in n:
                 report.error(where, f"numbers entries need claim and verified: {n}")
+            elif not isinstance(n["verified"], bool):
+                report.error(where, "number verified must be a boolean")
+            elif n["verified"] and not n.get("primary_source"):
+                report.error(where, "verified number needs primary_source")
     elif kind == "interfaces":
         if item.get("type") not in INTERFACE_TYPES:
             report.error(where, f"type must be one of {sorted(INTERFACE_TYPES)}")
@@ -239,6 +261,41 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
             report.error(where, "flag_when must be true or false")
 
 
+def check_tables(report: Report, refs: list) -> dict:
+    known = {}
+    required = {"version", "id", "status", "verified", "instrument", "clause",
+                "primary_source", "checked_on", "inputs", "outputs", "scope", "exclusions", "rows"}
+    for path in sorted((KNOWLEDGE / "tables").glob("*.yaml")):
+        rel = path.relative_to(ROOT).as_posix()
+        try:
+            table = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except yaml.YAMLError as exc:
+            report.error(rel, f"invalid YAML: {exc}")
+            continue
+        if not isinstance(table, dict) or required - table.keys():
+            report.error(rel, "table needs provenance, scope, inputs, outputs and rows")
+            continue
+        if table["version"] != 1 or table["verified"] is not True:
+            report.error(rel, "only version 1 primary-verified tables may be published")
+        if table["status"] not in STATUSES:
+            report.error(rel, "invalid table status")
+        if table["id"] != path.stem or not ID_PATTERNS["determinants"].fullmatch(str(table["id"])):
+            report.error(rel, "table id must match its snake_case filename")
+        if not str(table["primary_source"]).startswith("https://"):
+            report.error(rel, "table needs an HTTPS primary source")
+        for field in ("inputs", "outputs", "exclusions", "rows"):
+            if not isinstance(table[field], list) or not table[field]:
+                report.error(rel, f"table {field} must be a non-empty list")
+        if isinstance(table["inputs"], list):
+            refs.extend(("determinant", rel, d) for d in table["inputs"])
+        if isinstance(table["rows"], list) and isinstance(table["outputs"], list):
+            for row in table["rows"]:
+                if not isinstance(row, dict) or not set(table["outputs"]) <= row.keys():
+                    report.error(rel, "every table row must define each output")
+        known[table["id"]] = rel
+    return known
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed-dir", type=Path, default=DEFAULT_SEED_DIR)
@@ -255,6 +312,7 @@ def main() -> int:
     kind_key = {"systems": "system", "determinants": "determinant", "rules": "rule",
                 "interfaces": "interface", "failure_modes": "failure_mode"}
     cache: dict = {}
+    known["table"] = check_tables(report, refs)
 
     for path, kind, items in load_files(report):
         rel = path.relative_to(ROOT).as_posix()
