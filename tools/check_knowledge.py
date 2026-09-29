@@ -1,7 +1,7 @@
 """Validate knowledge/ against knowledge/SCHEMA.md.
 
 Interim dev tool for the extraction phase; the Go knowledge loader replaces it.
-Usage: python tools/check_knowledge.py [--seed-dir PATH] [--strict]
+Usage: python tools/check_knowledge.py [--seed-dir PATH] [--strict] [--only PATH_PREFIX]
 Errors fail the run. Unresolved cross-references are warnings (another cluster
 may define them) unless --strict.
 """
@@ -243,6 +243,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed-dir", type=Path, default=DEFAULT_SEED_DIR)
     parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--only", default="", help="report only problems in paths starting with this prefix, e.g. knowledge/clusters/fire")
     args = parser.parse_args()
     if not args.seed_dir.is_dir():
         print(f"seed dir not found: {args.seed_dir}", file=sys.stderr)
@@ -275,6 +276,9 @@ def main() -> int:
             else:
                 report.warn(where, msg)
 
+    if args.only:
+        report.errors = [e for e in report.errors if e.startswith(args.only)]
+        report.warnings = [w for w in report.warnings if w.startswith(args.only)]
     for w in report.warnings:
         print(f"WARN  {w}")
     for e in report.errors:
