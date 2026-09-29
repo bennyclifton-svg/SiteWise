@@ -1,172 +1,1468 @@
-# Project determinants: the facts that decide which rules apply.
-# Lead draft. The determinants cluster owns refinement, options and questions;
-# other clusters propose additions in clusters/<cluster>/proposed_determinants.yaml.
 version: 1
 determinants:
-  - id: ncc_class
-    label: NCC building classification(s)
-    value: multi_choice
-    extraction: choice
-    options:
-      - {id: "1a", describes: "A single dwelling, or attached dwellings each separated by a fire-resisting wall (house, townhouse, terrace)."}
-      - {id: "1b", describes: "A small boarding house, guest house or hostel below the Class 3 size limits."}
-      - {id: "2", describes: "A building of two or more sole-occupancy units, each a separate dwelling (apartments)."}
-      - {id: "3", describes: "Long-term or transient residential accommodation for unrelated people (hotel, motel, boarding house, dormitory, residential care not Class 9c)."}
-      - {id: "4", describes: "A single dwelling within a building of Class 5 to 9."}
-      - {id: "5", describes: "An office building for professional or commercial purposes."}
-      - {id: "6", describes: "A shop or other building selling goods or services to the public, including cafes and restaurants."}
-      - {id: "7a", describes: "A car park."}
-      - {id: "7b", describes: "A storage building or warehouse, or a building for display of goods or produce for wholesale."}
-      - {id: "8", describes: "A laboratory or a building for production, assembly, repair or processing of goods (factory)."}
-      - {id: "9a", describes: "A health-care building."}
-      - {id: "9b", describes: "An assembly building (school, theatre, sports venue, place of worship, early childhood centre)."}
-      - {id: "9c", describes: "A residential care building."}
-      - {id: "10a", describes: "A non-habitable building such as a private garage, carport or shed."}
-      - {id: "10b", describes: "A structure such as a fence, mast, antenna, retaining or free-standing wall, or swimming pool."}
-      - {id: "10c", describes: "A private bushfire shelter."}
-    question:
-      type: choice
-      instructions: >-
-        Using `text`, which NCC building classification does this passage
-        state for the building or part of the building?
-      criteria: {}   # filled from options by code, plus "not_stated"
-      runs_on: [fire-passive, access-egress, structure]
-    status: draft
-    notes: "Option wording is a lead draft; verify against NCC 2022 Part A6."
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Classification Definitions (Classes 1-10)"}
-
-  - id: rise_in_storeys
-    label: Rise in storeys (NCC definition)
-    value: integer
-    unit: storeys
-    extraction: pre_parsed
-    question:
-      type: choice
-      instructions: >-
-        Using `text` and `candidates`, which candidate is the building's rise
-        in storeys as the passage states it?
-      criteria: {}   # candidates filled by code, plus "none"
-      runs_on: [fire-passive, structure]
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Types of Construction (A, B, C)"}
-
-  - id: effective_height
-    label: Effective height
-    value: number
-    unit: m
-    extraction: pre_parsed
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Automatic Fire Sprinkler Systems"}
-
-  - id: sprinklered
-    label: Building protected by an automatic sprinkler system
-    value: boolean
-    extraction: choice
-    question:
-      type: noul
-      instructions: >-
-        Using `text`, does this passage state that the building, or the part
-        of it described, is protected by an automatic fire sprinkler system?
-      criteria:
-        true: "It states that sprinklers are installed or required throughout the building or the described part."
-        false: "It does not mention sprinklers, or only mentions them as an option, a future allowance or in another building."
-      runs_on: [fire-active, fire-passive]
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Sprinkler Concessions for Type of Construction"}
-
-  - id: type_of_construction
-    label: Type of Construction required
-    value: choice
-    options:
-      - {id: A, describes: "Type A construction (most fire-resistant)."}
-      - {id: B, describes: "Type B construction."}
-      - {id: C, describes: "Type C construction (least fire-resistant)."}
-    derived: true
-    by: rule.ncc.type-of-construction
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Types of Construction (A, B, C)"}
-
-  - id: floor_area
-    label: Floor area of the building or fire compartment
-    value: number
-    unit: m2
-    extraction: pre_parsed
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Fire Compartment Sizes and Classification Separation"}
-
-  - id: state
-    label: State or territory
-    value: choice
-    extraction: pre_parsed
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "## State-Specific Variations and Appendices"}
-
-  - id: bal
-    label: Bushfire attack level (AS 3959)
-    value: choice
-    extraction: choice
-    options:
-      - {id: BAL-LOW, describes: "BAL-LOW."}
-      - {id: BAL-12.5, describes: "BAL-12.5."}
-      - {id: BAL-19, describes: "BAL-19."}
-      - {id: BAL-29, describes: "BAL-29."}
-      - {id: BAL-40, describes: "BAL-40."}
-      - {id: BAL-FZ, describes: "BAL-FZ (flame zone)."}
-    status: draft
-    sources:
-      - {seed: as-standards-reference.md, anchor: "### BAL ratings"}
-
-  - id: wind_class
-    label: Wind classification (AS 4055)
-    value: choice
-    extraction: choice
-    status: draft
-    sources:
-      - {seed: as-standards-reference.md, anchor: "### Wind classification system"}
-
-  - id: site_class
-    label: Site classification (AS 2870)
-    value: choice
-    extraction: choice
-    status: draft
-    sources:
-      - {seed: as-standards-reference.md, anchor: "### Site classification"}
-
-  - id: climate_zone
-    label: NCC climate zone
-    value: choice
-    extraction: pre_parsed
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Section J DTS Provisions (J1-J6)"}
-
-  - id: flood_hazard
-    label: Site in a flood hazard area
-    value: boolean
-    extraction: choice
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Pool Barriers and Construction in Flood Hazard Areas"}
-
-  - id: heritage
-    label: Heritage item or conservation area
-    value: boolean
-    extraction: choice
-    status: draft
-    sources:
-      - {seed: renovation-guide.md, anchor: "# Archetype seed - Renovation"}
-
-  - id: existing_building
-    label: Work to an existing building
-    value: boolean
-    extraction: choice
-    status: draft
-    sources:
-      - {seed: fire-life-safety-guide.md, anchor: "## Existing buildings, refurbishment and remediation"}
+- id: ncc_class
+  label: NCC building classification(s)
+  value: multi_choice
+  extraction: choice
+  options:
+  - id: 1a
+    describes: A single dwelling, or attached dwellings each separated by a fire-resisting wall (house,
+      townhouse, terrace).
+  - id: 1b
+    describes: A small boarding house, guest house or hostel below the Class 3 size limits.
+  - id: '2'
+    describes: A building of two or more sole-occupancy units, each a separate dwelling (apartments).
+  - id: '3'
+    describes: Long-term or transient residential accommodation for unrelated people (hotel, motel, boarding
+      house, dormitory, residential care not Class 9c).
+  - id: '4'
+    describes: A single dwelling within a building of Class 5 to 9.
+  - id: '5'
+    describes: An office building for professional or commercial purposes.
+  - id: '6'
+    describes: A shop or other building selling goods or services to the public, including cafes and restaurants.
+  - id: 7a
+    describes: A car park.
+  - id: 7b
+    describes: A storage building or warehouse, or a building for display of goods or produce for wholesale.
+  - id: '8'
+    describes: A laboratory or a building for production, assembly, repair or processing of goods (factory).
+  - id: 9a
+    describes: A health-care building.
+  - id: 9b
+    describes: An assembly building (school, theatre, sports venue, place of worship, early childhood
+      centre).
+  - id: 9c
+    describes: A residential care building.
+  - id: 10a
+    describes: A non-habitable building such as a private garage, carport or shed.
+  - id: 10b
+    describes: A structure such as a fence, mast, antenna, retaining or free-standing wall, or swimming
+      pool.
+  - id: 10c
+    describes: A private bushfire shelter.
+  question:
+    type: choice
+    instructions: Using `text`, which NCC building classification does this passage state for the building
+      or part of the building?
+    criteria: {}
+    runs_on:
+    - fire-passive
+    - access-egress
+    - structure
+  status: draft
+  notes: Extract explicit class labels only; descriptions are draft aids, not a legal classification algorithm.
+    Keep building-part scope. Compile one option-presence question per option in one fan-out.
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Classification Definitions (Classes 1-10)'
+- id: rise_in_storeys
+  label: Rise in storeys (NCC definition)
+  value: integer
+  unit: storeys
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the building's rise in storeys as
+      the passage states it?
+    criteria: {}
+    runs_on:
+    - fire-passive
+    - structure
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Types of Construction (A, B, C)'
+- id: effective_height
+  label: Effective height
+  value: number
+  unit: m
+  extraction: pre_parsed
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Automatic Fire Sprinkler Systems'
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which value does this passage explicitly state for Effective
+      height? Select none or not_stated when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - fire-active
+    - fire-passive
+- id: sprinklered
+  label: Building protected by an automatic sprinkler system
+  value: boolean
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, does the passage explicitly state that the described building or part
+      is protected throughout by sprinklers? A requirement, proposed option or future installation is
+      not proof of existing protection; choose not_stated for those cases.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - fire-active
+    - fire-passive
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Sprinkler Concessions for Type of Construction'
+  notes: Extract actual stated protection separately from a requirement to install it. A design requirement
+    does not establish existing sprinkler protection.
+- id: type_of_construction
+  label: Type of Construction required
+  value: choice
+  options:
+  - id: A
+    describes: Type A construction (most fire-resistant).
+  - id: B
+    describes: Type B construction.
+  - id: C
+    describes: Type C construction (least fire-resistant).
+  derived: true
+  by: rule.ncc.type-of-construction
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Types of Construction (A, B, C)'
+- id: floor_area
+  label: Floor area of the building or fire compartment
+  value: number
+  unit: m2
+  extraction: pre_parsed
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire Compartment Sizes and Classification Separation'
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which value does this passage explicitly state for Floor
+      area of the building or fire compartment? Select none or not_stated when absent; do not calculate
+      or infer it.
+    criteria: {}
+    runs_on:
+    - fire-passive
+    - structure
+  notes: Retain whether the stated area belongs to the building, storey, compartment or SOU. Never substitute
+    one scope for another.
+- id: state
+  label: State or territory
+  value: choice
+  extraction: choice
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '## State-Specific Variations and Appendices'
+  options:
+  - id: ACT
+    describes: The passage explicitly states ACT for State or territory.
+  - id: NSW
+    describes: The passage explicitly states NSW for State or territory.
+  - id: NT
+    describes: The passage explicitly states NT for State or territory.
+  - id: QLD
+    describes: The passage explicitly states QLD for State or territory.
+  - id: SA
+    describes: The passage explicitly states SA for State or territory.
+  - id: TAS
+    describes: The passage explicitly states TAS for State or territory.
+  - id: VIC
+    describes: The passage explicitly states VIC for State or territory.
+  - id: WA
+    describes: The passage explicitly states WA for State or territory.
+  question:
+    type: choice
+    instructions: Using `text`, which value does this passage explicitly state for State or territory?
+      Select none or not_stated when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - site
+- id: bal
+  label: Bushfire attack level (AS 3959)
+  value: choice
+  extraction: choice
+  options:
+  - id: BAL-LOW
+    describes: BAL-LOW.
+  - id: BAL-12.5
+    describes: BAL-12.5.
+  - id: BAL-19
+    describes: BAL-19.
+  - id: BAL-29
+    describes: BAL-29.
+  - id: BAL-40
+    describes: BAL-40.
+  - id: BAL-FZ
+    describes: BAL-FZ (flame zone).
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '### BAL ratings'
+  question:
+    type: choice
+    instructions: Using `text`, which value does this passage explicitly state for Bushfire attack level
+      (AS 3959)? Select none or not_stated when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - envelope
+- id: wind_class
+  label: Wind classification (AS 4055)
+  value: choice
+  extraction: choice
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '### Wind classification system'
+  options:
+  - id: N1
+    describes: The passage explicitly states N1 for Wind classification (AS 4055).
+  - id: N2
+    describes: The passage explicitly states N2 for Wind classification (AS 4055).
+  - id: N3
+    describes: The passage explicitly states N3 for Wind classification (AS 4055).
+  - id: N4
+    describes: The passage explicitly states N4 for Wind classification (AS 4055).
+  - id: N5
+    describes: The passage explicitly states N5 for Wind classification (AS 4055).
+  - id: N6
+    describes: The passage explicitly states N6 for Wind classification (AS 4055).
+  - id: C1
+    describes: The passage explicitly states C1 for Wind classification (AS 4055).
+  - id: C2
+    describes: The passage explicitly states C2 for Wind classification (AS 4055).
+  - id: C3
+    describes: The passage explicitly states C3 for Wind classification (AS 4055).
+  - id: C4
+    describes: The passage explicitly states C4 for Wind classification (AS 4055).
+  question:
+    type: choice
+    instructions: Using `text`, which value does this passage explicitly state for Wind classification
+      (AS 4055)? Select none or not_stated when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - structure
+- id: site_class
+  label: Site classification (AS 2870)
+  value: choice
+  extraction: choice
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '### Site classification'
+  options:
+  - id: A
+    describes: The passage explicitly states A for Site classification (AS 2870).
+  - id: S
+    describes: The passage explicitly states S for Site classification (AS 2870).
+  - id: M
+    describes: The passage explicitly states M for Site classification (AS 2870).
+  - id: H1
+    describes: The passage explicitly states H1 for Site classification (AS 2870).
+  - id: H2
+    describes: The passage explicitly states H2 for Site classification (AS 2870).
+  - id: E
+    describes: The passage explicitly states E for Site classification (AS 2870).
+  - id: P
+    describes: The passage explicitly states P for Site classification (AS 2870).
+  question:
+    type: choice
+    instructions: Using `text`, which value does this passage explicitly state for Site classification
+      (AS 2870)? Select none or not_stated when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - site
+    - substructure
+- id: climate_zone
+  label: NCC climate zone
+  value: choice
+  extraction: choice
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+  options:
+  - id: '1'
+    describes: The passage explicitly states 1 for NCC climate zone.
+  - id: '2'
+    describes: The passage explicitly states 2 for NCC climate zone.
+  - id: '3'
+    describes: The passage explicitly states 3 for NCC climate zone.
+  - id: '4'
+    describes: The passage explicitly states 4 for NCC climate zone.
+  - id: '5'
+    describes: The passage explicitly states 5 for NCC climate zone.
+  - id: '6'
+    describes: The passage explicitly states 6 for NCC climate zone.
+  - id: '7'
+    describes: The passage explicitly states 7 for NCC climate zone.
+  - id: '8'
+    describes: The passage explicitly states 8 for NCC climate zone.
+  question:
+    type: choice
+    instructions: Using `text`, which value does this passage explicitly state for NCC climate zone? Select
+      none or not_stated when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - envelope
+- id: flood_hazard
+  label: Site in a flood hazard area
+  value: boolean
+  extraction: choice
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Pool Barriers and Construction in Flood Hazard Areas'
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Site in a flood
+      hazard area? Use only the described building, part or site; select not_stated for silence, optional
+      conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - site
+- id: heritage
+  label: Heritage item or conservation area
+  value: boolean
+  extraction: choice
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '# Archetype seed - Renovation'
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Heritage item or
+      conservation area? Use only the described building, part or site; select not_stated for silence,
+      optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - site
+- id: existing_building
+  label: Work to an existing building
+  value: boolean
+  extraction: choice
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Work to an existing
+      building? Use only the described building, part or site; select not_stated for silence, optional
+      conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - site
+    - structure
+- id: ncc_edition
+  label: NCC edition stated for this project
+  value: choice
+  extraction: pre_parsed
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### The NCC and State Adoption'
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage explicitly state for
+      NCC edition stated for this project? Select none when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - site
+    - fire-passive
+- id: building_use
+  label: Stated use of the building or part
+  value: choice
+  extraction: pre_parsed
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Classification Definitions (Classes 1-10)'
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage explicitly state for
+      Stated use of the building or part? Select none when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - site
+    - access-egress
+- id: work_type
+  label: Nature of the building works
+  value: choice
+  extraction: pre_parsed
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### The NCC and State Adoption'
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage explicitly state for
+      Nature of the building works? Select none when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - site
+    - structure
+- id: compliance_pathway
+  label: Compliance pathway for the provision being assessed
+  value: choice
+  extraction: pre_parsed
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Hierarchical Compliance Framework (DTS and Performance Solutions)'
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage explicitly state for
+      Compliance pathway for the provision being assessed? Select none when absent; do not calculate or
+      infer it.
+    criteria: {}
+    runs_on:
+    - fire-passive
+    - structure
+- id: compartment_volume
+  label: Volume of the identified fire compartment
+  value: number
+  extraction: pre_parsed
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire Compartment Sizes and Classification Separation'
+  unit: m3
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage explicitly state for
+      Volume of the identified fire compartment? Select none when absent; do not calculate or infer it.
+    criteria: {}
+    runs_on:
+    - fire-passive
+- id: patient_care_area
+  label: Identified part is a patient care area
+  value: boolean
+  extraction: choice
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire Compartment Sizes and Classification Separation'
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Identified part
+      is a patient care area? Use only the described building, part or site; select not_stated for silence,
+      optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - fire-passive
+    - access-egress
+- id: top_storey_class
+  label: NCC classification stated for the top storey
+  value: multi_choice
+  extraction: choice
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Mixed-Use Buildings and Classification Boundaries'
+  options:
+  - id: 1a
+    describes: A single dwelling, or attached dwellings each separated by a fire-resisting wall (house,
+      townhouse, terrace).
+  - id: 1b
+    describes: A small boarding house, guest house or hostel below the Class 3 size limits.
+  - id: '2'
+    describes: A building of two or more sole-occupancy units, each a separate dwelling (apartments).
+  - id: '3'
+    describes: Long-term or transient residential accommodation for unrelated people (hotel, motel, boarding
+      house, dormitory, residential care not Class 9c).
+  - id: '4'
+    describes: A single dwelling within a building of Class 5 to 9.
+  - id: '5'
+    describes: An office building for professional or commercial purposes.
+  - id: '6'
+    describes: A shop or other building selling goods or services to the public, including cafes and restaurants.
+  - id: 7a
+    describes: A car park.
+  - id: 7b
+    describes: A storage building or warehouse, or a building for display of goods or produce for wholesale.
+  - id: '8'
+    describes: A laboratory or a building for production, assembly, repair or processing of goods (factory).
+  - id: 9a
+    describes: A health-care building.
+  - id: 9b
+    describes: An assembly building (school, theatre, sports venue, place of worship, early childhood
+      centre).
+  - id: 9c
+    describes: A residential care building.
+  - id: 10a
+    describes: A non-habitable building such as a private garage, carport or shed.
+  - id: 10b
+    describes: A structure such as a fence, mast, antenna, retaining or free-standing wall, or swimming
+      pool.
+  - id: 10c
+    describes: A private bushfire shelter.
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage explicitly state for
+      NCC classification stated for the top storey? Select none when absent; do not calculate or infer
+      it.
+    criteria: {}
+    runs_on:
+    - fire-passive
+    - structure
+- id: car_parking_provided
+  label: Car parking provided (car park, garage or carport)
+  value: boolean
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Car parking provided
+      (car park, garage or carport)? Use only the described building, part or site; select not_stated
+      for silence, optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - site
+    - access-egress
+    - electrical.ev-charging
+    - mechanical
+  notes: Gates EV-readiness rules for Class 1 dwellings (garage or carport) and car parks serving Class
+    2 to 9 buildings. A count of spaces may be needed later if the verified NCC table gives EV provision
+    as a proportion of spaces.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Elemental Provisions Pathway and EV Readiness'
+  - seed: commercial-construction-guide.md
+    anchor: '## Carpark Design for Commercial Buildings'
+- id: bess_energy_capacity
+  label: Battery energy storage capacity
+  value: number
+  unit: kWh
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the stored energy capacity of the
+      battery energy storage system as the passage states it?
+    criteria: {}
+    runs_on:
+    - electrical.battery-storage
+    - electrical.solar-pv
+  notes: Code normalizes stated energy units. Seed applicability and separation thresholds remain unverified
+    in the associated rules; capacity alone does not establish compliance.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
+- id: network_operator
+  label: Electricity distribution network operator (DNSP)
+  value: choice
+  extraction: pre_parsed
+  options:
+  - id: ausgrid
+    describes: Ausgrid (NSW).
+  - id: endeavour-energy
+    describes: Endeavour Energy (NSW).
+  - id: essential-energy
+    describes: Essential Energy (NSW).
+  - id: powercor
+    describes: Powercor (VIC).
+  - id: citipower
+    describes: CitiPower (VIC).
+  - id: ausnet
+    describes: AusNet Services (VIC).
+  - id: energex
+    describes: Energex (QLD).
+  - id: ergon
+    describes: Ergon Energy (QLD).
+  - id: sa-power-networks
+    describes: SA Power Networks (SA).
+  - id: western-power
+    describes: Western Power (WA).
+  - id: other
+    describes: Another network operator named in the passage.
+  question:
+    type: choice
+    instructions: Using `text`, which electricity distribution network operator does this passage name
+      as the network the building connects to?
+    criteria: {}
+    runs_on:
+    - electrical.utility-supply
+    - electrical.solar-pv
+    - electrical.metering
+  notes: Extract the named operator. The option list is not exhaustive; use supplied candidates for operators
+    outside it. Do not derive from state alone.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters'
+  - seed: electrical-services-guide.md
+    anchor: '### Inception, site and existing information [inception]'
+- id: ev_readiness_required
+  label: NCC EV-charging readiness required for the car park
+  value: boolean
+  derived: true
+  by: rule.ncc.ev-charging-readiness
+  notes: Derived by table ev_charging_readiness from ncc_class and car_parking_provided. If the verified
+    NCC 2022 provision sets a proportion of spaces by class, the table should give that proportion as
+    a further derived value.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)'
+- id: energy_monitoring_required
+  label: NCC energy monitoring (sub-metering) required
+  value: boolean
+  derived: true
+  by: rule.ncc.energy-monitoring
+  notes: Derived by table energy_monitoring_facilities from ncc_class and floor_area. The seed says only
+    'buildings above certain sizes'.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)'
+- id: accessible_lift_required
+  label: Accessible lift required for access
+  value: boolean
+  derived: true
+  by: rule.ncc.accessible-lift-required
+  notes: Derived by table accessible_lift_requirement from ncc_class, rise_in_storeys and floor_area (per
+    storey).
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: bushfire_prone_land
+  label: Site on designated bushfire-prone land
+  value: boolean
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Site on designated
+      bushfire-prone land? Use only the described building, part or site; select not_stated for silence,
+      optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - envelope.bushfire-construction
+    - site
+  notes: '`bal` alone cannot distinguish "not assessed" from "BAL-LOW". Seeds warn that BAL-LOW must not
+    be assumed on mapped land without an assessment.'
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Bushfire Attack Levels (BAL) Determination'
+  - seed: as-standards-reference.md
+    anchor: '### How BAL is assessed'
+- id: energy_compliance_pathway
+  label: Energy-efficiency compliance pathway used
+  value: multi_choice
+  extraction: choice
+  options:
+  - id: basix
+    describes: NSW BASIX certificate (energy, water and thermal comfort commitments).
+  - id: nathers
+    describes: NatHERS star rating by an accredited assessor, including the whole-of-home assessment.
+  - id: residential_elemental
+    describes: NCC Volume Two elemental (deemed-to-satisfy) provisions for insulation, glazing, sealing
+      and shading.
+  - id: section_j_dts
+    describes: NCC Volume One Section J deemed-to-satisfy provisions.
+  - id: section_j_jv3
+    describes: NCC Section J Verification Method JV3 (energy modelling against a reference building).
+  question:
+    type: choice
+    instructions: Using `text`, which energy-efficiency compliance pathway does this passage state is
+      used for the building or dwelling?
+    criteria: {}
+    runs_on:
+    - envelope.thermal-performance
+  notes: A NSW Class 1 or 2 project can use BASIX together with a NatHERS simulation, so this is multi_choice.
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 3. NatHERS — thermal simulation method'
+  - seed: ncc-reference-guide.md
+    anchor: '### JV3 Verification Method (Performance-Based Compliance)'
+  - seed: ncc-reference-guide.md
+    anchor: '### Elemental Provisions Pathway and EV Readiness'
+- id: noise_affected_site
+  label: Site affected by road, rail or other external noise
+  value: boolean
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Site affected by
+      road, rail or other external noise? Use only the described building, part or site; select not_stated
+      for silence, optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - envelope.facade-acoustics
+    - site
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3671 — Acoustics — Road Traffic Noise Intrusion — Building Siting and Construction'
+- id: estimated_works_cost
+  label: Estimated cost of the works
+  value: number
+  unit: AUD
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the estimated cost of the building
+      works as the passage states it?
+    criteria: {}
+    runs_on:
+    - envelope.thermal-performance
+    - site
+  notes: Needed for the NSW BASIX alterations-and-additions trigger. The seeds give $50,000 but also say
+    not to freeze a threshold. The determinants cluster may already own a cost determinant; merge if so.
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## BASIX baseline for additions'
+- id: basix_required
+  label: NSW BASIX certificate required
+  value: boolean
+  derived: true
+  by: rule.basix.certificate-required
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 1. BASIX overview (NSW)'
+- id: nathers_min_stars
+  label: Minimum NatHERS star rating required
+  value: number
+  unit: stars
+  derived: true
+  by: rule.ncc.residential-nathers-rating
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NatHERS 7-Star Envelope Requirement'
+- id: roof_min_total_r_value
+  label: Minimum total R-value for the roof or ceiling
+  value: number
+  unit: m2K/W
+  derived: true
+  by: rule.ncc.roof-ceiling-insulation-minimum
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4859 Series — Thermal Insulation Materials'
+- id: wall_min_total_r_value
+  label: Minimum total R-value for external walls
+  value: number
+  unit: m2K/W
+  derived: true
+  by: rule.ncc.wall-insulation-minimum
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4859 Series — Thermal Insulation Materials'
+- id: sou_wall_min_rw_ctr
+  label: Minimum Rw + Ctr for walls between sole-occupancy units
+  value: number
+  unit: dB
+  derived: true
+  by: rule.ncc.sou-wall-sound-insulation
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+- id: sou_floor_min_rw_ctr
+  label: Minimum Rw + Ctr for floors between sole-occupancy units
+  value: number
+  unit: dB
+  derived: true
+  by: rule.ncc.sou-floor-airborne-sound
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+- id: sou_floor_max_lnw_ci
+  label: Maximum Ln,w + CI for floors between sole-occupancy units
+  value: number
+  unit: dB
+  derived: true
+  by: rule.ncc.sou-floor-impact-sound
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+- id: commercial_kitchen
+  label: Commercial kitchen use
+  value: boolean
+  derived: false
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Commercial kitchen
+      use? Use only the described building, part or site; select not_stated for silence, optional conditions
+      or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - hydraulic.trade-waste
+  notes: Explicit evidence only; code maps stated_true/stated_false to booleans and not_stated to unknown.
+    A kitchenette does not establish a commercial kitchen.
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Trade waste'
+- id: trade_waste_use
+  label: Use requiring trade-waste assessment
+  value: boolean
+  derived: false
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Use requiring trade-waste
+      assessment? Use only the described building, part or site; select not_stated for silence, optional
+      conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - hydraulic.trade-waste
+  notes: Explicit evidence only; code maps stated_true/stated_false to booleans and not_stated to unknown.
+    A kitchenette does not establish a commercial kitchen.
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Trade waste'
+- id: occupant_load
+  label: Design occupant load
+  value: integer
+  unit: persons
+  derived: false
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and code-parsed `candidates`, choose the candidate explicitly stated as
+      the design occupant load, or none.
+    criteria: {}
+    runs_on:
+    - hydraulic.sanitary
+    - access-egress
+  notes: Instantiate criteria from code-parsed candidates plus none. Scope per storey/use/population and
+    fixture type; never sum project-wide counts or infer population using Jev.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Facility Quantities by Building Classification'
+- id: sanitary_fixture_counts
+  label: Sanitary fixture count for the assessed fixture type
+  value: integer
+  unit: fixtures
+  derived: false
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and code-parsed `candidates`, choose the candidate explicitly stated as
+      the sanitary fixture count for the assessed fixture type, or none.
+    criteria: {}
+    runs_on:
+    - hydraulic.sanitary
+  notes: Instantiate criteria from code-parsed candidates plus none. Scope per storey/use/population and
+    fixture type; never sum project-wide counts or infer population using Jev.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Facility Quantities by Building Classification'
+- id: importance_level
+  label: Structural importance level (AS/NZS 1170.0)
+  value: choice
+  options:
+  - id: '1'
+    describes: 'Importance Level 1: structures presenting a low degree of hazard to life and other property.'
+  - id: '2'
+    describes: 'Importance Level 2: normal buildings, including typical residential and commercial buildings.'
+  - id: '3'
+    describes: 'Importance Level 3: buildings designed to contain a large number of people or of higher
+      consequence.'
+  - id: '4'
+    describes: 'Importance Level 4: essential facilities such as hospitals and emergency services buildings.'
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, which structural importance level does this passage state for the building
+      or structure?
+    criteria: {}
+    runs_on:
+    - structure.design-basis
+  notes: Option wording is drafted from seed descriptions; confirm against AS/NZS 1170.0 and NCC Table
+    B1.2a (or its NCC 2022 equivalent).
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 1170 Series — Structural Design Actions'
+  - seed: ncc-reference-guide.md
+    anchor: '### Performance Requirements and Importance Levels'
+- id: wind_region
+  label: Wind region (AS/NZS 1170.2)
+  value: choice
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is explicitly stated as the site wind
+      region? Choose none if absent. Do not derive the region from location or classify it as cyclonic.
+    criteria: {}
+    runs_on:
+    - structure.design-basis
+  notes: Seeds conflict about wind-region subdivisions; use literal candidates until the primary standard
+    is verified.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 1170 Series — Structural Design Actions'
+  - seed: structural-residential.md
+    anchor: '### Wind speed regions'
+  - seed: ncc-reference-guide.md
+    anchor: '### Wind Actions'
+- id: hazard_factor_z
+  label: Earthquake hazard factor Z (AS 1170.4)
+  value: number
+  unit: g
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the earthquake hazard factor (Z) that
+      the passage states for the site?
+    criteria: {}
+    runs_on:
+    - structure.design-basis
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Earthquake Actions'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 1170 Series — Structural Design Actions'
+- id: earthquake_site_subsoil_class
+  label: Earthquake site sub-soil class (AS 1170.4)
+  value: choice
+  options:
+  - id: Ae
+    describes: The passage explicitly states earthquake site subsoil class Ae.
+  - id: Be
+    describes: The passage explicitly states earthquake site subsoil class Be.
+  - id: Ce
+    describes: The passage explicitly states earthquake site subsoil class Ce.
+  - id: De
+    describes: The passage explicitly states earthquake site subsoil class De.
+  - id: Ee
+    describes: The passage explicitly states earthquake site subsoil class Ee.
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, which earthquake site sub-soil class (Ae, Be, Ce, De or Ee) does this
+      passage state for the site?
+    criteria: {}
+    runs_on:
+    - site.ground-conditions
+    - structure.design-basis
+  notes: Seed names Ae to Ee without definitions; do not infer class from soil descriptions.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 1170 Series — Structural Design Actions'
+  - seed: geotechnical-guide.md
+    anchor: '### Inception, site and existing information [inception]'
+- id: structure_height
+  label: Height of the structure for earthquake and framing limits
+  value: number
+  unit: m
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the overall height of the building
+      structure as the passage states it?
+    criteria: {}
+    runs_on:
+    - structure.design-basis
+  notes: Overall structure height as stated. Distinct from NCC effective height and from the height of
+    an individual framing wall; do not substitute these measures.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 1170 Series — Structural Design Actions'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1684 Series — Residential Timber-Framed Construction'
+- id: earthquake_design_category
+  label: Earthquake design category (AS 1170.4)
+  value: choice
+  derived: false
+  notes: Extract the stated project value only. Future derivation by rule.as1170.earthquake-actions remains
+    pending a verified primary-instrument lookup and complete inputs; no runtime derivation is available.
+    Prior category I/II/III options were not supported by the cited seed and have been removed; code must
+    harvest literal candidates.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '### Typical residential load cases'
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is explicitly stated as the Earthquake
+      design category (AS 1170.4)? Choose not_stated if no candidate is stated.
+    criteria: {}
+    runs_on:
+    - structure.design-basis
+- id: concrete_exposure_class
+  label: Concrete exposure classification (AS 3600)
+  value: choice
+  options:
+  - id: A1
+    describes: The passage explicitly states concrete exposure class A1.
+  - id: A2
+    describes: The passage explicitly states concrete exposure class A2.
+  - id: B1
+    describes: The passage explicitly states concrete exposure class B1.
+  - id: B2
+    describes: The passage explicitly states concrete exposure class B2.
+  - id: C1
+    describes: The passage explicitly states concrete exposure class C1.
+  - id: C2
+    describes: The passage explicitly states concrete exposure class C2.
+  - id: U
+    describes: The passage explicitly states concrete exposure class U.
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, which AS 3600 exposure classification does this passage state for the
+      concrete element or elements it describes?
+    criteria: {}
+    runs_on:
+    - structure.concrete
+    - substructure.slab-on-ground
+    - substructure.footings
+    - substructure.piles
+  notes: A building can have several exposure classes; code keeps one value per element group. Descriptions
+    from the seed; verify against AS 3600 Table 4.3.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3600 — Concrete Structures'
+  - seed: ncc-reference-guide.md
+    anchor: '### Concrete and Steel Design Standards'
+- id: min_concrete_cover
+  label: Minimum concrete cover for durability
+  value: number
+  unit: mm
+  derived: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3600 — Concrete Structures'
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is explicitly stated as the Minimum concrete
+      cover for durability? Choose not_stated if no candidate is stated.
+    criteria: {}
+    runs_on:
+    - substructure
+  notes: Extract the stated project value only. Future derivation by rule.as3600.durability-exposure remains
+    pending a verified primary-instrument lookup and complete inputs; no runtime derivation is available.
+- id: atmospheric_corrosivity_category
+  label: Atmospheric corrosivity category (AS 4312)
+  value: choice
+  options:
+  - id: C1
+    describes: 'C1 very low: dry interior.'
+  - id: C2
+    describes: 'C2 low: rural inland.'
+  - id: C3
+    describes: 'C3 medium: urban or mild coastal, more than 1 km from surf.'
+  - id: C4
+    describes: 'C4 high: industrial or moderate coastal, 100 m to 1 km from surf.'
+  - id: C5
+    describes: 'C5 very high: severe industrial or marine within 100 m of surf.'
+  - id: CX
+    describes: 'CX extreme: offshore, tidal or splash zones, chemical environments.'
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, which atmospheric corrosivity category (C1 to C5 or CX) does this passage
+      state for the site or the element it describes?
+    criteria: {}
+    runs_on:
+    - structure.steel
+    - structure.design-basis
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4312 — Atmospheric Corrosivity Zones in Australia'
+- id: steel_construction_category
+  label: Steelwork construction category (AS/NZS 5131)
+  value: choice
+  options:
+  - id: CC1
+    describes: 'CC1: minor structures with low consequence of failure.'
+  - id: CC2
+    describes: 'CC2: normal commercial and industrial structures.'
+  - id: CC3
+    describes: 'CC3: high consequence structures; independent third-party inspection.'
+  - id: CC4
+    describes: 'CC4: exceptional structures.'
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, which AS/NZS 5131 construction category does this passage specify for
+      the structural steelwork?
+    criteria: {}
+    runs_on:
+    - structure.steel
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5131 — Structural Steelwork — Fabrication and Erection'
+- id: as2870_design_route
+  label: Footing design route under AS 2870
+  value: choice
+  options:
+  - id: deemed_to_satisfy
+    describes: AS 2870 standard designs may be used for the site class.
+  - id: engineered
+    describes: A specific engineering design is required (for example Class P).
+  derived: false
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Site classification'
+  - seed: residential-construction-guide.md
+    anchor: '## Foundations and Footing Systems'
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is explicitly stated as the Footing design
+      route under AS 2870? Choose not_stated if no candidate is stated.
+    criteria: {}
+    runs_on:
+    - substructure
+  notes: Extract the stated project value only. Future derivation by rule.as2870.footing-design-by-site-class
+    remains pending a verified primary-instrument lookup and complete inputs; no runtime derivation is
+    available.
+- id: timber_framing_part
+  label: AS 1684 part that applies to the wind classification
+  value: choice
+  options:
+  - id: '1684.2'
+    describes: AS 1684.2, non-cyclonic areas (or AS 1684.4 simplified where eligible).
+  - id: '1684.3'
+    describes: AS 1684.3, cyclonic areas.
+  derived: false
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Series structure'
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is explicitly stated as the AS 1684 part
+      that applies to the wind classification? Choose not_stated if no candidate is stated.
+    criteria: {}
+    runs_on:
+    - structure.timber
+  notes: Extract the stated project value only. Future derivation by rule.as1684.timber-framing remains
+    pending a verified primary-instrument lookup and complete inputs; no runtime derivation is available.
+- id: acid_sulfate_soils_mapped
+  label: Site mapped as having acid sulfate soil risk
+  value: boolean
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Site mapped as having
+      acid sulfate soil risk? Use only the described building, part or site; select not_stated for silence,
+      optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - site.acid-sulfate-soils
+    - site.ground-conditions
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Acid Sulfate Soils'
+- id: potentially_contaminated_land
+  label: Site with a potentially contaminating history
+  value: boolean
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Site with a potentially
+      contaminating history? Use only the described building, part or site; select not_stated for silence,
+      optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - site.contamination
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Preliminary Site Assessment (Phase 1)'
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Contamination Types in Australian Construction'
+- id: nepm_hil_category
+  label: NEPM health investigation level category for the proposed use
+  value: choice
+  options:
+  - id: HIL-A
+    describes: Residential with garden or accessible soil.
+  - id: HIL-B
+    describes: Residential with minimal soil access, such as apartments.
+  - id: HIL-C
+    describes: Public open space.
+  - id: HIL-D
+    describes: Commercial or industrial.
+  derived: false
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## NEPM Framework and Investigation Levels'
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is explicitly stated as the NEPM health
+      investigation level category for the proposed use? Choose not_stated if no candidate is stated.
+    criteria: {}
+    runs_on:
+    - site.contamination
+  notes: Extract the stated project value only. Future derivation by rule.nepm.site-contamination-assessment
+    remains pending a verified primary-instrument lookup and complete inputs; no runtime derivation is
+    available.
+- id: termite_prone_area
+  label: Site in a termite-prone area
+  value: boolean
+  derived: false
+  notes: Extract the stated project value only. Future derivation by rule.ncc.termite-management remains
+    pending a verified primary-instrument lookup and complete inputs; no runtime derivation is available.
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Site in a termite-prone
+      area? Use only the described building, part or site; select not_stated for silence, optional conditions
+      or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - substructure
+- id: groundwater_above_excavation
+  label: Groundwater above the base of the proposed excavation
+  value: boolean
+  extraction: choice
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether Groundwater above
+      the base of the proposed excavation? Use only the described building, part or site; select not_stated
+      for silence, optional conditions or conflicting statements.
+    criteria:
+      stated_true: The passage explicitly affirms this condition for the identified building, part or
+        site.
+      stated_false: The passage explicitly denies this condition for the identified building, part or
+        site.
+      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
+        itself.
+    runs_on:
+    - site.ground-conditions
+    - substructure.basement-retention
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '### Pre-DA consultation and development application [development_application]'
+  - seed: commercial-construction-guide.md
+    anchor: '## Waterproofing in Commercial Buildings'
+- id: max_excavation_depth
+  label: Maximum depth of excavation or cut
+  value: number
+  unit: m
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the maximum depth of excavation, cut
+      or basement that the passage states?
+    criteria: {}
+    runs_on:
+    - site.earthworks
+    - substructure.basement-retention
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Geotechnical sign-off trigger'
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: max_fill_depth
+  label: Maximum depth of fill
+  value: number
+  unit: m
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the maximum depth of fill or fill
+      platform that the passage states?
+    criteria: {}
+    runs_on:
+    - site.earthworks
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Geotechnical sign-off trigger'
+- id: max_retaining_wall_height
+  label: Maximum retaining wall height
+  value: number
+  unit: m
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the greatest retained height of a
+      retaining wall that the passage states?
+    criteria: {}
+    runs_on:
+    - site.retaining-walls
+    - substructure.retaining-walls
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Batter slopes and retention'
+- id: existing_building_year
+  label: Year the existing building was constructed
+  value: integer
+  unit: year
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the year the existing building was
+      constructed, as the passage states it?
+    criteria: {}
+    runs_on:
+    - site.demolition
+    - structure.alterations
+  notes: Code compares it with the asbestos (2003) and lead paint (1970) thresholds; Jev never compares
+    years.
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Asbestos Assessment and Management in Construction'
+  - seed: as-standards-reference.md
+    anchor: '## AS 2601 — The Demolition of Structures'
+- id: flood_planning_level
+  label: Flood planning level
+  value: number
+  unit: m AHD
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the flood planning level (or defined
+      flood level plus freeboard) that the passage states for the site?
+    criteria: {}
+    runs_on:
+    - site.flooding
+  status: draft
+  sources:
+  - seed: new-dwelling-guide.md
+    anchor: '## Site due diligence — what a new dwelling triggers'
+  - seed: ncc-reference-guide.md
+    anchor: '### Pool Barriers and Construction in Flood Hazard Areas'
+- id: finished_floor_level
+  label: Lowest habitable finished floor level
+  value: number
+  unit: m AHD
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the lowest habitable finished floor
+      level (FFL) the passage states?
+    criteria: {}
+    runs_on:
+    - site.flooding
+    - substructure.slab-on-ground
+    - site.survey-boundaries
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '### Concept and schematic design [concept]'
+  - seed: new-dwelling-guide.md
+    anchor: '## Site due diligence — what a new dwelling triggers'
+- id: required_sanitary_fixture_count
+  label: Required sanitary fixture count for a scoped fixture category
+  value: integer
+  unit: fixtures
+  derived: true
+  by: rule.ncc.sanitary-facility-quantities
+  status: draft
+  notes: Derived minimum, separate from sanitary_fixture_counts (stated/provided quantity). Code must
+    retain the building part, use, occupant cohort and fixture category. Pending authoritative table means
+    unknown, never zero. A single integer does not represent the full sanitary schedule.
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Facility Quantities by Building Classification'

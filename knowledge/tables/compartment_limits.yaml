@@ -1,0 +1,23 @@
+version: 1
+id: compartment_limits
+status: draft
+verified: true
+instrument: NCC 2022 Volume One
+clause: Table C3D3
+primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c3-compartmentation-and-separation
+checked_on: '2026-09-29'
+inputs: [ncc_class, type_of_construction]
+outputs: [max_floor_area_m2, max_volume_m3]
+scope: Baseline national DTS compartment or atrium limits; both area and volume must be checked.
+exclusions:
+  - Patient care areas in Class 9a require C3D6.
+  - C3D2 application exceptions, C3D4 large isolated buildings and state variations require separate assessment.
+  - Mixed-class compartments and C3D3 excluded plant spaces or atrium volumes need separate computation.
+  - This is not a universal sprinkler trigger or an unsprinklered Class 5 limit.
+rows:
+  - {classes: ['5', '9b', '9c'], type_of_construction: A, max_floor_area_m2: 8000, max_volume_m3: 48000}
+  - {classes: ['5', '9b', '9c'], type_of_construction: B, max_floor_area_m2: 5500, max_volume_m3: 33000}
+  - {classes: ['5', '9b', '9c'], type_of_construction: C, max_floor_area_m2: 3000, max_volume_m3: 18000}
+  - {classes: ['6', '7a', '7b', '8', '9a'], type_of_construction: A, max_floor_area_m2: 5000, max_volume_m3: 30000}
+  - {classes: ['6', '7a', '7b', '8', '9a'], type_of_construction: B, max_floor_area_m2: 3500, max_volume_m3: 21000}
+  - {classes: ['6', '7a', '7b', '8', '9a'], type_of_construction: C, max_floor_area_m2: 2000, max_volume_m3: 12000}

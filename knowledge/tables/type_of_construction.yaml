@@ -1,0 +1,25 @@
+version: 1
+id: type_of_construction
+status: draft
+verified: true
+instrument: NCC 2022 Volume One
+clause: Table C2D2
+primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability
+checked_on: '2026-09-29'
+inputs: [ncc_class, rise_in_storeys]
+outputs: [type_of_construction]
+scope: Baseline national DTS table for a single classification and already established NCC rise in storeys.
+exclusions:
+  - Mixed classifications require C2D4 before selecting the applicable class.
+  - Exceptions in C2D6 and C2D8 and jurisdictional variations are not implemented.
+  - No sprinkler concession is inferred from this table.
+  - Class 1, 4 and 10 and Performance Solutions are outside this lookup.
+rows:
+  - {classes: ['2', '3', '9a', '9b', '9c'], rise_min: 4, type_of_construction: A}
+  - {classes: ['2', '3', '9a', '9b', '9c'], rise_min: 3, rise_max: 3, type_of_construction: A}
+  - {classes: ['2', '3', '9a', '9b', '9c'], rise_min: 2, rise_max: 2, type_of_construction: B}
+  - {classes: ['2', '3', '9a', '9b', '9c'], rise_min: 1, rise_max: 1, type_of_construction: C}
+  - {classes: ['5', '6', '7a', '7b', '8'], rise_min: 4, type_of_construction: A}
+  - {classes: ['5', '6', '7a', '7b', '8'], rise_min: 3, rise_max: 3, type_of_construction: B}
+  - {classes: ['5', '6', '7a', '7b', '8'], rise_min: 2, rise_max: 2, type_of_construction: C}
+  - {classes: ['5', '6', '7a', '7b', '8'], rise_min: 1, rise_max: 1, type_of_construction: C}
