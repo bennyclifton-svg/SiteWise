@@ -1,0 +1,1402 @@
+version: 1
+interfaces:
+- id: if.envelope-frame-before-roof
+  type: sequences
+  from:
+  - structure
+  to:
+  - envelope.roof-coverings
+  summary: Inspect the supporting frame before roof coverings conceal it.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that the frame inspection was accepted before
+      roof cladding?
+    criteria:
+      true: It explicitly states that the frame inspection was accepted before roof cladding.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - structure
+    - envelope.roof-coverings
+  failure_modes:
+  - fm.envelope-frame-before-roof
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+  cross_cluster: true
+  hold_point:
+    before: roof covering installation
+    after: frame inspection
+    evidence: Frame inspection record accepting the support construction.
+- id: if.envelope-sarking-before-roof
+  type: sequences
+  from:
+  - envelope.pliable-membranes
+  to:
+  - envelope.roof-coverings
+  summary: Install and lap sarking while its junctions and drainage paths remain accessible.
+  governed_by:
+  - rule.ncc.roof-sarking
+  - rule.as4200.pliable-membranes
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify installation of sarking before roof coverings
+      conceal it?
+    criteria:
+      true: It explicitly specifies installation of sarking before roof coverings conceal it.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.pliable-membranes
+    - envelope.roof-coverings
+  failure_modes:
+  - fm.envelope-sarking-before-roof
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+  hold_point:
+    before: roof covering installation
+    after: sarking installation
+    evidence: Inspection photographs showing laps, penetrations and drainage termination.
+  cross_cluster: false
+- id: if.envelope-roof-service-penetrations
+  type: penetrates
+  from:
+  - hydraulic
+  - mechanical
+  - electrical
+  to:
+  - envelope.roof-coverings
+  summary: Service penetrations need profile-compatible roof flashings coordinated before covering.
+  governed_by:
+  - rule.ncc.external-weatherproofing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify the flashing detail at a roof service penetration?
+    criteria:
+      true: It explicitly specifies the flashing detail at a roof service penetration.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - hydraulic
+    - mechanical
+    - electrical
+    - envelope.roof-coverings
+  failure_modes:
+  - fm.envelope-roof-service-penetrations
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+  cross_cluster: true
+- id: if.envelope-rough-in-before-linings
+  type: sequences
+  from:
+  - hydraulic
+  - electrical
+  - mechanical
+  to:
+  - interiors.walls-linings
+  - interiors.ceilings
+  summary: Inspect and test concealed services before wall and ceiling lining.
+  governed_by:
+  - rule.as3017.verification
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that service rough-in inspection was accepted
+      before lining?
+    criteria:
+      true: It explicitly states that service rough-in inspection was accepted before lining.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - hydraulic
+    - electrical
+    - mechanical
+    - interiors.walls-linings
+    - interiors.ceilings
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state electrical rough-in inspection released
+      wall lining?
+    criteria:
+      true: It explicitly states electrical rough-in inspection released wall lining.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.cabling-wiring
+    - interiors
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state a rough-in test record before wall
+      lining?
+    criteria:
+      true: It explicitly states a rough-in test record before wall lining.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+    - hydraulic.gas
+    - hydraulic.sanitary
+    - interiors
+  failure_modes:
+  - fm.envelope-rough-in-before-linings
+  - fm.electrical-rough-in-before-lining
+  - fm.hydraulic-rough-in-before-linings
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
+  cross_cluster: true
+  hold_point:
+    before: wall or ceiling lining installation
+    after: services rough-in inspection
+    evidence: 'Trade-specific inspection and test records for the concealed services. Also retain: Electrical
+      rough-in inspection record for the area before closure. Also retain: a rough-in test record before
+      wall lining'
+  notes: Reconciled duplicate if.electrical-rough-in-before-lining. Reconciled duplicate if.hydraulic-rough-in-before-linings.
+- id: if.envelope-joinery-service-positions
+  type: boundary
+  from:
+  - interiors.joinery
+  to:
+  - hydraulic
+  - electrical
+  summary: Final joinery and appliance geometry sets the service outlet locations.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify service outlet positions against the final joinery
+      layout?
+    criteria:
+      true: It explicitly specifies service outlet positions against the final joinery layout.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.joinery
+    - hydraulic
+    - electrical
+  failure_modes:
+  - fm.envelope-joinery-service-positions
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
+  cross_cluster: true
+- id: if.envelope-flashing-before-cladding
+  type: sequences
+  from:
+  - envelope.windows-doors
+  - envelope.flashings-seals
+  to:
+  - envelope.external-walls
+  summary: Install window flashings before masonry or render conceals their laps.
+  governed_by:
+  - rule.ncc.external-weatherproofing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that window flashings were inspected before cladding
+      concealed them?
+    criteria:
+      true: It explicitly states that window flashings were inspected before cladding concealed them.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.windows-doors
+    - envelope.flashings-seals
+    - envelope.external-walls
+  failure_modes:
+  - fm.envelope-flashing-before-cladding
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 4: External cladding — windows and doors before render or brickwork'
+  hold_point:
+    before: cladding closure at openings
+    after: window flashing inspection
+    evidence: Builder inspection record with photographs of head, sill and jamb flashings.
+  cross_cluster: false
+- id: if.envelope-render-window-movement
+  type: boundary
+  from:
+  - envelope.external-walls
+  to:
+  - envelope.windows-doors
+  - envelope.flashings-seals
+  summary: A flexible perimeter joint accommodates differential movement between render and window frames.
+  governed_by:
+  - rule.ncc.external-weatherproofing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify a flexible sealant joint at the render-to-window-frame
+      junction?
+    criteria:
+      true: It explicitly specifies a flexible sealant joint at the render-to-window-frame junction.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.external-walls
+    - envelope.windows-doors
+    - envelope.flashings-seals
+  failure_modes:
+  - fm.envelope-render-window-movement
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 4: External cladding — windows and doors before render or brickwork'
+  cross_cluster: false
+- id: if.envelope-wrap-flashing-continuity
+  type: boundary
+  from:
+  - envelope.pliable-membranes
+  to:
+  - envelope.flashings-seals
+  summary: Wall wrap laps into opening flashings to discharge collected water outside.
+  governed_by:
+  - rule.as4200.pliable-membranes
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify the lap between wall wrap and opening flashings?
+    criteria:
+      true: It explicitly specifies the lap between wall wrap and opening flashings.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.pliable-membranes
+    - envelope.flashings-seals
+  failure_modes:
+  - fm.envelope-wrap-flashing-continuity
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+  cross_cluster: false
+- id: if.envelope-cladding-drainage-cavity
+  type: boundary
+  from:
+  - envelope.external-walls
+  to:
+  - envelope.pliable-membranes
+  - envelope.flashings-seals
+  summary: Cavity drainage and weepholes keep water clear of the inner wall.
+  governed_by:
+  - rule.as4200.pliable-membranes
+  - rule.as4773.masonry-veneer-construction
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify a drained cavity behind the cladding?
+    criteria:
+      true: It explicitly specifies a drained cavity behind the cladding.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.external-walls
+    - envelope.pliable-membranes
+    - envelope.flashings-seals
+  failure_modes:
+  - fm.envelope-cladding-drainage-cavity
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+  cross_cluster: false
+- id: if.envelope-dpc-slab-membrane
+  type: boundary
+  from:
+  - envelope.flashings-seals
+  to:
+  - substructure
+  summary: The wall damp-proof course and slab membrane form a continuous moisture barrier.
+  governed_by:
+  - rule.ncc.rising-damp-protection
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify the lap connecting the wall damp-proof course
+      to the slab membrane?
+    criteria:
+      true: It explicitly specifies the lap connecting the wall damp-proof course to the slab membrane.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.flashings-seals
+    - substructure
+  failure_modes:
+  - fm.envelope-dpc-slab-membrane
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Rising Damp Protection and External Weatherproofing'
+  cross_cluster: true
+- id: if.envelope-external-levels-moisture-bridge
+  type: boundary
+  from:
+  - site
+  to:
+  - envelope.external-walls
+  - envelope.flashings-seals
+  summary: Finished ground and landscape levels preserve cladding clearance and damp-proof course function.
+  governed_by:
+  - rule.ncc.rising-damp-protection
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify finished ground levels relative to the damp-proof
+      course?
+    criteria:
+      true: It explicitly specifies finished ground levels relative to the damp-proof course.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - site
+    - envelope.external-walls
+    - envelope.flashings-seals
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state external ground clearances to wall
+      cladding?
+    criteria:
+      true: It explicitly states external ground clearances to wall cladding.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - envelope
+  failure_modes:
+  - fm.envelope-external-levels-moisture-bridge
+  - fm.external-levels-protect-envelope
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 8: External landscaping, paths, and drainage before occupation'
+  cross_cluster: true
+  notes: Reconciled duplicate if.external-levels-protect-envelope.
+- id: if.envelope-wet-waste-before-membrane
+  type: sequences
+  from:
+  - hydraulic.sanitary
+  to:
+  - interiors.wet-area-waterproofing
+  summary: Set floor waste flanges and service penetrations to their final positions before membrane application.
+  governed_by:
+  - rule.as3740.falls-to-floor-waste
+  - rule.as3740.membrane-installation
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that floor waste flange levels were confirmed
+      before waterproofing?
+    criteria:
+      true: It explicitly states that floor waste flange levels were confirmed before waterproofing.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - hydraulic
+    - interiors.wet-area-waterproofing
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the floor waste level confirmed before
+      waterproofing?
+    criteria:
+      true: It explicitly states the floor waste level confirmed before waterproofing.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - interiors
+  failure_modes:
+  - fm.envelope-wet-waste-before-membrane
+  - fm.waste-setout-before-membrane
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 5: Wet area floor waste and tile falls'
+  cross_cluster: true
+  hold_point:
+    before: membrane application
+    after: floor waste level confirmation
+    evidence: 'Level check and flange inspection identifying the finished floor and membrane junction.
+      Also retain: the floor waste level confirmed before waterproofing'
+  notes: Reconciled duplicate if.waste-setout-before-membrane.
+- id: if.envelope-wet-substrate-membrane
+  type: boundary
+  from:
+  - interiors.walls-linings
+  to:
+  - interiors.wet-area-waterproofing
+  summary: The membrane needs a sound compatible substrate and movement-capable junctions.
+  governed_by:
+  - rule.as3740.membrane-installation
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify the membrane detail at the wall-to-floor substrate
+      junction?
+    criteria:
+      true: It explicitly specifies the membrane detail at the wall-to-floor substrate junction.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.walls-linings
+    - interiors.wet-area-waterproofing
+  failure_modes:
+  - fm.envelope-wet-substrate-membrane
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+  cross_cluster: false
+- id: if.envelope-waterproofing-before-tiles
+  type: sequences
+  from:
+  - interiors.wet-area-waterproofing
+  to:
+  - interiors.tiling
+  summary: Inspect the cured membrane before tiles conceal it; applicable inspection authority is project-
+    and jurisdiction-specific.
+  governed_by:
+  - rule.state.waterproofing-inspection-before-tiling
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that the waterproofing inspection was accepted
+      before tiling?
+    criteria:
+      true: It explicitly states that the waterproofing inspection was accepted before tiling.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - interiors.tiling
+  failure_modes:
+  - fm.envelope-waterproofing-before-tiles
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 2: Wet area waterproofing to tiling'
+  hold_point:
+    before: tiling
+    after: waterproofing inspection
+    evidence: Membrane inspection acceptance and manufacturer-specific curing evidence; leak-test record
+      where specified.
+  cross_cluster: false
+- id: if.envelope-adhesive-membrane-compatibility
+  type: boundary
+  from:
+  - interiors.tiling
+  to:
+  - interiors.wet-area-waterproofing
+  summary: Tile adhesive and membrane form a compatible system installed after the membrane cures.
+  governed_by:
+  - rule.as3740.membrane-installation
+  - rule.as3958.tile-substrate-and-adhesive
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify compatibility of the tile adhesive with the
+      selected membrane?
+    criteria:
+      true: It explicitly specifies compatibility of the tile adhesive with the selected membrane.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.tiling
+    - interiors.wet-area-waterproofing
+  failure_modes:
+  - fm.envelope-adhesive-membrane-compatibility
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+  cross_cluster: false
+- id: if.envelope-hobless-shower-threshold
+  type: boundary
+  from:
+  - access-egress
+  to:
+  - interiors.wet-area-waterproofing
+  summary: Step-free shower access must be detailed with falls and water containment.
+  governed_by:
+  - rule.as3740.membrane-extent
+  - rule.as3740.falls-to-floor-waste
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify water containment at a hobless shower entrance?
+    criteria:
+      true: It explicitly specifies water containment at a hobless shower entrance.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - access-egress
+    - interiors.wet-area-waterproofing
+  failure_modes:
+  - fm.envelope-hobless-shower-threshold
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Higher Standards and Implementation Implications'
+  cross_cluster: true
+- id: if.envelope-balcony-facade-continuity
+  type: boundary
+  from:
+  - envelope.external-waterproofing
+  to:
+  - envelope.flashings-seals
+  - envelope.external-walls
+  - envelope.windows-doors
+  summary: Balcony membranes terminate continuously with facade weatherproofing and door thresholds.
+  governed_by:
+  - rule.as4654.drainage-and-terminations
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify continuity between the balcony membrane and
+      facade waterproofing?
+    criteria:
+      true: It explicitly specifies continuity between the balcony membrane and facade waterproofing.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.external-waterproofing
+    - envelope.flashings-seals
+    - envelope.external-walls
+    - envelope.windows-doors
+  failure_modes:
+  - fm.envelope-balcony-facade-continuity
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4654 Series — Waterproofing Membranes for External Above-Ground Use'
+  cross_cluster: false
+- id: if.envelope-external-membrane-drainage
+  type: boundary
+  from:
+  - envelope.external-waterproofing
+  to:
+  - hydraulic
+  summary: Falls, membrane outlets and overflow levels share the same finished-surface and threshold design.
+  governed_by:
+  - rule.as4654.drainage-and-terminations
+  - rule.as4654.external-membrane-falls-upstands
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify overflow drainage for a waterproofed roof or
+      balcony?
+    criteria:
+      true: It explicitly specifies overflow drainage for a waterproofed roof or balcony.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.external-waterproofing
+    - hydraulic
+  failure_modes:
+  - fm.envelope-external-membrane-drainage
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Roof Waterproofing and Trafficable Roofs'
+  cross_cluster: true
+- id: if.envelope-membrane-structural-joints
+  type: boundary
+  from:
+  - structure
+  to:
+  - envelope.external-waterproofing
+  - interiors.tiling
+  summary: Structural movement joints continue through waterproofing and tile finishes with movement-capable
+    details.
+  governed_by:
+  - rule.as4654.drainage-and-terminations
+  - rule.as3958.tile-movement-joints
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify a movement-capable membrane detail at a structural
+      joint?
+    criteria:
+      true: It explicitly specifies a movement-capable membrane detail at a structural joint.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - structure
+    - envelope.external-waterproofing
+    - interiors.tiling
+  failure_modes:
+  - fm.envelope-membrane-structural-joints
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Waterproofing in Commercial Buildings'
+  cross_cluster: true
+- id: if.envelope-facade-frame-movement
+  type: boundary
+  from:
+  - structure
+  to:
+  - envelope.curtain-wall
+  - envelope.flashings-seals
+  summary: Facade anchors and perimeter joints accommodate frame deflection and movement.
+  governed_by:
+  - rule.as4284.facade-testing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify movement accommodation at the facade-to-structure
+      junction?
+    criteria:
+      true: It explicitly specifies movement accommodation at the facade-to-structure junction.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - structure
+    - envelope.curtain-wall
+    - envelope.flashings-seals
+  failure_modes:
+  - fm.envelope-facade-frame-movement
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Facade and Curtain Wall Systems'
+  cross_cluster: true
+- id: if.envelope-facade-services-weatherproofing
+  type: penetrates
+  from:
+  - mechanical
+  - hydraulic
+  - electrical
+  - comms-security
+  to:
+  - envelope.external-walls
+  - envelope.pliable-membranes
+  summary: External service entries preserve the facade drainage and sealing layers.
+  governed_by:
+  - rule.ncc.external-weatherproofing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify weatherproofing at an external wall service
+      penetration?
+    criteria:
+      true: It explicitly specifies weatherproofing at an external wall service penetration.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - comms-security
+    - envelope.external-walls
+    - envelope.pliable-membranes
+  failure_modes:
+  - fm.envelope-facade-services-weatherproofing
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Weatherproofing and Facade Defects'
+  cross_cluster: true
+- id: if.envelope-roof-before-insulation
+  type: sequences
+  from:
+  - envelope.roof-coverings
+  - envelope.flashings-seals
+  to:
+  - envelope.thermal-insulation
+  summary: Make the roof weathertight before installing moisture-sensitive ceiling insulation.
+  governed_by:
+  - rule.as4859.insulation-product-r-value
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that roof weathertightness was confirmed before
+      insulation installation?
+    criteria:
+      true: It explicitly states that roof weathertightness was confirmed before insulation installation.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.roof-coverings
+    - envelope.flashings-seals
+    - envelope.thermal-insulation
+  failure_modes:
+  - fm.envelope-roof-before-insulation
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 7: Roof framing to insulation and ceiling'
+  hold_point:
+    before: ceiling insulation installation
+    after: roof weathertightness inspection
+    evidence: Inspection confirming complete roof coverings, flashings and sealed penetrations.
+  cross_cluster: false
+- id: if.envelope-insulation-downlights
+  type: boundary
+  from:
+  - electrical.lighting
+  to:
+  - envelope.thermal-insulation
+  summary: The selected luminaire rating and manufacturer clearances determine insulation detailing.
+  governed_by:
+  - rule.as3000.wiring-rules
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify insulation clearance or contact suitability
+      for the selected recessed light?
+    criteria:
+      true: It explicitly specifies insulation clearance or contact suitability for the selected recessed
+        light.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - electrical
+    - envelope.thermal-insulation
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the recessed fitting insulation compatibility?
+    criteria:
+      true: It explicitly states the recessed fitting insulation compatibility.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.lighting
+    - envelope
+  failure_modes:
+  - fm.envelope-insulation-downlights
+  - fm.downlights-insulation-interface
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 7: Roof framing to insulation and ceiling'
+  cross_cluster: true
+  notes: Reconciled duplicate if.downlights-insulation-interface.
+- id: if.envelope-envelope-thermal-bridges
+  type: boundary
+  from:
+  - structure
+  to:
+  - envelope.thermal-insulation
+  - envelope.thermal-performance
+  summary: Structural framing and slab edges affect assembly thermal performance.
+  governed_by:
+  - rule.ncc.section-j-envelope-fabric
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify thermal-bridge treatment at a structural element
+      passing through insulation?
+    criteria:
+      true: It explicitly specifies thermal-bridge treatment at a structural element passing through insulation.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - structure
+    - envelope.thermal-insulation
+    - envelope.thermal-performance
+  failure_modes:
+  - fm.envelope-envelope-thermal-bridges
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+  cross_cluster: true
+- id: if.envelope-sealed-envelope-ventilation
+  type: depends_on
+  from:
+  - envelope.facade-acoustics
+  - envelope.building-sealing
+  to:
+  - mechanical
+  summary: Closed windows used for acoustic protection need a ventilation solution consistent with the
+    facade assessment.
+  governed_by:
+  - rule.as3671.road-traffic-noise-intrusion
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify ventilation provision with the acoustically
+      protected windows closed?
+    criteria:
+      true: It explicitly specifies ventilation provision with the acoustically protected windows closed.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.facade-acoustics
+    - envelope.building-sealing
+    - mechanical
+  failure_modes:
+  - fm.envelope-sealed-envelope-ventilation
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3671 — Acoustics — Road Traffic Noise Intrusion — Building Siting and Construction'
+  cross_cluster: true
+- id: if.envelope-energy-services-commitments
+  type: depends_on
+  from:
+  - envelope.thermal-performance
+  to:
+  - hydraulic
+  - electrical
+  - mechanical
+  summary: The energy assessment relies on the selected fixed services and any committed on-site generation.
+  governed_by:
+  - rule.ncc.whole-of-home-energy
+  - rule.basix.energy-commitments
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the fixed-service specification used by the energy
+      assessment?
+    criteria:
+      true: It explicitly states the fixed-service specification used by the energy assessment.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.thermal-performance
+    - hydraulic
+    - electrical
+    - mechanical
+  failure_modes:
+  - fm.envelope-energy-services-commitments
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Whole-of-Home Energy Budget'
+  cross_cluster: true
+- id: if.envelope-basix-water-system
+  type: depends_on
+  from:
+  - envelope.thermal-performance
+  to:
+  - hydraulic
+  summary: BASIX water commitments depend on the installed harvesting and fixture specifications.
+  governed_by:
+  - rule.basix.water-commitments
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the water-system specification committed by the
+      BASIX certificate?
+    criteria:
+      true: It explicitly states the water-system specification committed by the BASIX certificate.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.thermal-performance
+    - hydraulic
+  failure_modes:
+  - fm.envelope-basix-water-system
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 1. BASIX overview (NSW)'
+  cross_cluster: true
+- id: if.envelope-services-acoustic-penetrations
+  type: penetrates
+  from:
+  - mechanical
+  - hydraulic
+  - electrical
+  - comms-security
+  to:
+  - interiors.acoustic-separation
+  summary: Service penetrations and sockets can bypass acoustic separation unless detailed for the assembly.
+  governed_by:
+  - rule.ncc.sou-wall-sound-insulation
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify acoustic sealing at service penetrations through
+      a separating element?
+    criteria:
+      true: It explicitly specifies acoustic sealing at service penetrations through a separating element.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - comms-security
+    - interiors.acoustic-separation
+  failure_modes:
+  - fm.envelope-services-acoustic-penetrations
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+  cross_cluster: true
+- id: if.envelope-ceiling-floor-acoustic-flanking
+  type: boundary
+  from:
+  - interiors.ceilings
+  - interiors.floor-finishes
+  to:
+  - interiors.acoustic-separation
+  summary: Ceiling plenums and raised floor voids can bypass separating walls.
+  governed_by:
+  - rule.ncc.sou-wall-sound-insulation
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify acoustic treatment of a flanking path through
+      a ceiling or floor void?
+    criteria:
+      true: It explicitly specifies acoustic treatment of a flanking path through a ceiling or floor void.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.ceilings
+    - interiors.floor-finishes
+    - interiors.acoustic-separation
+  failure_modes:
+  - fm.envelope-ceiling-floor-acoustic-flanking
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+  cross_cluster: false
+- id: if.envelope-floor-finish-impact-sound
+  type: boundary
+  from:
+  - interiors.floor-finishes
+  - interiors.tiling
+  to:
+  - interiors.acoustic-separation
+  summary: Floor-finish substitutions and rigid bridges affect impact sound isolation.
+  governed_by:
+  - rule.ncc.sou-floor-impact-sound
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify the acoustic underlay or floating-floor detail
+      beneath the floor finish?
+    criteria:
+      true: It explicitly specifies the acoustic underlay or floating-floor detail beneath the floor finish.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.floor-finishes
+    - interiors.tiling
+    - interiors.acoustic-separation
+  failure_modes:
+  - fm.envelope-floor-finish-impact-sound
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+  cross_cluster: false
+- id: if.envelope-room-acoustic-finishes
+  type: boundary
+  from:
+  - interiors.ceilings
+  - interiors.floor-finishes
+  - interiors.walls-linings
+  to:
+  - interiors.room-acoustics
+  summary: Interior finishes provide absorption used by the room acoustic design.
+  governed_by:
+  - rule.as2107.reverberation-time
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify acoustic absorption treatment for the room?
+    criteria:
+      true: It explicitly specifies acoustic absorption treatment for the room.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.ceilings
+    - interiors.floor-finishes
+    - interiors.walls-linings
+    - interiors.room-acoustics
+  failure_modes:
+  - fm.envelope-room-acoustic-finishes
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for
+      Building Interiors'
+  cross_cluster: false
+- id: if.envelope-plant-room-noise
+  type: boundary
+  from:
+  - mechanical
+  - hydraulic
+  - vertical-transport
+  - electrical
+  to:
+  - interiors.room-acoustics
+  summary: Services noise contributions are evaluated against the occupied room noise design.
+  governed_by:
+  - rule.as2107.design-sound-levels
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the services-noise contribution considered in
+      the room acoustic assessment?
+    criteria:
+      true: It explicitly states the services-noise contribution considered in the room acoustic assessment.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - vertical-transport
+    - electrical
+    - interiors.room-acoustics
+  failure_modes:
+  - fm.envelope-plant-room-noise
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for
+      Building Interiors'
+  cross_cluster: true
+- id: if.envelope-services-ceiling-space
+  type: shares_space
+  from:
+  - mechanical
+  - hydraulic
+  - electrical
+  - fire-active
+  to:
+  - interiors.ceilings
+  summary: Services routes and supports must fit the ceiling void while retaining the required room heights
+    and access.
+  governed_by:
+  - rule.ncc.room-heights
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify the finished ceiling level coordinated with
+      service routes?
+    criteria:
+      true: It explicitly specifies the finished ceiling level coordinated with service routes.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - fire-active
+    - interiors.ceilings
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the coordinated section through ceiling
+      services?
+    criteria:
+      true: It explicitly states the coordinated section through ceiling services.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - hydraulic.sanitary
+    - interiors
+    - structure
+  failure_modes:
+  - fm.envelope-services-ceiling-space
+  - fm.services-share-ceiling-space
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Ventilation Requirements and Ceiling Heights'
+  cross_cluster: true
+  notes: Reconciled duplicate if.services-share-ceiling-space.
+- id: if.envelope-grab-rail-backing-before-lining
+  type: sequences
+  from:
+  - access-egress
+  to:
+  - interiors.walls-linings
+  summary: Provide the specified future grab-rail backing before wall linings conceal the frame.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that grab-rail backing was installed before wall
+      lining?
+    criteria:
+      true: It explicitly states that grab-rail backing was installed before wall lining.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - access-egress
+    - interiors.walls-linings
+  failure_modes:
+  - fm.envelope-grab-rail-backing-before-lining
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Mandatory Silver Level Provisions'
+  cross_cluster: true
+  hold_point:
+    before: bathroom wall lining
+    after: grab-rail backing inspection
+    evidence: Photographs and location record of backing matched to the approved accessible layout.
+- id: if.envelope-paint-before-flooring
+  type: sequences
+  from:
+  - interiors.painting
+  to:
+  - interiors.floor-finishes
+  summary: Finish wet and painting work before laying vulnerable floor finishes.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that painting was complete before final floor
+      finishes were installed?
+    criteria:
+      true: It explicitly states that painting was complete before final floor finishes were installed.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - interiors.painting
+    - interiors.floor-finishes
+  failure_modes:
+  - fm.envelope-paint-before-flooring
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 6: Internal painting before flooring'
+  hold_point:
+    before: final floor finish installation
+    after: painting and wet-work completion
+    evidence: Inspection confirming dry painted surfaces and completed wet work.
+  cross_cluster: false
+- id: if.envelope-old-new-weather-barrier
+  type: boundary
+  from:
+  - envelope.flashings-seals
+  to:
+  - envelope.external-walls
+  - envelope.roof-coverings
+  - envelope.external-waterproofing
+  summary: Alterations need explicit continuity between retained and new weather barriers.
+  governed_by:
+  - rule.ncc.external-weatherproofing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify the weatherproofing tie-in between retained
+      and new construction?
+    criteria:
+      true: It explicitly specifies the weatherproofing tie-in between retained and new construction.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.flashings-seals
+    - envelope.external-walls
+    - envelope.roof-coverings
+    - envelope.external-waterproofing
+  failure_modes:
+  - fm.envelope-old-new-weather-barrier
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Waterproofing and old-to-new tie-ins'
+  cross_cluster: false
+- id: if.envelope-bushfire-site-basis
+  type: depends_on
+  from:
+  - envelope.bushfire-construction
+  to:
+  - site
+  summary: The construction BAL relies on the assessed vegetation separation and maintained asset protection
+    zone.
+  governed_by:
+  - rule.as3959.bal-assessment
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the asset protection zone assumed by the BAL assessment?
+    criteria:
+      true: It explicitly states the asset protection zone assumed by the BAL assessment.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.bushfire-construction
+    - site
+  failure_modes:
+  - fm.envelope-bushfire-site-basis
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Bushfire Attack Levels (BAL) Determination'
+  cross_cluster: true
+- id: if.envelope-bushfire-service-entries
+  type: penetrates
+  from:
+  - mechanical
+  - hydraulic
+  - electrical
+  - comms-security
+  to:
+  - envelope.bushfire-construction
+  summary: Service openings through the bushfire envelope need specified ember protection.
+  governed_by:
+  - rule.as3959.ember-protection
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify ember protection at an external service entry?
+    criteria:
+      true: It explicitly specifies ember protection at an external service entry.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - comms-security
+    - envelope.bushfire-construction
+  failure_modes:
+  - fm.envelope-bushfire-service-entries
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+  cross_cluster: true
+- id: if.envelope-landscaped-roof-protection
+  type: boundary
+  from:
+  - site.landscape
+  to:
+  - envelope.external-waterproofing
+  summary: Coordinate the green-roof root barrier, drainage layer and growing medium with the protected
+    waterproofing system.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state that the green-roof build-up includes
+      a root barrier protecting the waterproofing?
+    criteria:
+      true: It explicitly states that the green-roof build-up includes a root barrier protecting the waterproofing.
+      false: It does not explicitly state this detail; a general requirement or a mention of the systems
+        is insufficient.
+    runs_on:
+    - site.landscape
+    - envelope.external-waterproofing
+  failure_modes:
+  - fm.envelope-landscaped-roof-protection
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Roof Waterproofing and Trafficable Roofs'
+- id: if.envelope-trafficable-roof-membrane-access
+  type: boundary
+  from:
+  - envelope.external-waterproofing
+  to:
+  - interiors.floor-finishes
+  summary: Retain an identified means of inspecting and repairing a trafficable-roof membrane beneath
+    its surface finish.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state that the trafficable-roof surface finish
+      can be lifted to inspect the waterproofing?
+    criteria:
+      true: It explicitly states that the trafficable-roof surface finish can be lifted to inspect the
+        waterproofing.
+      false: It does not explicitly state this detail; a general requirement or a mention of the systems
+        is insufficient.
+    runs_on:
+    - envelope.external-waterproofing
+    - interiors.floor-finishes
+  failure_modes:
+  - fm.envelope-trafficable-roof-membrane-access
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Roof Waterproofing and Trafficable Roofs'
+- id: if.envelope-mixed-use-structure-borne-sound
+  type: boundary
+  from:
+  - structure
+  to:
+  - interiors.acoustic-separation
+  summary: Resolve structure-borne sound paths through shared slabs and cores between noise-producing
+    and noise-sensitive uses against their stated source and receiver criteria.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state that an acoustic treatment addresses
+      structure-borne sound through the shared structure between different building uses?
+    criteria:
+      true: It explicitly states that an acoustic treatment addresses structure-borne sound through the
+        shared structure between different building uses.
+      false: It does not explicitly state this detail; a general requirement or a mention of the systems
+        is insufficient.
+    runs_on:
+    - structure
+    - interiors.acoustic-separation
+  failure_modes:
+  - fm.envelope-mixed-use-structure-borne-sound
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: mixed-use-construction-guide.md
+    anchor: '## Fire and acoustic separation between uses'
+- id: if.envelope-repair-temporary-enclosure
+  type: sequences
+  from:
+  - envelope.external-walls
+  - envelope.roof-coverings
+  to:
+  - interiors.walls-linings
+  - interiors.floor-finishes
+  summary: Provide temporary weather protection for retained interiors while facade or roof repairs open
+    the enclosure. Temporary protection is separate from permanent repair acceptance.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state that temporary weather protection is
+      installed while the building enclosure is opened for repair?
+    criteria:
+      true: It explicitly states that temporary weather protection is installed while the building enclosure
+        is opened for repair.
+      false: It does not explicitly state this detail; a general requirement or a mention of the systems
+        is insufficient.
+    runs_on:
+    - envelope.external-walls
+    - envelope.roof-coverings
+    - interiors.walls-linings
+    - interiors.floor-finishes
+  failure_modes:
+  - fm.envelope-repair-temporary-enclosure
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: building-remediation-rectification-guide.md
+    anchor: '## Safety, occupation and temporary controls'
+  hold_point:
+    before: opening the enclosure during repair
+    after: temporary weather protection installation
+    evidence: Inspection confirming temporary protection of retained interiors.
+- id: if.envelope-energy-geometry-change
+  type: depends_on
+  from:
+  - envelope.thermal-performance
+  to:
+  - envelope.windows-doors
+  - envelope.external-shading
+  summary: Reassess the energy model when window orientation or external shading changes from the assessed
+    design.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state that the energy assessment was updated
+      to reflect a changed window orientation?
+    criteria:
+      true: It explicitly states that the energy assessment was updated to reflect a changed window orientation.
+      false: It does not explicitly state this detail; a general requirement or a mention of the systems
+        is insufficient.
+    runs_on:
+    - envelope.thermal-performance
+    - envelope.windows-doors
+    - envelope.external-shading
+  failure_modes:
+  - fm.envelope-energy-geometry-change
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: new-dwelling-guide.md
+    anchor: '### Common BASIX failure modes'
+- id: if.envelope-clinical-finish-cleaning
+  type: boundary
+  from:
+  - interiors.walls-linings
+  - interiors.floor-finishes
+  to:
+  - interiors.joinery
+  summary: Coordinate clinical finish junctions and materials with the infection-control requirements
+    named in the medical facility brief. Do not infer hospital standards for other institutional uses.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state that the clinical finish specification
+      identifies the infection-control requirements from the facility brief?
+    criteria:
+      true: It explicitly states that the clinical finish specification identifies the infection-control
+        requirements from the facility brief.
+      false: It does not explicitly state this detail; a general requirement or a mention of the systems
+        is insufficient.
+    runs_on:
+    - interiors.walls-linings
+    - interiors.floor-finishes
+    - interiors.joinery
+  failure_modes:
+  - fm.envelope-clinical-finish-cleaning
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: institution-construction-guide.md
+    anchor: '## Specialist facility standards'

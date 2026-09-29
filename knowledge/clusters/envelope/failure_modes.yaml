@@ -1,0 +1,1306 @@
+version: 1
+failure_modes:
+- id: fm.envelope-frame-before-roof
+  attaches_to:
+    interface: if.envelope-frame-before-roof
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that roof cladding concealed framing before its
+      inspection?
+    criteria:
+      true: It explicitly states that roof cladding concealed framing before its inspection.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - structure
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+- id: fm.envelope-sarking-before-roof
+  attaches_to:
+    interface: if.envelope-sarking-before-roof
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that required sarking was omitted or could not
+      be correctly fitted after battens?
+    criteria:
+      true: It explicitly states that required sarking was omitted or could not be correctly fitted after
+        battens.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.pliable-membranes
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+- id: fm.envelope-roof-service-penetrations
+  attaches_to:
+    interface: if.envelope-roof-service-penetrations
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a roof service penetration leaks because
+      its flashing is missing or incorrectly installed?
+    criteria:
+      true: It explicitly states that a roof service penetration leaks because its flashing is missing
+        or incorrectly installed.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - hydraulic
+    - mechanical
+    - electrical
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+- id: fm.envelope-rough-in-before-linings
+  attaches_to:
+    interface: if.envelope-rough-in-before-linings
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that wall or ceiling lining concealed services
+      before their required inspection?
+    criteria:
+      true: It explicitly states that wall or ceiling lining concealed services before their required
+        inspection.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - hydraulic
+    - electrical
+    - mechanical
+    - interiors.walls-linings
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
+- id: fm.envelope-joinery-service-positions
+  attaches_to:
+    interface: if.envelope-joinery-service-positions
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that service outlet positions conflict with the
+      installed joinery or appliance layout?
+    criteria:
+      true: It explicitly states that service outlet positions conflict with the installed joinery or
+        appliance layout.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.joinery
+    - hydraulic
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
+- id: fm.envelope-flashing-before-cladding
+  attaches_to:
+    interface: if.envelope-flashing-before-cladding
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that masonry or render concealed a window junction
+      before its flashing was installed?
+    criteria:
+      true: It explicitly states that masonry or render concealed a window junction before its flashing
+        was installed.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.windows-doors
+    - envelope.flashings-seals
+    - envelope.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 4: External cladding — windows and doors before render or brickwork'
+- id: fm.envelope-render-window-movement
+  attaches_to:
+    interface: if.envelope-render-window-movement
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that render is bonded directly to a window frame
+      and cracking at the junction?
+    criteria:
+      true: It explicitly states that render is bonded directly to a window frame and cracking at the
+        junction.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-walls
+    - envelope.windows-doors
+    - envelope.flashings-seals
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 4: External cladding — windows and doors before render or brickwork'
+- id: fm.envelope-wrap-flashing-continuity
+  attaches_to:
+    interface: if.envelope-wrap-flashing-continuity
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a gap between wall wrap and window flashing
+      allows water behind the weather barrier?
+    criteria:
+      true: It explicitly states that a gap between wall wrap and window flashing allows water behind
+        the weather barrier.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.pliable-membranes
+    - envelope.flashings-seals
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+- id: fm.envelope-cladding-drainage-cavity
+  attaches_to:
+    interface: if.envelope-cladding-drainage-cavity
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that blocked weepholes or a bridged cavity prevent
+      drainage behind cladding?
+    criteria:
+      true: It explicitly states that blocked weepholes or a bridged cavity prevent drainage behind cladding.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-walls
+    - envelope.pliable-membranes
+    - envelope.flashings-seals
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+- id: fm.envelope-dpc-slab-membrane
+  attaches_to:
+    interface: if.envelope-dpc-slab-membrane
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the wall damp-proof course is disconnected
+      from the slab membrane?
+    criteria:
+      true: It explicitly states that the wall damp-proof course is disconnected from the slab membrane.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.flashings-seals
+    - substructure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Rising Damp Protection and External Weatherproofing'
+- id: fm.envelope-external-levels-moisture-bridge
+  attaches_to:
+    interface: if.envelope-external-levels-moisture-bridge
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that soil, mulch or paving bridges the damp-proof
+      course?
+    criteria:
+      true: It explicitly states that soil, mulch or paving bridges the damp-proof course.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - site
+    - envelope.external-walls
+    - envelope.flashings-seals
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 8: External landscaping, paths, and drainage before occupation'
+- id: fm.envelope-wet-waste-before-membrane
+  attaches_to:
+    interface: if.envelope-wet-waste-before-membrane
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a waste flange was moved after waterproofing
+      and broke the membrane?
+    criteria:
+      true: It explicitly states that a waste flange was moved after waterproofing and broke the membrane.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - hydraulic
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 5: Wet area floor waste and tile falls'
+- id: fm.envelope-wet-substrate-membrane
+  attaches_to:
+    interface: if.envelope-wet-substrate-membrane
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a wet-area membrane is discontinuous at a
+      wall-to-floor substrate transition?
+    criteria:
+      true: It explicitly states that a wet-area membrane is discontinuous at a wall-to-floor substrate
+        transition.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.walls-linings
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+- id: fm.envelope-waterproofing-before-tiles
+  attaches_to:
+    interface: if.envelope-waterproofing-before-tiles
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that tiling concealed waterproofing before its
+      required inspection?
+    criteria:
+      true: It explicitly states that tiling concealed waterproofing before its required inspection.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 2: Wet area waterproofing to tiling'
+- id: fm.envelope-adhesive-membrane-compatibility
+  attaches_to:
+    interface: if.envelope-adhesive-membrane-compatibility
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that incompatible tile adhesive attacked or delaminated
+      the waterproofing membrane?
+    criteria:
+      true: It explicitly states that incompatible tile adhesive attacked or delaminated the waterproofing
+        membrane.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.tiling
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+- id: fm.envelope-hobless-shower-threshold
+  attaches_to:
+    interface: if.envelope-hobless-shower-threshold
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that water escapes the hobless shower because
+      its threshold or falls are defective?
+    criteria:
+      true: It explicitly states that water escapes the hobless shower because its threshold or falls
+        are defective.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - access-egress
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Higher Standards and Implementation Implications'
+- id: fm.envelope-balcony-facade-continuity
+  attaches_to:
+    interface: if.envelope-balcony-facade-continuity
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the balcony membrane terminates short of
+      the facade weather barrier?
+    criteria:
+      true: It explicitly states that the balcony membrane terminates short of the facade weather barrier.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-waterproofing
+    - envelope.flashings-seals
+    - envelope.external-walls
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4654 Series — Waterproofing Membranes for External Above-Ground Use'
+- id: fm.envelope-external-membrane-drainage
+  attaches_to:
+    interface: if.envelope-external-membrane-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that blocked primary drainage allows water to
+      enter a door threshold because overflow drainage is absent?
+    criteria:
+      true: It explicitly states that blocked primary drainage allows water to enter a door threshold
+        because overflow drainage is absent.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-waterproofing
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Roof Waterproofing and Trafficable Roofs'
+- id: fm.envelope-membrane-structural-joints
+  attaches_to:
+    interface: if.envelope-membrane-structural-joints
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a membrane tore where it was rigidly bonded
+      across a structural movement joint?
+    criteria:
+      true: It explicitly states that a membrane tore where it was rigidly bonded across a structural
+        movement joint.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - structure
+    - envelope.external-waterproofing
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Waterproofing in Commercial Buildings'
+- id: fm.envelope-facade-frame-movement
+  attaches_to:
+    interface: if.envelope-facade-frame-movement
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that structural movement cracked a rigid facade-to-frame
+      junction?
+    criteria:
+      true: It explicitly states that structural movement cracked a rigid facade-to-frame junction.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - structure
+    - envelope.curtain-wall
+    - envelope.flashings-seals
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Facade and Curtain Wall Systems'
+- id: fm.envelope-facade-slab-edge-fire
+  attaches_to:
+    interface: if.fire-facade-slab-edge
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that an unsealed slab-edge gap behind the curtain
+      wall bypasses floor fire separation?
+    criteria:
+      true: It explicitly states that an unsealed slab-edge gap behind the curtain wall bypasses floor
+        fire separation.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.curtain-wall
+    - fire-passive
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Spandrel and Slab Edge Fire Protection'
+- id: fm.envelope-facade-services-weatherproofing
+  attaches_to:
+    interface: if.envelope-facade-services-weatherproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a service penetration through the facade
+      is unflashed or unsealed?
+    criteria:
+      true: It explicitly states that a service penetration through the facade is unflashed or unsealed.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - comms-security
+    - envelope.external-walls
+    - envelope.pliable-membranes
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Weatherproofing and Facade Defects'
+- id: fm.envelope-roof-before-insulation
+  attaches_to:
+    interface: if.envelope-roof-before-insulation
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that ceiling insulation became wet because it
+      was installed before the roof was weathertight?
+    criteria:
+      true: It explicitly states that ceiling insulation became wet because it was installed before the
+        roof was weathertight.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.roof-coverings
+    - envelope.flashings-seals
+    - envelope.thermal-insulation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 7: Roof framing to insulation and ceiling'
+- id: fm.envelope-insulation-downlights
+  attaches_to:
+    interface: if.envelope-insulation-downlights
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that insulation contacts a recessed luminaire
+      which is not rated for that contact?
+    criteria:
+      true: It explicitly states that insulation contacts a recessed luminaire which is not rated for
+        that contact.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - electrical
+    - envelope.thermal-insulation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 7: Roof framing to insulation and ceiling'
+- id: fm.envelope-envelope-thermal-bridges
+  attaches_to:
+    interface: if.envelope-envelope-thermal-bridges
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the thermal assessment omitted structural
+      thermal bridges?
+    criteria:
+      true: It explicitly states that the thermal assessment omitted structural thermal bridges.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - structure
+    - envelope.thermal-insulation
+    - envelope.thermal-performance
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+- id: fm.envelope-sealed-envelope-ventilation
+  attaches_to:
+    interface: if.envelope-sealed-envelope-ventilation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that required ventilation depends on opening windows
+      which must remain closed to meet the acoustic design?
+    criteria:
+      true: It explicitly states that required ventilation depends on opening windows which must remain
+        closed to meet the acoustic design.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.facade-acoustics
+    - envelope.building-sealing
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3671 — Acoustics — Road Traffic Noise Intrusion — Building Siting and Construction'
+- id: fm.envelope-energy-services-commitments
+  attaches_to:
+    interface: if.envelope-energy-services-commitments
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that installed fixed services differ from those
+      used in the energy assessment?
+    criteria:
+      true: It explicitly states that installed fixed services differ from those used in the energy assessment.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.thermal-performance
+    - hydraulic
+    - electrical
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Whole-of-Home Energy Budget'
+- id: fm.envelope-basix-water-system
+  attaches_to:
+    interface: if.envelope-basix-water-system
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the installed rainwater system or fixtures
+      differ from the BASIX water commitments?
+    criteria:
+      true: It explicitly states that the installed rainwater system or fixtures differ from the BASIX
+        water commitments.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.thermal-performance
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 1. BASIX overview (NSW)'
+- id: fm.envelope-fire-acoustic-separation
+  attaches_to:
+    interface: if.fire-and-acoustic-separation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a substituted fire-rated assembly lacks the
+      required acoustic performance?
+    criteria:
+      true: It explicitly states that a substituted fire-rated assembly lacks the required acoustic performance.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - fire-passive
+    - interiors.acoustic-separation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+- id: fm.envelope-services-acoustic-penetrations
+  attaches_to:
+    interface: if.envelope-services-acoustic-penetrations
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that service penetrations form an unsealed sound
+      path through an acoustic separating element?
+    criteria:
+      true: It explicitly states that service penetrations form an unsealed sound path through an acoustic
+        separating element.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - comms-security
+    - interiors.acoustic-separation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+- id: fm.envelope-ceiling-floor-acoustic-flanking
+  attaches_to:
+    interface: if.envelope-ceiling-floor-acoustic-flanking
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that sound bypasses a separating wall through
+      a continuous ceiling or raised-floor void?
+    criteria:
+      true: It explicitly states that sound bypasses a separating wall through a continuous ceiling or
+        raised-floor void.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.ceilings
+    - interiors.floor-finishes
+    - interiors.acoustic-separation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+- id: fm.envelope-floor-finish-impact-sound
+  attaches_to:
+    interface: if.envelope-floor-finish-impact-sound
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a rigid bridge or omitted underlay defeats
+      the specified floor impact isolation?
+    criteria:
+      true: It explicitly states that a rigid bridge or omitted underlay defeats the specified floor impact
+        isolation.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.floor-finishes
+    - interiors.tiling
+    - interiors.acoustic-separation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+- id: fm.envelope-room-acoustic-finishes
+  attaches_to:
+    interface: if.envelope-room-acoustic-finishes
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a hard-finish substitution removed the acoustic
+      absorption specified for the room?
+    criteria:
+      true: It explicitly states that a hard-finish substitution removed the acoustic absorption specified
+        for the room.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.ceilings
+    - interiors.floor-finishes
+    - interiors.walls-linings
+    - interiors.room-acoustics
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for
+      Building Interiors'
+- id: fm.envelope-plant-room-noise
+  attaches_to:
+    interface: if.envelope-plant-room-noise
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that services noise was omitted from the room
+      acoustic assessment?
+    criteria:
+      true: It explicitly states that services noise was omitted from the room acoustic assessment.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - vertical-transport
+    - electrical
+    - interiors.room-acoustics
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for
+      Building Interiors'
+- id: fm.envelope-services-ceiling-space
+  attaches_to:
+    interface: if.envelope-services-ceiling-space
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a services bulkhead reduces room height below
+      the specified minimum?
+    criteria:
+      true: It explicitly states that a services bulkhead reduces room height below the specified minimum.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - fire-active
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Ventilation Requirements and Ceiling Heights'
+- id: fm.envelope-grab-rail-backing-before-lining
+  attaches_to:
+    interface: if.envelope-grab-rail-backing-before-lining
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that required grab-rail backing was omitted before
+      the bathroom wall was lined?
+    criteria:
+      true: It explicitly states that required grab-rail backing was omitted before the bathroom wall
+        was lined.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - access-egress
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Mandatory Silver Level Provisions'
+- id: fm.envelope-paint-before-flooring
+  attaches_to:
+    interface: if.envelope-paint-before-flooring
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that paint or wet-trade work damaged newly installed
+      floor finishes?
+    criteria:
+      true: It explicitly states that paint or wet-trade work damaged newly installed floor finishes.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.painting
+    - interiors.floor-finishes
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 6: Internal painting before flooring'
+- id: fm.envelope-old-new-weather-barrier
+  attaches_to:
+    interface: if.envelope-old-new-weather-barrier
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that water enters at an unsealed junction between
+      retained and new construction?
+    criteria:
+      true: It explicitly states that water enters at an unsealed junction between retained and new construction.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.flashings-seals
+    - envelope.external-walls
+    - envelope.roof-coverings
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Waterproofing and old-to-new tie-ins'
+- id: fm.envelope-bushfire-site-basis
+  attaches_to:
+    interface: if.envelope-bushfire-site-basis
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the asset protection zone assumed by the
+      BAL assessment is not maintained?
+    criteria:
+      true: It explicitly states that the asset protection zone assumed by the BAL assessment is not maintained.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.bushfire-construction
+    - site
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Bushfire Attack Levels (BAL) Determination'
+- id: fm.envelope-bushfire-service-entries
+  attaches_to:
+    interface: if.envelope-bushfire-service-entries
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a service penetration leaves an unprotected
+      ember entry into the building?
+    criteria:
+      true: It explicitly states that a service penetration leaves an unprotected ember entry into the
+        building.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - mechanical
+    - hydraulic
+    - electrical
+    - comms-security
+    - envelope.bushfire-construction
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+- id: fm.envelope-vapour-barrier-position
+  attaches_to:
+    system: envelope.pliable-membranes
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a vapour barrier is trapping moisture on
+      the cold side of the insulated assembly?
+    criteria:
+      true: It explicitly reports that a vapour barrier is trapping moisture on the cold side of the insulated
+        assembly.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.pliable-membranes
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+- id: fm.envelope-safety-glass-substitution
+  attaches_to:
+    system: envelope.windows-doors
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that annealed glass is installed in a location
+      specified to require safety glazing?
+    criteria:
+      true: It explicitly reports that annealed glass is installed in a location specified to require
+        safety glazing.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Safety glazing requirements'
+- id: fm.envelope-window-test-mismatch
+  attaches_to:
+    system: envelope.windows-doors
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the window test specimen differs from the
+      installed configuration without an assessment of the differences?
+    criteria:
+      true: It explicitly reports that the window test specimen differs from the installed configuration
+        without an assessment of the differences.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4420 Series — Windows — Methods of Test'
+- id: fm.envelope-facade-test-mismatch
+  attaches_to:
+    system: envelope.curtain-wall
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the facade test specimen omits the actual
+      installation joints or anchorage conditions?
+    criteria:
+      true: It explicitly reports that the facade test specimen omits the actual installation joints or
+        anchorage conditions.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.curtain-wall
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4284 — Testing of Building Facades'
+- id: fm.envelope-external-internal-membrane-substitution
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that an internal-wet-area-only membrane was selected
+      for an external waterproofing application?
+    criteria:
+      true: It explicitly reports that an internal-wet-area-only membrane was selected for an external
+        waterproofing application.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4654 Series — Waterproofing Membranes for External Above-Ground Use'
+- id: fm.envelope-wet-membrane-puncture
+  attaches_to:
+    system: interiors.wet-area-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that a later trade punctured the waterproofing
+      membrane without a documented repair?
+    criteria:
+      true: It explicitly reports that a later trade punctured the waterproofing membrane without a documented
+        repair.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 2: Wet area waterproofing to tiling'
+- id: fm.envelope-tile-drumming
+  attaches_to:
+    system: interiors.tiling
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that tiles are hollow-sounding or debonded?
+    criteria:
+      true: It explicitly reports that tiles are hollow-sounding or debonded.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - seed: defects-and-dlp-guide.md
+    anchor: '### 2.4 Tile drumming (debonded tiles)'
+- id: fm.envelope-paint-adhesion
+  attaches_to:
+    system: interiors.painting
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that paint is blistering or peeling from a damp
+      or contaminated substrate?
+    criteria:
+      true: It explicitly reports that paint is blistering or peeling from a damp or contaminated substrate.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - seed: defects-and-dlp-guide.md
+    anchor: '### 2.5 Paint defects'
+- id: fm.envelope-floor-cupping
+  attaches_to:
+    system: interiors.floor-finishes
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that timber flooring is cupping or crowning due
+      to moisture?
+    criteria:
+      true: It explicitly reports that timber flooring is cupping or crowning due to moisture.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.floor-finishes
+  flag_when: true
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Timber flooring (solid and engineered)'
+- id: fm.envelope-insulated-glass-seal
+  attaches_to:
+    system: envelope.windows-doors
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that moisture or fogging is present inside an
+      insulated glazing unit?
+    criteria:
+      true: It explicitly reports that moisture or fogging is present inside an insulated glazing unit.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '## Common defects at key trade interfaces'
+- id: fm.envelope-insulation-gaps
+  attaches_to:
+    system: envelope.thermal-insulation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that installed insulation has gaps or is compressed?
+    criteria:
+      true: It explicitly reports that installed insulation has gaps or is compressed.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.thermal-insulation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4859 Series — Thermal Insulation Materials'
+- id: fm.envelope-basix-glazing-substitution
+  attaches_to:
+    system: envelope.thermal-performance
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the installed window product differs from
+      the BASIX thermal specification?
+    criteria:
+      true: It explicitly reports that the installed window product differs from the BASIX thermal specification.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.thermal-performance
+  flag_when: true
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '### 4.1 Window U-value and SHGC substitution'
+- id: fm.envelope-basix-existing-assumption
+  attaches_to:
+    system: envelope.thermal-performance
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that the energy certificate assumed existing insulation
+      or equipment which site investigation did not confirm?
+    criteria:
+      true: It explicitly reports that the energy certificate assumed existing insulation or equipment
+        which site investigation did not confirm.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.thermal-performance
+  flag_when: true
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '### 4.6 Alterations and additions — existing vs new elements'
+- id: fm.envelope-recurring-efflorescence
+  attaches_to:
+    system: envelope.external-walls
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that efflorescence has recurred after surface
+      cleaning?
+    criteria:
+      true: It explicitly reports that efflorescence has recurred after surface cleaning.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - seed: defects-and-dlp-guide.md
+    anchor: '### 2.1 Efflorescence'
+- id: fm.envelope-lining-sag
+  attaches_to:
+    system: interiors.ceilings
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that ceiling lining is sagging?
+    criteria:
+      true: It explicitly reports that ceiling lining is sagging.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Plasterboard (gypsum board)'
+- id: fm.envelope-brick-movement-cracks
+  attaches_to:
+    system: envelope.external-walls
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage state that brickwork has stepped diagonal cracks or
+      cracks accompanied by sticking doors or windows?
+    criteria:
+      true: It explicitly reports that brickwork has stepped diagonal cracks or cracks accompanied by
+        sticking doors or windows.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - seed: defects-and-dlp-guide.md
+    anchor: '### 2.2 Cracks — hairline vs structural'
+- id: fm.envelope-landscaped-roof-protection
+  attaches_to:
+    interface: if.envelope-landscaped-roof-protection
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state that root penetration has damaged the
+      green-roof waterproofing?
+    criteria:
+      true: It explicitly states that root penetration has damaged the green-roof waterproofing.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - site.landscape
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Roof Waterproofing and Trafficable Roofs'
+- id: fm.envelope-trafficable-roof-membrane-access
+  attaches_to:
+    interface: if.envelope-trafficable-roof-membrane-access
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state that the fixed roof finish prevents
+      access to a leaking waterproofing membrane?
+    criteria:
+      true: It explicitly states that the fixed roof finish prevents access to a leaking waterproofing
+        membrane.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-waterproofing
+    - interiors.floor-finishes
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Roof Waterproofing and Trafficable Roofs'
+- id: fm.envelope-mixed-use-structure-borne-sound
+  attaches_to:
+    interface: if.envelope-mixed-use-structure-borne-sound
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state that structure-borne noise from another
+      building use is transmitted through the shared structure into habitable rooms?
+    criteria:
+      true: It explicitly states that structure-borne noise from another building use is transmitted through
+        the shared structure into habitable rooms.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - structure
+    - interiors.acoustic-separation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mixed-use-construction-guide.md
+    anchor: '## Fire and acoustic separation between uses'
+- id: fm.envelope-repair-temporary-enclosure
+  attaches_to:
+    interface: if.envelope-repair-temporary-enclosure
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state that rain entered retained interiors
+      through an unprotected opening during enclosure repairs?
+    criteria:
+      true: It explicitly states that rain entered retained interiors through an unprotected opening during
+        enclosure repairs.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.external-walls
+    - envelope.roof-coverings
+    - interiors.walls-linings
+    - interiors.floor-finishes
+  flag_when: true
+  status: draft
+  sources:
+  - seed: building-remediation-rectification-guide.md
+    anchor: '## Safety, occupation and temporary controls'
+- id: fm.envelope-energy-geometry-change
+  attaches_to:
+    interface: if.envelope-energy-geometry-change
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state that the installed window orientation
+      differs from the orientation used in the energy assessment?
+    criteria:
+      true: It explicitly states that the installed window orientation differs from the orientation used
+        in the energy assessment.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - envelope.thermal-performance
+    - envelope.windows-doors
+    - envelope.external-shading
+  flag_when: true
+  status: draft
+  sources:
+  - seed: new-dwelling-guide.md
+    anchor: '### Common BASIX failure modes'
+- id: fm.envelope-clinical-finish-cleaning
+  attaches_to:
+    interface: if.envelope-clinical-finish-cleaning
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state that installed clinical finishes fail
+      the infection-control requirements named in the facility brief?
+    criteria:
+      true: It explicitly states that installed clinical finishes fail the infection-control requirements
+        named in the facility brief.
+      false: It does not report this condition as present, or describes it only as a hypothetical risk,
+        a compliant detail, or a requirement to prevent it.
+    runs_on:
+    - interiors.walls-linings
+    - interiors.floor-finishes
+    - interiors.joinery
+  flag_when: true
+  status: draft
+  sources:
+  - seed: institution-construction-guide.md
+    anchor: '## Specialist facility standards'

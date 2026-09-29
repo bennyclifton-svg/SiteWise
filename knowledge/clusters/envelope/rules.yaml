@@ -1,0 +1,2468 @@
+version: 1
+rules:
+- id: rule.ncc.rising-damp-protection
+  title: Rising damp protection (damp-proof course and slab membrane)
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 1 F1.1; Vol 2 3.4.1 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.flashings-seals
+  - envelope.external-walls
+  - substructure
+  requires: Masonry walls have a continuous damp-proof course above finished external ground level that
+    laps with the damp-proof membrane under the slab on ground, forming an unbroken moisture barrier.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a damp-proof course in external walls or its
+      position relative to finished ground level?
+    criteria:
+      true: It specifies a damp-proof course (DPC) in walls, its height above ground or paving, or its
+        lap with the slab membrane.
+      false: It does not mention a damp-proof course, or mentions only the under-slab membrane.
+    runs_on:
+    - envelope.flashings-seals
+    - envelope.external-walls
+    - substructure
+  numbers:
+  - claim: DPC at not less than 150 mm above finished external ground level
+    verified: false
+  related_rules:
+  - rule.ncc.external-weatherproofing
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Rising Damp Protection and External Weatherproofing'
+  - seed: finishes-residential.md
+    anchor: '### Brick veneer'
+- id: rule.ncc.external-weatherproofing
+  title: Roofs and external walls prevent rainwater penetration
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 1 F1.4-F1.7; Vol 2 Part 3.5 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.external-walls
+  - envelope.roof-coverings
+  - envelope.flashings-seals
+  - envelope.curtain-wall
+  requires: Roofs and external walls prevent rainwater penetration using suitable coverings, cladding,
+    sarking or weather-resistant membranes, flashings, sealants and gutters and downpipes.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify how the external wall or roof is made weatherproof
+      (cladding system, drained cavity, flashings, weather-resistant membrane or sealants)?
+    criteria:
+      true: It names the weatherproofing method or components for a wall or roof (for example drained
+        cavity, flashings, wall wrap, sarking, sealant joints).
+      false: It describes the wall or roof without saying how water is kept out.
+    runs_on:
+    - envelope.external-walls
+    - envelope.roof-coverings
+    - envelope.flashings-seals
+    - envelope.curtain-wall
+  related_rules:
+  - rule.ncc.roof-sarking
+  - rule.as4200.pliable-membranes
+  - rule.as4284.facade-testing
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Rising Damp Protection and External Weatherproofing'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Weatherproofing and Facade Defects'
+- id: rule.ncc.roof-sarking
+  title: Sarking under roof coverings
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 1 F1.4-F1.7; Vol 2 Part 3.5 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.pliable-membranes
+  - envelope.roof-coverings
+  requires: Sarking is provided beneath roof cladding where the climate zone, roof pitch or energy provisions
+    require it, lapped and taped, draped to drain to the gutter and laid before battens.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify sarking or a roof underlay beneath the roof
+      covering?
+    criteria:
+      true: It specifies sarking, reflective foil sarking or a roof underlay under tiles or metal roofing.
+      false: It does not mention sarking or a roof underlay.
+    runs_on:
+    - envelope.pliable-membranes
+    - envelope.roof-coverings
+  numbers:
+  - claim: Roof sarking overlaps minimum 150 mm at horizontal joints and 100 mm at end joints (AS 4200.2)
+    verified: false
+  - claim: Roof sarking supported by battens at maximum 1200 mm spacing (AS 4200.2)
+    verified: false
+  notes: 'Seeds disagree on when sarking is required: "required under tiles in most climate zones" (finishes)
+    versus "beneath metal roof cladding in certain climate zones and below minimum pitch" (NCC guide).'
+  related_rules:
+  - rule.as4200.pliable-membranes
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Roof tile systems'
+  - seed: ncc-reference-guide.md
+    anchor: '### Rising Damp Protection and External Weatherproofing'
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+- id: rule.as2050.roof-tile-fixing
+  title: Roof tiles, ridges, hips and valleys mechanically fixed
+  instrument: AS 2050 (Installation of roof tiles)
+  clause: AS 2050
+  clause_verified: false
+  systems:
+  - envelope.roof-coverings
+  requires: Ridge, hip and valley tiles are mechanically fixed, not only mortar-bedded, and tiling battens
+    are fixed to every rafter at the spacing the tile manufacturer specifies.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify how ridge, hip or valley tiles are fixed?
+    criteria:
+      true: It states a fixing method for ridge, hip or valley tiles (mechanical fixing, dry-fix with
+        clips or foam closures, or mortar bedding and pointing).
+      false: It does not state how ridge, hip or valley tiles are fixed.
+    runs_on:
+    - envelope.roof-coverings
+  numbers:
+  - claim: Terracotta tiles weigh approximately 45-55 kg/m2
+    verified: false
+  - claim: Metal sheet roofing weighs approximately 5-8 kg/m2
+    verified: false
+  related_rules:
+  - rule.ncc.external-weatherproofing
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Roof tile systems'
+- id: rule.ncc.metal-roof-installation
+  title: Metal roof cladding installed to profile limits
+  instrument: NCC 2022 Volume Two
+  clause: Part 3.5 (seed numbering; NCC 2019); manufacturer's installation specification
+  clause_verified: false
+  systems:
+  - envelope.roof-coverings
+  requires: Metal roof sheeting is laid at or above the minimum pitch for its profile, lapped in the direction
+    of water flow, fixed to allow thermal movement, and flashed at all penetrations and abutments with
+    flashings matching the profile.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the roof pitch or the minimum pitch for the metal
+      roof sheet profile?
+    criteria:
+      true: It states a roof pitch in degrees or a ratio, or the manufacturer's minimum pitch for the
+        specified metal roof profile.
+      false: It does not state a roof pitch or a minimum pitch for the profile.
+    runs_on:
+    - envelope.roof-coverings
+  numbers:
+  - claim: Flat and low-pitch roofs below 5 degrees require a waterproof membrane
+    verified: false
+  related_rules:
+  - rule.ncc.external-weatherproofing
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Metal sheet roofing (Colorbond / Zincalume)'
+  - seed: finishes-residential.md
+    anchor: '### Flat roofs and membrane systems'
+- id: rule.as4773.masonry-veneer-construction
+  title: Masonry veneer cavity, ties, weepholes and control joints
+  instrument: AS 4773.1-2015 / AS 3700-2018
+  clause: AS 4773.1; AS 3700 (seed gives both)
+  clause_verified: false
+  systems:
+  - envelope.external-walls
+  - envelope.flashings-seals
+  requires: Brick veneer has a clear drained cavity, wall ties at specified centres, cavity flashings
+    and open weepholes at the base and above openings, lintels over openings and vertical control joints
+    at specified spacings and changes of direction.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify brick ties, cavity width, weepholes or control
+      joints for masonry veneer?
+    criteria:
+      true: 'It specifies at least one of: wall tie type or spacing, cavity width, weephole spacing, cavity
+        flashing, or masonry control joint spacing.'
+      false: It mentions brick or masonry cladding without any of those details.
+    runs_on:
+    - envelope.external-walls
+    - envelope.flashings-seals
+  numbers:
+  - claim: Brick ties typically at 600 mm vertical and 900 mm horizontal centres
+    verified: false
+  - claim: Minimum 25 mm clear cavity between brick and frame (finishes seed)
+    verified: false
+  - claim: Minimum 40 mm clear cavity (residential construction seed)
+    verified: false
+  - claim: Weepholes at maximum 1200 mm centres
+    verified: false
+  - claim: Vertical expansion joints at maximum 6-8 m centres for clay brick
+    verified: false
+  - claim: Brick cracks wider than 3 mm or stepped may be structural
+    verified: false
+  notes: Seeds contradict on minimum cavity width (25 mm vs 40 mm).
+  related_rules:
+  - rule.ncc.rising-damp-protection
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Brick veneer'
+  - seed: residential-construction-guide.md
+    anchor: '## Building Envelope and Weatherproofing'
+- id: rule.as1604.timber-cladding-durability
+  title: Treated or durable timber for external cladding
+  instrument: AS 1604 (Preservative-treated wood)
+  clause: AS 1604
+  clause_verified: false
+  systems:
+  - envelope.external-walls
+  requires: Timber weatherboards and cladding exposed externally are treated pine or hardwood of the required
+    hazard class, back-primed, and kept clear of the ground and roof cladding.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the hazard class or durability class of timber
+      cladding or weatherboards?
+    criteria:
+      true: It states a hazard class (such as H3 or H4) or durability class for external timber cladding.
+      false: It does not state a hazard or durability class for external timber.
+    runs_on:
+    - envelope.external-walls
+  numbers:
+  - claim: External timber cladding to hazard class H3 or H4
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Weatherboard / timber cladding'
+- id: rule.as4200.pliable-membranes
+  title: Pliable building membranes selected and installed to AS 4200
+  instrument: AS 4200.1:2017; AS 4200.2:2017
+  clause: AS 4200.1; AS 4200.2
+  clause_verified: false
+  systems:
+  - envelope.pliable-membranes
+  requires: Sarking, wall wrap and vapour barriers are classified for vapour permeance and installed with
+    the specified laps, the vapour-permeable face outward, sealing at penetrations, integration with window
+    and door head flashings, and a drainage cavity between wall wrap and cladding.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the vapour permeance class of a wall wrap, sarking
+      or vapour barrier?
+    criteria:
+      true: It states the membrane is vapour permeable, vapour impermeable, a vapour retarder or vapour
+        barrier, or cites an AS 4200 classification.
+      false: It mentions sarking or wrap without its vapour classification, or does not mention them.
+    runs_on:
+    - envelope.pliable-membranes
+  numbers:
+  - claim: Vapour permeable membranes have water vapour permeance above 1.14 ug/N.s
+    verified: false
+  - claim: Membrane flammability index not exceeding 5 (AS 1530.2)
+    verified: false
+  - claim: Water resistance minimum 300 mm hydrostatic head (ISO 811)
+    verified: false
+  - claim: Wall wrap lapped minimum 150 mm horizontally and 100 mm vertically
+    verified: false
+  - claim: Minimum 20 mm drainage cavity between wall wrap and cladding
+    verified: false
+  - claim: Vapour barriers have permeance below 56.5 ng/Pa.s.m2 (AS 4859 seed section)
+    verified: false
+  related_rules:
+  - rule.ncc.condensation-management
+  - rule.ncc.roof-sarking
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+- id: rule.ncc.condensation-management
+  title: Condensation management in the envelope
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 1 Part F6 (NCC guide) or F8 (AS guide); Vol 2 Part 3.8.7, Part 3.12 or Part 13.4 (seeds
+    disagree; unverified) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.pliable-membranes
+  - envelope.thermal-insulation
+  applies_when:
+    any:
+    - det: climate_zone
+      any_of:
+      - '6'
+      - '7'
+      - '8'
+  requires: 'In cool climate zones the envelope is designed to manage interstitial and surface condensation:
+    vapour control on the warm side of the insulation, vapour-permeable membranes outside, ventilated
+    cavities or roof spaces, and a condensation risk assessment.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage describe a condensation risk assessment or a condensation
+      management measure for the walls or roof?
+    criteria:
+      true: It describes a condensation risk assessment (Glaser method or hygrothermal modelling) or a
+        measure such as a vapour barrier position, vapour-permeable wrap or ventilated roof space for
+        condensation control.
+      false: It does not address condensation in the envelope.
+    runs_on:
+    - envelope.pliable-membranes
+    - envelope.thermal-insulation
+  numbers:
+  - claim: Condensation DTS provisions apply in climate zones 6, 7 and 8
+    verified: false
+  - claim: Condensation increasingly important in climate zones 5-8 (AS 4859 seed section)
+    verified: false
+  notes: Seeds give four different clause locations. The predicate uses zones 6-8; one seed says 5-8.
+    Climate zone option ids are assumed to be "1" to "8".
+  related_rules:
+  - rule.as4200.pliable-membranes
+  - rule.as4859.insulation-product-r-value
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Condensation Management'
+  - seed: as-standards-reference.md
+    anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+  - seed: residential-construction-guide.md
+    anchor: '## Energy Efficiency and Thermal Performance'
+- id: rule.ncc.wet-area-waterproofing
+  title: Wet areas waterproofed to AS 3740
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 1 F1.7; Vol 2 3.4.2 or 3.8.1 (seeds disagree; NCC 2019 numbering) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - interiors.wet-area-waterproofing
+  requires: Bathrooms, showers, laundries, toilets and other internal wet areas are waterproofed in accordance
+    with AS 3740.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify waterproofing of an internal wet area such as
+      a bathroom, shower, laundry or toilet?
+    criteria:
+      true: It specifies a waterproofing membrane or waterproofing standard for an internal wet area.
+      false: It does not specify waterproofing for an internal wet area, or only covers balconies or roofs.
+    runs_on:
+    - interiors.wet-area-waterproofing
+  related_rules:
+  - rule.as3740.membrane-extent
+  - rule.as3740.membrane-installation
+  - rule.as4858.wet-area-membrane-material
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Wet Area Waterproofing (AS 3740)'
+  - seed: finishes-residential.md
+    anchor: '### Regulatory requirement'
+- id: rule.as3740.membrane-extent
+  title: Extent and heights of wet-area membranes
+  instrument: AS 3740:2021
+  clause: AS 3740
+  clause_verified: false
+  systems:
+  - interiors.wet-area-waterproofing
+  requires: The membrane covers the whole shower floor and extends up shower walls to the required height,
+    covers the whole floor of the bathroom and laundry with upstands at walls, extends around baths, and
+    for hobless showers extends the required distance beyond the shower rose.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the height or extent of the waterproofing membrane
+      in a shower or wet area?
+    criteria:
+      true: It states a membrane height up shower walls, a wall upstand height, a floor coverage extent,
+        or an extent beyond a shower rose or screen.
+      false: It requires waterproofing without stating any height or extent.
+    runs_on:
+    - interiors.wet-area-waterproofing
+  numbers:
+  - claim: Shower wall membrane to minimum 1800 mm above finished floor level (AS 3740:2021)
+    verified: false
+  - claim: Shower wall membrane height was 1500 mm in AS 3740-2010
+    verified: false
+  - claim: Bathroom and laundry floor membrane with 150 mm wall upstands
+    verified: false
+  - claim: Bath membrane turned up 150 mm above the bath rim overflow
+    verified: false
+  - claim: Hobless shower membrane extends at least 1500 mm from the shower rose (AS seed)
+    verified: false
+  - claim: Hobless shower floor membrane extends to the screen line and at least 150 mm beyond (finishes
+      seed)
+    verified: false
+  - claim: Shower hob or threshold minimum 5 mm step-down from bathroom floor
+    verified: false
+  notes: Seeds disagree on the hobless-shower extent (1500 mm from rose vs 150 mm beyond screen).
+  related_rules:
+  - rule.ncc.wet-area-waterproofing
+  - rule.as3740.falls-to-floor-waste
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+  - seed: finishes-residential.md
+    anchor: '### Regulatory requirement'
+  - seed: residential-construction-guide.md
+    anchor: '## Wet Area Construction and Waterproofing'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Wet Area Waterproofing'
+- id: rule.as3740.falls-to-floor-waste
+  title: Wet-area floors fall to the floor waste
+  instrument: AS 3740:2021; AS 3958.1
+  clause: AS 3740; AS 3958.1 (seeds attribute the fall to both)
+  clause_verified: false
+  systems:
+  - interiors.wet-area-waterproofing
+  - interiors.tiling
+  requires: Shower and wet-area floors are graded to fall to the floor waste with no flat or reverse falls,
+    with the fall formed in the slab or a screed under the membrane.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a fall or grade for a shower or wet-area floor
+      to the floor waste?
+    criteria:
+      true: It states a fall ratio or percentage, or requires the floor to be graded to the floor waste.
+      false: It does not mention the fall of the wet-area floor.
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - interiors.tiling
+  numbers:
+  - claim: Minimum fall 1:80 (1.25%) to floor waste (AS 3740 seed sections)
+    verified: false
+  - claim: Minimum tile fall 1:100 to floor waste (trade interfaces seed, citing AS 3958)
+    verified: false
+  notes: 'Seeds contradict: 1:80 vs 1:100.'
+  related_rules:
+  - rule.as3740.membrane-extent
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 5: Wet area floor waste and tile falls'
+  - seed: as-standards-reference.md
+    anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Wet Area Waterproofing'
+- id: rule.as3740.membrane-installation
+  title: Wet-area membrane application, junctions and substrate
+  instrument: AS 3740:2021
+  clause: AS 3740 (substrate preparation seed-cited as Clause 4)
+  clause_verified: false
+  systems:
+  - interiors.wet-area-waterproofing
+  - interiors.walls-linings
+  requires: Membranes are applied to a sound, cured, primed substrate; liquid membranes in multiple coats
+    to the minimum dry film thickness; bond breakers or junction strips at internal corners and changes
+    of plane; flashing collars or reinforcing at penetrations; and full cure before tiling.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify treatment of internal corners, junctions or
+      penetrations in a wet-area membrane?
+    criteria:
+      true: It specifies bond-breaker tape, fabric reinforcing strips, junction strips, puddle flanges
+        or flashing collars at corners, junctions or penetrations.
+      false: It does not specify how corners, junctions or penetrations are treated.
+    runs_on:
+    - interiors.wet-area-waterproofing
+  numbers:
+  - claim: Liquid-applied membrane minimum 1.0 mm dry film thickness in multiple coats
+    verified: false
+  - claim: Sheet membranes minimum 0.2 mm polyethylene or 0.5 mm other
+    verified: false
+  - claim: Penetration collars or reinforcing extend 75 mm beyond the penetration
+    verified: false
+  - claim: Concrete and render substrates cured minimum 28 days (7 days for moisture-tolerant systems)
+    verified: false
+  - claim: Substrate cracks wider than 0.5 mm repaired
+    verified: false
+  - claim: Fibre cement substrate minimum 6 mm, fixed at 150 mm edge and 200 mm field centres
+    verified: false
+  - claim: Membrane cure before tiling typically 24-48 hours (finishes seed) or 24-72 hours (residential
+      seed)
+    verified: false
+  - claim: Two-coat minimum for sheet membranes; flood-coat minimum for liquid-applied (finishes seed)
+    verified: false
+  notes: The finishes seed's "two-coat minimum for sheet membranes; flood-coat minimum for liquid" looks
+    inverted against the AS 3740 seed section (liquid membranes need multiple coats).
+  related_rules:
+  - rule.as3740.membrane-extent
+  - rule.as4858.wet-area-membrane-material
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+  - seed: finishes-residential.md
+    anchor: '### Application requirements'
+  - seed: residential-construction-guide.md
+    anchor: '## Wet Area Construction and Waterproofing'
+- id: rule.as4858.wet-area-membrane-material
+  title: Wet-area membrane material complies with AS 4858
+  instrument: AS 4858 (Wet area membranes)
+  clause: AS 4858
+  clause_verified: false
+  systems:
+  - interiors.wet-area-waterproofing
+  requires: Wet-area membrane products are tested and classified to AS 4858, and membrane, substrate and
+    tile adhesive are compatible under the manufacturer's system specification.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage name the waterproofing membrane product or state its
+      compliance with AS 4858?
+    criteria:
+      true: It names a membrane product or system, or states the membrane complies with AS 4858.
+      false: It does not identify the membrane product or its material standard.
+    runs_on:
+    - interiors.wet-area-waterproofing
+  notes: One seed calls AS 4858 an installation standard; the others call it a materials standard. The
+    seed cites AS 4858-2004.
+  related_rules:
+  - rule.as3740.membrane-installation
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Wet Area Waterproofing (AS 3740)'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Wet Area Waterproofing'
+- id: rule.state.licensed-waterproofer
+  title: Wet-area waterproofing by a licensed waterproofer
+  instrument: State home building licensing legislation (NSW, QLD, VIC and most other jurisdictions)
+  clause: State licensing legislation (not named in seeds)
+  clause_verified: false
+  systems:
+  - interiors.wet-area-waterproofing
+  applies_when:
+    any:
+    - det: state
+      any_of:
+      - NSW
+      - QLD
+      - VIC
+  requires: Wet-area waterproofing is installed by a licensed waterproofer, who provides a statement or
+    certificate of compliance for the installed membrane.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require the waterproofing to be installed by a licensed
+      waterproofer, or give the waterproofer's licence details?
+    criteria:
+      true: It requires a licensed waterproofer or states a waterproofer's licence number or licensed
+        status.
+      false: It does not mention the installer's licence.
+    runs_on:
+    - interiors.wet-area-waterproofing
+  notes: State option ids assumed to be NSW, QLD, VIC; seeds say most other jurisdictions too.
+  related_rules:
+  - rule.ncc.wet-area-waterproofing
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Wet Area Waterproofing (AS 3740)'
+- id: rule.state.waterproofing-inspection-before-tiling
+  title: Wet-area waterproofing inspected before tiling
+  instrument: EP&A Act 1979 and EP&A Regulation 2021 (NSW) mandatory inspection stages
+  clause: Critical stage inspections (seed does not give the clause)
+  clause_verified: false
+  systems:
+  - interiors.wet-area-waterproofing
+  - interiors.tiling
+  applies_when:
+    all:
+    - det: state
+      any_of:
+      - NSW
+  requires: The wet-area membrane is inspected and accepted at a mandatory inspection stage before tiling
+    or any covering is applied.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require or record an inspection of the wet-area waterproofing
+      before tiling?
+    criteria:
+      true: It requires, schedules or records a waterproofing inspection, certificate or statement of
+        compliance before tiles are laid.
+      false: It does not mention an inspection of the waterproofing before tiling.
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - interiors.tiling
+  notes: 'Seeds disagree on who inspects: the finishes and trade-interfaces seeds say the certifier must
+    inspect; the new-dwelling inspection table says "Certifier or installer" with the waterproofer''s
+    statement of compliance as evidence. The residential seed calls it mandatory in all states.'
+  related_rules:
+  - rule.ncc.wet-area-waterproofing
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Inspection gate'
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 2: Wet area waterproofing to tiling'
+  - seed: new-dwelling-guide.md
+    anchor: '## Structural inspection gates — Class 1a new dwelling'
+- id: rule.as4654.external-membrane-materials
+  title: External above-ground membranes classified for use
+  instrument: AS 4654.1:2012
+  clause: AS 4654.1
+  clause_verified: false
+  systems:
+  - envelope.external-waterproofing
+  requires: Balcony, podium, roof terrace and planter membranes are materials classified for external
+    use and trafficability (foot, light vehicle, heavy vehicle), with UV resistance and the required design
+    life; an internal wet-area (AS 3740 only) membrane is not used externally.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the membrane system for a balcony, podium, roof
+      terrace, flat roof or planter box?
+    criteria:
+      true: It names the external membrane type or product (for example polyurethane, torch-on bitumen,
+        TPO or PVC sheet) or cites AS 4654 for it.
+      false: It requires waterproofing of the external area without naming the system, or covers only
+        internal wet areas.
+    runs_on:
+    - envelope.external-waterproofing
+  numbers:
+  - claim: Type A membrane minimum tensile strength 1.5 MPa
+    verified: false
+  - claim: Flexible membranes minimum 300% elongation
+    verified: false
+  - claim: Exposed membranes hydrostatic resistance 100 kPa
+    verified: false
+  - claim: Recommended design life 15 years accessible, 25 years inaccessible
+    verified: false
+  related_rules:
+  - rule.as4654.external-membrane-falls-upstands
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4654 Series — Waterproofing Membranes for External Above-Ground Use'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Balcony and External Waterproofing'
+- id: rule.as4654.external-membrane-falls-upstands
+  title: Falls and upstands for external membranes
+  instrument: AS 4654.2:2012
+  clause: AS 4654.2
+  clause_verified: false
+  systems:
+  - envelope.external-waterproofing
+  requires: External membranes fall to drainage outlets without ponding and turn up at walls and door
+    thresholds, continuous behind the door frame, to the required upstand heights.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the membrane upstand height at a balcony or roof-terrace
+      door threshold?
+    criteria:
+      true: It states an upstand height at a threshold, or states the membrane turns up behind the door
+        frame or sill.
+      false: It does not describe the membrane at door thresholds.
+    runs_on:
+    - envelope.external-waterproofing
+    - envelope.windows-doors
+  numbers:
+  - claim: Minimum falls 1:100 for sheet membranes and 1:60 for liquid-applied; 1:40 recommended for ponding-critical
+      areas (AS seed)
+    verified: false
+  - claim: AS 4654.2 requires minimum fall 1:60 to outlets; 1:40 recommended (multi-residential seed)
+    verified: false
+  - claim: Balcony fall minimum 1:60 (residential seed)
+    verified: false
+  - claim: Balcony paved-surface fall minimum 1:80 per AS 3740 (defects seed)
+    verified: false
+  - claim: Upstand minimum 150 mm above finished surface; 75 mm at weather-protected thresholds
+    verified: false
+  - claim: Balcony membrane minimum 100 mm up walls (finishes seed; defects seed says per NCC)
+    verified: false
+  notes: Seeds give four different minimum balcony falls and two upstand heights; verify against AS 4654.2.
+  related_rules:
+  - rule.as4654.external-membrane-materials
+  - rule.as4654.drainage-and-terminations
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4654 Series — Waterproofing Membranes for External Above-Ground Use'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Balcony and External Waterproofing'
+  - seed: defects-and-dlp-guide.md
+    anchor: '### 2.3 Balcony waterproofing failure'
+  - seed: finishes-residential.md
+    anchor: '### Regulatory requirement'
+- id: rule.as4654.drainage-and-terminations
+  title: External membrane drainage layer, overflows, joints and terminations
+  instrument: AS 4654.2:2012
+  clause: AS 4654.2
+  clause_verified: false
+  systems:
+  - envelope.external-waterproofing
+  - hydraulic
+  requires: Tiled or paved external membranes have a drainage layer over the membrane, outlets with puddle
+    flanges, overflows set below the lowest door threshold, movement joints spanned without bonding both
+    sides, and terminations continuous with the facade waterproofing.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify an overflow for a balcony, roof terrace or trafficable
+      roof?
+    criteria:
+      true: It specifies an overflow, scupper or secondary outlet for the external area.
+      false: It specifies only the primary drain, or does not mention drainage outlets.
+    runs_on:
+    - envelope.external-waterproofing
+    - hydraulic
+  related_rules:
+  - rule.as4654.external-membrane-falls-upstands
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4654 Series — Waterproofing Membranes for External Above-Ground Use'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Roof Waterproofing and Trafficable Roofs'
+  - seed: commercial-construction-guide.md
+    anchor: '## Waterproofing in Commercial Buildings'
+- id: rule.as3958.tile-substrate-and-adhesive
+  title: Tile substrate flatness and adhesive selection
+  instrument: AS 3958.1; AS ISO 13007
+  clause: AS 3958.1; AS ISO 13007
+  clause_verified: false
+  systems:
+  - interiors.tiling
+  requires: Tiles are laid on a sound, flat substrate suited to tiling, with an adhesive class suited
+    to the tile size, location and substrate and with the required adhesive bed coverage.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the tile adhesive type or class?
+    criteria:
+      true: It names a tile adhesive product or class (such as C1, C2, S1, R or epoxy).
+      false: It does not state the adhesive type.
+    runs_on:
+    - interiors.tiling
+  numbers:
+  - claim: Maximum 3 mm deviation under a 3 m straightedge for standard tile formats
+    verified: false
+  - claim: Adhesive contact area at least 85% (finishes seed)
+    verified: false
+  - claim: Adhesive bed coverage at least 95% (defects seed, citing AS 3958.1)
+    verified: false
+  - claim: Unsanded grout for joints under 3 mm; sanded grout for joints 3 mm and over
+    verified: false
+  notes: Seeds contradict on adhesive coverage (85% vs 95%).
+  related_rules:
+  - rule.as3958.tile-movement-joints
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Substrate preparation'
+  - seed: finishes-residential.md
+    anchor: '### Adhesive and grout selection'
+  - seed: defects-and-dlp-guide.md
+    anchor: '### 2.4 Tile drumming (debonded tiles)'
+- id: rule.as3958.tile-movement-joints
+  title: Tile movement joints
+  instrument: AS 3958.1
+  clause: AS 3958.1
+  clause_verified: false
+  systems:
+  - interiors.tiling
+  requires: Tiling has flexible movement joints at perimeters, at regular centres in each direction, and
+    over every structural movement joint in the substrate; movement joints are sealant, not grout.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify movement joints in tiling?
+    criteria:
+      true: It specifies tile movement or expansion joints (location, spacing or sealant) at perimeters,
+        field centres or over structural joints.
+      false: It does not mention movement joints in tiling.
+    runs_on:
+    - interiors.tiling
+  numbers:
+  - claim: Internal floor tile movement joints every 4.5 m in each direction
+    verified: false
+  - claim: External tile movement joints every 3 m
+    verified: false
+  related_rules:
+  - rule.as3958.tile-substrate-and-adhesive
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Expansion and movement joints'
+- id: rule.as1288.human-impact-safety-glass
+  title: Safety glass in human impact locations
+  instrument: AS 1288:2021; AS/NZS 2208
+  clause: AS 1288 Section 5
+  clause_verified: false
+  systems:
+  - envelope.windows-doors
+  - interiors.internal-glazing
+  requires: Grade A safety glass (toughened or laminated) is used in doors, sidelights, glazing near doors,
+    low-level glazing, wet-area screens and glazing near pools; annealed glass is not used there, and
+    etched or frosted finishes do not change the classification.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify toughened, laminated or Grade A safety glass
+      for a door, sidelight, low-level panel or shower screen?
+    criteria:
+      true: It specifies toughened, laminated or Grade A safety glass for at least one of those locations.
+      false: It does not state the glass type for those locations.
+    runs_on:
+    - envelope.windows-doors
+    - interiors.internal-glazing
+  numbers:
+  - claim: Glazed panels within 300 mm of a door opening need safety glass (finishes seed)
+    verified: false
+  - claim: Glazing within 500 mm of doorways needs safety glass (AS seed)
+    verified: false
+  - claim: Low-level glazing with bottom edge under 500 mm from floor (finishes seed)
+    verified: false
+  - claim: Glazing within 800 mm of FFL adjacent to paths of travel (AS seed)
+    verified: false
+  - claim: Glazing within 2000 mm of pool or spa floors
+    verified: false
+  notes: Seeds contradict on the door-proximity distance (300 mm vs 500 mm) and low-level height (500
+    mm vs 800 mm).
+  related_rules:
+  - rule.as1288.overhead-glazing
+  - rule.as1288.glass-strength-and-heat-soak
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Safety glazing requirements'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1288 — Glass in Buildings'
+  - seed: ncc-reference-guide.md
+    anchor: '### Framing, Cladding, and Glazing'
+- id: rule.as1288.overhead-glazing
+  title: Overhead glazing is laminated
+  instrument: AS 1288:2021
+  clause: AS 1288 Section 6
+  clause_verified: false
+  systems:
+  - envelope.windows-doors
+  - envelope.curtain-wall
+  requires: Overhead and sloped glazing (skylights, canopies, roof glazing) is laminated so broken fragments
+    stay on the interlayer.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify laminated glass for a skylight, glazed roof,
+      canopy or other overhead glazing?
+    criteria:
+      true: It specifies laminated glass for overhead or sloped glazing.
+      false: It does not describe overhead glazing, or describes it without stating laminated glass.
+    runs_on:
+    - envelope.windows-doors
+    - envelope.curtain-wall
+  related_rules:
+  - rule.as1288.human-impact-safety-glass
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1288 — Glass in Buildings'
+- id: rule.as1288.glass-strength-and-heat-soak
+  title: Glass sized for wind load, and heat-soaked where critical
+  instrument: AS 1288:2021; AS/NZS 1170.2
+  clause: AS 1288 Section 4
+  clause_verified: false
+  systems:
+  - envelope.windows-doors
+  - envelope.curtain-wall
+  requires: Glass thickness and type resist the site wind pressure and fit the frame rebate; toughened
+    glass in facades, overhead or balustrade applications is heat-soak tested against nickel sulphide
+    failure.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify heat-soak testing of toughened glass?
+    criteria:
+      true: It specifies heat-soak testing or heat-soaked toughened glass.
+      false: It does not mention heat soaking.
+    runs_on:
+    - envelope.windows-doors
+    - envelope.curtain-wall
+  numbers:
+  - claim: Toughened glass has 4-5 times the bending strength of annealed; heat-strengthened about 2 times
+    verified: false
+  - claim: Balustrade barrier loads 0.75 kN/m residential and 1.5 kN/m public assembly
+    verified: false
+  related_rules:
+  - rule.as2047.window-performance-grade
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1288 — Glass in Buildings'
+- id: rule.as2047.window-performance-grade
+  title: Windows rated for wind, water and air infiltration at their location
+  instrument: AS 2047:2014
+  clause: AS 2047 (marking Section 10; operating force Clause 5.3)
+  clause_verified: false
+  systems:
+  - envelope.windows-doors
+  requires: Each window and external glazed door has a performance grade for structural wind pressure,
+    water penetration resistance and air infiltration that suits the design pressure at its location (corners
+    and upper levels are higher), and is permanently marked with the manufacturer and grade.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an AS 2047 performance grade, wind rating or water
+      penetration rating for windows or external glazed doors?
+    criteria:
+      true: It states a window grade (such as N2, N3, C2), a design wind pressure, or a water penetration
+        resistance in Pa for windows or doors.
+      false: It does not state a window performance grade or rating.
+    runs_on:
+    - envelope.windows-doors
+  numbers:
+  - claim: Window grades N1 to N6 with test pressures 700, 1000, 1500, 2000, 2500 and 3000 Pa
+    verified: false
+  - claim: Water penetration levels 150, 200, 300, 450 and 600 Pa
+    verified: false
+  - claim: Air infiltration maximum 5.0 L/s/m2 of openable area at 75 Pa
+    verified: false
+  - claim: Low-infiltration windows achieve 1.0 L/s/m2
+    verified: false
+  - claim: Operating force maximum 35 N sliding, 50 N casement and awning, 70 N double-hung
+    verified: false
+  - claim: Corner local pressures 50-100% higher than wall field
+    verified: false
+  related_rules:
+  - rule.as4420.window-test-methods
+  - rule.as1288.glass-strength-and-heat-soak
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2047 — Windows and External Glazed Doors in Buildings'
+  - seed: finishes-residential.md
+    anchor: '### Window and door joinery (aluminium and timber)'
+- id: rule.as4420.window-test-methods
+  title: Window performance proven by AS 4420 tests
+  instrument: AS 4420 series (4420.1, 4420.4, 4420.5, 4420.11)
+  clause: AS 4420
+  clause_verified: false
+  systems:
+  - envelope.windows-doors
+  requires: 'Window grades are supported by NATA-accredited AS 4420 tests on representative production
+    specimens: deflection, static-pressure water penetration (not the hose screening test alone), air
+    infiltration and operating force, for the configurations actually used.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage refer to an AS 4420 test report or test result for the
+      windows?
+    criteria:
+      true: It cites AS 4420 testing, a window test report, or a tested result for water, air, deflection
+        or operating force.
+      false: It does not refer to window test evidence.
+    runs_on:
+    - envelope.windows-doors
+  numbers:
+  - claim: Deflection limit L/150 or 10 mm, whichever is less
+    verified: false
+  - claim: Structural adequacy at 1.5 times serviceability pressure
+    verified: false
+  - claim: Static water test sprays 3.4 L/min/m2
+    verified: false
+  - claim: Hose test at 30-40 kPa from 150 mm traversing joints at 75 mm/s
+    verified: false
+  related_rules:
+  - rule.as2047.window-performance-grade
+  - rule.as4284.facade-testing
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4420 Series — Windows — Methods of Test'
+- id: rule.as4284.facade-testing
+  title: Facade weather and structural testing
+  instrument: AS 4284:2008
+  clause: AS 4284 (Sections 4, 7, 8)
+  clause_verified: false
+  systems:
+  - envelope.curtain-wall
+  - envelope.external-walls
+  - envelope.windows-doors
+  requires: Curtain wall and facade systems are tested on a representative specimen, and preferably on
+    site, for static and dynamic air pressure, water penetration and structural adequacy at pressures
+    for the most exposed locations.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require or report facade testing to AS 4284 or site
+      water testing of the installed facade?
+    criteria:
+      true: It requires, schedules or reports AS 4284 testing, a facade mock-up test or site water spray
+        testing of the facade or windows.
+      false: It does not mention facade testing.
+    runs_on:
+    - envelope.curtain-wall
+    - envelope.external-walls
+    - envelope.windows-doors
+  numbers:
+  - claim: Test specimen includes at least one horizontal and one vertical joint intersection
+    verified: false
+  - claim: Commercial test pressures typically 300-1500 Pa
+    verified: false
+  - claim: Static water test 15 minutes; dynamic test 5 minutes per pressure increment
+    verified: false
+  - claim: Facade mock-up testing standard practice above 10 storeys
+    verified: false
+  - claim: Engage a facade consultant above 5 storeys
+    verified: false
+  related_rules:
+  - rule.as4420.window-test-methods
+  - rule.ncc.external-weatherproofing
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4284 — Testing of Building Facades'
+  - seed: commercial-construction-guide.md
+    anchor: '## Facade and Curtain Wall Systems'
+- id: rule.ncc.natural-light
+  title: Natural light to habitable rooms
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 1 F4.4; Vol 2 3.8.4 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.windows-doors
+  requires: Habitable rooms have windows, glazed doors or skylights with a light- transmitting area of
+    at least the required proportion of the floor area, facing the sky or a qualifying open space; borrowed
+    light only where the NCC permits it.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the natural light area or glazed area for a habitable
+      room in relation to its floor area?
+    criteria:
+      true: It states a light-transmitting or window area for a room, or a percentage of the room's floor
+        area.
+      false: It does not state natural light areas for rooms.
+    runs_on:
+    - envelope.windows-doors
+    - interiors.internal-glazing
+  numbers:
+  - claim: Light-transmitting area not less than 10% of the room floor area
+    verified: false
+  - claim: Artificial lighting alternative 300 lux for workspaces and 150 lux for habitable rooms (AS/NZS
+      1680)
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Natural Light Requirements'
+- id: rule.ncc.room-heights
+  title: Minimum room heights
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 1 Part F3; Vol 2 3.8.2 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - interiors.ceilings
+  requires: Habitable and non-habitable rooms have the minimum height from finished floor to ceiling,
+    measured under beams, bulkheads and ducts.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a ceiling height or room height?
+    criteria:
+      true: It states a floor-to-ceiling height, a ceiling height or a minimum room height.
+      false: It does not state a ceiling or room height.
+    runs_on:
+    - interiors.ceilings
+  numbers:
+  - claim: Habitable rooms minimum 2400 mm (Class 1 and Class 2-9)
+    verified: false
+  - claim: Non-habitable rooms, kitchens, laundries and corridors minimum 2100 mm
+    verified: false
+  - claim: Attic rooms 2200 mm over at least two-thirds of the floor area
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Ventilation Requirements and Ceiling Heights'
+- id: rule.ncc.section-j-envelope-fabric
+  title: Section J building fabric (commercial and Class 2-9)
+  instrument: NCC 2022 Volume One
+  clause: Section J, Part J1 (seed numbering; NCC 2019 J1 envelope) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.thermal-insulation
+  - envelope.thermal-performance
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Roofs, walls and floors meet minimum total R-values for the climate zone, accounting for thermal
+    bridging, under the Section J deemed-to-satisfy provisions unless JV3 is used.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a Section J compliance assessment or report for
+      the building envelope?
+    criteria:
+      true: It states that a Section J (or J1) envelope assessment, report or DTS calculation has been
+        prepared, or reports its outcome.
+      false: It does not mention a Section J envelope assessment.
+    runs_on:
+    - envelope.thermal-performance
+  numbers:
+  - claim: 8 NCC climate zones across Australia
+    verified: false
+  notes: Seed lists Section J parts as J1 envelope, J2 sealing, J3 HVAC, J4 lighting, J5 heated water,
+    J6 monitoring, which matches neither NCC 2019 nor NCC 2022. Class 2 inclusion comes from the multi-residential
+    seed.
+  related_rules:
+  - rule.ncc.section-j-glazing
+  - rule.ncc.section-j-building-sealing
+  - rule.ncc.jv3-verification
+  - rule.ncc.roof-ceiling-insulation-minimum
+  - rule.ncc.wall-insulation-minimum
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### NCC Energy Efficiency Requirements for Class 2'
+  - seed: commercial-construction-guide.md
+    anchor: '## Environmental Sustainability and Green Star'
+- id: rule.ncc.section-j-glazing
+  title: Section J glazing U-value and SHGC limits
+  instrument: NCC 2022 Volume One
+  clause: Section J, Part J1 glazing (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.windows-doors
+  - envelope.curtain-wall
+  - envelope.external-shading
+  - envelope.thermal-performance
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Glazing meets the maximum total system U-value and solar heat gain coefficient for its climate
+    zone, orientation and glazing area, with shading taken into account.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a total system U-value or SHGC for glazing?
+    criteria:
+      true: It states a U-value or SHGC for windows, glazed doors, curtain wall or skylights.
+      false: It does not state glazing U-value or SHGC.
+    runs_on:
+    - envelope.windows-doors
+    - envelope.curtain-wall
+    - envelope.thermal-performance
+  related_rules:
+  - rule.ncc.section-j-envelope-fabric
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+  - seed: commercial-construction-guide.md
+    anchor: '## Environmental Sustainability and Green Star'
+- id: rule.ncc.section-j-building-sealing
+  title: Section J building sealing
+  instrument: NCC 2022 Volume One
+  clause: Section J, Part J2 per seed (NCC 2019 J3) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.building-sealing
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: The envelope is sealed against air leakage at construction joints, penetrations, openable
+    windows and doors, and exhaust outlets.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify sealing of the building envelope against air
+      leakage?
+    criteria:
+      true: It specifies draught seals, weatherstrips, sealing of construction joints or penetrations
+        for air-tightness, self-closing dampers on exhausts, or an air-leakage test.
+      false: It does not address air leakage of the envelope.
+    runs_on:
+    - envelope.building-sealing
+  related_rules:
+  - rule.ncc.section-j-envelope-fabric
+  - rule.ncc.residential-building-sealing
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+- id: rule.ncc.jv3-verification
+  title: JV3 energy modelling as the Section J performance pathway
+  instrument: NCC 2022 Volume One
+  clause: Verification Method JV3 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  applies_when:
+    any:
+    - det: energy_compliance_pathway
+      any_of:
+      - section_j_jv3
+  requires: A JV3 model by a competent person with an approved tool shows the proposed building's annual
+    greenhouse gas emissions do not exceed a DTS reference building, with inputs and assumptions documented;
+    the result is valid only for those inputs.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that JV3 energy modelling is used or report its
+      result?
+    criteria:
+      true: It states a JV3 verification or energy simulation against a reference building, or reports
+        its outcome.
+      false: It does not mention JV3 or reference-building modelling.
+    runs_on:
+    - envelope.thermal-performance
+  related_rules:
+  - rule.ncc.section-j-envelope-fabric
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### JV3 Verification Method (Performance-Based Compliance)'
+  - seed: non-residential-sustainability-energy-guide.md
+    anchor: '## NCC energy-efficiency coordination'
+- id: rule.ncc.roof-ceiling-insulation-minimum
+  title: Minimum total R-value for roofs and ceilings
+  instrument: NCC 2022 Volumes One and Two
+  clause: Section J (Vol 1) and Part 13.2 (Vol 2) (seed numbering; unverified) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.thermal-insulation
+  derives:
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+    table: roof_ceiling_min_r_value
+    inputs:
+    - climate_zone
+    - ncc_class
+    gives: roof_min_total_r_value
+  requires: Roof and ceiling assemblies achieve the minimum total system R-value for the climate zone;
+    the product R-value alone does not demonstrate it.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an R-value for ceiling or roof insulation?
+    criteria:
+      true: It states an R-value for ceiling batts, roof insulation or the roof or ceiling assembly.
+      false: It does not state a roof or ceiling R-value.
+    runs_on:
+    - envelope.thermal-insulation
+    - envelope.thermal-performance
+  numbers:
+  - claim: Roof/ceiling total R-value from R3.0 (Zone 1) to R6.0 (Zone 7) for residential (AS 4859 seed
+      section)
+    verified: false
+  - claim: Ceilings minimum R4.0-R6.0 depending on climate zone (residential seed)
+    verified: false
+  - claim: BASIX commonly commits R5.0 ceiling (new-dwelling seed)
+    verified: false
+  related_rules:
+  - rule.ncc.section-j-envelope-fabric
+  - rule.ncc.residential-elemental-provisions
+  - rule.as4859.insulation-product-r-value
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4859 Series — Thermal Insulation Materials'
+  - seed: residential-construction-guide.md
+    anchor: '## Energy Efficiency and Thermal Performance'
+- id: rule.ncc.wall-insulation-minimum
+  title: Minimum total R-value for external walls
+  instrument: NCC 2022 Volumes One and Two
+  clause: Section J (Vol 1) and Part 13.2 (Vol 2) (seed numbering; unverified) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.thermal-insulation
+  derives:
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+    table: wall_min_r_value
+    inputs:
+    - climate_zone
+    - ncc_class
+    gives: wall_min_total_r_value
+  requires: External wall assemblies achieve the minimum total system R-value for the climate zone, including
+    thermal bridging through framing.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an R-value for external wall insulation?
+    criteria:
+      true: It states an R-value for wall batts, wall insulation or the external wall assembly.
+      false: It does not state an external wall R-value.
+    runs_on:
+    - envelope.thermal-insulation
+    - envelope.thermal-performance
+  numbers:
+  - claim: Wall total R-value from R1.4 (Zone 1) to R2.8 (Zone 7) (AS 4859 seed section)
+    verified: false
+  - claim: Walls minimum R2.0 for most climate zones (residential seed)
+    verified: false
+  - claim: BASIX commonly commits R2.5 walls (new-dwelling seed)
+    verified: false
+  related_rules:
+  - rule.ncc.section-j-envelope-fabric
+  - rule.ncc.residential-elemental-provisions
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4859 Series — Thermal Insulation Materials'
+  - seed: residential-construction-guide.md
+    anchor: '## Energy Efficiency and Thermal Performance'
+- id: rule.as4859.insulation-product-r-value
+  title: Insulation products labelled with a declared R-value and installed without gaps
+  instrument: AS/NZS 4859.1:2018
+  clause: AS/NZS 4859.1
+  clause_verified: false
+  systems:
+  - envelope.thermal-insulation
+  requires: Insulation products are tested and labelled with declared R-value, material type and test
+    standard; reflective insulation keeps its still air space; installation leaves no gaps or compression.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage name the insulation product or state its declared R-value?
+    criteria:
+      true: It names an insulation product, type (bulk, reflective, composite) or its declared R-value.
+      false: It does not identify the insulation product.
+    runs_on:
+    - envelope.thermal-insulation
+  numbers:
+  - claim: Fibreglass batts range from R1.5 (75 mm) to R6.0 (250 mm)
+    verified: false
+  - claim: A 5% gap in coverage can reduce effective R-value by 50% or more
+    verified: false
+  related_rules:
+  - rule.ncc.roof-ceiling-insulation-minimum
+  - rule.ncc.wall-insulation-minimum
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4859 Series — Thermal Insulation Materials'
+- id: rule.ncc.residential-nathers-rating
+  title: NatHERS star rating for Class 1 dwellings and Class 2 units
+  instrument: NCC 2022 Volumes One and Two
+  clause: Vol 2 Section 13 / Part 13.2 (previously Part 3.12); seed numbering (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - 1b
+      - '2'
+  derives:
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+    table: nathers_minimum_stars
+    inputs:
+    - state
+    - ncc_class
+    gives: nathers_min_stars
+  requires: The dwelling envelope achieves the minimum NatHERS star rating by an accredited assessor using
+    accredited software, unless another pathway (elemental provisions, or BASIX in NSW) is used.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a NatHERS star rating for the dwelling or a sole-occupancy
+      unit?
+    criteria:
+      true: It states a NatHERS star rating, a NatHERS certificate or a star rating result for the dwelling
+        or unit.
+      false: It does not state a NatHERS star rating.
+    runs_on:
+    - envelope.thermal-performance
+  numbers:
+  - claim: NCC 2022 minimum 7 stars (NCC guide, multi-residential seed)
+    verified: false
+  - claim: NCC 2022 minimum 6 stars nationally (sustainability seed, NCC guide Class 1 section)
+    verified: false
+  - claim: Minimum currently 6 stars in most states, some moving to 7 (residential seed)
+    verified: false
+  - claim: VIC requires 7 stars from 1 May 2023
+    verified: false
+  - claim: 7-star home in Melbourne (zone 6) about 46 MJ/m2 per annum; Brisbane (zone 2) about 50 MJ/m2
+    verified: false
+  notes: Seeds contradict on the national minimum (6 vs 7 stars).
+  related_rules:
+  - rule.ncc.whole-of-home-energy
+  - rule.ncc.residential-elemental-provisions
+  - rule.basix.thermal-comfort-commitments
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NatHERS 7-Star Envelope Requirement'
+  - seed: sustainability-energy-guide.md
+    anchor: '## 3. NatHERS — thermal simulation method'
+  - seed: residential-construction-guide.md
+    anchor: '## Energy Efficiency and Thermal Performance'
+- id: rule.ncc.whole-of-home-energy
+  title: Whole-of-home energy budget
+  instrument: NCC 2022 Volume Two
+  clause: Part 13.5 (seed numbering) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  - hydraulic
+  - electrical
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - 1b
+      - '2'
+  requires: The dwelling's fixed appliances (heated water, lighting, pool and spa equipment) and on-site
+    renewable generation meet a whole-of-home energy budget, and the envelope cannot trade below the minimum
+    star rating.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a whole-of-home energy assessment or result for
+      the dwelling?
+    criteria:
+      true: It states a NatHERS whole-of-home rating, score or assessment, or a whole-of-home energy budget
+        result.
+      false: It does not mention a whole-of-home assessment.
+    runs_on:
+    - envelope.thermal-performance
+  related_rules:
+  - rule.ncc.residential-nathers-rating
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Whole-of-Home Energy Budget'
+- id: rule.ncc.residential-elemental-provisions
+  title: Residential elemental provisions (DTS alternative to NatHERS)
+  instrument: NCC 2022 Volume Two
+  clause: Section 13, Parts 13.2, 13.3, 13.4 (seed numbering) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.thermal-insulation
+  - envelope.windows-doors
+  - envelope.building-sealing
+  - envelope.external-shading
+  - envelope.thermal-performance
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - 1b
+      - '2'
+    - det: energy_compliance_pathway
+      any_of:
+      - residential_elemental
+  requires: Ceiling, wall and floor insulation, glazing total system U-value and SHGC, building sealing
+    and shading each meet the elemental values for the climate zone.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that the dwelling complies by the elemental or
+      deemed-to-satisfy energy provisions rather than a NatHERS rating?
+    criteria:
+      true: It states the elemental provisions, DTS energy provisions or Part 13 elemental pathway are
+        used.
+      false: It states a NatHERS or BASIX pathway, or does not state a pathway.
+    runs_on:
+    - envelope.thermal-performance
+  related_rules:
+  - rule.ncc.residential-nathers-rating
+  - rule.ncc.roof-ceiling-insulation-minimum
+  - rule.ncc.wall-insulation-minimum
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Elemental Provisions Pathway and EV Readiness'
+- id: rule.ncc.residential-building-sealing
+  title: Residential building sealing
+  instrument: NCC 2022 Volume Two
+  clause: Part 13.4 (seed numbering) (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.building-sealing
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - 1b
+      - '2'
+  requires: Doors, windows, exhaust fans and service penetrations are draught sealed so the as-built dwelling
+    performs as modelled.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify draught sealing of doors, windows, exhaust fans
+      or penetrations in a dwelling?
+    criteria:
+      true: It specifies draught seals, weatherstrips, exhaust fan dampers or sealing of penetrations
+        for air-tightness.
+      false: It does not address draught sealing.
+    runs_on:
+    - envelope.building-sealing
+  notes: The residential seed places condensation management in Part 13.4 too; the NCC guide places sealing
+    there.
+  related_rules:
+  - rule.ncc.section-j-building-sealing
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Elemental Provisions Pathway and EV Readiness'
+  - seed: residential-construction-guide.md
+    anchor: '## Energy Efficiency and Thermal Performance'
+- id: rule.basix.certificate-required
+  title: BASIX certificate required for NSW residential work
+  instrument: BASIX, Environmental Planning and Assessment Act 1979 and Regulation 2021 (NSW)
+  clause: BASIX (seed does not give the clause)
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  applies_when:
+    all:
+    - det: state
+      any_of:
+      - NSW
+  derives:
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+    table: basix_applicability
+    inputs:
+    - state
+    - ncc_class
+    - existing_building
+    - estimated_works_cost
+    gives: basix_required
+  requires: New Class 1a and Class 2 dwellings, qualifying alterations and additions, and pools over the
+    volume trigger need a BASIX certificate lodged with the DA or CDC; BASIX does not apply to Class 10a
+    or to commercial buildings.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a BASIX certificate number or that a BASIX certificate
+      has been issued for the project?
+    criteria:
+      true: It states a BASIX certificate number, or that a BASIX certificate is issued or lodged for
+        the project.
+      false: It does not refer to a BASIX certificate for this project, or only says one may be needed.
+    runs_on:
+    - envelope.thermal-performance
+  numbers:
+  - claim: BASIX applies to alterations and additions valued at $50,000 and over
+    verified: false
+  notes: 'Seeds contradict: the sustainability seed says it does not freeze a threshold but its low-confidence
+    flag cites $50,000; the renovation seed states $50,000 as fact. The NCC guide adds "some Class 4 buildings".'
+  related_rules:
+  - rule.basix.thermal-comfort-commitments
+  - rule.basix.energy-commitments
+  - rule.basix.water-commitments
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 1. BASIX overview (NSW)'
+  - seed: renovation-guide.md
+    anchor: '## BASIX baseline for additions'
+  - seed: ancillary-guide.md
+    anchor: '## BASIX — ancillary structures'
+  - seed: small-commercial-guide.md
+    anchor: '## NCC class — Volume One applies'
+- id: rule.basix.thermal-comfort-commitments
+  title: BASIX thermal comfort commitments built as certified
+  instrument: BASIX (NSW)
+  clause: BASIX certificate commitments
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  - envelope.windows-doors
+  - envelope.thermal-insulation
+  - envelope.external-shading
+  applies_when:
+    all:
+    - det: basix_required
+      is: true
+  requires: Glazing (area by orientation, frame and glass U-value and SHGC), ceiling, wall and floor insulation
+    R-values, shading and ventilation are built as committed in the BASIX certificate, and the construction
+    certificate drawings and schedules match it.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a BASIX commitment for glazing, insulation, shading
+      or ventilation?
+    criteria:
+      true: It states a BASIX-committed window U-value or SHGC, insulation R-value, shading or ventilation
+        provision.
+      false: It does not state a BASIX thermal commitment.
+    runs_on:
+    - envelope.thermal-performance
+    - envelope.windows-doors
+    - envelope.thermal-insulation
+  related_rules:
+  - rule.basix.certificate-required
+  - rule.basix.substitution-requires-amendment
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 2. BASIX application workflow (NSW)'
+  - seed: sustainability-energy-guide.md
+    anchor: '### Step 3 — CC documentation'
+  - seed: new-dwelling-guide.md
+    anchor: '### What gets committed'
+- id: rule.basix.energy-commitments
+  title: BASIX energy commitments (hot water, PV, lighting) built as certified
+  instrument: BASIX (NSW)
+  clause: BASIX certificate commitments
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  - hydraulic
+  - electrical
+  applies_when:
+    all:
+    - det: basix_required
+      is: true
+  requires: The hot water system type and capacity, PV system size and connection, lighting (LED share)
+    and pool or spa pump efficiency are installed as committed in the BASIX certificate.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a BASIX commitment for the hot water system, PV
+      system or lighting?
+    criteria:
+      true: It states a BASIX-committed hot water system type or model, PV size in kW, or lighting requirement.
+      false: It does not state a BASIX energy commitment.
+    runs_on:
+    - envelope.thermal-performance
+    - hydraulic
+    - electrical
+  numbers:
+  - claim: PV commonly 3-6 kW for a new Class 1a dwelling
+    verified: false
+  related_rules:
+  - rule.basix.certificate-required
+  - rule.basix.substitution-requires-amendment
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 1. BASIX overview (NSW)'
+  - seed: new-dwelling-guide.md
+    anchor: '### What gets committed'
+- id: rule.basix.water-commitments
+  title: BASIX water commitments (rainwater tank, fixtures) built as certified
+  instrument: BASIX (NSW)
+  clause: BASIX certificate commitments
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  - hydraulic
+  applies_when:
+    all:
+    - det: basix_required
+      is: true
+  requires: The rainwater tank capacity and connections, WELS ratings of taps, showers and toilets, and
+    pool or spa cover are installed as committed in the BASIX certificate.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a BASIX commitment for a rainwater tank or water
+      fixtures?
+    criteria:
+      true: It states a BASIX-committed rainwater tank size or connections, or WELS ratings for fixtures.
+      false: It does not state a BASIX water commitment.
+    runs_on:
+    - envelope.thermal-performance
+    - hydraulic
+  related_rules:
+  - rule.basix.certificate-required
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 1. BASIX overview (NSW)'
+  - seed: residential-construction-guide.md
+    anchor: '## Sustainability and Environmental Considerations'
+- id: rule.basix.substitution-requires-amendment
+  title: Changes to BASIX commitments need an amended certificate first
+  instrument: BASIX (NSW)
+  clause: BASIX certificate amendment
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  applies_when:
+    all:
+    - det: basix_required
+      is: true
+  requires: Any change to a committed window, insulation, hot water, PV or other BASIX item is assessed
+    in the BASIX tool and an amended certificate is lodged with the certifier before the affected work
+    proceeds.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a BASIX certificate has been amended or revised?
+    criteria:
+      true: It states an amended, revised or re-issued BASIX certificate, or a BASIX re-assessment of
+        a change.
+      false: It does not mention an amendment of the BASIX certificate.
+    runs_on:
+    - envelope.thermal-performance
+  related_rules:
+  - rule.basix.thermal-comfort-commitments
+  - rule.basix.energy-commitments
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '## 6. BASIX certificate amendment'
+  - seed: new-dwelling-guide.md
+    anchor: '### Common BASIX failure modes'
+- id: rule.basix.completion-before-occupation
+  title: BASIX completion evidence before the occupation certificate
+  instrument: BASIX (NSW)
+  clause: BASIX completion receipt / final certificate
+  clause_verified: false
+  systems:
+  - envelope.thermal-performance
+  applies_when:
+    all:
+    - det: basix_required
+      is: true
+  requires: All BASIX commitments are evidenced as installed and the BASIX completion receipt or final
+    certificate is obtained before the occupation certificate is issued.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a BASIX completion receipt or final BASIX
+      certificate has been obtained?
+    criteria:
+      true: It states the BASIX completion receipt or final certificate is obtained or attached.
+      false: It does not state BASIX completion, or states it is outstanding.
+    runs_on:
+    - envelope.thermal-performance
+  notes: The sustainability seed says to verify the current completion requirement with the certifier.
+  related_rules:
+  - rule.basix.certificate-required
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '### Step 5 — BASIX final certificate (hold point before OC)'
+  - seed: new-dwelling-guide.md
+    anchor: '## Structural inspection gates — Class 1a new dwelling'
+- id: rule.ncc.bushfire-prone-construction
+  title: Buildings on bushfire-prone land built to AS 3959
+  instrument: NCC 2022 Volume Two
+  clause: Part 3.7.4 (NCC guide) or Part 3.10 (residential seed); NCC 2019 numbering (seed numbering;
+    NCC 2019)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  applies_when:
+    any:
+    - det: bushfire_prone_land
+      is: true
+  requires: Class 1 and associated Class 10a buildings in designated bushfire-prone areas are constructed
+    to AS 3959 for the site's BAL (or the ABCB standard); state legislation may extend this to Class 2
+    and 3, and state overlays (NSW PBP, VIC BMO) may add requirements.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require construction to AS 3959 or to a stated BAL?
+    criteria:
+      true: It requires construction to AS 3959, or states the BAL the building is to be constructed to.
+      false: It does not require bushfire construction.
+    runs_on:
+    - envelope.bushfire-construction
+  notes: AS seed says AS 3959 applies to Classes 1, 2, 3 and associated 10a; NCC guide says Class 1 and
+    10 with 2 and 3 by state legislation.
+  related_rules:
+  - rule.as3959.bal-assessment
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Bushfire Attack Levels (BAL) Determination'
+  - seed: residential-construction-guide.md
+    anchor: '## Bushfire Construction Requirements'
+  - seed: ncc-reference-guide.md
+    anchor: '## 5. Class 10a overview — selected DTS provisions'
+- id: rule.as3959.bal-assessment
+  title: BAL determined by a bushfire assessment
+  instrument: AS 3959:2018
+  clause: AS 3959 Section 2, Appendix A (simplified) and Appendix B (detailed)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  - site
+  applies_when:
+    any:
+    - det: bushfire_prone_land
+      is: true
+  requires: A qualified assessor determines the BAL from the fire danger index, vegetation type and distance
+    (including on neighbouring land), and effective slope; BAL-LOW is not assumed on mapped land without
+    it.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage report a BAL assessment result for the site?
+    criteria:
+      true: It states the assessed BAL (BAL-LOW, 12.5, 19, 29, 40 or FZ) from a bushfire assessment.
+      false: It does not report an assessed BAL, or says the assessment is pending.
+    runs_on:
+    - envelope.bushfire-construction
+    - site
+  numbers:
+  - claim: BAL-12.5 radiant heat up to 12.5 kW/m2; BAL-19 up to 19; BAL-29 up to 29; BAL-40 up to 40;
+      BAL-FZ over 40 kW/m2
+    verified: false
+  notes: The NCC guide calls the flame zone BAL-FMP once; all other seeds say BAL-FZ.
+  related_rules:
+  - rule.ncc.bushfire-prone-construction
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '### How BAL is assessed'
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+- id: rule.as3959.ember-protection
+  title: Ember protection of openings, vents and gaps
+  instrument: AS 3959:2018
+  clause: AS 3959 (BAL-12.5 and above)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  - envelope.building-sealing
+  applies_when:
+    any:
+    - det: bal
+      any_of:
+      - BAL-12.5
+      - BAL-19
+      - BAL-29
+      - BAL-40
+      - BAL-FZ
+  requires: Openings, vents, weepholes, roof and wall junction gaps, service penetrations and subfloor
+    spaces are screened or sealed against ember entry with non-combustible, corrosion-resistant mesh,
+    and gutters have non-combustible guards.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify ember screens, ember guards or sealing of gaps
+      against ember entry?
+    criteria:
+      true: It specifies ember mesh or screens, ember guards on vents or weepholes, gutter guards, or
+        sealing of gaps and penetrations against embers.
+      false: It does not address ember entry.
+    runs_on:
+    - envelope.bushfire-construction
+  numbers:
+  - claim: Ember mesh maximum 2 mm aperture, corrosion-resistant metal
+    verified: false
+  - claim: Ember screening of all openings over 2 mm at BAL-12.5 (AS seed)
+    verified: false
+  - claim: 2 mm mesh for BAL-19 and above (residential seed)
+    verified: false
+  related_rules:
+  - rule.as3959.bushfire-roofs-gutters
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+  - seed: residential-construction-guide.md
+    anchor: '## Bushfire Construction Requirements'
+- id: rule.as3959.bushfire-glazing
+  title: Windows and glazed doors to the BAL
+  instrument: AS 3959:2018
+  clause: AS 3959 (windows and doors by BAL)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  - envelope.windows-doors
+  applies_when:
+    any:
+    - det: bal
+      any_of:
+      - BAL-12.5
+      - BAL-19
+      - BAL-29
+      - BAL-40
+      - BAL-FZ
+  requires: 'Glass, frames and external doors meet the BAL: toughened glass and upgraded frames at higher
+    BALs, tested bushfire-resistant window assemblies or shutters at BAL-40, and bushfire-resistant systems
+    at BAL-FZ.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify glass or window requirements tied to a BAL?
+    criteria:
+      true: It states a glass type, thickness, frame material, shutter or tested window system required
+        for a stated BAL.
+      false: It does not link window or glass requirements to a BAL.
+    runs_on:
+    - envelope.bushfire-construction
+    - envelope.windows-doors
+  numbers:
+  - claim: BAL-29 windows minimum 5 mm toughened glass (NCC guide)
+    verified: false
+  - claim: BAL-29 windows minimum 5 mm toughened or laminated glass (AS seed)
+    verified: false
+  - claim: Toughened glass required from BAL-19 (residential seed)
+    verified: false
+  - claim: BAL-29 solid timber doors minimum 35 mm
+    verified: false
+  - claim: BAL-40 metal-framed windows and doors (structural seed)
+    verified: false
+  notes: Seeds contradict on the BAL where toughened glass starts (BAL-19 vs BAL-29) and on laminated
+    glass acceptance.
+  related_rules:
+  - rule.basix.thermal-comfort-commitments
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Construction Requirements by BAL Rating'
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+  - seed: structural-residential.md
+    anchor: '### BAL ratings and implications'
+- id: rule.as3959.bushfire-external-walls
+  title: External walls and cladding to the BAL
+  instrument: AS 3959:2018
+  clause: AS 3959 (external walls by BAL)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  - envelope.external-walls
+  applies_when:
+    any:
+    - det: bal
+      any_of:
+      - BAL-12.5
+      - BAL-19
+      - BAL-29
+      - BAL-40
+      - BAL-FZ
+  requires: 'External wall cladding, reveals and eaves meet the BAL: non-combustible or bushfire-resistant
+    cladding at lower BALs, FRL-rated or tested wall systems at BAL-29 and above, enclosed eaves and non-combustible
+    reveals at BAL-40, and specialist design (usually a Performance Solution) at BAL-FZ.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify external wall or cladding requirements tied
+      to a BAL?
+    criteria:
+      true: It states a cladding material, wall system, FRL, eaves or reveal requirement for a stated
+        BAL.
+      false: It does not link wall or cladding requirements to a BAL.
+    runs_on:
+    - envelope.bushfire-construction
+    - envelope.external-walls
+  numbers:
+  - claim: BAL-29 external walls -/30/30 FRL or tested systems (AS seed)
+    verified: false
+  - claim: Combustible cladding non-compliant at BAL-19 and above (NCC guide, residential seed)
+    verified: false
+  - claim: BAL-29 non-combustible or hardwood cladding (structural seed)
+    verified: false
+  - claim: BAL-40 requires enclosed eaves and non-combustible reveals
+    verified: false
+  notes: BAL-FZ almost always needs a Performance Solution; seeds treat it as a specialist trigger.
+  related_rules:
+  - rule.as3959.bal-assessment
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+  - seed: as-standards-reference.md
+    anchor: '### AS 3959 and the new-dwelling lifecycle'
+  - seed: ncc-reference-guide.md
+    anchor: '### Construction Requirements by BAL Rating'
+- id: rule.as3959.bushfire-decking
+  title: Decks and subfloor enclosure to the BAL
+  instrument: AS 3959:2018
+  clause: AS 3959 (decks, subfloors by BAL)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  applies_when:
+    any:
+    - det: bal
+      any_of:
+      - BAL-12.5
+      - BAL-19
+      - BAL-29
+      - BAL-40
+      - BAL-FZ
+  requires: 'Decking and its substructure and subfloor enclosures meet the BAL: non-combustible or bushfire-resistant
+    timber of the required density at higher BALs, with enclosed or screened subfloors.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify decking material or timber species for a deck
+      in a bushfire-prone building?
+    criteria:
+      true: It states a decking material, timber species or density, or a non-combustible deck substructure,
+        for a bushfire-prone building.
+      false: It does not specify decking for bushfire purposes.
+    runs_on:
+    - envelope.bushfire-construction
+  numbers:
+  - claim: BAL-29+ timber decking species density at least 750 kg/m3 at 12% moisture content
+    verified: false
+  - claim: Decking non-combustible or bushfire-resistant from BAL-19; substructure non-combustible from
+      BAL-29 (residential seed)
+    verified: false
+  related_rules:
+  - rule.as3959.bal-assessment
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+  - seed: residential-construction-guide.md
+    anchor: '## Bushfire Construction Requirements'
+- id: rule.as3959.bushfire-roofs-gutters
+  title: Roof coverings, sarking and gutters to the BAL
+  instrument: AS 3959:2018
+  clause: AS 3959 (roofs by BAL)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  - envelope.roof-coverings
+  applies_when:
+    any:
+    - det: bal
+      any_of:
+      - BAL-12.5
+      - BAL-19
+      - BAL-29
+      - BAL-40
+      - BAL-FZ
+  requires: Roof coverings are non-combustible with sarking and sealed roofing gaps, gutters are non-combustible
+    with ember guards, and fire-resistant roof assemblies are used at the highest BALs.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify roof covering, sarking or gutter requirements
+      tied to a BAL?
+    criteria:
+      true: It states a roof covering, sarking, roof gap sealing or gutter guard requirement for a stated
+        BAL.
+      false: It does not link roof or gutter requirements to a BAL.
+    runs_on:
+    - envelope.bushfire-construction
+    - envelope.roof-coverings
+  related_rules:
+  - rule.as3959.ember-protection
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Bushfire Construction Requirements'
+  - seed: ncc-reference-guide.md
+    anchor: '### Construction Requirements by BAL Rating'
+- id: rule.as3959.bushfire-water-supply
+  title: Dedicated static water supply at BAL-40 and BAL-FZ
+  instrument: AS 3959:2018 (as stated by seed; likely a state planning requirement)
+  clause: AS 3959 (seed attribution unverified)
+  clause_verified: false
+  systems:
+  - envelope.bushfire-construction
+  - hydraulic
+  - site
+  applies_when:
+    any:
+    - det: bal
+      any_of:
+      - BAL-40
+      - BAL-FZ
+  requires: A dedicated static water supply with a fire authority fitting is provided and accessible for
+    firefighting.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a dedicated static water supply for bushfire
+      firefighting?
+    criteria:
+      true: It specifies a dedicated firefighting water tank or static water supply, its capacity or its
+        fire authority fitting.
+      false: It does not mention a firefighting water supply.
+    runs_on:
+    - envelope.bushfire-construction
+    - hydraulic
+    - site
+  numbers:
+  - claim: Minimum 10,000 L dedicated static water supply
+    verified: false
+  - claim: Water supply accessible within 60 m
+    verified: false
+  notes: This requirement usually sits in state planning instruments (for example NSW PBP), not AS 3959;
+    verify the instrument.
+  related_rules:
+  - rule.as3959.bal-assessment
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3959 — Construction of Buildings in Bushfire-Prone Areas'
+- id: rule.ncc.sou-wall-sound-insulation
+  title: Airborne sound insulation of walls between sole-occupancy units
+  instrument: NCC 2022 Volume One
+  clause: Part F5 (seed numbering; NCC 2019); finishes seed says Specification 43
+  clause_verified: false
+  systems:
+  - interiors.acoustic-separation
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - 9c
+  derives:
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+    table: sound_insulation_requirements
+    inputs:
+    - ncc_class
+    gives: sou_wall_min_rw_ctr
+  requires: Walls between sole-occupancy units, and between units and common areas, achieve the required
+    airborne sound insulation rating and are built and sealed so the as-built wall performs as rated.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an Rw or Rw + Ctr rating for a wall between sole-occupancy
+      units or tenancies?
+    criteria:
+      true: It states an Rw or Rw + Ctr value, or an acoustic wall type with its rating, for a separating
+        wall.
+      false: It does not state an airborne sound rating for a separating wall.
+    runs_on:
+    - interiors.acoustic-separation
+  numbers:
+  - claim: Walls between SOUs Rw + Ctr at least 50
+    verified: false
+  - claim: Office inter-tenancy walls typically Rw 45, Rw 50-55 where confidential spaces adjoin common
+      areas
+    verified: false
+  notes: AS 2107 seed section wrongly says NCC F5 references AS/NZS 2107 for SOU sound insulation; the
+    rating standard is AS/NZS ISO 717.1.
+  related_rules:
+  - rule.ncc.sou-floor-airborne-sound
+  - rule.ncc.sou-floor-impact-sound
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+- id: rule.ncc.sou-floor-airborne-sound
+  title: Airborne sound insulation of floors between sole-occupancy units
+  instrument: NCC 2022 Volume One
+  clause: Part F5 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - interiors.acoustic-separation
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - 9c
+  derives:
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+    table: sound_insulation_requirements
+    inputs:
+    - ncc_class
+    gives: sou_floor_min_rw_ctr
+  requires: Floors between sole-occupancy units achieve the required airborne sound insulation rating.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an Rw or Rw + Ctr rating for a floor between sole-occupancy
+      units?
+    criteria:
+      true: It states an Rw or Rw + Ctr value for a floor or floor-ceiling assembly between units.
+      false: It does not state an airborne rating for a separating floor.
+    runs_on:
+    - interiors.acoustic-separation
+  numbers:
+  - claim: Floors between SOUs Rw + Ctr at least 50
+    verified: false
+  related_rules:
+  - rule.ncc.sou-floor-impact-sound
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+- id: rule.ncc.sou-floor-impact-sound
+  title: Impact sound insulation of floors between sole-occupancy units
+  instrument: NCC 2022 Volume One
+  clause: Part F5 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - interiors.acoustic-separation
+  - interiors.floor-finishes
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - 9c
+  derives:
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+    table: sound_insulation_requirements
+    inputs:
+    - ncc_class
+    gives: sou_floor_max_lnw_ci
+  requires: Floors separating a habitable room from a habitable room below achieve the maximum impact
+    sound rating, usually by acoustic underlays, floating screeds or resilient ceilings.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an Ln,w or Ln,w + CI impact sound rating for a
+      floor between units?
+    criteria:
+      true: It states an Ln,w or Ln,w + CI value, or an impact-rated underlay or floating floor with its
+        rating.
+      false: It does not state an impact sound rating.
+    runs_on:
+    - interiors.acoustic-separation
+    - interiors.floor-finishes
+  numbers:
+  - claim: Floors between habitable rooms Ln,w + CI at most 62
+    verified: false
+  related_rules:
+  - rule.ncc.sou-floor-airborne-sound
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+- id: rule.as2107.design-sound-levels
+  title: Design sound levels inside rooms
+  instrument: AS/NZS 2107:2016
+  clause: AS/NZS 2107
+  clause_verified: false
+  systems:
+  - interiors.room-acoustics
+  requires: The combined noise from building services and intruding external noise in each room stays
+    within the recommended design sound level range for the room type.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a design or maximum internal sound level (dBA
+      or LAeq) for a room type?
+    criteria:
+      true: It states an internal noise criterion in dBA, LAeq or L10 for a room or room type.
+      false: It does not state an internal noise criterion.
+    runs_on:
+    - interiors.room-acoustics
+    - envelope.facade-acoustics
+  numbers:
+  - claim: Private offices 35-40 dBA; open-plan offices 40-45 dBA
+    verified: false
+  - claim: Residential living rooms 30-40 dBA; bedrooms 25-35 dBA
+    verified: false
+  - claim: Teaching spaces 35-45 dBA; hospital wards 35-40 dBA; operating theatres 40-45 dBA
+    verified: false
+  - claim: Libraries 35-45 dBA; courtrooms 30-35 dBA; concert halls 20-25 dBA
+    verified: false
+  - claim: Office open-plan 35-40 dB(A) and private offices 30-35 dB(A) (commercial seed)
+    verified: false
+  notes: The commercial seed's office levels are 5 dB lower than the AS seed's.
+  related_rules:
+  - rule.as2107.reverberation-time
+  - rule.as3671.road-traffic-noise-intrusion
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for
+      Building Interiors'
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+- id: rule.as2107.reverberation-time
+  title: Reverberation time inside rooms
+  instrument: AS/NZS 2107:2016
+  clause: AS/NZS 2107
+  clause_verified: false
+  systems:
+  - interiors.room-acoustics
+  - interiors.ceilings
+  - interiors.floor-finishes
+  requires: Rooms achieve the recommended reverberation time for their volume and use, using absorptive
+    ceilings, wall treatments and finishes.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a reverberation time or specify acoustic absorption
+      treatment for a room?
+    criteria:
+      true: It states a reverberation time (T60 or RT in seconds) or specifies absorptive ceiling tiles,
+        panels or finishes for acoustic purposes.
+      false: It does not address reverberation or absorption.
+    runs_on:
+    - interiors.room-acoustics
+    - interiors.ceilings
+  numbers:
+  - claim: Classrooms up to 250 m3 0.4-0.6 s; larger lecture theatres 0.6-0.8 s
+    verified: false
+  - claim: Open-plan offices 0.4-0.6 s; concert halls 1.5-2.0 s; multi-purpose halls 0.8-1.2 s
+    verified: false
+  related_rules:
+  - rule.as2107.design-sound-levels
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for
+      Building Interiors'
+- id: rule.as3671.road-traffic-noise-intrusion
+  title: Facade designed against road traffic noise
+  instrument: AS 3671:1989 (and state road noise policies)
+  clause: AS 3671
+  clause_verified: false
+  systems:
+  - envelope.facade-acoustics
+  - envelope.windows-doors
+  applies_when:
+    any:
+    - det: noise_affected_site
+      is: true
+  requires: On noise-affected sites the facade (walls, windows, roof and ceiling) reduces external noise
+    to the internal targets with windows closed, and a ventilation strategy works with windows closed;
+    state EPA or road noise policies may set stricter criteria.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a required acoustic rating (Rw or Rw + Ctr) for
+      windows or glazing on the facade?
+    criteria:
+      true: It states an Rw or Rw + Ctr rating, acoustic glazing make-up or acoustic seals for facade
+        windows or doors.
+      false: It does not state an acoustic rating for facade glazing.
+    runs_on:
+    - envelope.facade-acoustics
+    - envelope.windows-doors
+  numbers:
+  - claim: Bedrooms at most 35 dBA L10 and living areas 40 dBA L10 with windows closed
+    verified: false
+  - claim: 65 dBA L10 facade level needs about 30 dB reduction, achievable with brick veneer and closed
+      windows
+    verified: false
+  - claim: 70-80 dBA common within 50 m of major arterial roads
+    verified: false
+  - claim: 6-8-6 mm IGU for Rw 30+; 10-12-6 mm for Rw 35+
+    verified: false
+  - claim: Metal roof with plasterboard ceiling about Rw 35; with R3.5 batts and 13 mm plasterboard about
+      Rw 45
+    verified: false
+  - claim: State policies trigger treatment at 55-60 dBA Lden or L10(18hr)
+    verified: false
+  - claim: Field performance typically 5-10 dB below laboratory ratings
+    verified: false
+  - claim: Rw overestimates traffic noise performance by 5-10 dB without Ctr
+    verified: false
+  related_rules:
+  - rule.as2107.design-sound-levels
+  - rule.ncc.natural-light
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3671 — Acoustics — Road Traffic Noise Intrusion — Building Siting and Construction'
+- id: rule.product.cladding-product-installation
+  title: Cladding product installation
+  instrument: Project-selected product installation instructions
+  clause: Product-specific requirements pending selection and verification
+  clause_verified: false
+  systems:
+  - envelope.external-walls
+  requires: Install sheet cladding with the specified fixings, joint treatment, cut-edge protection and
+    coating system.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the selected cladding product installation specification?
+    criteria:
+      true: It explicitly specifies the selected cladding product installation specification.
+      false: It does not specify this detail; naming the finish alone is insufficient.
+    runs_on:
+    - envelope.external-walls
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Fibre cement sheet (FC sheet)'
+  notes: Seed-derived workmanship requirement; confirm the selected product instructions. No universal
+    numeric limit is inferred.
+- id: rule.product.lining-product-installation
+  title: Lining substrate and fixing specification
+  instrument: Project-selected product installation instructions
+  clause: Product-specific requirements pending selection and verification
+  clause_verified: false
+  systems:
+  - interiors.walls-linings
+  requires: Select lining grade, fixings and movement joints appropriate to the substrate and exposure.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the lining grade and its intended exposure?
+    criteria:
+      true: It explicitly specifies the lining grade and its intended exposure.
+      false: It does not specify this detail; naming the finish alone is insufficient.
+    runs_on:
+    - interiors.walls-linings
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Plasterboard (gypsum board)'
+  notes: Seed-derived workmanship requirement; confirm the selected product instructions. No universal
+    numeric limit is inferred.
+- id: rule.product.floor-substrate-moisture
+  title: Timber floor substrate preparation
+  instrument: Project-selected product installation instructions
+  clause: Product-specific requirements pending selection and verification
+  clause_verified: false
+  systems:
+  - interiors.floor-finishes
+  requires: Prepare and assess substrate moisture before installing timber flooring using the selected
+    product instructions.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the substrate moisture acceptance criterion
+      for timber flooring?
+    criteria:
+      true: It explicitly specifies the substrate moisture acceptance criterion for timber flooring.
+      false: It does not specify this detail; naming the finish alone is insufficient.
+    runs_on:
+    - interiors.floor-finishes
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Timber flooring (solid and engineered)'
+  notes: Seed-derived workmanship requirement; confirm the selected product instructions. No universal
+    numeric limit is inferred.
+- id: rule.product.joinery-benchtop-support
+  title: Benchtop support by cabinetry
+  instrument: Project-selected product installation instructions
+  clause: Product-specific requirements pending selection and verification
+  clause_verified: false
+  systems:
+  - interiors.joinery
+  requires: Coordinate cabinet support and installation clearances with the selected benchtop material.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the cabinet support arrangement for the benchtop?
+    criteria:
+      true: It explicitly specifies the cabinet support arrangement for the benchtop.
+      false: It does not specify this detail; naming the finish alone is insufficient.
+    runs_on:
+    - interiors.joinery
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Kitchen cabinetry'
+  notes: Seed-derived workmanship requirement; confirm the selected product instructions. No universal
+    numeric limit is inferred.
+- id: rule.product.render-system-compatibility
+  title: Render system compatibility
+  instrument: Project-selected product installation instructions
+  clause: Product-specific requirements pending selection and verification
+  clause_verified: false
+  systems:
+  - envelope.external-walls
+  requires: Use a render system compatible with the substrate and carry movement joints through the coating.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify the render system selected for its substrate?
+    criteria:
+      true: It explicitly specifies the render system selected for its substrate.
+      false: It does not specify this detail; naming the finish alone is insufficient.
+    runs_on:
+    - envelope.external-walls
+  status: draft
+  sources:
+  - seed: finishes-residential.md
+    anchor: '### Rendered masonry and texture coat'
+  notes: Seed-derived workmanship requirement; confirm the selected product instructions. No universal
+    numeric limit is inferred.

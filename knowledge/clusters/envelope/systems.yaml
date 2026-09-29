@@ -1,0 +1,443 @@
+# Envelope cluster: child systems under `envelope` and `interiors`.
+# Siblings are split by topic so Jev can pick exactly one leaf per passage.
+# Where one physical element carries several topics (a window has glass,
+# flashings, a BAL rating and a U-value), the passage's main topic decides
+# the leaf; `excludes` names where the other topics go.
+version: 1
+systems:
+  # ---------------------------------------------------------------- envelope
+  - id: envelope.external-walls
+    parent: envelope
+    label: External walls and cladding
+    describes: >-
+      The outer wall assembly and its cladding: brick or block veneer, cavity
+      width, brick ties, rendered masonry and texture coats, autoclaved
+      aerated concrete (AAC) panels, fibre cement sheet and weatherboards,
+      timber and metal cladding, precast concrete panels, rendered insulation
+      systems (EIFS), ventilated rainscreens, cladding fixings, masonry
+      control joints and external paint or coating systems on cladding.
+    excludes: >-
+      Glazed curtain walls and window walls (curtain-wall); windows and
+      external doors (windows-doors); flashings, damp-proof courses,
+      weepholes and sealant joints as the topic (flashings-seals); wall wrap
+      (pliable-membranes); wall insulation (thermal-insulation); cladding
+      combustibility and fire resistance as the topic (fire-passive);
+      bushfire-specific cladding requirements (bushfire-construction);
+      load-bearing walls and lintel design (structure).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "### Brick veneer"}
+      - {seed: finishes-residential.md, anchor: "### Rendered masonry and texture coat"}
+      - {seed: finishes-residential.md, anchor: "### Fibre cement sheet (FC sheet)"}
+      - {seed: finishes-residential.md, anchor: "### Weatherboard / timber cladding"}
+      - {seed: multi-residential-apartments-guide.md, anchor: "### Facade Selection for Multi-Residential Buildings"}
+
+  - id: envelope.curtain-wall
+    parent: envelope
+    label: Curtain wall and unitised facades
+    describes: >-
+      Framed glazed facades hung off the structure: stick and unitised
+      curtain walls, window walls, spandrel panels within the curtain wall,
+      facade brackets and anchors, facade mock-ups and facade weather testing
+      to AS 4284.
+    excludes: >-
+      Individual windows set in a wall (windows-doors); masonry, precast and
+      sheet cladding (external-walls); fire-stopping at the slab edge as the
+      topic (fire-passive).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Facade and Curtain Wall Systems"}
+      - {seed: as-standards-reference.md, anchor: "## AS 4284 — Testing of Building Facades"}
+
+  - id: envelope.windows-doors
+    parent: envelope
+    label: Windows, external doors and skylights
+    describes: >-
+      Windows, external glazed and solid doors, sliding doors and skylights:
+      frames (aluminium, thermally broken, timber, uPVC), glass type and
+      thickness, safety glass in external windows and doors, insulated glass
+      units, low-E coatings, window performance grades (wind, water,
+      air infiltration) to AS 2047, window testing to AS 4420, compliance
+      marking, and window openings for natural light and ventilation.
+    excludes: >-
+      Head, sill and jamb flashings as the topic (flashings-seals); glazed
+      curtain walls (curtain-wall); shower screens and internal glazed
+      partitions (interiors.internal-glazing); glass balustrades
+      (access-egress); fire-rated windows (fire-passive); bushfire-specific
+      window requirements (bushfire-construction); thermal ratings when the
+      passage is a NatHERS, BASIX or Section J compliance statement
+      (thermal-performance).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "### Window and door joinery (aluminium and timber)"}
+      - {seed: finishes-residential.md, anchor: "### Safety glazing requirements"}
+      - {seed: as-standards-reference.md, anchor: "## AS 2047 — Windows and External Glazed Doors in Buildings"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1288 — Glass in Buildings"}
+
+  - id: envelope.roof-coverings
+    parent: envelope
+    label: Pitched roof coverings
+    describes: >-
+      Pitched roof cladding and its fixing: concrete and terracotta tiles,
+      metal sheet roofing, battens, ridge, hip and valley tiles and cappings,
+      valley gutters, roof pitch and sheet laps, fasteners, eaves and soffit
+      linings, and roof flashings at penetrations, abutments and chimneys.
+    excludes: >-
+      Membrane-covered flat, low-pitch and trafficable roofs
+      (external-waterproofing); sarking (pliable-membranes); roof insulation
+      (thermal-insulation); eaves gutters, box gutters and downpipes
+      (hydraulic); roof trusses and rafters (structure); skylights
+      (windows-doors).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "### Roof tile systems"}
+      - {seed: finishes-residential.md, anchor: "### Metal sheet roofing (Colorbond / Zincalume)"}
+      - {seed: trade-interfaces-coordination-guide.md, anchor: "## Interface 1: Frame to roof"}
+
+  - id: envelope.external-waterproofing
+    parent: envelope
+    label: External above-ground waterproofing
+    describes: >-
+      Waterproofing membranes exposed to weather above ground: balconies,
+      decks over habitable space, podiums, roof terraces, flat and
+      low-pitch membrane roofs, trafficable and green roofs and planter
+      boxes, with their falls, upstands at thresholds, drainage layers,
+      outlets, overflows and membrane terminations (AS 4654).
+    excludes: >-
+      Internal wet-area waterproofing (interiors.wet-area-waterproofing);
+      basement tanking and below-ground waterproofing (substructure);
+      pitched tile and metal roofs (roof-coverings); the stormwater pipes and
+      outlets themselves (hydraulic).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 4654 Series — Waterproofing Membranes for External Above-Ground Use"}
+      - {seed: multi-residential-apartments-guide.md, anchor: "### Balcony and External Waterproofing"}
+      - {seed: multi-residential-apartments-guide.md, anchor: "### Roof Waterproofing and Trafficable Roofs"}
+      - {seed: finishes-residential.md, anchor: "### Flat roofs and membrane systems"}
+
+  - id: envelope.flashings-seals
+    parent: envelope
+    label: Flashings, damp-proof courses and envelope joints
+    describes: >-
+      The small parts that stop water at junctions: head, sill and jamb
+      flashings, cavity flashings, damp-proof courses and their lap with the
+      slab membrane, weepholes, parapet and coping flashings, sealant joints
+      with backing rods, and movement joints between envelope elements and
+      between old and new work.
+    excludes: >-
+      Roof flashings at roof penetrations when the passage is about roofing
+      (roof-coverings); membranes on balconies and roofs
+      (external-waterproofing); under-slab damp-proof membranes as the topic
+      (substructure); fire-stopping sealants (fire-passive).
+    status: draft
+    sources:
+      - {seed: trade-interfaces-coordination-guide.md, anchor: "## Interface 4: External cladding — windows and doors before render or brickwork"}
+      - {seed: ncc-reference-guide.md, anchor: "### Rising Damp Protection and External Weatherproofing"}
+      - {seed: residential-construction-guide.md, anchor: "## Building Envelope and Weatherproofing"}
+
+  - id: envelope.pliable-membranes
+    parent: envelope
+    label: Sarking, wall wrap and condensation control
+    describes: >-
+      Pliable building membranes and underlays (AS 4200): roof sarking, wall
+      wrap behind cladding, vapour barriers and vapour retarders, the
+      drainage and ventilation cavity behind cladding, and condensation
+      management of the envelope (interstitial and surface condensation,
+      condensation risk assessment, vapour permeance, roof-space
+      ventilation).
+    excludes: >-
+      Wet-area and balcony membranes (interiors.wet-area-waterproofing,
+      external-waterproofing); bulk and reflective insulation R-values
+      (thermal-insulation); mechanical exhaust systems (mechanical).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 4200 Series — Pliable Building Membranes and Underlays"}
+      - {seed: ncc-reference-guide.md, anchor: "### Condensation Management"}
+
+  - id: envelope.thermal-insulation
+    parent: envelope
+    label: Thermal insulation
+    describes: >-
+      Bulk and reflective insulation in ceilings, roofs, walls and floors:
+      product type, declared and total system R-values, installation
+      coverage, gaps and compression, thermal bridging through framing and
+      slab edges, and insulation clearances around downlights and flues.
+    excludes: >-
+      Sarking and vapour barriers (pliable-membranes); acoustic insulation in
+      separating walls and floors (interiors.acoustic-separation); pipe and
+      duct insulation (hydraulic, mechanical); combustibility of cavity
+      insulation as the topic (fire-passive).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 4859 Series — Thermal Insulation Materials"}
+      - {seed: trade-interfaces-coordination-guide.md, anchor: "## Interface 7: Roof framing to insulation and ceiling"}
+
+  - id: envelope.building-sealing
+    parent: envelope
+    label: Building sealing and air leakage
+    describes: >-
+      Air-tightness of the envelope: draught sealing around doors, windows
+      and service penetrations, sealing of construction joints, exhaust fan
+      dampers, air infiltration limits and air-leakage testing for energy
+      efficiency.
+    excludes: >-
+      Water-shedding sealant joints and flashings (flashings-seals); ember
+      sealing in bushfire areas (bushfire-construction); smoke and fire
+      seals (fire-passive).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Section J DTS Provisions (J1-J6)"}
+      - {seed: ncc-reference-guide.md, anchor: "### Elemental Provisions Pathway and EV Readiness"}
+
+  - id: envelope.external-shading
+    parent: envelope
+    label: External shading
+    describes: >-
+      Eaves, awnings, pergolas, fixed and operable louvres, fins and other
+      external shading devices, and their effect on solar heat gain through
+      glazing by orientation.
+    excludes: >-
+      Internal blinds and curtains (interiors); glass solar properties such
+      as SHGC (windows-doors); roof coverings of eaves (roof-coverings).
+    status: draft
+    sources:
+      - {seed: residential-construction-guide.md, anchor: "## Energy Efficiency and Thermal Performance"}
+
+  - id: envelope.thermal-performance
+    parent: envelope
+    label: Energy rating and sustainability compliance
+    describes: >-
+      Whole-building or whole-dwelling energy and sustainability compliance
+      of the fabric: NatHERS star ratings and certificates, the NCC
+      whole-of-home energy budget, residential elemental provisions, NSW
+      BASIX certificates and their commitments, NCC Section J envelope
+      calculations and JV3 energy modelling, climate zone, and voluntary
+      ratings (Green Star, NABERS) where they set envelope targets.
+    excludes: >-
+      The installed hot water system, PV system and lighting equipment
+      (hydraulic, electrical); HVAC efficiency (mechanical); individual
+      insulation or window products when the passage is about the product,
+      not the rating (thermal-insulation, windows-doors).
+    status: draft
+    sources:
+      - {seed: sustainability-energy-guide.md, anchor: "## 1. BASIX overview (NSW)"}
+      - {seed: sustainability-energy-guide.md, anchor: "## 3. NatHERS — thermal simulation method"}
+      - {seed: ncc-reference-guide.md, anchor: "## Commercial Building Energy Efficiency"}
+      - {seed: ncc-reference-guide.md, anchor: "## Residential Energy Efficiency (NatHERS and Elemental)"}
+
+  - id: envelope.bushfire-construction
+    parent: envelope
+    label: Bushfire-resistant construction
+    describes: >-
+      Construction of the envelope to a Bushfire Attack Level under AS 3959:
+      BAL-specific requirements for external walls, windows, doors, roofs,
+      eaves, gutters, decks and subfloor enclosure; ember screens and mesh,
+      bushfire shutters, gutter guards, sealing of ember entry points, and
+      the BAL assessment that sets them.
+    excludes: >-
+      Fire resistance of walls between buildings or compartments
+      (fire-passive); asset protection zones and site vegetation (site);
+      window or cladding specifications with no bushfire purpose stated
+      (windows-doors, external-walls).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "## Bushfire Construction (AS 3959)"}
+      - {seed: as-standards-reference.md, anchor: "## AS 3959 — Construction of Buildings in Bushfire-Prone Areas"}
+      - {seed: residential-construction-guide.md, anchor: "## Bushfire Construction Requirements"}
+
+  - id: envelope.facade-acoustics
+    parent: envelope
+    label: Facade acoustic performance
+    describes: >-
+      Sound insulation of the external envelope against outside noise (road,
+      rail, aircraft, neighbouring plant): external noise levels at the
+      facade, required facade noise reduction, window, wall and roof/ceiling
+      Rw and Rw + Ctr ratings, acoustic seals and acoustic windows.
+    excludes: >-
+      Sound insulation between sole-occupancy units or tenancies
+      (interiors.acoustic-separation); noise levels and reverberation inside
+      rooms (interiors.room-acoustics); plant noise design (mechanical).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 3671 — Acoustics — Road Traffic Noise Intrusion — Building Siting and Construction"}
+
+  # --------------------------------------------------------------- interiors
+  - id: interiors.walls-linings
+    parent: interiors
+    label: Partitions and wall linings
+    describes: >-
+      Internal non-load-bearing partitions and the internal linings of all
+      walls: stud framing of partitions, plasterboard (standard, moisture
+      resistant, abuse resistant), fibre cement internal sheet, fixing
+      centres, set joints, cornices, control joints, wet-area wall
+      substrates, and in-wall noggings and reinforcement for fixtures and
+      grab rails.
+    excludes: >-
+      Ceilings (ceilings); wet-area membranes (wet-area-waterproofing);
+      fire-rated plasterboard systems as fire elements (fire-passive); sound
+      insulation ratings of separating walls (acoustic-separation);
+      load-bearing walls (structure).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "### Plasterboard (gypsum board)"}
+
+  - id: interiors.ceilings
+    parent: interiors
+    label: Ceilings and room heights
+    describes: >-
+      Ceiling linings and suspended ceilings, bulkheads, access panels,
+      ceiling voids and their coordination with services, and minimum room
+      heights measured from finished floor to ceiling.
+    excludes: >-
+      Roof and ceiling insulation (envelope.thermal-insulation); fire-rated
+      ceilings as fire elements (fire-passive); light fittings (electrical).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Ventilation Requirements and Ceiling Heights"}
+      - {seed: finishes-residential.md, anchor: "## Internal linings"}
+
+  - id: interiors.wet-area-waterproofing
+    parent: interiors
+    label: Wet-area waterproofing
+    describes: >-
+      Waterproofing of bathrooms, showers, ensuites, laundries, toilets and
+      other internal wet areas (AS 3740): membrane type and thickness,
+      membrane extent and heights, bond breakers and corner reinforcement,
+      puddle flanges at penetrations, falls to floor wastes, hobs and hobless
+      showers, flood testing and the waterproofing inspection before tiling.
+    excludes: >-
+      External balconies, roofs and podiums (envelope.external-waterproofing);
+      the tiles laid over the membrane (tiling); floor waste and pipe
+      installation (hydraulic); wet-area exhaust fans (mechanical).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "## Wet area waterproofing"}
+      - {seed: as-standards-reference.md, anchor: "## AS 3740 — Waterproofing of Domestic Wet Areas"}
+      - {seed: residential-construction-guide.md, anchor: "## Wet Area Construction and Waterproofing"}
+
+  - id: interiors.tiling
+    parent: interiors
+    label: Wall and floor tiling
+    describes: >-
+      Ceramic, porcelain and stone tiling to walls and floors inside and on
+      external paved areas: substrate flatness, adhesive class and coverage,
+      grout, tile movement joints, tile falls, lippage, drummy or cracked
+      tiles.
+    excludes: >-
+      The waterproofing membrane under tiles (wet-area-waterproofing,
+      envelope.external-waterproofing); non-tile floor finishes
+      (floor-finishes).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "## Tiling"}
+      - {seed: defects-and-dlp-guide.md, anchor: "### 2.4 Tile drumming (debonded tiles)"}
+
+  - id: interiors.floor-finishes
+    parent: interiors
+    label: Floor finishes (non-tile)
+    describes: >-
+      Solid and engineered timber flooring, luxury vinyl plank and tile,
+      sheet vinyl, carpet and underlay, polished concrete, acclimatisation,
+      moisture barriers over slabs, and transitions and threshold heights
+      between finishes.
+    excludes: >-
+      Tiled floors (tiling); acoustic underlays as part of an impact-rated
+      floor between units (acoustic-separation); the structural slab
+      (structure, substructure).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "## Flooring"}
+
+  - id: interiors.joinery
+    parent: interiors
+    label: Joinery and built-in cabinetry
+    describes: >-
+      Kitchen cabinetry, benchtops, vanities, laundry joinery, wardrobes and
+      built-in cabinetry: carcase and door materials, hardware, benchtop
+      material and support, and installation tolerances.
+    excludes: >-
+      Window and external door joinery (envelope.windows-doors); internal
+      doors (internal-doors); appliances and their services (hydraulic,
+      electrical).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "### Kitchen cabinetry"}
+      - {seed: finishes-residential.md, anchor: "### Wardrobes and built-in cabinetry"}
+
+  - id: interiors.internal-doors
+    parent: interiors
+    label: Internal doors and hardware
+    describes: >-
+      Internal doors, door frames, clear opening widths, thresholds, and
+      door hardware (hinges, locks, handles, closers) on doors that are not
+      fire or smoke doors.
+    excludes: >-
+      Fire and smoke doors (fire-passive); external doors
+      (envelope.windows-doors); exit door hardware as an egress requirement
+      (access-egress).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Mandatory Silver Level Provisions"}
+
+  - id: interiors.internal-glazing
+    parent: interiors
+    label: Internal glazing and shower screens
+    describes: >-
+      Shower screens, bath screens, internal glazed partitions and doors,
+      borrowed-light glazing and internal glazed panels, including safety
+      glass in those locations.
+    excludes: >-
+      External windows and doors (envelope.windows-doors); glass balustrades
+      (access-egress); fire-rated glazing (fire-passive).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "### Safety glazing requirements"}
+
+  - id: interiors.painting
+    parent: interiors
+    label: Internal painting and coatings
+    describes: >-
+      Paint and clear coatings on internal walls, ceilings, trim and doors:
+      preparation, primers and sealers, curing of plaster before painting,
+      number of coats, and paint defects.
+    excludes: >-
+      Coatings on external cladding (envelope.external-walls); intumescent
+      and fire-protective coatings (fire-passive).
+    status: draft
+    sources:
+      - {seed: trade-interfaces-coordination-guide.md, anchor: "## Interface 6: Internal painting before flooring"}
+      - {seed: defects-and-dlp-guide.md, anchor: "### 2.5 Paint defects"}
+
+  - id: interiors.acoustic-separation
+    parent: interiors
+    label: Sound insulation between occupancies
+    describes: >-
+      Sound insulation of walls and floors between sole-occupancy units,
+      tenancies and different uses: airborne ratings (Rw, Rw + Ctr), impact
+      ratings (Ln,w, Ln,w + CI), acoustic insulation, discontinuous and
+      double-stud construction, resilient mounts, acoustic underlays and
+      floating floors, flanking paths, and acoustic inspection and testing.
+    excludes: >-
+      Fire resistance of the same walls and floors (fire-passive); noise
+      from outside the building (envelope.facade-acoustics); noise levels
+      and reverberation within a room (room-acoustics).
+    status: draft
+    sources:
+      - {seed: multi-residential-apartments-guide.md, anchor: "### SOU Separation — Fire and Acoustic"}
+      - {seed: mixed-use-construction-guide.md, anchor: "## Fire and acoustic separation between uses"}
+
+  - id: interiors.room-acoustics
+    parent: interiors
+    label: Room acoustics and internal noise levels
+    describes: >-
+      Acoustic conditions inside rooms: design sound levels from building
+      services and intruding noise (AS/NZS 2107), reverberation time, and
+      acoustic absorption from ceilings, wall panels and floor finishes.
+    excludes: >-
+      Sound insulation between units or tenancies (acoustic-separation);
+      facade noise reduction (envelope.facade-acoustics); plant selection
+      and vibration isolation (mechanical).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for Building Interiors"}
+      - {seed: commercial-construction-guide.md, anchor: "## Acoustics in Commercial Buildings"}
