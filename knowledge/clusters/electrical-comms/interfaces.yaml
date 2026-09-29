@@ -1,0 +1,779 @@
+version: 1
+interfaces:
+- id: if.utility-supply-serves-distribution
+  type: supplies
+  from:
+  - electrical.utility-supply
+  to:
+  - electrical.switchboards
+  summary: Board demand and supply arrangements must match confirmed network capacity.
+  governed_by:
+  - rule.as3000.maximum-demand
+  - rule.dnsp.connection-application
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state utility confirmation of the proposed
+      supply capacity?
+    criteria:
+      true: It explicitly states utility confirmation of the proposed supply capacity.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.utility-supply
+    - electrical.switchboards
+  failure_modes:
+  - fm.utility-supply-serves-distribution
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: if.switchboard-room-access-and-replacement
+  type: shares_space
+  from:
+  - electrical.switchboards
+  to:
+  - interiors
+  summary: Switchrooms require installation, operation and replacement access.
+  governed_by:
+  - rule.as3000.switchboard-clearances
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the switchboard replacement route?
+    criteria:
+      true: It explicitly states the switchboard replacement route.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.switchboards
+    - interiors
+  failure_modes:
+  - fm.switchboard-room-access-and-replacement
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: if.switchrooms-depend-on-ventilation
+  type: depends_on
+  from:
+  - electrical.switchboards
+  to:
+  - mechanical
+  summary: Switchroom heat and environment require coordinated ventilation.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the switchroom ventilation design?
+    criteria:
+      true: It explicitly states the switchroom ventilation design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.switchboards
+    - mechanical
+  failure_modes:
+  - fm.switchrooms-depend-on-ventilation
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: if.electrical-room-flood-exposure
+  type: boundary
+  from:
+  - site.flooding
+  to:
+  - electrical.switchboards
+  summary: Flood constraints inform switchroom location and protection.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state flood exposure is addressed for the
+      switchroom?
+    criteria:
+      true: It explicitly states flood exposure is addressed for the switchroom.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.flooding
+    - electrical.switchboards
+  failure_modes:
+  - fm.electrical-room-flood-exposure
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: if.electrical-power-for-fire-systems
+  type: supplies
+  from:
+  - electrical.standby-power
+  - electrical.switchboards
+  to:
+  - fire-active
+  summary: Life-safety supply arrangements implement the fire strategy.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the power supply arrangement for fire
+      pumps?
+    criteria:
+      true: It explicitly states the power supply arrangement for fire pumps.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.standby-power
+    - electrical.switchboards
+    - fire-active
+  failure_modes:
+  - fm.electrical-power-for-fire-systems
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+- id: if.electrical-power-for-smoke-control
+  type: supplies
+  from:
+  - electrical.standby-power
+  to:
+  - mechanical
+  summary: Smoke-control supply and failure modes require coordinated testing.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the power supply arrangement for smoke-control
+      fans?
+    criteria:
+      true: It explicitly states the power supply arrangement for smoke-control fans.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.standby-power
+    - mechanical
+  failure_modes:
+  - fm.electrical-power-for-smoke-control
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+- id: if.security-hardware-allows-egress
+  type: boundary
+  from:
+  - comms-security.access-control
+  to:
+  - access-egress
+  summary: Security lock behaviour must be coordinated with emergency escape.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the door emergency-egress behaviour?
+    criteria:
+      true: It explicitly states the door emergency-egress behaviour.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.access-control
+    - access-egress
+  failure_modes:
+  - fm.security-hardware-allows-egress
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## Electronic security'
+- id: if.emergency-power-supplies-lifts
+  type: supplies
+  from:
+  - electrical.standby-power
+  to:
+  - vertical-transport.lift-fire-service
+  summary: The nominated lift supply must support its defined emergency operating mode.
+  governed_by:
+  - rule.ncc.emergency-lifts
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the emergency lift power supply arrangement?
+    criteria:
+      true: It explicitly states the emergency lift power supply arrangement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.standby-power
+    - vertical-transport.lift-fire-service
+  failure_modes:
+  - fm.emergency-power-supplies-lifts
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+- id: if.lift-shaft-structural-dimensions
+  type: depends_on
+  from:
+  - vertical-transport.lift-shafts-pits
+  to:
+  - structure
+  - substructure
+  summary: Lift supplier dimensions must be coordinated before structural shaft construction.
+  governed_by:
+  - rule.as1735.lifts-general
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state lift supplier confirmation of shaft
+      dimensions?
+    criteria:
+      true: It explicitly states lift supplier confirmation of shaft dimensions.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - structure
+    - substructure
+  failure_modes:
+  - fm.lift-shaft-structural-dimensions
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: if.lift-shaft-fire-separation
+  type: boundary
+  from:
+  - vertical-transport.lift-shafts-pits
+  to:
+  - fire-passive
+  summary: Lift shafts form vertical fire and smoke spread interfaces.
+  governed_by:
+  - rule.as1735.lifts-general
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the lift shaft fire separation detail?
+    criteria:
+      true: It explicitly states the lift shaft fire separation detail.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - fire-passive
+  failure_modes:
+  - fm.lift-shaft-fire-separation
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: if.lift-shaft-ventilation
+  type: depends_on
+  from:
+  - vertical-transport.lift-shafts-pits
+  to:
+  - mechanical
+  summary: Shaft ventilation must coordinate with smoke management and equipment needs.
+  governed_by:
+  - rule.as1735.lifts-general
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the lift shaft ventilation design?
+    criteria:
+      true: It explicitly states the lift shaft ventilation design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - mechanical
+  failure_modes:
+  - fm.lift-shaft-ventilation
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: if.accessible-lift-landing-path
+  type: boundary
+  from:
+  - vertical-transport.passenger-lifts
+  - vertical-transport.platform-lifts
+  to:
+  - access-egress
+  summary: Accessible lifts and landing paths must form a continuous accessible route.
+  governed_by:
+  - rule.as1735.lift-accessibility
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state an accessible route connecting the
+      lift landing?
+    criteria:
+      true: It explicitly states an accessible route connecting the lift landing.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.passenger-lifts
+    - vertical-transport.platform-lifts
+    - access-egress
+  failure_modes:
+  - fm.accessible-lift-landing-path
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: if.pv-array-loads-roof
+  type: loads
+  from:
+  - electrical.solar-pv
+  to:
+  - structure
+  summary: PV dead load and wind uplift must be included in roof and support design.
+  governed_by:
+  - rule.as5033.pv-arrays
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state structural approval for the PV support
+      loads?
+    criteria:
+      true: It explicitly states structural approval for the PV support loads.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.solar-pv
+    - structure
+  failure_modes:
+  - fm.pv-array-loads-roof
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
+- id: if.pv-supports-penetrate-roof
+  type: penetrates
+  from:
+  - electrical.solar-pv
+  to:
+  - envelope
+  summary: PV mounting penetrations need durable roof waterproofing details.
+  governed_by:
+  - rule.as5033.pv-arrays
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state roof waterproofing details at PV fixings?
+    criteria:
+      true: It explicitly states roof waterproofing details at PV fixings.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.solar-pv
+    - envelope
+  failure_modes:
+  - fm.pv-supports-penetrate-roof
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
+- id: if.inverters-connect-to-distribution
+  type: supplies
+  from:
+  - electrical.solar-pv
+  - electrical.battery-storage
+  to:
+  - electrical.switchboards
+  summary: Inverter connection and protection must match the distribution and network arrangement.
+  governed_by:
+  - rule.as4777.inverter-grid-connection
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the inverter connection protection
+      arrangement?
+    criteria:
+      true: It explicitly states the inverter connection protection arrangement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.solar-pv
+    - electrical.battery-storage
+    - electrical.switchboards
+  failure_modes:
+  - fm.inverters-connect-to-distribution
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters'
+- id: if.battery-location-protects-egress
+  type: boundary
+  from:
+  - electrical.battery-storage
+  to:
+  - access-egress
+  summary: Battery location must preserve escape routes and emergency access.
+  governed_by:
+  - rule.as5139.battery-location
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the battery installation location relative
+      to escape routes?
+    criteria:
+      true: It explicitly states the battery installation location relative to escape routes.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.battery-storage
+    - access-egress
+  failure_modes:
+  - fm.battery-location-protects-egress
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
+- id: if.battery-ventilation-environment
+  type: depends_on
+  from:
+  - electrical.battery-storage
+  to:
+  - mechanical
+  summary: Battery chemistry and enclosure govern ventilation requirements.
+  governed_by:
+  - rule.as5139.battery-location
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the battery ventilation design?
+    criteria:
+      true: It explicitly states the battery ventilation design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.battery-storage
+    - mechanical
+  failure_modes:
+  - fm.battery-ventilation-environment
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
+- id: if.ev-charging-demand-management
+  type: controls
+  from:
+  - electrical.ev-charging
+  to:
+  - electrical.utility-supply
+  - electrical.switchboards
+  summary: EV load controls must operate within verified supply capacity.
+  governed_by:
+  - rule.as3000.maximum-demand
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state EV charging load management settings?
+    criteria:
+      true: It explicitly states EV charging load management settings.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.ev-charging
+    - electrical.utility-supply
+    - electrical.switchboards
+  failure_modes:
+  - fm.ev-charging-demand-management
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
+- id: if.power-data-cable-segregation
+  type: shares_space
+  from:
+  - electrical.cabling-wiring
+  to:
+  - comms-security.structured-cabling
+  summary: Shared pathways need power and telecommunications separation.
+  governed_by:
+  - rule.ascas009.power-telecom-separation
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state power and telecommunications cable
+      segregation details?
+    criteria:
+      true: It explicitly states power and telecommunications cable segregation details.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.cabling-wiring
+    - comms-security.structured-cabling
+  failure_modes:
+  - fm.power-data-cable-segregation
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
+- id: if.ict-room-power-cooling
+  type: depends_on
+  from:
+  - comms-security.ict-rooms-pathways
+  to:
+  - mechanical
+  summary: ICT equipment heat loads and environment require cooling coordination.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state ICT room cooling requirements?
+    criteria:
+      true: It explicitly states ICT room cooling requirements.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.ict-rooms-pathways
+    - mechanical
+  failure_modes:
+  - fm.ict-room-power-cooling
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: if.ict-equipment-power-resilience
+  type: depends_on
+  from:
+  - comms-security.networks-integration
+  to:
+  - electrical.standby-power
+  summary: Network availability depends on documented power and UPS arrangements.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the ICT equipment UPS arrangement?
+    criteria:
+      true: It explicitly states the ICT equipment UPS arrangement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.networks-integration
+    - electrical.standby-power
+  failure_modes:
+  - fm.ict-equipment-power-resilience
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: if.carrier-entry-civil-route
+  type: boundary
+  from:
+  - comms-security.carrier-lead-in
+  to:
+  - site.services-connections
+  summary: Carrier entry, pits and conduits must connect to the agreed demarcation.
+  governed_by:
+  - rule.nbn.new-developments-pit-and-pipe
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the carrier lead-in route and demarcation?
+    criteria:
+      true: It explicitly states the carrier lead-in route and demarcation.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.carrier-lead-in
+    - site.services-connections
+  failure_modes:
+  - fm.carrier-entry-civil-route
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: if.cctv-lighting-performance
+  type: depends_on
+  from:
+  - comms-security.cctv
+  to:
+  - electrical.lighting
+  summary: Camera identification performance depends on scene lighting under operating conditions.
+  governed_by:
+  - rule.as4806.cctv
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state CCTV night-condition performance testing?
+    criteria:
+      true: It explicitly states CCTV night-condition performance testing.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.cctv
+    - electrical.lighting
+  failure_modes:
+  - fm.cctv-lighting-performance
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## Electronic security'
+- id: if.av-room-acoustics-lighting
+  type: depends_on
+  from:
+  - comms-security.audiovisual
+  to:
+  - interiors
+  - electrical.lighting
+  summary: AV performance depends on the room acoustic and visual environment.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state AV performance test scenarios for the
+      room?
+    criteria:
+      true: It explicitly states AV performance test scenarios for the room.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.audiovisual
+    - interiors
+    - electrical.lighting
+  failure_modes:
+  - fm.av-room-acoustics-lighting
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## Audiovisual systems'
+- id: if.intruder-detection-hvac-interference
+  type: boundary
+  from:
+  - mechanical
+  to:
+  - comms-security.intruder-alarm
+  summary: Air movement and temperature changes can impair intrusion detection.
+  governed_by:
+  - rule.as2201.intruder-alarms
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state intrusion detector locations account
+      for HVAC outlets?
+    criteria:
+      true: It explicitly states intrusion detector locations account for HVAC outlets.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - mechanical
+    - comms-security.intruder-alarm
+  failure_modes:
+  - fm.intruder-detection-hvac-interference
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2201 Series and AS 4806 Series — Intruder Alarm and CCTV Systems'
+- id: if.electrical-shutdown-preserves-life-safety
+  type: controls
+  from:
+  - electrical.temporary-power
+  to:
+  - fire-active
+  - comms-security.access-control
+  summary: Shutdown arrangements must maintain the nominated life-safety functions.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state temporary supply arrangements for life-safety
+      systems during shutdown?
+    criteria:
+      true: It explicitly states temporary supply arrangements for life-safety systems during shutdown.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.temporary-power
+    - fire-active
+    - comms-security.access-control
+  failure_modes:
+  - fm.electrical-shutdown-preserves-life-safety
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: if.cable-insulation-thermal-derating
+  type: boundary
+  from:
+  - electrical.cabling-wiring
+  to:
+  - envelope.thermal-insulation
+  summary: Thermal insulation around cables changes heat dissipation; cable selection must use the actual
+    installation condition.
+  governed_by:
+  - rule.as3008.cable-selection
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state cable sizing accounts for the installed
+      thermal insulation?
+    criteria:
+      true: It explicitly states cable sizing accounts for the installed thermal insulation.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.cabling-wiring
+    - envelope.thermal-insulation
+  failure_modes:
+  - fm.cable-insulation-thermal-derating
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3008 Series — Electrical Installations — Selection of Cables'
+- id: if.lightning-electrical-earth-bonding
+  type: boundary
+  from:
+  - electrical.earthing-lightning
+  to:
+  - electrical.cabling-wiring
+  summary: Lightning protection and the installation earthing system need a coordinated bonding arrangement
+    to control dangerous potential differences.
+  governed_by:
+  - rule.as1768.lightning-protection
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the lightning earth is bonded to the
+      electrical earthing system?
+    criteria:
+      true: It explicitly states the lightning earth is bonded to the electrical earthing system.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.earthing-lightning
+    - electrical.cabling-wiring
+  failure_modes:
+  - fm.lightning-electrical-earth-bonding
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1768 — Lightning Protection'
+- id: if.metering-data-path-commissioning
+  type: depends_on
+  from:
+  - electrical.metering
+  to:
+  - comms-security.networks-integration
+  summary: Energy meters require commissioned communications and correctly identified data points to support
+    operational performance verification.
+  governed_by:
+  - rule.ncc.energy-monitoring
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the energy meter data pathway has been
+      commissioned?
+    criteria:
+      true: It explicitly states the energy meter data pathway has been commissioned.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.metering
+    - comms-security.networks-integration
+  failure_modes:
+  - fm.metering-data-path-commissioning
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: non-residential-sustainability-energy-guide.md
+    anchor: '## Metering, controls and operational performance'
+- id: if.staged-electrical-energisation
+  type: boundary
+  from:
+  - electrical.switchboards
+  to:
+  - electrical.metering
+  summary: Staged occupation requires the distribution and isolation design to support energisation of
+    the completed stage while unfinished works remain isolated.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the electrical distribution supports
+      independent energisation of the occupied stage?
+    criteria:
+      true: It explicitly states the electrical distribution supports independent energisation of the
+        occupied stage.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.switchboards
+    - electrical.metering
+  failure_modes:
+  - fm.staged-electrical-energisation
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: multi-dwelling-guide.md
+    anchor: '## Separate metering and services'

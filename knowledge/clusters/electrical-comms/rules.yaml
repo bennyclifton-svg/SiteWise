@@ -1,0 +1,1797 @@
+version: 1
+rules:
+- id: rule.ncc.lighting-power-density
+  title: Maximum illumination power density for artificial lighting
+  instrument: NCC 2022 Volume One
+  clause: Part J4 (Artificial lighting and power) (seed numbering; seed labels NCC 2022 but NCC 2019 uses
+    Part J6)
+  clause_verified: false
+  systems:
+  - electrical.lighting
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Artificial lighting must not exceed the maximum illumination power density (W/m2) set for
+    each space type or classification.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an illumination power density (lighting watts
+      per square metre) for a space, or a maximum illumination power density that the lighting design
+      must meet?
+    criteria:
+      true: It states a lighting power density value or limit in W/m2, or states that the lighting was
+        checked against the NCC Section J maximum illumination power density.
+      false: It does not mention lighting power density, or only states illuminance in lux without any
+        power density.
+    runs_on:
+    - electrical.lighting
+  numbers: []
+  related_rules:
+  - rule.ncc.lighting-controls
+  - rule.as1680.interior-lighting
+  notes: 'Class 2 common areas are also subject to Section J per the apartments seed; the NCC guide lists
+    Class 3-9 only. Table of limits needed: illumination_power_density (by space type), not a building-level
+    determinant.'
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Electrical Services'
+- id: rule.ncc.lighting-controls
+  title: Lighting controls for energy efficiency
+  instrument: NCC 2022 Volume One
+  clause: Part J4 (Artificial lighting and power) (seed numbering; seed labels NCC 2022 but NCC 2019 uses
+    Part J6)
+  clause_verified: false
+  systems:
+  - electrical.lighting
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Lighting controls (occupancy sensors, daylight dimming, time scheduling) are required in most
+    spaces.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify automatic lighting controls such as occupancy
+      or motion sensors, daylight dimming or time scheduling?
+    criteria:
+      true: It specifies occupancy or motion sensors, daylight-linked dimming, time clocks or schedules,
+        or a lighting control system that switches or dims lights automatically.
+      false: It does not mention lighting controls, or mentions only manual switches.
+    runs_on:
+    - electrical.lighting
+  numbers: []
+  related_rules:
+  - rule.ncc.lighting-power-density
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+  - seed: electrical-services-guide.md
+    anchor: '## Lighting and controls'
+- id: rule.ncc.energy-monitoring
+  title: Energy monitoring and sub-metering by end use
+  instrument: NCC 2022 Volume One
+  clause: Part J6 (Energy monitoring) (seed numbering; NCC 2019 uses Part J8)
+  clause_verified: false
+  systems:
+  - electrical.metering
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  derives:
+    table: energy_monitoring_facilities
+    inputs:
+    - ncc_class
+    - floor_area
+    gives: energy_monitoring_required
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+  requires: Buildings above certain sizes must sub-meter energy consumption by end use (lighting, HVAC,
+    plug loads) so operators can find energy waste.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify energy sub-meters that separately measure end
+      uses such as lighting, air-conditioning, power or other major loads?
+    criteria:
+      true: It specifies sub-meters, a meter schedule or a metering hierarchy that separates energy use
+        by end use, system or tenancy.
+      false: It does not mention sub-metering, or mentions only the utility revenue meter.
+    runs_on:
+    - electrical.metering
+    - mechanical
+  numbers: []
+  related_rules: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)'
+  - seed: non-residential-sustainability-energy-guide.md
+    anchor: '## Metering, controls and operational performance'
+- id: rule.ncc.ev-charging-readiness
+  title: EV charging readiness for car parks
+  instrument: NCC 2022 Volume One
+  clause: Section J renewable energy and EV readiness provisions (seed gives no clause number)
+  clause_verified: false
+  systems:
+  - electrical.ev-charging
+  - electrical.switchboards
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+    - det: car_parking_provided
+      is: true
+  derives:
+    table: ev_charging_readiness
+    inputs:
+    - ncc_class
+    - car_parking_provided
+    gives: ev_readiness_required
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+  requires: Car parking must be provided with electrical capacity and conduit to parking areas to support
+    future EV charging.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify electrical capacity, distribution boards, conduits
+      or cable routes provided for current or future electric vehicle charging in the car park?
+    criteria:
+      true: It specifies EV chargers, EV-ready circuits or distribution boards, spare capacity reserved
+        for EV charging, or conduit or cable routes to parking spaces for EV charging.
+      false: It does not mention EV charging, or only says EV charging may be considered later without
+        any provision.
+    runs_on:
+    - electrical.ev-charging
+    - electrical.switchboards
+  numbers: []
+  related_rules:
+  - rule.ncc.ev-readiness-class-1
+  notes: The NCC guide scopes Section J to Class 3-9; apartments seed says Section J applies to Class
+    2. Class 2 car parks may need adding once verified against NCC 2022.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)'
+  - seed: commercial-construction-guide.md
+    anchor: '## Carpark Design for Commercial Buildings'
+- id: rule.ncc.solar-pv-readiness
+  title: On-site renewable energy (solar PV) readiness
+  instrument: NCC 2022 Volume One
+  clause: Section J renewable energy and EV readiness provisions (seed gives no clause number)
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  - structure
+  - envelope
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: The building must include provisions (conduit and structural capacity) so solar PV can be
+    installed later.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify provisions for future solar PV, such as roof
+      area set aside, conduit from the roof to the switchboard, switchboard space or roof structural capacity
+      for PV?
+    criteria:
+      true: 'It specifies a PV-ready provision: reserved roof area, conduit or cable route for PV, switchboard
+        space for a future inverter, or roof structure designed for a future array.'
+      false: It does not mention future PV provisions, or describes only a PV system installed now.
+    runs_on:
+    - electrical.solar-pv
+    - structure
+    - envelope
+  numbers: []
+  related_rules:
+  - rule.as5033.pv-arrays
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)'
+- id: rule.ncc.ev-readiness-class-1
+  title: EV readiness for new houses with a garage or carport
+  instrument: NCC 2022 Volume Two
+  clause: Section 13 (Energy efficiency — elemental provisions) (seed attribution; unverified)
+  clause_verified: false
+  systems:
+  - electrical.ev-charging
+  - electrical.switchboards
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+    - det: car_parking_provided
+      is: true
+    - det: existing_building
+      is: false
+  requires: A new Class 1 dwelling with a garage or carport must have an appropriately rated circuit and
+    wiring infrastructure for future EV charging.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify an EV charging circuit, spare circuit-breaker
+      position or conduit from the switchboard to the garage or carport?
+    criteria:
+      true: It specifies an EV charger, a dedicated EV circuit, a spare switchboard position for EV charging,
+        or conduit or cable from the switchboard to the garage or carport for EV charging.
+      false: It does not mention EV charging provisions for the dwelling.
+    runs_on:
+    - electrical.ev-charging
+    - electrical.switchboards
+    - electrical.cabling-wiring
+  numbers:
+  - claim: A conduit stub to the garage plus a spare 32 A circuit-breaker position is a low-cost EV provision
+    verified: false
+  related_rules:
+  - rule.ncc.ev-charging-readiness
+  notes: The NCC guide says 'Electric vehicle readiness provisions require new Class 1 dwellings with
+    a garage or carport'; mep-residential calls EV provision a 'growing expectation', not a requirement.
+    Verify whether the NCC 2022 provision is mandatory and in which states it is adopted.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Elemental Provisions Pathway and EV Readiness'
+  - seed: mep-residential.md
+    anchor: '### EV charging provision'
+- id: rule.ncc.whole-of-home-pv-offset
+  title: Whole-of-home energy budget and on-site PV
+  instrument: NCC 2022 Volume Two
+  clause: Part 13.5 (Whole-of-home provisions) (seed numbering; unverified)
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  - hydraulic
+  - electrical.lighting
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - '2'
+  requires: Class 1 dwellings and Class 2 sole-occupancy units must meet a whole-of-home energy budget
+    covering fixed appliances, lighting and on-site renewable generation. PV can offset the budget but
+    cannot take the envelope below 7 stars.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a solar PV system size that is counted in a whole-of-home,
+      NatHERS or BASIX energy assessment?
+    criteria:
+      true: It states a PV capacity (for example in kW) as an input to, or commitment in, a whole-of-home,
+        NatHERS or BASIX energy assessment or certificate.
+      false: It does not link a PV system to an energy assessment, or mentions PV without stating a size.
+    runs_on:
+    - electrical.solar-pv
+  numbers:
+  - claim: NatHERS component cannot be traded below 7 stars
+    verified: false
+  related_rules:
+  - rule.basix.pv-commitment
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Whole-of-Home Energy Budget'
+- id: rule.ncc.accessible-lift-required
+  title: Accessible lift required to serve storeys of an accessible building
+  instrument: NCC 2022 Volume One
+  clause: Part E3.6 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - vertical-transport.passenger-lifts
+  - access-egress
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+    - det: rise_in_storeys
+      gte: 2
+  derives:
+    table: accessible_lift_requirement
+    inputs:
+    - ncc_class
+    - rise_in_storeys
+    - floor_area
+    gives: accessible_lift_required
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+  requires: Buildings required to be accessible with more than one storey must provide at least one accessible
+    lift complying with AS 1735.12 unless an exemption applies.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a lift complying with AS 1735.12, or an accessible
+      lift, is provided?
+    criteria:
+      true: It states that a lift is accessible, complies with AS 1735.12, or is provided for access for
+        people with a disability.
+      false: It does not mention an accessible lift, or mentions lifts without any accessibility statement.
+    runs_on:
+    - vertical-transport
+    - access-egress
+  numbers:
+  - claim: 'Exemption: Class 5-8 buildings not exceeding three storeys with floor area not exceeding 200
+      m2 per storey'
+    verified: false
+  related_rules:
+  - rule.as1735.lift-accessibility
+  notes: Seed wording is 'Class 2-9 buildings with an entrance accessible to the public and more than
+    one storey'; the exemption wording is unverified.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Entrances and Paths of Travel'
+- id: rule.ncc.stretcher-lift
+  title: Stretcher-capable lift car
+  instrument: NCC 2022 Volume One
+  clause: Clause E3.3 (seed numbering; seed contradicts itself on trigger; unverified)
+  clause_verified: false
+  systems:
+  - vertical-transport.passenger-lifts
+  applies_when:
+    all:
+    - system_present: vertical-transport.passenger-lifts
+  requires: Where required, at least one lift must accommodate a stretcher, which needs a car about 2000
+    mm deep.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a lift car is sized to take a stretcher?
+    criteria:
+      true: It states that a lift is stretcher-capable, a stretcher lift, or has a car depth stated as
+        suitable for a stretcher.
+      false: It does not mention stretcher provision in any lift.
+    runs_on:
+    - vertical-transport.passenger-lifts
+  numbers:
+  - claim: Stretcher lift car depth 2000 mm
+    verified: false
+  related_rules:
+  - rule.as1735.lifts-general
+  notes: as-standards-reference says NCC E3.3 requires a stretcher lift for Class 2 and 3 buildings; commercial-construction-guide
+    says stretcher lifts are required where Class 9a uses are present. In NCC 2019 the stretcher facility
+    is E3.2 and E3.3 is the warning against lift use in fire, triggered by effective height (agent recollection,
+    not seed). The verifier should set applies_when from the NCC 2022 text.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+  - seed: commercial-construction-guide.md
+    anchor: '## Vertical Transport — Lifts and Escalators'
+- id: rule.ncc.emergency-lifts
+  title: Emergency (firefighter) lifts
+  instrument: NCC 2022 Volume One
+  clause: Not stated in seed (seed cites AS 1735.1.2; agent recollection NCC 2019 E3.4; unverified)
+  clause_verified: false
+  systems:
+  - vertical-transport.lift-fire-service
+  - electrical.standby-power
+  applies_when:
+    all:
+    - system_present: vertical-transport.passenger-lifts
+  requires: Buildings where the NCC requires it must have at least one emergency (firefighter) lift for
+    fire brigade use, with the lift's controls, power and protection that role needs.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a lift is an emergency lift or firefighter
+      lift?
+    criteria:
+      true: It designates a lift as an emergency lift, firefighter lift or fire service lift for brigade
+        use.
+      false: It does not designate any lift for firefighter use; fire recall of ordinary lifts alone is
+        not enough.
+    runs_on:
+    - vertical-transport
+  numbers: []
+  related_rules:
+  - rule.as1735.lifts-general
+  notes: 'The seeds give no trigger. Agent recollection: NCC 2019 E3.4 requires emergency lifts where
+    effective height exceeds 25 m (and some Class 9a and 9c cases). Verify and add an applies_when on
+    effective_height.'
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Vertical Transport — Lifts and Escalators'
+- id: rule.ncc.hearing-augmentation
+  title: Hearing augmentation where there is an inbuilt amplification system
+  instrument: NCC 2022 Volume One
+  clause: Part D3.7 (seed numbering; NCC 2019); AS 1428.5
+  clause_verified: false
+  systems:
+  - comms-security.audiovisual
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+    - system_present: comms-security.audiovisual
+  requires: Rooms or spaces with an inbuilt amplification system must have a hearing augmentation system
+    complying with AS 1428.5.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a hearing augmentation system (hearing loop,
+      infrared or FM assistive listening)?
+    criteria:
+      true: It specifies a hearing loop, induction loop, infrared or FM assistive listening system, or
+        hearing augmentation for a room.
+      false: It does not mention hearing augmentation or assistive listening.
+    runs_on:
+    - comms-security.audiovisual
+    - access-egress
+  numbers: []
+  related_rules: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Sanitary Facilities, Signage, and Hearing Augmentation'
+- id: rule.as3000.wiring-rules
+  title: Electrical installation to the Wiring Rules
+  instrument: AS/NZS 3000:2018
+  clause: AS/NZS 3000
+  clause_verified: false
+  systems:
+  - electrical
+  requires: Electrical installations from the point of supply to final subcircuits must be designed, constructed
+    and verified to AS/NZS 3000, including protection against electric shock by insulation, earthing and
+    bonding, automatic disconnection and RCD protection.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require the electrical installation or electrical work
+      to comply with AS/NZS 3000 (the Wiring Rules)?
+    criteria:
+      true: It names AS/NZS 3000 or the Wiring Rules as a requirement for the electrical design or installation.
+      false: It does not name AS/NZS 3000 or the Wiring Rules.
+    runs_on:
+    - electrical
+  numbers: []
+  related_rules:
+  - rule.as3017.verification
+  - rule.as3008.cable-selection
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3000 — Wiring Rules'
+  - seed: mep-residential.md
+    anchor: '### Key compliance'
+- id: rule.as3000.rcd-protection
+  title: RCD (safety switch) protection of circuits
+  instrument: AS/NZS 3000:2018
+  clause: Clause 2.6.3.2 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.cabling-wiring
+  - electrical.switchboards
+  requires: 30 mA RCD protection is required on socket-outlet circuits up to 20 A, on all lighting circuits
+    in domestic installations, and on bathroom, laundry, outdoor and swimming pool circuits.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify RCD or safety switch protection for lighting
+      circuits?
+    criteria:
+      true: It states that lighting circuits are protected by RCDs, safety switches or RCBOs, or that
+        all final subcircuits including lighting are RCD protected.
+      false: It does not mention RCD protection of lighting circuits, or mentions RCDs only on power circuits.
+    runs_on:
+    - electrical.cabling-wiring
+    - electrical.switchboards
+  numbers:
+  - claim: RCDs are rated 30 mA
+    verified: false
+  - claim: RCD protection on all socket-outlet circuits up to 20 A
+    verified: false
+  - claim: RCD protection of domestic lighting circuits is new in the 2018 edition
+    verified: false
+  related_rules:
+  - rule.as3000.wiring-rules
+  notes: Evidence targets lighting circuits because that is the 2018 change most often missed. mep-residential
+    says RCDs are required on all final subcircuits in Class 1a and calls them 'Type 2 RCDs'; the standards
+    seed lists specific circuit types. Verify scope and RCD type.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3000 — Wiring Rules'
+  - seed: mep-residential.md
+    anchor: '### Safety switches (RCDs)'
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Services — Hydraulic, Electrical, and Mechanical'
+- id: rule.as3000.maximum-demand
+  title: Maximum demand calculation
+  instrument: AS/NZS 3000:2018
+  clause: Appendix C (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.utility-supply
+  - electrical.switchboards
+  requires: Maximum demand is calculated with diversity and demand factors by load category, and must
+    include every connected load the supply serves (tenant fitout, mechanical plant, lifts, pumps, EV
+    charging, common area services).
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a maximum demand figure for the building's electrical
+      supply?
+    criteria:
+      true: It states a maximum demand value (for example in kVA, kW or amps per phase) for the building,
+        a switchboard or the supply application.
+      false: It does not state a maximum demand value, or only says maximum demand is to be calculated.
+    runs_on:
+    - electrical.utility-supply
+    - electrical.switchboards
+  numbers: []
+  related_rules:
+  - rule.dnsp.connection-application
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3000 — Wiring Rules'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Electrical Services'
+  - seed: electrical-services-guide.md
+    anchor: '### Conditions of consent and design development [design_development]'
+- id: rule.as3000.voltage-drop
+  title: Voltage drop limit
+  instrument: AS/NZS 3000:2018
+  clause: AS/NZS 3000 (voltage drop; seed gives no clause)
+  clause_verified: false
+  systems:
+  - electrical.cabling-wiring
+  requires: Voltage drop from the point of supply to the most remote point must not exceed the stated
+    limit, including during motor starting.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a voltage drop value or a voltage drop limit for
+      submains or circuits?
+    criteria:
+      true: It states a voltage drop percentage or volts, or a voltage drop limit or allocation, for a
+        cable, submain or circuit.
+      false: It does not mention voltage drop.
+    runs_on:
+    - electrical.cabling-wiring
+  numbers:
+  - claim: Total voltage drop not to exceed 5% from point of supply to the most remote point
+    verified: false
+  - claim: Typical allocation 3% submains plus 2% final subcircuit
+    verified: false
+  - claim: A 32 A single-phase circuit on a 50 m run in 4 mm2 cable drops about 17.6 V (7.7% of 230 V)
+    verified: false
+  related_rules:
+  - rule.as3008.cable-selection
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3000 — Wiring Rules'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3008 Series — Electrical Installations — Selection of Cables'
+- id: rule.as3000.switchboard-clearances
+  title: Access clearances around switchboards
+  instrument: AS/NZS 3000:2018
+  clause: Clause 2.3 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.switchboards
+  requires: Switchboards need minimum clearances around them for operation, maintenance, cable entry and
+    escape.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the access clearance or working space in front
+      of or around a switchboard?
+    criteria:
+      true: It states a clearance, working space or egress path dimension for a switchboard or switchroom,
+        or requires AS/NZS 3000 switchboard clearances.
+      false: It does not mention switchboard clearances.
+    runs_on:
+    - electrical.switchboards
+  numbers: []
+  related_rules:
+  - rule.as61439.switchboard-assemblies
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 61439 Series — Low-Voltage Switchgear and Controlgear Assemblies'
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: rule.as3000.wet-area-zones
+  title: Electrical equipment in bathroom zones
+  instrument: AS/NZS 3000:2018
+  clause: Section 6.2 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.cabling-wiring
+  - interiors
+  requires: Electrical equipment in bathroom zones 0 to 2 must have the IP rating required for its zone.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the IP rating of electrical equipment or luminaires
+      located in a bathroom, shower or wet area?
+    criteria:
+      true: It states an IP rating (for example IPX4) for a luminaire, fan, outlet or other electrical
+        equipment in a bathroom, shower or wet area, or refers to AS/NZS 3000 bathroom zones.
+      false: It does not state IP ratings or zones for wet-area electrical equipment.
+    runs_on:
+    - electrical.cabling-wiring
+    - electrical.lighting
+    - interiors
+  numbers:
+  - claim: Minimum IPX4 in Zone 2
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3000 — Wiring Rules'
+- id: rule.as3000.pool-bonding
+  title: Swimming pool and spa equipotential bonding
+  instrument: AS/NZS 3000:2018
+  clause: Section 6.3 (seed numbering); residential seed cites Section 6
+  clause_verified: false
+  systems:
+  - electrical.earthing-lightning
+  requires: Swimming pools and spa pools need equipotential bonding and RCD protection of pool circuits.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify equipotential bonding for a swimming pool or
+      spa?
+    criteria:
+      true: It specifies equipotential bonding of a pool or spa, its reinforcement, fittings or surrounds.
+      false: It does not mention pool or spa bonding.
+    runs_on:
+    - electrical.earthing-lightning
+    - electrical.cabling-wiring
+  numbers: []
+  related_rules:
+  - rule.as3000.rcd-protection
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3000 — Wiring Rules'
+- id: rule.as3008.cable-selection
+  title: Cable selection, derating and fault withstand
+  instrument: AS/NZS 3008.1.1:2017
+  clause: Tables 22 and 25 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.cabling-wiring
+  requires: Cables are sized for current-carrying capacity after derating for installation method, grouping,
+    ambient temperature and thermal insulation, for voltage drop, and for fault-current withstand.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state derating factors or an installation method used
+      to size cables?
+    criteria:
+      true: It states derating for grouping, ambient temperature or thermal insulation, or states the
+        installation method (conduit, tray, in insulation) used for cable sizing.
+      false: It does not mention cable derating or installation method.
+    runs_on:
+    - electrical.cabling-wiring
+  numbers:
+  - claim: Cables in insulation batts may derate by 50% or more
+    verified: false
+  - claim: 2.5 mm2 two-core V-75 copper carries about 26 A clipped, about 23 A in conduit, about 20 A
+      with three circuits grouped, 13 A or less in insulation
+    verified: false
+  - claim: Grouping factors about 0.70 for 3 circuits, 0.57 for 6, 0.45 for 12 or more
+    verified: false
+  - claim: Ambient reference 40 C in air, 25 C in ground
+    verified: false
+  - claim: V-75 PVC rated 75 C, X-90 XLPE 90 C; short-circuit limits 160 C and 250 C
+    verified: false
+  related_rules:
+  - rule.as3000.voltage-drop
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3008 Series — Electrical Installations — Selection of Cables'
+- id: rule.as3017.verification
+  title: Inspection and testing before energisation
+  instrument: AS/NZS 3017:2022
+  clause: Sections 3 to 5 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical
+  requires: Installations are inspected then tested in a mandatory sequence (earth continuity, insulation
+    resistance, polarity, RCD trip time, fault loop impedance). Insulation resistance is tested before
+    energisation; energised tests follow only after it passes.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage report electrical test results or require testing such
+      as insulation resistance, earth continuity, polarity, RCD trip time or fault loop impedance?
+    criteria:
+      true: It reports or requires one or more of these tests on the electrical installation.
+      false: It does not mention electrical inspection or testing.
+    runs_on:
+    - electrical
+  numbers:
+  - claim: Insulation resistance minimum 1 MOhm at 500 V DC
+    verified: false
+  - claim: New cable should typically measure above 100 MOhm (seed also says >10 MOhm is typical)
+    verified: false
+  - claim: 30 mA RCD trips within 300 ms at 30 mA and within 40 ms at 150 mA
+    verified: false
+  - claim: Disconnection 0.4 s for socket-outlet circuits, 5 s for fixed equipment
+    verified: false
+  - claim: Earth continuity typically below 0.5 Ohm for domestic
+    verified: false
+  - claim: Periodic verification typically every 5 years for commercial installations
+    verified: false
+  related_rules:
+  - rule.state.electrical-certificate-of-compliance
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3017 — Electrical Installations — Verification Guidelines'
+- id: rule.as61439.switchboard-assemblies
+  title: Switchboard assemblies design verification
+  instrument: AS/NZS 61439.1:2016, 61439.2:2016, 61439.3:2016
+  clause: Clauses 10.3, 10.9, 10.10, 10.11 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.switchboards
+  requires: Switchboards must be design-verified (test, calculation or design rules) for temperature rise,
+    short-circuit withstand at the actual prospective fault level, IP rating and internal form of separation,
+    with a declaration of conformity.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the form of internal separation (Form 1, 2, 3
+      or 4) for a switchboard?
+    criteria:
+      true: It states a form of separation such as Form 1, Form 2, Form 3b or Form 4b for a switchboard
+        or distribution board.
+      false: It does not state a form of separation.
+    runs_on:
+    - electrical.switchboards
+  numbers:
+  - claim: 'Temperature rise limits above 35 C ambient: 70 K busbars, 25 K accessible terminals, 15 K
+      touchable enclosure surfaces'
+    verified: false
+  - claim: Typical commercial main switchboard Icw 25-50 kA for 1 s
+    verified: false
+  - claim: Indoor boards typically IP31 to IP41; outdoor IP55 to IP66
+    verified: false
+  - claim: Commercial main switchboards typically Form 3b or 4b; sub-boards Form 1 or 2
+    verified: false
+  related_rules:
+  - rule.as3000.switchboard-clearances
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 61439 Series — Low-Voltage Switchgear and Controlgear Assemblies'
+- id: rule.as61439.fault-level-rating
+  title: Switchboard fault rating matches prospective fault level
+  instrument: AS/NZS 61439.1:2016
+  clause: Clause 10.11 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.switchboards
+  - electrical.utility-supply
+  requires: The switchboard's short-circuit withstand rating must be at least the prospective fault current
+    at its point of supply; batteries and inverters added later change protection coordination.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the prospective fault level at a switchboard or
+      the switchboard's short-circuit rating?
+    criteria:
+      true: It states a prospective fault current or fault level (kA) at the supply or switchboard, or
+        a switchboard short-circuit rating such as Icw or Ipk.
+      false: It does not state a fault level or short-circuit rating.
+    runs_on:
+    - electrical.switchboards
+    - electrical.utility-supply
+  numbers: []
+  related_rules:
+  - rule.as61439.switchboard-assemblies
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 61439 Series — Low-Voltage Switchgear and Controlgear Assemblies'
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: rule.as1680.interior-lighting
+  title: Interior lighting illuminance
+  instrument: AS/NZS 1680
+  clause: AS/NZS 1680
+  clause_verified: false
+  systems:
+  - electrical.lighting
+  requires: Lighting must provide the illuminance recommended for each space type.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a design illuminance in lux for a space?
+    criteria:
+      true: It states a lux level for a room, area or task, or requires AS/NZS 1680 illuminance.
+      false: It does not state an illuminance level.
+    runs_on:
+    - electrical.lighting
+  numbers:
+  - claim: 320 lux general office areas
+    verified: false
+  - claim: 160 lux corridors
+    verified: false
+  - claim: 40 lux car parks
+    verified: false
+  related_rules:
+  - rule.ncc.lighting-power-density
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Electrical Services'
+- id: rule.as1768.lightning-protection
+  title: Lightning protection risk assessment and design
+  instrument: AS 1768:2021
+  clause: Sections 3, 6 and 7; Annex C (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.earthing-lightning
+  - structure
+  requires: A lightning risk assessment decides whether protection is needed and at what level. Protection
+    uses air terminations, down conductors and earth terminations, bonding of incoming metallic services
+    at entry, bonding to the electrical earth, and coordinated surge protection.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the outcome of a lightning protection risk assessment
+      or a lightning protection level?
+    criteria:
+      true: It states that a lightning risk assessment was done and its outcome, or names a protection
+        level (I, II, III or IV), or states that lightning protection is or is not required based on AS
+        1768.
+      false: It does not mention a lightning risk assessment or protection level.
+    runs_on:
+    - electrical.earthing-lightning
+  numbers:
+  - claim: Acceptable risk for loss of human life 10^-5 per year
+    verified: false
+  - claim: Flash density from 0.5 (Tasmania) to 12+ (Top End) flashes per km2 per year
+    verified: false
+  - claim: 'Level I: 20 m sphere, 5x5 m mesh, 10 m down conductor spacing, about 99%'
+    verified: false
+  - claim: 'Level II: 30 m sphere, 10x10 m mesh, 15 m spacing, about 97%'
+    verified: false
+  - claim: 'Level III: 45 m sphere, 15x15 m mesh, 20 m spacing, about 91%'
+    verified: false
+  - claim: 'Level IV: 60 m sphere, 20x20 m mesh, 25 m spacing, about 84%'
+    verified: false
+  - claim: Down conductor bend radius minimum 200 mm
+    verified: false
+  - claim: Earth resistance not more than 10 Ohm per down conductor
+    verified: false
+  - claim: Ring earth (Type B) mandatory for Levels I and II
+    verified: false
+  - claim: Type 1 SPD minimum 12.5 kA per mode for Level I
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1768 — Lightning Protection'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Electrical Services'
+- id: rule.as5033.pv-arrays
+  title: PV array installation and DC safety
+  instrument: AS/NZS 5033:2021
+  clause: Sections 3 to 8; Appendix H (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  applies_when:
+    all:
+    - system_present: electrical.solar-pv
+  requires: PV arrays need string voltage checked at the site minimum temperature, rated DC cabling in
+    heavy-duty conduit inside buildings, DC isolators at the inverter and array, frame earthing, firefighter
+    signage and shutdown procedure, and roof structure and waterproofing checked for the array.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify DC isolators for the solar PV system?
+    criteria:
+      true: It specifies DC isolators, DC isolation switches or rapid shutdown devices for a PV array
+        or inverter.
+      false: It does not mention DC isolation for the PV system.
+    runs_on:
+    - electrical.solar-pv
+  numbers:
+  - claim: Maximum system voltage typically 600 V DC residential, 1000 or 1500 V DC commercial
+    verified: false
+  - claim: Voc temperature coefficient typically -0.3% to -0.4% per C
+    verified: false
+  - claim: DC cable minimum 4 mm2 for standard residential arrays
+    verified: false
+  - claim: DC isolator within 3 m of the inverter; array isolator if the array is more than 3 m away
+    verified: false
+  - claim: DC isolators rated for minimum 1000 cycles
+    verified: false
+  - claim: Array frame earth conductor minimum 4 mm2 copper above 120 V DC
+    verified: false
+  - claim: Periodic inspection every 5 years recommended
+    verified: false
+  related_rules:
+  - rule.as4777.inverter-grid-connection
+  - rule.as5033.pv-bushfire
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
+  - seed: residential-construction-guide.md
+    anchor: '## Sustainability and Environmental Considerations'
+- id: rule.as5033.pv-firefighter-safety
+  title: PV signage and shutdown for firefighters
+  instrument: AS/NZS 5033:2021
+  clause: Section 8 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  applies_when:
+    all:
+    - system_present: electrical.solar-pv
+  requires: Signage at the main switchboard and meter panel must show a PV system is present, DC cable
+    routes must carry warning labels, and an emergency shutdown procedure must be provided.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify PV warning signage at the switchboard or meter
+      panel, or labelling of DC cable routes?
+    criteria:
+      true: It specifies signs or labels showing a PV system is present, DC cable warning labels, or a
+        documented PV shutdown procedure for emergency services.
+      false: It does not mention PV signage, DC labelling or shutdown procedure.
+    runs_on:
+    - electrical.solar-pv
+    - electrical.switchboards
+  numbers: []
+  related_rules:
+  - rule.as5033.pv-arrays
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
+- id: rule.as5033.pv-bushfire
+  title: Ember guards on PV arrays in bushfire-prone areas
+  instrument: AS/NZS 5033:2021 with AS 3959
+  clause: Section 4 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  - envelope
+  applies_when:
+    all:
+    - system_present: electrical.solar-pv
+    - det: bal
+      any_of:
+      - BAL-12.5
+      - BAL-19
+      - BAL-29
+      - BAL-40
+      - BAL-FZ
+  requires: Roof-mounted arrays in BAL-rated areas need ember-guard screening at the array edges.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify ember guards or ember screening around a roof-mounted
+      PV array?
+    criteria:
+      true: It specifies ember guards, mesh or screening at the edges of or under a PV array.
+      false: It does not mention ember protection for the PV array.
+    runs_on:
+    - electrical.solar-pv
+    - envelope
+  numbers: []
+  related_rules:
+  - rule.as5033.pv-arrays
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
+- id: rule.as4777.inverter-grid-connection
+  title: Inverter grid connection
+  instrument: AS/NZS 4777.1:2016; AS/NZS 4777.2:2020 (Amdt 1:2024)
+  clause: AS/NZS 4777.1 and 4777.2
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  - electrical.battery-storage
+  - electrical.switchboards
+  applies_when:
+    any:
+    - system_present: electrical.solar-pv
+    - system_present: electrical.battery-storage
+  requires: Grid-connected inverters must be on the approved list and comply with AS/NZS 4777.2 (anti-islanding,
+    ride-through, reactive power, demand response modes, dynamic export), be connected by a dedicated
+    circuit from the main switchboard (not the meter panel) with visible isolation, and use the network
+    operator's protection settings.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that the inverter complies with AS/NZS 4777.2
+      or is on the approved inverter list?
+    criteria:
+      true: It states compliance with AS/NZS 4777 or AS 4777.2, or that the inverter is on the Clean Energy
+        Council approved list.
+      false: It does not state inverter compliance.
+    runs_on:
+    - electrical.solar-pv
+    - electrical.battery-storage
+  numbers:
+  - claim: Voltage ride-through to 180 V minimum for 0.9 s
+    verified: false
+  - claim: Frequency ride-through 47-52 Hz
+    verified: false
+  - claim: Power factor capability 0.80 leading to 0.80 lagging
+    verified: false
+  - claim: Demand response modes DRM 0 to DRM 8
+    verified: false
+  related_rules:
+  - rule.dnsp.embedded-generation-connection
+  - rule.as5033.pv-arrays
+  notes: residential-construction-guide cites 'AS 4777.2'; standards seed uses 'AS/NZS 4777.2:2020'.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters'
+- id: rule.as5139.battery-location
+  title: Battery energy storage location and separation
+  instrument: AS/NZS 5139:2019
+  clause: Section 4 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.battery-storage
+  - access-egress
+  - envelope
+  applies_when:
+    all:
+    - det: bess_energy_capacity
+      gt: 1
+  requires: Lithium-ion batteries must not be in habitable rooms (above a small capacity) or escape routes,
+    must keep separation from openable windows, doors, air intakes and ignition sources, must be ventilated
+    for flammable gas, mounted on a non-combustible surface, and have a smoke alarm in the space.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state where a battery energy storage system will be
+      installed?
+    criteria:
+      true: It names the location of a battery system (for example garage wall, external wall, plant room,
+        battery room, enclosure).
+      false: It does not state a battery location.
+    runs_on:
+    - electrical.battery-storage
+  numbers:
+  - claim: Applies to permanently installed systems above 1 kWh
+    verified: false
+  - claim: Lithium-ion above 2 kWh prohibited in habitable rooms unless specific containment is met
+    verified: false
+  - claim: Minimum 600 mm from openable windows, doors and air intakes
+    verified: false
+  - claim: Minimum 1.0 m from ignition sources (gas meters, hot water systems)
+    verified: false
+  - claim: Lead-acid ventilation typically 1 L/s per cell at maximum charging rate
+    verified: false
+  - claim: Systems above 20 kWh may need fire detection and suppression per fire engineer
+    verified: false
+  - claim: Residential systems typically 5-15 kWh; commercial 30 kWh to multiple MWh
+    verified: false
+  related_rules:
+  - rule.as5139.battery-shutdown-signage
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
+- id: rule.as5139.battery-shutdown-signage
+  title: Battery management, emergency shutdown and signage
+  instrument: AS/NZS 5139:2019
+  clause: Sections 5 and 7 (seed numbering)
+  clause_verified: false
+  systems:
+  - electrical.battery-storage
+  applies_when:
+    all:
+    - det: bess_energy_capacity
+      gt: 1
+  requires: The battery management system must monitor cells and disconnect automatically; warning signs
+    must show chemistry, voltage and shutdown procedure; the emergency shutdown must be accessible without
+    opening the enclosure; the BESS needs a dedicated circuit with overcurrent and RCD protection.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify an emergency shutdown or warning signage for
+      a battery energy storage system?
+    criteria:
+      true: It specifies a battery emergency shutdown device or procedure, or warning signs showing the
+        battery chemistry, voltage or shutdown procedure.
+      false: It does not mention battery shutdown or battery signage.
+    runs_on:
+    - electrical.battery-storage
+  numbers: []
+  related_rules:
+  - rule.as5139.battery-location
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
+- id: rule.as1735.lifts-general
+  title: Lift design and installation
+  instrument: AS 1735.1:2016; AS 1735.2:2016
+  clause: AS 1735.1 and 1735.2 (seed; commercial seed cites 'AS 1735.1.2')
+  clause_verified: false
+  systems:
+  - vertical-transport.passenger-lifts
+  - vertical-transport.goods-lifts
+  - vertical-transport.lift-shafts-pits
+  applies_when:
+    any:
+    - system_present: vertical-transport.passenger-lifts
+    - system_present: vertical-transport.goods-lifts
+  requires: Lifts must comply with AS 1735 for car design, shaft construction, ventilation and drainage,
+    machinery spaces, safety gear and buffers, door interlocks and controls.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state lift shaft dimensions or pit depth?
+    criteria:
+      true: It states a lift shaft width or depth, pit depth, overrun or headroom dimension.
+      false: It does not state lift shaft or pit dimensions.
+    runs_on:
+    - vertical-transport
+  numbers:
+  - claim: '8-person lift: clear car area 1.4 m2 (1100 x 1400 mm), 800 mm entrance, shaft about 1600 x
+      1850 mm'
+    verified: false
+  - claim: '13-person lift: clear car area 2.0 m2 (1100 x 2100 mm), 900 mm entrance'
+    verified: false
+  - claim: MRL lifts common up to about 30 storeys
+    verified: false
+  related_rules:
+  - rule.as1735.lift-accessibility
+  - rule.whs.lift-inspection
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+  - seed: commercial-construction-guide.md
+    anchor: '## Vertical Transport — Lifts and Escalators'
+- id: rule.as1735.lift-accessibility
+  title: Lift facilities for people with disabilities
+  instrument: AS 1735.12:2020
+  clause: AS 1735.12
+  clause_verified: false
+  systems:
+  - vertical-transport.passenger-lifts
+  applies_when:
+    all:
+    - det: accessible_lift_required
+      is: true
+  requires: Accessible lifts need minimum car dimensions, extended door hold times, tactile and Braille
+    controls on a side panel, audible floor and direction announcements, a mirror, luminance contrast
+    and a two-way voice and visual emergency communication accessible from wheelchair height.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify lift door dwell or hold times, or a door re-opening
+      device?
+    criteria:
+      true: It states a door hold, dwell or open time, an extended-time button, or a door re-opening or
+        detection device for a lift.
+      false: It does not mention lift door timing or re-opening devices.
+    runs_on:
+    - vertical-transport.passenger-lifts
+  numbers:
+  - claim: Accessible car minimum 1100 mm clear width by 1400 mm clear depth (2000 mm for stretcher)
+    verified: false
+  - claim: Door hold minimum 3 s, extending to 8 s on detection or extended-time button
+    verified: false
+  - claim: Controls 900-1200 mm above floor on a side panel
+    verified: false
+  related_rules:
+  - rule.ncc.accessible-lift-required
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: rule.as1735.escalators
+  title: Escalators and moving walks
+  instrument: AS 1735 (escalator part; seed cites AS 1735.2)
+  clause: AS 1735.2 (seed numbering; contradicts AS 1735.2 as lifts elsewhere in the same seed)
+  clause_verified: false
+  systems:
+  - vertical-transport.escalators-walks
+  applies_when:
+    all:
+    - system_present: vertical-transport.escalators-walks
+  requires: Escalators and moving walks need compliant step dimensions, speed, comb-step and skirt clearances
+    and emergency stops; where they pass through fire-rated floors they need fire-rated enclosures or
+    shutters.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify how an escalator opening in a floor is fire
+      separated (enclosure, shutter or other protection)?
+    criteria:
+      true: It specifies a fire-rated enclosure, fire shutter, sprinkler curtain or other stated fire
+        protection for an escalator or moving walk opening.
+      false: It does not address fire protection of an escalator opening.
+    runs_on:
+    - vertical-transport.escalators-walks
+    - fire-passive
+  numbers:
+  - claim: Escalator speed limit 0.5 m/s in public buildings
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Vertical Transport — Lifts and Escalators'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: rule.whs.lift-inspection
+  title: Lift registration and periodic inspection
+  instrument: WHS Regulation 2017 (state work health and safety regulations)
+  clause: State WHS regulations (seed gives no clause)
+  clause_verified: false
+  systems:
+  - vertical-transport
+  applies_when:
+    any:
+    - system_present: vertical-transport.passenger-lifts
+    - system_present: vertical-transport.goods-lifts
+    - system_present: vertical-transport.escalators-walks
+  requires: Lifts must be inspected by a registered lift inspector at intervals set by state WHS regulations;
+    operating a lift without current inspection certification is an offence.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a lift registration, lift inspection certificate
+      or periodic lift inspection requirement?
+    criteria:
+      true: It states plant or lift registration, a lift inspection certificate, or periodic inspection
+        of lifts by an inspector.
+      false: It does not mention lift registration or inspection.
+    runs_on:
+    - vertical-transport
+  numbers:
+  - claim: Passenger lifts inspected typically 6-12 monthly; goods lifts 12-monthly
+    verified: false
+  related_rules:
+  - rule.as1735.lifts-general
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: rule.ascas009.customer-cabling
+  title: Customer cabling wiring rules and lead-in
+  instrument: AS/CA S009:2013
+  clause: AS/CA S009
+  clause_verified: false
+  systems:
+  - comms-security.carrier-lead-in
+  - comms-security.structured-cabling
+  - comms-security.ict-rooms-pathways
+  requires: 'Customer cabling from the network boundary to outlets must comply with AS/CA S009: minimum
+    lead-in conduit, a secure ventilated accessible MDF with power and lighting, backbone and horizontal
+    cabling limits.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the size or number of telecommunications lead-in
+      conduits?
+    criteria:
+      true: It states the diameter or number of lead-in conduits or pipes from the boundary or pit to
+        the building for telecommunications.
+      false: It does not state lead-in conduit size or number.
+    runs_on:
+    - comms-security.carrier-lead-in
+  numbers:
+  - claim: Lead-in 1 x 50 mm PVC conduit for a single dwelling
+    verified: false
+  - claim: Lead-in 1 x 100 mm or 2 x 50 mm for multi-dwelling
+    verified: false
+  - claim: Backbone minimum Category 5e
+    verified: false
+  - claim: Horizontal permanent link maximum 90 m
+    verified: false
+  related_rules:
+  - rule.as3080.generic-cabling
+  - rule.telecom.registered-cabler
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
+- id: rule.as3080.generic-cabling
+  title: Generic cabling for commercial premises
+  instrument: AS/NZS 3080:2013
+  clause: AS/NZS 3080
+  clause_verified: false
+  systems:
+  - comms-security.structured-cabling
+  - comms-security.ict-rooms-pathways
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Commercial cabling follows a hierarchical star (campus backbone, building backbone, horizontal)
+    with a stated cable category and telecommunications rooms of adequate size.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the category of horizontal data cabling (for example
+      Cat 6 or Cat 6A)?
+    criteria:
+      true: It states a cable category or class for horizontal or backbone data cabling (Cat 5e, Cat 6,
+        Cat 6A, OM3, OM4, OS2).
+      false: It does not state a cable category.
+    runs_on:
+    - comms-security.structured-cabling
+  numbers:
+  - claim: Cat 5e 100 MHz; Cat 6 250 MHz (10 Gbps to 37 m); Cat 6A 500 MHz (10 Gbps to 100 m)
+    verified: false
+  - claim: Cat 6A recommended minimum for new commercial installations
+    verified: false
+  - claim: Two Cat 6A outlets per work position, one outlet per 10 m2
+    verified: false
+  - claim: Telecommunications room minimum 6 m2 for up to 500 m2 served floor area
+    verified: false
+  related_rules:
+  - rule.ascas009.customer-cabling
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
+- id: rule.ascas009.power-telecom-separation
+  title: Separation of telecommunications and power cabling
+  instrument: AS/CA S009:2013 and AS/NZS 3000:2018
+  clause: AS/CA S009 / AS/NZS 3000 separation provisions (seed gives no clause)
+  clause_verified: false
+  systems:
+  - comms-security.structured-cabling
+  - electrical.cabling-wiring
+  requires: Telecommunications cables must keep minimum separation from power cables in shared pathways
+    and at crossings.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify separation between data or telecommunications
+      cables and power cables?
+    criteria:
+      true: It states a separation distance, a barrier or segregated tray or conduit between telecommunications
+        and power cabling.
+      false: It does not mention separation of data and power cabling.
+    runs_on:
+    - comms-security.structured-cabling
+    - electrical.cabling-wiring
+    - comms-security.ict-rooms-pathways
+  numbers:
+  - claim: 50 mm separation for parallel runs in the same tray with a barrier
+    verified: false
+  - claim: 150 mm for parallel runs without a barrier
+    verified: false
+  - claim: 300 mm from high-voltage or heavy-current cables
+    verified: false
+  - claim: 25 mm minimum at crossings
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
+- id: rule.nbn.new-developments-pit-and-pipe
+  title: NBN-ready pit and pipe in new developments
+  instrument: NBN Co requirements; Telecommunications in New Developments (TIND) policy
+  clause: TIND policy (seed gives no clause)
+  clause_verified: false
+  systems:
+  - comms-security.carrier-lead-in
+  - site
+  applies_when:
+    all:
+    - det: existing_building
+      is: false
+  requires: 'Developers must provide NBN-ready infrastructure: lead-in conduit from the street boundary,
+    pit and pipe, internal pathways to outlets and an accessible location for NBN equipment, in place
+    before slabs are poured and linings close.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify NBN or carrier pit and pipe or lead-in conduit
+      for the development?
+    criteria:
+      true: It specifies NBN pits, pipes, lead-in conduits or a lead-in route for the building or lots.
+      false: It does not mention NBN or carrier lead-in infrastructure.
+    runs_on:
+    - comms-security.carrier-lead-in
+    - site
+  numbers: []
+  related_rules:
+  - rule.ascas009.customer-cabling
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Pit-and-pipe (conduit infrastructure)'
+  - seed: as-standards-reference.md
+    anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Metering and Utility Connections'
+- id: rule.telecom.registered-cabler
+  title: Cabling by registered cablers
+  instrument: Telecommunications Act 1997; Telecommunications Cabling Provider Rules 2014
+  clause: Cabling Provider Rules 2014 (seed gives no clause)
+  clause_verified: false
+  systems:
+  - comms-security.structured-cabling
+  - comms-security.carrier-lead-in
+  requires: Customer cabling must be installed by cablers registered under the ACMA cabling provider rules.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require telecommunications or data cabling to be installed
+      by a registered or licensed cabler?
+    criteria:
+      true: It requires ACMA cabling registration, a registered cabler or a licensed cabling provider
+        for the cabling work.
+      false: It does not mention cabler registration.
+    runs_on:
+    - comms-security.structured-cabling
+  numbers: []
+  related_rules:
+  - rule.ascas009.customer-cabling
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  - seed: as-standards-reference.md
+    anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
+- id: rule.as2201.intruder-alarms
+  title: Intruder alarm systems
+  instrument: AS/NZS 2201.1:2007; 2201.2:2004; 2201.3:2007; 2201.5:2008
+  clause: AS/NZS 2201 series
+  clause_verified: false
+  systems:
+  - comms-security.intruder-alarm
+  applies_when:
+    all:
+    - system_present: comms-security.intruder-alarm
+  requires: Intruder alarms are designed from a security risk assessment to a security grade, with tamper
+    detection, standby batteries, event logs and monitoring by a compliant 24-hour centre.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the security grade of an intruder alarm system?
+    criteria:
+      true: It states an intruder alarm grade or class (for example Grade 2 or Grade 3) or a security
+        level derived from a risk assessment.
+      false: It does not state an intruder alarm grade.
+    runs_on:
+    - comms-security.intruder-alarm
+  numbers:
+  - claim: Standby battery 8 h plus 30 min alarm for Grades 1-2; 60 h plus 30 min for Grades 3-4
+    verified: false
+  - claim: Event log minimum 500 events
+    verified: false
+  - claim: PIR range 12-15 m
+    verified: false
+  - claim: Monitoring centre processes signals within 60 s
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2201 Series and AS 4806 Series — Intruder Alarm and CCTV Systems'
+  - seed: commercial-construction-guide.md
+    anchor: '## Security Systems and Access Control'
+- id: rule.as4806.cctv
+  title: CCTV system performance and retention
+  instrument: AS 4806.1:2006; AS 4806.2:2006
+  clause: AS 4806 series
+  clause_verified: false
+  systems:
+  - comms-security.cctv
+  applies_when:
+    all:
+    - system_present: comms-security.cctv
+  requires: CCTV cameras are selected for their purpose (detection or identification) with adequate resolution,
+    frame rate, scene lighting and environmental rating, and recordings are kept for a stated retention
+    period.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a CCTV recording retention period?
+    criteria:
+      true: It states how long CCTV footage is kept (for example a number of days).
+      false: It does not state a CCTV retention period.
+    runs_on:
+    - comms-security.cctv
+  numbers:
+  - claim: Minimum 1080p (2 MP) general surveillance; 4 MP or higher for identification
+    verified: false
+  - claim: Minimum 12.5 fps general, 25 fps for fast movement
+    verified: false
+  - claim: IP66 minimum outdoors; IK10 for vandal resistance
+    verified: false
+  - claim: Retention typically 30 days commercial, 90 days high security
+    verified: false
+  - claim: 250 pixels per metre for identification
+    verified: false
+  - claim: 50 lux for colour identification; 5 lux for detection with IR
+    verified: false
+  related_rules:
+  - rule.privacy.cctv-surveillance
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2201 Series and AS 4806 Series — Intruder Alarm and CCTV Systems'
+- id: rule.privacy.cctv-surveillance
+  title: Privacy and surveillance obligations for CCTV
+  instrument: Privacy Act 1988 (Cth); state surveillance devices legislation
+  clause: Privacy Act 1988; Surveillance Devices Act (state) (seed gives no clause)
+  clause_verified: false
+  systems:
+  - comms-security.cctv
+  applies_when:
+    all:
+    - system_present: comms-security.cctv
+  requires: CCTV in workplaces and public areas needs privacy signage, controlled access to recordings
+    and a data-retention policy.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify CCTV privacy signage or controls on who can
+      access recorded footage?
+    criteria:
+      true: It specifies signs notifying CCTV surveillance, or restrictions, roles or procedures for access
+        to recorded footage.
+      false: It does not mention CCTV signage or footage access controls.
+    runs_on:
+    - comms-security.cctv
+  numbers: []
+  related_rules:
+  - rule.as4806.cctv
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2201 Series and AS 4806 Series — Intruder Alarm and CCTV Systems'
+  - seed: commercial-construction-guide.md
+    anchor: '## Security Systems and Access Control'
+- id: rule.state.electrical-certificate-of-compliance
+  title: Licensed electrical work and certificate of compliance
+  instrument: State electrical safety legislation (NSW CCEW; VIC Certificate of Electrical Safety)
+  clause: State legislation (seed gives no clause)
+  clause_verified: false
+  systems:
+  - electrical
+  requires: Electrical work must be done by a licensed electrician and covered by a certificate of compliance
+    lodged with the state regulator within the prescribed time; mains connection and metering work needs
+    an authorised service provider.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require or record a certificate of compliance for electrical
+      work (for example a CCEW)?
+    criteria:
+      true: It requires, attaches or refers to a certificate of compliance for electrical work, a CCEW
+        or a certificate of electrical safety.
+      false: It does not mention an electrical certificate of compliance.
+    runs_on:
+    - electrical
+  numbers:
+  - claim: Certificate lodged within 7 business days in NSW
+    verified: false
+  - claim: Certificate lodged within 2 business days in VIC
+    verified: false
+  related_rules:
+  - rule.as3017.verification
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Key compliance'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3017 — Electrical Installations — Verification Guidelines'
+- id: rule.dnsp.connection-application
+  title: Network connection application and contestable works
+  instrument: Network operator connection requirements (Ausgrid, Endeavour Energy, Essential Energy in
+    NSW); NSW Accredited Service Provider scheme
+  clause: Network operator rules (seed gives no clause)
+  clause_verified: false
+  systems:
+  - electrical.utility-supply
+  requires: A connection application must be lodged with the network operator, which decides supply capacity,
+    point of connection and any substation or augmentation; contestable works are designed by an Accredited
+    Service Provider Level 3 designer in NSW.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a connection application has been lodged
+      with, or a connection offer received from, the electricity network operator?
+    criteria:
+      true: It states that a connection application, supply application or design brief request was lodged,
+        or a connection offer, supply advice or design information was received from the network operator.
+      false: It does not mention a network connection application or offer, or says one is still to be
+        made.
+    runs_on:
+    - electrical.utility-supply
+  numbers:
+  - claim: Transformer procurement and installation 16-24 weeks, on the critical path to energise
+    verified: false
+  - claim: Electricity new connection for dwellings 6-16 weeks
+    verified: false
+  related_rules:
+  - rule.as3000.maximum-demand
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '### Conditions of consent and design development [design_development]'
+  - seed: electrical-services-guide.md
+    anchor: '### Inception, site and existing information [inception]'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Metering and Utility Connections'
+  - seed: infrastructure-construction-guide.md
+    anchor: '## Authority interfaces and network operators'
+- id: rule.dnsp.metering-location
+  title: Meters accessible from common areas
+  instrument: Network operator and metering provider requirements
+  clause: Network operator rules (seed gives no clause)
+  clause_verified: false
+  systems:
+  - electrical.metering
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+  requires: Each sole-occupancy unit or tenancy needs its own meter, located in a meter room or panel
+    reachable from common areas without entering any unit.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state where electricity meters for the units, dwellings
+      or tenancies are located?
+    criteria:
+      true: It states a location for the electricity meters, such as a common meter room, a meter panel
+        on each floor or a meter board at the boundary.
+      false: It does not state where electricity meters are located.
+    runs_on:
+    - electrical.metering
+  numbers: []
+  related_rules: []
+  notes: Applies_when uses the classes where per-dwelling or per-tenancy metering arises in the seeds
+    (multi-dwelling, apartments, tenancies).
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Metering and Utility Connections'
+  - seed: multi-dwelling-guide.md
+    anchor: '## Separate metering and services'
+- id: rule.dnsp.embedded-generation-connection
+  title: Network approval for solar and battery export
+  instrument: Network operator connection requirements
+  clause: Network operator rules (seed gives no clause)
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  - electrical.battery-storage
+  applies_when:
+    any:
+    - system_present: electrical.solar-pv
+    - system_present: electrical.battery-storage
+  requires: Inverter systems need network approval; small systems usually qualify for automatic approval,
+    larger ones need a detailed application, export limits, power-quality assessment or protection studies.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an export limit for the solar or battery system?
+    criteria:
+      true: It states an export limit in kW, a zero-export arrangement, or a dynamic export limit for
+        the inverter system.
+      false: It does not state an export limit.
+    runs_on:
+    - electrical.solar-pv
+    - electrical.battery-storage
+  numbers:
+  - claim: Up to 5 kW single-phase or 15 kW three-phase typically qualifies for automatic approval
+    verified: false
+  - claim: Export limiting typically 5 kW per phase
+    verified: false
+  related_rules:
+  - rule.as4777.inverter-grid-connection
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters'
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
+- id: rule.basix.pv-commitment
+  title: BASIX-committed PV installed before occupation
+  instrument: BASIX (EP&A Regulation 2021, NSW)
+  clause: BASIX certificate commitments (seed gives no clause)
+  clause_verified: false
+  systems:
+  - electrical.solar-pv
+  applies_when:
+    all:
+    - det: state
+      eq: NSW
+    - det: ncc_class
+      any_of:
+      - 1a
+      - '2'
+    - system_present: electrical.solar-pv
+  requires: A PV system committed in the BASIX certificate must be installed and connected at the committed
+    size before the occupation certificate.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a PV system size committed in a BASIX certificate?
+    criteria:
+      true: It states a PV capacity (for example in kW) as a BASIX commitment or BASIX certificate requirement.
+      false: It does not link a PV size to BASIX.
+    runs_on:
+    - electrical.solar-pv
+  numbers:
+  - claim: PV commonly 3-6 kW for a new Class 1a depending on the energy score
+    verified: false
+  - claim: Typical residential PV 5-10 kW
+    verified: false
+  related_rules:
+  - rule.ncc.whole-of-home-pv-offset
+  notes: Code compares the committed kW with installed kW from other documents; Jev only finds the stated
+    values.
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '### 4.4 PV system not installed (when committed)'
+  - seed: new-dwelling-guide.md
+    anchor: '### Common BASIX failure modes'

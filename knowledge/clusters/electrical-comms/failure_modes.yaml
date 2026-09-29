@@ -1,0 +1,653 @@
+version: 1
+failure_modes:
+- id: fm.utility-supply-serves-distribution
+  attaches_to:
+    interface: if.utility-supply-serves-distribution
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the design assumes spare supply capacity
+      without verification?
+    criteria:
+      true: It explicitly states the design assumes spare supply capacity without verification.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.utility-supply
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: fm.switchboard-room-access-and-replacement
+  attaches_to:
+    interface: if.switchboard-room-access-and-replacement
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the switchboard lacks a replacement
+      access route?
+    criteria:
+      true: It explicitly states the switchboard lacks a replacement access route.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.switchboards
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: fm.switchrooms-depend-on-ventilation
+  attaches_to:
+    interface: if.switchrooms-depend-on-ventilation
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state switchroom ventilation is omitted?
+    criteria:
+      true: It explicitly states switchroom ventilation is omitted.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.switchboards
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: fm.electrical-room-flood-exposure
+  attaches_to:
+    interface: if.electrical-room-flood-exposure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the switchroom is exposed to flooding
+      without protection?
+    criteria:
+      true: It explicitly states the switchroom is exposed to flooding without protection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.flooding
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: fm.electrical-power-for-fire-systems
+  attaches_to:
+    interface: if.electrical-power-for-fire-systems
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state fire pumps lack the specified power
+      supply?
+    criteria:
+      true: It explicitly states fire pumps lack the specified power supply.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.standby-power
+    - electrical.switchboards
+    - fire-active
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+- id: fm.electrical-power-for-smoke-control
+  attaches_to:
+    interface: if.electrical-power-for-smoke-control
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state smoke-control fans lose their required
+      supply during a fire test?
+    criteria:
+      true: It explicitly states smoke-control fans lose their required supply during a fire test.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.standby-power
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+- id: fm.fire-alarm-controls-security-release
+  attaches_to:
+    interface: if.fire-alarm-releases-security
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state access-controlled doors remain locked
+      during the required fire release?
+    criteria:
+      true: It explicitly states access-controlled doors remain locked during the required fire release.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - fire-active
+    - comms-security.access-control
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## Electronic security'
+- id: fm.security-hardware-allows-egress
+  attaches_to:
+    interface: if.security-hardware-allows-egress
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a security lock prevents emergency
+      egress?
+    criteria:
+      true: It explicitly states a security lock prevents emergency egress.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.access-control
+    - access-egress
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## Electronic security'
+- id: fm.fire-alarm-controls-lift-recall
+  attaches_to:
+    interface: if.fire-alarm-controls-lift
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the lift recall interface failed its
+      functional test?
+    criteria:
+      true: It explicitly states the lift recall interface failed its functional test.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - fire-active
+    - vertical-transport.lift-fire-service
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+- id: fm.emergency-power-supplies-lifts
+  attaches_to:
+    interface: if.emergency-power-supplies-lifts
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the emergency lift lacks its specified
+      standby supply?
+    criteria:
+      true: It explicitly states the emergency lift lacks its specified standby supply.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.standby-power
+    - vertical-transport.lift-fire-service
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+- id: fm.lift-shaft-structural-dimensions
+  attaches_to:
+    interface: if.lift-shaft-structural-dimensions
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the constructed lift shaft is too small
+      for the specified lift?
+    criteria:
+      true: It explicitly states the constructed lift shaft is too small for the specified lift.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - structure
+    - substructure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: fm.lift-shaft-fire-separation
+  attaches_to:
+    interface: if.lift-shaft-fire-separation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state lift shaft fire separation is incomplete?
+    criteria:
+      true: It explicitly states lift shaft fire separation is incomplete.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - fire-passive
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: fm.lift-shaft-ventilation
+  attaches_to:
+    interface: if.lift-shaft-ventilation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state lift shaft ventilation conflicts with
+      the smoke-control strategy?
+    criteria:
+      true: It explicitly states lift shaft ventilation conflicts with the smoke-control strategy.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: fm.accessible-lift-landing-path
+  attaches_to:
+    interface: if.accessible-lift-landing-path
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the lift landing interrupts the accessible
+      route?
+    criteria:
+      true: It explicitly states the lift landing interrupts the accessible route.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - vertical-transport.passenger-lifts
+    - vertical-transport.platform-lifts
+    - access-egress
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: fm.pv-array-loads-roof
+  attaches_to:
+    interface: if.pv-array-loads-roof
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state PV support loads were omitted from
+      the roof design?
+    criteria:
+      true: It explicitly states PV support loads were omitted from the roof design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.solar-pv
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
+- id: fm.pv-supports-penetrate-roof
+  attaches_to:
+    interface: if.pv-supports-penetrate-roof
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state PV fixings have caused roof leakage?
+    criteria:
+      true: It explicitly states PV fixings have caused roof leakage.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.solar-pv
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
+- id: fm.inverters-connect-to-distribution
+  attaches_to:
+    interface: if.inverters-connect-to-distribution
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the inverter protection settings conflict
+      with network requirements?
+    criteria:
+      true: It explicitly states the inverter protection settings conflict with network requirements.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.solar-pv
+    - electrical.battery-storage
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters'
+- id: fm.battery-location-protects-egress
+  attaches_to:
+    interface: if.battery-location-protects-egress
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a battery is installed in an escape
+      route?
+    criteria:
+      true: It explicitly states a battery is installed in an escape route.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.battery-storage
+    - access-egress
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
+- id: fm.battery-ventilation-environment
+  attaches_to:
+    interface: if.battery-ventilation-environment
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state battery ventilation required by the
+      design is omitted?
+    criteria:
+      true: It explicitly states battery ventilation required by the design is omitted.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.battery-storage
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
+- id: fm.ev-charging-demand-management
+  attaches_to:
+    interface: if.ev-charging-demand-management
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state charger nameplate rating is used as
+      proof of supply capacity?
+    criteria:
+      true: It explicitly states charger nameplate rating is used as proof of supply capacity.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.ev-charging
+    - electrical.utility-supply
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
+- id: fm.power-data-cable-segregation
+  attaches_to:
+    interface: if.power-data-cable-segregation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state power and telecommunications segregation
+      is missing?
+    criteria:
+      true: It explicitly states power and telecommunications segregation is missing.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.cabling-wiring
+    - comms-security.structured-cabling
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
+- id: fm.ict-room-power-cooling
+  attaches_to:
+    interface: if.ict-room-power-cooling
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state ICT equipment overheats because room
+      cooling is inadequate?
+    criteria:
+      true: It explicitly states ICT equipment overheats because room cooling is inadequate.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.ict-rooms-pathways
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: fm.ict-equipment-power-resilience
+  attaches_to:
+    interface: if.ict-equipment-power-resilience
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state critical ICT equipment lacks its specified
+      UPS supply?
+    criteria:
+      true: It explicitly states critical ICT equipment lacks its specified UPS supply.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.networks-integration
+    - electrical.standby-power
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: fm.carrier-entry-civil-route
+  attaches_to:
+    interface: if.carrier-entry-civil-route
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the carrier route is blocked or incomplete?
+    criteria:
+      true: It explicitly states the carrier route is blocked or incomplete.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.carrier-lead-in
+    - site.services-connections
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: fm.cctv-lighting-performance
+  attaches_to:
+    interface: if.cctv-lighting-performance
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state CCTV cannot identify the intended subject
+      under night lighting?
+    criteria:
+      true: It explicitly states CCTV cannot identify the intended subject under night lighting.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.cctv
+    - electrical.lighting
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## Electronic security'
+- id: fm.av-room-acoustics-lighting
+  attaches_to:
+    interface: if.av-room-acoustics-lighting
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state room lighting makes the projected image
+      unreadable?
+    criteria:
+      true: It explicitly states room lighting makes the projected image unreadable.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - comms-security.audiovisual
+    - interiors
+    - electrical.lighting
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ict-av-security-guide.md
+    anchor: '## Audiovisual systems'
+- id: fm.intruder-detection-hvac-interference
+  attaches_to:
+    interface: if.intruder-detection-hvac-interference
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state HVAC air currents cause intrusion false
+      alarms?
+    criteria:
+      true: It explicitly states HVAC air currents cause intrusion false alarms.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - mechanical
+    - comms-security.intruder-alarm
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2201 Series and AS 4806 Series — Intruder Alarm and CCTV Systems'
+- id: fm.electrical-rough-in-before-lining
+  attaches_to:
+    interface: if.envelope-rough-in-before-linings
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state wall lining concealed uninspected electrical
+      rough-in?
+    criteria:
+      true: It explicitly states wall lining concealed uninspected electrical rough-in.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.cabling-wiring
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
+- id: fm.downlights-insulation-interface
+  attaches_to:
+    interface: if.envelope-insulation-downlights
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state insulation contacts a luminaire that
+      prohibits insulation contact?
+    criteria:
+      true: It explicitly states insulation contacts a luminaire that prohibits insulation contact.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.lighting
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 7: Roof framing to insulation and ceiling'
+- id: fm.electrical-shutdown-preserves-life-safety
+  attaches_to:
+    interface: if.electrical-shutdown-preserves-life-safety
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a shutdown unexpectedly disabled a
+      life-safety system?
+    criteria:
+      true: It explicitly states a shutdown unexpectedly disabled a life-safety system.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.temporary-power
+    - fire-active
+    - comms-security.access-control
+  flag_when: true
+  status: draft
+  sources:
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: fm.cable-insulation-thermal-derating
+  attaches_to:
+    interface: if.cable-insulation-thermal-derating
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state cable sizing ignores thermal insulation
+      surrounding the cable?
+    criteria:
+      true: It explicitly states cable sizing ignores thermal insulation surrounding the cable.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.cabling-wiring
+    - envelope.thermal-insulation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3008 Series — Electrical Installations — Selection of Cables'
+- id: fm.lightning-electrical-earth-bonding
+  attaches_to:
+    interface: if.lightning-electrical-earth-bonding
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the lightning earth is isolated from
+      the electrical earthing system contrary to the design?
+    criteria:
+      true: It explicitly states the lightning earth is isolated from the electrical earthing system contrary
+        to the design.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.earthing-lightning
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1768 — Lightning Protection'
+- id: fm.metering-data-path-commissioning
+  attaches_to:
+    interface: if.metering-data-path-commissioning
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state installed energy meters have no functioning
+      data pathway?
+    criteria:
+      true: It explicitly states installed energy meters have no functioning data pathway.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.metering
+    - comms-security.networks-integration
+  flag_when: true
+  status: draft
+  sources:
+  - seed: non-residential-sustainability-energy-guide.md
+    anchor: '## Metering, controls and operational performance'
+- id: fm.staged-electrical-energisation
+  attaches_to:
+    interface: if.staged-electrical-energisation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state staged occupation assumes independent
+      energisation although only whole-site energisation is possible?
+    criteria:
+      true: It explicitly states staged occupation assumes independent energisation although only whole-site
+        energisation is possible.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - electrical.switchboards
+    - electrical.metering
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-dwelling-guide.md
+    anchor: '## Separate metering and services'

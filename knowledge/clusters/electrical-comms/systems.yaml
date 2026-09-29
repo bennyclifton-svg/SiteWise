@@ -1,0 +1,457 @@
+# Electrical, communications/security and vertical transport cluster.
+# Children of the lead-owned top-level systems `electrical`, `comms-security`
+# and `vertical-transport`. Siblings are mutually exclusive: `describes` and
+# `excludes` are read by Jev when it picks one child for a passage.
+version: 1
+systems:
+  # ---------------------------------------------------------------- electrical
+  - id: electrical.utility-supply
+    parent: electrical
+    label: Utility supply, substations and consumer mains
+    describes: >-
+      The connection to the electricity network: network operator (DNSP)
+      applications and connection offers, point of connection or attachment,
+      supply voltage (low-voltage or high-voltage), substations, kiosks and
+      padmount transformers, easements for network assets, contestable
+      works by an accredited service provider, and consumer mains from the
+      point of supply to the main switchboard. Includes maximum demand
+      stated as the basis of the supply application.
+    excludes: >-
+      The main switchboard and distribution boards (switchboards), revenue
+      and sub-meters and meter panels (metering), solar export and inverter
+      grid-connection settings (solar-pv), and telecommunications lead-ins
+      (comms-security.carrier-lead-in).
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Supply, demand and resilience"}
+      - {seed: electrical-services-guide.md, anchor: "### Concept and schematic design [concept]"}
+      - {seed: commercial-construction-guide.md, anchor: "## Commercial Electrical Services"}
+
+  - id: electrical.switchboards
+    parent: electrical
+    label: Switchboards, switchrooms and protection
+    describes: >-
+      Main switchboards, distribution boards and sub-boards as assemblies:
+      form of internal separation, fault-level (short-circuit) rating, IP
+      rating, protective devices and their settings, discrimination and
+      arc-energy studies, main switches, labelling, and the switchrooms and
+      board cupboards that house them with their clearances and access.
+    excludes: >-
+      Submains, final subcircuits, cable sizing and containment
+      (cabling-wiring), residual current devices when the passage is about
+      which circuits need them (cabling-wiring), meters and meter panels
+      (metering), substations and transformers (utility-supply), and
+      emergency-lighting central battery boards (fire-active).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 61439 Series — Low-Voltage Switchgear and Controlgear Assemblies"}
+      - {seed: electrical-services-guide.md, anchor: "## Distribution, protection and access"}
+
+  - id: electrical.cabling-wiring
+    parent: electrical
+    label: Submains, final subcircuits and wiring
+    describes: >-
+      Electrical reticulation from the switchboards to the points of use:
+      submains, final subcircuits, circuit allocation, power outlets (GPOs),
+      dedicated appliance circuits, RCD (safety switch) protection of
+      circuits, cable selection and derating, voltage drop, cable
+      containment (trays, conduits, ladders), electrical risers and cable
+      routes, wiring in bathroom zones and near pools, and electrical
+      rough-in.
+    excludes: >-
+      The switchboard assembly itself (switchboards), earthing electrodes,
+      bonding and lightning protection (earthing-lightning), data and
+      telecommunications cabling (comms-security.structured-cabling), and
+      lighting design and luminaires (lighting).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 3000 — Wiring Rules"}
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 3008 Series — Electrical Installations — Selection of Cables"}
+      - {seed: mep-residential.md, anchor: "### Circuit layout for Class 1a"}
+
+  - id: electrical.earthing-lightning
+    parent: electrical
+    label: Earthing, bonding, lightning and surge protection
+    describes: >-
+      The main earthing system and earth electrodes, protective and
+      equipotential bonding (including bonding of incoming metallic
+      services and swimming pools), lightning protection risk assessment,
+      protection level, air terminals, down conductors, earth termination
+      systems, and surge protection devices.
+    excludes: >-
+      Protective devices in switchboards (switchboards), RCDs on circuits
+      (cabling-wiring), and PV array frame earthing when the passage is
+      about the PV installation (solar-pv).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1768 — Lightning Protection"}
+      - {seed: commercial-construction-guide.md, anchor: "## Commercial Electrical Services"}
+
+  - id: electrical.lighting
+    parent: electrical
+    label: General lighting and lighting controls
+    describes: >-
+      Artificial lighting for normal use: illuminance levels by space,
+      luminaires, external, facade, landscape, car-park and security
+      lighting, lighting power density and energy efficiency, and lighting
+      controls (occupancy sensors, daylight dimming, time schedules,
+      switching zones and overrides).
+    excludes: >-
+      Emergency escape lighting and exit signs (fire-active), and the
+      circuits and cables feeding the luminaires (cabling-wiring).
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Lighting and controls"}
+      - {seed: ncc-reference-guide.md, anchor: "### Section J DTS Provisions (J1-J6)"}
+
+  - id: electrical.standby-power
+    parent: electrical
+    label: Standby, essential and critical power
+    describes: >-
+      Alternative supplies that keep loads running when the normal supply
+      fails: standby generators and their changeover, uninterruptible power
+      supplies (UPS), essential and life-safety distribution separated from
+      normal loads, critical-power and redundancy arrangements (for example
+      N+1), autonomy, and generator load testing.
+    excludes: >-
+      Battery energy storage installed with solar or for energy management
+      (battery-storage), emergency-lighting batteries (fire-active), and
+      alarm-panel standby batteries (the system they belong to).
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Supply, demand and resilience"}
+      - {seed: program-scheduling-guide.md, anchor: "## Commissioning and Handover Programming"}
+
+  - id: electrical.solar-pv
+    parent: electrical
+    label: Solar photovoltaic generation
+    describes: >-
+      Solar PV arrays and their mounting, DC string design and cabling, DC
+      isolators, inverters, AC connection to the switchboard, export limits,
+      grid-protection and demand-response settings, PV signage and
+      shutdown for firefighters, PV readiness provisions, and PV capacity
+      committed in energy certificates.
+    excludes: >-
+      Battery storage (battery-storage), solar hot-water collectors
+      (hydraulic), and the utility connection for loads (utility-supply).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays"}
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters"}
+
+  - id: electrical.battery-storage
+    parent: electrical
+    label: Battery energy storage systems
+    describes: >-
+      Permanently installed battery energy storage systems (BESS) of any
+      chemistry: battery location and separation distances, battery rooms
+      and enclosures, ventilation for flammable gas, battery management
+      system, emergency shutdown, signage, and fire detection or suppression
+      provided because of the battery.
+    excludes: >-
+      Generators and UPS for standby supply (standby-power), emergency
+      lighting batteries (fire-active), and EV batteries on charge
+      (ev-charging).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems"}
+
+  - id: electrical.ev-charging
+    parent: electrical
+    label: Electric vehicle charging
+    describes: >-
+      Electric vehicle chargers and EV-ready provisions: dedicated EV
+      circuits or distribution boards, conduit and cable routes to parking
+      spaces, spare switchboard capacity for future chargers, charging
+      demand and load management, and allocation of chargers to users.
+    excludes: >-
+      Car-park ventilation (mechanical), car-park sprinklers (fire-active),
+      and parking layout (site or access-egress).
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Generation, storage and EV infrastructure"}
+      - {seed: mep-residential.md, anchor: "### EV charging provision"}
+      - {seed: ncc-reference-guide.md, anchor: "### NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)"}
+
+  - id: electrical.metering
+    parent: electrical
+    label: Metering and energy monitoring
+    describes: >-
+      Utility revenue meters, meter rooms and meter panels, per-dwelling and
+      per-tenancy metering, embedded networks, sub-metering of end uses for
+      energy monitoring, meter hierarchy, power monitoring, and the meter
+      data pathway to a building management or monitoring system.
+    excludes: >-
+      Water and gas meters (hydraulic), and the supply application itself
+      (utility-supply).
+    status: draft
+    sources:
+      - {seed: non-residential-sustainability-energy-guide.md, anchor: "## Metering, controls and operational performance"}
+      - {seed: multi-residential-apartments-guide.md, anchor: "### Metering and Utility Connections"}
+
+  - id: electrical.process-hazardous
+    parent: electrical
+    label: Process power, hazardous areas and power quality
+    describes: >-
+      Specialist electrical systems for industrial and mission-critical
+      facilities: process and production-equipment power, electrical
+      equipment in classified hazardous areas, high-voltage customer
+      systems, power quality and harmonics, static control, special
+      earthing, and process shutdown interfaces.
+    excludes: >-
+      Standby generators and UPS (standby-power), and general building
+      distribution (switchboards, cabling-wiring).
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Life-safety and specialist interfaces"}
+      - {seed: industrial-construction-guide.md, anchor: "## Building, process and services coordination"}
+
+  - id: electrical.temporary-power
+    parent: electrical
+    label: Temporary power and shutdowns
+    describes: >-
+      Temporary electrical supplies during construction or alteration:
+      builders' temporary supply and construction-site switchboards,
+      temporary supplies that keep occupied areas, alarms and life-safety
+      systems running during shutdowns, and isolation, shutdown and
+      restoration arrangements for live electrical work.
+    excludes: >-
+      Permanent standby generators and UPS (standby-power).
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Refurbishment and live work"}
+      - {seed: industrial-construction-guide.md, anchor: "## Construction in operational environments"}
+
+  # ------------------------------------------------------------ comms-security
+  - id: comms-security.carrier-lead-in
+    parent: comms-security
+    label: Carrier lead-in and NBN pit and pipe
+    describes: >-
+      The telecommunications connection to the carrier network: NBN or
+      carrier lead-in conduit, pit and pipe from the property boundary,
+      carrier entry and demarcation (network boundary), main distribution
+      frame, premises connection devices and network termination devices,
+      and the access technology (FTTP, FTTN, HFC).
+    excludes: >-
+      Cabling inside the building beyond the network boundary
+      (structured-cabling), and the rooms that house carrier equipment
+      (ict-rooms-pathways).
+    status: draft
+    sources:
+      - {seed: mep-residential.md, anchor: "### Pit-and-pipe (conduit infrastructure)"}
+      - {seed: as-standards-reference.md, anchor: "## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling"}
+
+  - id: comms-security.ict-rooms-pathways
+    parent: comms-security
+    label: ICT rooms, racks and pathways
+    describes: >-
+      Communications rooms, equipment rooms, floor distributor rooms, comms
+      cupboards and racks, and the backbone and horizontal pathways for
+      communications cabling (communications risers, cable trays and
+      conduits reserved for data), with their size, access, environment,
+      power and spare capacity.
+    excludes: >-
+      The cables themselves and their testing (structured-cabling), active
+      network equipment (networks-integration), and electrical risers and
+      cable trays for power (electrical.cabling-wiring).
+    status: draft
+    sources:
+      - {seed: ict-av-security-guide.md, anchor: "## ICT rooms, pathways and cabling"}
+
+  - id: comms-security.structured-cabling
+    parent: comms-security
+    label: Structured cabling
+    describes: >-
+      Customer telecommunications cabling inside the building: backbone and
+      horizontal copper and fibre cabling, cable category (Cat 5e, 6, 6A,
+      OM3/OM4, OS2), telecommunications outlets and consolidation points,
+      coaxial TV and antenna distribution, labelling, cabling test results,
+      and separation from power cabling.
+    excludes: >-
+      The carrier lead-in outside the network boundary (carrier-lead-in),
+      rooms and pathways (ict-rooms-pathways), and power cables
+      (electrical.cabling-wiring).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling"}
+      - {seed: mep-residential.md, anchor: "### Internal cabling"}
+
+  - id: comms-security.networks-integration
+    parent: comms-security
+    label: Active networks, integration and cybersecurity
+    describes: >-
+      Active network equipment and the networks that building systems run
+      over: switches, routers, wireless access points and coverage, IP and
+      operational-technology networks for BMS, lifts, security and energy
+      systems, integration protocols (BACnet, Modbus), the interface
+      register, network segregation, remote access, credentials and other
+      cybersecurity controls.
+    excludes: >-
+      Passive cabling (structured-cabling), HVAC control sequences and BMS
+      points (mechanical), and security devices themselves (access-control,
+      cctv, intruder-alarm).
+    status: draft
+    sources:
+      - {seed: ict-av-security-guide.md, anchor: "## Networks, integration and cybersecurity"}
+      - {seed: commercial-construction-guide.md, anchor: "## Building Management Systems (BMS)"}
+
+  - id: comms-security.audiovisual
+    parent: comms-security
+    label: Audiovisual systems
+    describes: >-
+      Presentation, conferencing, collaboration, teaching, sound
+      reinforcement, public information and background audio systems, and
+      hearing augmentation (hearing loops, assistive listening) in rooms
+      with amplification: displays, speakers, microphones, cameras, control
+      systems and signal flow.
+    excludes: >-
+      Emergency warning and intercom systems (fire-active), and security
+      intercoms (access-control).
+    status: draft
+    sources:
+      - {seed: ict-av-security-guide.md, anchor: "## Audiovisual systems"}
+      - {seed: ncc-reference-guide.md, anchor: "### Accessible Sanitary Facilities, Signage, and Hearing Augmentation"}
+
+  - id: comms-security.access-control
+    parent: comms-security
+    label: Access control and intercoms
+    describes: >-
+      Electronic access control and entry systems: card or credential
+      readers, electrified locks and door hardware controlled by the
+      security system, fail-safe or fail-secure behaviour, turnstiles, car
+      park barriers, lift access control, security zones and permissions,
+      and visitor and apartment intercoms.
+    excludes: >-
+      Warden intercoms and emergency warning (fire-active), fire-door
+      closers and hold-open devices (fire-passive), and CCTV (cctv).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Security Systems and Access Control"}
+      - {seed: ict-av-security-guide.md, anchor: "## Electronic security"}
+
+  - id: comms-security.cctv
+    parent: comms-security
+    label: CCTV and video surveillance
+    describes: >-
+      Closed-circuit television and video surveillance: camera purpose,
+      locations, fields of view, resolution, lighting needed for cameras,
+      recording, storage and retention, video management, access to
+      footage, and privacy signage.
+    excludes: >-
+      Intruder detection (intruder-alarm) and access control
+      (access-control).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 2201 Series and AS 4806 Series — Intruder Alarm and CCTV Systems"}
+
+  - id: comms-security.intruder-alarm
+    parent: comms-security
+    label: Intruder and duress alarms
+    describes: >-
+      Intruder alarm systems: security grade, detectors (PIR,
+      dual-technology, reed switches, vibration), control panels, tamper
+      protection, standby batteries, duress alarms, alarm transmission and
+      monitoring-centre response.
+    excludes: >-
+      Fire alarm monitoring (fire-active) and CCTV (cctv).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 2201 Series and AS 4806 Series — Intruder Alarm and CCTV Systems"}
+
+  # -------------------------------------------------------- vertical-transport
+  - id: vertical-transport.passenger-lifts
+    parent: vertical-transport
+    label: Passenger lifts
+    describes: >-
+      Passenger and goods-passenger lifts (electric traction,
+      machine-room-less or hydraulic) as equipment: number, size, capacity
+      and speed, lift traffic analysis, car dimensions, doors and door
+      timing, control systems (collective or destination control),
+      accessible lift features, stretcher-capable cars, and car emergency
+      communication.
+    excludes: >-
+      Goods-only, service and car lifts (goods-lifts), the shaft, pit and
+      machine room as spaces (lift-shafts-pits), fire recall and firefighter
+      operation (lift-fire-service), and platform lifts (platform-lifts).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"}
+      - {seed: commercial-construction-guide.md, anchor: "## Vertical Transport — Lifts and Escalators"}
+
+  - id: vertical-transport.goods-lifts
+    parent: vertical-transport
+    label: Goods, service and car lifts
+    describes: >-
+      Lifts that carry goods or vehicles rather than passengers: goods
+      lifts, service lifts, dumbwaiters and car lifts or car stackers
+      serving basement car parks, sized for the intended loads or vehicles.
+    excludes: >-
+      Passenger and goods-passenger lifts (passenger-lifts).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Vertical Transport — Lifts and Escalators"}
+
+  - id: vertical-transport.lift-shafts-pits
+    parent: vertical-transport
+    label: Lift shafts, pits and machine rooms
+    describes: >-
+      The spaces lifts run in: lift shaft (well) dimensions and plumb,
+      pit depth, headroom and overrun, machine rooms or machine-room-less
+      drive space, shaft ventilation, pit drainage and waterproofing, and
+      supplier dimensional requirements for the shaft.
+    excludes: >-
+      The fire resistance level of shaft walls when that is the topic
+      (fire-passive), and the lift car and its equipment (passenger-lifts,
+      goods-lifts).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"}
+
+  - id: vertical-transport.lift-fire-service
+    parent: vertical-transport
+    label: Lift fire-service operation and emergency lifts
+    describes: >-
+      How lifts behave in a fire: automatic fire recall of lifts on alarm,
+      firefighter control switches, emergency (firefighter) lifts, lifts
+      used for evacuation of people with disability, and the protected
+      power supply and signage that emergency lifts need.
+    excludes: >-
+      Normal lift traffic and controls (passenger-lifts), and fire
+      detection devices themselves (fire-active).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Vertical Transport — Lifts and Escalators"}
+      - {seed: ncc-reference-guide.md, anchor: "### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress"}
+
+  - id: vertical-transport.escalators-walks
+    parent: vertical-transport
+    label: Escalators and moving walks
+    describes: >-
+      Escalators and moving walks: step dimensions, speed, comb and skirt
+      clearances, emergency stop buttons, and the fire-rated enclosures or
+      shutters needed where they pass through fire-rated floors.
+    excludes: >-
+      Lifts of any kind (passenger-lifts, goods-lifts, platform-lifts) and
+      stairs (access-egress).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Vertical Transport — Lifts and Escalators"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"}
+
+  - id: vertical-transport.platform-lifts
+    parent: vertical-transport
+    label: Platform, stairway and home lifts
+    describes: >-
+      Low-rise platform lifts, stairway platform lifts, inclined lifts and
+      private residence (home) lifts, typically serving a few levels or
+      providing accessible access over a change in level.
+    excludes: >-
+      Passenger lifts in shafts (passenger-lifts) and ramps
+      (access-egress).
+    status: draft
+    notes: >-
+      The seeds do not describe platform lifts in detail; this child exists
+      because the top-level system names them. Sources are the general
+      AS 1735 section only.
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"}
