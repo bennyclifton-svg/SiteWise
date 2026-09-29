@@ -1,0 +1,3 @@
+module sitewise
+
+go 1.27.1
