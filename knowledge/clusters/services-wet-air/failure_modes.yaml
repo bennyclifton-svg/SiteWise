@@ -1,0 +1,474 @@
+version: 1
+failure_modes:
+- id: fm.condensate-to-hydraulic-drainage
+  attaches_to:
+    interface: if.condensate-to-hydraulic-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state condensate discharged into a ceiling
+      cavity?
+    criteria:
+      true: It explicitly states condensate discharged into a ceiling cavity.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Refrigerant, condensate and water interfaces'
+- id: fm.exhaust-intake-separation
+  attaches_to:
+    interface: if.exhaust-intake-separation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state exhaust air drawn into the outdoor-air
+      intake?
+    criteria:
+      true: It explicitly states exhaust air drawn into the outdoor-air intake.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - mechanical.cooling-towers
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Outdoor air and indoor air quality'
+- id: fm.exhaust-penetrates-envelope
+  attaches_to:
+    interface: if.exhaust-penetrates-envelope
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state bathroom exhaust discharged into the
+      roof space?
+    criteria:
+      true: It explicitly states bathroom exhaust discharged into the roof space.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Wet area exhaust'
+- id: fm.plant-loads-structure
+  attaches_to:
+    interface: if.plant-loads-structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state plant installed on an unverified support?
+    criteria:
+      true: It explicitly states plant installed on an unverified support.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.central-plant
+    - mechanical.air-conditioning
+    - hydraulic.hot-water
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Mechanical evidence sweep'
+- id: fm.mechanical-power-supply
+  attaches_to:
+    interface: if.mechanical-power-supply
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the electrical supply capacity unresolved
+      for selected plant?
+    criteria:
+      true: It explicitly states the electrical supply capacity unresolved for selected plant.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - electrical
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - mechanical.controls-bms
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Heating and cooling'
+- id: fm.plant-noise-vibration
+  attaches_to:
+    interface: if.plant-noise-vibration
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state plant vibration transmitted into occupied
+      rooms?
+    criteria:
+      true: It explicitly states plant vibration transmitted into occupied rooms.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - interiors
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Mechanical evidence sweep'
+- id: fm.roof-drainage-waterproofing
+  attaches_to:
+    interface: if.roof-drainage-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an overflow path discharging into the
+      building?
+    criteria:
+      true: It explicitly states an overflow path discharging into the building.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Stormwater and roof drainage'
+- id: fm.building-drainage-to-site
+  attaches_to:
+    interface: if.building-drainage-to-site
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a roof drainage outlet without a resolved
+      downstream connection?
+    criteria:
+      true: It explicitly states a roof drainage outlet without a resolved downstream connection.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - site
+  flag_when: true
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Stormwater and roof drainage'
+- id: fm.hydraulic-rough-in-before-linings
+  attaches_to:
+    interface: if.envelope-rough-in-before-linings
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state plumbing concealed before testing?
+    criteria:
+      true: It explicitly states plumbing concealed before testing.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+    - hydraulic.gas
+    - hydraulic.sanitary
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
+- id: fm.waste-setout-before-membrane
+  attaches_to:
+    interface: if.envelope-wet-waste-before-membrane
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a pipe cut through a completed membrane
+      without resealing?
+    criteria:
+      true: It explicitly states a pipe cut through a completed membrane without resealing.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 5: Wet area floor waste and tile falls'
+- id: fm.hot-water-energy-source
+  attaches_to:
+    interface: if.hot-water-energy-source
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a substituted hot-water system inconsistent
+      with the approved energy commitment?
+    criteria:
+      true: It explicitly states a substituted hot-water system inconsistent with the approved energy
+        commitment.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - electrical
+    - hydraulic.gas
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### System types'
+- id: fm.potable-nonpotable-separation
+  attaches_to:
+    interface: if.potable-nonpotable-separation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a direct unprotected connection between
+      potable and non-potable systems?
+    criteria:
+      true: It explicitly states a direct unprotected connection between potable and non-potable systems.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.non-potable-water
+    - hydraulic.cold-water
+    - hydraulic.backflow-prevention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+- id: fm.kitchen-exhaust-makeup-air
+  attaches_to:
+    interface: if.kitchen-exhaust-makeup-air
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state kitchen exhaust causing doors to resist
+      opening?
+    criteria:
+      true: It explicitly states kitchen exhaust causing doors to resist opening.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+- id: fm.bms-fire-mode-priority
+  attaches_to:
+    interface: if.bms-fire-mode-priority
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an energy-saving control overriding
+      fire mode?
+    criteria:
+      true: It explicitly states an energy-saving control overriding fire mode.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - mechanical.controls-bms
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+- id: fm.services-share-ceiling-space
+  attaches_to:
+    interface: if.envelope-services-ceiling-space
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state ductwork reducing the documented room
+      clear height?
+    criteria:
+      true: It explicitly states ductwork reducing the documented room clear height.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - hydraulic.sanitary
+    - interiors
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Ventilation Requirements and Ceiling Heights'
+- id: fm.services-plant-maintenance-access
+  attaches_to:
+    interface: if.services-plant-maintenance-access
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state equipment inaccessible for routine
+      maintenance?
+    criteria:
+      true: It explicitly states equipment inaccessible for routine maintenance.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.central-plant
+    - mechanical.cooling-towers
+    - hydraulic.trade-waste
+    - access-egress.maintenance-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Heating and cooling'
+- id: fm.cooling-tower-stagnant-dead-leg
+  attaches_to:
+    interface: if.cooling-tower-water-treatment-drainage
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a stagnant dead leg remaining in an
+      operating cooling-tower circuit?
+    criteria:
+      true: It explicitly reports a stagnant dead leg remaining in an operating cooling-tower circuit.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - mechanical.cooling-towers
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3666 Series — Air-Handling and Water Systems — Microbial Control'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Potable and non-potable water'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Trade waste'
+- id: fm.process-vendor-utility-mismatch
+  attaches_to:
+    interface: if.process-equipment-services-demarcation
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a mismatch between process equipment
+      utility requirements and the installed building service connection?
+    criteria:
+      true: It explicitly reports a mismatch between process equipment utility requirements and the installed
+        building service connection.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - mechanical.process-specialist
+    - hydraulic.specialist-process
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Building, process and services coordination'
+- id: fm.medical-gas-used-before-verification
+  attaches_to:
+    rule: rule.project.specialist-services-acceptance
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report medical gas put into clinical use
+      before its required verification?
+    criteria:
+      true: It explicitly reports medical gas put into clinical use before its required verification.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - hydraulic.specialist-process
+  flag_when: true
+  status: draft
+  sources:
+  - seed: institution-construction-guide.md
+    anchor: '## Construction, commissioning and handover'
+- id: fm.sewage-pump-failure-alarm-inoperative
+  attaches_to:
+    interface: if.sewage-pump-power-and-alarm
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an inoperative sewage pump failure
+      alarm?
+    criteria:
+      true: It explicitly reports an inoperative sewage pump failure alarm.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Pump-out systems'
+- id: fm.occupied-stage-services-isolated
+  attaches_to:
+    rule: rule.project.occupied-services-cutover
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report work in a later stage isolating a
+      service still required by an occupied stage?
+    criteria:
+      true: It explicitly reports work in a later stage isolating a service still required by an occupied
+        stage.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.sanitary
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-dwelling-guide.md
+    anchor: '## Separate metering and services'
+  - seed: mixed-use-construction-guide.md
+    anchor: '## Stratification, cores and separate services'
+  - seed: mixed-use-construction-guide.md
+    anchor: '## Staged handover by use'
+- id: fm.services-startup-substitutes-functional-test
+  attaches_to:
+    rule: rule.project.services-functional-commissioning
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report equipment start-up accepted in place
+      of a required system functional test?
+    criteria:
+      true: It explicitly reports equipment start-up accepted in place of a required system functional
+        test.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - mechanical.controls-bms
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.air-conditioning-assumed-outdoor-air
+  attaches_to:
+    system: mechanical.ventilation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a recirculating air-conditioning system
+      being relied on as the required outdoor-air supply without an outdoor-air path?
+    criteria:
+      true: It explicitly reports a recirculating air-conditioning system being relied on as the required
+        outdoor-air supply without an outdoor-air path.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - mechanical.ventilation
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Common failure modes'

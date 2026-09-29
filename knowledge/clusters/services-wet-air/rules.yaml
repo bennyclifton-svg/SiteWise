@@ -1,0 +1,2125 @@
+version: 1
+rules:
+- id: rule.ncc.habitable-room-ventilation
+  title: Ventilation of habitable rooms
+  instrument: NCC 2022 Volume One and Volume Two
+  clause: Vol 1 Part F4.5; Vol 2 Part 3.8.5 (seed numbering; NCC 2019). residential-construction-guide
+    gives Vol 2 Part 13.5 (conflict)
+  clause_verified: false
+  systems:
+  - mechanical.ventilation
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - 1b
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Every habitable room is ventilated either naturally, by openable windows or doors opening
+    directly to outside air, or mechanically in accordance with AS 1668.2 (or AS 1668.4 for natural ventilation
+    design).
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state how habitable rooms are ventilated, either by
+      openable windows or doors or by a mechanical ventilation system?
+    criteria:
+      true: It states the ventilation method for habitable rooms, such as openable window area, natural
+        cross-ventilation, or mechanical outdoor-air supply to AS 1668.2.
+      false: It does not state how habitable rooms are ventilated, or it only describes air-conditioning
+        without saying how outdoor air is provided.
+    runs_on:
+    - mechanical.ventilation
+  numbers:
+  - claim: Natural ventilation needs openable area of not less than 5% of the room floor area
+    verified: false
+  related_rules:
+  - rule.as1668-2.outdoor-air-rates
+  - rule.basix.ventilation-commitment
+  notes: A recirculating split system is not ventilation (mechanical-services-guide). NCC 2022 renumbered
+    light and ventilation to Part F6 (Vol 1).
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Ventilation Requirements and Ceiling Heights'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Mechanical Ventilation in Apartments'
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Services — Hydraulic, Electrical, and Mechanical'
+  - seed: mechanical-services-guide.md
+    anchor: '### Outdoor air and indoor air quality'
+- id: rule.ncc.sanitary-laundry-exhaust
+  title: Exhaust ventilation of bathrooms, sanitary compartments and laundries
+  instrument: NCC 2022 Volume One and Volume Two
+  clause: Vol 1 Part F4.5 and Vol 2 Part 3.8.5 (ncc-reference-guide); Vol 2 H6.3 (mep-residential) (seed
+    numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - mechanical.local-exhaust
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - 1b
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Bathrooms, ensuites, sanitary compartments and laundries that are not naturally ventilated
+    by an openable window have mechanical exhaust at the minimum extract rate.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify mechanical exhaust for a bathroom, ensuite,
+      toilet, sanitary compartment or laundry?
+    criteria:
+      true: It specifies an exhaust fan or exhaust system for at least one bathroom, ensuite, toilet,
+        sanitary compartment or laundry, with or without a stated airflow rate.
+      false: It does not specify exhaust for any of these rooms, or it only mentions kitchen rangehoods
+        or general ventilation.
+    runs_on:
+    - mechanical.local-exhaust
+  numbers:
+  - claim: Bathroom exhaust minimum 25 L/s (mep-residential, NCC Vol 2 H6.3)
+    verified: false
+  - claim: 'Bathrooms: openable window of at least 5% of floor area or mechanical exhaust of 25 L/s per
+      fixture (ncc-reference-guide)'
+    verified: false
+  - claim: Sanitary compartments ventilated at 25 L/s per compartment (ncc-reference-guide)
+    verified: false
+  - claim: AS 1668.2 typical extract 25 L/s for a bathroom and 20 L/s for a toilet (multi-residential-apartments-guide)
+    verified: false
+  related_rules:
+  - rule.ncc.exhaust-discharge-to-outside
+  notes: Seeds disagree on the toilet rate (25 L/s vs 20 L/s) and on per-fixture vs per-compartment wording.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Ventilation Requirements and Ceiling Heights'
+  - seed: mep-residential.md
+    anchor: '### Wet area exhaust'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Mechanical Ventilation in Apartments'
+- id: rule.ncc.exhaust-discharge-to-outside
+  title: Exhaust discharges to outside air, not into concealed spaces
+  instrument: NCC 2022 Volume Two
+  clause: Vol 2 H6.3 (mep-residential; seed numbering)
+  clause_verified: false
+  systems:
+  - mechanical.local-exhaust
+  requires: Exhaust from bathrooms, toilets, laundries and ducted rangehoods is discharged to outside
+    air, not into the roof space, ceiling void or other concealed building space.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state where an exhaust fan or rangehood discharges?
+    criteria:
+      true: It states the discharge point of an exhaust fan or rangehood, for example ducted to outside
+        through the roof or wall, or into the roof space.
+      false: It does not state where any exhaust discharges.
+    runs_on:
+    - mechanical.local-exhaust
+  numbers: []
+  related_rules:
+  - rule.ncc.sanitary-laundry-exhaust
+  notes: The seed condensation-management section covers envelope vapour control only; NCC 2022 condensation
+    exhaust clauses (Vol 1 F8, Vol 2 Part 10.8) are for the verifier to confirm.
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Wet area exhaust'
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Services — Hydraulic, Electrical, and Mechanical'
+  - seed: mechanical-services-guide.md
+    anchor: '### Local exhaust'
+- id: rule.as1668-2.outdoor-air-rates
+  title: Minimum outdoor air rates and filtration for mechanical ventilation
+  instrument: AS 1668.2:2012
+  clause: AS 1668.2
+  clause_verified: false
+  systems:
+  - mechanical.ventilation
+  - mechanical.air-conditioning
+  applies_when:
+    all:
+    - system_present: mechanical.ventilation
+  requires: Mechanically ventilated spaces receive at least the AS 1668.2 minimum outdoor air rate for
+    their use, combining a per-person and a per-area component, with filtration to the stated minimum.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an outdoor air rate or the outdoor air design
+      basis for a space or system?
+    criteria:
+      true: It states an outdoor air quantity (for example L/s per person or L/s per m2) or states that
+        outdoor air is designed to AS 1668.2 for named spaces.
+      false: It does not state an outdoor air rate or design basis; supply airflow for cooling alone does
+        not count.
+    runs_on:
+    - mechanical.ventilation
+    - mechanical.air-conditioning
+  numbers:
+  - claim: Offices 10 L/s per person plus 1.0 L/s per m2
+    verified: false
+  - claim: Classrooms 10 L/s per person plus 0.5 L/s per m2
+    verified: false
+  - claim: Retail 10 L/s per person plus 0.5 L/s per m2
+    verified: false
+  - claim: Restaurants 10 L/s per person plus 1.0 L/s per m2
+    verified: false
+  - claim: Hospital wards 10 L/s per person plus 2.0 L/s per m2
+    verified: false
+  - claim: Minimum filtration MERV 8 for most commercial applications; MERV 13 or higher for hospitals
+      and laboratories
+    verified: false
+  related_rules:
+  - rule.ncc.habitable-room-ventilation
+  - rule.ncc.hvac-energy-efficiency
+  notes: The seed per-person plus per-area format should be checked against AS 1668.2 itself.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial HVAC and Mechanical Services'
+- id: rule.as1668-2.intake-separation
+  title: Outdoor-air intakes separated from exhausts and contaminant sources
+  instrument: AS 1668.2:2012
+  clause: AS 1668.2 (seed cites the standard, no clause)
+  clause_verified: false
+  systems:
+  - mechanical.ventilation
+  - mechanical.local-exhaust
+  - mechanical.cooling-towers
+  applies_when:
+    all:
+    - system_present: mechanical.ventilation
+  requires: Outdoor-air intakes are located and separated from exhaust discharges, cooling towers, vehicle
+    traffic and other contaminant sources so that contaminated air is not drawn back into the building.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the location of an outdoor-air intake relative
+      to an exhaust discharge, cooling tower, vent, flue or vehicle area?
+    criteria:
+      true: It states where an outdoor-air intake is, or a separation distance, in relation to an exhaust,
+        cooling tower, plumbing vent, gas flue or traffic source.
+      false: It does not relate any outdoor-air intake to a contaminant source.
+    runs_on:
+    - mechanical.ventilation
+    - mechanical.local-exhaust
+    - mechanical.cooling-towers
+  numbers:
+  - claim: Cooling tower air intakes (seed wording) at least 6 m from building fresh air intakes (AS/NZS
+      3666.1)
+    verified: false
+  related_rules:
+  - rule.asnzs3666.cooling-tower-microbial-control
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Outdoor air and indoor air quality'
+  - seed: mechanical-services-guide.md
+    anchor: '### Concept and schematic design [concept]'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3666 Series — Air-Handling and Water Systems — Microbial Control'
+  - seed: mixed-use-construction-guide.md
+    anchor: '## Stratification, cores and separate services'
+- id: rule.as1668.carpark-ventilation
+  title: Ventilation of enclosed car parks
+  instrument: AS 1668.1:2015 and AS 1668.2:2012
+  clause: AS 1668.1 Section 6 (as-standards-reference); commercial guide cites AS 1668.1 and AS 1668.2
+  clause_verified: false
+  systems:
+  - mechanical.carpark-ventilation
+  applies_when:
+    any:
+    - det: ncc_class
+      any_of:
+      - 7a
+    - system_present: mechanical.carpark-ventilation
+  requires: An enclosed car park that does not qualify as naturally ventilated has mechanical ventilation
+    at the prescribed rate, commonly controlled by carbon monoxide monitoring, and switchable to smoke
+    exhaust on fire detection where the fire strategy requires it.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state whether an enclosed car park or loading area is
+      naturally ventilated or mechanically ventilated?
+    criteria:
+      true: It states the ventilation method for a car park or enclosed vehicle area (natural ventilation,
+        mechanical exhaust or supply fans, jet fans, or CO-controlled ventilation).
+      false: It does not state how any car park or enclosed vehicle area is ventilated.
+    runs_on:
+    - mechanical.carpark-ventilation
+  numbers:
+  - claim: Enclosed car parks 7.5 L/s per m2 (seed attributes to AS 1668.1 Section 6)
+    verified: false
+  related_rules:
+  - rule.as1668-1.air-handling-fire-mode
+  notes: Seed places normal car-park ventilation rate in AS 1668.1; normal ventilation is usually AS 1668.2.
+    Verify.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+  - seed: commercial-construction-guide.md
+    anchor: '## Carpark Design for Commercial Buildings'
+  - seed: mechanical-services-guide.md
+    anchor: '### Car-park and enclosed-vehicle areas'
+- id: rule.as1668-1.air-handling-fire-mode
+  title: Fire-mode operation of air-handling and smoke-control equipment
+  instrument: AS 1668.1:2015
+  clause: AS 1668.1 Clause 4.6 (stair pressurisation door force), Section 5 (zone smoke control), Section
+    6 (car parks)
+  clause_verified: false
+  systems:
+  - mechanical.fire-mode-air-systems
+  - mechanical.controls-bms
+  - fire-active
+  applies_when:
+    any:
+    - system_present: mechanical.fire-mode-air-systems
+    - system_present: mechanical.carpark-ventilation
+  requires: Air-handling systems have a defined fire mode (shutdown, smoke exhaust, zone pressurisation
+    or stair pressurisation) that starts automatically on fire detection, runs on an essential power supply,
+    overrides energy-saving controls, and is commissioned by pressure-differential testing.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify what an air-handling system, fan or damper does
+      in fire mode?
+    criteria:
+      true: It specifies a fire-mode action such as fan shutdown, smoke exhaust, stair or zone pressurisation,
+        damper closure or opening, or a cause-and-effect entry for mechanical plant.
+      false: It does not describe any fire-mode behaviour of mechanical plant.
+    runs_on:
+    - mechanical.fire-mode-air-systems
+    - mechanical.carpark-ventilation
+    - mechanical.controls-bms
+  numbers:
+  - claim: Stair pressurisation minimum 50 Pa differential with all doors closed
+    verified: false
+  - claim: Door opening force not exceeding 110 N (AS 1668.1 Clause 4.6)
+    verified: false
+  - claim: Stair pressurisation required where effective height exceeds 25 m (NCC Part E2.2, seed numbering;
+      fire cluster rule)
+    verified: false
+  related_rules:
+  - rule.as1668.carpark-ventilation
+  notes: The fire cluster owns smoke control as fire strategy and the NCC E2 trigger; this rule covers
+    the mechanical equipment's fire mode.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+  - seed: mechanical-services-guide.md
+    anchor: '### Smoke control and fire interfaces'
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+- id: rule.as1668-1.kitchen-exhaust-fire-rated-duct
+  title: Commercial kitchen exhaust in fire-rated ductwork
+  instrument: AS 1668.1:2015
+  clause: AS 1668.1 (commercial-construction-guide; no clause given)
+  clause_verified: false
+  systems:
+  - mechanical.local-exhaust
+  - fire-passive
+  applies_when:
+    all:
+    - det: commercial_kitchen
+      is: true
+  requires: Commercial kitchen exhaust systems use fire-rated ductwork and meet state planning requirements
+    for odour and noise at the discharge.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify fire-rated ductwork or a fire-rated shaft for
+      a commercial kitchen exhaust?
+    criteria:
+      true: It specifies a fire rating, fire-rated duct, fire-rated enclosure or shaft for kitchen exhaust
+        ductwork.
+      false: It does not state any fire rating for kitchen exhaust ductwork, or the kitchen is a domestic
+        kitchen.
+    runs_on:
+    - mechanical.local-exhaust
+  numbers: []
+  related_rules:
+  - rule.ncc.penetration-protection
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial HVAC and Mechanical Services'
+- id: rule.as4254.ductwork-construction
+  title: Ductwork construction, installation and sealing
+  instrument: AS 4254.1:2012 and AS 4254.2:2012
+  clause: AS 4254.1 (flexible); AS 4254.2 (rigid), Section 5 (leakage)
+  clause_verified: false
+  systems:
+  - mechanical.air-distribution
+  applies_when:
+    all:
+    - system_present: mechanical.air-distribution
+  requires: Flexible ductwork is fully extended, supported and within the maximum run length; rigid ductwork
+    uses the gauge, joints and stiffening for its size and pressure class; all ductwork is sealed to its
+    leakage class.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a ductwork construction requirement such as duct
+      material or gauge, leakage class, sealing, support spacing, insulation or flexible-duct length?
+    criteria:
+      true: It states at least one ductwork construction or installation requirement, or cites AS 4254.
+      false: It only shows duct routes or sizes without any construction, sealing or installation requirement.
+    runs_on:
+    - mechanical.air-distribution
+  numbers:
+  - claim: Flexible duct maximum installed length 6 m per run, excluding 1.5 m factory tails
+    verified: false
+  - claim: Flexible duct minimum bend radius one duct diameter
+    verified: false
+  - claim: Flexible duct support spacing not more than 1.5 m, with support within 300 mm of each connection
+    verified: false
+  - claim: Compressed flexible duct increases pressure drop by up to 400% per metre
+    verified: false
+  - claim: Flexible duct insulation typically R1.0 minimum inside the building, R1.5 in roof spaces
+    verified: false
+  - claim: 'Rectangular duct up to 750 mm: minimum 0.60 mm galvanised steel for low pressure (up to 500
+      Pa), 0.80 mm for medium pressure (500-1000 Pa)'
+    verified: false
+  - claim: Rectangular duct support spacing maximum 2.5 m up to 750 mm, 1.5 m for larger sizes
+    verified: false
+  - claim: Class A leakage maximum 0.009 x p^0.65 L/s per m2 of duct surface; Class B 3x Class A; Class
+      C 1/3 of Class A
+    verified: false
+  - claim: Unsealed joints in commercial systems can leak 15-25% of total airflow
+    verified: false
+  - claim: Equal-friction sizing typically 1.0-1.5 Pa/m; velocity maximum 5 m/s in occupied spaces reducing
+      to 3 m/s near diffusers
+    verified: false
+  related_rules:
+  - rule.as1682.fire-damper-installation
+  - rule.ncc.hvac-energy-efficiency
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4254 Series — Ductwork for Air-Handling Systems in Buildings'
+- id: rule.as1682.fire-damper-installation
+  title: Fire dampers where ducts penetrate fire-resisting construction
+  instrument: AS 1682.1 and AS 1682.2; NCC 2022 Volume One
+  clause: NCC Part C3 (seed numbering; NCC 2019); NCC Spec C3.15 cited by AS 4254 seed
+  clause_verified: false
+  systems:
+  - fire-passive.openings
+  - mechanical.air-distribution
+  applies_when:
+    all:
+    - system_present: mechanical.air-distribution
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Where air-handling ducts pass through fire-resisting construction, fire dampers are fitted
+    and installed strictly in the manufacturer's tested and listed configuration, with access for inspection
+    and maintenance.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify fire dampers where ductwork passes through a
+      fire-resisting wall, floor or shaft?
+    criteria:
+      true: It specifies fire dampers, fire-rated dampers or combination fire and smoke dampers at duct
+        penetrations of fire-resisting construction, or cites AS 1682.
+      false: It does not mention fire dampers at any duct penetration.
+    runs_on:
+    - mechanical.air-distribution
+    - mechanical.local-exhaust
+    - fire-passive.openings
+  numbers: []
+  related_rules:
+  - rule.ncc.penetration-protection
+  - rule.as4254.ductwork-construction
+  notes: May overlap a fire-cluster rule on openings; lead to reconcile ids.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  - seed: as-standards-reference.md
+    anchor: '## AS 4254 Series — Ductwork for Air-Handling Systems in Buildings'
+- id: rule.ncc.hvac-energy-efficiency
+  title: Energy efficiency of air-conditioning and ventilation systems
+  instrument: NCC 2022 Volume One
+  clause: Part J5 (as-standards-reference; NCC 2019 numbering); Part J3 (ncc-reference-guide); Part J6
+    (mechanical-services-guide; NCC 2022 numbering)
+  clause_verified: false
+  systems:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  - mechanical.ventilation
+  - mechanical.air-distribution
+  - mechanical.controls-bms
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Air-conditioning and ventilation systems meet the Section J minimum equipment efficiencies
+    and control requirements (economy cycles, heat recovery, variable-speed drives, demand-controlled
+    ventilation, time control), and ductwork and pipework are insulated and sealed. For Class 2 buildings
+    this applies to common-area systems.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state NCC Section J requirements or compliance for air-conditioning
+      or ventilation systems?
+    criteria:
+      true: It states Section J HVAC requirements, equipment efficiency requirements, required energy
+        controls (economy cycle, heat recovery, VSD, time switching) or duct and pipe insulation to meet
+        Section J.
+      false: It does not refer to energy efficiency of air-conditioning or ventilation, or only discusses
+        envelope or lighting.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - mechanical.ventilation
+    - mechanical.controls-bms
+  numbers: []
+  related_rules:
+  - rule.ncc.jv3-verification-hvac-inputs
+  - rule.gems.air-conditioner-registration
+  notes: Three seeds give three Part numbers. commercial-construction-guide also wrongly attributes energy
+    efficiency to 'NCC Section F'.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Section J DTS Provisions (J1-J6)'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+  - seed: mechanical-services-guide.md
+    anchor: '## Current authoritative verification points'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### NCC Energy Efficiency Requirements for Class 2'
+- id: rule.ncc.jv3-verification-hvac-inputs
+  title: JV3 energy modelling reflects the installed HVAC and controls
+  instrument: NCC 2022 Volume One
+  clause: Verification Method JV3
+  clause_verified: false
+  systems:
+  - mechanical.air-conditioning
+  - mechanical.controls-bms
+  - envelope
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Where JV3 is used, the proposed building's modelled greenhouse gas emissions do not exceed
+    the DTS reference building, and the HVAC system and control strategy modelled are the ones designed
+    and installed.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that NCC Section J compliance is shown by JV3
+      or by energy simulation against a reference building?
+    criteria:
+      true: It states that JV3, a reference-building comparison or energy simulation is the Section J
+        compliance pathway.
+      false: It does not state a JV3 or simulation pathway, or it states a DTS pathway.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.controls-bms
+    - envelope
+  numbers: []
+  related_rules:
+  - rule.ncc.hvac-energy-efficiency
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### JV3 Verification Method (Performance-Based Compliance)'
+  - seed: non-residential-sustainability-energy-guide.md
+    anchor: '## NCC energy-efficiency coordination'
+- id: rule.asnzs3666.cooling-tower-microbial-control
+  title: Microbial (Legionella) control of cooling towers
+  instrument: AS/NZS 3666.1:2011, AS/NZS 3666.2:2011; NCC 2022 Volume One
+  clause: NCC Part F2.5 (seed numbering; NCC 2019); AS/NZS 3666.1 (design), 3666.2 (operation and maintenance)
+  clause_verified: false
+  systems:
+  - mechanical.cooling-towers
+  applies_when:
+    all:
+    - system_present: mechanical.cooling-towers
+  requires: Cooling towers are designed, installed and commissioned to AS/NZS 3666.1 (drift eliminators,
+    no stagnant zones or dead legs, access for cleaning, separation from outdoor-air intakes) and operated
+    to AS/NZS 3666.2 with biocide treatment and microbiological testing.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify Legionella or microbial control for a cooling
+      tower?
+    criteria:
+      true: It specifies AS/NZS 3666 compliance, water treatment, biocide dosing, drift eliminators, microbiological
+        testing or a Legionella management plan for a cooling tower.
+      false: It mentions a cooling tower without any microbial control measure, or does not mention a
+        cooling tower.
+    runs_on:
+    - mechanical.cooling-towers
+  numbers:
+  - claim: Drift eliminators limit drift to less than 0.002% of circulating flow
+    verified: false
+  - claim: Cooling tower air intakes (seed wording) at least 6 m from building fresh air intakes
+    verified: false
+  - claim: Target heterotrophic colony count below 100,000 CFU/mL
+    verified: false
+  - claim: Target Legionella below 10 CFU/mL
+    verified: false
+  - claim: Legionella above 1000 CFU/mL requires shutdown and decontamination
+    verified: false
+  - claim: Hyperchlorination at 10 mg/L free chlorine for at least 1 hour
+    verified: false
+  related_rules:
+  - rule.state.cooling-tower-registration
+  - rule.as1668-2.intake-separation
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3666 Series — Air-Handling and Water Systems — Microbial Control'
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Facilities and Microbial Control'
+- id: rule.state.cooling-tower-registration
+  title: Registration of cooling towers with the state health authority
+  instrument: 'State public health legislation: Public Health Act 2010 (NSW); Public Health and Wellbeing
+    Act 2008 (VIC); Public Health Act 2005 (QLD)'
+  clause: Registration provisions (seed gives Acts, no sections)
+  clause_verified: false
+  systems:
+  - mechanical.cooling-towers
+  applies_when:
+    all:
+    - system_present: mechanical.cooling-towers
+  requires: Cooling towers are registered with the local council or state health authority; VIC requires
+    annual audits and QLD requires a risk management plan; treatment, testing and maintenance records
+    are kept.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a cooling tower is to be registered with
+      a council or health authority?
+    criteria:
+      true: It states registration of a cooling tower, a risk management plan, or a statutory audit for
+        a cooling tower.
+      false: It does not mention registration, risk management plans or audits for a cooling tower.
+    runs_on:
+    - mechanical.cooling-towers
+  numbers: []
+  related_rules:
+  - rule.asnzs3666.cooling-tower-microbial-control
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3666 Series — Air-Handling and Water Systems — Microbial Control'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial HVAC and Mechanical Services'
+- id: rule.asnzs5149.refrigerant-charge-limits
+  title: Refrigerant safety group and charge limits in occupied spaces
+  instrument: AS/NZS 5149.1:2016 and AS/NZS 5149.2:2016
+  clause: AS/NZS 5149.1 (classification), 5149.2 (charge limits)
+  clause_verified: false
+  systems:
+  - mechanical.refrigerant-condensate
+  - mechanical.air-conditioning
+  applies_when:
+    any:
+    - system_present: mechanical.refrigerant-condensate
+    - system_present: mechanical.air-conditioning
+    - system_present: mechanical.process-specialist
+  requires: The refrigerant's safety group sets the permitted charge in an occupied room; charges above
+    the limit need a machinery room or other measures. Changing refrigerant (for example R-410A to R-32)
+    requires the charge limit to be recalculated.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the refrigerant type or refrigerant charge for
+      an air-conditioning or refrigeration system?
+    criteria:
+      true: It names a refrigerant (for example R-32, R-410A, R-290) or states a refrigerant charge or
+        charge limit.
+      false: It does not name a refrigerant or state a charge.
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - mechanical.air-conditioning
+    - mechanical.process-specialist
+  numbers:
+  - claim: R-32 refrigerant concentration limit 61 g/m3
+    verified: false
+  - claim: A 30 m2 room with 2.7 m ceiling allows about 4.9 kg of R-32
+    verified: false
+  - claim: A3 hydrocarbon refrigerants limited to about 150 g in sealed factory-charged systems
+    verified: false
+  related_rules:
+  - rule.asnzs5149.machinery-room
+  notes: Seed lists R-32 under both A1 and A2L in one sentence; R-32 is A2L.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5149 Series — Refrigerating Systems and Heat Pumps — Safety and Environmental Requirements'
+  - seed: mechanical-services-guide.md
+    anchor: '### Refrigerant, condensate and water interfaces'
+- id: rule.asnzs5149.machinery-room
+  title: Refrigerating machinery rooms and installation testing
+  instrument: AS/NZS 5149.3:2016 and AS/NZS 5149.4:2016
+  clause: AS/NZS 5149.3 (machinery rooms), 5149.4 (installation)
+  clause_verified: false
+  systems:
+  - mechanical.refrigerant-condensate
+  - mechanical.central-plant
+  applies_when:
+    any:
+    - system_present: mechanical.central-plant
+    - system_present: mechanical.process-specialist
+    - system_present: mechanical.refrigerant-condensate
+  requires: Where refrigerant charge exceeds occupied-space limits, a machinery room has two means of
+    egress, emergency mechanical extraction, refrigerant detection with alarms and self-closing doors;
+    refrigerant circuits are pressure tested with dry nitrogen, never oxygen or compressed air.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify refrigerant leak detection or emergency ventilation
+      for a plant room or machinery room?
+    criteria:
+      true: It specifies refrigerant gas detection, refrigerant alarms or emergency extraction ventilation
+        for a room containing refrigerating plant.
+      false: It does not mention refrigerant detection or emergency ventilation.
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - mechanical.central-plant
+    - mechanical.process-specialist
+  numbers:
+  - claim: 'Machinery room: minimum two means of egress'
+    verified: false
+  - claim: Refrigerant detection alarms at 25% of the lower flammability limit for flammable refrigerants
+    verified: false
+  related_rules:
+  - rule.asnzs5149.refrigerant-charge-limits
+  - rule.whs.pressure-equipment-registration
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5149 Series — Refrigerating Systems and Heat Pumps — Safety and Environmental Requirements'
+- id: rule.whs.pressure-equipment-registration
+  title: Registration of high-pressure refrigerating plant
+  instrument: WHS Regulation 2017 and AS 4343
+  clause: Plant registration provisions (seed gives no clause)
+  clause_verified: false
+  systems:
+  - mechanical.central-plant
+  - mechanical.process-specialist
+  applies_when:
+    any:
+    - system_present: mechanical.central-plant
+    - system_present: mechanical.process-specialist
+  requires: Refrigerating systems above the pressure-volume threshold are registered plant under WHS regulations
+    and are periodically inspected by registered inspectors.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that refrigerating or pressure plant is to be
+      registered or inspected as registered plant?
+    criteria:
+      true: It states WHS plant registration, AS 4343 hazard level or registered-inspector inspection
+        for refrigerating or pressure equipment.
+      false: It does not mention plant registration.
+    runs_on:
+    - mechanical.central-plant
+    - mechanical.process-specialist
+  numbers:
+  - claim: Registration threshold typically 200 kPa gauge x 50 litres = 10,000 kPa.L
+    verified: false
+  related_rules:
+  - rule.asnzs5149.machinery-room
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5149 Series — Refrigerating Systems and Heat Pumps — Safety and Environmental Requirements'
+- id: rule.gems.air-conditioner-registration
+  title: Air conditioners registered under GEMS and rated to AS/NZS 3823
+  instrument: GEMS Act 2012; AS/NZS 3823.1.1:2012 and AS/NZS 3823.1.2:2012
+  clause: GEMS Determinations (MEPS); AS/NZS 3823 Annex B (seasonal weighting)
+  clause_verified: false
+  systems:
+  - mechanical.air-conditioning
+  applies_when:
+    all:
+    - system_present: mechanical.air-conditioning
+  requires: Air conditioners and heat pumps installed are registered under GEMS and meet minimum energy
+    performance standards; NCC energy requirements may require higher efficiency than GEMS minimums.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an efficiency rating for air-conditioning equipment,
+      such as EER, COP, AEER, ACOP, star rating or GEMS or MEPS compliance?
+    criteria:
+      true: It states an efficiency value, a star rating, or requires GEMS registration or MEPS compliance
+        for air-conditioning equipment.
+      false: It does not state any efficiency rating or GEMS or MEPS requirement for air-conditioning
+        equipment.
+    runs_on:
+    - mechanical.air-conditioning
+  numbers:
+  - claim: Rating conditions cooling 35 C outdoor, 27 C indoor dry bulb, 19 C indoor wet bulb
+    verified: false
+  - claim: Rating conditions heating 7 C outdoor dry bulb, 6 C wet bulb, 20 C indoor dry bulb
+    verified: false
+  - claim: Typical residential split systems EER 3.0-4.5 and COP 3.5-5.0
+    verified: false
+  - claim: Minimum AEER for non-ducted splits up to 4 kW about 3.66 (as of 2024)
+    verified: false
+  - claim: Each additional star about 25% efficiency improvement
+    verified: false
+  - claim: Outdoor unit noise limits of 50-55 dBA at the property boundary are common
+    verified: false
+  - claim: Duct losses can reduce delivered capacity by 15-30% in residential ducted systems
+    verified: false
+  - claim: Hot water heat pump COP typically 2.5-4.0 (AS/NZS 2712)
+    verified: false
+  related_rules:
+  - rule.ncc.hvac-energy-efficiency
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3823 Series — Performance of Electrical Appliances — Air Conditioners and Heat
+      Pumps'
+- id: rule.asnzs5141.residential-hvac-installation
+  title: Residential heating, ventilation and air-conditioning installation
+  instrument: AS/NZS 5141:2022
+  clause: AS/NZS 5141
+  clause_verified: false
+  systems:
+  - mechanical.air-conditioning
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+    - system_present: mechanical.air-conditioning
+  requires: Residential split and ducted air-conditioning is installed to AS/NZS 5141, and ducted systems
+    have ceiling space to deliver design airflow to each room without compressed or kinked ducts.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage cite AS/NZS 5141 or specify installation requirements
+      for a residential split or ducted air-conditioning system?
+    criteria:
+      true: It cites AS/NZS 5141 or states installation requirements for a residential split or ducted
+        system (unit location, duct routes, ceiling space, airflow to rooms).
+      false: It does not describe residential air-conditioning installation requirements.
+    runs_on:
+    - mechanical.air-conditioning
+  numbers: []
+  related_rules:
+  - rule.as4254.ductwork-construction
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Services — Hydraulic, Electrical, and Mechanical'
+- id: rule.asnzs2107.services-noise-levels
+  title: Design sound levels for building services noise in rooms
+  instrument: AS/NZS 2107:2016
+  clause: AS/NZS 2107
+  clause_verified: false
+  systems:
+  - mechanical.air-conditioning
+  - mechanical.air-distribution
+  - hydraulic.sanitary
+  - interiors
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  requires: Aggregate noise from building services (HVAC, plumbing, lifts, transformers) and external
+    intrusion in each room stays within the AS/NZS 2107 design sound level range for that room type.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a design sound level or noise criterion for building
+      services noise inside rooms?
+    criteria:
+      true: It states an internal noise criterion (for example dBA or NR for a room type) for mechanical,
+        hydraulic or other services noise, or cites AS/NZS 2107.
+      false: It does not state an internal services noise criterion; sound insulation ratings between
+        rooms (Rw) alone do not count.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.air-distribution
+    - hydraulic.sanitary
+  numbers:
+  - claim: Private offices 35-40 dBA; open-plan offices 40-45 dBA (as-standards-reference)
+    verified: false
+  - claim: Open-plan offices 35-40 dBA; private offices and meeting rooms 30-35 dBA (commercial-construction-guide)
+    verified: false
+  - claim: Residential living rooms 30-40 dBA; bedrooms 25-35 dBA
+    verified: false
+  - claim: Hospital wards 35-40 dBA; operating theatres 40-45 dBA
+    verified: false
+  - claim: Teaching spaces 35-45 dBA
+    verified: false
+  related_rules:
+  - rule.epa.outdoor-plant-noise
+  notes: The two seeds give different office levels.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for
+      Building Interiors'
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+- id: rule.epa.outdoor-plant-noise
+  title: External plant noise limits at neighbouring properties
+  instrument: State EPA noise policy and development consent conditions
+  clause: Consent conditions (project-specific)
+  clause_verified: false
+  systems:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  - mechanical.cooling-towers
+  - mechanical.carpark-ventilation
+  applies_when:
+    any:
+    - system_present: mechanical.air-conditioning
+    - system_present: mechanical.central-plant
+    - system_present: mechanical.cooling-towers
+  requires: Outdoor units, cooling towers and other external plant meet the noise limits set by the EPA
+    noise policy and the development consent at the property boundary or nearest receiver.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a noise limit or acoustic treatment for external
+      mechanical plant?
+    criteria:
+      true: It states a noise limit at a boundary or receiver, or specifies acoustic screens, attenuators,
+        enclosures or plant selection to limit external plant noise.
+      false: It does not address noise from external mechanical plant.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - mechanical.cooling-towers
+  numbers:
+  - claim: Outdoor unit noise limits of 50-55 dBA at the property boundary are common
+    verified: false
+  related_rules:
+  - rule.asnzs2107.services-noise-levels
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3823 Series — Performance of Electrical Appliances — Air Conditioners and Heat
+      Pumps'
+  - seed: mechanical-services-guide.md
+    anchor: '### Conditions of consent and design development [design_development]'
+  - seed: commercial-construction-guide.md
+    anchor: '## Acoustics in Commercial Buildings'
+- id: rule.basix.ventilation-commitment
+  title: BASIX ventilation commitments
+  instrument: BASIX (NSW), EP&A Regulation 2021
+  clause: BASIX certificate and consent condition
+  clause_verified: false
+  systems:
+  - mechanical.ventilation
+  - mechanical.local-exhaust
+  - envelope
+  applies_when:
+    all:
+    - det: state
+      eq: NSW
+    - det: ncc_class
+      any_of:
+      - 1a
+      - '2'
+      - '4'
+  requires: Natural ventilation provisions (such as openable windows for cross-ventilation) and mechanical
+    ventilation (such as exhaust fans of a stated capacity) committed in the BASIX certificate are built
+    as committed or the certificate is amended.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a ventilation item committed in a BASIX certificate?
+    criteria:
+      true: It lists a BASIX commitment for natural ventilation, openable windows, ceiling fans, exhaust
+        fans or mechanical ventilation.
+      false: It does not mention BASIX ventilation commitments.
+    runs_on:
+    - mechanical.ventilation
+    - mechanical.local-exhaust
+  numbers: []
+  related_rules:
+  - rule.ncc.habitable-room-ventilation
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '### 4.5 Ventilation provisions not met'
+  - seed: new-dwelling-guide.md
+    anchor: '### What gets committed'
+- id: rule.basix.hot-water-commitment
+  title: BASIX hot water system commitment
+  instrument: BASIX (NSW), EP&A Regulation 2021
+  clause: BASIX certificate and consent condition
+  clause_verified: false
+  systems:
+  - hydraulic.hot-water
+  applies_when:
+    all:
+    - det: state
+      eq: NSW
+    - det: ncc_class
+      any_of:
+      - 1a
+      - '2'
+      - '4'
+  requires: The hot water system type, energy source and capacity committed in the BASIX certificate is
+    installed; any substitution is re-certified before installation, and the BASIX final certificate is
+    needed for the occupation certificate.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the hot water system type committed in a BASIX
+      certificate?
+    criteria:
+      true: It states the BASIX-committed hot water system type or energy source (for example heat pump,
+        solar with boost, gas instantaneous, electric storage).
+      false: It does not link a hot water system type to BASIX.
+    runs_on:
+    - hydraulic.hot-water
+  numbers: []
+  related_rules:
+  - rule.ncc.heated-water-energy-efficiency
+  status: draft
+  sources:
+  - seed: sustainability-energy-guide.md
+    anchor: '### 4.3 Hot water system substitution'
+  - seed: mep-residential.md
+    anchor: '### System types'
+  - seed: new-dwelling-guide.md
+    anchor: '### Common BASIX failure modes'
+  - seed: as-standards-reference.md
+    anchor: '### Residential plumbing posture for project leads'
+- id: rule.basix.rainwater-tank-commitment
+  title: BASIX rainwater tank commitment
+  instrument: BASIX (NSW), EP&A Regulation 2021
+  clause: BASIX certificate and consent condition
+  clause_verified: false
+  systems:
+  - hydraulic.non-potable-water
+  applies_when:
+    all:
+    - det: state
+      eq: NSW
+    - det: ncc_class
+      any_of:
+      - 1a
+      - '2'
+      - '4'
+  requires: Where BASIX commits a rainwater tank, it is installed at the committed capacity and connected
+    to the committed end uses (toilet, laundry, external taps), with first-flush diversion, mosquito screening
+    and backflow protection.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a rainwater tank capacity or the fixtures a rainwater
+      tank is connected to?
+    criteria:
+      true: It states a rainwater tank volume or lists the connected uses (toilets, laundry, garden or
+        external taps).
+      false: It does not state a rainwater tank capacity or its connections, or it describes a stormwater
+        detention tank.
+    runs_on:
+    - hydraulic.non-potable-water
+  numbers: []
+  related_rules:
+  - rule.pca.backflow-prevention
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Rainwater tank'
+  - seed: new-dwelling-guide.md
+    anchor: '### What gets committed'
+- id: rule.basix.water-efficient-fixtures
+  title: BASIX water-efficient fixture commitment
+  instrument: BASIX (NSW), EP&A Regulation 2021
+  clause: BASIX certificate (WELS rating minima)
+  clause_verified: false
+  systems:
+  - hydraulic.cold-water
+  - hydraulic.sanitary
+  applies_when:
+    all:
+    - det: state
+      eq: NSW
+    - det: ncc_class
+      any_of:
+      - 1a
+      - '2'
+      - '4'
+  requires: Taps, showers, toilets and other fixtures meet the WELS ratings committed in the BASIX certificate.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a WELS star rating or flow rating for taps, showers
+      or toilets?
+    criteria:
+      true: It states a WELS rating, a star rating or a maximum flow rate for at least one tap, shower
+        head, toilet or dishwasher.
+      false: It does not state any water-efficiency rating for fixtures.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.sanitary
+  numbers: []
+  related_rules: []
+  status: draft
+  sources:
+  - seed: new-dwelling-guide.md
+    anchor: '### What gets committed'
+  - seed: sustainability-energy-guide.md
+    anchor: '## 1. BASIX overview (NSW)'
+- id: rule.pca.water-services
+  title: Water service pressure, sizing and materials
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500.1:2021
+  clause: PCA Part B1 (seed numbering); AS/NZS 3500.1
+  clause_verified: false
+  systems:
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  requires: The water service delivers adequate pressure and flow to every fixture, within the maximum
+    pressure (with a pressure-limiting valve above it), sized by loading units and simultaneous demand,
+    using approved drinking-water-safe materials.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the available or design water pressure or flow
+      for the building's water supply?
+    criteria:
+      true: It states a supply pressure, residual pressure, flow rate, flow and pressure test result,
+        or a need for booster pumps or pressure-limiting valves.
+      false: It does not state water supply pressure or flow.
+    runs_on:
+    - hydraulic.cold-water
+  numbers:
+  - claim: Minimum fixture pressure 150 kPa; most fixtures need 200-350 kPa
+    verified: false
+  - claim: Maximum 500 kPa, above which a pressure-limiting valve is required
+    verified: false
+  - claim: 'Loading units: basin 1 LU, shower 3 LU, bath 4 LU'
+    verified: false
+  related_rules:
+  - rule.pca.watermark-certification
+  - rule.pca.backflow-prevention
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+  - seed: ncc-reference-guide.md
+    anchor: '### Water Supply and Sanitary Drainage Systems'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Hydraulic Services'
+- id: rule.pca.watermark-certification
+  title: Plumbing products WaterMark certified
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); ABCB WaterMark Certification Scheme
+  clause: WaterMark Certification Scheme; AS/NZS 4020 (drinking water contact)
+  clause_verified: false
+  systems:
+  - hydraulic
+  requires: Plumbing and drainage products installed are WaterMark certified, and products in contact
+    with drinking water comply with AS/NZS 4020.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require plumbing products to be WaterMark certified?
+    criteria:
+      true: It requires WaterMark certification or AS/NZS 4020 compliance for plumbing products or materials.
+      false: It does not mention WaterMark or AS/NZS 4020.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+    - hydraulic.sanitary
+  numbers: []
+  related_rules:
+  - rule.pca.water-services
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Water Supply and Sanitary Drainage Systems'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+- id: rule.pca.backflow-prevention
+  title: Cross-connection control and backflow prevention
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500.1:2021
+  clause: PCA Part B5 (seed numbering); AS/NZS 3500.1 Clause 4
+  clause_verified: false
+  systems:
+  - hydraulic.backflow-prevention
+  requires: 'Every cross-connection between the drinking-water supply and a non-potable source or hazard
+    has a backflow prevention device matched to its hazard rating: at the authority connection, at tenancies
+    or zones, and at fire services, irrigation, pools, industrial processes and rainwater tank connections.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a backflow prevention device or its hazard rating?
+    criteria:
+      true: It specifies a backflow prevention device (RPZ, reduced pressure zone device, double check
+        valve, air gap) or states a cross-connection hazard rating.
+      false: It does not mention backflow prevention.
+    runs_on:
+    - hydraulic.backflow-prevention
+    - hydraulic.cold-water
+    - hydraulic.non-potable-water
+  numbers: []
+  related_rules:
+  - rule.pca.water-services
+  notes: Seed says high-hazard installations including connections to fire services require RPZ devices
+    or air gaps; verify against AS/NZS 3500.1.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Stormwater, Heated Water, and Backflow Prevention'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Services — Hydraulic, Electrical, and Mechanical'
+- id: rule.water-authority.individual-water-metering
+  title: Individual water metering of apartments
+  instrument: State water authority requirements
+  clause: Water authority metering requirements (seed gives no instrument)
+  clause_verified: false
+  systems:
+  - hydraulic.cold-water
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '2'
+  requires: Each sole-occupancy unit has its own water sub-meter and isolation valve accessible from common
+    property, with a master meter at the boundary.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify water meters or sub-meters for individual apartments
+      or dwellings?
+    criteria:
+      true: It specifies a water meter or sub-meter per apartment, dwelling or sole-occupancy unit, or
+        states their location.
+      false: It does not specify individual water metering.
+    runs_on:
+    - hydraulic.cold-water
+  numbers: []
+  related_rules: []
+  status: draft
+  sources:
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Metering and Utility Connections'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Vertical Risers and Service Distribution'
+- id: rule.pca.sanitary-drainage-grades
+  title: Sanitary drainage sizing and grades
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500.2:2021
+  clause: PCA Part B2 (seed numbering); AS/NZS 3500.2
+  clause_verified: false
+  systems:
+  - hydraulic.sanitary
+  requires: Sanitary drains and branches are sized by fixture units and laid at not less than the minimum
+    grade for their diameter.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a grade or fall for sanitary drainage pipes?
+    criteria:
+      true: It states a grade, fall or gradient (for example 1:60 or 1:40) for a sanitary drain, waste
+        pipe or sewer line.
+      false: It does not state a grade for any sanitary pipe; floor tile falls do not count.
+    runs_on:
+    - hydraulic.sanitary
+  numbers:
+  - claim: Minimum grade 1:60 for 100 mm pipes
+    verified: false
+  - claim: Minimum grade 1:40 for smaller pipes (ncc-reference-guide) or for 40-65 mm pipes (as-standards-reference)
+    verified: false
+  - claim: 'Fixture units: basin 1 FU, WC 4 FU (100 mm branch), shower 2 FU'
+    verified: false
+  - claim: A 50 mm branch serves up to 5 FU; a 100 mm branch up to 160 FU
+    verified: false
+  related_rules:
+  - rule.pca.sanitary-venting
+  - rule.pca.drainage-tested-before-concealment
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Water Supply and Sanitary Drainage Systems'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+- id: rule.pca.sanitary-venting
+  title: Venting of sanitary plumbing to protect trap seals
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500.2:2021
+  clause: AS/NZS 3500.2 Section 5 (venting)
+  clause_verified: false
+  systems:
+  - hydraulic.sanitary
+  requires: The sanitary system is vented so that pressure variation does not break trap seals, and stacks
+    are vented to atmosphere above the roof.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify venting of sanitary plumbing, such as vent pipes,
+      stack vents or air admittance valves?
+    criteria:
+      true: It specifies vent pipes, stack vents, relief vents, vent termination above the roof or air
+        admittance valves for sanitary plumbing.
+      false: It does not mention venting of sanitary plumbing.
+    runs_on:
+    - hydraulic.sanitary
+  numbers:
+  - claim: Venting limits pressure variation to plus or minus 375 Pa
+    verified: false
+  - claim: Trap seal minimum 50 mm depth, 25 mm for floor wastes (as-standards-reference)
+    verified: false
+  - claim: Trap seal minimum 25 mm water seal (ncc-reference-guide)
+    verified: false
+  related_rules:
+  - rule.pca.sanitary-drainage-grades
+  notes: Seeds conflict on minimum trap seal depth.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+  - seed: ncc-reference-guide.md
+    anchor: '### Water Supply and Sanitary Drainage Systems'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Vertical Risers and Service Distribution'
+- id: rule.pca.drainage-tested-before-concealment
+  title: Drainage and water pipework tested before concealment
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500 series
+  clause: PCA Part B2 (seed numbering)
+  clause_verified: false
+  systems:
+  - hydraulic.sanitary
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  requires: Drainage is airtight and watertight and is tested before concealment; water pipework is pressure
+    tested before linings close or trenches are backfilled.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require hydraulic pipework or drains to be tested before
+      they are concealed, backfilled or lined over?
+    criteria:
+      true: It requires a pressure, air, water or leak test of pipework or drains before concealment,
+        backfill, slab pour or lining.
+      false: It does not require testing before concealment.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+  numbers: []
+  related_rules:
+  - rule.state.licensed-plumbing-and-compliance-certificate
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Water Supply and Sanitary Drainage Systems'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Quality Hold Points for Apartment Construction'
+- id: rule.asnzs3500-2.inspection-openings
+  title: Inspection openings on sewer drains
+  instrument: AS/NZS 3500.2:2021
+  clause: AS/NZS 3500.2 (seed gives no clause)
+  clause_verified: false
+  systems:
+  - hydraulic.sanitary
+  requires: Sewer drains have inspection openings at the specified intervals and at changes of direction,
+    kept permanently accessible (not buried or paved over without a flush fitting).
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage show or specify inspection openings on sanitary drains?
+    criteria:
+      true: It shows or specifies inspection openings (IOs), clear-outs or access points on sanitary drains.
+      false: It does not mention inspection openings or access points on drains.
+    runs_on:
+    - hydraulic.sanitary
+  numbers: []
+  related_rules:
+  - rule.pca.sanitary-drainage-grades
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Inspection openings (IOs)'
+- id: rule.ncc.sanitary-facility-quantities
+  title: Number and location of sanitary facilities
+  instrument: NCC 2022 Volume One and Volume Two
+  clause: Vol 1 Part F2, Table F2.3; Vol 2 Part 3.8.3 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - hydraulic.sanitary
+  - interiors
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - 1a
+      - 1b
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  derives:
+    table: sanitary_facility_ratios
+    inputs:
+    - ncc_class
+    - occupant_load
+    gives: required_sanitary_fixture_count
+    pending: true
+    reason: Primary instrument and full applicability inputs must be verified before this table can be
+      implemented; return unknown.
+  requires: The building has at least the number of closet pans, urinals and washbasins that Table F2.3
+    gives for its classification and NCC occupant load, located within the travel limit, separate for
+    males and females above the unisex threshold, with laundry facilities in Class 1 and 2.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the number of toilets, urinals or washbasins provided
+      or required?
+    criteria:
+      true: It states a count of closet pans, WCs, urinals or washbasins provided or required, or a sanitary
+        facility calculation.
+      false: It does not state any sanitary fixture count.
+    runs_on:
+    - hydraulic.sanitary
+  numbers:
+  - claim: 'Class 5: 1 closet pan per 25 males and 1 per 15 females, 1 urinal per 25 males, 1 washbasin
+      per 30 persons'
+    verified: false
+  - claim: Facilities within 40 m travel or one storey
+    verified: false
+  - claim: Unisex facilities acceptable where total occupant load is less than 10 persons
+    verified: false
+  related_rules: []
+  notes: Required count is a code-derived minimum for one physical scope, occupancy cohort and fixture
+    category; compare separately with extracted sanitary_fixture_counts (provided quantity). Do not collapse
+    a mixed fixture schedule into one scalar. The authoritative ratio table and full applicability inputs
+    remain pending.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Facility Quantities by Building Classification'
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: rule.pca.roof-drainage-design
+  title: Roof and building stormwater drainage design with overflow
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500.3:2021
+  clause: PCA Part B3 (seed numbering); AS/NZS 3500.3
+  clause_verified: false
+  systems:
+  - hydraulic.roof-drainage
+  requires: Roof, balcony and terrace drainage is sized for the design rainfall intensity and catchment,
+    and has overflow provisions that discharge away from the building if the primary system is blocked
+    or overloaded.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the design rainfall intensity, average recurrence
+      interval or annual exceedance probability used for roof or building stormwater drainage?
+    criteria:
+      true: It states a rainfall intensity, ARI, AEP or storm duration used to size gutters, box gutters,
+        downpipes or stormwater pipes.
+      false: It does not state a design rainfall basis for roof or building drainage.
+    runs_on:
+    - hydraulic.roof-drainage
+  numbers:
+  - claim: Rational method Q = CIA/3600 with BOM IFD data
+    verified: false
+  - claim: Domestic roof drainage typically 20-year ARI, 5-minute duration
+    verified: false
+  - claim: Minimum stormwater pipe grades 1:100 for 100 mm, 1:200 for 150 mm (indicative)
+    verified: false
+  related_rules:
+  - rule.pca.stormwater-not-to-sewer
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+  - seed: ncc-reference-guide.md
+    anchor: '### Stormwater, Heated Water, and Backflow Prevention'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Stormwater and roof drainage'
+  - seed: civil-residential.md
+    anchor: '### Gravity drainage principles'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Hydraulic Services'
+- id: rule.pca.stormwater-not-to-sewer
+  title: Stormwater kept separate from sanitary sewer
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500.3:2021
+  clause: AS/NZS 3500.3 (seed gives no clause)
+  clause_verified: false
+  systems:
+  - hydraulic.roof-drainage
+  - hydraulic.sanitary
+  requires: Stormwater is not discharged to the sanitary sewer; a cross-connection is a regulatory breach.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state where roof or stormwater drainage discharges?
+    criteria:
+      true: It states a discharge point for stormwater, such as the council system, kerb, OSD tank, rainwater
+        tank, absorption trench or the sewer.
+      false: It does not state where stormwater discharges.
+    runs_on:
+    - hydraulic.roof-drainage
+  numbers: []
+  related_rules:
+  - rule.pca.roof-drainage-design
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '### Residential plumbing posture for project leads'
+  - seed: civil-residential.md
+    anchor: '### Connection to council drainage'
+- id: rule.asnzs3500-4.delivery-temperature-limit
+  title: Heated water delivery temperature limit at personal hygiene fixtures
+  instrument: NCC 2022 Volume Three (Plumbing Code of Australia); AS/NZS 3500.4:2021
+  clause: PCA Part B4 (seed numbering); AS/NZS 3500.4 Section 6 (mep-residential)
+  clause_verified: false
+  systems:
+  - hydraulic.hot-water
+  applies_when:
+    all:
+    - system_present: hydraulic.hot-water
+  requires: Hot water to personal hygiene fixtures is limited by a tempering valve or thermostatic mixing
+    valve to the maximum delivery temperature, with a lower limit in early childhood, school and aged-care
+    buildings.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a tempering valve, thermostatic mixing valve
+      or maximum hot water delivery temperature?
+    criteria:
+      true: It specifies a tempering valve, TMV or thermostatic mixing valve, or states a maximum outlet
+        or delivery temperature for hot water.
+      false: It does not mention temperature limiting of hot water at outlets.
+    runs_on:
+    - hydraulic.hot-water
+  numbers:
+  - claim: Maximum 50 C at personal hygiene fixtures (general)
+    verified: false
+  - claim: Maximum 45 C for early childhood, schools and aged care (as-standards-reference)
+    verified: false
+  - claim: Maximum 50 C at outlets in early childhood centres and nursing homes (ncc-reference-guide)
+    verified: false
+  related_rules:
+  - rule.ncc.warm-water-microbial-control
+  notes: Seeds conflict on the childcare and aged-care limit (45 C vs 50 C).
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Compliance points'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Facilities and Microbial Control'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Hydraulic Services'
+- id: rule.ncc.warm-water-microbial-control
+  title: Hot and warm water storage temperature for Legionella control
+  instrument: NCC 2022 Volume One; AS/NZS 3500.4:2021; AS/NZS 3666 series
+  clause: Vol 1 Part F2.5 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - hydraulic.hot-water
+  applies_when:
+    all:
+    - system_present: hydraulic.hot-water
+  requires: Stored hot and warm water is heated and held at a temperature that inhibits Legionella growth,
+    while delivery is tempered for scald protection; warm water systems in Class 3 and 9a buildings fall
+    under microbial control requirements.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a storage temperature for hot water or a Legionella
+      control measure for a hot or warm water system?
+    criteria:
+      true: It states a hot water storage or circulation temperature, or a Legionella control measure
+        such as thermal disinfection or AS/NZS 3666 compliance, for a hot or warm water system.
+      false: It does not state a storage temperature or Legionella measure for hot or warm water.
+    runs_on:
+    - hydraulic.hot-water
+  numbers:
+  - claim: Stored water heated to at least 60 C
+    verified: false
+  - claim: Warm water storage range 25 C to 60 C
+    verified: false
+  related_rules:
+  - rule.asnzs3500-4.delivery-temperature-limit
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Facilities and Microbial Control'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3666 Series — Air-Handling and Water Systems — Microbial Control'
+- id: rule.asnzs3500-4.storage-heater-relief-valves
+  title: Expansion control and pressure relief valves on storage water heaters
+  instrument: AS/NZS 3500.4:2021
+  clause: AS/NZS 3500.4 (seed gives no clause)
+  clause_verified: false
+  systems:
+  - hydraulic.hot-water
+  applies_when:
+    all:
+    - system_present: hydraulic.hot-water
+  requires: Storage water heaters have an expansion control valve and a pressure relief valve, and relief
+    discharges terminate safely (for example to a tundish).
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a relief valve, expansion control valve or relief
+      drain for a water heater?
+    criteria:
+      true: It specifies a pressure and temperature relief valve, expansion control valve, relief drain
+        line or tundish for a water heater.
+      false: It does not mention relief or expansion valves or relief drains for a water heater.
+    runs_on:
+    - hydraulic.hot-water
+  numbers: []
+  related_rules: []
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Compliance points'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Hot water'
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: rule.ncc.heated-water-energy-efficiency
+  title: Energy efficiency of heated water supply
+  instrument: NCC 2022 Volume One
+  clause: Part J5 heated water (ncc-reference-guide; conflicts with J7 in NCC 2019 and J8 in NCC 2022)
+  clause_verified: false
+  systems:
+  - hydraulic.hot-water
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+    - system_present: hydraulic.hot-water
+  requires: Water heating systems meet the NCC minimum efficiency requirements, which favour heat pump
+    and solar thermal systems over electric resistance and gas storage systems.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state an energy efficiency requirement or rating for
+      a water heater?
+    criteria:
+      true: It states a Section J heated water requirement, a water heater efficiency or COP, or requires
+        a heat pump or solar system for energy efficiency.
+      false: It does not state any energy efficiency requirement for water heating.
+    runs_on:
+    - hydraulic.hot-water
+  numbers: []
+  related_rules:
+  - rule.basix.hot-water-commitment
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)'
+  - seed: non-residential-sustainability-energy-guide.md
+    anchor: '## NCC energy-efficiency coordination'
+- id: rule.asnzs5601.gas-pressure-test
+  title: Gas pipework pressure tested before concealment
+  instrument: AS/NZS 5601.1:2022
+  clause: AS/NZS 5601.1 (seed gives Section 5 for sizing; no clause for testing)
+  clause_verified: false
+  systems:
+  - hydraulic.gas
+  applies_when:
+    all:
+    - system_present: hydraulic.gas
+  requires: All gas pipework is pressure tested for soundness before it is concealed, and pipework is
+    sized so that pressure drop from the meter to the most remote appliance is within the limit.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require gas pipework to be pressure tested?
+    criteria:
+      true: It requires a pressure or soundness test of gas pipework, or reports a gas pressure test result.
+      false: It does not mention testing of gas pipework.
+    runs_on:
+    - hydraulic.gas
+  numbers:
+  - claim: Test at 1.5 times maximum operating pressure, minimum 7 kPa for LP Gas and 3 kPa for natural
+      gas, for at least 3 minutes
+    verified: false
+  - claim: Maximum pressure drop meter to most remote appliance 0.75 kPa for natural gas (1.1 kPa nominal
+      supply)
+    verified: false
+  - claim: LP Gas regulated supply nominally 2.75 kPa
+    verified: false
+  - claim: Natural gas supplied at 1.1 kPa at the meter (mep-residential)
+    verified: false
+  related_rules:
+  - rule.state.licensed-plumbing-and-compliance-certificate
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5601.1 — Gas Installations — General Installations'
+  - seed: mep-residential.md
+    anchor: '### Key compliance'
+  - seed: mep-residential.md
+    anchor: '### Sizing and pressure'
+- id: rule.asnzs5601.flue-and-combustion-air
+  title: Flues and combustion air for gas appliances
+  instrument: AS/NZS 5601.1:2022
+  clause: AS/NZS 5601.1 Section 6 (flues)
+  clause_verified: false
+  systems:
+  - hydraulic.gas
+  - mechanical.central-plant
+  applies_when:
+    all:
+    - system_present: hydraulic.gas
+  requires: Flued gas appliances discharge combustion products safely to outside (conventional, power,
+    room-sealed flues), and appliances drawing air from an enclosed room or plant room have permanent
+    combustion-air openings; flueless appliances are limited and need room ventilation.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a flue, flue terminal or combustion air provision
+      for a gas appliance?
+    criteria:
+      true: It specifies a flue type, flue route or terminal location, or a combustion air opening or
+        ventilation for a gas appliance or plant room.
+      false: It does not mention flues or combustion air for gas appliances.
+    runs_on:
+    - hydraulic.gas
+    - mechanical.central-plant
+  numbers:
+  - claim: Conventional flues minimum 3 m effective height
+    verified: false
+  - claim: Combustion air permanent openings 25 cm2 per MJ/h input for appliances in enclosed spaces
+    verified: false
+  - claim: Clearances to combustibles typically 25-150 mm for low-temperature flues, up to 600 mm for
+      high-temperature flues without shielding
+    verified: false
+  related_rules:
+  - rule.asnzs5601.appliance-isolation-and-clearances
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5601.1 — Gas Installations — General Installations'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Gas'
+- id: rule.asnzs5601.type-b-appliance-certification
+  title: Type B gas appliances engineered and certified
+  instrument: AS/NZS 5601.1:2022; state gas regulations
+  clause: AS/NZS 5601.1 (Type A and Type B appliance definitions)
+  clause_verified: false
+  systems:
+  - hydraulic.gas
+  - mechanical.central-plant
+  applies_when:
+    all:
+    - system_present: hydraulic.gas
+  requires: Type B appliances (large boilers, commercial kitchen equipment, industrial ovens, gas engines)
+    are designed, installed and commissioned under a Type B gasfitter or gas engineer with a compliance
+    certificate.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage identify a Type B gas appliance or a commercial or industrial
+      gas appliance?
+    criteria:
+      true: It names a Type B appliance or a commercial or industrial gas appliance such as a large boiler,
+        commercial cooking equipment, industrial oven or gas engine.
+      false: It only mentions domestic gas appliances or no gas appliances.
+    runs_on:
+    - hydraulic.gas
+    - mechanical.central-plant
+  numbers:
+  - claim: Type B appliances are commercial scale above 10 MJ/h input (mep-residential)
+    verified: false
+  - claim: Type A includes water heaters up to 500 MJ/hr (as-standards-reference)
+    verified: false
+  related_rules:
+  - rule.asnzs5601.flue-and-combustion-air
+  notes: The two seeds give inconsistent Type A/Type B boundaries (10 MJ/h vs water heaters up to 500
+    MJ/hr).
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5601.1 — Gas Installations — General Installations'
+  - seed: mep-residential.md
+    anchor: '### Type A vs Type B appliances'
+- id: rule.asnzs5601.appliance-isolation-and-clearances
+  title: Gas appliance isolation, clearances and meter location
+  instrument: AS/NZS 5601.1:2022
+  clause: AS/NZS 5601.1 Section 4 (clearances, per mep-residential)
+  clause_verified: false
+  systems:
+  - hydraulic.gas
+  applies_when:
+    all:
+    - system_present: hydraulic.gas
+  requires: Each appliance has an accessible isolation valve and minimum clearances from combustible materials;
+    gas meters keep minimum clearances from electrical meters, openings and ignition sources, and are
+    in a naturally ventilated location.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the location of a gas meter or gas regulator?
+    criteria:
+      true: It states where a gas meter, meter enclosure or regulator is located.
+      false: It does not state the location of a gas meter or regulator.
+    runs_on:
+    - hydraulic.gas
+  numbers: []
+  related_rules:
+  - rule.asnzs5601.flue-and-combustion-air
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Key compliance'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5601.1 — Gas Installations — General Installations'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### Metering and Utility Connections'
+- id: rule.asnzs1596.lpg-storage
+  title: LPG cylinder and tank location
+  instrument: AS/NZS 1596; AS/NZS 5601.1:2022
+  clause: AS/NZS 1596 (seed gives no clause)
+  clause_verified: false
+  systems:
+  - hydraulic.gas
+  - site
+  applies_when:
+    all:
+    - system_present: hydraulic.gas
+  requires: LPG cylinders and tanks are located with the required exclusion zones and clearances from
+    openings, ignition sources and boundaries, and not in pits, below ground level or under stairways.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify LPG cylinders or an LPG tank?
+    criteria:
+      true: It specifies LPG cylinders, an LPG tank or LP Gas storage for the building.
+      false: It does not mention LPG storage.
+    runs_on:
+    - hydraulic.gas
+  numbers:
+  - claim: LPG cylinders not within 1.0 m of unprotected openings
+    verified: false
+  related_rules:
+  - rule.asnzs5601.appliance-isolation-and-clearances
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### LPG specific'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5601.1 — Gas Installations — General Installations'
+- id: rule.nsw.section-73-certificate
+  title: Water authority compliance certificate for water and sewer
+  instrument: Section 73 compliance certificate, Sydney Water (NSW); VIC equivalent is a water corporation
+    Certificate of Compliance
+  clause: Section 73 (seed gives no Act)
+  clause_verified: false
+  systems:
+  - hydraulic.sanitary
+  - hydraulic.cold-water
+  - site
+  applies_when:
+    all:
+    - det: state
+      eq: NSW
+  requires: The water authority's compliance certificate confirming water and sewer servicing is obtained
+    (through a Water Servicing Coordinator in Sydney Water areas) before the occupation certificate for
+    most new developments.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage refer to a Section 73 certificate or a water authority
+      compliance certificate for water and sewer?
+    criteria:
+      true: It refers to a Section 73 certificate, a Water Servicing Coordinator, or a water authority
+        certificate of compliance for water or sewer.
+      false: It does not mention a water authority compliance certificate.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+  numbers: []
+  related_rules:
+  - rule.water-authority.build-over-sewer
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Gravity sewer'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Conditions of consent and design development [design_development]'
+- id: rule.water-authority.build-over-sewer
+  title: Approval to build over or near an authority sewer
+  instrument: Sydney Water Build Over Sewer approval (NSW); other water authorities' equivalents
+  clause: Build Over Sewer (BOS) approval (seed gives no instrument clause)
+  clause_verified: false
+  systems:
+  - site
+  - substructure
+  - hydraulic.sanitary
+  applies_when:
+    all:
+    - det: state
+      eq: NSW
+  requires: Where an authority sewer main crosses or adjoins the building footprint, build-over or deviation
+    approval is obtained before construction starts.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that an authority sewer main crosses or adjoins
+      the building footprint?
+    criteria:
+      true: It states that a sewer main or authority sewer asset crosses, is under or is next to the proposed
+        building, or refers to build-over-sewer approval.
+      false: It does not mention an authority sewer main near the building.
+    runs_on:
+    - hydraulic.sanitary
+    - site
+    - substructure
+  numbers: []
+  related_rules:
+  - rule.nsw.section-73-certificate
+  status: draft
+  sources:
+  - seed: new-dwelling-guide.md
+    anchor: '## Site due diligence — what a new dwelling triggers'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Inception, site and existing information [inception]'
+- id: rule.water-authority.trade-waste-agreement
+  title: Trade waste pre-treatment and authority agreement
+  instrument: Water authority trade waste requirements
+  clause: Trade waste agreement or consent (seed gives no instrument clause)
+  clause_verified: false
+  systems:
+  - hydraulic.trade-waste
+  applies_when:
+    any:
+    - det: trade_waste_use
+      is: true
+    - det: commercial_kitchen
+      is: true
+  requires: Trade waste from commercial kitchens, laboratories, medical and industrial uses passes through
+    pre-treatment (grease arrestor, sediment trap, neutralising pit) before the sewer, and a trade waste
+    agreement with the water authority is in place before operation.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify a trade waste pre-treatment device or a trade
+      waste agreement?
+    criteria:
+      true: It specifies a grease arrestor, grease trap, sediment trap, oil separator, neutralising pit,
+        sampling point or trade waste agreement or consent.
+      false: It does not mention trade waste pre-treatment or agreements.
+    runs_on:
+    - hydraulic.trade-waste
+    - hydraulic.sanitary
+  numbers: []
+  related_rules: []
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Hydraulic Services'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Trade waste'
+- id: rule.state.licensed-plumbing-and-compliance-certificate
+  title: Licensed plumbing and gasfitting with compliance certificates
+  instrument: State plumbing and gas legislation (NSW Plumbing and Drainage Act per new-dwelling-guide;
+    as-standards-reference cites Home Building Act 1989 for licensing)
+  clause: State licensing and compliance certificate provisions
+  clause_verified: false
+  systems:
+  - hydraulic
+  requires: Plumbing, drainage and gas work is done by licensed plumbers and gasfitters, inspected at
+    the authority's stages (rough-in before lining, in-ground drainage before backfill), and certified
+    by a compliance certificate lodged with the regulator.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage require a plumbing or gas compliance certificate?
+    criteria:
+      true: It requires a plumbing compliance certificate, certificate of compliance, gas compliance certificate
+        or notice of work from a licensed plumber or gasfitter.
+      false: It does not mention plumbing or gas compliance certificates.
+    runs_on:
+    - hydraulic
+  numbers: []
+  related_rules:
+  - rule.pca.drainage-tested-before-concealment
+  - rule.asnzs5601.gas-pressure-test
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '### Residential plumbing posture for project leads'
+  - seed: mep-residential.md
+    anchor: '### Inspection gate'
+  - seed: ncc-reference-guide.md
+    anchor: '### Water Supply and Sanitary Drainage Systems'
+- id: rule.as3823.hvac-rating
+  title: HVAC performance selection
+  instrument: AS/NZS 3823 series; GEMS
+  clause: Applicable determination and rating method pending
+  clause_verified: false
+  systems:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  requires: Select equipment using performance at actual design conditions and applicable registration
+    and energy requirements.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the selected equipment capacity at
+      site design conditions?
+    criteria:
+      true: It explicitly states the selected equipment capacity at site design conditions.
+      false: It does not state this, or only mentions the system generally.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3823 Series — Performance of Electrical Appliances — Air Conditioners and Heat
+      Pumps'
+- id: rule.project.services-functional-commissioning
+  title: Services functional commissioning and deferred tests
+  instrument: Approved project services design and commissioning requirements
+  clause: Project-specific technical acceptance basis; exact applicable instrument to be verified
+  clause_verified: false
+  systems: &id001
+  - mechanical.controls-bms
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  applies_when:
+    any:
+    - system_present: mechanical.controls-bms
+    - system_present: mechanical.air-conditioning
+    - system_present: mechanical.central-plant
+  requires: Verify performance and control sequences for the specified operating modes rather than treating
+    equipment start-up as system acceptance; define seasonal or deferred tests and record unresolved results.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a functional acceptance criterion for services
+      commissioning?
+    criteria:
+      true: It specifies the required outcome of a system functional test.
+      false: It only says start-up, commissioning by others, or gives no test outcome.
+    runs_on: *id001
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: rule.project.specialist-services-acceptance
+  title: Specialist process and clinical services acceptance
+  instrument: Approved project services design and commissioning requirements
+  clause: Project-specific technical acceptance basis; exact applicable instrument to be verified
+  clause_verified: false
+  systems: &id002
+  - mechanical.process-specialist
+  - hydraulic.specialist-process
+  applies_when:
+    any:
+    - system_present: mechanical.process-specialist
+    - system_present: hydraulic.specialist-process
+  requires: Use the actual process or clinical brief to define service performance and integrated tests,
+    with the named operator participating in acceptance before the affected facility enters service.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage identify the operator acceptance test for specialist
+      services?
+    criteria:
+      true: It names a clinical, research or process acceptance test for the affected specialist service.
+      false: It only lists equipment or ordinary building completion without an operator test.
+    runs_on: *id002
+  status: draft
+  sources:
+  - seed: institution-construction-guide.md
+    anchor: '## Construction, commissioning and handover'
+  - seed: industrial-construction-guide.md
+    anchor: '## Commissioning and operational readiness'
+- id: rule.project.occupied-services-cutover
+  title: Occupied-building services cutover and restoration
+  instrument: Approved project services design and commissioning requirements
+  clause: Project-specific technical acceptance basis; exact applicable instrument to be verified
+  clause_verified: false
+  systems: &id003
+  - hydraulic.cold-water
+  - hydraulic.sanitary
+  - hydraulic.gas
+  - mechanical.air-conditioning
+  applies_when:
+    any:
+    - system_present: hydraulic.cold-water
+    - system_present: hydraulic.sanitary
+    - system_present: hydraulic.gas
+    - system_present: mechanical.air-conditioning
+  requires: Trace retained services and define isolation, temporary service continuity, cutover tests
+    and restoration before altering services that support an occupied area.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the service restoration arrangement for an occupied
+      area?
+    criteria:
+      true: It describes how the affected service will be restored or retained during the cutover.
+      false: It only gives a general construction programme or mentions existing services.
+    runs_on: *id003
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+  - seed: renovation-guide.md
+    anchor: '## Live occupancy and staging'
+- id: rule.project.sewage-pump-out-operation
+  title: Sewage pump-out system duty and alarm operation
+  instrument: Approved project services design and commissioning requirements
+  clause: Project-specific technical acceptance basis; exact applicable instrument to be verified
+  clause_verified: false
+  systems: &id004
+  - hydraulic.sanitary
+  applies_when:
+    any:
+    - system_present: hydraulic.sanitary
+  requires: Where gravity connection is unavailable, coordinate the approved pump-out arrangement, power
+    and failure alarm with the operating and maintenance requirements of the receiving system.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the sewage pump failure alarm arrangement?
+    criteria:
+      true: It describes the alarm used to report sewage pump failure.
+      false: It only mentions a holding tank or pump without identifying a failure alarm.
+    runs_on: *id004
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Pump-out systems'
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'

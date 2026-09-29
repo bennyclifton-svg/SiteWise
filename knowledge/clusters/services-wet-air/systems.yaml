@@ -1,0 +1,298 @@
+version: 1
+systems:
+- id: mechanical.air-conditioning
+  parent: mechanical
+  label: Air-conditioning and space heating
+  describes: 'Systems that heat or cool occupied spaces and their room or zone equipment: split and multi-split
+    systems, ducted reverse-cycle units, VRF or VRV systems, packaged units, air-handling units, fan coil
+    units, VAV boxes and chilled beams; comfort criteria, heat loads, zoning, equipment capacity and efficiency
+    ratings (EER, COP, AEER, ACOP), and outdoor condensing units of split and VRF systems.'
+  excludes: Chillers, boilers and hydronic plant (central-plant); cooling towers (cooling-towers); outdoor
+    air rates and ventilation of habitable rooms (ventilation); ductwork construction (air-distribution);
+    refrigerant pipework and condensate drains (refrigerant-condensate); hot water for taps and showers
+    (hydraulic.hot-water).
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Heating and cooling'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial HVAC and Mechanical Services'
+  - seed: mep-residential.md
+    anchor: '### Air conditioning'
+- id: mechanical.central-plant
+  parent: mechanical
+  label: Central plant and hydronic systems
+  describes: 'Central heating and cooling plant and its water circuits: water-cooled and air-cooled chillers,
+    boilers and heating-water plant, central heat pumps producing heating or chilled water, chilled-water,
+    heating-water and condenser-water pumps and pipework, and the plant rooms that house them.'
+  excludes: Cooling towers and their water treatment (cooling-towers); split and VRF outdoor units (air-conditioning);
+    domestic hot water plant (hydraulic.hot-water); fire pumps (fire-active).
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial HVAC and Mechanical Services'
+  - seed: mechanical-services-guide.md
+    anchor: '### Heating and cooling'
+- id: mechanical.cooling-towers
+  parent: mechanical
+  label: Cooling towers and evaporative heat rejection
+  describes: Cooling towers and evaporative condensers, their drift eliminators, basins, condenser-water
+    treatment and biocide dosing, Legionella sampling and testing, cleaning and decontamination, and registration
+    of the tower with the state health authority.
+  excludes: Air-cooled chillers and air-cooled condensers (central-plant or air-conditioning); warm-water
+    and hot-water systems for taps (hydraulic.hot-water).
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3666 Series — Air-Handling and Water Systems — Microbial Control'
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Facilities and Microbial Control'
+- id: mechanical.ventilation
+  parent: mechanical
+  label: Outdoor air and general ventilation
+  describes: 'How occupied and habitable rooms get fresh air: natural ventilation by openable windows
+    or doors, mechanical outdoor-air supply, outdoor-air rates per person and per area, filtration, heat
+    or energy recovery ventilation (HRV, ERV), demand-controlled ventilation by CO2, outdoor-air intake
+    locations, transfer air and pressure relationships between rooms.'
+  excludes: Exhaust from bathrooms, toilets, laundries, kitchens, refuse rooms and plant rooms (local-exhaust);
+    car-park ventilation (carpark-ventilation); smoke exhaust and stair pressurisation (fire-mode-air-systems).
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Outdoor air and indoor air quality'
+  - seed: ncc-reference-guide.md
+    anchor: '### Ventilation Requirements and Ceiling Heights'
+  - seed: mep-residential.md
+    anchor: '### Whole-house ventilation'
+- id: mechanical.air-distribution
+  parent: mechanical
+  label: Ductwork and air distribution
+  describes: 'Supply, return and outdoor-air ductwork and its construction: rigid and flexible ducts,
+    duct gauge, joints, sealing and leakage class, duct insulation, supports, grilles, registers and diffusers,
+    volume control dampers, duct sizing and air velocities, and duct cleaning access.'
+  excludes: Exhaust ducts of kitchen, bathroom and refuse exhaust systems (local-exhaust); fire dampers
+    and smoke dampers in fire-resisting construction (fire-passive.openings); smoke exhaust ducts (fire-mode-air-systems).
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4254 Series — Ductwork for Air-Handling Systems in Buildings'
+- id: mechanical.local-exhaust
+  parent: mechanical
+  label: Local exhaust ventilation
+  describes: 'Exhaust that removes moisture, odour or contaminants at the source: bathroom, ensuite, toilet
+    and laundry exhaust fans, domestic rangehoods, commercial kitchen hoods and grease exhaust ducts,
+    refuse room and bin store exhaust, cleaners'' rooms, plant rooms, battery and charging rooms, clothes
+    dryer discharge, make-up air for these systems and their discharge points to outside.'
+  excludes: Enclosed car-park ventilation (carpark-ventilation); general outdoor-air supply (ventilation);
+    laboratory fume and process exhaust (process-specialist); smoke exhaust (fire-mode-air-systems).
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Local exhaust'
+  - seed: mep-residential.md
+    anchor: '### Wet area exhaust'
+  - seed: mep-residential.md
+    anchor: '### Kitchen rangehood'
+- id: mechanical.carpark-ventilation
+  parent: mechanical
+  label: Car-park and enclosed vehicle area ventilation
+  describes: 'Ventilation of enclosed car parks, loading docks and other vehicle areas in normal operation:
+    natural or mechanical ventilation, supply and exhaust fans, jet fans, shafts and louvres, carbon monoxide
+    monitoring and demand control.'
+  excludes: The smoke-exhaust fire mode of car-park fans when the passage is about fire operation (fire-mode-air-systems);
+    car-park sprinklers (fire-active.sprinklers); EV charging (electrical).
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Car-park and enclosed-vehicle areas'
+  - seed: commercial-construction-guide.md
+    anchor: '## Carpark Design for Commercial Buildings'
+- id: mechanical.fire-mode-air-systems
+  parent: mechanical
+  label: Mechanical smoke-control and fire-mode equipment
+  describes: 'The mechanical equipment that performs fire and smoke functions: smoke exhaust and smoke
+    spill fans, stair and lobby pressurisation fans and relief paths, motorised smoke dampers, fire-rated
+    fan ducts, and the fire-mode operation of air-handling plant (shutdown, zone pressurisation, switching
+    car-park fans to smoke exhaust).'
+  excludes: The fire strategy, smoke-control performance requirements and cause-and-effect matrix (fire-active);
+    fire dampers in fire-resisting walls and floors (fire-passive.openings); detection and fire indicator
+    panels (fire-active.detection).
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Smoke control and fire interfaces'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+- id: mechanical.refrigerant-condensate
+  parent: mechanical
+  label: Refrigerant and condensate
+  describes: Refrigerant type and safety group, refrigerant charge and charge limits, refrigerant pipework,
+    insulation and routes, leak detection and refrigerating machinery rooms, pressure and leak testing
+    of refrigerant circuits, and condensate collection from air-conditioning equipment (trays, traps,
+    falls, tundishes and discharge points).
+  excludes: The drainage system the condensate discharges into (hydraulic.sanitary or hydraulic.roof-drainage);
+    chilled and heating water pipework (central-plant); heat pump hot water units (hydraulic.hot-water).
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Refrigerant, condensate and water interfaces'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5149 Series — Refrigerating Systems and Heat Pumps — Safety and Environmental Requirements'
+- id: mechanical.controls-bms
+  parent: mechanical
+  label: Controls and building management system
+  describes: 'Controls for building services: the building management system (BMS), controllers, sensors,
+    set points, schedules, sequences of operation, points lists, alarms, trend logging, communication
+    protocols (BACnet, Modbus), after-hours control and integration with other systems.'
+  excludes: Fire indicator panels and fire detection (fire-active.detection); electricity and energy meters
+    themselves (electrical); access control and security systems (comms-security).
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Controls, BMS and metering'
+  - seed: commercial-construction-guide.md
+    anchor: '## Building Management Systems (BMS)'
+- id: mechanical.process-specialist
+  parent: mechanical
+  label: Process and specialist mechanical systems
+  describes: 'Mechanical systems serving a process or controlled environment rather than occupant comfort:
+    cold stores and process refrigeration, process cooling and heat rejection, process exhaust and dust
+    extraction, laboratory fume exhaust, clean rooms and pressure-controlled rooms, and data-centre cooling.'
+  excludes: Comfort air-conditioning (air-conditioning) and general exhaust from bathrooms, kitchens and
+    refuse rooms (local-exhaust).
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Building, process and services coordination'
+  - seed: industrial-construction-guide.md
+    anchor: '## Activation and subtype control'
+  - seed: mechanical-services-guide.md
+    anchor: '### Commercial, industrial and institutional work'
+- id: hydraulic.cold-water
+  parent: hydraulic
+  label: Potable cold water supply
+  describes: 'Drinking-water supply from the authority main to fixtures: point of connection, master and
+    sub-meters, isolation valves, booster pumps and break tanks, pressure-limiting and pressure-reducing
+    valves, pressure zones, pipe sizing by loading units, pipe materials, and available pressure and flow.'
+  excludes: Backflow prevention devices (backflow-prevention); rainwater and recycled water (non-potable-water);
+    heated water (hot-water); water supply to sprinklers and hydrants, fire pumps and fire tanks (fire-active.fire-water).
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Potable and non-potable water'
+  - seed: ncc-reference-guide.md
+    anchor: '### Water Supply and Sanitary Drainage Systems'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Hydraulic Services'
+- id: hydraulic.backflow-prevention
+  parent: hydraulic
+  label: Cross-connection control and backflow prevention
+  describes: 'Protection of the drinking-water supply from contamination: hazard rating of cross-connections,
+    backflow prevention devices (reduced pressure zone devices, double check valves, air gaps), their
+    location at the property boundary, zones or fixtures, and backflow testing and certification.'
+  excludes: General cold water pipework and pressure (cold-water).
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Stormwater, Heated Water, and Backflow Prevention'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+- id: hydraulic.non-potable-water
+  parent: hydraulic
+  label: Rainwater, recycled and non-potable water
+  describes: Rainwater harvesting tanks for reuse, first-flush diverters, tank pumps and top-up, recycled
+    or reclaimed water, and non-potable supply to toilets, laundries and irrigation points.
+  excludes: On-site stormwater detention tanks and site drainage (site); drinking water supply (cold-water).
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Rainwater tank'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Potable and non-potable water'
+- id: hydraulic.hot-water
+  parent: hydraulic
+  label: Heated water
+  describes: 'Hot and warm water generation, storage and distribution for fixtures: electric, gas, heat
+    pump and solar water heaters, storage and instantaneous units, flow and return circulation, storage
+    temperature for Legionella control, tempering and thermostatic mixing valves, delivery temperature
+    limits, expansion control and pressure relief valves and their drains.'
+  excludes: Heating water for space heating (mechanical.central-plant); gas supply pipework to the heater
+    (gas).
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Hot water'
+  - seed: mep-residential.md
+    anchor: '## Hot water systems'
+- id: hydraulic.sanitary
+  parent: hydraulic
+  label: Sanitary plumbing and drainage
+  describes: 'Wastewater from fixtures to the authority sewer connection: sanitary fixtures and their
+    traps, floor wastes, waste branches, stacks, vent pipes, in-ground and in-slab drains, grades and
+    fixture units, inspection openings, boundary traps, sewage pump-out stations and rising mains, and
+    the connection to the sewer.'
+  excludes: The authority sewer main and on-site wastewater treatment and disposal (site); trade waste
+    pre-treatment (trade-waste); stormwater (roof-drainage).
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Sanitary plumbing and sewer'
+  - seed: civil-residential.md
+    anchor: '### Gravity sewer'
+  - seed: civil-residential.md
+    anchor: '### Pump-out systems'
+- id: hydraulic.trade-waste
+  parent: hydraulic
+  label: Trade waste pre-treatment
+  describes: 'Liquid trade waste from commercial kitchens, food premises, laboratories, medical and industrial
+    uses: grease arrestors, sediment traps, oil separators, neutralising pits, sampling points, and the
+    water authority''s trade waste agreement or consent.'
+  excludes: Domestic kitchen and office kitchenette drainage (sanitary).
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Trade waste'
+  - seed: commercial-construction-guide.md
+    anchor: '## Commercial Hydraulic Services'
+- id: hydraulic.roof-drainage
+  parent: hydraulic
+  label: Roof and building stormwater drainage
+  describes: 'Rainwater collection from roofs, balconies, terraces and podiums: gutters, box gutters,
+    sumps, rainwater heads, downpipes, overflows and overflow scuppers, internal and charged stormwater
+    pipework, design rainfall intensity and catchments, to the point where drainage leaves the building.'
+  excludes: On-site detention, site pits, external stormwater drains and the council connection (site);
+    roof sheeting, flashings and membranes (envelope).
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Stormwater and roof drainage'
+  - seed: ncc-reference-guide.md
+    anchor: '### Stormwater, Heated Water, and Backflow Prevention'
+- id: hydraulic.gas
+  parent: hydraulic
+  label: Fuel gas
+  describes: 'Natural gas and LPG installations: supply connection, meters and regulators, gas pipework
+    and its sizing and pressure testing, appliance isolation valves, Type A and Type B appliances, flues
+    and combustion air, clearances to combustible materials, and LPG cylinders and tanks.'
+  excludes: Medical and laboratory gases (specialist-process); the boilers and heaters themselves as heating
+    plant (mechanical.central-plant or mechanical.air-conditioning).
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Gas'
+  - seed: mep-residential.md
+    anchor: '## Gas'
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5601.1 — Gas Installations — General Installations'
+- id: hydraulic.specialist-process
+  parent: hydraulic
+  label: Specialist and process hydraulic systems
+  describes: 'Hydraulic systems for a process or specialist use: medical gases, laboratory gases and purified
+    water, process water supply, and process drainage from industrial, laboratory or medical areas.'
+  excludes: Trade waste pre-treatment devices (trade-waste) and fuel gas (gas).
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Low-confidence and escalation flags'
+  - seed: industrial-construction-guide.md
+    anchor: '## Building, process and services coordination'

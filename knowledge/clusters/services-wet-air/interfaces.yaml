@@ -1,0 +1,454 @@
+version: 1
+interfaces:
+- id: if.condensate-to-hydraulic-drainage
+  type: supplies
+  from:
+  - mechanical.refrigerant-condensate
+  to:
+  - hydraulic.sanitary
+  summary: Coordinate condensate falls, traps, tundishes and approved discharge points with the receiving
+    drainage system.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the condensate discharge connection?
+    criteria:
+      true: It explicitly states the condensate discharge connection.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - hydraulic.sanitary
+  failure_modes:
+  - fm.condensate-to-hydraulic-drainage
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Refrigerant, condensate and water interfaces'
+- id: if.exhaust-intake-separation
+  type: boundary
+  from:
+  - mechanical.local-exhaust
+  - mechanical.cooling-towers
+  to:
+  - mechanical.ventilation
+  summary: Locate outdoor-air intakes away from exhaust contaminants, traffic and cooling-tower drift.
+  governed_by:
+  - rule.as1668-2.outdoor-air-rates
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the separation of outdoor-air intake
+      from exhaust discharge?
+    criteria:
+      true: It explicitly states the separation of outdoor-air intake from exhaust discharge.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - mechanical.cooling-towers
+    - mechanical.ventilation
+  failure_modes:
+  - fm.exhaust-intake-separation
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Outdoor air and indoor air quality'
+- id: if.exhaust-penetrates-envelope
+  type: penetrates
+  from:
+  - mechanical.local-exhaust
+  to:
+  - envelope
+  summary: Exhaust terminals must discharge outside while maintaining weatherproofing and the required
+    building-envelope performance.
+  governed_by:
+  - rule.ncc.exhaust-discharge-to-outside
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state an external termination for bathroom
+      exhaust?
+    criteria:
+      true: It explicitly states an external termination for bathroom exhaust.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - envelope
+  failure_modes:
+  - fm.exhaust-penetrates-envelope
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### Wet area exhaust'
+- id: if.plant-loads-structure
+  type: loads
+  from:
+  - mechanical.central-plant
+  - mechanical.air-conditioning
+  - hydraulic.hot-water
+  to:
+  - structure
+  summary: Coordinate operating plant loads, supports and applicable seismic restraint with structural
+    design.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the structural support arrangement
+      for services plant?
+    criteria:
+      true: It explicitly states the structural support arrangement for services plant.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.central-plant
+    - mechanical.air-conditioning
+    - hydraulic.hot-water
+    - structure
+  failure_modes:
+  - fm.plant-loads-structure
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Mechanical evidence sweep'
+- id: if.mechanical-power-supply
+  type: supplies
+  from:
+  - electrical
+  to:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  - mechanical.controls-bms
+  summary: Selected plant demand, starting and standby needs must be coordinated with supply and switchboards.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the electrical demand of selected mechanical
+      plant?
+    criteria:
+      true: It explicitly states the electrical demand of selected mechanical plant.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - electrical
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - mechanical.controls-bms
+  failure_modes:
+  - fm.mechanical-power-supply
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Heating and cooling'
+- id: if.plant-noise-vibration
+  type: boundary
+  from:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  to:
+  - interiors
+  - envelope
+  summary: Coordinate airborne noise, duct breakout, structure-borne vibration and neighbour exposure
+    with the acoustic design.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the vibration isolation specified for
+      plant?
+    criteria:
+      true: It explicitly states the vibration isolation specified for plant.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - interiors
+    - envelope
+  failure_modes:
+  - fm.plant-noise-vibration
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Mechanical evidence sweep'
+- id: if.roof-drainage-waterproofing
+  type: boundary
+  from:
+  - hydraulic.roof-drainage
+  to:
+  - envelope
+  summary: Outlets, flanges, catchment falls and emergency overflows must be coordinated with roof and
+    podium waterproofing.
+  governed_by:
+  - rule.pca.roof-drainage-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the waterproofing connection at a roof
+      outlet?
+    criteria:
+      true: It explicitly states the waterproofing connection at a roof outlet.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - envelope
+  failure_modes:
+  - fm.roof-drainage-waterproofing
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Stormwater and roof drainage'
+- id: if.building-drainage-to-site
+  type: supplies
+  from:
+  - hydraulic.roof-drainage
+  to:
+  - site
+  summary: Coordinate the building drainage outlet and safe overflow path with external drainage, detention
+    and overland flow.
+  governed_by:
+  - rule.pca.roof-drainage-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the building drainage connection to
+      the site system?
+    criteria:
+      true: It explicitly states the building drainage connection to the site system.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - site
+  failure_modes:
+  - fm.building-drainage-to-site
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '### Stormwater and roof drainage'
+- id: if.hot-water-energy-source
+  type: supplies
+  from:
+  - electrical
+  - hydraulic.gas
+  to:
+  - hydraulic.hot-water
+  summary: Coordinate the selected hot-water energy source and approved energy commitments before substitutions.
+  governed_by:
+  - rule.asnzs3500-4.delivery-temperature-limit
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the energy source for the selected
+      hot-water system?
+    criteria:
+      true: It explicitly states the energy source for the selected hot-water system.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - electrical
+    - hydraulic.gas
+    - hydraulic.hot-water
+  failure_modes:
+  - fm.hot-water-energy-source
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: mep-residential.md
+    anchor: '### System types'
+- id: if.potable-nonpotable-separation
+  type: boundary
+  from:
+  - hydraulic.non-potable-water
+  to:
+  - hydraulic.cold-water
+  - hydraulic.backflow-prevention
+  summary: Separate and identify non-potable supplies and protect potable top-up cross-connections.
+  governed_by:
+  - rule.pca.backflow-prevention
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the backflow protection at a non-potable
+      top-up connection?
+    criteria:
+      true: It explicitly states the backflow protection at a non-potable top-up connection.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.non-potable-water
+    - hydraulic.cold-water
+    - hydraulic.backflow-prevention
+  failure_modes:
+  - fm.potable-nonpotable-separation
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+- id: if.kitchen-exhaust-makeup-air
+  type: depends_on
+  from:
+  - mechanical.local-exhaust
+  to:
+  - mechanical.ventilation
+  summary: Kitchen exhaust needs a designed make-up-air path so pressure does not impair doors or other
+    building systems.
+  governed_by:
+  - rule.ncc.exhaust-discharge-to-outside
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the kitchen exhaust make-up-air source?
+    criteria:
+      true: It explicitly states the kitchen exhaust make-up-air source.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - mechanical.ventilation
+  failure_modes:
+  - fm.kitchen-exhaust-makeup-air
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+- id: if.bms-fire-mode-priority
+  type: controls
+  from:
+  - fire-active.detection
+  to:
+  - mechanical.controls-bms
+  summary: Fire mode takes the specified priority over normal schedules and energy controls; verify command
+    and feedback together.
+  governed_by:
+  - rule.as1668.fire-mode
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the priority of fire mode over energy-saving
+      controls?
+    criteria:
+      true: It explicitly states the priority of fire mode over energy-saving controls.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - mechanical.controls-bms
+  failure_modes:
+  - fm.bms-fire-mode-priority
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+- id: if.services-plant-maintenance-access
+  type: depends_on
+  from:
+  - mechanical.central-plant
+  - mechanical.cooling-towers
+  - hydraulic.trade-waste
+  to:
+  - access-egress.maintenance-access
+  summary: Allow safe service, cleaning and replacement routes; equipment location must not make routine
+    maintenance impossible.
+  governed_by:
+  - rule.as1657.maintenance-access
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the plant replacement route?
+    criteria:
+      true: It explicitly states the plant replacement route.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.central-plant
+    - mechanical.cooling-towers
+    - hydraulic.trade-waste
+    - access-egress.maintenance-access
+  failure_modes:
+  - fm.services-plant-maintenance-access
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Heating and cooling'
+- id: if.cooling-tower-water-treatment-drainage
+  type: boundary
+  from:
+  - mechanical.cooling-towers
+  to:
+  - hydraulic.backflow-prevention
+  - hydraulic.trade-waste
+  summary: Coordinate tower make-up water protection, treatment and discharge with the receiving water
+    and drainage systems; determine discharge acceptance from the actual treatment chemicals and authority
+    conditions.
+  governed_by:
+  - rule.asnzs3666.cooling-tower-microbial-control
+  - rule.pca.backflow-prevention
+  - rule.water-authority.trade-waste-agreement
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the tower treatment and discharge arrangement?
+    criteria:
+      true: It states the tower treatment and discharge arrangement.
+      false: It does not state this arrangement; a general system mention is insufficient.
+    runs_on:
+    - mechanical.cooling-towers
+    - hydraulic.backflow-prevention
+    - hydraulic.trade-waste
+  failure_modes:
+  - fm.cooling-tower-stagnant-dead-leg
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 3666 Series — Air-Handling and Water Systems — Microbial Control'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Potable and non-potable water'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Trade waste'
+- id: if.process-equipment-services-demarcation
+  type: boundary
+  from:
+  - mechanical.process-specialist
+  to:
+  - hydraulic.specialist-process
+  - electrical
+  summary: Match process equipment vendor utility loads and connection boundaries with building services
+    and prove the combined operation for the actual process.
+  governed_by:
+  - rule.project.specialist-services-acceptance
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the process equipment service connection boundary?
+    criteria:
+      true: It states the process equipment service connection boundary.
+      false: It does not state this arrangement; a general system mention is insufficient.
+    runs_on:
+    - mechanical.process-specialist
+    - hydraulic.specialist-process
+    - electrical
+  failure_modes:
+  - fm.process-vendor-utility-mismatch
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Building, process and services coordination'
+- id: if.sewage-pump-power-and-alarm
+  type: supplies
+  from:
+  - electrical
+  to:
+  - hydraulic.sanitary
+  summary: The sewage pump-out arrangement depends on its defined electrical supply and a working failure
+    alarm.
+  governed_by:
+  - rule.project.sewage-pump-out-operation
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the electrical supply arrangement for the sewage
+      pump?
+    criteria:
+      true: It states the electrical supply arrangement for the sewage pump.
+      false: It does not state this arrangement; a general system mention is insufficient.
+    runs_on:
+    - electrical
+    - hydraulic.sanitary
+  failure_modes:
+  - fm.sewage-pump-failure-alarm-inoperative
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '### Pump-out systems'
