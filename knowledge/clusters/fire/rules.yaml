@@ -1,111 +1,766 @@
-# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
-# Clause numbers are copied from the seeds, which use NCC 2019 numbering.
-# The determinants cluster verifies them against NCC 2022.
 version: 1
 rules:
-  - id: rule.ncc.type-of-construction
-    title: Type of Construction required
-    instrument: NCC 2022 Volume One
-    clause: "C1.1, Table C1.2 (seed numbering; NCC 2019)"
-    clause_verified: false
-    systems: [fire-passive.rated-elements, structure]
-    applies_when:
-      all:
-        - {det: ncc_class, any_of: ["2", "3", "5", "6", "7a", "7b", "8", "9a", "9b", "9c"]}
-    derives:
-      table: type_of_construction
-      inputs: [ncc_class, rise_in_storeys]
-      gives: type_of_construction
-    requires: >-
-      The building's Type of Construction (A, B or C) is set by its
-      classification and rise in storeys, and it sets the fire resistance
-      levels of its elements.
-    evidence:
-      type: noul
-      instructions: >-
-        Using `text`, does this passage state the building's Type of
-        Construction (Type A, Type B or Type C)?
-      criteria:
-        true: "It names Type A, Type B or Type C construction for the building or a part of it."
-        false: "It does not name a Type of Construction, or only explains what the types mean in general."
-      runs_on: [fire-passive, structure]
-    numbers:
-      - {claim: "Class 2 or 3 with a rise in storeys of 4 or more requires Type A", verified: false}
-      - {claim: "Class 5, 6, 7, 8 or 9 with a rise in storeys of 4 or more requires Type A", verified: false}
-      - {claim: "Class 2, 3, 5, 6, 7, 8 or 9 with a rise in storeys of 2 or 3 requires Type B", verified: false}
-      - {claim: "Single-storey Class 2 to 9 buildings require Type C", verified: false}
-    related_rules: [rule.ncc.sprinkler-concession-type-of-construction]
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Types of Construction (A, B, C)"}
-
-  - id: rule.ncc.sprinkler-concession-type-of-construction
-    title: Sprinkler concession for Type of Construction
-    instrument: NCC 2022 Volume One
-    clause: "C1.6, Specification 17 (seed numbering; NCC 2019)"
-    clause_verified: false
-    systems: [fire-passive.rated-elements, fire-active.sprinklers]
-    applies_when:
-      all:
-        - {det: sprinklered, is: true}
-    requires: >-
-      Some buildings fitted with a sprinkler system complying with AS 2118.1
-      may use a lower Type of Construction. The building then depends on the
-      sprinkler system for compliance for its whole life.
-    evidence:
-      type: noul
-      instructions: >-
-        Using `text`, does this passage state that a sprinkler concession or
-        sprinkler trade-off is used to reduce the Type of Construction, fire
-        resistance levels, compartment size or travel distances?
-      criteria:
-        true: "It states that the design relies on sprinklers to reduce a fire requirement (Type of Construction, FRL, compartment size or travel distance)."
-        false: "It mentions sprinklers without saying another fire requirement was reduced because of them."
-      runs_on: [fire-passive, fire-active.sprinklers]
-    numbers:
-      - {claim: "A 4-storey Class 5 building needing Type A may use Type B if fully sprinklered", verified: false}
-    related_rules: [rule.ncc.type-of-construction, rule.as1851.fire-system-maintenance]
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Sprinkler Concessions for Type of Construction"}
-
-  - id: rule.ncc.penetration-protection
-    title: Protection of service penetrations through fire-resisting construction
-    instrument: NCC 2022 Volume One
-    clause: "C3.15 / C4.5 (seed gives both; unverified)"
-    clause_verified: false
-    systems: [fire-passive.penetrations]
-    requires: >-
-      Services passing through fire-resisting construction must be protected
-      by a tested system (collar, wrap, sealant or damper) that maintains the
-      FRL of the construction.
-    evidence:
-      type: noul
-      instructions: >-
-        Using `text`, does this passage specify how service penetrations
-        through fire-resisting walls or floors are protected?
-      criteria:
-        true: "It names a protection method for penetrations (fire collar, wrap, sealant, damper or a tested system) or requires one."
-        false: "It does not address penetration protection, or only states the wall or floor's fire rating without saying how penetrations are protected."
-      runs_on: [fire-passive, hydraulic, mechanical, electrical]
-    related_rules: []
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
-
-  - id: rule.as1851.fire-system-maintenance
-    title: Routine service of fire protection systems
-    instrument: AS 1851:2012 (Amdt 1, 2016)
-    clause: "AS 1851"
-    clause_verified: false
-    systems: [fire-active]
-    requires: >-
-      Installed fire protection systems must be serviced to AS 1851 schedules
-      by licensed personnel, with defects rectified and an annual fire safety
-      statement lodged under state legislation.
-    numbers:
-      - {claim: "Non-critical defects rectified within 30 days", verified: false}
-    related_rules: []
-    status: draft
-    sources:
-      - {seed: as-standards-reference.md, anchor: "## AS 1851 — Routine Service of Fire Protection Systems"}
+- id: rule.ncc.type-of-construction
+  title: Type of Construction required
+  instrument: NCC 2022 Volume One
+  clause: C2D2, Table C2D2
+  clause_verified: true
+  systems:
+  - fire-passive.rated-elements
+  - structure
+  applies_when:
+    all:
+    - det: ncc_class
+      any_of:
+      - '2'
+      - '3'
+      - '5'
+      - '6'
+      - 7a
+      - 7b
+      - '8'
+      - 9a
+      - 9b
+      - 9c
+  derives:
+    table: type_of_construction
+    inputs:
+    - ncc_class
+    - rise_in_storeys
+    gives: type_of_construction
+  requires: Use the baseline class/rise lookup only within its recorded scope; apply relevant exceptions
+    and jurisdictional provisions separately. Mixed classifications require C2D4 assessment before lookup.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the building's Type of Construction (Type A, Type
+      B or Type C)?
+    criteria:
+      true: It names Type A, Type B or Type C construction for the building or a part of it.
+      false: It does not name a Type of Construction, or only explains what the types mean in general.
+    runs_on:
+    - fire-passive
+    - structure
+  numbers:
+  - claim: 'Baseline Table C2D2: Class 2, 3 and 9 at rises 4+, 3, 2, 1 map to A, A, B, C.'
+    verified: true
+    primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability
+  - claim: 'Baseline Table C2D2: Class 5, 6, 7 and 8 at rises 4+, 3, 2, 1 map to A, B, C, C.'
+    verified: true
+    primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability
+  related_rules:
+  - rule.ncc.sprinkler-concession-type-of-construction
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Types of Construction (A, B, C)'
+  primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability
+  checked_on: '2026-09-29'
+  notes: Primary correction replaces the seed blanket Type B claim for rises 2 or 3. See determinants/VERIFICATION.md.
+    Table is draft; scope/exclusions must be checked before computation.
+- id: rule.ncc.sprinkler-concession-type-of-construction
+  title: Sprinkler concession for Type of Construction
+  instrument: NCC 2022 Volume One
+  clause: C1.6, Specification 17 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - fire-passive.rated-elements
+  - fire-active.sprinklers
+  applies_when:
+    all:
+    - det: sprinklered
+      is: true
+  requires: Record the exact approved provision or performance solution supporting any sprinkler-dependent
+    concession. The seed claim of a generic construction-type reduction is unverified and must not be
+    applied as a rule.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state that a sprinkler concession or sprinkler trade-off
+      is used to reduce the Type of Construction, fire resistance levels, compartment size or travel distances?
+    criteria:
+      true: It states that the design relies on sprinklers to reduce a fire requirement (Type of Construction,
+        FRL, compartment size or travel distance).
+      false: It mentions sprinklers without saying another fire requirement was reduced because of them.
+    runs_on:
+    - fire-passive
+    - fire-active.sprinklers
+  numbers:
+  - claim: A 4-storey Class 5 building needing Type A may use Type B if fully sprinklered
+    verified: false
+  related_rules:
+  - rule.ncc.type-of-construction
+  - rule.as1851.fire-system-maintenance
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Sprinkler Concessions for Type of Construction'
+  notes: 'Rejected generic seed proposition: 2019 C1.6 maps to C2D7 (Class 4 parts), not a general Class
+    5 sprinkler downgrade. Do not compute a reduction. Only record the exact approved concession or Performance
+    Solution. Primary check: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability'
+- id: rule.ncc.penetration-protection
+  title: Protection of service penetrations through fire-resisting construction
+  instrument: NCC 2022 Volume One
+  clause: C4D15
+  clause_verified: true
+  systems:
+  - fire-passive.penetrations
+  requires: 'Protect applicable service openings in elements requiring fire integrity or insulation using
+    the appropriate C4D15 route: tested systems, prescribed duct provisions or Specification 13 where
+    permitted. Confirm the installation and clause scope; do not infer compliance from a product name.'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage specify how service penetrations through fire-resisting
+      walls or floors are protected?
+    criteria:
+      true: It names a protection method for penetrations (fire collar, wrap, sealant, damper or a tested
+        system) or requires one.
+      false: It does not address penetration protection, or only states the wall or floor's fire rating
+        without saying how penetrations are protected.
+    runs_on:
+    - fire-passive
+    - hydraulic
+    - mechanical
+    - electrical
+  related_rules: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+  primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c4-protection-openings
+  checked_on: '2026-09-29'
+  notes: Primary locator is C4D15, formerly C3.15. Seed C4.5 is incorrect. Clause verification does not
+    verify a particular product or installation.
+- id: rule.as1851.fire-system-maintenance
+  title: Routine service of fire protection systems
+  instrument: AS 1851:2012 (Amdt 1, 2016)
+  clause: AS 1851
+  clause_verified: false
+  systems:
+  - fire-active
+  requires: Installed fire protection systems must be serviced to AS 1851 schedules by licensed personnel,
+    with defects rectified and an annual fire safety statement lodged under state legislation.
+  numbers:
+  - claim: Non-critical defects rectified within 30 days
+    verified: false
+  related_rules: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1851 — Routine Service of Fire Protection Systems'
+- id: rule.ncc.fire-element-frl
+  title: Fire resistance of complete elements
+  instrument: NCC 2022 Volume One
+  clause: Specification C1.1 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems: &id001
+  - fire-passive.rated-elements
+  - fire-passive.structural-fire-protection
+  requires: Establish the required fire resistance for each element and its connections from the applicable
+    construction type, classification and element conditions.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the required FRL for a building element?
+    criteria:
+      true: It explicitly states the required FRL for a building element.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id001
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire Resistance Level (FRL) Requirements'
+- id: rule.ncc.fire-compartment-limits
+  title: Fire compartment limits
+  instrument: NCC 2022 Volume One
+  clause: C3D3, Table C3D3
+  clause_verified: true
+  systems: &id002
+  - fire-passive.compartments
+  requires: Assess compartment area and volume using the applicable instrument table; the conflicting
+    seed sprinkler-based limits are not a design basis.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the floor area of a fire compartment?
+    criteria:
+      true: It explicitly states the floor area of a fire compartment.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id002
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire Compartment Sizes and Classification Separation'
+  numbers:
+  - claim: 'Baseline Table C3D3, Class 5 Type B: maximum area 5500 m2 and volume 33000 m3; not a universal
+      unsprinklered limit.'
+    verified: true
+    primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c3-compartmentation-and-separation
+  primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c3-compartmentation-and-separation
+  checked_on: '2026-09-29'
+  notes: Verified rows are in knowledge/tables/compartment_limits.yaml. Both conflicting seed figures
+    are rejected as universal Class 5 limits; see determinants/VERIFICATION.md. Exceptions and mixed-class
+    calculations are outside the baseline table.
+- id: rule.as1530.tested-fire-assemblies
+  title: Evidence for tested fire assemblies
+  instrument: AS 1530 series
+  clause: AS 1530.4
+  clause_verified: false
+  systems: &id003
+  - fire-passive.rated-elements
+  - fire-passive.penetrations
+  requires: Use test or assessed evidence applicable to the actual assembly, including substrate, joints,
+    fixings and penetrations.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a test report for the specified fire-resisting
+      assembly?
+    criteria:
+      true: It explicitly states a test report for the specified fire-resisting assembly.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id003
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1530 Series — Fire Testing'
+- id: rule.as1905.fire-doorsets
+  title: Tested fire doorsets
+  instrument: AS 1905.1:2015
+  clause: Installation and hardware; exact clauses pending
+  clause_verified: false
+  systems: &id004
+  - fire-passive.openings
+  requires: Specify and install the doorset as a tested assembly including frame, closer, latch, seals
+    and permitted hardware.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the tested hardware configuration for
+      a fire doorset?
+    criteria:
+      true: It explicitly states the tested hardware configuration for a fire doorset.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id004
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1905.1 — Components for the Protection of Openings in Fire-Resistant Walls — Part 1:
+      Fire-Resistant Doorsets'
+- id: rule.ncc.fire-egress
+  title: Required exit paths
+  instrument: NCC 2022 Volume One
+  clause: D1.2, D1.4, D1.6 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems: &id005
+  - access-egress.exits
+  requires: Determine required exits and dimensions from applicable occupancy, use and building conditions;
+    measure actual paths around obstructions.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the path used to measure travel to
+      an exit?
+    criteria:
+      true: It explicitly states the path used to measure travel to an exit.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id005
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Travel Distances and Number of Exits'
+  numbers:
+  - claim: 'Seed generic Class 5-9 travel distances: 20 m to a single exit and 40 m to alternative exits;
+      scope and exceptions unverified.'
+    verified: false
+  - claim: 'Seed generic exit counts: over 50 occupants two exits, over 500 three, over 1,000 four; not
+      accepted as lookup data.'
+    verified: false
+- id: rule.ncc.fire-isolated-exits
+  title: Fire isolation of exits
+  instrument: NCC 2022 Volume One
+  clause: D2.6 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems: &id006
+  - access-egress.exits
+  - fire-passive.rated-elements
+  requires: Establish which exits require fire isolation using the applicable NCC provisions, and detail
+    enclosure continuity and protected openings.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a fire-isolated exit enclosure?
+    criteria:
+      true: It explicitly states a fire-isolated exit enclosure.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id006
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+- id: rule.as1670.detection-design
+  title: Fire detection and alarm design
+  instrument: AS 1670.1:2018
+  clause: System design and commissioning; exact clauses pending
+  clause_verified: false
+  systems: &id007
+  - fire-active.detection
+  requires: Select detection suitable for the environment and document zones, alarm interfaces and commissioning.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the detector type selected for a room?
+    criteria:
+      true: It explicitly states the detector type selected for a room.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id007
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.1 — Fire Detection and Alarm Systems'
+- id: rule.as2118.sprinkler-design
+  title: Sprinkler hazard and supply design
+  instrument: AS 2118.1:2017
+  clause: Sections 3 and 5 (seed references)
+  clause_verified: false
+  systems: &id008
+  - fire-active.sprinklers
+  - fire-active.fire-water
+  requires: Use the actual occupancy, storage and process hazard to establish sprinkler design and prove
+    its water supply.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the sprinkler hazard classification
+      for the protected use?
+    criteria:
+      true: It explicitly states the sprinkler hazard classification for the protected use.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id008
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  numbers:
+  - claim: 'Seed OH2 example: 5.0 mm/min over 144 m2; approximately 720 L/min for 60 minutes plus hose
+      allowance.'
+    verified: false
+- id: rule.as2419.hydrant-design
+  title: Hydrant coverage and supply
+  instrument: AS 2419 series
+  clause: AS 2419.1; exact clauses pending
+  clause_verified: false
+  systems: &id009
+  - fire-active.hydrants
+  - fire-active.fire-water
+  requires: Coordinate hydrant coverage, brigade booster access and proven pressure and flow at the required
+    duty.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the hydrant coverage route?
+    criteria:
+      true: It explicitly states the hydrant coverage route.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id009
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+- id: rule.as2941.fire-pumps
+  title: Fire pumpset duty and support systems
+  instrument: AS 2941:2014
+  clause: Sections 5 and 6 (seed references)
+  clause_verified: false
+  systems: &id010
+  - fire-active.fire-water
+  requires: Verify pumpset duty, suction arrangement, drive, fuel or power supply, room ventilation and
+    access against the served fire systems.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the fire pump duty point?
+    criteria:
+      true: It explicitly states the fire pump duty point.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id010
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2941 — Fixed Fire Protection Installations — Pumpset Systems'
+- id: rule.as1670.warning-monitoring
+  title: Occupant warning and monitored alarms
+  instrument: AS 1670.3 and AS 1670.4:2018
+  clause: System design and commissioning; exact clauses pending
+  clause_verified: false
+  systems: &id011
+  - fire-active.occupant-warning
+  - fire-active.detection
+  requires: Specify warning zones, intelligibility and monitoring arrangements and record functional testing.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the occupant-warning zone arrangement?
+    criteria:
+      true: It explicitly states the occupant-warning zone arrangement.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id011
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom'
+- id: rule.as3786.smoke-alarms
+  title: Smoke alarm selection and interconnection
+  instrument: AS 3786:2014; applicable NCC and state legislation
+  clause: Location and interconnection provisions pending verification
+  clause_verified: false
+  systems: &id012
+  - fire-active.smoke-alarms
+  requires: Select compliant smoke alarms and establish the location, power and interconnection required
+    by the applicable project jurisdiction and building use.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state interconnection between dwelling smoke
+      alarms?
+    criteria:
+      true: It explicitly states interconnection between dwelling smoke alarms.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id012
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3786 — Smoke Alarms Using Scattered Light, Transmitted Light or Ionisation'
+- id: rule.as2444.extinguishers
+  title: Extinguisher selection and location
+  instrument: AS 2444:2001
+  clause: Selection and location; exact clauses pending
+  clause_verified: false
+  systems: &id013
+  - fire-active.portable-extinguishers
+  requires: Match extinguisher type to the evidenced fire risk and provide visible accessible locations
+    on actual travel paths.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the fire risk used to select an extinguisher
+      type?
+    criteria:
+      true: It explicitly states the fire risk used to select an extinguisher type.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id013
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2444 — Portable Fire Extinguishers and Fire Blankets — Selection and Location'
+- id: rule.ncc.external-wall-fire
+  title: External wall fire performance
+  instrument: NCC 2022 Volume One
+  clause: C1.9, C2.6, C2.7 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems: &id014
+  - fire-passive.external-walls
+  requires: Verify external wall materials and assembly evidence against applicable non-combustibility,
+    boundary and vertical-spread provisions; a marketing claim or test alone does not establish an accepted
+    pathway.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state test evidence for an external wall
+      material?
+    criteria:
+      true: It explicitly states test evidence for an external wall material.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id014
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Cladding Combustibility Requirements'
+- id: rule.as1428.accessible-paths
+  title: Accessible paths and doors
+  instrument: AS 1428 series; Premises Standards
+  clause: Applicable adopted edition and clauses pending
+  clause_verified: false
+  systems: &id015
+  - access-egress.accessible-access
+  requires: Coordinate clear openings, circulation space, landings, gradients, hardware and tactile guidance
+    on the continuous accessible path.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the clear opening width of an accessible
+      doorway?
+    criteria:
+      true: It explicitly states the clear opening width of an accessible doorway.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id015
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  numbers:
+  - claim: Seed accessible doorway clear opening 850 mm; ramp gradient 1:14; verify adopted edition and
+      exceptions.
+    verified: false
+- id: rule.ncc.accessible-sanitary
+  title: Accessible sanitary arrangements
+  instrument: NCC 2022 Volume One; AS 1428.1
+  clause: F2.4, D3.6, D3.7 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems: &id016
+  - access-egress.accessible-facilities
+  requires: Establish accessible sanitary provision and layout from applicable use and facilities, with
+    circulation spaces free of fixtures and obstructions.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the wheelchair circulation space in
+      an accessible sanitary compartment?
+    criteria:
+      true: It explicitly states the wheelchair circulation space in an accessible sanitary compartment.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id016
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Sanitary Facilities, Signage, and Hearing Augmentation'
+- id: rule.ncc.stairs-barriers
+  title: Stairs and barriers
+  instrument: NCC 2022 Volumes One and Two
+  clause: D2.13-D2.19, 3.9 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems: &id017
+  - access-egress.stairs-and-ramps
+  - access-egress.barriers
+  requires: Check stair geometry, landings, handrails and barriers against the applicable use and fall
+    conditions; code evaluates dimensions and loads.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the dimensions of stair risers and
+      goings?
+    criteria:
+      true: It explicitly states the dimensions of stair risers and goings.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id017
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+- id: rule.as1926.pool-barriers
+  title: Pool enclosure and gates
+  instrument: AS 1926 series; state pool legislation
+  clause: Applicable adopted edition and clauses pending
+  clause_verified: false
+  systems: &id018
+  - access-egress.pool-barriers
+  requires: Provide an enclosure with appropriate non-climbable zones and self-closing self-latching gates,
+    considering actual adjoining finished levels and state requirements.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a self-closing pool gate?
+    criteria:
+      true: It explicitly states a self-closing pool gate.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id018
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1926 Series — Swimming Pool Safety'
+  numbers:
+  - claim: Seed barrier height 1,200 mm and bottom gap maximum 100 mm; verify state and barrier configuration.
+    verified: false
+- id: rule.as1657.maintenance-access
+  title: Fixed maintenance access
+  instrument: AS 1657:2018
+  clause: Platforms, walkways, stairs and ladders; exact clauses pending
+  clause_verified: false
+  systems: &id019
+  - access-egress.maintenance-access
+  requires: Provide safe access and working space for inspection, maintenance and replacement of plant;
+    distinguish maintenance access from public circulation.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a permanent access route to rooftop
+      plant?
+    criteria:
+      true: It explicitly states a permanent access route to rooftop plant.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id019
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1657 — Fixed Platforms, Walkways, Stairways and Ladders — Design, Construction and
+      Installation'
+- id: rule.as1668.fire-mode
+  title: Mechanical fire mode
+  instrument: AS 1668.1:2015
+  clause: Smoke control; exact clauses pending
+  clause_verified: false
+  systems: &id020
+  - fire-active.smoke-control
+  requires: Specify smoke-control operating modes and verify them in integrated testing against the accepted
+    fire strategy.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the intended smoke-control response
+      to a fire alarm?
+    criteria:
+      true: It explicitly states the intended smoke-control response to a fire alarm.
+      false: It does not state this, or only mentions the system generally.
+    runs_on: *id020
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+- id: rule.ncc.internal-lining-fire-hazard
+  title: Internal lining fire-hazard evidence
+  instrument: NCC 2022 Volume One; adopted reaction-to-fire test standards
+  clause: Fire hazard properties; exact adopted provisions and test route awaiting primary verification
+  clause_verified: false
+  systems:
+  - fire-passive.linings-fire-hazard
+  - interiors
+  applies_when:
+    any:
+    - system_present: fire-passive.linings-fire-hazard
+    - system_present: interiors
+  requires: Select internal linings and floor coverings using the reaction-to-fire classification required
+    for their actual location, use and sprinkler conditions; an FRL or external-wall combustibility result
+    is not a substitute.
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1530 Series — Fire Testing'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage identify the reaction-to-fire classification for an
+      internal lining?
+    criteria:
+      true: It identifies a lining group, smoke classification or other specified reaction-to-fire classification
+        for the lining.
+      false: It only gives an FRL, an external-wall combustibility claim, or no lining classification.
+    runs_on:
+    - fire-passive.linings-fire-hazard
+    - interiors
+- id: rule.ncc.hose-reel-provision
+  title: Fire hose reel provision and coverage
+  instrument: NCC 2022 Volume One; adopted hose reel standard
+  clause: Fire hose reel provisions; historical seed E1.4 numbering (NCC 2019), current clause and exceptions
+    unverified
+  clause_verified: false
+  systems:
+  - fire-active.hydrants
+  applies_when:
+    any:
+    - system_present: fire-active.hydrants
+  requires: Determine hose reel applicability separately from hydrants and sprinklers, and coordinate
+    coverage along the actual accessible hose path under the adopted provision.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire Hydrant and Hose Reel Systems'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the hose reel coverage arrangement?
+    criteria:
+      true: It describes hose reel locations or the path used to establish hose reach.
+      false: It only mentions hydrants or sprinklers, or gives no hose reel coverage arrangement.
+    runs_on:
+    - fire-active.hydrants
+- id: rule.project.livable-adaptable-design-basis
+  title: Livable and adaptable housing construction basis
+  instrument: Applicable adopted livable housing provisions and project planning requirements
+  clause: Jurisdiction, approval-date applicability and applicable design standard to be verified
+  clause_verified: false
+  systems:
+  - access-egress.livable-housing
+  applies_when:
+    any:
+    - system_present: access-egress.livable-housing
+  requires: Record the applicable livable or adaptable housing basis and carry its spatial, entry, sanitary
+    and future grab-rail provisions into the actual dwelling variant; do not substitute a voluntary design
+    level for the adopted requirement.
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Accessibility and Livable Housing Design'
+  - seed: access-consultant-guide.md
+    anchor: '## Purpose and professional boundary'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage identify the applicable livable or adaptable housing
+      design basis?
+    criteria:
+      true: It names the project-required livable or adaptable housing standard, level or approval condition.
+      false: It only says accessible, or does not identify the design basis.
+    runs_on:
+    - access-egress.livable-housing
+- id: rule.project.fire-system-impairment
+  title: Fire-system impairment and restoration
+  instrument: Approved project fire strategy and impairment procedure
+  clause: Project-specific temporary protection and restoration requirements; not a universal statutory
+    clause
+  clause_verified: false
+  systems:
+  - fire-active.fire-control
+  - access-egress.exits
+  applies_when:
+    any:
+    - system_present: fire-active.fire-control
+    - system_present: access-egress.exits
+  requires: Before impairing a required measure in occupied areas, define accepted temporary protection
+    and safe egress, then verify restoration before withdrawing those controls.
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  - seed: building-remediation-rectification-guide.md
+    anchor: '## Safety, occupation and temporary controls'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state a restoration test for an impaired fire measure?
+    criteria:
+      true: It describes the test required to confirm restoration of the affected measure.
+      false: It only schedules the shutdown or states the system is being replaced.
+    runs_on:
+    - fire-active.fire-control
+    - fire-active.detection
+    - fire-active.fire-water
+- id: rule.project.integrated-fire-testing
+  title: Integrated fire-system operation tests
+  instrument: Approved project fire strategy and cause-and-effect matrix
+  clause: Project-specific normal, fire, failure and recovery acceptance scripts
+  clause_verified: false
+  systems:
+  - fire-active.fire-control
+  applies_when:
+    any:
+    - system_present: fire-active.fire-control
+  requires: Verify integrated fire-system behaviour against approved cause-and-effect scripts for the
+    specified operating modes, recording expected and actual outcomes and retesting defects; individual
+    trade certificates do not establish integrated operation.
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage report an integrated fire-system test result?
+    criteria:
+      true: It records an actual result from testing interaction between fire-related systems.
+      false: It only supplies a trade certificate, plans a future integrated test, or mentions commissioning
+        generally.
+    runs_on:
+    - fire-active.fire-control
+- id: rule.project.special-fire-hazard-basis
+  title: Special hazard suppression design basis
+  instrument: Approved project fire engineering and specialist suppression design
+  clause: Project-specific hazard assessment; applicable suppression standard to be verified
+  clause_verified: false
+  systems:
+  - fire-active.special-suppression
+  - fire-active.sprinklers
+  applies_when:
+    any:
+    - system_present: fire-active.special-suppression
+    - system_present: fire-active.sprinklers
+  requires: Establish suppression design from the actual process, storage, cold environment or other special
+    hazard and retain the operating assumptions on which that design depends.
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage state the hazard basis used for suppression design?
+    criteria:
+      true: It identifies the actual process, storage or equipment hazard used to select the suppression
+        design.
+      false: It only calls the building industrial or warehouse without stating the design hazard.
+    runs_on:
+    - fire-active.special-suppression
+    - fire-active.sprinklers

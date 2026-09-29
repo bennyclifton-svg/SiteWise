@@ -1,96 +1,236 @@
-# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
+# Fire cluster: child systems of fire-passive, fire-active and access-egress.
+# Siblings are mutually exclusive. `describes` and `excludes` are Jev
+# criterion text used to label passages, so they are literal and name the
+# boundary cases.
 version: 1
 systems:
+  # ---------------------------------------------------------------- fire-passive
   - id: fire-passive.rated-elements
     parent: fire-passive
     label: Fire-resisting building elements
     describes: >-
-      Walls, floors, columns, beams, shafts and ceilings that must achieve a
-      fire resistance level (FRL), and the Type of Construction that sets
-      those levels.
+      Walls, floors, columns, beams, roofs, shafts and ceilings that must
+      achieve a fire resistance level (FRL), the FRL triplet itself
+      (structural adequacy / integrity / insulation), the Type of
+      Construction (A, B or C) that sets those levels, and fire-rated
+      enclosures of stairs, lift shafts, risers and plant rooms.
     excludes: >-
-      Doors, shutters and dampers in those elements (openings), and
-      penetrations through them (penetrations).
+      Doors, shutters, windows and dampers in those elements (openings);
+      pipes, ducts and cables passing through them (penetrations); coatings,
+      boards and sprays applied to steel or timber to reach the FRL
+      (structural-fire-protection); external wall combustibility and
+      boundary distance (external-walls); and the layout of compartments
+      (compartments).
     status: draft
     sources:
       - {seed: ncc-reference-guide.md, anchor: "### Fire Resistance Level (FRL) Requirements"}
+      - {seed: ncc-reference-guide.md, anchor: "### Types of Construction (A, B, C)"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1530 Series — Fire Testing"}
 
   - id: fire-passive.compartments
     parent: fire-passive
     label: Fire compartments and separation
     describes: >-
-      Division of the building into fire compartments, compartment size
-      limits, and fire separation between classifications and between
-      sole-occupancy units.
+      Division of the building into fire compartments and smoke
+      compartments, compartment floor area and volume limits, fire
+      separation between different classifications, between sole-occupancy
+      units and common areas, around a Class 4 part, and fire-resisting
+      party walls between attached Class 1 dwellings including their
+      continuity to the roof.
     excludes: >-
       The FRL of the individual elements forming the separation
-      (rated-elements).
+      (rated-elements), acoustic separation (interiors), and external walls
+      facing a boundary (external-walls).
     status: draft
     sources:
       - {seed: ncc-reference-guide.md, anchor: "### Fire Compartment Sizes and Classification Separation"}
+      - {seed: residential-construction-guide.md, anchor: "### Party-wall fire rating"}
+      - {seed: mixed-use-construction-guide.md, anchor: "## Fire and acoustic separation between uses"}
 
   - id: fire-passive.penetrations
     parent: fire-passive
-    label: Service penetrations and joints
+    label: Service penetrations and fire stopping
     describes: >-
-      Pipes, ducts, cables and conduits passing through fire-resisting
-      construction, and the collars, wraps, sealants and tested systems that
-      protect them; control joints and perimeter gaps in rated construction.
+      Pipes, ducts, cables, conduits and cable trays passing through
+      fire-resisting walls, floors or shaft walls, and the fire collars,
+      wraps, sealants, pillows and tested fire-stopping systems that protect
+      them; control joints, perimeter gaps and junctions in fire-rated
+      construction; penetration registers.
     excludes: >-
-      Fire dampers in ductwork (openings).
+      Fire dampers in ductwork and fire doors (openings), and the routing
+      or sizing of the services themselves (hydraulic, mechanical,
+      electrical, comms-security).
     status: draft
     sources:
       - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
+      - {seed: fire-life-safety-guide.md, anchor: "## Passive fire protection"}
 
   - id: fire-passive.openings
     parent: fire-passive
     label: Protection of openings
     describes: >-
-      Fire doors, smoke doors, fire shutters, fire windows and fire dampers in
-      fire-resisting construction, with their closers, latches and hold-open
-      devices.
+      Fire doors, smoke doors, fire shutters, fire windows, fire-rated access
+      panels and fire dampers in fire-resisting construction, tested as
+      doorsets or assemblies, with their frames, closers, latches, hinges,
+      seals, vision panels, gaps and hold-open devices.
     excludes: >-
-      Ordinary internal doors (interiors).
+      Ordinary internal doors (interiors), the egress function of doors such
+      as swing direction and security locking (access-egress.egress-doors),
+      and smoke dampers operated by a smoke control system
+      (fire-active.smoke-control).
     status: draft
     sources:
       - {seed: ncc-reference-guide.md, anchor: "### Protection of Openings in Fire-Resisting Construction"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1905.1 — Components for the Protection of Openings in Fire-Resistant Walls — Part 1: Fire-Resistant Doorsets"}
 
+  - id: fire-passive.external-walls
+    parent: fire-passive
+    label: External wall fire performance
+    describes: >-
+      Fire performance of external walls and facades: non-combustible
+      external wall requirements, cladding and insulation combustibility,
+      aluminium composite panels, AS 5113 fire propagation testing, FRLs and
+      unprotected openings required by distance to a fire-source feature or
+      boundary, and spandrels or slab-edge protection against vertical fire
+      spread.
+    excludes: >-
+      Weatherproofing, thermal and structural performance of the facade
+      (envelope), and construction for bushfire attack levels
+      (bushfire-construction).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### External Wall Fire Resistance and Boundary Distance"}
+      - {seed: ncc-reference-guide.md, anchor: "### Cladding Combustibility Requirements"}
+      - {seed: ncc-reference-guide.md, anchor: "### Spandrel and Slab Edge Fire Protection"}
+
+  - id: fire-passive.bushfire-construction
+    parent: fire-passive
+    label: Bushfire-resistant construction
+    describes: >-
+      Construction of the building to resist bushfire attack under AS 3959:
+      bushfire attack level (BAL) assessment results, ember screening and
+      sealing of openings and gaps, BAL-rated glazing, shutters, doors,
+      cladding, decking and roofing, and asset protection zones.
+    excludes: >-
+      General external wall combustibility under NCC Part C
+      (external-walls), and planning-level bushfire mapping and vegetation
+      management as land use (site).
+    status: draft
+    notes: Bushfire detail is envelope-heavy; the envelope cluster may also label these passages.
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 3959 — Construction of Buildings in Bushfire-Prone Areas"}
+      - {seed: ncc-reference-guide.md, anchor: "### Construction Requirements by BAL Rating"}
+
+  - id: fire-passive.structural-fire-protection
+    parent: fire-passive
+    label: Applied fire protection to structure
+    describes: >-
+      Fire protection applied to structural members to reach their FRL:
+      intumescent coatings, fire-rated boards, sprayed fire protection and
+      encasement of steel, and the fire protection of structural connections
+      and fixings.
+    excludes: >-
+      Structural design of the members for strength (structure) and the FRL
+      the element must achieve (rated-elements).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Timber, Masonry, and Fire Resistance of Structural Materials"}
+      - {seed: ncc-reference-guide.md, anchor: "### Fire Resistance Level (FRL) Requirements"}
+
+  - id: fire-passive.linings-fire-hazard
+    parent: fire-passive
+    label: Fire hazard properties of linings and materials
+    describes: >-
+      Early fire hazard properties of internal wall and ceiling linings,
+      floor coverings and other materials: group numbers, spread of flame,
+      smoke development and heat release (AS 1530.3, AS 5637.1), including
+      linings in fire-isolated exits and public corridors.
+    excludes: >-
+      Combustibility of external walls and cladding (external-walls) and
+      fire resistance of elements (rated-elements).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1530 Series — Fire Testing"}
+
+  # ---------------------------------------------------------------- fire-active
   - id: fire-active.detection
     parent: fire-active
-    label: Detection and alarm
+    label: Fire detection and alarm system
     describes: >-
-      Smoke and heat detectors, smoke alarms, fire indicator panels, manual
-      call points and alarm monitoring to the fire brigade.
+      Fire detection and alarm systems to AS 1670.1: smoke, heat, beam and
+      aspirating detectors reporting to a fire indicator panel (FIP),
+      conventional or addressable systems, manual call points, detection
+      zones, and alarm transmission to a monitoring centre and fire brigade
+      (AS 1670.3).
     excludes: >-
-      Occupant warning and emergency intercom systems (occupant-warning).
+      Standalone smoke alarms in dwellings (smoke-alarms), occupant warning
+      speakers and warden intercoms (occupant-warning), and the
+      cause-and-effect matrix linking the FIP to other systems
+      (fire-control).
     status: draft
     sources:
       - {seed: as-standards-reference.md, anchor: "## AS 1670.1 — Fire Detection and Alarm Systems"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom"}
+
+  - id: fire-active.smoke-alarms
+    parent: fire-active
+    label: Smoke alarms in dwellings and SOUs
+    describes: >-
+      Standalone smoke alarms to AS 3786 with built-in sounders in Class 1
+      dwellings and in sole-occupancy units: photoelectric or ionisation
+      type, hardwired or 10-year non-removable battery, interconnection, and
+      locations in bedrooms, hallways and each storey.
+    excludes: >-
+      Smoke detectors reporting to a fire indicator panel (detection).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 3786 — Smoke Alarms Using Scattered Light, Transmitted Light or Ionisation"}
+      - {seed: ncc-reference-guide.md, anchor: "### Fire Safety, Smoke Alarms, and Bushfire Construction"}
+
+  - id: fire-active.occupant-warning
+    parent: fire-active
+    label: Occupant warning and emergency intercom
+    describes: >-
+      Building occupant warning systems and emergency warning and
+      intercommunication systems (EWIS) to AS 1670.4: evacuation tones and
+      voice messages, speaker coverage and intelligibility, warden
+      intercom phones, and staged or zoned evacuation messaging.
+    excludes: >-
+      Detectors, call points and the fire indicator panel (detection), and
+      general public address or background music (comms-security).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom"}
 
   - id: fire-active.sprinklers
     parent: fire-active
     label: Automatic fire sprinklers
     describes: >-
-      Sprinkler heads, pipework, control and alarm valves, hazard
-      classification and design density, and sprinkler water supply design
-      (wet, dry, pre-action or deluge).
+      Sprinkler heads, pipework, control and alarm valves, flow switches,
+      hazard classification and design density, system type (wet, dry,
+      pre-action or deluge), residential sprinkler systems (AS 2118.4) and
+      sprinkler coverage of ceilings, voids and car parks.
     excludes: >-
-      Fire hydrants and hose reels (hydrants), and fire pumps and tanks shared
-      between systems (fire-water).
+      Fire hydrants and hose reels (hydrants), fire pumps and tanks shared
+      between systems (fire-water), and gaseous or foam suppression
+      (special-suppression).
     status: draft
     sources:
       - {seed: as-standards-reference.md, anchor: "## AS 2118 Series — Automatic Fire Sprinkler Systems"}
+      - {seed: ncc-reference-guide.md, anchor: "### Automatic Fire Sprinkler Systems"}
 
   - id: fire-active.hydrants
     parent: fire-active
     label: Fire hydrants and hose reels
     describes: >-
-      Fire hydrant systems, booster assemblies, hydrant coverage, and fire
-      hose reels.
+      Fire hydrant systems, hydrant valves and outlets, hose-lay coverage,
+      fire brigade booster assemblies and their location, pressure
+      sustaining and zone valves, and fire hose reels.
     excludes: >-
       Sprinklers (sprinklers) and pumps and tanks (fire-water).
     status: draft
     sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2419 Series — Fire Hydrant Installations"}
       - {seed: ncc-reference-guide.md, anchor: "### Fire Hydrant and Hose Reel Systems"}
 
   - id: fire-active.fire-water
@@ -98,10 +238,238 @@ systems:
     label: Fire-water supply, pumps and tanks
     describes: >-
       The water supply serving sprinklers and hydrants: town main connection
-      and flow and pressure testing, fire pumps, pumpsets, storage tanks and
-      boosters.
+      and flow and pressure testing, fire pumpsets (electric, diesel,
+      jockey), pump rooms, fire-water storage tanks, static bushfire water
+      supplies and diesel fuel storage for fire pumps.
     excludes: >-
-      Domestic cold and hot water (hydraulic).
+      Domestic cold and hot water (hydraulic), and the sprinkler or hydrant
+      pipework downstream of the pumps (sprinklers, hydrants).
     status: draft
     sources:
       - {seed: as-standards-reference.md, anchor: "## AS 2941 — Fixed Fire Protection Installations — Pumpset Systems"}
+      - {seed: hydraulic-services-guide.md, anchor: "### Fire-water boundary"}
+
+  - id: fire-active.smoke-control
+    parent: fire-active
+    label: Smoke control and pressurisation
+    describes: >-
+      Smoke hazard management systems to AS 1668.1: stair and lobby
+      pressurisation, smoke exhaust, zone smoke control, car-park smoke
+      exhaust mode, smoke dampers and fans operating in fire mode, and their
+      pressure and door-force criteria.
+    excludes: >-
+      Day-to-day ventilation and air-conditioning (mechanical), fire dampers
+      at rated penetrations (fire-passive.openings), and the
+      cause-and-effect matrix (fire-control).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1668 Series — Ventilation and Air-Conditioning"}
+      - {seed: mechanical-services-guide.md, anchor: "### Smoke control and fire interfaces"}
+
+  - id: fire-active.emergency-lighting
+    parent: fire-active
+    label: Emergency lighting and exit signs
+    describes: >-
+      Emergency escape lighting and illuminated exit signs to AS/NZS 2293:
+      illuminance on escape paths, battery duration, central battery or
+      self-contained luminaires, exit sign locations and legibility, and
+      discharge testing.
+    excludes: >-
+      General lighting and lighting controls (electrical), and non-emergency
+      wayfinding and tactile signage (access-egress.accessible-access).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 2293 Series — Emergency Escape Lighting and Exit Signs"}
+
+  - id: fire-active.portable-extinguishers
+    parent: fire-active
+    label: Portable extinguishers and fire blankets
+    describes: >-
+      Portable fire extinguishers and fire blankets to AS 2444: type
+      selected for the fire class, location, travel distance to the nearest
+      unit, mounting and signage.
+    excludes: >-
+      Fire hose reels (hydrants).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2444 — Portable Fire Extinguishers and Fire Blankets — Selection and Location"}
+
+  - id: fire-active.fire-control
+    parent: fire-active
+    label: Fire control centre and cause and effect
+    describes: >-
+      The cause-and-effect matrix and fire-mode sequences that link fire
+      detection to other systems (fans, dampers, doors, lifts, security,
+      power, process shutdown), fire control rooms or centres, fire brigade
+      panels, and integrated fire systems testing.
+    excludes: >-
+      The design of each linked system itself (detection, smoke-control,
+      mechanical, vertical-transport, comms-security).
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Smoke control, controls and cause and effect"}
+      - {seed: electrical-services-guide.md, anchor: "## Life-safety and specialist interfaces"}
+
+  - id: fire-active.special-suppression
+    parent: fire-active
+    label: Special suppression systems
+    describes: >-
+      Fire suppression other than water sprinklers and hydrants: gaseous
+      suppression, foam systems and suppression for special hazards such as
+      data rooms, dangerous goods, batteries or process plant.
+    excludes: >-
+      Wet, dry, pre-action and deluge sprinkler systems (sprinklers) and
+      portable extinguishers (portable-extinguishers).
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Active systems and water supply"}
+
+  # ---------------------------------------------------------------- access-egress
+  - id: access-egress.exits
+    parent: access-egress
+    label: Exits, travel distances and escape routes
+    describes: >-
+      Provision for escape: number and location of exits, travel distances,
+      alternative paths, dead ends, exit and path widths, occupant load,
+      whether exits must be fire-isolated stairs or passageways, discharge to
+      a road or open space, and accessible egress such as areas of refuge.
+    excludes: >-
+      Fire rating of exit enclosures (fire-passive.rated-elements), stair
+      and ramp geometry (stairs-and-ramps), exit doors and their hardware
+      (egress-doors), and exit signs (fire-active.emergency-lighting).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Travel Distances and Number of Exits"}
+      - {seed: ncc-reference-guide.md, anchor: "### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress"}
+
+  - id: access-egress.stairs-and-ramps
+    parent: access-egress
+    label: Stairs, ramps and handrails
+    describes: >-
+      Geometry of stairways and ramps in buildings: riser and going
+      dimensions and their consistency, winders, landings, stair widths,
+      ramp gradients and landings, nosings, and handrails on stairs and
+      ramps.
+    excludes: >-
+      Balustrades and barriers against falls (barriers), plant access
+      stairs, ladders and walkways under AS 1657 (maintenance-access), and
+      the structural design of stairs (structure).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Stairways, Ramps, and Barriers"}
+
+  - id: access-egress.barriers
+    parent: access-egress
+    label: Balustrades and barriers against falls
+    describes: >-
+      Balustrades, guards and barriers at edges of floors, balconies,
+      landings, mezzanines, stairs and raised platforms: when a barrier is
+      required, its height, openings and climbability.
+    excludes: >-
+      Handrails for support on stairs and ramps (stairs-and-ramps), pool
+      safety barriers (pool-barriers), and plant guardrails under AS 1657
+      (maintenance-access).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Stairways, Ramps, and Barriers"}
+
+  - id: access-egress.egress-doors
+    parent: access-egress
+    label: Egress doors and hardware
+    describes: >-
+      Doors on exits and paths of travel as egress elements: swing direction,
+      operation without a key, latches and hardware, electronic locks and
+      their release on fire alarm or power failure, fail-safe or fail-secure
+      behaviour, turnstiles and security gates in exit paths, and door
+      opening forces.
+    excludes: >-
+      Fire rating, closers, seals and hold-open devices of fire doors
+      (fire-passive.openings), accessible door clear widths and luminance
+      contrast (accessible-access), and ordinary door finishes (interiors).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Travel Distances and Number of Exits"}
+      - {seed: ict-av-security-guide.md, anchor: "## Electronic security"}
+
+  - id: access-egress.accessible-access
+    parent: access-egress
+    label: Accessible entrances and paths of travel
+    describes: >-
+      Access for people with a disability to and through Class 2 to 9
+      buildings: accessible entrances, continuous accessible paths of travel,
+      clear widths, thresholds, accessible doorways, tactile ground surface
+      indicators, luminance contrast, braille and tactile signage, and
+      accessible car parking spaces.
+    excludes: >-
+      Accessible toilets, hearing augmentation and other facilities
+      (accessible-facilities), access inside dwellings under livable housing
+      rules (livable-housing), ramp geometry (stairs-and-ramps) and lifts
+      (vertical-transport).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Accessible Entrances and Paths of Travel"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1428 Series — Design for Access and Mobility"}
+
+  - id: access-egress.accessible-facilities
+    parent: access-egress
+    label: Accessible facilities
+    describes: >-
+      Accessible sanitary compartments and showers, their number and
+      distribution, circulation space and grab rails; hearing augmentation
+      systems; accessible seating and counters; and changing-places or other
+      inclusion facilities.
+    excludes: >-
+      General sanitary fixture numbers and plumbing (hydraulic), entrances
+      and paths of travel (accessible-access), and bathrooms inside dwellings
+      under livable housing rules (livable-housing).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Accessible Sanitary Facilities, Signage, and Hearing Augmentation"}
+      - {seed: ncc-reference-guide.md, anchor: "### Accessible Facilities and Microbial Control"}
+
+  - id: access-egress.livable-housing
+    parent: access-egress
+    label: Livable and adaptable housing
+    describes: >-
+      Accessibility inside Class 1a dwellings and Class 2 sole-occupancy
+      units: step-free entry, entry-level door and corridor widths, an
+      entry-level toilet, bathroom wall reinforcement for future grab rails,
+      hobless showers, and adaptable housing (AS 4299) or livable housing
+      levels (Silver, Gold, Platinum).
+    excludes: >-
+      Accessible common areas and paths in Class 2 to 9 buildings
+      (accessible-access and accessible-facilities).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Mandatory Silver Level Provisions"}
+      - {seed: residential-construction-guide.md, anchor: "## Accessibility and Livable Housing Design"}
+
+  - id: access-egress.pool-barriers
+    parent: access-egress
+    label: Swimming pool safety barriers
+    describes: >-
+      Child-resistant barriers around swimming pools and spas to AS 1926.1
+      and state pool law: barrier height, gaps, non-climbable zones, gates
+      and latches, building walls, doors and windows forming part of the
+      barrier, and pool registration and CPR signage.
+    excludes: >-
+      Pool shells, pool plant and recirculation (hydraulic, structure) and
+      general balustrades (barriers).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1926 Series — Swimming Pool Safety"}
+      - {seed: residential-construction-guide.md, anchor: "## Swimming Pools and Pool Safety"}
+
+  - id: access-egress.maintenance-access
+    parent: access-egress
+    label: Plant and maintenance access
+    describes: >-
+      Fixed platforms, walkways, stairways, ladders and guardrails for access
+      to plant, roofs and equipment under AS 1657: loads, guardrail heights,
+      toeplates, ladder cages and slip resistance.
+    excludes: >-
+      Stairs and barriers in areas used by occupants or the public
+      (stairs-and-ramps, barriers).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1657 — Fixed Platforms, Walkways, Stairways and Ladders — Design, Construction and Installation"}

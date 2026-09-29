@@ -1,59 +1,468 @@
-# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
 version: 1
 failure_modes:
-  - id: fm.plastic-pipe-without-fire-collar
-    attaches_to: {interface: if.services-penetrate-fire-rated-construction}
-    severity: life-safety
-    detector:
-      type: noul
-      instructions: >-
-        Using `text`, does this passage show or describe a plastic pipe
-        passing through a fire-resisting wall or floor without a fire collar
-        or other tested penetration protection?
-      criteria:
-        true: "It describes a plastic pipe through fire-rated construction and states or shows no collar or tested protection at that penetration."
-        false: "It does not describe such a penetration, or the penetration it describes is protected."
-      runs_on: [fire-passive.penetrations, hydraulic]
-    flag_when: true
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
-
-  - id: fm.fire-water-supply-assessed-late
-    attaches_to: {interface: if.fire-water-supplies-sprinklers}
-    severity: cost
-    detector:
-      type: noul
-      instructions: >-
-        Using `text`, does this passage state that the fire-water supply,
-        flow test or sprinkler hydraulic calculation is still to be done or
-        is excluded?
-      criteria:
-        true: "It says the water supply assessment, flow test or hydraulic calculation is outstanding, to be confirmed, deferred or excluded."
-        false: "It reports the assessment as done, or does not mention it."
-      runs_on: [fire-active, hydraulic]
-    flag_when: true
-    status: draft
-    sources:
-      - {seed: as-standards-reference.md, anchor: "## AS 2118 Series — Automatic Fire Sprinkler Systems"}
-
-  - id: fm.fire-door-hold-open-not-released-on-alarm
-    attaches_to: {system: fire-passive.openings}
-    severity: life-safety
-    detector:
-      type: noul
-      instructions: >-
-        Using `text`, does this passage specify hold-open devices on fire or
-        smoke doors?
-      criteria:
-        true: "It specifies hold-open devices, magnetic holders or door retainers on fire or smoke doors."
-        false: "It does not mention hold-open devices on fire or smoke doors."
-      runs_on: [fire-passive.openings]
-    flag_when: true
-    notes: >-
-      The detector only finds hold-open devices. Code pairs it with the
-      release-on-alarm question (to be written by the fire cluster) and flags
-      when a hold-open is specified and release on alarm is not.
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Protection of Openings in Fire-Resisting Construction"}
+- id: fm.plastic-pipe-without-fire-collar
+  attaches_to:
+    interface: if.services-penetrate-fire-rated-construction
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage show or describe a plastic pipe passing through a fire-resisting
+      wall or floor without a fire collar or other tested penetration protection?
+    criteria:
+      true: It describes a plastic pipe through fire-rated construction and states or shows no collar
+        or tested protection at that penetration.
+      false: It does not describe such a penetration, or the penetration it describes is protected.
+    runs_on:
+    - fire-passive.penetrations
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+- id: fm.fire-water-supply-assessed-late
+  attaches_to:
+    interface: if.fire-water-supplies-sprinklers
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state that issued fire-system design, tender
+      or installation relies on a water supply that has not been verified?
+    criteria:
+      true: It explicitly says the issued design, tender or installation relies on an outstanding, excluded
+        or overdue supply assessment, flow test or hydraulic calculation.
+      false: A future assessment in an early plan, a general outstanding task without this dependency,
+        silence, or completed verification is insufficient.
+    runs_on:
+    - fire-active.fire-water
+    - fire-active.sprinklers
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  notes: Pending evidence alone is not a late-assessment defect. The passage must explicitly tie unverified
+    supply to an issued design, tender or installation relying on it.
+- id: fm.fire-door-hold-open-not-released-on-alarm
+  attaches_to:
+    system: fire-passive.openings
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a fire-door hold-open device that fails
+      to release on alarm?
+    criteria:
+      true: It explicitly states a fire-door hold-open device that fails to release on alarm.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.openings
+    - fire-active.detection
+  flag_when: true
+  notes: This detector requires an explicit failure statement. Missing release evidence is a review gap,
+    not proof of failed hardware.
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+- id: fm.fire-alarm-releases-doors
+  attaches_to:
+    interface: if.fire-alarm-releases-doors
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a fire door held open by a wedge?
+    criteria:
+      true: It explicitly states a fire door held open by a wedge.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - fire-passive.openings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1905.1 — Components for the Protection of Openings in Fire-Resistant Walls — Part 1:
+      Fire-Resistant Doorsets'
+- id: fm.fire-detection-controls-smoke-plant
+  attaches_to:
+    interface: if.fire-detection-controls-smoke-plant
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a conflict between the smoke-control
+      matrix and installed fan operation?
+    criteria:
+      true: It explicitly states a conflict between the smoke-control matrix and installed fan operation.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - mechanical.fire-mode-air-systems
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+- id: fm.fire-alarm-releases-security
+  attaches_to:
+    interface: if.fire-alarm-releases-security
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a security lock preventing emergency
+      egress?
+    criteria:
+      true: It explicitly states a security lock preventing emergency egress.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - comms-security
+    - access-egress.egress-doors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+- id: fm.fire-alarm-controls-lift
+  attaches_to:
+    interface: if.fire-alarm-controls-lift
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a failed lift fire-response test?
+    criteria:
+      true: It explicitly states a failed lift fire-response test.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - vertical-transport
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+- id: fm.essential-power-supplies-fire-water
+  attaches_to:
+    interface: if.essential-power-supplies-fire-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a shared unprotected electrical feed
+      serving the fire pump?
+    criteria:
+      true: It explicitly states a shared unprotected electrical feed serving the fire pump.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - electrical
+    - fire-active.fire-water
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2941 — Fixed Fire Protection Installations — Pumpset Systems'
+- id: fm.fire-tanks-load-structure
+  attaches_to:
+    interface: if.fire-tanks-load-structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a fire tank load omitted from structural
+      design?
+    criteria:
+      true: It explicitly states a fire tank load omitted from structural design.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.fire-water
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: fm.sprinklers-share-ceiling-services
+  attaches_to:
+    interface: if.sprinklers-share-ceiling-services
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a duct obstructing sprinkler discharge?
+    criteria:
+      true: It explicitly states a duct obstructing sprinkler discharge.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.sprinklers
+    - mechanical.air-distribution
+    - interiors
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+- id: fm.fire-stopping-before-concealment
+  attaches_to:
+    interface: if.fire-stopping-before-concealment
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state fire stopping concealed before inspection?
+    criteria:
+      true: It explicitly states fire stopping concealed before inspection.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.penetrations
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+- id: fm.fire-facade-slab-edge
+  attaches_to:
+    interface: if.fire-facade-slab-edge
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an unprotected gap at the facade and
+      floor slab junction?
+    criteria:
+      true: It explicitly states an unprotected gap at the facade and floor slab junction.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.compartments
+    - envelope
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Spandrel and Slab Edge Fire Protection'
+- id: fm.fire-and-acoustic-separation
+  attaches_to:
+    interface: if.fire-and-acoustic-separation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a service penetration that bypasses
+      acoustic separation?
+    criteria:
+      true: It explicitly states a service penetration that bypasses acoustic separation.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.compartments
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+- id: fm.accessible-fixtures-clear-circulation
+  attaches_to:
+    interface: if.accessible-fixtures-clear-circulation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a fixture obstructing the accessible
+      circulation space?
+    criteria:
+      true: It explicitly states a fixture obstructing the accessible circulation space.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - access-egress.accessible-facilities
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Sanitary Facilities, Signage, and Hearing Augmentation'
+- id: fm.fire-warning-acoustic-environment
+  attaches_to:
+    interface: if.fire-warning-acoustic-environment
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state evacuation messages reported unintelligible?
+    criteria:
+      true: It explicitly states evacuation messages reported unintelligible.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.occupant-warning
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom'
+- id: fm.damper-access-maintained
+  attaches_to:
+    interface: if.damper-access-maintained
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a fire damper inaccessible for inspection?
+    criteria:
+      true: It explicitly states a fire damper inaccessible for inspection.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.openings
+    - access-egress.maintenance-access
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4254 Series — Ductwork for Air-Handling Systems in Buildings'
+- id: fm.lining-frl-substituted-for-fire-hazard
+  attaches_to:
+    interface: if.lining-selection-fire-classification
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an FRL being accepted in place of
+      the required internal-lining reaction-to-fire evidence?
+    criteria:
+      true: It explicitly reports an FRL being accepted in place of the required internal-lining reaction-to-fire
+        evidence.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-passive.linings-fire-hazard
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1530 Series — Fire Testing'
+- id: fm.party-wall-stops-in-roof
+  attaches_to:
+    interface: if.party-wall-roof-continuity
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a party wall stopping short of its
+      required roof termination?
+    criteria:
+      true: It explicitly reports a party wall stopping short of its required roof termination.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-passive.compartments
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: multi-dwelling-guide.md
+    anchor: '## Party-wall fire-rating'
+- id: fm.occupied-stage-shared-fire-unavailable
+  attaches_to:
+    interface: if.staged-occupation-shared-fire-systems
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report occupation of a stage while a shared
+      fire measure required for that stage is unavailable?
+    criteria:
+      true: It explicitly reports occupation of a stage while a shared fire measure required for that
+        stage is unavailable.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.exits
+    - fire-active.fire-control
+    - fire-active.fire-water
+  flag_when: true
+  status: draft
+  sources:
+  - seed: mixed-use-construction-guide.md
+    anchor: '## Staged handover by use'
+  - seed: multi-dwelling-guide.md
+    anchor: '## Staging guidance'
+- id: fm.brigade-access-obstructed
+  attaches_to:
+    interface: if.brigade-access-to-fire-facilities
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an obstruction preventing the required
+      emergency-service access to a booster or fire-control facility?
+    criteria:
+      true: It explicitly reports an obstruction preventing the required emergency-service access to a
+        booster or fire-control facility.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.hydrants
+    - fire-active.fire-control
+    - site
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '### Pre-DA consultation and development application [development_application]'
+- id: fm.fire-impairment-without-temporary-protection
+  attaches_to:
+    rule: rule.project.fire-system-impairment
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a required fire measure isolated in
+      an occupied area without its specified temporary protection?
+    criteria:
+      true: It explicitly reports a required fire measure isolated in an occupied area without its specified
+        temporary protection.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.fire-control
+    - fire-active.detection
+    - fire-active.fire-water
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  - seed: building-remediation-rectification-guide.md
+    anchor: '## Safety, occupation and temporary controls'
+- id: fm.integrated-fire-test-failed
+  attaches_to:
+    rule: rule.project.integrated-fire-testing
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a failed integrated fire-system test
+      remaining unresolved at proposed occupation?
+    criteria:
+      true: It explicitly reports a failed integrated fire-system test remaining unresolved at proposed
+        occupation.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.fire-control
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+- id: fm.suppression-hazard-changed
+  attaches_to:
+    rule: rule.project.special-fire-hazard-basis
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a changed storage or process hazard
+      outside the accepted suppression design basis?
+    criteria:
+      true: It explicitly reports a changed storage or process hazard outside the accepted suppression
+        design basis.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.special-suppression
+    - fire-active.sprinklers
+  flag_when: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'

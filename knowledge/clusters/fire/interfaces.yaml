@@ -1,92 +1,677 @@
-# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
 version: 1
 interfaces:
-  - id: if.services-penetrate-fire-rated-construction
-    type: penetrates
-    from: [hydraulic, mechanical, electrical, comms-security]
-    to: [fire-passive.penetrations]
-    summary: >-
-      Every pipe, duct and cable that passes through fire-resisting
-      construction breaks the compartment unless it is protected by a tested
-      system. Late services changes are the usual cause of unprotected
-      penetrations.
-    governed_by: [rule.ncc.penetration-protection]
-    responsibility: >-
-      Each services designer locates penetrations; the passive fire installer
-      protects them with tested systems; the certifier inspects before
-      linings close.
-    resolved_when:
-      - type: noul
-        instructions: >-
-          Using `text`, does this passage specify how service penetrations
-          through fire-resisting walls or floors are protected?
-        criteria:
-          true: "It names a protection method (fire collar, wrap, sealant, damper or a tested system) or requires one."
-          false: "It does not address penetration protection."
-        runs_on: [fire-passive.penetrations, hydraulic, mechanical, electrical]
-    failure_modes: [fm.plastic-pipe-without-fire-collar]
-    cross_cluster: true
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
-      - {seed: fire-life-safety-guide.md, anchor: "## Passive fire protection"}
-
-  - id: if.fire-water-supplies-sprinklers
-    type: supplies
-    from: [fire-active.fire-water]
-    to: [fire-active.sprinklers, fire-active.hydrants]
-    applies_when:
-      any:
-        - {system_present: fire-active.sprinklers}
-        - {system_present: fire-active.hydrants}
-    summary: >-
-      Sprinklers and hydrants need a proven water supply. Where town main
-      pressure or flow is inadequate, pumps and tanks follow, and with them
-      plant space, structural load and power supply.
-    governed_by: []
-    resolved_when:
-      - type: noul
-        instructions: >-
-          Using `text`, does this passage state the results of a town main
-          flow and pressure test, or state the water supply source for the
-          sprinkler or hydrant system?
-        criteria:
-          true: "It reports flow or pressure test results, or names the supply source (town main, tank, pump)."
-          false: "It does not describe the fire-water supply."
-        runs_on: [fire-active, hydraulic]
-    failure_modes: [fm.fire-water-supply-assessed-late]
-    cross_cluster: false
-    status: draft
-    sources:
-      - {seed: as-standards-reference.md, anchor: "## AS 2118 Series — Automatic Fire Sprinkler Systems"}
-      - {seed: hydraulic-services-guide.md, anchor: "### Fire-water boundary"}
-
-  - id: if.fire-construction-depends-on-sprinklers
-    type: depends_on
-    from: [fire-passive.rated-elements, fire-passive.compartments]
-    to: [fire-active.sprinklers]
-    applies_when:
-      all:
-        - {det: sprinklered, is: true}
-    summary: >-
-      When a sprinkler concession lowers the Type of Construction, fire
-      resistance levels, compartment sizes or travel distances, the
-      building's passive fire compliance depends on the sprinklers staying
-      installed and maintained for the life of the building.
-    governed_by:
-      - rule.ncc.sprinkler-concession-type-of-construction
-      - rule.as1851.fire-system-maintenance
-    resolved_when:
-      - type: noul
-        instructions: >-
-          Using `text`, does this passage state that a sprinkler concession or
-          sprinkler trade-off is used to reduce another fire requirement?
-        criteria:
-          true: "It states that sprinklers are relied on to reduce Type of Construction, FRLs, compartment size or travel distance."
-          false: "It does not state any reliance on sprinklers."
-        runs_on: [fire-passive, fire-active.sprinklers]
-    failure_modes: []
-    cross_cluster: false
-    status: draft
-    sources:
-      - {seed: ncc-reference-guide.md, anchor: "### Sprinkler Concessions for Type of Construction"}
+- id: if.services-penetrate-fire-rated-construction
+  type: penetrates
+  from:
+  - hydraulic
+  - mechanical
+  - electrical
+  - comms-security
+  to:
+  - fire-passive.penetrations
+  summary: Every pipe, duct and cable that passes through fire-resisting construction breaks the compartment
+    unless it is protected by a tested system. Late services changes are the usual cause of unprotected
+    penetrations.
+  governed_by:
+  - rule.ncc.penetration-protection
+  responsibility: Each services designer locates penetrations; the passive fire installer protects them
+    with tested systems; the certifier inspects before linings close.
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage specify how service penetrations through fire-resisting
+      walls or floors are protected?
+    criteria:
+      true: It names a protection method (fire collar, wrap, sealant, damper or a tested system) or requires
+        one.
+      false: It does not address penetration protection.
+    runs_on:
+    - fire-passive.penetrations
+    - hydraulic
+    - mechanical
+    - electrical
+  failure_modes:
+  - fm.plastic-pipe-without-fire-collar
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+- id: if.fire-water-supplies-sprinklers
+  type: supplies
+  from:
+  - fire-active.fire-water
+  to:
+  - fire-active.sprinklers
+  - fire-active.hydrants
+  applies_when:
+    any:
+    - system_present: fire-active.sprinklers
+    - system_present: fire-active.hydrants
+  summary: Sprinklers and hydrants need a proven water supply. Where town main pressure or flow is inadequate,
+    pumps and tanks follow, and with them plant space, structural load and power supply.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the results of a town main flow and pressure test,
+      or state the water supply source for the sprinkler or hydrant system?
+    criteria:
+      true: It reports flow or pressure test results, or names the supply source (town main, tank, pump).
+      false: It does not describe the fire-water supply.
+    runs_on:
+    - fire-active
+    - hydraulic
+  failure_modes:
+  - fm.fire-water-supply-assessed-late
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  - seed: hydraulic-services-guide.md
+    anchor: '### Fire-water boundary'
+- id: if.fire-construction-depends-on-sprinklers
+  type: depends_on
+  from:
+  - fire-passive.rated-elements
+  - fire-passive.compartments
+  to:
+  - fire-active.sprinklers
+  applies_when:
+    all:
+    - det: sprinklered
+      is: true
+  summary: When a sprinkler concession lowers the Type of Construction, fire resistance levels, compartment
+    sizes or travel distances, the building's passive fire compliance depends on the sprinklers staying
+    installed and maintained for the life of the building.
+  governed_by:
+  - rule.ncc.sprinkler-concession-type-of-construction
+  - rule.as1851.fire-system-maintenance
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state that a sprinkler concession or sprinkler trade-off
+      is used to reduce another fire requirement?
+    criteria:
+      true: It states that sprinklers are relied on to reduce Type of Construction, FRLs, compartment
+        size or travel distance.
+      false: It does not state any reliance on sprinklers.
+    runs_on:
+    - fire-passive
+    - fire-active.sprinklers
+  failure_modes: []
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Sprinkler Concessions for Type of Construction'
+- id: if.fire-alarm-releases-doors
+  type: controls
+  from:
+  - fire-active.detection
+  to:
+  - fire-passive.openings
+  summary: Alarm release must be coordinated with each fire or smoke door hold-open device.
+  governed_by:
+  - rule.as1905.fire-doorsets
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state automatic release of fire-door hold-open
+      devices on alarm?
+    criteria:
+      true: It explicitly states automatic release of fire-door hold-open devices on alarm.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - fire-passive.openings
+  failure_modes:
+  - fm.fire-alarm-releases-doors
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1905.1 — Components for the Protection of Openings in Fire-Resistant Walls — Part 1:
+      Fire-Resistant Doorsets'
+- id: if.fire-detection-controls-smoke-plant
+  type: controls
+  from:
+  - fire-active.detection
+  to:
+  - mechanical.fire-mode-air-systems
+  summary: The accepted fire strategy defines alarm inputs and fan, damper and shutdown outputs, including
+    feedback and failure modes.
+  governed_by:
+  - rule.as1668.fire-mode
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the fan response to a fire alarm?
+    criteria:
+      true: It explicitly states the fan response to a fire alarm.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on: &id001
+    - fire-active.detection
+    - mechanical.fire-mode-air-systems
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the damper response to a fire alarm?
+    criteria:
+      true: It explicitly states the damper response to a fire alarm.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on: *id001
+  failure_modes:
+  - fm.fire-detection-controls-smoke-plant
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+- id: if.fire-alarm-releases-security
+  type: controls
+  from:
+  - fire-active.detection
+  to:
+  - comms-security.access-control
+  - access-egress.egress-doors
+  summary: Security locking and turnstiles must support the specified emergency egress response.
+  governed_by:
+  - rule.ncc.fire-egress
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the access-control response to a fire
+      alarm?
+    criteria:
+      true: It explicitly states the access-control response to a fire alarm.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - comms-security
+    - access-egress.egress-doors
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the fire-alarm door release sequence?
+    criteria:
+      true: It explicitly states the fire-alarm door release sequence.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - fire-active
+    - comms-security.access-control
+  failure_modes:
+  - fm.fire-alarm-releases-security
+  - fm.fire-alarm-controls-security-release
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  - seed: ict-av-security-guide.md
+    anchor: '## Electronic security'
+  notes: Reconciled duplicate if.fire-alarm-controls-security-release.
+- id: if.fire-alarm-controls-lift
+  type: controls
+  from:
+  - fire-active.detection
+  to:
+  - vertical-transport.lift-fire-service
+  summary: Coordinate the lift fire response with the approved cause-and-effect matrix and integrated
+    testing.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the lift response to a fire alarm?
+    criteria:
+      true: It explicitly states the lift response to a fire alarm.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.detection
+    - vertical-transport
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the fire-alarm lift recall sequence?
+    criteria:
+      true: It explicitly states the fire-alarm lift recall sequence.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - fire-active
+    - vertical-transport.lift-fire-service
+  failure_modes:
+  - fm.fire-alarm-controls-lift
+  - fm.fire-alarm-controls-lift-recall
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+  - seed: electrical-services-guide.md
+    anchor: '## Life-safety and specialist interfaces'
+  notes: Reconciled duplicate if.fire-alarm-controls-lift-recall.
+- id: if.essential-power-supplies-fire-water
+  type: supplies
+  from:
+  - electrical
+  to:
+  - fire-active.fire-water
+  summary: Electric fire pumps require the specified dedicated supply and protected cable route. Diesel
+    alternatives need their own support systems.
+  governed_by:
+  - rule.as2941.fire-pumps
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the electrical supply arrangement for
+      the fire pump?
+    criteria:
+      true: It explicitly states the electrical supply arrangement for the fire pump.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on: &id002
+    - electrical
+    - fire-active.fire-water
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the fire protection of the fire pump
+      cable route?
+    criteria:
+      true: It explicitly states the fire protection of the fire pump cable route.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on: *id002
+  failure_modes:
+  - fm.essential-power-supplies-fire-water
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2941 — Fixed Fire Protection Installations — Pumpset Systems'
+- id: if.fire-tanks-load-structure
+  type: loads
+  from:
+  - fire-active.fire-water
+  to:
+  - structure
+  summary: Tank operating weight and pump support loads must be included in structural design and plant-space
+    coordination.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the fire-water tank operating load?
+    criteria:
+      true: It explicitly states the fire-water tank operating load.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.fire-water
+    - structure
+  failure_modes:
+  - fm.fire-tanks-load-structure
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: if.sprinklers-share-ceiling-services
+  type: shares_space
+  from:
+  - fire-active.sprinklers
+  to:
+  - mechanical.air-distribution
+  - interiors
+  - electrical
+  summary: Coordinate sprinkler coverage with ducts, cable trays and ceiling layouts to avoid obstruction
+    shadows.
+  governed_by:
+  - rule.as2118.sprinkler-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the coordination of sprinkler heads
+      with ceiling obstructions?
+    criteria:
+      true: It explicitly states the coordination of sprinkler heads with ceiling obstructions.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.sprinklers
+    - mechanical.air-distribution
+    - interiors
+    - electrical
+  failure_modes:
+  - fm.sprinklers-share-ceiling-services
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+- id: if.fire-stopping-before-concealment
+  type: sequences
+  from:
+  - fire-passive.penetrations
+  to:
+  - interiors
+  summary: Inspect and record the actual protected penetration before concealment; retain tested system
+    and location evidence.
+  governed_by:
+  - rule.ncc.penetration-protection
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state a location-based inspection record
+      for concealed fire stopping?
+    criteria:
+      true: It explicitly states a location-based inspection record for concealed fire stopping.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.penetrations
+    - interiors
+  failure_modes:
+  - fm.fire-stopping-before-concealment
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+  hold_point:
+    before: interiors
+    after: fire-passive.penetrations
+    evidence: a location-based inspection record for concealed fire stopping
+- id: if.fire-facade-slab-edge
+  type: boundary
+  from:
+  - envelope.curtain-wall
+  to:
+  - fire-passive.compartments
+  - structure
+  summary: Maintain compartment continuity at the floor slab and facade junction, including movement-compatible
+    perimeter protection.
+  governed_by:
+  - rule.ncc.external-wall-fire
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state a slab-edge fire protection detail?
+    criteria:
+      true: It explicitly states a slab-edge fire protection detail.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.compartments
+    - envelope
+    - structure
+  - type: noul
+    instructions: Using `text`, does this passage specify fire-stopping at the curtain-wall-to-slab-edge
+      junction?
+    criteria:
+      true: It explicitly specifies fire-stopping at the curtain-wall-to-slab-edge junction.
+      false: It does not state this detail; a general mention of the systems or a requirement to coordinate
+        them is insufficient.
+    runs_on:
+    - envelope.curtain-wall
+    - fire-passive
+  failure_modes:
+  - fm.fire-facade-slab-edge
+  - fm.envelope-facade-slab-edge-fire
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Spandrel and Slab Edge Fire Protection'
+  notes: Reconciled duplicate if.envelope-facade-slab-edge-fire.
+- id: if.fire-and-acoustic-separation
+  type: boundary
+  from:
+  - fire-passive.compartments
+  to:
+  - interiors.acoustic-separation
+  summary: SOU walls and floors need compatible fire and acoustic assemblies; service details must preserve
+    both.
+  governed_by:
+  - rule.as1530.tested-fire-assemblies
+  - rule.ncc.sou-wall-sound-insulation
+  - rule.ncc.sou-floor-airborne-sound
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state an assembly specified for both fire
+      and acoustic separation?
+    criteria:
+      true: It explicitly states an assembly specified for both fire and acoustic separation.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.compartments
+    - interiors
+  - type: noul
+    instructions: Using `text`, does this passage specify fire performance evidence for the separating
+      assembly?
+    criteria:
+      true: It identifies fire performance evidence for the specified separating assembly.
+      false: It names the assembly without fire performance evidence, or discusses only a general requirement.
+    runs_on: &id003
+    - fire-passive
+    - interiors.acoustic-separation
+  - type: noul
+    instructions: Using `text`, does this passage specify acoustic performance evidence for the separating
+      assembly?
+    criteria:
+      true: It identifies acoustic performance evidence for the specified separating assembly.
+      false: It names the assembly without acoustic performance evidence, or discusses only a general
+        requirement.
+    runs_on: *id003
+  failure_modes:
+  - fm.fire-and-acoustic-separation
+  - fm.envelope-fire-acoustic-separation
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+  - seed: multi-residential-apartments-guide.md
+    anchor: '### SOU Separation — Fire and Acoustic'
+  notes: Reconciled duplicate if.envelope-fire-acoustic-separation.
+- id: if.accessible-fixtures-clear-circulation
+  type: shares_space
+  from:
+  - hydraulic.sanitary
+  to:
+  - access-egress.accessible-facilities
+  summary: Fixture positions, dispensers, grab rails and pipework must preserve the documented accessible
+    circulation zone.
+  governed_by:
+  - rule.ncc.accessible-sanitary
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the fixture set-out relative to accessible
+      circulation space?
+    criteria:
+      true: It explicitly states the fixture set-out relative to accessible circulation space.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - access-egress.accessible-facilities
+  failure_modes:
+  - fm.accessible-fixtures-clear-circulation
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Sanitary Facilities, Signage, and Hearing Augmentation'
+- id: if.accessible-threshold-weatherproofing
+  type: boundary
+  from:
+  - access-egress.accessible-access
+  to:
+  - envelope
+  summary: Coordinate step-free entries and doors with the external drainage and weatherproofing solution.
+  governed_by:
+  - rule.as1428.accessible-paths
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the weatherproofing detail at a step-free
+      entrance?
+    criteria:
+      true: It explicitly states the weatherproofing detail at a step-free entrance.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - access-egress.accessible-access
+    - envelope
+  failure_modes: []
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: access-consultant-guide.md
+    anchor: '### Concept and schematic design [concept]'
+- id: if.fire-warning-acoustic-environment
+  type: depends_on
+  from:
+  - fire-active.occupant-warning
+  to:
+  - interiors
+  summary: Warning audibility and intelligibility depend on room acoustics and operating background noise;
+    verify the installed environment.
+  governed_by:
+  - rule.as1670.warning-monitoring
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state an occupant-warning intelligibility
+      test result?
+    criteria:
+      true: It explicitly states an occupant-warning intelligibility test result.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-active.occupant-warning
+    - interiors
+  failure_modes:
+  - fm.fire-warning-acoustic-environment
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom'
+- id: if.damper-access-maintained
+  type: depends_on
+  from:
+  - fire-passive.openings
+  to:
+  - access-egress.maintenance-access
+  - interiors
+  summary: Provide accessible inspection and service points at fire dampers, with ceiling panels and access
+    routes coordinated.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state an access panel for fire damper maintenance?
+    criteria:
+      true: It explicitly states an access panel for fire damper maintenance.
+      false: It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - fire-passive.openings
+    - access-egress.maintenance-access
+    - interiors
+  failure_modes:
+  - fm.damper-access-maintained
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4254 Series — Ductwork for Air-Handling Systems in Buildings'
+- id: if.lining-selection-fire-classification
+  type: boundary
+  from:
+  - interiors
+  to:
+  - fire-passive.linings-fire-hazard
+  summary: An interior finish substitution must retain the reaction-to-fire performance required at its
+    actual location.
+  governed_by:
+  - rule.ncc.internal-lining-fire-hazard
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the fire-hazard classification of the proposed
+      lining?
+    criteria:
+      true: It states the fire-hazard classification of the proposed lining.
+      false: It does not state this arrangement; a general system mention is insufficient.
+    runs_on:
+    - interiors
+    - fire-passive.linings-fire-hazard
+  failure_modes:
+  - fm.lining-frl-substituted-for-fire-hazard
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1530 Series — Fire Testing'
+- id: if.party-wall-roof-continuity
+  type: boundary
+  from:
+  - fire-passive.compartments
+  to:
+  - envelope
+  summary: Carry attached-dwelling fire separation through the roof, eaves and cavity termination detail,
+    including handed dwelling variants.
+  governed_by:
+  - rule.ncc.fire-element-frl
+  - rule.as1530.tested-fire-assemblies
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the party-wall termination detail at the roof?
+    criteria:
+      true: It states the party-wall termination detail at the roof.
+      false: It does not state this arrangement; a general system mention is insufficient.
+    runs_on:
+    - fire-passive.compartments
+    - envelope
+  failure_modes:
+  - fm.party-wall-stops-in-roof
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: multi-dwelling-guide.md
+    anchor: '## Party-wall fire-rating'
+- id: if.staged-occupation-shared-fire-systems
+  type: depends_on
+  from:
+  - access-egress.exits
+  to:
+  - fire-active.fire-control
+  - fire-active.fire-water
+  - fire-passive.compartments
+  summary: An occupied stage depends on its complete escape routes, separation and shared fire measures;
+    unfinished adjoining work must not remove those functions.
+  governed_by:
+  - rule.ncc.fire-egress
+  - rule.project.integrated-fire-testing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state which shared fire measures serve the proposed
+      occupied stage?
+    criteria:
+      true: It states which shared fire measures serve the proposed occupied stage.
+      false: It does not state this arrangement; a general system mention is insufficient.
+    runs_on:
+    - access-egress.exits
+    - fire-active.fire-control
+    - fire-active.fire-water
+    - fire-passive.compartments
+  failure_modes:
+  - fm.occupied-stage-shared-fire-unavailable
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: mixed-use-construction-guide.md
+    anchor: '## Staged handover by use'
+  - seed: multi-dwelling-guide.md
+    anchor: '## Staging guidance'
+- id: if.brigade-access-to-fire-facilities
+  type: depends_on
+  from:
+  - fire-active.hydrants
+  - fire-active.fire-control
+  to:
+  - site
+  summary: Booster and fire-control facilities depend on the access route and working space accepted for
+    emergency-service use.
+  governed_by:
+  - rule.as2419.hydrant-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the emergency-service access route to the fire
+      facilities?
+    criteria:
+      true: It states the emergency-service access route to the fire facilities.
+      false: It does not state this arrangement; a general system mention is insufficient.
+    runs_on:
+    - fire-active.hydrants
+    - fire-active.fire-control
+    - site
+  failure_modes:
+  - fm.brigade-access-obstructed
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '### Pre-DA consultation and development application [development_application]'
