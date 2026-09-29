@@ -1,0 +1,13 @@
+{
+  "model": "jev-latest",
+  "answers": {
+    "kind": {
+      "type": "choice",
+      "choice": "drawing",
+      "probabilities": {"drawing": 0.91, "report": 0.09},
+      "confidence": 0.84
+    },
+    "is_revision": {"type": "noul", "noul": 0.12}
+  },
+  "usage": {"input_tokens": 10, "output_tokens": 2}
+}

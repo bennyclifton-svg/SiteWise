@@ -1,0 +1,13 @@
+{
+  "model": "jev-1.13.0",
+  "answers": {
+    "kind": {
+      "type": "choice",
+      "choice": "spreadsheet",
+      "probabilities": {"drawing": 0.2, "report": 0.1, "spreadsheet": 0.7},
+      "confidence": 0.5
+    },
+    "is_revision": {"type": "noul", "noul": 0.5}
+  },
+  "usage": {"input_tokens": 80, "output_tokens": 10}
+}

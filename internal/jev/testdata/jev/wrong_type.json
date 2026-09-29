@@ -1,0 +1,8 @@
+{
+  "model": "jev-1.13.0",
+  "answers": {
+    "kind": {"type": "noul", "noul": 0.4},
+    "is_revision": {"type": "noul", "noul": 0.2}
+  },
+  "usage": {"input_tokens": 11, "output_tokens": 3}
+}
