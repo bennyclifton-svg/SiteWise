@@ -34,6 +34,7 @@ type Document struct {
 	DocumentNumber *string
 	Revision       *string
 	CreatedAt      time.Time
+	Reason         string
 }
 
 type File struct {

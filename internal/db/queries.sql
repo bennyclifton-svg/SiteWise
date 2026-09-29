@@ -114,7 +114,7 @@ WHERE org_id = sqlc.arg(org_id)::uuid
 
 -- name: CreateDocument :exec
 INSERT INTO documents (
-    org_id, id, project_id, file_id, filename, status, document_number, revision
+    org_id, id, project_id, file_id, filename, status, document_number, revision, reason
 ) VALUES (
     sqlc.arg(org_id)::uuid,
     sqlc.arg(id)::uuid,
@@ -123,7 +123,8 @@ INSERT INTO documents (
     sqlc.arg(filename),
     sqlc.arg(status),
     sqlc.narg(document_number),
-    sqlc.narg(revision)
+    sqlc.narg(revision),
+    sqlc.arg(reason)
 );
 
 -- name: GetDocument :one
@@ -134,7 +135,8 @@ SELECT
     d.filename,
     d.status,
     COALESCE(d.document_number, '') AS document_number,
-    COALESCE(d.revision, '') AS revision
+    COALESCE(d.revision, '') AS revision,
+    d.reason
 FROM documents d
 WHERE d.org_id = sqlc.arg(org_id)::uuid
   AND d.id = sqlc.arg(id)::uuid;
@@ -222,3 +224,48 @@ SELECT id::text AS id, document_id::text AS document_id, kind, status
 FROM jobs
 WHERE org_id = sqlc.arg(org_id)::uuid
 ORDER BY id;
+
+-- name: InsertFile :one
+INSERT INTO files (org_id, id, project_id, sha256, byte_size, media_type)
+VALUES (
+    sqlc.arg(org_id)::uuid,
+    sqlc.arg(id)::uuid,
+    sqlc.arg(project_id)::uuid,
+    sqlc.arg(sha256),
+    sqlc.arg(byte_size),
+    sqlc.arg(media_type)
+)
+ON CONFLICT (org_id, project_id, sha256) DO NOTHING
+RETURNING id::text AS id;
+
+-- name: LockFileByHash :one
+SELECT id::text AS id, project_id::text AS project_id, sha256, byte_size, media_type
+FROM files
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND project_id = sqlc.arg(project_id)::uuid
+  AND sha256 = sqlc.arg(sha256)
+FOR UPDATE;
+
+-- name: DocumentByFile :one
+SELECT
+    d.id::text AS id,
+    d.project_id::text AS project_id,
+    d.file_id::text AS file_id,
+    d.filename,
+    d.status,
+    d.reason
+FROM documents d
+WHERE d.org_id = sqlc.arg(org_id)::uuid
+  AND d.file_id = sqlc.arg(file_id)::uuid;
+
+-- name: JobByDocumentKind :one
+SELECT id::text AS id, document_id::text AS document_id, kind, status
+FROM jobs
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND document_id = sqlc.arg(document_id)::uuid
+  AND kind = sqlc.arg(kind);
+
+-- name: ListContentHashes :many
+SELECT DISTINCT sha256
+FROM files
+ORDER BY sha256;

@@ -78,7 +78,7 @@ func (q *Queries) CreateDecision(ctx context.Context, arg CreateDecisionParams) 
 
 const createDocument = `-- name: CreateDocument :exec
 INSERT INTO documents (
-    org_id, id, project_id, file_id, filename, status, document_number, revision
+    org_id, id, project_id, file_id, filename, status, document_number, revision, reason
 ) VALUES (
     $1::uuid,
     $2::uuid,
@@ -87,7 +87,8 @@ INSERT INTO documents (
     $5,
     $6,
     $7,
-    $8
+    $8,
+    $9
 )
 `
 
@@ -100,6 +101,7 @@ type CreateDocumentParams struct {
 	Status         string
 	DocumentNumber *string
 	Revision       *string
+	Reason         string
 }
 
 func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) error {
@@ -112,6 +114,7 @@ func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) 
 		arg.Status,
 		arg.DocumentNumber,
 		arg.Revision,
+		arg.Reason,
 	)
 	return err
 }
@@ -272,6 +275,47 @@ func (q *Queries) DeleteOrg(ctx context.Context, id string) error {
 	return err
 }
 
+const documentByFile = `-- name: DocumentByFile :one
+SELECT
+    d.id::text AS id,
+    d.project_id::text AS project_id,
+    d.file_id::text AS file_id,
+    d.filename,
+    d.status,
+    d.reason
+FROM documents d
+WHERE d.org_id = $1::uuid
+  AND d.file_id = $2::uuid
+`
+
+type DocumentByFileParams struct {
+	OrgID  string
+	FileID string
+}
+
+type DocumentByFileRow struct {
+	ID        string
+	ProjectID string
+	FileID    string
+	Filename  string
+	Status    string
+	Reason    string
+}
+
+func (q *Queries) DocumentByFile(ctx context.Context, arg DocumentByFileParams) (DocumentByFileRow, error) {
+	row := q.db.QueryRow(ctx, documentByFile, arg.OrgID, arg.FileID)
+	var i DocumentByFileRow
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.FileID,
+		&i.Filename,
+		&i.Status,
+		&i.Reason,
+	)
+	return i, err
+}
+
 const enqueueJob = `-- name: EnqueueJob :execrows
 INSERT INTO jobs (org_id, id, document_id, kind, status)
 SELECT $1::uuid, $2::uuid, $3::uuid, $4, 'queued'
@@ -364,7 +408,8 @@ SELECT
     d.filename,
     d.status,
     COALESCE(d.document_number, '') AS document_number,
-    COALESCE(d.revision, '') AS revision
+    COALESCE(d.revision, '') AS revision,
+    d.reason
 FROM documents d
 WHERE d.org_id = $1::uuid
   AND d.id = $2::uuid
@@ -383,6 +428,7 @@ type GetDocumentRow struct {
 	Status         string
 	DocumentNumber string
 	Revision       string
+	Reason         string
 }
 
 func (q *Queries) GetDocument(ctx context.Context, arg GetDocumentParams) (GetDocumentRow, error) {
@@ -396,6 +442,7 @@ func (q *Queries) GetDocument(ctx context.Context, arg GetDocumentParams) (GetDo
 		&i.Status,
 		&i.DocumentNumber,
 		&i.Revision,
+		&i.Reason,
 	)
 	return i, err
 }
@@ -555,6 +602,102 @@ func (q *Queries) GetSupersession(ctx context.Context, arg GetSupersessionParams
 	return prior_document_id, err
 }
 
+const insertFile = `-- name: InsertFile :one
+INSERT INTO files (org_id, id, project_id, sha256, byte_size, media_type)
+VALUES (
+    $1::uuid,
+    $2::uuid,
+    $3::uuid,
+    $4,
+    $5,
+    $6
+)
+ON CONFLICT (org_id, project_id, sha256) DO NOTHING
+RETURNING id::text AS id
+`
+
+type InsertFileParams struct {
+	OrgID     string
+	ID        string
+	ProjectID string
+	Sha256    []byte
+	ByteSize  int64
+	MediaType string
+}
+
+func (q *Queries) InsertFile(ctx context.Context, arg InsertFileParams) (string, error) {
+	row := q.db.QueryRow(ctx, insertFile,
+		arg.OrgID,
+		arg.ID,
+		arg.ProjectID,
+		arg.Sha256,
+		arg.ByteSize,
+		arg.MediaType,
+	)
+	var id string
+	err := row.Scan(&id)
+	return id, err
+}
+
+const jobByDocumentKind = `-- name: JobByDocumentKind :one
+SELECT id::text AS id, document_id::text AS document_id, kind, status
+FROM jobs
+WHERE org_id = $1::uuid
+  AND document_id = $2::uuid
+  AND kind = $3
+`
+
+type JobByDocumentKindParams struct {
+	OrgID      string
+	DocumentID string
+	Kind       string
+}
+
+type JobByDocumentKindRow struct {
+	ID         string
+	DocumentID string
+	Kind       string
+	Status     string
+}
+
+func (q *Queries) JobByDocumentKind(ctx context.Context, arg JobByDocumentKindParams) (JobByDocumentKindRow, error) {
+	row := q.db.QueryRow(ctx, jobByDocumentKind, arg.OrgID, arg.DocumentID, arg.Kind)
+	var i JobByDocumentKindRow
+	err := row.Scan(
+		&i.ID,
+		&i.DocumentID,
+		&i.Kind,
+		&i.Status,
+	)
+	return i, err
+}
+
+const listContentHashes = `-- name: ListContentHashes :many
+SELECT DISTINCT sha256
+FROM files
+ORDER BY sha256
+`
+
+func (q *Queries) ListContentHashes(ctx context.Context) ([][]byte, error) {
+	rows, err := q.db.Query(ctx, listContentHashes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items [][]byte
+	for rows.Next() {
+		var sha256 []byte
+		if err := rows.Scan(&sha256); err != nil {
+			return nil, err
+		}
+		items = append(items, sha256)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listJobs = `-- name: ListJobs :many
 SELECT id::text AS id, document_id::text AS document_id, kind, status
 FROM jobs
@@ -650,6 +793,42 @@ func (q *Queries) ListStream(ctx context.Context, arg ListStreamParams) ([]ListS
 		return nil, err
 	}
 	return items, nil
+}
+
+const lockFileByHash = `-- name: LockFileByHash :one
+SELECT id::text AS id, project_id::text AS project_id, sha256, byte_size, media_type
+FROM files
+WHERE org_id = $1::uuid
+  AND project_id = $2::uuid
+  AND sha256 = $3
+FOR UPDATE
+`
+
+type LockFileByHashParams struct {
+	OrgID     string
+	ProjectID string
+	Sha256    []byte
+}
+
+type LockFileByHashRow struct {
+	ID        string
+	ProjectID string
+	Sha256    []byte
+	ByteSize  int64
+	MediaType string
+}
+
+func (q *Queries) LockFileByHash(ctx context.Context, arg LockFileByHashParams) (LockFileByHashRow, error) {
+	row := q.db.QueryRow(ctx, lockFileByHash, arg.OrgID, arg.ProjectID, arg.Sha256)
+	var i LockFileByHashRow
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.Sha256,
+		&i.ByteSize,
+		&i.MediaType,
+	)
+	return i, err
 }
 
 const lockInviteByHash = `-- name: LockInviteByHash :one

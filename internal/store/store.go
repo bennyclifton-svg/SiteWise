@@ -1,10 +1,12 @@
 package store
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -15,6 +17,18 @@ import (
 
 // ErrNotFound means the row is not visible in the caller's org.
 var ErrNotFound = errors.New("not found")
+
+// ErrMetadata means a stored file row disagrees with the uploaded bytes.
+var ErrMetadata = errors.New("file metadata does not match content")
+
+const (
+	// StatusPending is a filing waiting for intake.
+	StatusPending = "pending"
+	// StatusNotFiled means the bytes are stored and will not be filed.
+	StatusNotFiled = "not_filed"
+	// JobKindIntake is the durable job created with a pending filing.
+	JobKindIntake = "intake"
+)
 
 // ErrInviteExpired means the invite can no longer be consumed.
 var ErrInviteExpired = errors.New("invite expired")
@@ -42,6 +56,7 @@ type Document struct {
 	Number       string
 	Revision     string
 	SupersedesID string
+	Reason       string
 }
 
 // Decision is one field judgment on a document.
@@ -242,6 +257,7 @@ func (s *Store) CreateDocument(ctx context.Context, orgID string, doc Document) 
 		Status:         doc.Status,
 		DocumentNumber: strPtr(doc.Number),
 		Revision:       strPtr(doc.Revision),
+		Reason:         doc.Reason,
 	})
 }
 
@@ -269,6 +285,7 @@ func (s *Store) GetDocument(ctx context.Context, orgID, documentID string) (Docu
 		Number:       row.DocumentNumber,
 		Revision:     row.Revision,
 		SupersedesID: prior,
+		Reason:       row.Reason,
 	}, nil
 }
 
@@ -493,6 +510,223 @@ func (s *Store) GetProject(ctx context.Context, orgID, projectID string) (Projec
 		return Project{}, err
 	}
 	return Project{ID: row.ID, Name: row.Name}, nil
+}
+
+// CommitIntake is one uploaded blob to file in a project.
+// Reason empty queues intake. A reason stores the file as not_filed.
+type CommitIntake struct {
+	ProjectID string
+	SHA256    []byte
+	ByteSize  int64
+	MediaType string
+	Filename  string
+	Reason    string
+}
+
+// CommittedIntake is the filing written by CommitIntake.
+type CommittedIntake struct {
+	FileID     string
+	DocumentID string
+	JobID      string
+	Status     string
+	Reason     string
+	Filename   string
+	SHA256     []byte
+	ByteSize   int64
+	Created    bool
+}
+
+// CommitIntake inserts the file association, document and intake job in one
+// transaction. A concurrent duplicate waits for that transaction and returns it.
+func (s *Store) CommitIntake(ctx context.Context, orgID string, in CommitIntake) (CommittedIntake, error) {
+	if err := validateIntake(in); err != nil {
+		return CommittedIntake{}, err
+	}
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return CommittedIntake{}, err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	q := s.q.WithTx(tx)
+
+	if _, err := q.GetProject(ctx, db.GetProjectParams{OrgID: orgID, ID: in.ProjectID}); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return CommittedIntake{}, ErrNotFound
+		}
+		return CommittedIntake{}, err
+	}
+
+	fileID := newID()
+	insertedID, err := q.InsertFile(ctx, db.InsertFileParams{
+		OrgID:     orgID,
+		ID:        fileID,
+		ProjectID: in.ProjectID,
+		Sha256:    in.SHA256,
+		ByteSize:  in.ByteSize,
+		MediaType: in.MediaType,
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		existing, err := loadIntake(ctx, q, orgID, in)
+		if err != nil {
+			return CommittedIntake{}, err
+		}
+		if err := tx.Commit(ctx); err != nil {
+			return CommittedIntake{}, err
+		}
+		return existing, nil
+	}
+	if err != nil {
+		return CommittedIntake{}, err
+	}
+
+	filed, err := insertFiling(ctx, q, orgID, insertedID, in)
+	if err != nil {
+		return CommittedIntake{}, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return CommittedIntake{}, err
+	}
+	return filed, nil
+}
+
+func loadIntake(ctx context.Context, q *db.Queries, orgID string, in CommitIntake) (CommittedIntake, error) {
+	row, err := q.LockFileByHash(ctx, db.LockFileByHashParams{
+		OrgID:     orgID,
+		ProjectID: in.ProjectID,
+		Sha256:    in.SHA256,
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return CommittedIntake{}, ErrNotFound
+	}
+	if err != nil {
+		return CommittedIntake{}, err
+	}
+	if row.ByteSize != in.ByteSize || !bytes.Equal(row.Sha256, in.SHA256) {
+		return CommittedIntake{}, ErrMetadata
+	}
+	doc, err := q.DocumentByFile(ctx, db.DocumentByFileParams{OrgID: orgID, FileID: row.ID})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return CommittedIntake{}, errors.New("file association has no document")
+	}
+	if err != nil {
+		return CommittedIntake{}, err
+	}
+	jobID := ""
+	if doc.Status == StatusPending {
+		job, err := q.JobByDocumentKind(ctx, db.JobByDocumentKindParams{
+			OrgID:      orgID,
+			DocumentID: doc.ID,
+			Kind:       JobKindIntake,
+		})
+		if errors.Is(err, pgx.ErrNoRows) {
+			return CommittedIntake{}, errors.New("intake job missing")
+		}
+		if err != nil {
+			return CommittedIntake{}, err
+		}
+		jobID = job.ID
+	}
+	return CommittedIntake{
+		FileID:     row.ID,
+		DocumentID: doc.ID,
+		JobID:      jobID,
+		Status:     doc.Status,
+		Reason:     doc.Reason,
+		Filename:   doc.Filename,
+		SHA256:     bytes.Clone(row.Sha256),
+		ByteSize:   row.ByteSize,
+		Created:    false,
+	}, nil
+}
+
+func insertFiling(ctx context.Context, q *db.Queries, orgID, fileID string, in CommitIntake) (CommittedIntake, error) {
+	status := StatusPending
+	reason := ""
+	if in.Reason != "" {
+		status = StatusNotFiled
+		reason = in.Reason
+	}
+	docID := newID()
+	if err := q.CreateDocument(ctx, db.CreateDocumentParams{
+		OrgID:     orgID,
+		ID:        docID,
+		ProjectID: in.ProjectID,
+		FileID:    fileID,
+		Filename:  in.Filename,
+		Status:    status,
+		Reason:    reason,
+	}); err != nil {
+		return CommittedIntake{}, err
+	}
+	jobID := ""
+	if status == StatusPending {
+		jobID = newID()
+		n, err := q.EnqueueJob(ctx, db.EnqueueJobParams{
+			OrgID:      orgID,
+			ID:         jobID,
+			DocumentID: docID,
+			Kind:       JobKindIntake,
+		})
+		if err != nil {
+			return CommittedIntake{}, err
+		}
+		if n == 0 {
+			return CommittedIntake{}, ErrNotFound
+		}
+	}
+	return CommittedIntake{
+		FileID:     fileID,
+		DocumentID: docID,
+		JobID:      jobID,
+		Status:     status,
+		Reason:     reason,
+		Filename:   in.Filename,
+		SHA256:     bytes.Clone(in.SHA256),
+		ByteSize:   in.ByteSize,
+		Created:    true,
+	}, nil
+}
+
+func validateIntake(in CommitIntake) error {
+	if in.ProjectID == "" || in.MediaType == "" {
+		return errors.New("incomplete file metadata")
+	}
+	if len(in.SHA256) != 32 {
+		return errors.New("sha256 must be 32 bytes")
+	}
+	if in.ByteSize < 0 {
+		return errors.New("invalid byte size")
+	}
+	if in.ByteSize == 0 && in.Reason == "" {
+		return errors.New("empty file requires a not_filed reason")
+	}
+	if in.Filename == "" || in.Filename == "." || in.Filename == ".." || len(in.Filename) > 255 || strings.ContainsAny(in.Filename, `/\`) {
+		return errors.New("invalid filename")
+	}
+	if strings.TrimSpace(in.Reason) != in.Reason || len(in.Reason) > 64 {
+		return errors.New("invalid not_filed reason")
+	}
+	for _, r := range in.Reason {
+		if r < 0x20 || r == 0x7f {
+			return errors.New("invalid not_filed reason")
+		}
+	}
+	return nil
+}
+
+// ListContentHashes returns every stored blob hash. Orphan recovery needs the
+// full set because one blob directory is shared by every org. The result has
+// no org, project or document id and is not a tenant read.
+func (s *Store) ListContentHashes(ctx context.Context) ([][]byte, error) {
+	rows, err := s.q.ListContentHashes(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := make([][]byte, len(rows))
+	for i, row := range rows {
+		out[i] = bytes.Clone(row)
+	}
+	return out, nil
 }
 
 func newID() string {
