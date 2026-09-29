@@ -10,6 +10,16 @@ import check_knowledge as checker
 
 
 class TableValidationTests(unittest.TestCase):
+    def test_computed_requirement_cannot_overwrite_observed_fact(self):
+        rule = {'id': 'rule.ncc.fixtures', 'derives': {'gives': 'fixture_count'}}
+        report = checker.Report()
+        checker.check_derivation_output('test', rule, {'fixture_count': {'derived': False}}, report)
+        self.assertTrue(any('not an extracted fact' in error for error in report.errors))
+        report = checker.Report()
+        checker.check_derivation_output('test', rule, {
+            'fixture_count': {'derived': True, 'by': 'rule.ncc.fixtures'}}, report)
+        self.assertEqual(report.errors, [])
+
     def test_boolean_evidence_cannot_treat_silence_as_false(self):
         item = {'id': 'sprinklered', 'label': 'Sprinklered', 'value': 'boolean',
                 'status': 'draft', 'sources': [{'seed': 'seed.md', 'anchor': '# Test'}],

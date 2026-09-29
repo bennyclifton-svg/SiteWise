@@ -54,6 +54,8 @@ A rule awaiting an authoritative table keeps its `derives` contract with
 `pending: true` and a `reason`. Code must return unknown for that derivation;
 it must never execute seed numbers or substitute a default. Active derivations
 must reference an existing verified table. The strict checker enforces this.
+A `derives.gives` target must be a derived determinant whose `by` names that
+rule. Keep computed requirements distinct from extracted design/provided values.
 
 Verified rule clauses and numeric claims include `primary_source` next to their
 verification flag. A verified clause locator does not verify every claim in

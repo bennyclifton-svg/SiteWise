@@ -296,6 +296,15 @@ def check_tables(report: Report, refs: list) -> dict:
     return known
 
 
+def check_derivation_output(where: str, rule: dict, determinants: dict, report: Report) -> None:
+    derives = rule.get("derives")
+    if not isinstance(derives, dict):
+        return
+    output = determinants.get(derives.get("gives"))
+    if output is not None and (output.get("derived") is not True or output.get("by") != rule.get("id")):
+        report.error(where, "derivation output must be a derived determinant owned by this rule, not an extracted fact")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed-dir", type=Path, default=DEFAULT_SEED_DIR)
@@ -313,16 +322,25 @@ def main() -> int:
                 "interfaces": "interface", "failure_modes": "failure_mode"}
     cache: dict = {}
     known["table"] = check_tables(report, refs)
+    determinants = {}
+    rules = []
 
     for path, kind, items in load_files(report):
         rel = path.relative_to(ROOT).as_posix()
         for item in items:
             check_item(kind, rel, item, args.seed_dir, report, refs, cache)
             if isinstance(item, dict) and "id" in item:
+                if kind == "determinants":
+                    determinants[item["id"]] = item
+                elif kind == "rules":
+                    rules.append((f"{rel} [{item['id']}]", item))
                 bucket = known[kind_key[kind]]
                 if item["id"] in bucket:
                     report.error(rel, f"duplicate id {item['id']} (also in {bucket[item['id']]})")
                 bucket[item["id"]] = rel
+
+    for where, rule in rules:
+        check_derivation_output(where, rule, determinants, report)
 
     for ref_kind, where, target in refs:
         if target not in known[ref_kind]:

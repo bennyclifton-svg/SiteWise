@@ -1,88 +1,85 @@
-# Handoff — 29 September 2026
+# Handoff — 29 September 2026, knowledge merge complete
 
-For the next agent (any provider). Read `AGENTS.md`, then
-`docs/design/2026-09-29-foundation-design.md`, then `knowledge/SCHEMA.md`.
+Read `AGENTS.md`, `docs/design/2026-09-29-foundation-design.md`,
+`knowledge/SCHEMA.md`, then `docs/plans/2026-09-29-instant-intake.md`.
 
-## Where things stand
+## Completed
 
-The design session with the owner is complete and recorded in the design doc.
-Decisions that must not be re-litigated:
+- Recovered the interrupted extraction and completed the relevant seed sweeps.
+  All six clusters have reports with full-file inventories, exclusions,
+  contradictions and residual technical gaps.
+- Merged **143 systems, 66 determinants, 226 rules, 140 interfaces and
+  172 failure modes**. All records remain draft; only the owner marks reviewed.
+- Folded proposals into `knowledge/determinants.yaml`, reconciled duplicate
+  interfaces and resolved references. Canonical IDs: `knowledge/MERGE.md`.
+- Read primary NCC 2022 adopted Volume One C2/C3/C4. Corrected construction-type
+  and compartment-limit seed errors, rejected the generic sprinkler downgrade,
+  and corrected the service-opening clause locator.
+- Wrote **2 primary-verified baseline tables**: `type_of_construction` and
+  `compartment_limits`. Their scope/exclusions are essential. See
+  `knowledge/clusters/determinants/VERIFICATION.md`.
+- Marked **9 distinct missing tables / 11 derivations pending**. No seed-only
+  numeric table is executable. Kept provided fixture count separate from the
+  computed required count. Explicit unknown evidence never becomes false.
+- Strengthened the interim checker and added 6 regression tests.
+- Installed checksum-verified **Go 1.27.1** locally in `.tools/go/`; version
+  and compile/run smoke test passed. The installation is ignored by Git.
+- Selected **fire** as the background pilot, including water, power, structure
+  and smoke-control interfaces. Wrote the intake implementation plan using the
+  locally available `superpowers:writing-plans` skill.
 
-- **Jev (TypeSafe System One) is the only AI.** No LLMs or embeddings at
-  runtime. Ground every Jev choice in docs.typesafe.ai (patterns, confidence,
-  jev-1.13 limitations, cookbooks, API) and cite the page.
-- **Speed is the first objective**; budgets and failing benchmarks.
-- **Stack:** Go single binary, PostgreSQL 17 on the same VPS (no Supabase, no
-  pgvector), local NVMe files, React SPA, SSE, Caddy + systemd. Replaces
-  sitewise.au; rebuild that VPS clean. Carry over only secrets/keys.
-- **v1 slice:** instant intake (filed in about 1 s p50, p90 < 2 s). PDF with
-  text layer + DOCX/XLSX; drop into a chosen project; invite-only multi-org.
-- **Domain model (owner's direction, most important):** ignore clerk's PM
-  doctrine (`clerk/docs/clerk-brief.md`). Build from first principles on the
-  physical building: **systems → determinants → rules (NCC, AS, state) →
-  interfaces between systems → failure modes**. Jev reads the evidence; code
-  does the physics (table lookups, graph walks, conflicts). Knowledge is
-  compiled once into `knowledge/` from `clerk/data/seed/`.
-- **Do not** benchmark the old app or back up Supabase (owner decision).
+## Verified at handoff
 
-## In flight when this session ended
+```powershell
+python tools/check_knowledge.py
+python tools/check_knowledge.py --strict
+python -m unittest discover -s tools -p 'test_*.py' -v
+```
 
-Six extraction agents were launched in parallel. Each writes only its own
-folder and **does not commit**:
+Both knowledge checks: **0 errors, 0 warnings**. All six tests pass.
+`git diff --check` passed. Changes were committed per domain cluster, with lead
+validation/reconciliation and planning commits. No application runtime or
+deployment has been implemented in this continuation.
 
-| Cluster folder | Scope | Top-level systems |
-|---|---|---|
-| `knowledge/clusters/fire/` | passive + active fire, egress, access | fire-passive, fire-active, access-egress |
-| `knowledge/clusters/structure/` | site, ground, substructure, structure | site, substructure, structure |
-| `knowledge/clusters/envelope/` | envelope, interiors, waterproofing, acoustics, BASIX/NatHERS/Section J fabric | envelope, interiors |
-| `knowledge/clusters/services-wet-air/` | mechanical + hydraulic (incl. J5) | mechanical, hydraulic |
-| `knowledge/clusters/electrical-comms/` | electrical, comms/security, lifts (incl. J6, PV, EV) | electrical, comms-security, vertical-transport |
-| `knowledge/determinants.yaml`, `knowledge/tables/`, `knowledge/clusters/determinants/` | complete determinants; verify seed numbers and NCC 2019→2022 clause numbers against NCC 2022 primary text; write verified lookup tables only | — |
+## Next work
 
-Each cluster must end with `systems.yaml`, `rules.yaml`, `interfaces.yaml`,
-`failure_modes.yaml`, optional `proposed_determinants.yaml`, and `REPORT.md`
-(coverage table, seed contradictions, cross-cluster interfaces, unresolved
-system ids, tables needed). The determinants agent writes `VERIFICATION.md`
-and `REPORT.md`.
+Execute `docs/plans/2026-09-29-instant-intake.md` from Task 1. It specifies
+files, acceptance tests, Jev citations, latency gates, tenant isolation,
+durable upload/SSE/jobs, parser spike, calibration and operational readiness.
 
-**A folder without `REPORT.md` means that agent did not finish.** Re-run it
-with this brief: read the files listed at the top of this handoff plus the
-fire worked example; read every seed relevant to the cluster in full
-(`ncc-reference-guide.md` and `as-standards-reference.md` for all clusters);
-extract physical-building knowledge only (skip fees, RFPs, stages, contracts,
-cost, programme, role/doctrine, except technical facts inside them); copy
-seed clause numbers with "(seed numbering; NCC 2019)", `clause_verified:
-false`, and every numeric claim with `verified: false`; interfaces are the
-most important output, including cross-cluster edges (`cross_cluster: true`);
-write only inside the cluster folder; no git writes; finish with
-`python tools/check_knowledge.py --only <folder>` at 0 errors.
+For PowerShell, add the repo-local compiler to this shell only:
 
-Known seed contradiction to resolve: compartment limits (ncc-reference-guide
-says 5,500 m² unsprinklered Class 5; as-standards-reference AS 2118 section
-says 3,500 m²). The seeds use NCC 2019 numbering throughout.
+```powershell
+$env:PATH = "$PWD/.tools/go/bin;$env:PATH"
+$env:GOCACHE = "$PWD/.tools/go-cache"
+$env:GOPATH = "$PWD/.tools/go-path"
+$env:GOTOOLCHAIN = 'local'
+go version
+```
 
-## Next steps (in order)
+Confirm PostgreSQL 17 and Node availability before installing them. Corpus
+answer keys and the 57-discipline data are located in the frozen `../clerk`
+reference; actual corpus paths and hashes still need verification. Some labels
+are unreviewed/model-derived and some register revisions post-date the files;
+the plan accounts for this. The exact 16-kind taxonomy needs reconciliation
+from the reference data before calibration.
 
-1. Check every cluster folder has `REPORT.md`; re-run any that don't.
-2. `python tools/check_knowledge.py` across everything; fix errors.
-3. **Merge (lead job):** reconcile cross-cluster interfaces (each agent saw
-   only its own side; de-duplicate edges that two clusters both wrote, keep
-   one id), resolve unresolved child-system ids, fold `proposed_determinants`
-   into `knowledge/determinants.yaml`, apply `VERIFICATION.md` results to rule
-   `clause`/`numbers` fields. Then `--strict` should pass.
-4. Commit per cluster (the owner's git identity is configured in this repo;
-   end messages with the agent's co-author line).
-5. Report to the owner: counts, gaps, contradictions, whether NCC 2022
-   primary text was readable, and tables written vs pending.
-6. Then: pick the pilot cluster (recommended: fire, with its hydraulic fire
-   water, electrical supply and structural load edges), install Go, and plan
-   the intake implementation (`superpowers:writing-plans`).
+No live Jev evaluation, confidence thresholds, Go app tests, end-to-end intake
+test, live latency result or restore rehearsal exists yet. These are explicit
+implementation gates, not implied by the knowledge checker passing.
 
-## Notes
+## Boundaries to preserve
 
-- Go is **not installed** on this machine yet. PyYAML is.
-- `tools/check_knowledge.py` is a dev-only interim tool; the Go loader
-  replaces it.
-- YAML trap: `on`/`yes`/`no` keys parse as booleans (already bitten once).
-- Owner memory for Claude sessions: `new-sitewise-jev-only-rebuild.md` in the
-  clerk project memory.
+- Jev is the only runtime AI; pin `jev-1.13.0`, never an alias. Code controls
+  flow, parses candidates, compares revisions and computes lookups.
+- One fan-out per state. Intake gate: p50 ≤ 1 s, p90 ≤ 2 s after upload.
+- Go single binary, embedded React, PostgreSQL 17, local hash-addressed files,
+  Caddy/systemd. No stack change without a stated reason.
+- No old-app benchmark and no Supabase backup. Future clean VPS replacement
+  carries over only secrets/keys; this continuation did not rebuild the VPS.
+- Primary Standard tables, state adoption and specialist engineering details
+  remain gaps. `pending` means unknown; a draft table is not owner review or
+  project compliance. Never use a baseline table outside its recorded scope.
+- The owner stopped the earlier Claude extraction workers after overlapping
+  writes were detected. This continuation's agents finished and stopped writing.
+- Copy only data from `../clerk`, never code or PM doctrine.

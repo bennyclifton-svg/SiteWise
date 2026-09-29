@@ -129,7 +129,7 @@ Most outside endpoints use existing top-level IDs; the new landscape edge uses t
 | if.envelope-mixed-use-structure-borne-sound | structure |
 
 
-Lead reconciliation already retained canonical IDs (see .tools/merged_interface_aliases.yaml), including the two fire-owned edges listed above. Remaining interface topics for review: services before lining; structural frame before roofing; slab membrane/DPC continuity; service penetrations and weatherproofing; ceiling-space coordination; fire/acoustic assembly; downlight/insulation clearance; whole-of-home energy commitments. The wet-air agent removed its duplicate rule.ncc.whole-of-home-energy and references the canonical envelope rule. Electrical's whole-of-home PV offset rule is complementary and can reference it.
+Lead reconciliation already retained canonical IDs (see knowledge/MERGE.md), including the two fire-owned edges listed above. Remaining interface topics for review: services before lining; structural frame before roofing; slab membrane/DPC continuity; service penetrations and weatherproofing; ceiling-space coordination; fire/acoustic assembly; downlight/insulation clearance; whole-of-home energy commitments. The wet-air agent removed its duplicate rule.ncc.whole-of-home-energy and references the canonical envelope rule. Electrical's whole-of-home PV offset rule is complementary and can reference it.
 
 ## Jev authoring basis
 
