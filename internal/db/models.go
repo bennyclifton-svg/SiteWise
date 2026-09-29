@@ -5,6 +5,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -19,7 +21,7 @@ type Decision struct {
 	QuestionVersion *string
 	Confidence      pgtype.Float8
 	Version         int64
-	CreatedAt       pgtype.Timestamptz
+	CreatedAt       time.Time
 }
 
 type Document struct {
@@ -31,7 +33,7 @@ type Document struct {
 	Status         string
 	DocumentNumber *string
 	Revision       *string
-	CreatedAt      pgtype.Timestamptz
+	CreatedAt      time.Time
 }
 
 type File struct {
@@ -41,7 +43,7 @@ type File struct {
 	Sha256    []byte
 	ByteSize  int64
 	MediaType string
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }
 
 type Invite struct {
@@ -49,8 +51,9 @@ type Invite struct {
 	ID         string
 	Email      string
 	TokenHash  []byte
-	ExpiresAt  pgtype.Timestamptz
+	ExpiresAt  time.Time
 	ConsumedAt pgtype.Timestamptz
+	Role       string
 }
 
 type Job struct {
@@ -60,22 +63,22 @@ type Job struct {
 	Kind        string
 	Status      string
 	Attempts    int32
-	RunAfter    pgtype.Timestamptz
+	RunAfter    time.Time
 	LockedUntil pgtype.Timestamptz
-	CreatedAt   pgtype.Timestamptz
+	CreatedAt   time.Time
 }
 
 type Membership struct {
 	OrgID     string
 	UserID    string
 	Role      string
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }
 
 type Org struct {
 	ID        string
 	Name      string
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }
 
 type Passage struct {
@@ -84,34 +87,34 @@ type Passage struct {
 	DocumentID string
 	Ordinal    int32
 	Body       string
-	CreatedAt  pgtype.Timestamptz
+	CreatedAt  time.Time
 }
 
 type Project struct {
 	OrgID     string
 	ID        string
 	Name      string
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }
 
 type Session struct {
 	OrgID     string
 	ID        string
 	UserID    string
-	CreatedAt pgtype.Timestamptz
-	ExpiresAt pgtype.Timestamptz
+	CreatedAt time.Time
+	ExpiresAt time.Time
 }
 
 type Supersession struct {
 	OrgID           string
 	DocumentID      string
 	PriorDocumentID string
-	CreatedAt       pgtype.Timestamptz
+	CreatedAt       time.Time
 }
 
 type User struct {
 	OrgID     string
 	ID        string
 	Email     string
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }

@@ -95,3 +95,19 @@ func TestLoadAcceptsPinnedModel(t *testing.T) {
 		t.Fatal("expected typed configuration to retain provided values")
 	}
 }
+
+func TestLoadProductionRequiresMail(t *testing.T) {
+	vals := fullEnv()
+	vals["SITEWISE_ENV"] = "production"
+	_, err := Load(getenvFrom(vals))
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	msg := err.Error()
+	if !strings.Contains(msg, "SITEWISE_MAIL_FROM") || !strings.Contains(msg, "SITEWISE_SMTP_ADDR") || !strings.Contains(msg, "SITEWISE_PUBLIC_ORIGIN") {
+		t.Fatalf("error %q", msg)
+	}
+	if strings.Contains(msg, canaryAPIKey) || strings.Contains(msg, canaryPassword) || strings.Contains(msg, canarySecret) {
+		t.Fatalf("error contains a secret: %s", msg)
+	}
+}

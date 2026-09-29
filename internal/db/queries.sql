@@ -12,11 +12,61 @@ VALUES (sqlc.arg(org_id)::uuid, sqlc.arg(id)::uuid, sqlc.arg(email));
 
 -- name: CreateMembership :exec
 INSERT INTO memberships (org_id, user_id, role)
-VALUES (sqlc.arg(org_id)::uuid, sqlc.arg(user_id)::uuid, sqlc.arg(role));
+VALUES (sqlc.arg(org_id)::uuid, sqlc.arg(user_id)::uuid, sqlc.arg(role))
+ON CONFLICT (org_id, user_id) DO NOTHING;
 
 -- name: CreateInvite :exec
-INSERT INTO invites (org_id, id, email, token_hash)
-VALUES (sqlc.arg(org_id)::uuid, sqlc.arg(id)::uuid, sqlc.arg(email), sqlc.arg(token_hash));
+INSERT INTO invites (org_id, id, email, token_hash, role, expires_at)
+VALUES (
+    sqlc.arg(org_id)::uuid,
+    sqlc.arg(id)::uuid,
+    sqlc.arg(email),
+    sqlc.arg(token_hash),
+    sqlc.arg(role),
+    sqlc.arg(expires_at)
+);
+
+-- name: LockInviteByHash :one
+SELECT
+    org_id::text AS org_id,
+    id::text AS id,
+    email,
+    role,
+    expires_at,
+    (consumed_at IS NOT NULL)::boolean AS consumed
+FROM invites
+WHERE token_hash = sqlc.arg(token_hash)
+FOR UPDATE;
+
+-- name: MarkInviteConsumed :execrows
+UPDATE invites
+SET consumed_at = now()
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND id = sqlc.arg(id)::uuid
+  AND consumed_at IS NULL;
+
+-- name: FindUserByEmail :one
+SELECT id::text AS id
+FROM users
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND email = sqlc.arg(email);
+
+-- name: MembershipExists :one
+SELECT true AS member
+FROM memberships
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND user_id = sqlc.arg(user_id)::uuid;
+
+-- name: LookupSession :one
+SELECT org_id::text AS org_id, user_id::text AS user_id, expires_at
+FROM sessions
+WHERE id = sqlc.arg(id)::uuid;
+
+-- name: GetProject :one
+SELECT id::text AS id, name
+FROM projects
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND id = sqlc.arg(id)::uuid;
 
 -- name: GetInvite :one
 SELECT id::text AS id, email

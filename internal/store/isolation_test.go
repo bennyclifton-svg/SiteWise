@@ -240,10 +240,11 @@ func seedTenants(ctx context.Context, st *store.Store) error {
 	shared := bytes32(0xab)
 	type tenant struct {
 		org, user, email, project, file, doc, decision, passage, invite, session string
+		token                                                                    byte
 	}
 	tenants := []tenant{
-		{orgA, userA, "a@example.com", projectA, fileA, docA, decisionA, passageA, inviteA, sessionA},
-		{orgB, userB, "b@example.com", projectB, fileB, docB, decisionB, passageB, inviteB, sessionB},
+		{orgA, userA, "a@example.com", projectA, fileA, docA, decisionA, passageA, inviteA, sessionA, 0x11},
+		{orgB, userB, "b@example.com", projectB, fileB, docB, decisionB, passageB, inviteB, sessionB, 0x22},
 	}
 	for _, tn := range tenants {
 		if err := st.CreateOrg(ctx, tn.org, "Org "+tn.org); err != nil {
@@ -258,7 +259,7 @@ func seedTenants(ctx context.Context, st *store.Store) error {
 		if err := st.CreateInvite(ctx, tn.org, store.Invite{
 			ID:        tn.invite,
 			Email:     tn.email,
-			TokenHash: bytes32(0x11),
+			TokenHash: bytes32(tn.token),
 		}); err != nil {
 			return err
 		}

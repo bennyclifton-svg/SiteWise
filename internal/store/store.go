@@ -2,7 +2,10 @@ package store
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
+	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,6 +15,12 @@ import (
 
 // ErrNotFound means the row is not visible in the caller's org.
 var ErrNotFound = errors.New("not found")
+
+// ErrInviteExpired means the invite can no longer be consumed.
+var ErrInviteExpired = errors.New("invite expired")
+
+// ErrInviteUsed means the invite was already consumed.
+var ErrInviteUsed = errors.New("invite used")
 
 // File is a content-addressed blob associated with one project.
 type File struct {
@@ -53,11 +62,20 @@ type Passage struct {
 	Body       string
 }
 
-// Invite is a single-use membership invitation.
+// Invite is a single-use membership invitation. Role is owner or member.
+// A zero ExpiresAt is stored as 24 hours from creation.
 type Invite struct {
 	ID        string
 	Email     string
 	TokenHash []byte
+	Role      string
+	ExpiresAt time.Time
+}
+
+// Project is a filing container owned by one org.
+type Project struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 // Job is a durable unit of background work.
@@ -120,11 +138,21 @@ func (s *Store) CreateMembership(ctx context.Context, orgID, userID, role string
 
 // CreateInvite stores an invitation token hash.
 func (s *Store) CreateInvite(ctx context.Context, orgID string, invite Invite) error {
+	role := invite.Role
+	if role == "" {
+		role = "member"
+	}
+	expires := invite.ExpiresAt
+	if expires.IsZero() {
+		expires = time.Now().Add(24 * time.Hour)
+	}
 	return s.q.CreateInvite(ctx, db.CreateInviteParams{
 		OrgID:     orgID,
 		ID:        invite.ID,
 		Email:     invite.Email,
 		TokenHash: invite.TokenHash,
+		Role:      role,
+		ExpiresAt: expires,
 	})
 }
 
@@ -371,4 +399,108 @@ func strPtr(s string) *string {
 		return nil
 	}
 	return &s
+}
+
+// Session is an authenticated browser session.
+type Session struct {
+	ID     string
+	OrgID  string
+	UserID string
+}
+
+// ConsumeInvite marks an invite used and creates the user, membership and
+// session in one transaction. The org is taken from the invite row.
+func (s *Store) ConsumeInvite(ctx context.Context, tokenHash []byte, now time.Time) (Session, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return Session{}, err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	q := s.q.WithTx(tx)
+	inv, err := q.LockInviteByHash(ctx, tokenHash)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Session{}, ErrNotFound
+	}
+	if err != nil {
+		return Session{}, err
+	}
+	if inv.Consumed {
+		return Session{}, ErrInviteUsed
+	}
+	if !inv.ExpiresAt.After(now) {
+		return Session{}, ErrInviteExpired
+	}
+	userID, err := q.FindUserByEmail(ctx, db.FindUserByEmailParams{OrgID: inv.OrgID, Email: inv.Email})
+	if errors.Is(err, pgx.ErrNoRows) {
+		userID = newID()
+		err = q.CreateUser(ctx, db.CreateUserParams{OrgID: inv.OrgID, ID: userID, Email: inv.Email})
+	}
+	if err != nil {
+		return Session{}, err
+	}
+	if err := q.CreateMembership(ctx, db.CreateMembershipParams{OrgID: inv.OrgID, UserID: userID, Role: inv.Role}); err != nil {
+		return Session{}, err
+	}
+	sessionID := newID()
+	if err := q.CreateSession(ctx, db.CreateSessionParams{OrgID: inv.OrgID, ID: sessionID, UserID: userID}); err != nil {
+		return Session{}, err
+	}
+	n, err := q.MarkInviteConsumed(ctx, db.MarkInviteConsumedParams{OrgID: inv.OrgID, ID: inv.ID})
+	if err != nil {
+		return Session{}, err
+	}
+	if n == 0 {
+		return Session{}, ErrInviteUsed
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return Session{}, err
+	}
+	return Session{ID: sessionID, OrgID: inv.OrgID, UserID: userID}, nil
+}
+
+// LookupSession resolves a cookie session id to its org. The caller does not
+// supply the org.
+func (s *Store) LookupSession(ctx context.Context, sessionID string) (Session, time.Time, error) {
+	row, err := s.q.LookupSession(ctx, sessionID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Session{}, time.Time{}, ErrNotFound
+	}
+	if err != nil {
+		return Session{}, time.Time{}, err
+	}
+	return Session{ID: sessionID, OrgID: row.OrgID, UserID: row.UserID}, row.ExpiresAt, nil
+}
+
+// Member reports whether the user has a membership in orgID.
+func (s *Store) Member(ctx context.Context, orgID, userID string) (bool, error) {
+	ok, err := s.q.MembershipExists(ctx, db.MembershipExistsParams{OrgID: orgID, UserID: userID})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return ok, nil
+}
+
+// GetProject loads a project visible to orgID.
+func (s *Store) GetProject(ctx context.Context, orgID, projectID string) (Project, error) {
+	row, err := s.q.GetProject(ctx, db.GetProjectParams{OrgID: orgID, ID: projectID})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Project{}, ErrNotFound
+	}
+	if err != nil {
+		return Project{}, err
+	}
+	return Project{ID: row.ID, Name: row.Name}, nil
+}
+
+func newID() string {
+	var b [16]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		panic(err)
+	}
+	b[6] = (b[6] & 0x0f) | 0x40
+	b[8] = (b[8] & 0x3f) | 0x80
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 }

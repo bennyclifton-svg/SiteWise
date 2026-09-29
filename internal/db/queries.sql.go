@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const addPassage = `-- name: AddPassage :exec
@@ -149,8 +150,15 @@ func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) error {
 }
 
 const createInvite = `-- name: CreateInvite :exec
-INSERT INTO invites (org_id, id, email, token_hash)
-VALUES ($1::uuid, $2::uuid, $3, $4)
+INSERT INTO invites (org_id, id, email, token_hash, role, expires_at)
+VALUES (
+    $1::uuid,
+    $2::uuid,
+    $3,
+    $4,
+    $5,
+    $6
+)
 `
 
 type CreateInviteParams struct {
@@ -158,6 +166,8 @@ type CreateInviteParams struct {
 	ID        string
 	Email     string
 	TokenHash []byte
+	Role      string
+	ExpiresAt time.Time
 }
 
 func (q *Queries) CreateInvite(ctx context.Context, arg CreateInviteParams) error {
@@ -166,6 +176,8 @@ func (q *Queries) CreateInvite(ctx context.Context, arg CreateInviteParams) erro
 		arg.ID,
 		arg.Email,
 		arg.TokenHash,
+		arg.Role,
+		arg.ExpiresAt,
 	)
 	return err
 }
@@ -173,6 +185,7 @@ func (q *Queries) CreateInvite(ctx context.Context, arg CreateInviteParams) erro
 const createMembership = `-- name: CreateMembership :exec
 INSERT INTO memberships (org_id, user_id, role)
 VALUES ($1::uuid, $2::uuid, $3)
+ON CONFLICT (org_id, user_id) DO NOTHING
 `
 
 type CreateMembershipParams struct {
@@ -324,6 +337,25 @@ func (q *Queries) FindFileByHash(ctx context.Context, arg FindFileByHashParams) 
 	return i, err
 }
 
+const findUserByEmail = `-- name: FindUserByEmail :one
+SELECT id::text AS id
+FROM users
+WHERE org_id = $1::uuid
+  AND email = $2
+`
+
+type FindUserByEmailParams struct {
+	OrgID string
+	Email string
+}
+
+func (q *Queries) FindUserByEmail(ctx context.Context, arg FindUserByEmailParams) (string, error) {
+	row := q.db.QueryRow(ctx, findUserByEmail, arg.OrgID, arg.Email)
+	var id string
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getDocument = `-- name: GetDocument :one
 SELECT
     d.id::text AS id,
@@ -453,6 +485,30 @@ func (q *Queries) GetPassage(ctx context.Context, arg GetPassageParams) (GetPass
 		&i.Ordinal,
 		&i.Body,
 	)
+	return i, err
+}
+
+const getProject = `-- name: GetProject :one
+SELECT id::text AS id, name
+FROM projects
+WHERE org_id = $1::uuid
+  AND id = $2::uuid
+`
+
+type GetProjectParams struct {
+	OrgID string
+	ID    string
+}
+
+type GetProjectRow struct {
+	ID   string
+	Name string
+}
+
+func (q *Queries) GetProject(ctx context.Context, arg GetProjectParams) (GetProjectRow, error) {
+	row := q.db.QueryRow(ctx, getProject, arg.OrgID, arg.ID)
+	var i GetProjectRow
+	err := row.Scan(&i.ID, &i.Name)
 	return i, err
 }
 
@@ -594,6 +650,101 @@ func (q *Queries) ListStream(ctx context.Context, arg ListStreamParams) ([]ListS
 		return nil, err
 	}
 	return items, nil
+}
+
+const lockInviteByHash = `-- name: LockInviteByHash :one
+SELECT
+    org_id::text AS org_id,
+    id::text AS id,
+    email,
+    role,
+    expires_at,
+    (consumed_at IS NOT NULL)::boolean AS consumed
+FROM invites
+WHERE token_hash = $1
+FOR UPDATE
+`
+
+type LockInviteByHashRow struct {
+	OrgID     string
+	ID        string
+	Email     string
+	Role      string
+	ExpiresAt time.Time
+	Consumed  bool
+}
+
+func (q *Queries) LockInviteByHash(ctx context.Context, tokenHash []byte) (LockInviteByHashRow, error) {
+	row := q.db.QueryRow(ctx, lockInviteByHash, tokenHash)
+	var i LockInviteByHashRow
+	err := row.Scan(
+		&i.OrgID,
+		&i.ID,
+		&i.Email,
+		&i.Role,
+		&i.ExpiresAt,
+		&i.Consumed,
+	)
+	return i, err
+}
+
+const lookupSession = `-- name: LookupSession :one
+SELECT org_id::text AS org_id, user_id::text AS user_id, expires_at
+FROM sessions
+WHERE id = $1::uuid
+`
+
+type LookupSessionRow struct {
+	OrgID     string
+	UserID    string
+	ExpiresAt time.Time
+}
+
+func (q *Queries) LookupSession(ctx context.Context, id string) (LookupSessionRow, error) {
+	row := q.db.QueryRow(ctx, lookupSession, id)
+	var i LookupSessionRow
+	err := row.Scan(&i.OrgID, &i.UserID, &i.ExpiresAt)
+	return i, err
+}
+
+const markInviteConsumed = `-- name: MarkInviteConsumed :execrows
+UPDATE invites
+SET consumed_at = now()
+WHERE org_id = $1::uuid
+  AND id = $2::uuid
+  AND consumed_at IS NULL
+`
+
+type MarkInviteConsumedParams struct {
+	OrgID string
+	ID    string
+}
+
+func (q *Queries) MarkInviteConsumed(ctx context.Context, arg MarkInviteConsumedParams) (int64, error) {
+	result, err := q.db.Exec(ctx, markInviteConsumed, arg.OrgID, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const membershipExists = `-- name: MembershipExists :one
+SELECT true AS member
+FROM memberships
+WHERE org_id = $1::uuid
+  AND user_id = $2::uuid
+`
+
+type MembershipExistsParams struct {
+	OrgID  string
+	UserID string
+}
+
+func (q *Queries) MembershipExists(ctx context.Context, arg MembershipExistsParams) (bool, error) {
+	row := q.db.QueryRow(ctx, membershipExists, arg.OrgID, arg.UserID)
+	var member bool
+	err := row.Scan(&member)
+	return member, err
 }
 
 const supersedeDocument = `-- name: SupersedeDocument :execrows
