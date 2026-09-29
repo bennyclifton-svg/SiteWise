@@ -1,0 +1,787 @@
+version: 1
+interfaces:
+- id: if.ground-model-informs-foundations
+  type: depends_on
+  from:
+  - substructure.footings
+  - substructure.piles
+  to:
+  - site.ground-conditions
+  summary: Foundation design depends on investigation matched to the final foundation depth and footprint.
+  governed_by:
+  - rule.as1726.ground-investigation
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the foundation design adopts the current
+      geotechnical report?
+    criteria:
+      true: It explicitly states the foundation design adopts the current geotechnical report.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - substructure.piles
+    - site.ground-conditions
+  failure_modes:
+  - fm.ground-model-informs-foundations
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: if.excavation-affects-adjoining-foundations
+  type: loads
+  from:
+  - substructure.basement-retention
+  to:
+  - site.adjoining-structures
+  summary: Excavation changes support to adjacent footings; retention and movement monitoring require
+    coordinated design.
+  governed_by:
+  - rule.as4678.retaining-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state an adjoining-footing protection detail?
+    criteria:
+      true: It explicitly states an adjoining-footing protection detail.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+    - site.adjoining-structures
+  failure_modes:
+  - fm.excavation-affects-adjoining-foundations
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Pre-DA consultation and development application [development_application]'
+- id: if.groundwater-loads-basement
+  type: loads
+  from:
+  - site.ground-conditions
+  to:
+  - substructure.basement-retention
+  summary: Groundwater creates water pressure and dewatering dependencies for retained excavations.
+  governed_by:
+  - rule.project.groundwater-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the basement groundwater design level?
+    criteria:
+      true: It explicitly states the basement groundwater design level.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.ground-conditions
+    - substructure.basement-retention
+  failure_modes:
+  - fm.groundwater-loads-basement
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: if.retaining-drainage-protects-wall
+  type: depends_on
+  from:
+  - substructure.retaining-walls
+  - site.retaining-walls
+  to:
+  - hydraulic
+  summary: Drained retaining design depends on maintainable drainage or allowance for full water pressure.
+  governed_by:
+  - rule.as4678.retaining-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state retaining wall drainage details?
+    criteria:
+      true: It explicitly states retaining wall drainage details.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.retaining-walls
+    - site.retaining-walls
+    - hydraulic
+  failure_modes:
+  - fm.retaining-drainage-protects-wall
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4678 — Earth-Retaining Structures'
+- id: if.surcharge-loads-retaining-wall
+  type: loads
+  from:
+  - site.vehicle-access
+  - structure
+  to:
+  - site.retaining-walls
+  - substructure.retaining-walls
+  summary: Adjacent vehicle and building loads contribute surcharge to retained ground.
+  governed_by:
+  - rule.as4678.retaining-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the retaining design includes adjacent
+      vehicle surcharge?
+    criteria:
+      true: It explicitly states the retaining design includes adjacent vehicle surcharge.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+    - structure
+    - site.retaining-walls
+    - substructure.retaining-walls
+  failure_modes:
+  - fm.surcharge-loads-retaining-wall
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4678 — Earth-Retaining Structures'
+- id: if.controlled-fill-supports-footings
+  type: loads
+  from:
+  - substructure.footings
+  - substructure.slab-on-ground
+  to:
+  - site.earthworks
+  summary: Foundations load fill whose compaction and suitability must be documented.
+  governed_by:
+  - rule.as3798.controlled-fill
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state fill compaction acceptance beneath
+      the foundations?
+    criteria:
+      true: It explicitly states fill compaction acceptance beneath the foundations.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - substructure.slab-on-ground
+    - site.earthworks
+  failure_modes:
+  - fm.controlled-fill-supports-footings
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3798 — Guidelines on Earthworks for Commercial and Residential Developments'
+- id: if.tree-moisture-affects-footings
+  type: loads
+  from:
+  - site.trees
+  - site.landscape
+  to:
+  - substructure.footings
+  summary: Tree presence, removal and altered moisture conditions can cause foundation movement.
+  governed_by:
+  - rule.as2870.footing-design-by-site-class
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state tree influence is addressed in the
+      footing design?
+    criteria:
+      true: It explicitly states tree influence is addressed in the footing design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.trees
+    - site.landscape
+    - substructure.footings
+  failure_modes:
+  - fm.tree-moisture-affects-footings
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2870 — Residential Slabs and Footings'
+- id: if.drainage-moisture-affects-footings
+  type: loads
+  from:
+  - hydraulic
+  - site.stormwater-detention
+  to:
+  - substructure.footings
+  summary: Leaking services or poor drainage alter ground moisture beneath footings.
+  governed_by:
+  - rule.as2870.footing-design-by-site-class
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state drainage maintains the designed moisture
+      conditions around footings?
+    criteria:
+      true: It explicitly states drainage maintains the designed moisture conditions around footings.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - site.stormwater-detention
+    - substructure.footings
+  failure_modes:
+  - fm.drainage-moisture-affects-footings
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2870 — Residential Slabs and Footings'
+- id: if.pile-downdrag-from-settling-ground
+  type: loads
+  from:
+  - site.earthworks
+  - site.ground-conditions
+  to:
+  - substructure.piles
+  summary: Settling fill and dewatered soils can impose pile downdrag.
+  governed_by:
+  - rule.as2159.piling
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state pile downdrag is addressed in the design?
+    criteria:
+      true: It explicitly states pile downdrag is addressed in the design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - site.ground-conditions
+    - substructure.piles
+  failure_modes:
+  - fm.pile-downdrag-from-settling-ground
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2159 — Piling — Design and Installation'
+- id: if.reinforcement-inspected-before-pour
+  type: sequences
+  from:
+  - structure.concrete
+  to:
+  - substructure.slab-on-ground
+  summary: Reinforcement must be inspected before concrete conceals it.
+  governed_by:
+  - rule.project.structural-inspections
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state reinforcement inspection released the
+      concrete pour?
+    criteria:
+      true: It explicitly states reinforcement inspection released the concrete pour.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - substructure.slab-on-ground
+  failure_modes:
+  - fm.reinforcement-inspected-before-pour
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  hold_point:
+    before: substructure.slab-on-ground
+    after: structure.concrete
+    evidence: Reinforcement inspection release identifying the pour.
+- id: if.frame-inspected-before-roof
+  type: sequences
+  from:
+  - structure.timber
+  to:
+  - envelope
+  summary: Frame inspection precedes roof covering that conceals connections.
+  governed_by:
+  - rule.project.structural-inspections
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state frame inspection released roof covering
+      installation?
+    criteria:
+      true: It explicitly states frame inspection released roof covering installation.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+    - envelope
+  failure_modes:
+  - fm.frame-inspected-before-roof
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+  hold_point:
+    before: envelope
+    after: structure.timber
+    evidence: Frame inspection release before roof cladding.
+- id: if.services-modify-structural-framing
+  type: penetrates
+  from:
+  - hydraulic
+  - electrical
+  - mechanical
+  to:
+  - structure.timber
+  summary: Services drilling and notching must respect structural member limitations.
+  governed_by:
+  - rule.as1684.member-modifications
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state service penetrations have approved
+      framing details?
+    criteria:
+      true: It explicitly states service penetrations have approved framing details.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - electrical
+    - mechanical
+    - structure.timber
+  failure_modes:
+  - fm.services-modify-structural-framing
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Notching, drilling, and modification rules'
+- id: if.services-openings-in-concrete
+  type: penetrates
+  from:
+  - hydraulic
+  - mechanical
+  - electrical
+  to:
+  - structure.concrete
+  summary: Coordinate sleeves and penetrations with reinforcement and structural zones.
+  governed_by:
+  - rule.as3600.reinforcement-detailing
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state structural approval of service openings?
+    criteria:
+      true: It explicitly states structural approval of service openings.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - mechanical
+    - electrical
+    - structure.concrete
+  failure_modes:
+  - fm.services-openings-in-concrete
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Conditions of consent and design development [design_development]'
+- id: if.structural-member-depends-on-fire-protection
+  type: depends_on
+  from:
+  - structure.steel
+  to:
+  - fire-passive
+  summary: Structural steel relies on its specified fire protection system to achieve the project FRL.
+  governed_by:
+  - rule.ncc.structural-design-basis
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the structural steel fire protection
+      specification?
+    criteria:
+      true: It explicitly states the structural steel fire protection specification.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+    - fire-passive
+  failure_modes:
+  - fm.structural-member-depends-on-fire-protection
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Timber, Masonry, and Fire Resistance of Structural Materials'
+- id: if.temporary-works-load-new-concrete
+  type: loads
+  from:
+  - structure.temporary-works
+  to:
+  - structure.concrete
+  summary: Reshoring and construction loads act on partially cured floors.
+  governed_by:
+  - rule.as3610.formwork-reshoring
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state a reshoring design for the new concrete
+      floors?
+    criteria:
+      true: It explicitly states a reshoring design for the new concrete floors.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - structure.concrete
+  failure_modes:
+  - fm.temporary-works-load-new-concrete
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3610 Series — Formwork for Concrete'
+- id: if.precast-erection-temporary-stability
+  type: depends_on
+  from:
+  - structure.precast
+  to:
+  - structure.temporary-works
+  summary: Precast erection requires a defined temporary stability system and connection sequence.
+  governed_by:
+  - rule.ncc.structural-design-basis
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state temporary bracing details for precast
+      erection?
+    criteria:
+      true: It explicitly states temporary bracing details for precast erection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - structure.temporary-works
+  failure_modes:
+  - fm.precast-erection-temporary-stability
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Novation and post-contract design [post_contract_design]'
+- id: if.flood-level-controls-building-levels
+  type: controls
+  from:
+  - site.flooding
+  to:
+  - substructure.slab-on-ground
+  summary: Flood planning inputs inform building floor levels before they are fixed.
+  governed_by:
+  - rule.ncc.flood-structural-actions
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state finished floor levels reference the
+      project flood planning level?
+    criteria:
+      true: It explicitly states finished floor levels reference the project flood planning level.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.flooding
+    - substructure.slab-on-ground
+  failure_modes:
+  - fm.flood-level-controls-building-levels
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: if.termite-barrier-service-penetrations
+  type: penetrates
+  from:
+  - hydraulic
+  - electrical
+  to:
+  - substructure.termite-management
+  summary: Services through termite management systems need coordinated continuity details.
+  governed_by:
+  - rule.ncc.termite-management
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state termite protection around service penetrations?
+    criteria:
+      true: It explicitly states termite protection around service penetrations.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - electrical
+    - substructure.termite-management
+  failure_modes:
+  - fm.termite-barrier-service-penetrations
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+- id: if.demolition-maintains-retained-structure
+  type: loads
+  from:
+  - site.demolition
+  to:
+  - structure.alterations
+  summary: Removal sequence must maintain stability of retained structure.
+  governed_by:
+  - rule.as2601.demolition-stability
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state temporary support for retained structure
+      during demolition?
+    criteria:
+      true: It explicitly states temporary support for retained structure during demolition.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.demolition
+    - structure.alterations
+  failure_modes:
+  - fm.demolition-maintains-retained-structure
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2601 — The Demolition of Structures'
+- id: if.underground-services-before-paving
+  type: sequences
+  from:
+  - site.services-connections
+  to:
+  - site.vehicle-access
+  summary: Underground conduit and drainage are installed before paving conceals the routes.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state underground services were inspected
+      before paving?
+    criteria:
+      true: It explicitly states underground services were inspected before paving.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+    - site.vehicle-access
+  failure_modes:
+  - fm.underground-services-before-paving
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 8: External landscaping, paths, and drainage before occupation'
+  hold_point:
+    before: site.vehicle-access
+    after: site.services-connections
+    evidence: Inspection evidence for concealed underground service routes.
+- id: if.survey-datum-controls-structural-setout
+  type: controls
+  from:
+  - site.survey-boundaries
+  to:
+  - substructure.footings
+  summary: Set-out uses a consistent survey datum and defined boundaries.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the set-out datum matches the design
+      datum?
+    criteria:
+      true: It explicitly states the set-out datum matches the design datum.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.survey-boundaries
+    - substructure.footings
+  failure_modes:
+  - fm.survey-datum-controls-structural-setout
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: if.service-trenching-affects-tree-roots
+  type: penetrates
+  from:
+  - site.services-connections
+  to:
+  - site.trees
+  summary: Service trenching must respect the arborist protection zones and supervised excavation details.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state service routes are coordinated with
+      tree protection zones?
+    criteria:
+      true: It explicitly states service routes are coordinated with tree protection zones.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+    - site.trees
+  failure_modes:
+  - fm.service-trenching-affects-tree-roots
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: arborist-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: if.podium-soil-loads-structure
+  type: loads
+  from:
+  - site.landscape
+  to:
+  - structure.concrete
+  summary: Podium soil and planting loads are structural design inputs.
+  governed_by:
+  - rule.as1170.structural-actions
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state podium soil loads are provided to the
+      structural designer?
+    criteria:
+      true: It explicitly states podium soil loads are provided to the structural designer.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - structure.concrete
+  failure_modes:
+  - fm.podium-soil-loads-structure
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: if.podium-landscape-waterproofing
+  type: boundary
+  from:
+  - site.landscape
+  to:
+  - envelope
+  - hydraulic
+  summary: Podium landscape build-up must preserve waterproofing and drainage.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state podium landscape drainage details?
+    criteria:
+      true: It explicitly states podium landscape drainage details.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - envelope
+    - hydraulic
+  failure_modes:
+  - fm.podium-landscape-waterproofing
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Purpose and professional boundary'
+- id: if.earthworks-disturbs-acid-sulfate-soils
+  type: loads
+  from:
+  - site.earthworks
+  to:
+  - site.acid-sulfate-soils
+  summary: Excavation and dewatering can oxidise acid sulfate soils; management must address discharge.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state acid sulfate soil management during
+      dewatering?
+    criteria:
+      true: It explicitly states acid sulfate soil management during dewatering.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - site.acid-sulfate-soils
+  failure_modes:
+  - fm.earthworks-disturbs-acid-sulfate-soils
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Acid Sulfate Soils'
+- id: if.imported-fill-contamination-validation
+  type: boundary
+  from:
+  - site.earthworks
+  to:
+  - site.contamination
+  summary: Imported fill must not recontaminate remediated land.
+  governed_by:
+  - rule.nepm.site-contamination-assessment
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state imported fill contamination validation
+      results?
+    criteria:
+      true: It explicitly states imported fill contamination validation results.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - site.contamination
+  failure_modes:
+  - fm.imported-fill-contamination-validation
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Validation and Verification'
+- id: if.containment-cap-service-penetrations
+  type: penetrates
+  from:
+  - site.services-connections
+  to:
+  - site.contamination
+  summary: Service trenches through a contamination cap require details that preserve the containment
+    barrier and the site management conditions.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the approved detail for reinstating
+      a contamination cap at service trenches?
+    criteria:
+      true: It explicitly states the approved detail for reinstating a contamination cap at service trenches.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - site.services-connections
+    - site.contamination
+  failure_modes:
+  - fm.containment-cap-service-penetrations
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Long-Term Site Management and Monitoring'
+- id: if.soil-vapour-building-protection
+  type: boundary
+  from:
+  - site.contamination
+  to:
+  - substructure.slab-on-ground
+  - mechanical
+  summary: Residual volatile contamination can create a vapour pathway into the building; the site-specific
+    design may require a barrier or subfloor ventilation and ongoing performance verification.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state a soil-vapour intrusion mitigation
+      design for this building?
+    criteria:
+      true: It explicitly states a soil-vapour intrusion mitigation design for this building.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - site.contamination
+    - substructure.slab-on-ground
+    - mechanical
+  failure_modes:
+  - fm.soil-vapour-building-protection
+  cross_cluster: true
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Long-Term Site Management and Monitoring'
+- id: if.crane-outrigger-ground-bearing
+  type: loads
+  from:
+  - structure.temporary-works
+  to:
+  - site.ground-conditions
+  summary: Crane outrigger reactions require a ground-bearing assessment and support design for the actual
+    setup.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state a ground-bearing assessment for the
+      crane outrigger setup?
+    criteria:
+      true: It explicitly states a ground-bearing assessment for the crane outrigger setup.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - structure.temporary-works
+    - site.ground-conditions
+  failure_modes:
+  - fm.crane-outrigger-ground-bearing
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1418 and AS 2550 Series — Cranes, Hoists and Winches'

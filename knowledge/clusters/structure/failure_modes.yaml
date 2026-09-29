@@ -1,0 +1,584 @@
+version: 1
+failure_modes:
+- id: fm.ground-model-informs-foundations
+  attaches_to:
+    interface: if.ground-model-informs-foundations
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the geotechnical investigation does
+      not reach the proposed founding depth?
+    criteria:
+      true: It explicitly states the geotechnical investigation does not reach the proposed founding depth.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - substructure.piles
+    - site.ground-conditions
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: fm.excavation-affects-adjoining-foundations
+  attaches_to:
+    interface: if.excavation-affects-adjoining-foundations
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state excavation undermines an adjoining
+      footing?
+    criteria:
+      true: It explicitly states excavation undermines an adjoining footing.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+    - site.adjoining-structures
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Pre-DA consultation and development application [development_application]'
+- id: fm.groundwater-loads-basement
+  attaches_to:
+    interface: if.groundwater-loads-basement
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the basement design omits groundwater
+      pressure?
+    criteria:
+      true: It explicitly states the basement design omits groundwater pressure.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.ground-conditions
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: fm.retaining-drainage-protects-wall
+  attaches_to:
+    interface: if.retaining-drainage-protects-wall
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state retaining wall drainage is blocked
+      or omitted?
+    criteria:
+      true: It explicitly states retaining wall drainage is blocked or omitted.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.retaining-walls
+    - site.retaining-walls
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4678 — Earth-Retaining Structures'
+- id: fm.surcharge-loads-retaining-wall
+  attaches_to:
+    interface: if.surcharge-loads-retaining-wall
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the retaining design omits an adjacent
+      vehicle surcharge?
+    criteria:
+      true: It explicitly states the retaining design omits an adjacent vehicle surcharge.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+    - structure
+    - site.retaining-walls
+    - substructure.retaining-walls
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4678 — Earth-Retaining Structures'
+- id: fm.controlled-fill-supports-footings
+  attaches_to:
+    interface: if.controlled-fill-supports-footings
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state foundations bear on untested uncontrolled
+      fill?
+    criteria:
+      true: It explicitly states foundations bear on untested uncontrolled fill.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - substructure.slab-on-ground
+    - site.earthworks
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3798 — Guidelines on Earthworks for Commercial and Residential Developments'
+- id: fm.tree-moisture-affects-footings
+  attaches_to:
+    interface: if.tree-moisture-affects-footings
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state tree removal has caused footing movement?
+    criteria:
+      true: It explicitly states tree removal has caused footing movement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.trees
+    - site.landscape
+    - substructure.footings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2870 — Residential Slabs and Footings'
+- id: fm.drainage-moisture-affects-footings
+  attaches_to:
+    interface: if.drainage-moisture-affects-footings
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state leaking drainage has caused footing
+      movement?
+    criteria:
+      true: It explicitly states leaking drainage has caused footing movement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - site.stormwater-detention
+    - substructure.footings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2870 — Residential Slabs and Footings'
+- id: fm.pile-downdrag-from-settling-ground
+  attaches_to:
+    interface: if.pile-downdrag-from-settling-ground
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the pile design omits downdrag from
+      settling fill?
+    criteria:
+      true: It explicitly states the pile design omits downdrag from settling fill.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - site.ground-conditions
+    - substructure.piles
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2159 — Piling — Design and Installation'
+- id: fm.reinforcement-inspected-before-pour
+  attaches_to:
+    interface: if.reinforcement-inspected-before-pour
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state concrete was poured before reinforcement
+      inspection?
+    criteria:
+      true: It explicitly states concrete was poured before reinforcement inspection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - substructure.slab-on-ground
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+- id: fm.frame-inspected-before-roof
+  attaches_to:
+    interface: if.frame-inspected-before-roof
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state roof covering concealed uninspected
+      framing?
+    criteria:
+      true: It explicitly states roof covering concealed uninspected framing.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 1: Frame to roof'
+- id: fm.services-modify-structural-framing
+  attaches_to:
+    interface: if.services-modify-structural-framing
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state service drilling or notching weakened
+      a framing member?
+    criteria:
+      true: It explicitly states service drilling or notching weakened a framing member.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - electrical
+    - mechanical
+    - structure.timber
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Notching, drilling, and modification rules'
+- id: fm.services-openings-in-concrete
+  attaches_to:
+    interface: if.services-openings-in-concrete
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an unapproved service opening cuts
+      structural reinforcement?
+    criteria:
+      true: It explicitly states an unapproved service opening cuts structural reinforcement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - mechanical
+    - electrical
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Conditions of consent and design development [design_development]'
+- id: fm.structural-member-depends-on-fire-protection
+  attaches_to:
+    interface: if.structural-member-depends-on-fire-protection
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state structural steel fire protection is
+      omitted?
+    criteria:
+      true: It explicitly states structural steel fire protection is omitted.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+    - fire-passive
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Timber, Masonry, and Fire Resistance of Structural Materials'
+- id: fm.temporary-works-load-new-concrete
+  attaches_to:
+    interface: if.temporary-works-load-new-concrete
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state reshoring was removed before the specified
+      concrete strength?
+    criteria:
+      true: It explicitly states reshoring was removed before the specified concrete strength.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3610 Series — Formwork for Concrete'
+- id: fm.precast-erection-temporary-stability
+  attaches_to:
+    interface: if.precast-erection-temporary-stability
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state precast panels lack required temporary
+      bracing?
+    criteria:
+      true: It explicitly states precast panels lack required temporary bracing.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Novation and post-contract design [post_contract_design]'
+- id: fm.flood-level-controls-building-levels
+  attaches_to:
+    interface: if.flood-level-controls-building-levels
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state floor levels were fixed before flood
+      levels were confirmed?
+    criteria:
+      true: It explicitly states floor levels were fixed before flood levels were confirmed.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.flooding
+    - substructure.slab-on-ground
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: fm.termite-barrier-service-penetrations
+  attaches_to:
+    interface: if.termite-barrier-service-penetrations
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a service penetration leaves a gap
+      in the termite barrier?
+    criteria:
+      true: It explicitly states a service penetration leaves a gap in the termite barrier.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - hydraulic
+    - electrical
+    - substructure.termite-management
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+- id: fm.demolition-maintains-retained-structure
+  attaches_to:
+    interface: if.demolition-maintains-retained-structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state demolition destabilises retained structure?
+    criteria:
+      true: It explicitly states demolition destabilises retained structure.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.demolition
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2601 — The Demolition of Structures'
+- id: fm.underground-services-before-paving
+  attaches_to:
+    interface: if.underground-services-before-paving
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state paving concealed incomplete underground
+      service routes?
+    criteria:
+      true: It explicitly states paving concealed incomplete underground service routes.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 8: External landscaping, paths, and drainage before occupation'
+- id: fm.external-levels-protect-envelope
+  attaches_to:
+    interface: if.envelope-external-levels-moisture-bridge
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state soil or mulch is banked against external
+      cladding?
+    criteria:
+      true: It explicitly states soil or mulch is banked against external cladding.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: trade-interfaces-coordination-guide.md
+    anchor: '## Interface 8: External landscaping, paths, and drainage before occupation'
+- id: fm.survey-datum-controls-structural-setout
+  attaches_to:
+    interface: if.survey-datum-controls-structural-setout
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the survey and design use different
+      datums?
+    criteria:
+      true: It explicitly states the survey and design use different datums.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.survey-boundaries
+    - substructure.footings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: fm.service-trenching-affects-tree-roots
+  attaches_to:
+    interface: if.service-trenching-affects-tree-roots
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state service trenches cut through a protected
+      root zone without arborist approval?
+    criteria:
+      true: It explicitly states service trenches cut through a protected root zone without arborist approval.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+    - site.trees
+  flag_when: true
+  status: draft
+  sources:
+  - seed: arborist-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: fm.podium-soil-loads-structure
+  attaches_to:
+    interface: if.podium-soil-loads-structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state podium soil loads were omitted from
+      the structural design?
+    criteria:
+      true: It explicitly states podium soil loads were omitted from the structural design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: fm.podium-landscape-waterproofing
+  attaches_to:
+    interface: if.podium-landscape-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state podium landscape blocks drainage outlets?
+    criteria:
+      true: It explicitly states podium landscape blocks drainage outlets.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - envelope
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Purpose and professional boundary'
+- id: fm.earthworks-disturbs-acid-sulfate-soils
+  attaches_to:
+    interface: if.earthworks-disturbs-acid-sulfate-soils
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state acidic dewatering discharge enters
+      the stormwater system?
+    criteria:
+      true: It explicitly states acidic dewatering discharge enters the stormwater system.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - site.acid-sulfate-soils
+  flag_when: true
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Acid Sulfate Soils'
+- id: fm.imported-fill-contamination-validation
+  attaches_to:
+    interface: if.imported-fill-contamination-validation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state contaminated imported fill was placed
+      on remediated land?
+    criteria:
+      true: It explicitly states contaminated imported fill was placed on remediated land.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - site.contamination
+  flag_when: true
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Validation and Verification'
+- id: fm.containment-cap-service-penetrations
+  attaches_to:
+    interface: if.containment-cap-service-penetrations
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a service trench breaches the contamination
+      cap without reinstatement?
+    criteria:
+      true: It explicitly states a service trench breaches the contamination cap without reinstatement.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - site.services-connections
+    - site.contamination
+  flag_when: true
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Long-Term Site Management and Monitoring'
+- id: fm.soil-vapour-building-protection
+  attaches_to:
+    interface: if.soil-vapour-building-protection
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the required soil-vapour mitigation
+      system is omitted?
+    criteria:
+      true: It explicitly states the required soil-vapour mitigation system is omitted.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - site.contamination
+    - substructure.slab-on-ground
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Long-Term Site Management and Monitoring'
+- id: fm.crane-outrigger-ground-bearing
+  attaches_to:
+    interface: if.crane-outrigger-ground-bearing
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state crane outriggers are set on ground
+      without a bearing assessment?
+    criteria:
+      true: It explicitly states crane outriggers are set on ground without a bearing assessment.
+      false: It does not explicitly state this fact.
+    runs_on:
+    - structure.temporary-works
+    - site.ground-conditions
+  flag_when: true
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1418 and AS 2550 Series — Cranes, Hoists and Winches'

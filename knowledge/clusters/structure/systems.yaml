@@ -1,0 +1,595 @@
+# Structure cluster: child systems under site, substructure and structure.
+# Drafted from clerk/data/seed (see REPORT.md for coverage). Siblings are
+# written to be mutually exclusive; `excludes` names the sibling that owns
+# each boundary case so Jev can pick one child per passage.
+version: 1
+systems:
+  # ---------------------------------------------------------------- site
+  - id: site.survey-boundaries
+    parent: site
+    label: Survey, boundaries, datum and set-out
+    describes: >-
+      Detail and boundary surveys, title boundaries, easements and covenants
+      on title, existing levels and contours, level datum (AHD) and
+      coordinates (MGA), adjoining building heights and windows as surveyed,
+      set-out of the works, floor level and height checks, identification
+      surveys at completion, and plans of subdivision or strata.
+    excludes: >-
+      Soil, rock and groundwater conditions (site.ground-conditions), the
+      physical condition of neighbouring buildings (site.adjoining-structures)
+      and service pipes and cables located in easements
+      (site.services-connections).
+    status: draft
+    sources:
+      - {seed: surveying-guide.md, anchor: "## Purpose and professional boundary"}
+      - {seed: surveying-guide.md, anchor: "### Inception, site and existing information [inception]"}
+      - {seed: surveying-guide.md, anchor: "### Construction and completion [construction_completion]"}
+      - {seed: new-dwelling-guide.md, anchor: "## Site due diligence — what a new dwelling triggers"}
+
+  - id: site.ground-conditions
+    parent: site
+    label: Geotechnical ground conditions
+    describes: >-
+      The natural ground as a foundation: boreholes, test pits, cone and SPT
+      testing, bore logs, soil and rock descriptions, laboratory soil tests,
+      AS 2870 site classification and soil reactivity, bearing capacity, rock
+      levels, groundwater levels and monitoring, earthquake site sub-soil
+      class, slope stability and the geotechnical design parameters given for
+      footings, piles, retaining walls and pavements.
+    excludes: >-
+      Chemical contamination of soil or groundwater (site.contamination), acid
+      sulfate soils (site.acid-sulfate-soils), placing and compacting fill
+      (site.earthworks) and the design of the footings themselves
+      (substructure).
+    status: draft
+    sources:
+      - {seed: geotechnical-guide.md, anchor: "## Purpose and professional boundary"}
+      - {seed: geotechnical-guide.md, anchor: "### Inception, site and existing information [inception]"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1726 — Geotechnical Site Investigations"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1289 Series — Methods of Testing Soils for Engineering Purposes"}
+      - {seed: structural-residential.md, anchor: "### Site classification"}
+
+  - id: site.contamination
+    parent: site
+    label: Contaminated land and remediation
+    describes: >-
+      Chemical and hazardous contamination of soil, fill, groundwater and soil
+      vapour: preliminary and detailed site investigations, NEPM investigation
+      levels, remediation action plans, excavation and disposal of
+      contaminated soil, capping and containment, validation sampling,
+      imported fill validation, site audit statements, long-term environmental
+      management plans, asbestos in soil and PFAS.
+    excludes: >-
+      Asbestos and hazardous materials inside existing buildings being
+      demolished (site.demolition), naturally occurring acid sulfate soils
+      (site.acid-sulfate-soils) and soil engineering properties
+      (site.ground-conditions).
+    status: draft
+    sources:
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Due Diligence Process Overview"}
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Remediation Action Plans (RAPs)"}
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Validation and Verification"}
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Asbestos Assessment and Management in Construction"}
+
+  - id: site.acid-sulfate-soils
+    parent: site
+    label: Acid sulfate soils
+    describes: >-
+      Acid sulfate soils and sediments that produce sulfuric acid when
+      excavated, dewatered or exposed to air: ASS risk maps, chromium
+      reducible sulfur testing, liming rates, lime treatment of excavated
+      soil, ASS management plans and pH monitoring of dewatering discharge.
+    excludes: >-
+      Man-made chemical contamination (site.contamination) and general
+      groundwater levels for design (site.ground-conditions).
+    status: draft
+    sources:
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Acid Sulfate Soils"}
+      - {seed: civil-residential.md, anchor: "## Low-confidence flags"}
+
+  - id: site.earthworks
+    parent: site
+    label: Earthworks, cut and fill
+    describes: >-
+      Site stripping and preparation, bulk cut and fill, batters, benching,
+      placement and compaction of fill in layers, compaction and density
+      testing, fill lot classes, imported and site-won fill quality, spoil
+      removal and backfilling of trenches.
+    excludes: >-
+      Excavation for basements and its support (substructure.basement-retention),
+      removal of contaminated soil (site.contamination), pavement subgrade and
+      base layers (site.vehicle-access) and erosion and sediment controls
+      (site.erosion-sediment-control).
+    status: draft
+    sources:
+      - {seed: civil-residential.md, anchor: "## Site earthworks — cut and fill"}
+      - {seed: as-standards-reference.md, anchor: "## AS 3798 — Guidelines on Earthworks for Commercial and Residential Developments"}
+
+  - id: site.stormwater-detention
+    parent: site
+    label: Site stormwater, detention and water quality
+    describes: >-
+      Stormwater drainage outside the building: site pits, pipes and
+      subsoil drains, connection to the council system or a legal point of
+      discharge, on-site detention tanks and basins with their orifice and
+      overflow, stormwater quality treatment and WSUD, drainage easements,
+      absorption trenches, and the overflow of rainwater tanks into the site
+      system.
+    excludes: >-
+      Roof gutters, downpipes and drainage inside the building
+      (hydraulic.roof-drainage), rainwater harvesting tanks and their reuse
+      plumbing (hydraulic.non-potable-water) and flooding from outside the
+      site (site.flooding).
+    status: draft
+    sources:
+      - {seed: civil-residential.md, anchor: "## Stormwater drainage"}
+      - {seed: civil-commercial-industrial-guide.md, anchor: "## Purpose and professional boundary"}
+      - {seed: civil-residential.md, anchor: "### On-site detention (OSD)"}
+
+  - id: site.flooding
+    parent: site
+    label: Flooding and overland flow
+    describes: >-
+      Riverine and overland flooding affecting the site: flood studies and
+      mapping, defined flood levels, flood planning levels and freeboard,
+      overland flow paths, flood impact assessment and flood-related
+      development controls on floor levels and fill.
+    excludes: >-
+      Stormwater generated on the site and its drainage and detention
+      (site.stormwater-detention).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Pool Barriers and Construction in Flood Hazard Areas"}
+      - {seed: civil-commercial-industrial-guide.md, anchor: "### Concept and schematic design [concept]"}
+      - {seed: new-dwelling-guide.md, anchor: "## Site due diligence — what a new dwelling triggers"}
+
+  - id: site.vehicle-access
+    parent: site
+    label: Vehicle access, pavements and parking layout
+    describes: >-
+      Driveways and crossovers, kerb and gutter, internal roads, hardstands,
+      at-grade pavements and their subgrade, base and wearing layers, design
+      vehicles and swept paths, loading and waste-collection vehicle access,
+      driveway and ramp grades, and car park stall, aisle and headroom
+      geometry.
+    excludes: >-
+      The structure of suspended car park floors and ramps (structure), car
+      park ventilation (mechanical) and footpaths and accessible paths of
+      travel for people (access-egress).
+    notes: >-
+      Car park geometry inside a building is placed here because no other
+      top-level system owns vehicle geometry. Flagged for the lead in REPORT.
+    status: draft
+    sources:
+      - {seed: civil-residential.md, anchor: "## Driveway crossover"}
+      - {seed: traffic-transport-guide.md, anchor: "## Purpose and professional boundary"}
+      - {seed: commercial-construction-guide.md, anchor: "## Carpark Design for Commercial Buildings"}
+
+  - id: site.trees
+    parent: site
+    label: Existing trees and tree protection
+    describes: >-
+      Existing trees on the site, road reserve and adjoining land: arborist
+      assessment, tree protection zones and structural root zones,
+      encroachment, root investigation, tree removal and pruning, protection
+      fencing and ground protection, and project arborist supervision and
+      certification.
+    excludes: >-
+      New planting and landscape design (site.landscape).
+    status: draft
+    sources:
+      - {seed: arborist-guide.md, anchor: "## Purpose and professional boundary"}
+      - {seed: arborist-guide.md, anchor: "### Conditions of consent and design development [design_development]"}
+
+  - id: site.landscape
+    parent: site
+    label: Landscape, planting and external grading
+    describes: >-
+      New landscape: planting, soil and deep soil zones, podium and roof
+      planting build-ups and planters, irrigation, garden beds, finished
+      external ground levels and grading around the building, and external
+      paths, fences and walls that are not retaining walls.
+    excludes: >-
+      Existing trees and their protection (site.trees), retaining walls
+      (site.retaining-walls), vehicle pavements (site.vehicle-access), the
+      waterproofing under podium planting (envelope) and pool barriers
+      (access-egress).
+    status: draft
+    sources:
+      - {seed: landscape-architecture-guide.md, anchor: "## Purpose and professional boundary"}
+      - {seed: trade-interfaces-coordination-guide.md, anchor: "## Interface 8: External landscaping, paths, and drainage before occupation"}
+
+  - id: site.retaining-walls
+    parent: site
+    label: Free-standing site retaining walls
+    describes: >-
+      Retaining walls that stand clear of the building and do not support
+      it: landscape and boundary retaining walls, crib, segmental block,
+      timber and masonry retaining walls, their footings, backfill and
+      drainage.
+    excludes: >-
+      Retaining walls that form part of or support the building
+      (substructure.retaining-walls) and basement perimeter walls
+      (substructure.basement-retention).
+    status: draft
+    sources:
+      - {seed: civil-residential.md, anchor: "### Batter slopes and retention"}
+      - {seed: as-standards-reference.md, anchor: "## AS 4678 — Earth-Retaining Structures"}
+      - {seed: ncc-reference-guide.md, anchor: "### Class 10b — Swimming pool, fence, mast, antenna, retaining wall"}
+
+  - id: site.services-connections
+    parent: site
+    label: Site services connections and utility infrastructure
+    describes: >-
+      Authority infrastructure on or beside the lot and the ground it
+      occupies: water and sewer mains, Section 73 certificates and water
+      authority availability, sewer mains crossing the lot and building over
+      or near sewer, on-site wastewater treatment and disposal (septic,
+      aerated systems, absorption areas), locating existing underground
+      services before excavation, shared service trenches outside the
+      building, and utility relocations and trenchless crossings.
+    excludes: >-
+      Sanitary drains, inspection openings, boundary traps and pump-out
+      stations serving the building (hydraulic.sanitary), the electricity
+      network connection and consumer mains (electrical.utility-supply), the
+      telecommunications lead-in (comms-security.carrier-lead-in) and site
+      stormwater (site.stormwater-detention).
+    status: draft
+    sources:
+      - {seed: civil-residential.md, anchor: "## Sewer connection"}
+      - {seed: new-dwelling-guide.md, anchor: "## Site due diligence — what a new dwelling triggers"}
+      - {seed: infrastructure-construction-guide.md, anchor: "## Linear works, land access and utilities"}
+      - {seed: mep-residential.md, anchor: "### Pit-and-pipe (conduit infrastructure)"}
+
+  - id: site.demolition
+    parent: site
+    label: Demolition and hazardous building materials
+    describes: >-
+      Demolition and strip-out of existing structures: hazardous materials
+      and asbestos surveys of buildings, licensed asbestos removal and
+      clearance, lead paint and PCBs, demolition work plans and sequence,
+      exclusion zones, dust, noise and vibration control during demolition,
+      and demolition waste separation.
+    excludes: >-
+      Asbestos found in soil or fill (site.contamination) and structural
+      alteration of a building that is being kept (structure.alterations).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2601 — The Demolition of Structures"}
+      - {seed: commercial-construction-guide.md, anchor: "## Demolition and Strip-Out for Commercial Refurbishment"}
+
+  - id: site.adjoining-structures
+    parent: site
+    label: Adjoining buildings and boundary structures
+    describes: >-
+      Neighbouring buildings, party walls and boundary structures as they are
+      affected by the works: dilapidation surveys, adjoining footings within
+      the zone of influence of excavation, vibration and movement monitoring,
+      and protection of neighbouring property.
+    excludes: >-
+      Underpinning designed as part of the works (substructure.underpinning)
+      and surveyed boundary positions (site.survey-boundaries).
+    status: draft
+    sources:
+      - {seed: renovation-guide.md, anchor: "## Dilapidation and neighbour management"}
+      - {seed: structural-commercial-industrial-guide.md, anchor: "## Evidence sweep"}
+
+  - id: site.pools
+    parent: site
+    label: Swimming pool and spa structures
+    describes: >-
+      Swimming pool and outdoor spa shells as built structures (Class 10b):
+      reinforced concrete or prefabricated shells, pool excavation, pool
+      surrounds and their drainage.
+    excludes: >-
+      Pool safety barriers and gates (access-egress), pool filtration and
+      water plumbing (hydraulic) and pool electrical bonding (electrical).
+    status: draft
+    sources:
+      - {seed: residential-construction-guide.md, anchor: "## Swimming Pools and Pool Safety"}
+      - {seed: ncc-reference-guide.md, anchor: "### Class 10b — Swimming pool, fence, mast, antenna, retaining wall"}
+
+  - id: site.erosion-sediment-control
+    parent: site
+    label: Erosion, sediment and dust control
+    describes: >-
+      Temporary site controls against soil loss and runoff during works:
+      erosion and sediment control plans, silt fences, stockpile management,
+      stabilised site access, dust suppression and controls against
+      sediment-laden or contaminated runoff leaving the site.
+    excludes: >-
+      Permanent stormwater drainage (site.stormwater-detention) and
+      remediation works (site.contamination).
+    status: draft
+    sources:
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Environmental Management Plans"}
+      - {seed: civil-commercial-industrial-guide.md, anchor: "### Pre-DA consultation and development application [development_application]"}
+
+  # --------------------------------------------------------- substructure
+  - id: substructure.footings
+    parent: substructure
+    label: Pad and strip footings
+    describes: >-
+      Shallow footings founded in natural ground or rock: pad, strip and
+      ground-beam footings, footing excavation, founding depth and bearing
+      stratum, founding inspection and footing reinforcement.
+    excludes: >-
+      Slabs on ground including stiffened raft and waffle slabs
+      (substructure.slab-on-ground), piles, piers and screw piles
+      (substructure.piles) and strengthening existing footings
+      (substructure.underpinning).
+    status: draft
+    sources:
+      - {seed: residential-construction-guide.md, anchor: "## Foundations and Footing Systems"}
+      - {seed: commercial-construction-guide.md, anchor: "## Structural Systems for Commercial Buildings"}
+
+  - id: substructure.slab-on-ground
+    parent: substructure
+    label: Slabs on ground
+    describes: >-
+      Ground-bearing concrete slabs: AS 2870 stiffened raft and waffle pod
+      slabs with edge and internal beams, industrial ground slabs for racking,
+      forklift and equipment loads, basement floor slabs on ground, slab
+      set-downs, pits and sumps, slab reinforcement and pre-pour inspection,
+      and articulation of reactive-site slabs.
+    excludes: >-
+      Suspended slabs (structure.concrete), the damp-proof membrane or
+      vapour barrier under the slab (substructure.damp-waterproofing) and
+      termite barriers (substructure.termite-management).
+    status: draft
+    sources:
+      - {seed: structural-residential.md, anchor: "### Slab and footing types"}
+      - {seed: as-standards-reference.md, anchor: "## AS 2870 — Residential Slabs and Footings"}
+      - {seed: industrial-construction-guide.md, anchor: "## Operational brief and basis of design"}
+
+  - id: substructure.piles
+    parent: substructure
+    label: Piles, piers and screw piles
+    describes: >-
+      Deep foundations: bored piers and piles, continuous flight auger piles,
+      driven piles, screw piles, pile caps, pile design parameters and
+      testing (integrity, dynamic and static load tests) and pile founding
+      inspection.
+    excludes: >-
+      Piled retaining walls around basements (substructure.basement-retention)
+      and shallow pad and strip footings (substructure.footings).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2159 — Piling — Design and Installation"}
+      - {seed: residential-construction-guide.md, anchor: "## Foundations and Footing Systems"}
+
+  - id: substructure.basement-retention
+    parent: substructure
+    label: Basement excavation, retention and dewatering
+    describes: >-
+      Excavation for basements and below-ground structures and its support:
+      shoring, contiguous, secant and soldier piled walls, diaphragm walls,
+      ground anchors and props, permanent basement perimeter walls, and
+      construction dewatering and groundwater control during excavation.
+    excludes: >-
+      Waterproofing of basement walls and slabs (substructure.damp-waterproofing),
+      general site cut and fill (site.earthworks) and retaining walls that
+      are not basement walls (substructure.retaining-walls).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Structural Systems for Commercial Buildings"}
+      - {seed: geotechnical-guide.md, anchor: "### Concept and schematic design [concept]"}
+      - {seed: structural-commercial-industrial-guide.md, anchor: "### Concept and schematic design [concept]"}
+
+  - id: substructure.retaining-walls
+    parent: substructure
+    label: Building retaining walls
+    describes: >-
+      Retaining walls that form part of the building or support its
+      footings, other than basement perimeter walls: split-level and cut
+      walls, walls supporting building foundations, their stem-to-base
+      detail, backfill, drainage and surcharge design.
+    excludes: >-
+      Basement perimeter walls and excavation support
+      (substructure.basement-retention) and free-standing landscape retaining
+      walls (site.retaining-walls).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 4678 — Earth-Retaining Structures"}
+      - {seed: structural-commercial-industrial-guide.md, anchor: "## Purpose and professional boundary"}
+
+  - id: substructure.damp-waterproofing
+    parent: substructure
+    label: Below-ground waterproofing and damp protection
+    describes: >-
+      Protection against ground moisture and groundwater: basement tanking
+      membranes, drained cavity systems and their sumps, waterstops at
+      construction joints in basement and retaining walls, and damp-proof
+      membranes and vapour barriers under slabs on ground.
+    excludes: >-
+      Damp-proof courses in walls and their lap with the slab membrane as the
+      topic (envelope.flashings-seals), above-ground external waterproofing
+      of balconies, podiums and roofs (envelope.external-waterproofing) and
+      internal wet-area waterproofing (interiors.wet-area-waterproofing).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Waterproofing in Commercial Buildings"}
+      - {seed: ncc-reference-guide.md, anchor: "### Rising Damp Protection and External Weatherproofing"}
+
+  - id: substructure.termite-management
+    parent: substructure
+    label: Termite management
+    describes: >-
+      Subterranean termite management systems under AS 3660: chemical soil
+      treatment and reticulation, stainless steel mesh, graded stone and
+      sheet barriers at slab edges, joints and penetrations, inspection
+      zones, durable notices and ongoing termite inspection.
+    excludes: >-
+      Natural durability and preservative treatment of timber members
+      (structure.timber).
+    status: draft
+    sources:
+      - {seed: residential-construction-guide.md, anchor: "## Termite Management"}
+
+  - id: substructure.underpinning
+    parent: substructure
+    label: Underpinning and footing strengthening
+    describes: >-
+      Work to existing footings: underpinning, piering under existing walls,
+      footing enlargement and remedial substructure work after movement, for
+      the building being altered or for neighbouring buildings next to new
+      excavation.
+    excludes: >-
+      New footings for new work (substructure.footings) and the survey of
+      neighbouring building condition (site.adjoining-structures).
+    status: draft
+    sources:
+      - {seed: renovation-guide.md, anchor: "## Structural intervention"}
+      - {seed: commercial-construction-guide.md, anchor: "## Heritage and Adaptive Reuse in Commercial Construction"}
+
+  # ------------------------------------------------------------ structure
+  - id: structure.design-basis
+    parent: structure
+    label: Structural design basis and actions
+    describes: >-
+      The criteria and loads the structure is designed for: importance level,
+      design life, permanent and imposed actions, floor and balcony live
+      loads, wind region, terrain category and AS 4055 wind classification,
+      earthquake hazard factor and design category, snow, flood actions,
+      load combinations, robustness and the standards and editions adopted.
+    excludes: >-
+      The design and construction of particular members in concrete, steel,
+      timber or masonry (their own children) and the geotechnical parameters
+      of the ground (site.ground-conditions).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 1170 Series — Structural Design Actions"}
+      - {seed: ncc-reference-guide.md, anchor: "### Performance Requirements and Importance Levels"}
+      - {seed: structural-residential.md, anchor: "## AS 4055 — Wind loads for housing"}
+
+  - id: structure.concrete
+    parent: structure
+    label: In-situ concrete structure
+    describes: >-
+      Cast-in-place reinforced and post-tensioned concrete above the ground
+      slab: suspended slabs, beams, columns, walls and cores, transfer slabs,
+      concrete stairs and balconies, reinforcement and cover, exposure
+      classification and durability, concrete supply, sampling and strength
+      testing, curing and off-form surface finish.
+    excludes: >-
+      Slabs on ground (substructure.slab-on-ground), precast and tilt-up
+      elements (structure.precast), formwork and propping
+      (structure.temporary-works) and fire ratings of elements when that is
+      the topic (fire-passive).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 3600 — Concrete Structures"}
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 4671 — Steel Reinforcing Materials"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1012 Series — Methods of Testing Concrete"}
+
+  - id: structure.precast
+    parent: structure
+    label: Precast and tilt-up concrete
+    describes: >-
+      Structural precast and tilt-up concrete: wall panels, planks, beams and
+      columns cast off-site or on-site and lifted into place, their
+      connections, grouting, temporary bracing and robustness of the
+      connected structure.
+    excludes: >-
+      Architectural precast cladding that carries no building load
+      (envelope) and cast-in-place concrete (structure.concrete).
+    status: draft
+    sources:
+      - {seed: structural-commercial-industrial-guide.md, anchor: "### Concept and schematic design [concept]"}
+      - {seed: ncc-reference-guide.md, anchor: "### Earthquake Actions"}
+
+  - id: structure.steel
+    parent: structure
+    label: Structural steel and cold-formed steel
+    describes: >-
+      Hot-rolled and welded steel frames, portal frames, steel beams and
+      columns including steel beams in houses, composite metal-deck floors,
+      cold-formed steel framing and purlins, connections, bolting and
+      welding, fabrication categories, erection, and corrosion protection
+      coatings and galvanizing of structural steel.
+    excludes: >-
+      Applied fire protection to steel when fire resistance is the topic
+      (fire-passive), steel reinforcement in concrete (structure.concrete) and
+      metal roof and wall sheeting (envelope).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 4100 — Steel Structures"}
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 5131 — Structural Steelwork — Fabrication and Erection"}
+      - {seed: as-standards-reference.md, anchor: "## AS/NZS 2312 Series — Guide to the Protection of Structural Steelwork Against Atmospheric Corrosion"}
+      - {seed: residential-construction-guide.md, anchor: "## Structural Framing Systems"}
+
+  - id: structure.timber
+    parent: structure
+    label: Timber structure and framing
+    describes: >-
+      Timber framing and engineered timber: AS 1684 wall, floor and roof
+      framing, bearers and joists, rafters and nailplated roof trusses,
+      lintels, bracing, tie-down and connectors, stress grades, LVL, glulam
+      and CLT, notching and drilling limits, timber durability and
+      preservative treatment, and timber decks.
+    excludes: >-
+      Termite barriers in and around the slab (substructure.termite-management),
+      timber cladding and roof battens as weatherproofing (envelope) and
+      cold-formed steel framing (structure.steel).
+    status: draft
+    sources:
+      - {seed: structural-residential.md, anchor: "## AS 1684 — Residential timber framing"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1684 Series — Residential Timber-Framed Construction"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1720 Series — Timber Structures"}
+      - {seed: as-standards-reference.md, anchor: "## AS 5604 — Timber — Natural Durability Ratings"}
+
+  - id: structure.masonry
+    parent: structure
+    label: Loadbearing masonry
+    describes: >-
+      Masonry that carries load: loadbearing brick and block walls,
+      reinforced and core-filled blockwork, mortar class, slenderness,
+      lateral restraint, movement and articulation joints and robustness of
+      masonry structures.
+    excludes: >-
+      Brick veneer and other non-loadbearing external masonry skins and their
+      wall ties (envelope.external-walls), masonry retaining walls
+      (site.retaining-walls or substructure.retaining-walls) and damp-proof
+      courses (envelope.flashings-seals).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 3700 — Masonry Structures"}
+      - {seed: ncc-reference-guide.md, anchor: "### Timber, Masonry, and Fire Resistance of Structural Materials"}
+
+  - id: structure.temporary-works
+    parent: structure
+    label: Temporary works during construction
+    describes: >-
+      Temporary structures and support while the permanent structure is
+      incomplete: formwork and falsework, stripping times, back-propping and
+      reshoring, post-tensioning stressing sequence, temporary bracing and
+      erection stability, crane bases, outrigger pads and tie-ins, and
+      propping of existing structure during alterations.
+    excludes: >-
+      Excavation shoring and dewatering (substructure.basement-retention) and
+      scaffolding as access (not a structural system in this cluster).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 3610 Series — Formwork for Concrete"}
+      - {seed: as-standards-reference.md, anchor: "## AS 1418 and AS 2550 Series — Cranes, Hoists and Winches"}
+      - {seed: structural-commercial-industrial-guide.md, anchor: "## Common failures and low-confidence flags"}
+
+  - id: structure.alterations
+    parent: structure
+    label: Alterations to existing structure
+    describes: >-
+      Work on a structure that is being kept: assessment of existing
+      structural condition and capacity, testing of existing members (cover
+      meter, cores, load tests), removal of or new openings in loadbearing or
+      bracing walls, new loads on existing members, strengthening and repair
+      of deteriorated concrete or corroded steel, and heritage structural
+      interventions.
+    excludes: >-
+      Demolition of whole structures (site.demolition), work to existing
+      footings (substructure.underpinning) and new structure that does not
+      rely on existing members (concrete, steel, timber or masonry children).
+    status: draft
+    sources:
+      - {seed: renovation-guide.md, anchor: "## Structural intervention"}
+      - {seed: structural-commercial-industrial-guide.md, anchor: "### Inception, site and existing information [inception]"}
+      - {seed: residential-construction-guide.md, anchor: "## Residential Renovation and Extension Considerations"}

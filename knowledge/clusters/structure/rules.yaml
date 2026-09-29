@@ -1,0 +1,700 @@
+version: 1
+rules:
+- id: rule.ncc.structural-design-basis
+  title: Structural design basis
+  instrument: NCC 2022 Volumes One and Two
+  clause: Part B1, Specification B1.1; Volume Two Part 2.1 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - structure.design-basis
+  requires: Document the actions, importance level and structural design standards adopted for the building.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the adopted structural importance level?
+    criteria:
+      true: It explicitly states the adopted structural importance level.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.design-basis
+  numbers: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Performance Requirements and Importance Levels'
+- id: rule.as1170.structural-actions
+  title: Permanent and imposed actions
+  instrument: AS/NZS 1170 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.design-basis
+  requires: Design for permanent and imposed actions using the applicable combinations, including distributed
+    and concentrated load cases.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a concentrated imposed load case?
+    criteria:
+      true: It explicitly states a concentrated imposed load case.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.design-basis
+  numbers:
+  - claim: Seed residential imposed floor load 1.5 kPa; balcony 2.0 kPa (conflicts with residential structural
+      seed 3.0 kPa).
+    verified: false
+  - claim: Seed office load 3.0 kPa, retail 4.0 kPa, assembly 4.0–5.0 kPa; not design defaults.
+    verified: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 1170 Series — Structural Design Actions'
+- id: rule.as1170.wind-actions
+  title: Wind design basis
+  instrument: AS/NZS 1170.2:2021; AS 4055
+  clause: Part B1; Volume Two Part 2.1 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - structure.design-basis
+  requires: Document wind region and site exposure inputs; confirm simplified housing pathway scope before
+    using its classifications.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the adopted wind classification or
+      wind region?
+    criteria:
+      true: It explicitly states the adopted wind classification or wind region.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.design-basis
+  numbers: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Wind Actions'
+- id: rule.as1170.earthquake-actions
+  title: Earthquake design basis
+  instrument: AS 1170.4
+  clause: Part B1, B1.4; Volume Two Part 2.1 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - structure.design-basis
+  requires: Establish earthquake actions and the applicable analysis method from verified site and structural
+    inputs.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the earthquake design method?
+    criteria:
+      true: It explicitly states the earthquake design method.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.design-basis
+  numbers:
+  - claim: Seed hazard factor Z ranges 0.03–0.22; requires primary verification.
+    verified: false
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Earthquake Actions'
+- id: rule.as3600.durability-exposure
+  title: Concrete durability exposure and cover
+  instrument: AS 3600:2018
+  clause: Section 4, Table 4.3 (unverified seed reference)
+  clause_verified: false
+  systems:
+  - structure.concrete
+  - substructure.footings
+  - substructure.slab-on-ground
+  - substructure.piles
+  requires: Specify concrete exposure classification, cover and strength for each element using verified
+    durability requirements and placement tolerances.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the exposure classification for a concrete
+      element?
+    criteria:
+      true: It explicitly states the exposure classification for a concrete element.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - substructure.footings
+    - substructure.slab-on-ground
+    - substructure.piles
+  numbers:
+  - claim: 'Seed A1: 25 MPa and 20 mm cover; B1: 32 MPa and 40 mm; B2: 40 MPa and 45 mm; C: 50 MPa and
+      50 mm. Do not use as a lookup table.'
+    verified: false
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3600 — Concrete Structures'
+- id: rule.as3600.reinforcement-detailing
+  title: Reinforcement detailing
+  instrument: AS 3600:2018
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.concrete
+  requires: Detail reinforcement anchorage, laps, shear reinforcement and cover for the actual concrete
+    members.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state reinforcement lap details?
+    criteria:
+      true: It explicitly states reinforcement lap details.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3600 — Concrete Structures'
+- id: rule.as1012.concrete-testing
+  title: Concrete conformance testing
+  instrument: AS 1012 series; AS/NZS 1379
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.concrete
+  - substructure.slab-on-ground
+  requires: Specify sampling, curing, testing and engineer review of nonconforming concrete results.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state concrete strength test results?
+    criteria:
+      true: It explicitly states concrete strength test results.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - substructure.slab-on-ground
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1012 Series — Methods of Testing Concrete'
+- id: rule.as4671.reinforcement-traceability
+  title: Reinforcement grade and traceability
+  instrument: AS/NZS 4671
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.concrete
+  requires: Match reinforcement grade and ductility to the design and retain product traceability.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state reinforcement grade certification?
+    criteria:
+      true: It explicitly states reinforcement grade certification.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 4671 — Steel Reinforcing Materials'
+- id: rule.as3610.formwork-reshoring
+  title: Formwork and reshoring design
+  instrument: AS 3610 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.temporary-works
+  - structure.concrete
+  requires: Design formwork and reshoring for construction loads and specify evidence of concrete strength
+    before stripping.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a strength-based formwork stripping
+      requirement?
+    criteria:
+      true: It explicitly states a strength-based formwork stripping requirement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - structure.concrete
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3610 Series — Formwork for Concrete'
+- id: rule.as4100.steel-design
+  title: Steel member and connection design
+  instrument: AS 4100:2020
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.steel
+  requires: Document steel stability, restraints and connection load paths for the actual frame.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state steel connection design details?
+    criteria:
+      true: It explicitly states steel connection design details.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4100 — Steel Structures'
+- id: rule.as5131.steel-fabrication
+  title: Steel fabrication and erection controls
+  instrument: AS/NZS 5131:2016
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.steel
+  requires: Specify the construction category and its inspection requirements, with erection stability
+    documented.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the steelwork construction category?
+    criteria:
+      true: It explicitly states the steelwork construction category.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 5131 — Structural Steelwork — Fabrication and Erection'
+- id: rule.as1554.steel-welding
+  title: Structural welding controls
+  instrument: AS/NZS 1554 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.steel
+  requires: Specify weld categories, qualified procedures and inspection scope for structural welds.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the required weld inspection method?
+    criteria:
+      true: It explicitly states the required weld inspection method.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 1554 Series — Structural Steel Welding'
+- id: rule.as2312.steel-corrosion
+  title: Steel corrosion protection
+  instrument: AS/NZS 2312 series; AS 4312
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.steel
+  requires: Select corrosion protection for exposure and maintenance conditions, with surface preparation
+    and inspection requirements.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the specified surface preparation for
+      protective coating?
+    criteria:
+      true: It explicitly states the specified surface preparation for protective coating.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS/NZS 2312 Series — Guide to the Protection of Structural Steelwork Against Atmospheric
+      Corrosion'
+- id: rule.as1720.engineered-timber
+  title: Engineered timber design
+  instrument: AS 1720 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.timber
+  requires: Use engineering design for timber construction outside prescriptive framing scope, with product-specific
+    properties and connections.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an engineered timber design basis?
+    criteria:
+      true: It explicitly states an engineered timber design basis.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1720 Series — Timber Structures'
+- id: rule.as1684.timber-framing
+  title: Residential framing scope and load path
+  instrument: AS 1684 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.timber
+  requires: Confirm the applicable framing part and scope, with continuous bracing and tie-down paths
+    to foundations.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a continuous roof-to-foundation tie-down
+      detail?
+    criteria:
+      true: It explicitly states a continuous roof-to-foundation tie-down detail.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+  numbers: []
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Connection and tie-down requirements'
+- id: rule.as1684.member-modifications
+  title: Framing penetrations and notches
+  instrument: AS 1684 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.timber
+  requires: Coordinate service drilling and notching with permitted member zones or obtain specific engineering
+    details.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an approved framing penetration detail?
+    criteria:
+      true: It explicitly states an approved framing penetration detail.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+  numbers: []
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Notching, drilling, and modification rules'
+- id: rule.as5604.timber-durability
+  title: Timber exposure and durability
+  instrument: AS 5604; AS/NZS 1604 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.timber
+  requires: Specify heartwood or treatment appropriate to exposure, compatible fixings and treatment of
+    cut ends.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the treatment of cut timber ends?
+    criteria:
+      true: It explicitly states the treatment of cut timber ends.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 5604 — Timber — Natural Durability Ratings'
+- id: rule.as3700.masonry-design
+  title: Masonry stability and movement
+  instrument: AS 3700:2018
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure.masonry
+  requires: Design masonry restraint and movement joints for the structural system and exposure.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state masonry movement joint details?
+    criteria:
+      true: It explicitly states masonry movement joint details.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3700 — Masonry Structures'
+- id: rule.as2870.footing-design-by-site-class
+  title: Residential footing design basis
+  instrument: AS 2870:2011
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - substructure.footings
+  - substructure.slab-on-ground
+  requires: Use investigated site conditions to select a permissible footing design route; abnormal sites
+    require specific engineering assessment.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a project-specific footing design for
+      abnormal site conditions?
+    criteria:
+      true: It explicitly states a project-specific footing design for abnormal site conditions.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - substructure.slab-on-ground
+  numbers: []
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Site classification'
+- id: rule.as1726.ground-investigation
+  title: Ground investigation coverage
+  instrument: AS 1726:2017
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - site.ground-conditions
+  requires: Investigate ground conditions to a scope appropriate to the final footprint, founding level
+    and excavation depth.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the investigation depth relative to
+      the proposed foundation?
+    criteria:
+      true: It explicitly states the investigation depth relative to the proposed foundation.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.ground-conditions
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1726 — Geotechnical Site Investigations'
+- id: rule.as1289.soil-testing
+  title: Soil testing basis
+  instrument: AS 1289 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - site.ground-conditions
+  - site.earthworks
+  requires: Specify test methods and reference compactive effort consistently with the earthworks acceptance
+    criteria.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the reference compactive effort for
+      density acceptance?
+    criteria:
+      true: It explicitly states the reference compactive effort for density acceptance.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.ground-conditions
+    - site.earthworks
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1289 Series — Methods of Testing Soils for Engineering Purposes'
+- id: rule.as3798.controlled-fill
+  title: Controlled fill records
+  instrument: AS 3798:2007
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - site.earthworks
+  requires: Control fill suitability, placement, moisture conditioning and testing with identifiable lots.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state fill lot test records?
+    criteria:
+      true: It explicitly states fill lot test records.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 3798 — Guidelines on Earthworks for Commercial and Residential Developments'
+- id: rule.as2159.piling
+  title: Piling design and verification
+  instrument: AS 2159:2009
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - substructure.piles
+  requires: Design piles for site risk, settlement and downdrag, and specify integrity and load verification.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pile integrity testing requirements?
+    criteria:
+      true: It explicitly states pile integrity testing requirements.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.piles
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2159 — Piling — Design and Installation'
+- id: rule.as4678.retaining-design
+  title: Retaining stability and water pressure
+  instrument: AS 4678:2002
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - site.retaining-walls
+  - substructure.retaining-walls
+  - substructure.basement-retention
+  requires: Design retaining structures for ground conditions, surcharge and water pressure, including
+    global stability.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the water-pressure design basis for
+      the retaining wall?
+    criteria:
+      true: It explicitly states the water-pressure design basis for the retaining wall.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.retaining-walls
+    - substructure.retaining-walls
+    - substructure.basement-retention
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 4678 — Earth-Retaining Structures'
+- id: rule.ncc.flood-structural-actions
+  title: Flood actions and floor levels
+  instrument: NCC 2022; ABCB flood hazard standard
+  clause: G5; Volume Two 3.10.3 (seed numbering; NCC 2019)
+  clause_verified: false
+  systems:
+  - site.flooding
+  - structure.design-basis
+  requires: Establish flood constraints and design for applicable flood actions using the project flood
+    assessment.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a project flood planning level?
+    criteria:
+      true: It explicitly states a project flood planning level.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.flooding
+    - structure.design-basis
+  numbers: []
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Pool Barriers and Construction in Flood Hazard Areas'
+- id: rule.ncc.termite-management
+  title: Termite management continuity
+  instrument: NCC 2022; AS 3660 series
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - substructure.termite-management
+  requires: Establish site termite risk and specify a continuous management system at slab edges and penetrations.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a termite management detail at service
+      penetrations?
+    criteria:
+      true: It explicitly states a termite management detail at service penetrations.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.termite-management
+  numbers: []
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+- id: rule.nepm.site-contamination-assessment
+  title: Contamination assessment for intended use
+  instrument: National Environment Protection (Assessment of Site Contamination) Measure
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - site.contamination
+  requires: Assess contamination using the relevant land-use assessment criteria and site investigation
+    evidence.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the adopted contamination land-use
+      assessment category?
+    criteria:
+      true: It explicitly states the adopted contamination land-use assessment category.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.contamination
+  numbers: []
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## NEPM Framework and Investigation Levels'
+- id: rule.as2601.demolition-stability
+  title: Demolition sequence and hazardous materials
+  instrument: AS 2601:2001
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - site.demolition
+  - structure.alterations
+  requires: Document a stable demolition sequence following hazardous material identification and management.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a structural demolition sequence?
+    criteria:
+      true: It explicitly states a structural demolition sequence.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.demolition
+    - structure.alterations
+  numbers: []
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2601 — The Demolition of Structures'
+- id: rule.project.groundwater-design
+  title: Groundwater and dewatering basis
+  instrument: Project geotechnical design requirements; applicable water authority conditions
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - site.ground-conditions
+  - substructure.basement-retention
+  requires: Resolve groundwater observations and dewatering implications for the excavation design.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state groundwater observations for the proposed
+      excavation?
+    criteria:
+      true: It explicitly states groundwater observations for the proposed excavation.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.ground-conditions
+    - substructure.basement-retention
+  numbers: []
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '### Pre-DA consultation and development application [development_application]'
+- id: rule.project.structural-inspections
+  title: Structural concealment inspections
+  instrument: Project structural inspection specification
+  clause: Specific clause pending primary-instrument verification
+  clause_verified: false
+  systems:
+  - structure
+  - substructure
+  requires: Inspect footing, reinforcement and framing hold points before the inspected work is concealed.
+  evidence:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state reinforcement inspection evidence before
+      the concrete pour?
+    criteria:
+      true: It explicitly states reinforcement inspection evidence before the concrete pour.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - substructure
+  numbers: []
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
