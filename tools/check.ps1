@@ -21,6 +21,9 @@ function Require-Command([string]$Name) {
 Require-Command python
 Require-Command go
 
+# Dedicated test database. Never point this at any other database.
+$env:SITEWISE_TEST_DATABASE_URL = 'postgres://sitewise@127.0.0.1:5433/sitewise_test?sslmode=disable'
+
 & python tools/check_knowledge.py --strict
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
