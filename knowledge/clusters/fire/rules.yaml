@@ -1,0 +1,111 @@
+# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
+# Clause numbers are copied from the seeds, which use NCC 2019 numbering.
+# The determinants cluster verifies them against NCC 2022.
+version: 1
+rules:
+  - id: rule.ncc.type-of-construction
+    title: Type of Construction required
+    instrument: NCC 2022 Volume One
+    clause: "C1.1, Table C1.2 (seed numbering; NCC 2019)"
+    clause_verified: false
+    systems: [fire-passive.rated-elements, structure]
+    applies_when:
+      all:
+        - {det: ncc_class, any_of: ["2", "3", "5", "6", "7a", "7b", "8", "9a", "9b", "9c"]}
+    derives:
+      table: type_of_construction
+      inputs: [ncc_class, rise_in_storeys]
+      gives: type_of_construction
+    requires: >-
+      The building's Type of Construction (A, B or C) is set by its
+      classification and rise in storeys, and it sets the fire resistance
+      levels of its elements.
+    evidence:
+      type: noul
+      instructions: >-
+        Using `text`, does this passage state the building's Type of
+        Construction (Type A, Type B or Type C)?
+      criteria:
+        true: "It names Type A, Type B or Type C construction for the building or a part of it."
+        false: "It does not name a Type of Construction, or only explains what the types mean in general."
+      runs_on: [fire-passive, structure]
+    numbers:
+      - {claim: "Class 2 or 3 with a rise in storeys of 4 or more requires Type A", verified: false}
+      - {claim: "Class 5, 6, 7, 8 or 9 with a rise in storeys of 4 or more requires Type A", verified: false}
+      - {claim: "Class 2, 3, 5, 6, 7, 8 or 9 with a rise in storeys of 2 or 3 requires Type B", verified: false}
+      - {claim: "Single-storey Class 2 to 9 buildings require Type C", verified: false}
+    related_rules: [rule.ncc.sprinkler-concession-type-of-construction]
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Types of Construction (A, B, C)"}
+
+  - id: rule.ncc.sprinkler-concession-type-of-construction
+    title: Sprinkler concession for Type of Construction
+    instrument: NCC 2022 Volume One
+    clause: "C1.6, Specification 17 (seed numbering; NCC 2019)"
+    clause_verified: false
+    systems: [fire-passive.rated-elements, fire-active.sprinklers]
+    applies_when:
+      all:
+        - {det: sprinklered, is: true}
+    requires: >-
+      Some buildings fitted with a sprinkler system complying with AS 2118.1
+      may use a lower Type of Construction. The building then depends on the
+      sprinkler system for compliance for its whole life.
+    evidence:
+      type: noul
+      instructions: >-
+        Using `text`, does this passage state that a sprinkler concession or
+        sprinkler trade-off is used to reduce the Type of Construction, fire
+        resistance levels, compartment size or travel distances?
+      criteria:
+        true: "It states that the design relies on sprinklers to reduce a fire requirement (Type of Construction, FRL, compartment size or travel distance)."
+        false: "It mentions sprinklers without saying another fire requirement was reduced because of them."
+      runs_on: [fire-passive, fire-active.sprinklers]
+    numbers:
+      - {claim: "A 4-storey Class 5 building needing Type A may use Type B if fully sprinklered", verified: false}
+    related_rules: [rule.ncc.type-of-construction, rule.as1851.fire-system-maintenance]
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Sprinkler Concessions for Type of Construction"}
+
+  - id: rule.ncc.penetration-protection
+    title: Protection of service penetrations through fire-resisting construction
+    instrument: NCC 2022 Volume One
+    clause: "C3.15 / C4.5 (seed gives both; unverified)"
+    clause_verified: false
+    systems: [fire-passive.penetrations]
+    requires: >-
+      Services passing through fire-resisting construction must be protected
+      by a tested system (collar, wrap, sealant or damper) that maintains the
+      FRL of the construction.
+    evidence:
+      type: noul
+      instructions: >-
+        Using `text`, does this passage specify how service penetrations
+        through fire-resisting walls or floors are protected?
+      criteria:
+        true: "It names a protection method for penetrations (fire collar, wrap, sealant, damper or a tested system) or requires one."
+        false: "It does not address penetration protection, or only states the wall or floor's fire rating without saying how penetrations are protected."
+      runs_on: [fire-passive, hydraulic, mechanical, electrical]
+    related_rules: []
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
+
+  - id: rule.as1851.fire-system-maintenance
+    title: Routine service of fire protection systems
+    instrument: AS 1851:2012 (Amdt 1, 2016)
+    clause: "AS 1851"
+    clause_verified: false
+    systems: [fire-active]
+    requires: >-
+      Installed fire protection systems must be serviced to AS 1851 schedules
+      by licensed personnel, with defects rectified and an annual fire safety
+      statement lodged under state legislation.
+    numbers:
+      - {claim: "Non-critical defects rectified within 30 days", verified: false}
+    related_rules: []
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1851 — Routine Service of Fire Protection Systems"}

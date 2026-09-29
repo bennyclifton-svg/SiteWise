@@ -1,0 +1,180 @@
+# Top-level building systems. Lead-owned: clusters add children in
+# clusters/<cluster>/systems.yaml and never edit this file.
+# Jev labels passages with one noul per top-level system (a passage can be
+# about several), then a choice among that system's children.
+version: 1
+systems:
+  - id: site
+    label: Site, ground and external works
+    describes: >-
+      The land and ground: surveys, boundaries, ground conditions and
+      contamination, earthworks, site stormwater and detention, external
+      pavements and driveways, landscaping and trees, and site services
+      connections outside the building.
+    excludes: >-
+      Footings, slabs and basements (substructure) and drainage inside the
+      building (hydraulic).
+    status: draft
+    sources:
+      - {seed: residential-construction-guide.md, anchor: "## Site Assessment and Due Diligence"}
+      - {seed: civil-commercial-industrial-guide.md, anchor: "## Evidence sweep"}
+
+  - id: substructure
+    label: Substructure
+    describes: >-
+      Everything that transfers the building into the ground: footings, slabs
+      on ground, piles, basements, retaining walls that form part of the
+      building, and below-ground waterproofing and termite barriers.
+    excludes: >-
+      Suspended floors, columns and frames above ground (structure) and
+      free-standing landscape retaining walls (site).
+    status: draft
+    sources:
+      - {seed: residential-construction-guide.md, anchor: "## Foundations and Footing Systems"}
+
+  - id: structure
+    label: Structure
+    describes: >-
+      The load-bearing frame above ground: columns, beams, suspended floors,
+      load-bearing walls, roof structure, stairs as structure, and the
+      structural actions they resist (dead, live, wind, earthquake).
+    excludes: >-
+      Fire-resistance ratings of elements (fire-passive), non-load-bearing
+      partitions (interiors) and roof coverings (envelope).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Structural Systems for Commercial Buildings"}
+      - {seed: residential-construction-guide.md, anchor: "## Structural Framing Systems"}
+
+  - id: envelope
+    label: Building envelope
+    describes: >-
+      The weather and thermal boundary: external walls, cladding and facades,
+      windows and external doors, roof coverings, balconies and terraces,
+      external waterproofing, insulation, sarking and vapour control.
+    excludes: >-
+      Internal wet-area waterproofing (interiors) and the fire performance of
+      external walls when that is the topic (fire-passive).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Facade and Curtain Wall Systems"}
+      - {seed: finishes-residential.md, anchor: "## External envelope"}
+
+  - id: interiors
+    label: Interiors and finishes
+    describes: >-
+      Internal partitions, linings, ceilings, floor finishes, wet areas and
+      their waterproofing, tiling, joinery, internal doors and hardware.
+    excludes: >-
+      Fire-rated walls, fire doors and their hardware as fire elements
+      (fire-passive).
+    status: draft
+    sources:
+      - {seed: finishes-residential.md, anchor: "## Internal linings"}
+      - {seed: finishes-residential.md, anchor: "## Wet area waterproofing"}
+
+  - id: fire-passive
+    label: Passive fire protection
+    describes: >-
+      Fire-resisting construction and separation: Type of Construction, fire
+      resistance levels, fire compartments, separation between
+      classifications and sole-occupancy units, protection of openings and
+      service penetrations, fire and smoke doors, fire dampers, and
+      combustibility of external walls.
+    excludes: >-
+      Sprinklers, hydrants, detection and alarms (fire-active).
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Passive fire protection"}
+      - {seed: ncc-reference-guide.md, anchor: "## Fire Resistance and Type of Construction"}
+
+  - id: fire-active
+    label: Active fire protection
+    describes: >-
+      Fire systems that detect, warn or suppress: smoke and heat detection,
+      fire indicator panels, occupant warning, sprinklers, hydrants, hose
+      reels, fire pumps and tanks, smoke control, emergency lighting and exit
+      signs, and fire alarm monitoring.
+    excludes: >-
+      Fire-rated construction (fire-passive) and general lighting
+      (electrical).
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Active systems and water supply"}
+      - {seed: ncc-reference-guide.md, anchor: "## Fire Detection, Warning, and Suppression Systems"}
+
+  - id: mechanical
+    label: Mechanical services
+    describes: >-
+      Heating, cooling, outdoor air and ventilation, local exhaust, car-park
+      ventilation, refrigerant and condensate, and building management and
+      controls.
+    excludes: >-
+      Smoke control when the passage is about the fire strategy
+      (fire-active), and hot water (hydraulic).
+    status: draft
+    sources:
+      - {seed: mechanical-services-guide.md, anchor: "## System map"}
+
+  - id: hydraulic
+    label: Hydraulic services
+    describes: >-
+      Potable and non-potable water, sanitary plumbing and sewer, hot water,
+      trade waste, roof and building stormwater drainage, gas, and fire-water
+      supply where it is part of the hydraulic scope.
+    excludes: >-
+      Site stormwater detention and external drainage (site), and sprinkler
+      and hydrant design (fire-active).
+    status: draft
+    sources:
+      - {seed: hydraulic-services-guide.md, anchor: "## System map"}
+
+  - id: electrical
+    label: Electrical services
+    describes: >-
+      Utility supply, substations, main switchboards and distribution,
+      general lighting and lighting controls, emergency and standby power,
+      solar PV, batteries, EV charging, metering and lightning protection.
+    excludes: >-
+      Emergency lighting and exit signs (fire-active) and data cabling
+      (comms-security).
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Supply, demand and resilience"}
+
+  - id: comms-security
+    label: Communications and security
+    describes: >-
+      Telecommunications lead-in, structured cabling, ICT rooms and pathways,
+      audiovisual systems, intruder alarms, CCTV, access control and
+      intercoms.
+    excludes: >-
+      Fire alarm and occupant warning systems (fire-active).
+    status: draft
+    sources:
+      - {seed: ict-av-security-guide.md, anchor: "## ICT rooms, pathways and cabling"}
+
+  - id: vertical-transport
+    label: Vertical transport
+    describes: >-
+      Lifts, escalators, moving walks and platform lifts, their shafts, pits,
+      machine rooms and controls.
+    excludes: >-
+      Stairs and ramps (access-egress).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Vertical Transport — Lifts and Escalators"}
+
+  - id: access-egress
+    label: Access and egress
+    describes: >-
+      How people move into, through and out of the building: paths of travel,
+      exits and travel distances, stairs, ramps, balustrades and barriers,
+      accessible entrances and facilities, and pool barriers.
+    excludes: >-
+      Fire-isolated exit construction ratings (fire-passive) and lifts
+      (vertical-transport).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "## Means of Egress"}
+      - {seed: ncc-reference-guide.md, anchor: "## Accessibility Requirements"}

@@ -1,0 +1,92 @@
+# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
+version: 1
+interfaces:
+  - id: if.services-penetrate-fire-rated-construction
+    type: penetrates
+    from: [hydraulic, mechanical, electrical, comms-security]
+    to: [fire-passive.penetrations]
+    summary: >-
+      Every pipe, duct and cable that passes through fire-resisting
+      construction breaks the compartment unless it is protected by a tested
+      system. Late services changes are the usual cause of unprotected
+      penetrations.
+    governed_by: [rule.ncc.penetration-protection]
+    responsibility: >-
+      Each services designer locates penetrations; the passive fire installer
+      protects them with tested systems; the certifier inspects before
+      linings close.
+    resolved_when:
+      - type: noul
+        instructions: >-
+          Using `text`, does this passage specify how service penetrations
+          through fire-resisting walls or floors are protected?
+        criteria:
+          true: "It names a protection method (fire collar, wrap, sealant, damper or a tested system) or requires one."
+          false: "It does not address penetration protection."
+        runs_on: [fire-passive.penetrations, hydraulic, mechanical, electrical]
+    failure_modes: [fm.plastic-pipe-without-fire-collar]
+    cross_cluster: true
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
+      - {seed: fire-life-safety-guide.md, anchor: "## Passive fire protection"}
+
+  - id: if.fire-water-supplies-sprinklers
+    type: supplies
+    from: [fire-active.fire-water]
+    to: [fire-active.sprinklers, fire-active.hydrants]
+    applies_when:
+      any:
+        - {system_present: fire-active.sprinklers}
+        - {system_present: fire-active.hydrants}
+    summary: >-
+      Sprinklers and hydrants need a proven water supply. Where town main
+      pressure or flow is inadequate, pumps and tanks follow, and with them
+      plant space, structural load and power supply.
+    governed_by: []
+    resolved_when:
+      - type: noul
+        instructions: >-
+          Using `text`, does this passage state the results of a town main
+          flow and pressure test, or state the water supply source for the
+          sprinkler or hydrant system?
+        criteria:
+          true: "It reports flow or pressure test results, or names the supply source (town main, tank, pump)."
+          false: "It does not describe the fire-water supply."
+        runs_on: [fire-active, hydraulic]
+    failure_modes: [fm.fire-water-supply-assessed-late]
+    cross_cluster: false
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2118 Series — Automatic Fire Sprinkler Systems"}
+      - {seed: hydraulic-services-guide.md, anchor: "### Fire-water boundary"}
+
+  - id: if.fire-construction-depends-on-sprinklers
+    type: depends_on
+    from: [fire-passive.rated-elements, fire-passive.compartments]
+    to: [fire-active.sprinklers]
+    applies_when:
+      all:
+        - {det: sprinklered, is: true}
+    summary: >-
+      When a sprinkler concession lowers the Type of Construction, fire
+      resistance levels, compartment sizes or travel distances, the
+      building's passive fire compliance depends on the sprinklers staying
+      installed and maintained for the life of the building.
+    governed_by:
+      - rule.ncc.sprinkler-concession-type-of-construction
+      - rule.as1851.fire-system-maintenance
+    resolved_when:
+      - type: noul
+        instructions: >-
+          Using `text`, does this passage state that a sprinkler concession or
+          sprinkler trade-off is used to reduce another fire requirement?
+        criteria:
+          true: "It states that sprinklers are relied on to reduce Type of Construction, FRLs, compartment size or travel distance."
+          false: "It does not state any reliance on sprinklers."
+        runs_on: [fire-passive, fire-active.sprinklers]
+    failure_modes: []
+    cross_cluster: false
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Sprinkler Concessions for Type of Construction"}

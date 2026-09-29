@@ -1,0 +1,172 @@
+# Project determinants: the facts that decide which rules apply.
+# Lead draft. The determinants cluster owns refinement, options and questions;
+# other clusters propose additions in clusters/<cluster>/proposed_determinants.yaml.
+version: 1
+determinants:
+  - id: ncc_class
+    label: NCC building classification(s)
+    value: multi_choice
+    extraction: choice
+    options:
+      - {id: "1a", describes: "A single dwelling, or attached dwellings each separated by a fire-resisting wall (house, townhouse, terrace)."}
+      - {id: "1b", describes: "A small boarding house, guest house or hostel below the Class 3 size limits."}
+      - {id: "2", describes: "A building of two or more sole-occupancy units, each a separate dwelling (apartments)."}
+      - {id: "3", describes: "Long-term or transient residential accommodation for unrelated people (hotel, motel, boarding house, dormitory, residential care not Class 9c)."}
+      - {id: "4", describes: "A single dwelling within a building of Class 5 to 9."}
+      - {id: "5", describes: "An office building for professional or commercial purposes."}
+      - {id: "6", describes: "A shop or other building selling goods or services to the public, including cafes and restaurants."}
+      - {id: "7a", describes: "A car park."}
+      - {id: "7b", describes: "A storage building or warehouse, or a building for display of goods or produce for wholesale."}
+      - {id: "8", describes: "A laboratory or a building for production, assembly, repair or processing of goods (factory)."}
+      - {id: "9a", describes: "A health-care building."}
+      - {id: "9b", describes: "An assembly building (school, theatre, sports venue, place of worship, early childhood centre)."}
+      - {id: "9c", describes: "A residential care building."}
+      - {id: "10a", describes: "A non-habitable building such as a private garage, carport or shed."}
+      - {id: "10b", describes: "A structure such as a fence, mast, antenna, retaining or free-standing wall, or swimming pool."}
+      - {id: "10c", describes: "A private bushfire shelter."}
+    question:
+      type: choice
+      instructions: >-
+        Using `text`, which NCC building classification does this passage
+        state for the building or part of the building?
+      criteria: {}   # filled from options by code, plus "not_stated"
+      runs_on: [fire-passive, access-egress, structure]
+    status: draft
+    notes: "Option wording is a lead draft; verify against NCC 2022 Part A6."
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Classification Definitions (Classes 1-10)"}
+
+  - id: rise_in_storeys
+    label: Rise in storeys (NCC definition)
+    value: integer
+    unit: storeys
+    extraction: pre_parsed
+    question:
+      type: choice
+      instructions: >-
+        Using `text` and `candidates`, which candidate is the building's rise
+        in storeys as the passage states it?
+      criteria: {}   # candidates filled by code, plus "none"
+      runs_on: [fire-passive, structure]
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Types of Construction (A, B, C)"}
+
+  - id: effective_height
+    label: Effective height
+    value: number
+    unit: m
+    extraction: pre_parsed
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Automatic Fire Sprinkler Systems"}
+
+  - id: sprinklered
+    label: Building protected by an automatic sprinkler system
+    value: boolean
+    extraction: choice
+    question:
+      type: noul
+      instructions: >-
+        Using `text`, does this passage state that the building, or the part
+        of it described, is protected by an automatic fire sprinkler system?
+      criteria:
+        true: "It states that sprinklers are installed or required throughout the building or the described part."
+        false: "It does not mention sprinklers, or only mentions them as an option, a future allowance or in another building."
+      runs_on: [fire-active, fire-passive]
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Sprinkler Concessions for Type of Construction"}
+
+  - id: type_of_construction
+    label: Type of Construction required
+    value: choice
+    options:
+      - {id: A, describes: "Type A construction (most fire-resistant)."}
+      - {id: B, describes: "Type B construction."}
+      - {id: C, describes: "Type C construction (least fire-resistant)."}
+    derived: true
+    by: rule.ncc.type-of-construction
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Types of Construction (A, B, C)"}
+
+  - id: floor_area
+    label: Floor area of the building or fire compartment
+    value: number
+    unit: m2
+    extraction: pre_parsed
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Fire Compartment Sizes and Classification Separation"}
+
+  - id: state
+    label: State or territory
+    value: choice
+    extraction: pre_parsed
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "## State-Specific Variations and Appendices"}
+
+  - id: bal
+    label: Bushfire attack level (AS 3959)
+    value: choice
+    extraction: choice
+    options:
+      - {id: BAL-LOW, describes: "BAL-LOW."}
+      - {id: BAL-12.5, describes: "BAL-12.5."}
+      - {id: BAL-19, describes: "BAL-19."}
+      - {id: BAL-29, describes: "BAL-29."}
+      - {id: BAL-40, describes: "BAL-40."}
+      - {id: BAL-FZ, describes: "BAL-FZ (flame zone)."}
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "### BAL ratings"}
+
+  - id: wind_class
+    label: Wind classification (AS 4055)
+    value: choice
+    extraction: choice
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "### Wind classification system"}
+
+  - id: site_class
+    label: Site classification (AS 2870)
+    value: choice
+    extraction: choice
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "### Site classification"}
+
+  - id: climate_zone
+    label: NCC climate zone
+    value: choice
+    extraction: pre_parsed
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Section J DTS Provisions (J1-J6)"}
+
+  - id: flood_hazard
+    label: Site in a flood hazard area
+    value: boolean
+    extraction: choice
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Pool Barriers and Construction in Flood Hazard Areas"}
+
+  - id: heritage
+    label: Heritage item or conservation area
+    value: boolean
+    extraction: choice
+    status: draft
+    sources:
+      - {seed: renovation-guide.md, anchor: "# Archetype seed - Renovation"}
+
+  - id: existing_building
+    label: Work to an existing building
+    value: boolean
+    extraction: choice
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Existing buildings, refurbishment and remediation"}

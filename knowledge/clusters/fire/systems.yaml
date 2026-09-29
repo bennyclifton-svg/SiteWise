@@ -1,0 +1,107 @@
+# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
+version: 1
+systems:
+  - id: fire-passive.rated-elements
+    parent: fire-passive
+    label: Fire-resisting building elements
+    describes: >-
+      Walls, floors, columns, beams, shafts and ceilings that must achieve a
+      fire resistance level (FRL), and the Type of Construction that sets
+      those levels.
+    excludes: >-
+      Doors, shutters and dampers in those elements (openings), and
+      penetrations through them (penetrations).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Fire Resistance Level (FRL) Requirements"}
+
+  - id: fire-passive.compartments
+    parent: fire-passive
+    label: Fire compartments and separation
+    describes: >-
+      Division of the building into fire compartments, compartment size
+      limits, and fire separation between classifications and between
+      sole-occupancy units.
+    excludes: >-
+      The FRL of the individual elements forming the separation
+      (rated-elements).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Fire Compartment Sizes and Classification Separation"}
+
+  - id: fire-passive.penetrations
+    parent: fire-passive
+    label: Service penetrations and joints
+    describes: >-
+      Pipes, ducts, cables and conduits passing through fire-resisting
+      construction, and the collars, wraps, sealants and tested systems that
+      protect them; control joints and perimeter gaps in rated construction.
+    excludes: >-
+      Fire dampers in ductwork (openings).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
+
+  - id: fire-passive.openings
+    parent: fire-passive
+    label: Protection of openings
+    describes: >-
+      Fire doors, smoke doors, fire shutters, fire windows and fire dampers in
+      fire-resisting construction, with their closers, latches and hold-open
+      devices.
+    excludes: >-
+      Ordinary internal doors (interiors).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Protection of Openings in Fire-Resisting Construction"}
+
+  - id: fire-active.detection
+    parent: fire-active
+    label: Detection and alarm
+    describes: >-
+      Smoke and heat detectors, smoke alarms, fire indicator panels, manual
+      call points and alarm monitoring to the fire brigade.
+    excludes: >-
+      Occupant warning and emergency intercom systems (occupant-warning).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 1670.1 — Fire Detection and Alarm Systems"}
+
+  - id: fire-active.sprinklers
+    parent: fire-active
+    label: Automatic fire sprinklers
+    describes: >-
+      Sprinkler heads, pipework, control and alarm valves, hazard
+      classification and design density, and sprinkler water supply design
+      (wet, dry, pre-action or deluge).
+    excludes: >-
+      Fire hydrants and hose reels (hydrants), and fire pumps and tanks shared
+      between systems (fire-water).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2118 Series — Automatic Fire Sprinkler Systems"}
+
+  - id: fire-active.hydrants
+    parent: fire-active
+    label: Fire hydrants and hose reels
+    describes: >-
+      Fire hydrant systems, booster assemblies, hydrant coverage, and fire
+      hose reels.
+    excludes: >-
+      Sprinklers (sprinklers) and pumps and tanks (fire-water).
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Fire Hydrant and Hose Reel Systems"}
+
+  - id: fire-active.fire-water
+    parent: fire-active
+    label: Fire-water supply, pumps and tanks
+    describes: >-
+      The water supply serving sprinklers and hydrants: town main connection
+      and flow and pressure testing, fire pumps, pumpsets, storage tanks and
+      boosters.
+    excludes: >-
+      Domestic cold and hot water (hydraulic).
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2941 — Fixed Fire Protection Installations — Pumpset Systems"}

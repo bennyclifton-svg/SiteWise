@@ -1,0 +1,59 @@
+# WORKED EXAMPLE (lead). The fire cluster agent extends this file.
+version: 1
+failure_modes:
+  - id: fm.plastic-pipe-without-fire-collar
+    attaches_to: {interface: if.services-penetrate-fire-rated-construction}
+    severity: life-safety
+    detector:
+      type: noul
+      instructions: >-
+        Using `text`, does this passage show or describe a plastic pipe
+        passing through a fire-resisting wall or floor without a fire collar
+        or other tested penetration protection?
+      criteria:
+        true: "It describes a plastic pipe through fire-rated construction and states or shows no collar or tested protection at that penetration."
+        false: "It does not describe such a penetration, or the penetration it describes is protected."
+      runs_on: [fire-passive.penetrations, hydraulic]
+    flag_when: true
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### SOU Separation and Service Penetrations"}
+
+  - id: fm.fire-water-supply-assessed-late
+    attaches_to: {interface: if.fire-water-supplies-sprinklers}
+    severity: cost
+    detector:
+      type: noul
+      instructions: >-
+        Using `text`, does this passage state that the fire-water supply,
+        flow test or sprinkler hydraulic calculation is still to be done or
+        is excluded?
+      criteria:
+        true: "It says the water supply assessment, flow test or hydraulic calculation is outstanding, to be confirmed, deferred or excluded."
+        false: "It reports the assessment as done, or does not mention it."
+      runs_on: [fire-active, hydraulic]
+    flag_when: true
+    status: draft
+    sources:
+      - {seed: as-standards-reference.md, anchor: "## AS 2118 Series — Automatic Fire Sprinkler Systems"}
+
+  - id: fm.fire-door-hold-open-not-released-on-alarm
+    attaches_to: {system: fire-passive.openings}
+    severity: life-safety
+    detector:
+      type: noul
+      instructions: >-
+        Using `text`, does this passage specify hold-open devices on fire or
+        smoke doors?
+      criteria:
+        true: "It specifies hold-open devices, magnetic holders or door retainers on fire or smoke doors."
+        false: "It does not mention hold-open devices on fire or smoke doors."
+      runs_on: [fire-passive.openings]
+    flag_when: true
+    notes: >-
+      The detector only finds hold-open devices. Code pairs it with the
+      release-on-alarm question (to be written by the fire cluster) and flags
+      when a hold-open is specified and release on alarm is not.
+    status: draft
+    sources:
+      - {seed: ncc-reference-guide.md, anchor: "### Protection of Openings in Fire-Resisting Construction"}
