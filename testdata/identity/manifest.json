@@ -1,0 +1,44 @@
+{
+  "fixtures": [
+    {
+      "file": "rotated-title-block.pdf",
+      "sha256": "330ebca16157f1cc9ffeabb3a9e662dc37109547e484f5f2fd3a58c6d31afce2",
+      "bytes": 901
+    },
+    {
+      "file": "scanned-empty.pdf",
+      "sha256": "878f5102d32fcbd225e0e95607e2949dec53b552176ec548ad6a91cccc8bce91",
+      "bytes": 543
+    },
+    {
+      "file": "identity-page.pdf",
+      "sha256": "f044f9373e25ae2692ea2030480ea7179bab901809d7881e57c562838d123d0e",
+      "bytes": 3351
+    },
+    {
+      "file": "malformed.docx",
+      "sha256": "bffb82716cbef7c8bbf51b494b0660a125e4bba7ff8dc82104bca838627b4ca4",
+      "bytes": 26
+    },
+    {
+      "file": "large-shared-strings.xlsx",
+      "sha256": "0d38df56dfe6c198da2635bc68c465f90436ad3ed40ea998fe173ec69d6e01f6",
+      "bytes": 15717
+    },
+    {
+      "file": "merged-cells.xlsx",
+      "sha256": "f4be45b87a559cec6d0500207056d67a35e635f9bf2141c8114b38087afe7580",
+      "bytes": 1863
+    },
+    {
+      "file": "docx-table.docx",
+      "sha256": "0ce4f9f72a628b9c8142b3378b26bd4211496fae4961bd4f037e3f3aad315ef0",
+      "bytes": 811
+    },
+    {
+      "file": "padded-document.docx",
+      "sha256": "3bc1c8389263076ae984e988ff4dd89dc72104d1dfdf2317c453ed86225f8824",
+      "bytes": 700
+    }
+  ]
+}
