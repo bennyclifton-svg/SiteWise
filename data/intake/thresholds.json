@@ -1,0 +1,13 @@
+{
+  "question_version": "intake-1",
+  "reconciliation": "Green and amber cut-offs are unknown until the calibration run fits them per question, version and option count. Unknown thresholds disable automatic Jev action. No example probability from the TypeSafe docs is a default. Supersession is its own question and is not copied from another field.",
+  "questions": {
+    "kind": {"green": null, "amber": null, "options": null},
+    "discipline": {"green": null, "amber": null, "options": null},
+    "lifecycle": {"green": null, "amber": null, "options": null},
+    "number": {"green": null, "amber": null, "options": null},
+    "revision": {"green": null, "amber": null, "options": null},
+    "title": {"green": null, "amber": null, "options": null},
+    "supersedes": {"green": null, "amber": null, "options": null}
+  }
+}
