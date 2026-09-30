@@ -1,0 +1,474 @@
+{
+  "source": "clerk/data/taxonomy/disciplines.json",
+  "source_sha256": "6e079e5e91ff479e147cf3244a7a80fd34d2011e9fe749d570201614120157fa",
+  "note": "Filing view copied from the reference taxonomy. Consultant disciplines are not the building model. PM doctrine fields are omitted.",
+  "disciplines": [
+    {
+      "id": "consultant.access",
+      "label": "Access",
+      "aliases": [
+        "Access consultant",
+        "Accessibility consultant"
+      ]
+    },
+    {
+      "id": "consultant.acoustic",
+      "label": "Acoustic",
+      "aliases": [
+        "Acoustic consultant",
+        "Acoustic engineer"
+      ]
+    },
+    {
+      "id": "consultant.archaeology",
+      "label": "Archaeology",
+      "aliases": [
+        "Archaeologist"
+      ]
+    },
+    {
+      "id": "consultant.architect",
+      "label": "Architect",
+      "aliases": [
+        "Architecture",
+        "Architectural",
+        "Architectural services"
+      ]
+    },
+    {
+      "id": "consultant.arborist",
+      "label": "Arborist",
+      "aliases": [
+        "Arboricultural consultant"
+      ]
+    },
+    {
+      "id": "consultant.av",
+      "label": "AV Consultant",
+      "aliases": [
+        "Audio visual consultant",
+        "Audiovisual consultant"
+      ]
+    },
+    {
+      "id": "consultant.basix",
+      "label": "BASIX",
+      "aliases": [
+        "BASIX assessor"
+      ]
+    },
+    {
+      "id": "consultant.bca",
+      "label": "BCA",
+      "aliases": [
+        "BCA consultant",
+        "Building code consultant"
+      ]
+    },
+    {
+      "id": "consultant.bms",
+      "label": "BMS Consultant",
+      "aliases": [
+        "Building management systems consultant"
+      ]
+    },
+    {
+      "id": "consultant.building",
+      "label": "Building Consultant",
+      "aliases": [
+        "Building consultant"
+      ]
+    },
+    {
+      "id": "consultant.bushfire",
+      "label": "Bushfire",
+      "aliases": [
+        "Bushfire consultant"
+      ]
+    },
+    {
+      "id": "consultant.certifier",
+      "label": "Certifier",
+      "aliases": [
+        "Building certifier",
+        "Certification"
+      ]
+    },
+    {
+      "id": "consultant.civil",
+      "label": "Civil",
+      "aliases": [
+        "Civil engineer",
+        "Civil engineering",
+        "Civil and stormwater engineer",
+        "Civil & stormwater",
+        "Civil / stormwater engineer",
+        "Stormwater engineer",
+        "Stormwater engineering",
+        "Stormwater"
+      ]
+    },
+    {
+      "id": "consultant.commissioning",
+      "label": "Commissioning Agent",
+      "aliases": [
+        "Commissioning consultant"
+      ]
+    },
+    {
+      "id": "consultant.construction_manager",
+      "label": "Construction Manager",
+      "aliases": [
+        "Construction management"
+      ]
+    },
+    {
+      "id": "consultant.demolition",
+      "label": "Demolition Consultant",
+      "aliases": [
+        "Demolition adviser"
+      ]
+    },
+    {
+      "id": "consultant.ecology",
+      "label": "Ecology",
+      "aliases": [
+        "Ecologist"
+      ]
+    },
+    {
+      "id": "consultant.electrical",
+      "label": "Electrical",
+      "aliases": [
+        "Electrical engineer",
+        "Electrical services engineer"
+      ]
+    },
+    {
+      "id": "consultant.environmental",
+      "label": "Environmental",
+      "aliases": [
+        "Environmental consultant"
+      ]
+    },
+    {
+      "id": "consultant.esd",
+      "label": "ESD",
+      "aliases": [
+        "ESD consultant",
+        "Sustainability consultant"
+      ]
+    },
+    {
+      "id": "consultant.expert_witness",
+      "label": "Expert Witness",
+      "aliases": [
+        "Expert witness consultant"
+      ]
+    },
+    {
+      "id": "consultant.facade",
+      "label": "Facade",
+      "aliases": [
+        "Facade consultant",
+        "Facade engineer"
+      ]
+    },
+    {
+      "id": "consultant.fire_engineer",
+      "label": "Fire Engineer",
+      "aliases": [
+        "Fire safety engineer",
+        "Fire Services",
+        "Fire services engineer"
+      ]
+    },
+    {
+      "id": "consultant.geotechnical",
+      "label": "Geotechnical",
+      "aliases": [
+        "Geotechnical engineer",
+        "Geotech"
+      ]
+    },
+    {
+      "id": "consultant.hazmat",
+      "label": "Hazmat",
+      "aliases": [
+        "Hazmat consultant",
+        "Hazardous materials consultant"
+      ]
+    },
+    {
+      "id": "consultant.heritage",
+      "label": "Heritage",
+      "aliases": [
+        "Heritage consultant"
+      ]
+    },
+    {
+      "id": "consultant.hydraulic",
+      "label": "Hydraulic",
+      "aliases": [
+        "Hydraulic engineer",
+        "Hydraulic services engineer"
+      ]
+    },
+    {
+      "id": "consultant.ict",
+      "label": "ICT Consultant",
+      "aliases": [
+        "ICT consultant",
+        "Communications consultant"
+      ]
+    },
+    {
+      "id": "consultant.interior_design",
+      "label": "Interior Design",
+      "aliases": [
+        "Interior designer"
+      ]
+    },
+    {
+      "id": "consultant.landscape",
+      "label": "Landscape",
+      "aliases": [
+        "Landscape architect",
+        "Landscape architecture",
+        "Landscape Architectural"
+      ]
+    },
+    {
+      "id": "consultant.lighting",
+      "label": "Lighting Designer",
+      "aliases": [
+        "Lighting consultant"
+      ]
+    },
+    {
+      "id": "consultant.mechanical",
+      "label": "Mechanical",
+      "aliases": [
+        "Mechanical engineer",
+        "Mechanical services engineer"
+      ]
+    },
+    {
+      "id": "consultant.programming",
+      "label": "Programmer",
+      "aliases": [
+        "Programming consultant",
+        "Briefing consultant"
+      ]
+    },
+    {
+      "id": "consultant.project_manager",
+      "label": "Project Manager",
+      "aliases": [
+        "Project management"
+      ]
+    },
+    {
+      "id": "consultant.quantity_surveyor",
+      "label": "Quantity Surveyor",
+      "aliases": [
+        "QS",
+        "Cost consultant"
+      ]
+    },
+    {
+      "id": "consultant.roof_access",
+      "label": "Roof Access",
+      "aliases": [
+        "Roof access consultant"
+      ]
+    },
+    {
+      "id": "consultant.security",
+      "label": "Security",
+      "aliases": [
+        "Security consultant"
+      ]
+    },
+    {
+      "id": "consultant.services",
+      "label": "Services Engineer",
+      "aliases": [
+        "Building services engineer",
+        "Building Services Engineer (multi-services)",
+        "Services consultant",
+        "Multi services",
+        "Multi services engineer",
+        "Multi services consultant"
+      ]
+    },
+    {
+      "id": "consultant.signage",
+      "label": "Signage Consultant",
+      "aliases": [
+        "Wayfinding consultant"
+      ]
+    },
+    {
+      "id": "consultant.specialist",
+      "label": "Specialist Consultant",
+      "aliases": [
+        "Specialist adviser"
+      ]
+    },
+    {
+      "id": "consultant.structural",
+      "label": "Structural",
+      "aliases": [
+        "Structural engineer",
+        "Structural engineering"
+      ]
+    },
+    {
+      "id": "consultant.surveyor",
+      "label": "Surveyor",
+      "aliases": [
+        "Land surveyor",
+        "Registered surveyor"
+      ]
+    },
+    {
+      "id": "consultant.town_planner",
+      "label": "Town Planner",
+      "aliases": [
+        "Town planning",
+        "Planning consultant"
+      ]
+    },
+    {
+      "id": "consultant.traffic",
+      "label": "Traffic",
+      "aliases": [
+        "Traffic engineer",
+        "Traffic consultant"
+      ]
+    },
+    {
+      "id": "consultant.vertical_transport",
+      "label": "Vertical Transport",
+      "aliases": [
+        "Vertical transport consultant",
+        "Vertical transportation consultant",
+        "Lift consultant"
+      ]
+    },
+    {
+      "id": "consultant.waste",
+      "label": "Waste",
+      "aliases": [
+        "Waste consultant",
+        "Waste management",
+        "Waste management consultant",
+        "Waste management plan",
+        "WMP"
+      ]
+    },
+    {
+      "id": "consultant.waterproofing",
+      "label": "Waterproofing",
+      "aliases": [
+        "Waterproofing consultant"
+      ]
+    },
+    {
+      "id": "consultant.workplace",
+      "label": "Workplace Strategist",
+      "aliases": [
+        "Workplace consultant"
+      ]
+    },
+    {
+      "id": "trade.main_works",
+      "label": "Main Works",
+      "aliases": [
+        "Main contractor",
+        "Head contractor",
+        "Builder",
+        "Head contract",
+        "D&C contract",
+        "Design and construct contract"
+      ]
+    },
+    {
+      "id": "trade.civil_works",
+      "label": "Civil Works",
+      "aliases": [
+        "Civil works contractor",
+        "Civil contractor",
+        "Civil construction",
+        "Earthworks contractor"
+      ]
+    },
+    {
+      "id": "trade.electrical",
+      "label": "Electrical Services",
+      "aliases": [
+        "Electrical contractor",
+        "Electrician"
+      ]
+    },
+    {
+      "id": "trade.mechanical",
+      "label": "Mechanical Services",
+      "aliases": [
+        "Mechanical contractor"
+      ]
+    },
+    {
+      "id": "trade.hydraulic_plumbing",
+      "label": "Hydraulic and Plumbing Services",
+      "aliases": [
+        "Plumbing contractor",
+        "Plumber"
+      ]
+    },
+    {
+      "id": "trade.structural_steel",
+      "label": "Structural Steel",
+      "aliases": [
+        "Structural steelwork",
+        "Steel framing"
+      ]
+    },
+    {
+      "id": "trade.fire_services",
+      "label": "Fire Services Trade",
+      "aliases": [
+        "Fire services contractor",
+        "Fire sprinkler",
+        "Sprinkler",
+        "Sprinklers",
+        "Fire hydrant",
+        "Hydrant",
+        "Hydrants",
+        "Fire wet and dry",
+        "Fire wet & dry"
+      ]
+    },
+    {
+      "id": "trade.joinery_kitchens",
+      "label": "Joinery and Kitchens",
+      "aliases": [
+        "Joinery",
+        "Kitchens",
+        "Cabinetry",
+        "Cabinet maker"
+      ]
+    },
+    {
+      "id": "supplier.windows_glazing",
+      "label": "Windows and Glazing",
+      "aliases": [
+        "Windows",
+        "Glazing",
+        "Aluminium windows",
+        "Window supplier"
+      ]
+    }
+  ]
+}

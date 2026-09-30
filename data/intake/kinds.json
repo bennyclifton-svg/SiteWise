@@ -1,0 +1,20 @@
+{
+  "design_count": 16,
+  "complete": false,
+  "source": "clerk DocumentClass literal, matching frontend DOCUMENT_CLASSES",
+  "reconciliation": "The foundation design asks for 16 kinds. The frozen reference vocabulary has these 12 labels, including unknown as the unresolved class. No file in clerk/data lists 16 kinds. The four missing labels are not invented here. Do not calibrate a 16-way kind question against this list.",
+  "kinds": [
+    {"id": "design_brief", "label": "Design Brief"},
+    {"id": "drawing", "label": "Drawing"},
+    {"id": "specification", "label": "Specification"},
+    {"id": "report", "label": "Report"},
+    {"id": "certificate", "label": "Certificate"},
+    {"id": "correspondence", "label": "Correspondence"},
+    {"id": "contract", "label": "Contract"},
+    {"id": "commercial", "label": "Commercial"},
+    {"id": "schedule", "label": "Schedule"},
+    {"id": "statutory_instrument", "label": "Statutory Instrument"},
+    {"id": "photo", "label": "Photo"},
+    {"id": "unknown", "label": "Unknown"}
+  ]
+}

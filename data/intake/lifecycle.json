@@ -1,0 +1,16 @@
+{
+  "complete": false,
+  "source": "clerk reference-corpus folder categories, including the unmatched default",
+  "reconciliation": "No lifecycle taxonomy file exists in clerk/data. These labels are the folder areas in the reference corpus layout. Folder 06 is absent there, between procurement and construction, and is not invented. This list is a filing view, not a claim that the lifecycle question is calibrated.",
+  "areas": [
+    {"id": "brief", "label": "Brief", "folder": "00-brief-pmp"},
+    {"id": "cost", "label": "Cost", "folder": "01-cost"},
+    {"id": "consultant", "label": "Consultant", "folder": "02-consultant"},
+    {"id": "design", "label": "Design", "folder": "03-design"},
+    {"id": "authorities", "label": "Authorities", "folder": "04-planning-and-authorities"},
+    {"id": "procurement", "label": "Procurement", "folder": "05-procurement"},
+    {"id": "construction", "label": "Construction", "folder": "07-construction"},
+    {"id": "reporting", "label": "Reporting", "folder": "08-meetings-reporting"},
+    {"id": "project", "label": "Project", "folder": ""}
+  ]
+}
