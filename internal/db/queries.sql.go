@@ -43,14 +43,7 @@ func (q *Queries) AddPassage(ctx context.Context, arg AddPassageParams) error {
 }
 
 const claimJob = `-- name: ClaimJob :one
-UPDATE jobs AS j
-SET
-    status = 'leased',
-    attempts = j.attempts + 1,
-    lease_token = $1::uuid,
-    locked_until = now() + make_interval(secs => $2::double precision),
-    last_error = ''
-FROM (
+WITH picked AS MATERIALIZED (
     SELECT c.org_id, c.id
     FROM jobs c
     WHERE c.org_id = $3::uuid
@@ -65,7 +58,15 @@ FROM (
     ORDER BY c.priority DESC, c.run_after, c.created_at, c.id
     FOR UPDATE SKIP LOCKED
     LIMIT 1
-) AS picked
+)
+UPDATE jobs AS j
+SET
+    status = 'leased',
+    attempts = j.attempts + 1,
+    lease_token = $1::uuid,
+    locked_until = now() + make_interval(secs => $2::double precision),
+    last_error = ''
+FROM picked
 WHERE j.org_id = picked.org_id
   AND j.id = picked.id
 RETURNING
@@ -93,6 +94,9 @@ type ClaimJobRow struct {
 	LeaseToken string
 }
 
+// The pick is a materialized CTE so it locks once. As a FROM subquery the
+// planner rescanned it inside a nested loop, and a concurrent claimer could
+// come back empty while a second job was still queued.
 func (q *Queries) ClaimJob(ctx context.Context, arg ClaimJobParams) (ClaimJobRow, error) {
 	row := q.db.QueryRow(ctx, claimJob,
 		arg.LeaseToken,

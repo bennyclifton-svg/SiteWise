@@ -318,14 +318,10 @@ WHERE org_id = sqlc.arg(org_id)::uuid
   AND attempts >= max_attempts;
 
 -- name: ClaimJob :one
-UPDATE jobs AS j
-SET
-    status = 'leased',
-    attempts = j.attempts + 1,
-    lease_token = sqlc.arg(lease_token)::uuid,
-    locked_until = now() + make_interval(secs => sqlc.arg(lease_seconds)::double precision),
-    last_error = ''
-FROM (
+-- The pick is a materialized CTE so it locks once. As a FROM subquery the
+-- planner rescanned it inside a nested loop, and a concurrent claimer could
+-- come back empty while a second job was still queued.
+WITH picked AS MATERIALIZED (
     SELECT c.org_id, c.id
     FROM jobs c
     WHERE c.org_id = sqlc.arg(org_id)::uuid
@@ -340,7 +336,15 @@ FROM (
     ORDER BY c.priority DESC, c.run_after, c.created_at, c.id
     FOR UPDATE SKIP LOCKED
     LIMIT 1
-) AS picked
+)
+UPDATE jobs AS j
+SET
+    status = 'leased',
+    attempts = j.attempts + 1,
+    lease_token = sqlc.arg(lease_token)::uuid,
+    locked_until = now() + make_interval(secs => sqlc.arg(lease_seconds)::double precision),
+    last_error = ''
+FROM picked
 WHERE j.org_id = picked.org_id
   AND j.id = picked.id
 RETURNING
