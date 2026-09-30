@@ -2,7 +2,9 @@ version: "2"
 sql:
   - engine: postgresql
     schema: internal/db/migrations
-    queries: internal/db/queries.sql
+    queries:
+      - internal/db/queries.sql
+      - internal/store/decisions.sql
     gen:
       go:
         package: db
@@ -10,6 +12,8 @@ sql:
         sql_package: pgx/v5
         overrides:
           - db_type: "uuid"
+            go_type: "string"
+          - db_type: "tsvector"
             go_type: "string"
           - db_type: "text"
             nullable: true

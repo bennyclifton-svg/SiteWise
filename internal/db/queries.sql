@@ -211,8 +211,14 @@ WHERE org_id = sqlc.arg(org_id)::uuid
   AND id = sqlc.arg(id)::uuid;
 
 -- name: EnqueueJob :execrows
-INSERT INTO jobs (org_id, id, document_id, kind, status)
-SELECT sqlc.arg(org_id)::uuid, sqlc.arg(id)::uuid, sqlc.arg(document_id)::uuid, sqlc.arg(kind), 'queued'
+INSERT INTO jobs (org_id, id, document_id, kind, status, priority)
+SELECT
+    sqlc.arg(org_id)::uuid,
+    sqlc.arg(id)::uuid,
+    sqlc.arg(document_id)::uuid,
+    sqlc.arg(kind),
+    'queued',
+    CASE WHEN sqlc.arg(kind) IN ('intake', 'jev_retry') THEN 100 ELSE 0 END
 WHERE EXISTS (
     SELECT 1 FROM documents
     WHERE org_id = sqlc.arg(org_id)::uuid
@@ -269,3 +275,203 @@ WHERE org_id = sqlc.arg(org_id)::uuid
 SELECT DISTINCT sha256
 FROM files
 ORDER BY sha256;
+
+-- name: NextEventID :one
+INSERT INTO event_counters (org_id, last_id)
+VALUES (sqlc.arg(org_id)::uuid, 1)
+ON CONFLICT (org_id) DO UPDATE
+SET last_id = event_counters.last_id + 1
+RETURNING last_id;
+
+-- name: InsertEvent :exec
+INSERT INTO events (org_id, id, kind, document_id, payload)
+VALUES (
+    sqlc.arg(org_id)::uuid,
+    sqlc.arg(id),
+    sqlc.arg(kind),
+    sqlc.narg(document_id)::uuid,
+    sqlc.arg(payload)
+);
+
+-- name: ListEventsAfter :many
+SELECT
+    id,
+    kind,
+    CAST(COALESCE(document_id::text, '') AS text) AS document_id,
+    payload
+FROM events
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND id > sqlc.arg(after_id)
+ORDER BY id
+LIMIT sqlc.arg(row_limit);
+
+-- name: FailExhaustedJobs :exec
+UPDATE jobs
+SET
+    status = 'failed',
+    last_error = CASE WHEN last_error = '' THEN 'attempts exhausted' ELSE last_error END,
+    locked_until = NULL,
+    lease_token = NULL
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND status = 'leased'
+  AND locked_until < now()
+  AND attempts >= max_attempts;
+
+-- name: ClaimJob :one
+UPDATE jobs AS j
+SET
+    status = 'leased',
+    attempts = j.attempts + 1,
+    lease_token = sqlc.arg(lease_token)::uuid,
+    locked_until = now() + make_interval(secs => sqlc.arg(lease_seconds)::double precision),
+    last_error = ''
+FROM (
+    SELECT c.org_id, c.id
+    FROM jobs c
+    WHERE c.org_id = sqlc.arg(org_id)::uuid
+      AND c.kind = ANY(sqlc.arg(kinds)::text[])
+      AND c.kind <> 'intake'
+      AND c.attempts < c.max_attempts
+      AND c.run_after <= now()
+      AND (
+          c.status = 'queued'
+          OR (c.status = 'leased' AND c.locked_until < now())
+      )
+    ORDER BY c.priority DESC, c.run_after, c.created_at, c.id
+    FOR UPDATE SKIP LOCKED
+    LIMIT 1
+) AS picked
+WHERE j.org_id = picked.org_id
+  AND j.id = picked.id
+RETURNING
+    j.org_id::text AS org_id,
+    j.id::text AS id,
+    j.document_id::text AS document_id,
+    j.kind,
+    j.attempts,
+    j.lease_token::text AS lease_token;
+
+-- name: CompleteJob :execrows
+UPDATE jobs
+SET status = 'done', locked_until = NULL, lease_token = NULL
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND id = sqlc.arg(id)::uuid
+  AND lease_token = sqlc.arg(lease_token)::uuid
+  AND status = 'leased';
+
+-- name: FailJob :execrows
+UPDATE jobs
+SET
+    status = CASE WHEN attempts >= max_attempts THEN 'failed' ELSE 'queued' END,
+    run_after = CASE
+        WHEN attempts >= max_attempts THEN run_after
+        ELSE now() + make_interval(secs => sqlc.arg(backoff_seconds)::double precision)
+    END,
+    last_error = sqlc.arg(last_error),
+    locked_until = NULL,
+    lease_token = NULL
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND id = sqlc.arg(id)::uuid
+  AND lease_token = sqlc.arg(lease_token)::uuid
+  AND status = 'leased';
+
+-- name: ExpireJobLease :execrows
+UPDATE jobs
+SET locked_until = now() - interval '1 second'
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND id = sqlc.arg(id)::uuid
+  AND status = 'leased';
+
+-- name: GetJob :one
+SELECT
+    id::text AS id,
+    document_id::text AS document_id,
+    kind,
+    status,
+    attempts,
+    max_attempts,
+    priority,
+    COALESCE(last_error, '') AS last_error
+FROM jobs
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND id = sqlc.arg(id)::uuid;
+
+-- name: EnqueueStage :execrows
+INSERT INTO jobs (org_id, id, document_id, kind, status, priority)
+SELECT
+    sqlc.arg(org_id)::uuid,
+    sqlc.arg(id)::uuid,
+    sqlc.arg(document_id)::uuid,
+    sqlc.arg(kind),
+    'queued',
+    0
+WHERE EXISTS (
+    SELECT 1 FROM documents
+    WHERE org_id = sqlc.arg(org_id)::uuid
+      AND id = sqlc.arg(document_id)::uuid
+)
+ON CONFLICT (org_id, document_id, kind) DO NOTHING;
+
+-- name: ListDocumentPassages :many
+SELECT id::text AS id, ordinal, body
+FROM passages
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND document_id = sqlc.arg(document_id)::uuid
+ORDER BY ordinal;
+
+-- name: DeleteDocumentPassages :exec
+DELETE FROM passages
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND document_id = sqlc.arg(document_id)::uuid;
+
+-- name: DeletePassageSystems :exec
+DELETE FROM passage_systems
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND passage_id = sqlc.arg(passage_id)::uuid;
+
+-- name: DeletePassageEvidence :exec
+DELETE FROM passage_evidence
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND passage_id = sqlc.arg(passage_id)::uuid;
+
+-- name: InsertPassageSystem :exec
+INSERT INTO passage_systems (org_id, passage_id, system_id)
+VALUES (sqlc.arg(org_id)::uuid, sqlc.arg(passage_id)::uuid, sqlc.arg(system_id))
+ON CONFLICT (org_id, passage_id, system_id) DO NOTHING;
+
+-- name: ListPassageSystems :many
+SELECT system_id
+FROM passage_systems
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND passage_id = sqlc.arg(passage_id)::uuid
+ORDER BY system_id;
+
+-- name: UpsertPassageEvidence :exec
+INSERT INTO passage_evidence (org_id, passage_id, question_id, state)
+VALUES (
+    sqlc.arg(org_id)::uuid,
+    sqlc.arg(passage_id)::uuid,
+    sqlc.arg(question_id),
+    sqlc.arg(state)
+)
+ON CONFLICT (org_id, passage_id, question_id) DO UPDATE
+SET state = EXCLUDED.state;
+
+-- name: ListPassageEvidence :many
+SELECT question_id, state
+FROM passage_evidence
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND passage_id = sqlc.arg(passage_id)::uuid
+ORDER BY question_id;
+
+-- name: SearchPassages :many
+SELECT p.id::text AS id, p.document_id::text AS document_id, p.ordinal, p.body
+FROM passages p
+JOIN documents d
+    ON d.org_id = p.org_id
+   AND d.id = p.document_id
+WHERE p.org_id = sqlc.arg(org_id)::uuid
+  AND d.project_id = sqlc.arg(project_id)::uuid
+  AND p.body_tsv @@ websearch_to_tsquery('english', sqlc.arg(query))
+ORDER BY ts_rank(p.body_tsv, websearch_to_tsquery('english', sqlc.arg(query))) DESC, p.ordinal
+LIMIT sqlc.arg(row_limit);

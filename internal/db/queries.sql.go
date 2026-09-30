@@ -8,6 +8,8 @@ package db
 import (
 	"context"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addPassage = `-- name: AddPassage :exec
@@ -38,6 +40,99 @@ func (q *Queries) AddPassage(ctx context.Context, arg AddPassageParams) error {
 		arg.Body,
 	)
 	return err
+}
+
+const claimJob = `-- name: ClaimJob :one
+UPDATE jobs AS j
+SET
+    status = 'leased',
+    attempts = j.attempts + 1,
+    lease_token = $1::uuid,
+    locked_until = now() + make_interval(secs => $2::double precision),
+    last_error = ''
+FROM (
+    SELECT c.org_id, c.id
+    FROM jobs c
+    WHERE c.org_id = $3::uuid
+      AND c.kind = ANY($4::text[])
+      AND c.kind <> 'intake'
+      AND c.attempts < c.max_attempts
+      AND c.run_after <= now()
+      AND (
+          c.status = 'queued'
+          OR (c.status = 'leased' AND c.locked_until < now())
+      )
+    ORDER BY c.priority DESC, c.run_after, c.created_at, c.id
+    FOR UPDATE SKIP LOCKED
+    LIMIT 1
+) AS picked
+WHERE j.org_id = picked.org_id
+  AND j.id = picked.id
+RETURNING
+    j.org_id::text AS org_id,
+    j.id::text AS id,
+    j.document_id::text AS document_id,
+    j.kind,
+    j.attempts,
+    j.lease_token::text AS lease_token
+`
+
+type ClaimJobParams struct {
+	LeaseToken   string
+	LeaseSeconds float64
+	OrgID        string
+	Kinds        []string
+}
+
+type ClaimJobRow struct {
+	OrgID      string
+	ID         string
+	DocumentID string
+	Kind       string
+	Attempts   int32
+	LeaseToken string
+}
+
+func (q *Queries) ClaimJob(ctx context.Context, arg ClaimJobParams) (ClaimJobRow, error) {
+	row := q.db.QueryRow(ctx, claimJob,
+		arg.LeaseToken,
+		arg.LeaseSeconds,
+		arg.OrgID,
+		arg.Kinds,
+	)
+	var i ClaimJobRow
+	err := row.Scan(
+		&i.OrgID,
+		&i.ID,
+		&i.DocumentID,
+		&i.Kind,
+		&i.Attempts,
+		&i.LeaseToken,
+	)
+	return i, err
+}
+
+const completeJob = `-- name: CompleteJob :execrows
+UPDATE jobs
+SET status = 'done', locked_until = NULL, lease_token = NULL
+WHERE org_id = $1::uuid
+  AND id = $2::uuid
+  AND lease_token = $3::uuid
+  AND status = 'leased'
+`
+
+type CompleteJobParams struct {
+	OrgID      string
+	ID         string
+	LeaseToken string
+}
+
+func (q *Queries) CompleteJob(ctx context.Context, arg CompleteJobParams) (int64, error) {
+	result, err := q.db.Exec(ctx, completeJob, arg.OrgID, arg.ID, arg.LeaseToken)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const createDecision = `-- name: CreateDecision :exec
@@ -265,6 +360,22 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const deleteDocumentPassages = `-- name: DeleteDocumentPassages :exec
+DELETE FROM passages
+WHERE org_id = $1::uuid
+  AND document_id = $2::uuid
+`
+
+type DeleteDocumentPassagesParams struct {
+	OrgID      string
+	DocumentID string
+}
+
+func (q *Queries) DeleteDocumentPassages(ctx context.Context, arg DeleteDocumentPassagesParams) error {
+	_, err := q.db.Exec(ctx, deleteDocumentPassages, arg.OrgID, arg.DocumentID)
+	return err
+}
+
 const deleteOrg = `-- name: DeleteOrg :exec
 DELETE FROM orgs
 WHERE id = $1::uuid
@@ -272,6 +383,38 @@ WHERE id = $1::uuid
 
 func (q *Queries) DeleteOrg(ctx context.Context, id string) error {
 	_, err := q.db.Exec(ctx, deleteOrg, id)
+	return err
+}
+
+const deletePassageEvidence = `-- name: DeletePassageEvidence :exec
+DELETE FROM passage_evidence
+WHERE org_id = $1::uuid
+  AND passage_id = $2::uuid
+`
+
+type DeletePassageEvidenceParams struct {
+	OrgID     string
+	PassageID string
+}
+
+func (q *Queries) DeletePassageEvidence(ctx context.Context, arg DeletePassageEvidenceParams) error {
+	_, err := q.db.Exec(ctx, deletePassageEvidence, arg.OrgID, arg.PassageID)
+	return err
+}
+
+const deletePassageSystems = `-- name: DeletePassageSystems :exec
+DELETE FROM passage_systems
+WHERE org_id = $1::uuid
+  AND passage_id = $2::uuid
+`
+
+type DeletePassageSystemsParams struct {
+	OrgID     string
+	PassageID string
+}
+
+func (q *Queries) DeletePassageSystems(ctx context.Context, arg DeletePassageSystemsParams) error {
+	_, err := q.db.Exec(ctx, deletePassageSystems, arg.OrgID, arg.PassageID)
 	return err
 }
 
@@ -317,8 +460,14 @@ func (q *Queries) DocumentByFile(ctx context.Context, arg DocumentByFileParams) 
 }
 
 const enqueueJob = `-- name: EnqueueJob :execrows
-INSERT INTO jobs (org_id, id, document_id, kind, status)
-SELECT $1::uuid, $2::uuid, $3::uuid, $4, 'queued'
+INSERT INTO jobs (org_id, id, document_id, kind, status, priority)
+SELECT
+    $1::uuid,
+    $2::uuid,
+    $3::uuid,
+    $4,
+    'queued',
+    CASE WHEN $4 IN ('intake', 'jev_retry') THEN 100 ELSE 0 END
 WHERE EXISTS (
     SELECT 1 FROM documents
     WHERE org_id = $1::uuid
@@ -339,6 +488,121 @@ func (q *Queries) EnqueueJob(ctx context.Context, arg EnqueueJobParams) (int64, 
 		arg.ID,
 		arg.DocumentID,
 		arg.Kind,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const enqueueStage = `-- name: EnqueueStage :execrows
+INSERT INTO jobs (org_id, id, document_id, kind, status, priority)
+SELECT
+    $1::uuid,
+    $2::uuid,
+    $3::uuid,
+    $4,
+    'queued',
+    0
+WHERE EXISTS (
+    SELECT 1 FROM documents
+    WHERE org_id = $1::uuid
+      AND id = $3::uuid
+)
+ON CONFLICT (org_id, document_id, kind) DO NOTHING
+`
+
+type EnqueueStageParams struct {
+	OrgID      string
+	ID         string
+	DocumentID string
+	Kind       string
+}
+
+func (q *Queries) EnqueueStage(ctx context.Context, arg EnqueueStageParams) (int64, error) {
+	result, err := q.db.Exec(ctx, enqueueStage,
+		arg.OrgID,
+		arg.ID,
+		arg.DocumentID,
+		arg.Kind,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const expireJobLease = `-- name: ExpireJobLease :execrows
+UPDATE jobs
+SET locked_until = now() - interval '1 second'
+WHERE org_id = $1::uuid
+  AND id = $2::uuid
+  AND status = 'leased'
+`
+
+type ExpireJobLeaseParams struct {
+	OrgID string
+	ID    string
+}
+
+func (q *Queries) ExpireJobLease(ctx context.Context, arg ExpireJobLeaseParams) (int64, error) {
+	result, err := q.db.Exec(ctx, expireJobLease, arg.OrgID, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const failExhaustedJobs = `-- name: FailExhaustedJobs :exec
+UPDATE jobs
+SET
+    status = 'failed',
+    last_error = CASE WHEN last_error = '' THEN 'attempts exhausted' ELSE last_error END,
+    locked_until = NULL,
+    lease_token = NULL
+WHERE org_id = $1::uuid
+  AND status = 'leased'
+  AND locked_until < now()
+  AND attempts >= max_attempts
+`
+
+func (q *Queries) FailExhaustedJobs(ctx context.Context, orgID string) error {
+	_, err := q.db.Exec(ctx, failExhaustedJobs, orgID)
+	return err
+}
+
+const failJob = `-- name: FailJob :execrows
+UPDATE jobs
+SET
+    status = CASE WHEN attempts >= max_attempts THEN 'failed' ELSE 'queued' END,
+    run_after = CASE
+        WHEN attempts >= max_attempts THEN run_after
+        ELSE now() + make_interval(secs => $1::double precision)
+    END,
+    last_error = $2,
+    locked_until = NULL,
+    lease_token = NULL
+WHERE org_id = $3::uuid
+  AND id = $4::uuid
+  AND lease_token = $5::uuid
+  AND status = 'leased'
+`
+
+type FailJobParams struct {
+	BackoffSeconds float64
+	LastError      string
+	OrgID          string
+	ID             string
+	LeaseToken     string
+}
+
+func (q *Queries) FailJob(ctx context.Context, arg FailJobParams) (int64, error) {
+	result, err := q.db.Exec(ctx, failJob,
+		arg.BackoffSeconds,
+		arg.LastError,
+		arg.OrgID,
+		arg.ID,
+		arg.LeaseToken,
 	)
 	if err != nil {
 		return 0, err
@@ -504,6 +768,53 @@ func (q *Queries) GetInvite(ctx context.Context, arg GetInviteParams) (GetInvite
 	return i, err
 }
 
+const getJob = `-- name: GetJob :one
+SELECT
+    id::text AS id,
+    document_id::text AS document_id,
+    kind,
+    status,
+    attempts,
+    max_attempts,
+    priority,
+    COALESCE(last_error, '') AS last_error
+FROM jobs
+WHERE org_id = $1::uuid
+  AND id = $2::uuid
+`
+
+type GetJobParams struct {
+	OrgID string
+	ID    string
+}
+
+type GetJobRow struct {
+	ID          string
+	DocumentID  string
+	Kind        string
+	Status      string
+	Attempts    int32
+	MaxAttempts int32
+	Priority    int32
+	LastError   string
+}
+
+func (q *Queries) GetJob(ctx context.Context, arg GetJobParams) (GetJobRow, error) {
+	row := q.db.QueryRow(ctx, getJob, arg.OrgID, arg.ID)
+	var i GetJobRow
+	err := row.Scan(
+		&i.ID,
+		&i.DocumentID,
+		&i.Kind,
+		&i.Status,
+		&i.Attempts,
+		&i.MaxAttempts,
+		&i.Priority,
+		&i.LastError,
+	)
+	return i, err
+}
+
 const getPassage = `-- name: GetPassage :one
 SELECT id::text AS id, document_id::text AS document_id, ordinal, body
 FROM passages
@@ -602,6 +913,36 @@ func (q *Queries) GetSupersession(ctx context.Context, arg GetSupersessionParams
 	return prior_document_id, err
 }
 
+const insertEvent = `-- name: InsertEvent :exec
+INSERT INTO events (org_id, id, kind, document_id, payload)
+VALUES (
+    $1::uuid,
+    $2,
+    $3,
+    $4::uuid,
+    $5
+)
+`
+
+type InsertEventParams struct {
+	OrgID      string
+	ID         int64
+	Kind       string
+	DocumentID pgtype.UUID
+	Payload    string
+}
+
+func (q *Queries) InsertEvent(ctx context.Context, arg InsertEventParams) error {
+	_, err := q.db.Exec(ctx, insertEvent,
+		arg.OrgID,
+		arg.ID,
+		arg.Kind,
+		arg.DocumentID,
+		arg.Payload,
+	)
+	return err
+}
+
 const insertFile = `-- name: InsertFile :one
 INSERT INTO files (org_id, id, project_id, sha256, byte_size, media_type)
 VALUES (
@@ -637,6 +978,23 @@ func (q *Queries) InsertFile(ctx context.Context, arg InsertFileParams) (string,
 	var id string
 	err := row.Scan(&id)
 	return id, err
+}
+
+const insertPassageSystem = `-- name: InsertPassageSystem :exec
+INSERT INTO passage_systems (org_id, passage_id, system_id)
+VALUES ($1::uuid, $2::uuid, $3)
+ON CONFLICT (org_id, passage_id, system_id) DO NOTHING
+`
+
+type InsertPassageSystemParams struct {
+	OrgID     string
+	PassageID string
+	SystemID  string
+}
+
+func (q *Queries) InsertPassageSystem(ctx context.Context, arg InsertPassageSystemParams) error {
+	_, err := q.db.Exec(ctx, insertPassageSystem, arg.OrgID, arg.PassageID, arg.SystemID)
+	return err
 }
 
 const jobByDocumentKind = `-- name: JobByDocumentKind :one
@@ -698,6 +1056,96 @@ func (q *Queries) ListContentHashes(ctx context.Context) ([][]byte, error) {
 	return items, nil
 }
 
+const listDocumentPassages = `-- name: ListDocumentPassages :many
+SELECT id::text AS id, ordinal, body
+FROM passages
+WHERE org_id = $1::uuid
+  AND document_id = $2::uuid
+ORDER BY ordinal
+`
+
+type ListDocumentPassagesParams struct {
+	OrgID      string
+	DocumentID string
+}
+
+type ListDocumentPassagesRow struct {
+	ID      string
+	Ordinal int32
+	Body    string
+}
+
+func (q *Queries) ListDocumentPassages(ctx context.Context, arg ListDocumentPassagesParams) ([]ListDocumentPassagesRow, error) {
+	rows, err := q.db.Query(ctx, listDocumentPassages, arg.OrgID, arg.DocumentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListDocumentPassagesRow
+	for rows.Next() {
+		var i ListDocumentPassagesRow
+		if err := rows.Scan(&i.ID, &i.Ordinal, &i.Body); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsAfter = `-- name: ListEventsAfter :many
+SELECT
+    id,
+    kind,
+    CAST(COALESCE(document_id::text, '') AS text) AS document_id,
+    payload
+FROM events
+WHERE org_id = $1::uuid
+  AND id > $2
+ORDER BY id
+LIMIT $3
+`
+
+type ListEventsAfterParams struct {
+	OrgID    string
+	AfterID  int64
+	RowLimit int32
+}
+
+type ListEventsAfterRow struct {
+	ID         int64
+	Kind       string
+	DocumentID string
+	Payload    string
+}
+
+func (q *Queries) ListEventsAfter(ctx context.Context, arg ListEventsAfterParams) ([]ListEventsAfterRow, error) {
+	rows, err := q.db.Query(ctx, listEventsAfter, arg.OrgID, arg.AfterID, arg.RowLimit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListEventsAfterRow
+	for rows.Next() {
+		var i ListEventsAfterRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Kind,
+			&i.DocumentID,
+			&i.Payload,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listJobs = `-- name: ListJobs :many
 SELECT id::text AS id, document_id::text AS document_id, kind, status
 FROM jobs
@@ -730,6 +1178,77 @@ func (q *Queries) ListJobs(ctx context.Context, orgID string) ([]ListJobsRow, er
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPassageEvidence = `-- name: ListPassageEvidence :many
+SELECT question_id, state
+FROM passage_evidence
+WHERE org_id = $1::uuid
+  AND passage_id = $2::uuid
+ORDER BY question_id
+`
+
+type ListPassageEvidenceParams struct {
+	OrgID     string
+	PassageID string
+}
+
+type ListPassageEvidenceRow struct {
+	QuestionID string
+	State      string
+}
+
+func (q *Queries) ListPassageEvidence(ctx context.Context, arg ListPassageEvidenceParams) ([]ListPassageEvidenceRow, error) {
+	rows, err := q.db.Query(ctx, listPassageEvidence, arg.OrgID, arg.PassageID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPassageEvidenceRow
+	for rows.Next() {
+		var i ListPassageEvidenceRow
+		if err := rows.Scan(&i.QuestionID, &i.State); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPassageSystems = `-- name: ListPassageSystems :many
+SELECT system_id
+FROM passage_systems
+WHERE org_id = $1::uuid
+  AND passage_id = $2::uuid
+ORDER BY system_id
+`
+
+type ListPassageSystemsParams struct {
+	OrgID     string
+	PassageID string
+}
+
+func (q *Queries) ListPassageSystems(ctx context.Context, arg ListPassageSystemsParams) ([]string, error) {
+	rows, err := q.db.Query(ctx, listPassageSystems, arg.OrgID, arg.PassageID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var system_id string
+		if err := rows.Scan(&system_id); err != nil {
+			return nil, err
+		}
+		items = append(items, system_id)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -926,6 +1445,78 @@ func (q *Queries) MembershipExists(ctx context.Context, arg MembershipExistsPara
 	return member, err
 }
 
+const nextEventID = `-- name: NextEventID :one
+INSERT INTO event_counters (org_id, last_id)
+VALUES ($1::uuid, 1)
+ON CONFLICT (org_id) DO UPDATE
+SET last_id = event_counters.last_id + 1
+RETURNING last_id
+`
+
+func (q *Queries) NextEventID(ctx context.Context, orgID string) (int64, error) {
+	row := q.db.QueryRow(ctx, nextEventID, orgID)
+	var last_id int64
+	err := row.Scan(&last_id)
+	return last_id, err
+}
+
+const searchPassages = `-- name: SearchPassages :many
+SELECT p.id::text AS id, p.document_id::text AS document_id, p.ordinal, p.body
+FROM passages p
+JOIN documents d
+    ON d.org_id = p.org_id
+   AND d.id = p.document_id
+WHERE p.org_id = $1::uuid
+  AND d.project_id = $2::uuid
+  AND p.body_tsv @@ websearch_to_tsquery('english', $3)
+ORDER BY ts_rank(p.body_tsv, websearch_to_tsquery('english', $3)) DESC, p.ordinal
+LIMIT $4
+`
+
+type SearchPassagesParams struct {
+	OrgID     string
+	ProjectID string
+	Query     string
+	RowLimit  int32
+}
+
+type SearchPassagesRow struct {
+	ID         string
+	DocumentID string
+	Ordinal    int32
+	Body       string
+}
+
+func (q *Queries) SearchPassages(ctx context.Context, arg SearchPassagesParams) ([]SearchPassagesRow, error) {
+	rows, err := q.db.Query(ctx, searchPassages,
+		arg.OrgID,
+		arg.ProjectID,
+		arg.Query,
+		arg.RowLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchPassagesRow
+	for rows.Next() {
+		var i SearchPassagesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.DocumentID,
+			&i.Ordinal,
+			&i.Body,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const supersedeDocument = `-- name: SupersedeDocument :execrows
 INSERT INTO supersessions (org_id, document_id, prior_document_id)
 SELECT $1::uuid, $2::uuid, $3::uuid
@@ -973,4 +1564,33 @@ func (q *Queries) UpdateDocumentStatus(ctx context.Context, arg UpdateDocumentSt
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const upsertPassageEvidence = `-- name: UpsertPassageEvidence :exec
+INSERT INTO passage_evidence (org_id, passage_id, question_id, state)
+VALUES (
+    $1::uuid,
+    $2::uuid,
+    $3,
+    $4
+)
+ON CONFLICT (org_id, passage_id, question_id) DO UPDATE
+SET state = EXCLUDED.state
+`
+
+type UpsertPassageEvidenceParams struct {
+	OrgID      string
+	PassageID  string
+	QuestionID string
+	State      string
+}
+
+func (q *Queries) UpsertPassageEvidence(ctx context.Context, arg UpsertPassageEvidenceParams) error {
+	_, err := q.db.Exec(ctx, upsertPassageEvidence,
+		arg.OrgID,
+		arg.PassageID,
+		arg.QuestionID,
+		arg.State,
+	)
+	return err
 }

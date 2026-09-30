@@ -37,6 +37,20 @@ type Document struct {
 	Reason         string
 }
 
+type Event struct {
+	OrgID      string
+	ID         int64
+	Kind       string
+	DocumentID pgtype.UUID
+	Payload    string
+	CreatedAt  time.Time
+}
+
+type EventCounter struct {
+	OrgID  string
+	LastID int64
+}
+
 type File struct {
 	OrgID     string
 	ID        string
@@ -67,6 +81,10 @@ type Job struct {
 	RunAfter    time.Time
 	LockedUntil pgtype.Timestamptz
 	CreatedAt   time.Time
+	Priority    int32
+	LeaseToken  pgtype.UUID
+	MaxAttempts int32
+	LastError   string
 }
 
 type Membership struct {
@@ -89,6 +107,20 @@ type Passage struct {
 	Ordinal    int32
 	Body       string
 	CreatedAt  time.Time
+	BodyTsv    interface{}
+}
+
+type PassageEvidence struct {
+	OrgID      string
+	PassageID  string
+	QuestionID string
+	State      string
+}
+
+type PassageSystem struct {
+	OrgID     string
+	PassageID string
+	SystemID  string
 }
 
 type Project struct {

@@ -24,11 +24,38 @@ var ErrMetadata = errors.New("file metadata does not match content")
 const (
 	// StatusPending is a filing waiting for intake.
 	StatusPending = "pending"
+	// StatusFiled means intake has committed decisions for the document.
+	StatusFiled = "filed"
 	// StatusNotFiled means the bytes are stored and will not be filed.
 	StatusNotFiled = "not_filed"
 	// JobKindIntake is the durable job created with a pending filing.
 	JobKindIntake = "intake"
+	// JobKindFullText is the first background stage after a filing commits.
+	JobKindFullText = "full_text"
+	// JobKindJevRetry is a background re-check after a grey filing.
+	// It is queued ahead of passage work so a visible grey chip is not stuck
+	// behind the full-text backlog.
+	JobKindJevRetry = "jev_retry"
+	// JobKindLabel asks which systems a passage is about.
+	JobKindLabel = "label"
+	// JobKindEvidence asks the knowledge questions for the labelled systems.
+	JobKindEvidence = "evidence"
+	// JobStatusQueued is waiting for a worker.
+	JobStatusQueued = "queued"
+	// JobStatusLeased is held by one worker until the lease expires.
+	JobStatusLeased = "leased"
+	// JobStatusDone is an intake job that filing has finished, or a background
+	// stage that completed.
+	JobStatusDone = "done"
+	// JobStatusFailed is a stage that used its attempts.
+	JobStatusFailed = "failed"
 )
+
+// ErrIdle means this org has no job the caller is allowed to lease.
+var ErrIdle = errors.New("no queued job")
+
+// ErrLeaseLost means the job was claimed again after the lease expired.
+var ErrLeaseLost = errors.New("job lease lost")
 
 // ErrInviteExpired means the invite can no longer be consumed.
 var ErrInviteExpired = errors.New("invite expired")
