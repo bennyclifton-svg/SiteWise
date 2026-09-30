@@ -5,6 +5,7 @@ sql:
     queries:
       - internal/db/queries.sql
       - internal/store/decisions.sql
+      - internal/store/views.sql
     gen:
       go:
         package: db

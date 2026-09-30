@@ -141,6 +141,46 @@ func TestOrgIsolatedEventIDs(t *testing.T) {
 	}
 }
 
+// A store transaction writes the event without the broker. Wake makes a live
+// stream read it from the cursor.
+func TestWakeDeliversEventCommittedOutsideBroker(t *testing.T) {
+	log := &memLog{}
+	broker := events.NewBroker(log)
+	out := serveInto(t, broker, "org")
+	waitFor(t, func() bool { return broker.Subscribers("org") == 1 })
+	if _, err := log.AppendEvent(context.Background(), "org", "filing", "", `{"n":1}`); err != nil {
+		t.Fatal(err)
+	}
+	broker.Wake("org")
+	waitFor(t, func() bool { return strings.Contains(out.String(), "id: 1\n") })
+}
+
+// A live event dropped for a slow client is still delivered from the cursor
+// without a reconnect.
+func TestSlowStreamCatchesUpDroppedEvents(t *testing.T) {
+	log := &memLog{}
+	broker := events.NewBroker(log)
+	pr, pw := io.Pipe()
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+	go func() {
+		_ = broker.Serve(ctx, pw, "org", 0)
+		_ = pw.Close()
+	}()
+	waitFor(t, func() bool { return broker.Subscribers("org") == 1 })
+	for i := 0; i < 5; i++ {
+		if _, err := broker.Commit(ctx, "org", "filing", "", `{"n":1}`); err != nil {
+			t.Fatal(err)
+		}
+	}
+	out := &lockedBuffer{}
+	go func() { _, _ = io.Copy(out, pr) }()
+	waitFor(t, func() bool { return strings.Contains(out.String(), "id: 5\n") })
+	if n := strings.Count(out.String(), "event: filing\n"); n != 5 {
+		t.Fatalf("delivered %d of 5:\n%s", n, out.String())
+	}
+}
+
 func TestLastEventID(t *testing.T) {
 	n, err := events.LastEventID("")
 	if err != nil || n != 0 {
@@ -153,6 +193,43 @@ func TestLastEventID(t *testing.T) {
 	if _, err := events.LastEventID("-1"); err == nil {
 		t.Fatal("accepted negative")
 	}
+}
+
+func serveInto(t *testing.T, broker *events.Broker, org string) *lockedBuffer {
+	t.Helper()
+	out := &lockedBuffer{}
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+	go func() { _ = broker.Serve(ctx, out, org, 0) }()
+	return out
+}
+
+func waitFor(t *testing.T, ok func() bool) {
+	t.Helper()
+	deadline := time.Now().Add(2 * time.Second)
+	for !ok() {
+		if time.Now().After(deadline) {
+			t.Fatal("condition not met within 2s")
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+}
+
+type lockedBuffer struct {
+	mu  sync.Mutex
+	buf strings.Builder
+}
+
+func (b *lockedBuffer) Write(p []byte) (int, error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.Write(p)
+}
+
+func (b *lockedBuffer) String() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.String()
 }
 
 type memLog struct {

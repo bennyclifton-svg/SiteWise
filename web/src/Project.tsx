@@ -1,0 +1,580 @@
+// A chosen project: drop files anywhere on the page, watch each become a title
+// block, correct any box. Live updates come from the durable event stream and
+// never move focus.
+
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type DragEvent } from "react";
+import {
+  api,
+  ApiError,
+  EVENT_KINDS,
+  upload,
+  type Catalog,
+  type Doc,
+  type DocumentList,
+  type StreamEvent,
+} from "./api";
+import { DocumentRow, stateOf, type RowModel } from "./DocumentRow";
+import { IconCheck, IconConfirmed, IconNotChecked, IconNotSet, IconUpload, IconYou } from "./icons";
+
+const STALE_MS = 8000;
+const UPLOAD_CONCURRENCY = 4;
+const ACCEPT = ".pdf,.docx,.xlsx";
+
+interface Upload {
+  key: string;
+  filename: string;
+  progress: number;
+  error?: string;
+  docId?: string;
+}
+
+interface State {
+  phase: "loading" | "ready" | "missing" | "error";
+  error?: string;
+  projectName: string;
+  docs: Record<string, Doc>;
+  /** Row keys, newest first. A key is a document id or an upload key. */
+  order: string[];
+  uploads: Record<string, Upload>;
+  /** When each document's bytes finished uploading in this tab (performance clock). */
+  sentAt: Record<string, number>;
+  /** Wall-clock time each pending filing was started from this tab. */
+  pendingSince: Record<string, number>;
+  filedIn: Record<string, number>;
+  duplicate: Record<string, boolean>;
+  interrupted: Record<string, boolean>;
+  landed: Record<string, boolean>;
+  /** Events that arrived before their upload's response: a fast filing can
+   *  beat the HTTP reply. Applied when the document joins the list. */
+  early: Record<string, StreamEvent>;
+  loadedAt: number;
+}
+
+type Action =
+  | { type: "loaded"; list: DocumentList }
+  | { type: "failed"; missing: boolean; error: string }
+  | { type: "uploadStart"; items: { key: string; filename: string }[] }
+  | { type: "uploadProgress"; key: string; progress: number }
+  | { type: "uploadDone"; key: string; doc: Doc; created: boolean; at: number }
+  | { type: "uploadFailed"; key: string; error: string }
+  | { type: "dismiss"; key: string }
+  | { type: "event"; ev: StreamEvent; at: number }
+  | { type: "doc"; doc: Doc }
+  | { type: "retrying"; id: string }
+  | { type: "unland"; id: string };
+
+const initial: State = {
+  phase: "loading",
+  projectName: "",
+  docs: {},
+  order: [],
+  uploads: {},
+  sentAt: {},
+  pendingSince: {},
+  filedIn: {},
+  duplicate: {},
+  interrupted: {},
+  landed: {},
+  early: {},
+  loadedAt: 0,
+};
+
+const MAX_EARLY = 200;
+
+function without<T>(rec: Record<string, T>, key: string): Record<string, T> {
+  const next = { ...rec };
+  delete next[key];
+  return next;
+}
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "loaded": {
+      const docs: Record<string, Doc> = {};
+      for (const d of action.list.documents) docs[d.id] = d;
+      return {
+        ...state,
+        phase: "ready",
+        projectName: action.list.project.name,
+        docs,
+        order: action.list.documents.map((d) => d.id),
+        loadedAt: Date.now(),
+      };
+    }
+    case "failed":
+      return { ...state, phase: action.missing ? "missing" : "error", error: action.error };
+    case "uploadStart": {
+      // A batch goes on top in the order it was chosen.
+      const uploads = { ...state.uploads };
+      for (const it of action.items) uploads[it.key] = { key: it.key, filename: it.filename, progress: 0 };
+      return { ...state, uploads, order: [...action.items.map((it) => it.key), ...state.order] };
+    }
+    case "uploadProgress": {
+      const up = state.uploads[action.key];
+      if (!up) return state;
+      return { ...state, uploads: { ...state.uploads, [action.key]: { ...up, progress: action.progress } } };
+    }
+    case "uploadDone": {
+      const { doc, key } = action;
+      // An event may have landed before the upload response; keep the newer status.
+      const known = state.docs[doc.id];
+      const merged = known && known.status !== "pending" ? known : doc;
+      const order = state.order.filter((k) => k !== doc.id).map((k) => (k === key ? doc.id : k));
+      const next: State = {
+        ...state,
+        docs: { ...state.docs, [doc.id]: merged },
+        order,
+        uploads: without(state.uploads, key),
+        sentAt: doc.status === "pending" ? { ...state.sentAt, [doc.id]: action.at } : state.sentAt,
+        pendingSince: doc.status === "pending" ? { ...state.pendingSince, [doc.id]: Date.now() } : state.pendingSince,
+        duplicate: action.created ? without(state.duplicate, doc.id) : { ...state.duplicate, [doc.id]: true },
+        early: without(state.early, doc.id),
+      };
+      const early = state.early[doc.id];
+      return early ? reducer(next, { type: "event", ev: early, at: action.at }) : next;
+    }
+    case "uploadFailed": {
+      const up = state.uploads[action.key];
+      if (!up) return state;
+      return { ...state, uploads: { ...state.uploads, [action.key]: { ...up, error: action.error } } };
+    }
+    case "dismiss":
+      return { ...state, uploads: without(state.uploads, action.key), order: state.order.filter((k) => k !== action.key) };
+    case "event": {
+      const { ev } = action;
+      const id = ev.payload?.document_id ?? ev.document_id;
+      if (!id) return state;
+      const doc = state.docs[id];
+      if (!doc) {
+        // Not listed yet: keep the newest event for when its upload returns.
+        // Events for other projects share the org stream, so the store is capped.
+        if (!(id in state.early) && Object.keys(state.early).length >= MAX_EARLY) return state;
+        return { ...state, early: { ...state.early, [id]: ev } };
+      }
+      if (ev.kind === "filing_failed") {
+        return doc.status === "pending" ? { ...state, interrupted: { ...state.interrupted, [id]: true } } : state;
+      }
+      const p = ev.payload;
+      const next: Doc = {
+        ...doc,
+        status: p.status ?? doc.status,
+        reason: p.reason ?? doc.reason,
+        fields: p.fields ?? doc.fields,
+      };
+      const landing = doc.status === "pending" && next.status !== "pending";
+      const sent = state.sentAt[id];
+      return {
+        ...state,
+        docs: { ...state.docs, [id]: next },
+        interrupted: landing ? without(state.interrupted, id) : state.interrupted,
+        landed: landing ? { ...state.landed, [id]: true } : state.landed,
+        filedIn: landing && sent !== undefined ? { ...state.filedIn, [id]: action.at - sent } : state.filedIn,
+      };
+    }
+    case "doc":
+      return { ...state, docs: { ...state.docs, [action.doc.id]: action.doc } };
+    case "retrying":
+      return {
+        ...state,
+        interrupted: without(state.interrupted, action.id),
+        sentAt: { ...state.sentAt, [action.id]: performance.now() },
+        pendingSince: { ...state.pendingSince, [action.id]: Date.now() },
+      };
+    case "unland":
+      return { ...state, landed: without(state.landed, action.id) };
+  }
+}
+
+interface Props {
+  projectId: string;
+  catalog: Catalog | null;
+  onSignedOut: () => void;
+  onHome: () => void;
+}
+
+export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
+  const [state, dispatch] = useReducer(reducer, initial);
+  const [cursor, setCursor] = useState<number | null>(null);
+  const [live, setLive] = useState<"live" | "reconnecting" | "offline">("reconnecting");
+  const [over, setOver] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
+  const [flash, setFlash] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const lastId = useRef(0);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const queue = useRef<{ key: string; file: File }[]>([]);
+  const active = useRef(0);
+  const dragDepth = useRef(0);
+  const docsRef = useRef(state.docs);
+  docsRef.current = state.docs;
+
+  // Load the list, then stream from the cursor read before it.
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .documents(projectId)
+      .then((list) => {
+        if (cancelled) return;
+        lastId.current = list.cursor;
+        dispatch({ type: "loaded", list });
+        setCursor(list.cursor);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        if (e instanceof ApiError && e.status === 401) return onSignedOut();
+        const missing = e instanceof ApiError && e.status === 404;
+        dispatch({ type: "failed", missing, error: e instanceof Error ? e.message : "Couldn't load this project." });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId, onSignedOut]);
+
+  useEffect(() => {
+    if (cursor === null) return;
+    let es: EventSource | null = null;
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    let stopped = false;
+    const open = () => {
+      if (stopped) return;
+      es = new EventSource(`/api/events?after=${lastId.current}`);
+      es.onopen = () => setLive("live");
+      es.onerror = () => {
+        if (!es || es.readyState !== EventSource.CLOSED) {
+          setLive("reconnecting");
+          return;
+        }
+        setLive("offline");
+        api.checkSession().then(
+          () => {
+            retry = setTimeout(open, 3000);
+          },
+          (e: unknown) => {
+            if (e instanceof ApiError && e.status === 401) onSignedOut();
+            else retry = setTimeout(open, 3000);
+          },
+        );
+      };
+      for (const kind of EVENT_KINDS) {
+        es.addEventListener(kind, (msg) => {
+          const ev = JSON.parse((msg as MessageEvent<string>).data) as StreamEvent;
+          if (ev.id <= lastId.current) return;
+          lastId.current = ev.id;
+          dispatch({ type: "event", ev, at: performance.now() });
+          const doc = docsRef.current[ev.payload?.document_id ?? ""];
+          if (!doc) return;
+          if (ev.kind === "filing") setAnnouncement(`${doc.filename} filed.`);
+          if (ev.kind === "not_filed") setAnnouncement(`${doc.filename} stored but not filed.`);
+          if (ev.kind === "filing_failed") setAnnouncement(`Filing stopped for ${doc.filename}. Retry is available.`);
+        });
+      }
+    };
+    open();
+    return () => {
+      stopped = true;
+      es?.close();
+      clearTimeout(retry);
+    };
+  }, [cursor, onSignedOut]);
+
+  // Clear the ink-in flag once its animation has played.
+  useEffect(() => {
+    const ids = Object.keys(state.landed);
+    if (ids.length === 0) return;
+    const t = setTimeout(() => ids.forEach((id) => dispatch({ type: "unland", id })), 900);
+    return () => clearTimeout(t);
+  }, [state.landed]);
+
+  const anyPending = Object.values(state.docs).some((d) => d.status === "pending");
+  useEffect(() => {
+    if (!anyPending) return;
+    const t = setInterval(() => setNow(Date.now()), 2000);
+    return () => clearInterval(t);
+  }, [anyPending]);
+
+  const pump = useCallback(() => {
+    while (active.current < UPLOAD_CONCURRENCY && queue.current.length > 0) {
+      const { key, file } = queue.current.shift()!;
+      active.current++;
+      const job = upload(projectId, file, (progress) => dispatch({ type: "uploadProgress", key, progress }));
+      job.done
+        .then(({ doc, created }) => {
+          dispatch({ type: "uploadDone", key, doc, created, at: performance.now() });
+          if (!created) setAnnouncement(`${file.name} is already in this project.`);
+        })
+        .catch((e: unknown) => {
+          if (e instanceof ApiError && e.status === 401) onSignedOut();
+          dispatch({ type: "uploadFailed", key, error: e instanceof Error ? e.message : "Upload failed." });
+        })
+        .finally(() => {
+          active.current--;
+          pump();
+        });
+    }
+  }, [projectId, onSignedOut]);
+
+  const addFiles = useCallback(
+    (files: FileList | File[]) => {
+      const list = Array.from(files);
+      if (list.length === 0) return;
+      const items = list.map((file) => ({ key: `upload-${crypto.randomUUID()}`, filename: file.name, file }));
+      dispatch({ type: "uploadStart", items });
+      for (const { key, file } of items) queue.current.push({ key, file });
+      setAnnouncement(list.length === 1 ? `Uploading ${list[0].name}.` : `Uploading ${list.length} files.`);
+      pump();
+    },
+    [pump],
+  );
+
+  // The whole page is a drop target once a project is chosen.
+  function onDragEnter(e: DragEvent) {
+    if (!e.dataTransfer.types.includes("Files")) return;
+    e.preventDefault();
+    dragDepth.current++;
+    setOver(true);
+  }
+  function onDragOver(e: DragEvent) {
+    if (!e.dataTransfer.types.includes("Files")) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  }
+  function onDragLeave() {
+    dragDepth.current = Math.max(0, dragDepth.current - 1);
+    if (dragDepth.current === 0) setOver(false);
+  }
+  function onDrop(e: DragEvent) {
+    e.preventDefault();
+    dragDepth.current = 0;
+    setOver(false);
+    addFiles(e.dataTransfer.files);
+  }
+
+  const correct = useCallback(
+    async (docId: string, field: string, value: string) => {
+      try {
+        const doc = await api.correct(docId, field, value);
+        dispatch({ type: "doc", doc });
+        setAnnouncement(`Saved ${field}.`);
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 401) onSignedOut();
+        throw e;
+      }
+    },
+    [onSignedOut],
+  );
+
+  const retry = useCallback(
+    (docId: string) => {
+      dispatch({ type: "retrying", id: docId });
+      api.retry(docId).then(
+        (doc) => dispatch({ type: "doc", doc }),
+        (e: unknown) => {
+          if (e instanceof ApiError && e.status === 401) onSignedOut();
+          setAnnouncement("Retry didn't start. Check your connection and try again.");
+        },
+      );
+    },
+    [onSignedOut],
+  );
+
+  const jump = useCallback((docId: string) => {
+    const el = document.getElementById(`doc-${docId}`);
+    if (!el) return;
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+    el.focus({ preventScroll: true });
+    setFlash(docId);
+    setTimeout(() => setFlash((f) => (f === docId ? null : f)), 1200);
+  }, []);
+
+  const priorLabel = useCallback(
+    (id: string) => {
+      const d = state.docs[id];
+      if (!d) return undefined;
+      const number = d.fields.find((f) => f.field === "number")?.value || d.number;
+      const rev = d.fields.find((f) => f.field === "revision")?.value || d.revision;
+      return [number, rev].filter(Boolean).join(" · ") || d.filename;
+    },
+    [state.docs],
+  );
+
+  const rows: RowModel[] = useMemo(
+    () =>
+      state.order.flatMap((key): RowModel[] => {
+        const up = state.uploads[key];
+        if (up) return [{ key, filename: up.filename, progress: up.progress, uploadError: up.error }];
+        const doc = state.docs[key];
+        if (!doc) return [];
+        const since = state.pendingSince[key] ?? state.loadedAt;
+        return [
+          {
+            key,
+            filename: doc.filename,
+            doc,
+            duplicate: state.duplicate[key],
+            interrupted: state.interrupted[key],
+            stale: doc.status === "pending" && now - since > STALE_MS,
+            filedInMs: state.filedIn[key],
+            landed: state.landed[key],
+            flash: flash === key,
+          },
+        ];
+      }),
+    [state, now, flash],
+  );
+
+  const tally = useMemo(() => {
+    let filed = 0;
+    let attention = 0;
+    let notFiled = 0;
+    for (const d of Object.values(state.docs)) {
+      if (d.status === "not_filed") notFiled++;
+      if (d.status !== "filed") continue;
+      filed++;
+      if (d.fields.some((f) => f.field !== "supersedes" && ["check", "unchecked"].includes(stateOf(f)))) attention++;
+    }
+    return { filed, attention, notFiled };
+  }, [state.docs]);
+
+  if (state.phase === "loading") {
+    return (
+      <main className="page" aria-busy="true">
+        <p className="drop-sub">Opening project…</p>
+      </main>
+    );
+  }
+  if (state.phase === "missing") {
+    return (
+      <main className="page">
+        <div className="empty">
+          <strong>This project isn't available.</strong>
+          It may belong to another organisation, or the link is wrong.
+          <p style={{ marginTop: 14 }}>
+            <button type="button" className="btn" onClick={onHome}>
+              Back to projects
+            </button>
+          </p>
+        </div>
+      </main>
+    );
+  }
+  if (state.phase === "error") {
+    return (
+      <main className="page">
+        <div className="banner" role="alert">
+          {state.error}
+          <button type="button" className="btn btn-small" onClick={() => location.reload()}>
+            Try again
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="page" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <div className="project-head">
+        <h1>{state.projectName}</h1>
+        <div className="tally">
+          <span>
+            <strong>{tally.filed}</strong> filed
+          </span>
+          <span>
+            <strong>{tally.attention}</strong> to check
+          </span>
+          <span>
+            <strong>{tally.notFiled}</strong> stored, not filed
+          </span>
+          <span className="live" data-state={live} role="status">
+            {live === "live" ? "Live" : live === "reconnecting" ? "Reconnecting…" : "Offline, retrying"}
+          </span>
+        </div>
+      </div>
+
+      <section className="drop" data-over={over ? "true" : undefined} aria-label={`Add files to ${state.projectName}`}>
+        <span className="drop-mark">
+          <IconUpload />
+        </span>
+        <div>
+          <p className="drop-title">{over ? `Release to file into ${state.projectName}` : "Drop drawings, reports and schedules anywhere"}</p>
+          <p className="drop-sub">PDF, DOCX or XLSX. Each one is filed in about a second; anything else is kept, not filed.</p>
+        </div>
+        <button type="button" className="btn btn-primary" onClick={() => fileInput.current?.click()}>
+          <IconUpload />
+          Choose files
+        </button>
+        <input
+          ref={fileInput}
+          type="file"
+          multiple
+          accept={ACCEPT}
+          hidden
+          data-testid="file-input"
+          onChange={(e) => {
+            if (e.target.files) addFiles(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </section>
+
+      <ul className="legend" aria-label="How to read each box">
+        <li>
+          <span className="mark" style={{ color: "var(--ok)" }}>
+            <IconConfirmed />
+          </span>
+          From document or confirmed
+        </li>
+        <li>
+          <span className="mark" style={{ color: "var(--warn)" }}>
+            <IconCheck />
+          </span>
+          Check: Jev's pick, flagged
+        </li>
+        <li>
+          <span className="mark">
+            <IconNotSet />
+          </span>
+          Not set
+        </li>
+        <li>
+          <span className="mark">
+            <IconNotChecked />
+          </span>
+          Not checked: Jev didn't answer in time
+        </li>
+        <li>
+          <span className="mark" style={{ color: "var(--ember-hot)" }}>
+            <IconYou />
+          </span>
+          Set by you. Click any box to correct it.
+        </li>
+      </ul>
+
+      {rows.length === 0 ? (
+        <div className="empty">
+          <strong>Nothing filed in {state.projectName} yet.</strong>
+          Drop a consultant package on this page. Each file becomes a title block showing its number, revision and
+          title, and how each was decided.
+        </div>
+      ) : (
+        <div className="stack">
+          {rows.map((row) => (
+            <DocumentRow
+              key={row.key}
+              row={row}
+              catalog={catalog}
+              priorLabel={priorLabel}
+              onCorrect={correct}
+              onRetry={retry}
+              onJump={jump}
+              onDismiss={(key) => dispatch({ type: "dismiss", key })}
+            />
+          ))}
+        </div>
+      )}
+
+      <p className="sr-only" aria-live="polite">
+        {announcement}
+      </p>
+    </main>
+  );
+}

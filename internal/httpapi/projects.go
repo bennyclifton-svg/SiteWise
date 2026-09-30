@@ -11,16 +11,32 @@ import (
 	"time"
 
 	"sitewise/internal/auth"
+	"sitewise/internal/events"
+	"sitewise/internal/intake"
 	"sitewise/internal/store"
 )
 
-// Deps is the HTTP wiring for invite consumption and project creation.
+// Deps is the HTTP wiring. Store and PublicOrigin serve sessions and
+// projects; the intake fields serve uploads, corrections and events.
 type Deps struct {
-	Store        *store.Store
-	PublicOrigin string
-	Log          *log.Logger
-	MaxBodyBytes int64
-	SecureCookie bool
+	Store          *store.Store
+	PublicOrigin   string
+	Log            *log.Logger
+	MaxBodyBytes   int64
+	SecureCookie   bool
+	MaxUploadBytes int64
+	Uploader       *intake.Uploader
+	Service        *intake.Service
+	Catalog        intake.Catalog
+	Broker         *events.Broker
+	Filer          Filer
+	// Closing ends event streams when the server shuts down.
+	Closing <-chan struct{}
+}
+
+// Filer starts a foreground filing that outlives the upload request.
+type Filer interface {
+	Start(orgID, documentID string)
 }
 
 // Handler serves session consumption and project routes.
@@ -30,6 +46,9 @@ func Handler(deps Deps) http.Handler {
 	}
 	if deps.Log == nil {
 		deps.Log = log.New(io.Discard, "", 0)
+	}
+	if deps.MaxUploadBytes <= 0 {
+		deps.MaxUploadBytes = 200 << 20
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /session", func(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +60,20 @@ func Handler(deps Deps) http.Handler {
 	mux.HandleFunc("GET /projects/{id}", func(w http.ResponseWriter, r *http.Request) {
 		getProject(w, r, deps)
 	})
+	routes := map[string]func(http.ResponseWriter, *http.Request, Deps){
+		"GET /session":                       checkSession,
+		"GET /projects":                      listProjects,
+		"GET /projects/{id}/documents":       listDocuments,
+		"POST /projects/{id}/files":          uploadFile,
+		"GET /documents/{id}":                getDocument,
+		"POST /documents/{id}/filing":        retryFiling,
+		"PUT /documents/{id}/fields/{field}": correctField,
+		"GET /catalog":                       getCatalog,
+		"GET /events":                        streamEvents,
+	}
+	for pattern, h := range routes {
+		mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) { h(w, r, deps) })
+	}
 	return mux
 }
 

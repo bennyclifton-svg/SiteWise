@@ -116,21 +116,5 @@ func optionalUUID(s string) (pgtype.UUID, error) {
 }
 
 func filingEventPayload(documentID string, rows []db.ListFilingDecisionsRow) (string, error) {
-	decisions := make([]map[string]string, 0, len(rows))
-	for _, row := range rows {
-		decisions = append(decisions, map[string]string{
-			"field": row.Field,
-			"value": row.Value,
-			"band":  row.Band,
-		})
-	}
-	body, err := json.Marshal(map[string]any{
-		"document_id": documentID,
-		"status":      StatusFiled,
-		"decisions":   decisions,
-	})
-	if err != nil {
-		return "", err
-	}
-	return string(body), nil
+	return documentEventPayload(documentID, StatusFiled, "", rows)
 }

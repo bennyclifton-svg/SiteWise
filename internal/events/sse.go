@@ -24,8 +24,8 @@ type Log interface {
 }
 
 // Broker fans committed events out to live subscribers without holding the
-// commit open. A full subscriber buffer is dropped; that client catches up
-// from the cursor.
+// commit open. When a subscriber's buffer is full the event is not queued;
+// the subscriber is rung instead and reads it from the cursor.
 type Broker struct {
 	log  Log
 	mu   sync.Mutex
@@ -33,7 +33,8 @@ type Broker struct {
 }
 
 type subscription struct {
-	ch chan store.StoredEvent
+	ch   chan store.StoredEvent
+	ring chan struct{}
 }
 
 // NewBroker serves log. log must already have committed the event before Notify.
@@ -56,25 +57,56 @@ func (b *Broker) Commit(ctx context.Context, orgID, kind, documentID, payload st
 // Notify wakes live subscribers for orgID. It does not write the log and it
 // does not wait for a client to read.
 func (b *Broker) Notify(orgID string, ev store.StoredEvent) {
-	b.mu.Lock()
-	current := b.subs[orgID]
-	list := make([]*subscription, 0, len(current))
-	for sub := range current {
-		list = append(list, sub)
-	}
-	b.mu.Unlock()
-	for _, sub := range list {
+	for _, sub := range b.current(orgID) {
 		select {
 		case sub.ch <- ev:
 		default:
+			sub.rung()
 		}
+	}
+}
+
+// Wake tells orgID's live streams to read the log from their cursor. Use it
+// after a store transaction appended an event without going through Commit.
+func (b *Broker) Wake(orgID string) {
+	for _, sub := range b.current(orgID) {
+		sub.rung()
+	}
+}
+
+// Subscribers is the number of live receivers for orgID.
+func (b *Broker) Subscribers(orgID string) int {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return len(b.subs[orgID])
+}
+
+func (b *Broker) current(orgID string) []*subscription {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	list := make([]*subscription, 0, len(b.subs[orgID]))
+	for sub := range b.subs[orgID] {
+		list = append(list, sub)
+	}
+	return list
+}
+
+func (s *subscription) rung() {
+	select {
+	case s.ring <- struct{}{}:
+	default:
 	}
 }
 
 // Subscribe registers a live receiver. The returned channel has a buffer of
 // one so a slow client does not stall Commit. Cancel removes it.
 func (b *Broker) Subscribe(orgID string) (<-chan store.StoredEvent, func()) {
-	sub := &subscription{ch: make(chan store.StoredEvent, 1)}
+	sub, cancel := b.subscribe(orgID)
+	return sub.ch, cancel
+}
+
+func (b *Broker) subscribe(orgID string) (*subscription, func()) {
+	sub := &subscription{ch: make(chan store.StoredEvent, 1), ring: make(chan struct{}, 1)}
 	b.mu.Lock()
 	if b.subs[orgID] == nil {
 		b.subs[orgID] = map[*subscription]struct{}{}
@@ -82,7 +114,7 @@ func (b *Broker) Subscribe(orgID string) (<-chan store.StoredEvent, func()) {
 	b.subs[orgID][sub] = struct{}{}
 	b.mu.Unlock()
 	var once sync.Once
-	return sub.ch, func() {
+	return sub, func() {
 		once.Do(func() {
 			b.mu.Lock()
 			delete(b.subs[orgID], sub)
@@ -118,30 +150,24 @@ func (b *Broker) CatchUp(ctx context.Context, orgID string, after int64) ([]stor
 }
 
 // Serve writes missed events, then live ones, until ctx ends. Event ids at or
-// below the cursor are skipped so a client can de-duplicate a replay.
+// below the cursor are skipped so a client can de-duplicate a replay. A ring
+// reads the log from the cursor, which covers dropped and out-of-band events.
 func (b *Broker) Serve(ctx context.Context, w io.Writer, orgID string, after int64) error {
-	live, cancel := b.Subscribe(orgID)
+	sub, cancel := b.subscribe(orgID)
 	defer cancel()
-	missed, err := b.CatchUp(ctx, orgID, after)
+	after, err := b.writeMissed(ctx, w, orgID, after)
 	if err != nil {
 		return err
-	}
-	for _, ev := range missed {
-		next, ok := Advance(after, ev.ID)
-		if !ok {
-			continue
-		}
-		if err := WriteSSE(w, ev); err != nil {
-			return err
-		}
-		after = next
-		flush(w)
 	}
 	for {
 		select {
 		case <-ctx.Done():
 			return nil
-		case ev := <-live:
+		case <-sub.ring:
+			if after, err = b.writeMissed(ctx, w, orgID, after); err != nil {
+				return err
+			}
+		case ev := <-sub.ch:
 			next, ok := Advance(after, ev.ID)
 			if !ok {
 				continue
@@ -153,6 +179,25 @@ func (b *Broker) Serve(ctx context.Context, w io.Writer, orgID string, after int
 			flush(w)
 		}
 	}
+}
+
+func (b *Broker) writeMissed(ctx context.Context, w io.Writer, orgID string, after int64) (int64, error) {
+	missed, err := b.CatchUp(ctx, orgID, after)
+	if err != nil {
+		return after, err
+	}
+	for _, ev := range missed {
+		next, ok := Advance(after, ev.ID)
+		if !ok {
+			continue
+		}
+		if err := WriteSSE(w, ev); err != nil {
+			return after, err
+		}
+		after = next
+		flush(w)
+	}
+	return after, nil
 }
 
 // Advance moves the cursor when id is new. A replay of an id the client

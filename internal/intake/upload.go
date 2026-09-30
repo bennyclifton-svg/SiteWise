@@ -3,6 +3,7 @@ package intake
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"path/filepath"
 	"strings"
@@ -10,6 +11,10 @@ import (
 	"sitewise/internal/files"
 	"sitewise/internal/store"
 )
+
+// ErrFilename means the uploaded name is empty or too long. It is the
+// caller's to fix, not a storage failure.
+var ErrFilename = errors.New("invalid filename")
 
 // Upload is one dropped file. Reason is empty when the file should be filed.
 // A non-empty reason stores the bytes and records status not_filed.
@@ -107,10 +112,10 @@ func cleanFilename(name string) (string, error) {
 	name = filepath.Base(strings.TrimSpace(name))
 	name = strings.TrimSpace(name)
 	if name == "" || name == "." || name == ".." {
-		return "", errors.New("filename is required")
+		return "", fmt.Errorf("%w: filename is required", ErrFilename)
 	}
 	if len(name) > 255 {
-		return "", errors.New("filename is too long")
+		return "", fmt.Errorf("%w: filename is too long", ErrFilename)
 	}
 	return name, nil
 }

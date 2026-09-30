@@ -112,7 +112,8 @@ func (s *Store) OrgSupersessions(ctx context.Context, orgID string) ([][2]string
 }
 
 // CorrectDecision stores a user value. It replaces a rule or Jev value and
-// bumps the version so an in-flight filing cannot write over it.
+// bumps the version so an in-flight filing cannot write over it. The
+// correction event commits with it, so a reconnecting client sees it.
 func (s *Store) CorrectDecision(ctx context.Context, orgID, documentID, field, value string) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -120,7 +121,8 @@ func (s *Store) CorrectDecision(ctx context.Context, orgID, documentID, field, v
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	q := s.q.WithTx(tx)
-	if _, err := q.LockFilingDocument(ctx, db.LockFilingDocumentParams{OrgID: orgID, ID: documentID}); err != nil {
+	doc, err := q.LockFilingDocument(ctx, db.LockFilingDocumentParams{OrgID: orgID, ID: documentID})
+	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrNotFound
 		}
@@ -138,6 +140,17 @@ func (s *Store) CorrectDecision(ctx context.Context, orgID, documentID, field, v
 	}
 	if n == 0 {
 		return ErrNotFound
+	}
+	rows, err := q.ListFilingDecisions(ctx, db.ListFilingDecisionsParams{OrgID: orgID, DocumentID: documentID})
+	if err != nil {
+		return err
+	}
+	payload, err := documentEventPayload(documentID, doc.Status, "", rows)
+	if err != nil {
+		return err
+	}
+	if _, err := appendEvent(ctx, q, orgID, EventCorrection, documentID, payload); err != nil {
+		return err
 	}
 	return tx.Commit(ctx)
 }
@@ -265,7 +278,7 @@ func (s *Store) CommitFiling(ctx context.Context, orgID, documentID string, in C
 	if err != nil {
 		return FilingOutcome{}, err
 	}
-	if _, err := appendEvent(ctx, q, orgID, "filing", documentID, payload); err != nil {
+	if _, err := appendEvent(ctx, q, orgID, EventFiling, documentID, payload); err != nil {
 		return FilingOutcome{}, err
 	}
 	if err := tx.Commit(ctx); err != nil {
