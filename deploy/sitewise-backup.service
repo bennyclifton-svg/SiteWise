@@ -1,0 +1,18 @@
+# Nightly backup run. Install with sitewise-backup.timer.
+[Unit]
+Description=SiteWise nightly backup (PostgreSQL + content-hash files)
+After=postgresql.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/sitewise/deploy/backup.sh
+# Root reads the 0600 blobs and backup credentials; the filesystem stays
+# read-only except the state the steps write.
+ProtectSystem=strict
+ReadWritePaths=/var/lib/sitewise-backup /var/spool/pgbackrest /var/log/pgbackrest
+PrivateTmp=yes
+ProtectHome=yes
+NoNewPrivileges=yes
+Nice=10
+IOSchedulingClass=idle

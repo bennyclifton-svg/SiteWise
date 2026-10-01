@@ -13,6 +13,7 @@ import (
 	"sitewise/internal/auth"
 	"sitewise/internal/events"
 	"sitewise/internal/intake"
+	"sitewise/internal/latency"
 	"sitewise/internal/store"
 )
 
@@ -32,6 +33,11 @@ type Deps struct {
 	Filer          Filer
 	// Closing ends event streams when the server shuts down.
 	Closing <-chan struct{}
+	// Health and Speed serve the owner-only status views. Budgets are what
+	// the speed view judges against.
+	Health  *healthChecker
+	Speed   *recorder
+	Budgets latency.Budgets
 }
 
 // Filer starts a foreground filing that outlives the upload request.
@@ -51,16 +57,10 @@ func Handler(deps Deps) http.Handler {
 		deps.MaxUploadBytes = 200 << 20
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /session", func(w http.ResponseWriter, r *http.Request) {
-		consumeSession(w, r, deps)
-	})
-	mux.HandleFunc("POST /projects", func(w http.ResponseWriter, r *http.Request) {
-		createProject(w, r, deps)
-	})
-	mux.HandleFunc("GET /projects/{id}", func(w http.ResponseWriter, r *http.Request) {
-		getProject(w, r, deps)
-	})
 	routes := map[string]func(http.ResponseWriter, *http.Request, Deps){
+		"POST /session":                      consumeSession,
+		"POST /projects":                     createProject,
+		"GET /projects/{id}":                 getProject,
 		"GET /session":                       checkSession,
 		"GET /projects":                      listProjects,
 		"GET /projects/{id}/documents":       listDocuments,
@@ -70,11 +70,35 @@ func Handler(deps Deps) http.Handler {
 		"PUT /documents/{id}/fields/{field}": correctField,
 		"GET /catalog":                       getCatalog,
 		"GET /events":                        streamEvents,
+		"GET /health":                        getHealth,
+		"GET /speed":                         getSpeed,
 	}
 	for pattern, h := range routes {
-		mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) { h(w, r, deps) })
+		path, timed := routePaths[pattern]
+		if !timed || deps.Speed == nil {
+			mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) { h(w, r, deps) })
+			continue
+		}
+		mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			h(w, r, deps)
+			deps.Speed.Observe(path, time.Since(start))
+		})
 	}
 	return mux
+}
+
+// routePaths names the budget path each timed route reports to the speed
+// view. Failed requests are timed too. Uploads are not: their duration is
+// the client's network.
+var routePaths = map[string]string{
+	"POST /session":                      pathInviteAuth,
+	"POST /projects":                     pathInviteAuth,
+	"GET /projects":                      pathDocumentList,
+	"GET /projects/{id}/documents":       pathDocumentList,
+	"PUT /documents/{id}/fields/{field}": pathFieldCorrection,
+	"GET /health":                        pathHealthSpeed,
+	"GET /speed":                         pathHealthSpeed,
 }
 
 func consumeSession(w http.ResponseWriter, r *http.Request, deps Deps) {

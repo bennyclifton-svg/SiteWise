@@ -17,6 +17,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"testing/fstest"
 	"time"
@@ -268,6 +269,8 @@ func TestListAndCorrectionBudgets(t *testing.T) {
 type app struct {
 	url   string
 	store *store.Store
+	// jevHits counts evaluation calls that reached the fake provider.
+	jevHits atomic.Int64
 }
 
 func newApp(t *testing.T) *app {
@@ -286,7 +289,13 @@ func newApp(t *testing.T) *app {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fake := httptest.NewServer(http.HandlerFunc(recordedJev))
+	a := &app{store: st}
+	fake := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			a.jevHits.Add(1)
+		}
+		recordedJev(w, r)
+	}))
 	t.Cleanup(fake.Close)
 	client, err := jev.New(jev.Options{
 		BaseURL: fake.URL,
@@ -321,7 +330,8 @@ func newApp(t *testing.T) *app {
 		defer cancel()
 		_ = srv.Wait(ctx)
 	})
-	return &app{url: ts.URL, store: st}
+	a.url = ts.URL
+	return a
 }
 
 // recordedJev answers every choice question with its first option at a

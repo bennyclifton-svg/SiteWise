@@ -55,8 +55,7 @@ const benchOrg = "be4c0000-0000-4000-8000-000000000001"
 const (
 	// pathWhole is timed by the bench client, not inside the server.
 	pathWhole = "whole_intake"
-	// pathHealth has no server endpoint yet. It stays in the budget file and
-	// fails the gate as missing samples rather than being dropped from it.
+	// pathHealth times the owner's detailed health and speed views.
 	pathHealth = "health_speed"
 )
 
@@ -323,6 +322,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.reconnect(ctx, arrived.cursor(), o.apiSamples); err != nil {
 		return 0, err
 	}
+	if err := api.healthSpeed(ctx, o.apiSamples); err != nil {
+		return 0, err
+	}
 	if replayer != nil {
 		if n := replayer.misses.Load(); n > 0 {
 			return 0, fmt.Errorf("%d Jev requests had no recorded document; re-record with intake-eval -live", n)
@@ -364,7 +366,7 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 			"whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
 			"Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
 			"Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
-			pathHealth + " has no endpoint until Task 12, so it has no samples and fails the gate as missing.",
+			pathHealth + " alternates the owner-only /api/health and /api/speed views after the filings, with the background queue still holding their stages.",
 		},
 	}
 	if !o.live {
@@ -658,10 +660,14 @@ func (a *apiClient) timed(ctx context.Context, path, method, url string, body []
 }
 
 // signIn consumes n invitations, timing each token consumption, and keeps
-// the last session.
+// the last session. That one is an owner, so it can read health and speed.
 func (a *apiClient) signIn(ctx context.Context, st *store.Store, n int) error {
 	for i := 0; i < n; i++ {
-		raw, err := auth.CreateInvite(ctx, st, &auth.Sink{}, benchOrg, fmt.Sprintf("bench-%d@bench.test", i), "member", time.Now().Add(time.Hour), nil)
+		role := "member"
+		if i == n-1 {
+			role = "owner"
+		}
+		raw, err := auth.CreateInvite(ctx, st, &auth.Sink{}, benchOrg, fmt.Sprintf("bench-%d@bench.test", i), role, time.Now().Add(time.Hour), nil)
 		if err != nil {
 			return err
 		}
@@ -808,6 +814,20 @@ func (a *apiClient) listDocuments(ctx context.Context, projects []string, n int)
 	for i := 0; i < n; i++ {
 		p := projects[i%len(projects)]
 		if _, err := a.timed(ctx, "project_document_list", http.MethodGet, "/projects/"+p+"/documents", nil, http.StatusOK); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// healthSpeed reads the detailed health and speed views n times in turn.
+func (a *apiClient) healthSpeed(ctx context.Context, n int) error {
+	for i := 0; i < n; i++ {
+		url := "/health"
+		if i%2 == 1 {
+			url = "/speed"
+		}
+		if _, err := a.timed(ctx, pathHealth, http.MethodGet, url, nil, http.StatusOK); err != nil {
 			return err
 		}
 	}

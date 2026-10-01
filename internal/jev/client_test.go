@@ -926,3 +926,64 @@ func split(ids []string) [][]byte {
 func ioWrite(w http.ResponseWriter, body string) (int, error) {
 	return w.Write([]byte(body))
 }
+
+func TestStatusReportsReachAndCircuit(t *testing.T) {
+	clock := time.Date(2026, 10, 1, 0, 0, 0, 0, time.UTC)
+	var fail atomic.Bool
+	c := startClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if fail.Load() {
+			http.Error(w, "down", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(fixture(t, "success.json"))
+	}), jev.Options{BreakerThreshold: 2, BreakerCooldown: time.Minute, Now: func() time.Time { return clock }})
+
+	if s := c.Status(); !s.Reached.IsZero() || s.Circuit != jev.CircuitClosed {
+		t.Fatalf("fresh %+v", s)
+	}
+	if err := c.Warm(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if s := c.Status(); !s.Reached.Equal(clock) {
+		t.Fatalf("after warm %+v", s)
+	}
+	fail.Store(true)
+	for range 2 {
+		if _, err := c.Ask(context.Background(), sampleCall()); err == nil {
+			t.Fatal("expected failure")
+		}
+	}
+	if s := c.Status(); s.Circuit != jev.CircuitOpen {
+		t.Fatalf("after failures %+v", s)
+	}
+}
+
+func TestProbeIsAnUnauthenticatedHead(t *testing.T) {
+	var heads, other atomic.Int32
+	c := startClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead && r.Header.Get("Authorization") == "" {
+			heads.Add(1)
+			return
+		}
+		other.Add(1)
+	}), jev.Options{})
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		c.Probe(ctx, 5*time.Millisecond)
+		close(done)
+	}()
+	deadline := time.Now().Add(5 * time.Second)
+	for heads.Load() < 3 && time.Now().Before(deadline) {
+		time.Sleep(5 * time.Millisecond)
+	}
+	cancel()
+	<-done
+	if heads.Load() < 3 || other.Load() != 0 {
+		t.Fatalf("heads %d other %d", heads.Load(), other.Load())
+	}
+	if c.Status().Reached.IsZero() {
+		t.Fatal("probe did not record reach")
+	}
+}

@@ -42,6 +42,44 @@ func (q *Queries) AddPassage(ctx context.Context, arg AddPassageParams) error {
 	return err
 }
 
+const backlog = `-- name: Backlog :many
+SELECT kind,
+       count(*)::bigint AS queued,
+       floor(extract(epoch FROM now() - min(created_at)) * 1000)::bigint AS oldest_ms
+FROM jobs
+WHERE status IN ('queued', 'leased')
+GROUP BY kind
+ORDER BY kind
+`
+
+type BacklogRow struct {
+	Kind     string
+	Queued   int64
+	OldestMs int64
+}
+
+// Process-wide unfinished work for health. Counts and ages only; no row of
+// any org leaves this query. Age is by the database clock.
+func (q *Queries) Backlog(ctx context.Context) ([]BacklogRow, error) {
+	rows, err := q.db.Query(ctx, backlog)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BacklogRow
+	for rows.Next() {
+		var i BacklogRow
+		if err := rows.Scan(&i.Kind, &i.Queued, &i.OldestMs); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const claimJob = `-- name: ClaimJob :one
 WITH picked AS MATERIALIZED (
     SELECT c.org_id, c.id
@@ -1449,6 +1487,25 @@ func (q *Queries) MembershipExists(ctx context.Context, arg MembershipExistsPara
 	return member, err
 }
 
+const membershipRole = `-- name: MembershipRole :one
+SELECT role
+FROM memberships
+WHERE org_id = $1::uuid
+  AND user_id = $2::uuid
+`
+
+type MembershipRoleParams struct {
+	OrgID  string
+	UserID string
+}
+
+func (q *Queries) MembershipRole(ctx context.Context, arg MembershipRoleParams) (string, error) {
+	row := q.db.QueryRow(ctx, membershipRole, arg.OrgID, arg.UserID)
+	var role string
+	err := row.Scan(&role)
+	return role, err
+}
+
 const nextEventID = `-- name: NextEventID :one
 INSERT INTO event_counters (org_id, last_id)
 VALUES ($1::uuid, 1)
@@ -1462,6 +1519,43 @@ func (q *Queries) NextEventID(ctx context.Context, orgID string) (int64, error) 
 	var last_id int64
 	err := row.Scan(&last_id)
 	return last_id, err
+}
+
+const orgBacklog = `-- name: OrgBacklog :many
+SELECT kind,
+       count(*)::bigint AS queued,
+       floor(extract(epoch FROM now() - min(created_at)) * 1000)::bigint AS oldest_ms
+FROM jobs
+WHERE org_id = $1::uuid
+  AND status IN ('queued', 'leased')
+GROUP BY kind
+ORDER BY kind
+`
+
+type OrgBacklogRow struct {
+	Kind     string
+	Queued   int64
+	OldestMs int64
+}
+
+func (q *Queries) OrgBacklog(ctx context.Context, orgID string) ([]OrgBacklogRow, error) {
+	rows, err := q.db.Query(ctx, orgBacklog, orgID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []OrgBacklogRow
+	for rows.Next() {
+		var i OrgBacklogRow
+		if err := rows.Scan(&i.Kind, &i.Queued, &i.OldestMs); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const searchPassages = `-- name: SearchPassages :many

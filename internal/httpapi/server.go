@@ -12,9 +12,11 @@ import (
 	"sync"
 	"time"
 
+	"sitewise/bench"
 	"sitewise/internal/events"
 	"sitewise/internal/files"
 	"sitewise/internal/intake"
+	"sitewise/internal/jev"
 	"sitewise/internal/store"
 )
 
@@ -72,12 +74,27 @@ func New(opts Options) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	if opts.Observe != nil {
-		svc.Observe(opts.Observe)
+	budgets, err := bench.Budgets()
+	if err != nil {
+		return nil, err
+	}
+	speed := newRecorder()
+	svc.Observe(func(path string, d time.Duration) {
+		speed.Observe(path, d)
+		if opts.Observe != nil {
+			opts.Observe(path, d)
+		}
+	})
+	checker := &healthChecker{ping: opts.Store.Ping, now: time.Now}
+	// A client that reports its own state feeds health; any other Asker
+	// leaves Jev reported as unknown, never as healthy.
+	if s, ok := opts.Jev.(interface{ Status() jev.Status }); ok {
+		checker.jev = s.Status
 	}
 	broker := events.NewBroker(opts.Store)
 	runner := intake.NewRunner(opts.Blobs, opts.Store, svc)
 	f := &filer{
+		observe:  speed.Observe,
 		run:      runner.Run,
 		broker:   broker,
 		log:      opts.Log,
@@ -98,8 +115,12 @@ func New(opts Options) (*Server, error) {
 		Broker:         broker,
 		Filer:          f,
 		Closing:        closing,
+		Health:         checker,
+		Speed:          speed,
+		Budgets:        budgets,
 	})
 	mux := http.NewServeMux()
+	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})
 	mux.Handle("/api/", http.StripPrefix("/api", noStore(api)))
 	mux.Handle("/", spa(opts.Static))
 	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, closing: closing}, nil
@@ -123,7 +144,7 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 		return 0, err
 	}
 	for _, p := range pending {
-		s.filer.Start(p.OrgID, p.DocumentID)
+		s.filer.start(p.OrgID, p.DocumentID, false)
 	}
 	return len(pending), nil
 }
@@ -146,6 +167,8 @@ func (s *Server) Wait(ctx context.Context) error {
 // filer runs foreground filings outside the upload request, so a closed tab
 // does not abort a filing whose bytes are already stored.
 type filer struct {
+	// observe records whole_intake for filings started by an upload or retry.
+	observe func(string, time.Duration)
 	run     func(ctx context.Context, orgID, documentID string) error
 	broker  *events.Broker
 	log     *log.Logger
@@ -160,6 +183,15 @@ type filer struct {
 // Start files the document unless a filing for it is already running. A
 // failure is written as an event so the client can offer a retry.
 func (f *filer) Start(orgID, documentID string) {
+	f.start(orgID, documentID, true)
+}
+
+// start times the filing from here to its event being written when timed.
+// Resumed filings are not timed: their clock would start at process restart.
+// This is the server's share of whole_intake; the bench's client-side figure
+// also includes the final upload byte and SSE delivery.
+func (f *filer) start(orgID, documentID string, timed bool) {
+	began := time.Now()
 	key := orgID + "/" + documentID
 	f.mu.Lock()
 	if _, busy := f.inflight[key]; busy {
@@ -189,6 +221,9 @@ func (f *filer) Start(orgID, documentID string) {
 			}
 		}
 		f.broker.Wake(orgID)
+		if timed && f.observe != nil {
+			f.observe(pathWholeIntake, time.Since(began))
+		}
 	}()
 }
 

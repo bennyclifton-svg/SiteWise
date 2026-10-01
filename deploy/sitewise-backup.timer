@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the SiteWise backup nightly
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 Australia/Sydney
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

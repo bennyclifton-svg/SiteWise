@@ -25,6 +25,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"sitewise/internal/config"
@@ -69,6 +70,9 @@ type Client struct {
 	backoff            time.Duration
 	now                func() time.Time
 	sleep              func(context.Context, time.Duration) error
+	// reached is the unix-nano time of the last HTTP response from the
+	// endpoint, whatever its status; zero means none yet.
+	reached atomic.Int64
 }
 
 type outbound struct {
@@ -252,8 +256,49 @@ func (c *Client) Warm(ctx context.Context) error {
 		return err
 	}
 	defer resp.Body.Close()
+	c.markReached()
 	_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 4096))
 	return nil
+}
+
+// Probe warms the connection every interval until ctx ends, so health can
+// tell whether the provider is reachable without asking Jev anything. The
+// probe is a HEAD without the API key: it spends no evaluation and no slot.
+func (c *Client) Probe(ctx context.Context, every time.Duration) {
+	t := time.NewTicker(every)
+	defer t.Stop()
+	for {
+		probe, cancel := context.WithTimeout(ctx, every)
+		_ = c.Warm(probe)
+		cancel()
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+		}
+	}
+}
+
+// Status is the provider state health reports.
+type Status struct {
+	// Circuit is CircuitClosed, CircuitOpen or CircuitHalfOpen.
+	Circuit string
+	// Reached is the last HTTP response from the endpoint, from a probe or a
+	// call; zero means none since start.
+	Reached time.Time
+}
+
+// Status reads the breaker and last reach without blocking a call.
+func (c *Client) Status() Status {
+	s := Status{Circuit: c.breaker.State()}
+	if n := c.reached.Load(); n != 0 {
+		s.Reached = time.Unix(0, n).In(c.now().Location())
+	}
+	return s
+}
+
+func (c *Client) markReached() {
+	c.reached.Store(c.now().UnixNano())
 }
 
 // Ask posts one fan-out. Valid answers are returned even when other questions
@@ -362,6 +407,7 @@ func (c *Client) post(ctx context.Context, payload []byte) (int, []byte, error) 
 		return 0, nil, err
 	}
 	defer resp.Body.Close()
+	c.markReached()
 	body, tooBig, err := readBounded(resp.Body, c.maxBody)
 	if err != nil {
 		return resp.StatusCode, nil, err

@@ -479,3 +479,30 @@ WHERE p.org_id = sqlc.arg(org_id)::uuid
   AND p.body_tsv @@ websearch_to_tsquery('english', sqlc.arg(query))
 ORDER BY ts_rank(p.body_tsv, websearch_to_tsquery('english', sqlc.arg(query))) DESC, p.ordinal
 LIMIT sqlc.arg(row_limit);
+
+-- name: MembershipRole :one
+SELECT role
+FROM memberships
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND user_id = sqlc.arg(user_id)::uuid;
+
+-- name: Backlog :many
+-- Process-wide unfinished work for health. Counts and ages only; no row of
+-- any org leaves this query. Age is by the database clock.
+SELECT kind,
+       count(*)::bigint AS queued,
+       floor(extract(epoch FROM now() - min(created_at)) * 1000)::bigint AS oldest_ms
+FROM jobs
+WHERE status IN ('queued', 'leased')
+GROUP BY kind
+ORDER BY kind;
+
+-- name: OrgBacklog :many
+SELECT kind,
+       count(*)::bigint AS queued,
+       floor(extract(epoch FROM now() - min(created_at)) * 1000)::bigint AS oldest_ms
+FROM jobs
+WHERE org_id = sqlc.arg(org_id)::uuid
+  AND status IN ('queued', 'leased')
+GROUP BY kind
+ORDER BY kind;

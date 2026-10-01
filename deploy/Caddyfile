@@ -1,0 +1,42 @@
+# /etc/caddy/Caddyfile. Caddy terminates TLS and proxies to the loopback
+# listener; the app is never exposed directly.
+{
+	# Certificate expiry notices go here.
+	email REPLACE_ACME_EMAIL
+}
+
+www.sitewise.au {
+	redir https://sitewise.au{uri} permanent
+}
+
+sitewise.au {
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+	# The app caps uploads at 200 MiB; leave headroom for multipart framing.
+	request_body {
+		max_size 210MB
+	}
+
+	# Compress pages and JSON, never the event stream: compression buffers
+	# events and breaks live updates.
+	@compressible not path /api/events
+	encode @compressible zstd gzip
+
+	reverse_proxy 127.0.0.1:8080 {
+		# Server-sent events are flushed as written.
+		flush_interval -1
+		# /healthz answers 503 only when the database is down; then every
+		# request would fail anyway, so Caddy may stop routing.
+		health_uri /healthz
+		health_interval 10s
+		health_timeout 2s
+	}
+
+	log {
+		output file /var/log/caddy/sitewise.log {
+			roll_size 50MiB
+			roll_keep 10
+		}
+		format json
+	}
+}

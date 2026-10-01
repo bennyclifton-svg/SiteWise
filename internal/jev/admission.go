@@ -81,6 +81,13 @@ func (a *Admission) fits(p Priority) bool {
 	return true
 }
 
+// Circuit states reported by Client.Status.
+const (
+	CircuitClosed   = "closed"
+	CircuitOpen     = "open"
+	CircuitHalfOpen = "half_open"
+)
+
 type circuitState int
 
 const (
@@ -124,6 +131,21 @@ func (b *breaker) Allow(now time.Time) error {
 		return nil
 	default:
 		return nil
+	}
+}
+
+// State names the current state. An open circuit past its cooldown stays
+// open until the next call probes it.
+func (b *breaker) State() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	switch b.state {
+	case circuitOpen:
+		return CircuitOpen
+	case circuitHalfOpen:
+		return CircuitHalfOpen
+	default:
+		return CircuitClosed
 	}
 }
 

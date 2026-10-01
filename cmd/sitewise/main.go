@@ -27,6 +27,10 @@ import (
 	"sitewise/web"
 )
 
+// jevProbeInterval matches the staleness limit in httpapi health: four
+// missed probes make Jev unreachable.
+const jevProbeInterval = 30 * time.Second
+
 func main() {
 	os.Exit(run(os.Args[1:], os.Getenv, os.Stderr, os.Stdout))
 }
@@ -40,6 +44,9 @@ func run(args []string, getenv func(string) string, stderr, stdout io.Writer) in
 	}
 	if len(args) > 0 && args[0] == "serve" {
 		return runServe(args[1:], getenv, stderr, stdout)
+	}
+	if len(args) > 0 && args[0] == "restore-check" {
+		return runRestoreCheck(args[1:], getenv, stderr, stdout)
 	}
 	cfg, err := config.Load(getenv)
 	if err != nil {
@@ -112,6 +119,9 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	if err := client.Warm(ctx); err != nil {
 		logger.Printf("jev warm-up failed; filings will show grey until it answers: %v", err)
 	}
+	// Health judges Jev reachability from this probe, never from a call made
+	// for it. It also keeps the pooled connection warm between filings.
+	go client.Probe(ctx, jevProbeInterval)
 	srv, err := httpapi.New(httpapi.Options{
 		Store:          st,
 		Blobs:          blobs,

@@ -1,0 +1,104 @@
+{
+  "checked_at": "2026-10-01T10:34:17.5941387Z",
+  "facts": {
+    "orgs": [
+      {
+        "org_id": "0adc9731-5c60-46f4-9dbb-32c42150a46a",
+        "users": 1,
+        "memberships": 1,
+        "projects": 1,
+        "files": 8,
+        "documents": 8,
+        "decisions": 44,
+        "passages": 0,
+        "events": 7
+      },
+      {
+        "org_id": "509ecaa9-237a-4719-8780-a033638715ea",
+        "users": 0,
+        "memberships": 0,
+        "projects": 0,
+        "files": 0,
+        "documents": 0,
+        "decisions": 0,
+        "passages": 0,
+        "events": 0
+      },
+      {
+        "org_id": "75d63634-e6aa-4ed2-892f-5e05a32127d4",
+        "users": 0,
+        "memberships": 0,
+        "projects": 0,
+        "files": 0,
+        "documents": 0,
+        "decisions": 0,
+        "passages": 0,
+        "events": 0
+      },
+      {
+        "org_id": "9df92660-1b40-4246-acfa-950471610e7d",
+        "users": 1,
+        "memberships": 1,
+        "projects": 1,
+        "files": 7,
+        "documents": 7,
+        "decisions": 43,
+        "passages": 0,
+        "events": 7
+      },
+      {
+        "org_id": "b608d53d-9754-4faa-aabd-a4cde62681b8",
+        "users": 0,
+        "memberships": 0,
+        "projects": 0,
+        "files": 0,
+        "documents": 0,
+        "decisions": 0,
+        "passages": 0,
+        "events": 0
+      }
+    ],
+    "foreign_keys": 17,
+    "unvalidated_foreign_keys": 0,
+    "migrations": [
+      "001_init.sql",
+      "002_invite_role.sql",
+      "003_document_reason.sql",
+      "004_events_and_leases.sql",
+      "005_backlog_index.sql"
+    ],
+    "cross_org": [
+      {
+        "reference": "events.document_id",
+        "rows": 0
+      },
+      {
+        "reference": "documents.project_id",
+        "rows": 0
+      },
+      {
+        "reference": "documents.file_id",
+        "rows": 0
+      },
+      {
+        "reference": "decisions.document_id",
+        "rows": 0
+      },
+      {
+        "reference": "sessions.user_id",
+        "rows": 0
+      },
+      {
+        "reference": "memberships.user_id",
+        "rows": 0
+      }
+    ]
+  },
+  "blobs": {
+    "referenced": 8,
+    "verified": 8,
+    "digest": "70fb2140c09f96675e657a0fa1459c6fe57913b6b981267e66fb751ada198035",
+    "missing": [],
+    "corrupt": []
+  }
+}
