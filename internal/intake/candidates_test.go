@@ -376,3 +376,98 @@ func assertBudget(t *testing.T, name string, samples []int64, p50us, p90us int64
 		t.Fatalf("%s p50 %dus p90 %dus exceeds %d/%d", name, p50, p90, p50us, p90us)
 	}
 }
+
+func run(text string) identity.Run { return identity.Run{Text: text, Source: identity.Source{Page: 1}} }
+
+func TestCandidateRejectsImpossibleDates(t *testing.T) {
+	got := intake.Harvest("sheet.pdf", identity.Text{TextLayer: true, Runs: []identity.Run{
+		run("90/90/90"), run("31/02/2023x"), run("13/13/2023"), run("2023-14-01"), run("05.12.2023"),
+	}})
+	dates := displays(got, intake.FieldDate)
+	if len(dates) != 1 || dates[0] != "05.12.2023" {
+		t.Fatalf("only a calendar date is a date: %v", dates)
+	}
+}
+
+func TestCandidateCaptionIsNotATitle(t *testing.T) {
+	got := intake.Harvest("sheet.pdf", identity.Text{TextLayer: true, Runs: []identity.Run{
+		run("SHEET TITLE"), run("DRAWN"),
+		run("Drawing Title:"), run("Drawing No:"),
+		run("Title"), run("ARCHITECT"),
+	}})
+	if titles := displays(got, intake.FieldTitle); len(titles) != 0 {
+		t.Fatalf("title-block captions harvested as titles: %v", titles)
+	}
+}
+
+func TestCandidatePrelimInBodyTextIsNotARevision(t *testing.T) {
+	got := intake.Harvest("sheet.pdf", identity.Text{TextLayer: true, Runs: []identity.Run{
+		run("P23 CONDUIT TO PIT"), run("P2"),
+	}})
+	revs := displays(got, intake.FieldRevision)
+	if len(revs) != 1 || revs[0] != "P2" {
+		t.Fatalf("a P-token inside a note is not a revision; a standalone one may be: %v", revs)
+	}
+}
+
+func TestCandidateSplitsRevisionSuffixedFilenameNumber(t *testing.T) {
+	// A stem that is only <sheet>-<two digits> is the sheet at that revision.
+	got := intake.Harvest("S204-03.pdf", identity.Text{TextLayer: true})
+	if n := displays(got, intake.FieldNumber); len(n) != 1 || n[0] != "S204" {
+		t.Fatalf("the whole-stem form is split, not offered fused: %v", n)
+	}
+	if r := displays(got, intake.FieldRevision); len(r) != 1 || r[0] != "03" {
+		t.Fatalf("the suffix is the revision: %v", r)
+	}
+	c, _ := findCandidate(got, intake.FieldNumber, "S204")
+	if "S204-03.pdf"[c.Provenance.Start:c.Provenance.End] != "S204" {
+		t.Fatalf("provenance covers the literal: %+v", c.Provenance)
+	}
+
+	// Inside a longer name code offers both readings and does not choose.
+	got = intake.Harvest("S204-03 Shoring Plan.pdf", identity.Text{TextLayer: true})
+	for _, want := range []string{"S204", "S204-03"} {
+		if _, ok := findCandidate(got, intake.FieldNumber, want); !ok {
+			t.Fatalf("missing %s: %v", want, displays(got, intake.FieldNumber))
+		}
+	}
+	if number := fieldResult(t, intake.Decide(got), intake.FieldNumber); number.Settled {
+		t.Fatalf("code does not choose between S204 and S204-03: %+v", number)
+	}
+}
+
+func TestCandidateStandaloneShortSheetNumber(t *testing.T) {
+	got := intake.Harvest("M07 - MECHANICAL - ROOF PLAN - [B2].pdf", identity.Text{TextLayer: true, Runs: []identity.Run{
+		run("M07"), run("NOTE M07 IS SHOWN"),
+	}})
+	n := displays(got, intake.FieldNumber)
+	if len(n) != 2 || n[0] != "M07" || n[1] != "M07" {
+		t.Fatalf("a short sheet number counts from the filename's lead token and a standalone cell only: %v", n)
+	}
+}
+
+func TestCandidateShortFilenameIsNotATitle(t *testing.T) {
+	got := intake.Harvest("M07-ME~1.PDF", identity.Text{TextLayer: true})
+	if titles := displays(got, intake.FieldTitle); len(titles) != 0 {
+		t.Fatalf("an 8.3 short name is not a title: %v", titles)
+	}
+	if _, ok := findCandidate(got, intake.FieldNumber, "M07"); !ok {
+		t.Fatalf("its lead sheet number still counts: %v", displays(got, intake.FieldNumber))
+	}
+}
+
+func TestCandidateTitleNextToTheSheetNumberCell(t *testing.T) {
+	got := intake.Harvest("sheet.pdf", identity.Text{TextLayer: true, Runs: []identity.Run{
+		run("GENERAL NOTE ONE APPLIES TO ALL WORK SHOWN ON THIS DRAWING AND SHALL BE READ WITH THE SPECIFICATION"),
+		run("PLANT ROOM - MECHANICAL LAYOUT"),
+		run("2024-03-01"),
+		run("M-207"),
+		run("DRAWN"),
+		run("1:100"),
+		run("FAR AWAY TEXT ONE"), run("FAR AWAY TEXT TWO"), run("FAR AWAY TEXT THREE"), run("FAR AWAY TEXT FOUR"),
+	}})
+	titles := displays(got, intake.FieldTitle)
+	if len(titles) != 1 || titles[0] != "PLANT ROOM - MECHANICAL LAYOUT" {
+		t.Fatalf("a title-like cell beside the sheet number is a title candidate; notes and distant cells are not: %v", titles)
+	}
+}

@@ -224,7 +224,7 @@ func recorded(w http.ResponseWriter, r *http.Request) {
 			Filename string `json:"filename"`
 		} `json:"state"`
 		Questions map[string]struct {
-			Criteria map[string]string `json:"criteria"`
+			Criteria map[string]json.RawMessage `json:"criteria"`
 		} `json:"questions"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&call); err != nil {

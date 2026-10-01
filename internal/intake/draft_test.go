@@ -2,8 +2,10 @@ package intake_test
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -105,7 +107,11 @@ func TestDraftOffersSameNumberPriors(t *testing.T) {
 		t.Fatal("a same-number prior asks supersession")
 	}
 	q := call.Questions[intake.FieldSupersedes]
-	criteria, _ := q.Criteria.(map[string]string)
+	raw, _ := json.Marshal(q.Criteria)
+	var criteria map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &criteria); err != nil {
+		t.Fatal(err)
+	}
 	if _, ok := criteria["prior"]; !ok || len(criteria) != 2 {
 		t.Fatalf("%+v", q.Criteria)
 	}
@@ -138,5 +144,36 @@ func TestServiceObservesEachPath(t *testing.T) {
 		if seen[path] != 1 {
 			t.Fatalf("%s observed %d times: %v", path, seen[path], seen)
 		}
+	}
+}
+
+func TestNumberQuestionStatesTheRoleAndWhereEachOptionWasFound(t *testing.T) {
+	name, text := ambiguousNumber()
+	d := intake.NewDraft(draftCatalog(t), name, text, intake.Harvest(name, text), nil)
+	d.Plan(nil, "self")
+	call, ok := d.Call()
+	if !ok || call.QuestionVersion != "intake-2" {
+		t.Fatalf("version %q", call.QuestionVersion)
+	}
+	raw, err := json.Marshal(call.Questions[intake.FieldNumber])
+	if err != nil {
+		t.Fatal(err)
+	}
+	var q struct {
+		Instructions map[string]string         `json:"instructions"`
+		Criteria     map[string]map[string]any `json:"criteria"`
+	}
+	if err := json.Unmarshal(raw, &q); err != nil {
+		t.Fatalf("instructions and options are structured: %v\n%s", err, raw)
+	}
+	if q.Instructions["question"] == "" || q.Instructions["not_for"] == "" {
+		t.Fatalf("%s", raw)
+	}
+	a100 := q.Criteria["A-100"]
+	if a100["value"] != "A-100" || !strings.Contains(a100["found"].(string), "filename") {
+		t.Fatalf("an option says its literal and where code found it: %s", raw)
+	}
+	if q.Criteria["none"]["what"] == nil {
+		t.Fatalf("none says what it means: %s", raw)
 	}
 }

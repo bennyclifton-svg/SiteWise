@@ -11,18 +11,48 @@ import (
 
 // choice is one option offered to Jev. ID is the answer token, Value is the
 // literal stored when the option is applied, and Source is where it was found.
+// Describe, when set, is the option's description in the request.
 type choice struct {
-	ID     string `json:"id"`
-	Value  string `json:"value"`
-	Source string `json:"source"`
-	Label  string `json:"-"`
+	ID       string `json:"id"`
+	Value    string `json:"value"`
+	Source   string `json:"source"`
+	Label    string `json:"-"`
+	Describe any    `json:"-"`
 }
 
 type builtQuestion struct {
 	Field        string
-	Instructions string
+	Instructions any
 	Options      []choice
 }
+
+// roleQuestion is a structured instruction: the role the chosen value plays
+// and what it is not, so similar candidates are told apart.
+// https://docs.typesafe.ai/primitives/advanced
+type roleQuestion struct {
+	Question string `json:"question"`
+	NotFor   string `json:"not_for"`
+}
+
+// Identity questions name the role the value plays in a drawing register and
+// pick among pre-found spans only. Code splits revisions from numbers and
+// orders revisions; Jev is not asked to.
+// https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook
+var (
+	numberQuestion = roleQuestion{
+		Question: "Which candidate is this sheet's own drawing or document number, as a drawing register or transmittal would list it?",
+		NotFor:   "A project or job number shared by every sheet of the project, a referenced standard, another sheet's number, or a number with the revision appended when the plain number is also a candidate.",
+	}
+	revisionQuestion = roleQuestion{
+		Question: "Which candidate is the revision or issue of this document?",
+		NotFor:   "A pit, pump, page or grid reference, or any value that is not a revision.",
+	}
+	titleQuestion = roleQuestion{
+		Question: "Which candidate is this sheet's or document's own title, as a drawing register would list it?",
+		NotFor:   "A project, site or company name, a caption such as Drawing Title, a general note, or a filename fragment.",
+	}
+	noneOption = map[string]string{"what": "None of these is the requested value."}
+)
 
 type filingState struct {
 	Filename   string   `json:"filename"`
@@ -103,7 +133,7 @@ func optionID(normalized string) string {
 	}
 }
 
-func identityQuestion(field, instructions string, harvested []Candidate) (builtQuestion, bool) {
+func identityQuestion(field string, instructions any, harvested []Candidate) (builtQuestion, bool) {
 	opts := identityOptions(harvested, field)
 	if len(opts) < 2 {
 		return builtQuestion{}, false
@@ -128,14 +158,42 @@ func identityOptions(harvested []Candidate, field string) []choice {
 	for _, key := range order {
 		chosen := prefer(groups[key])
 		opts = append(opts, choice{
-			ID:     optionID(key),
-			Value:  chosen.Display,
-			Source: chosen.Provenance.Origin,
-			Label:  chosen.Display,
+			ID:       optionID(key),
+			Value:    chosen.Display,
+			Source:   chosen.Provenance.Origin,
+			Label:    chosen.Display,
+			Describe: map[string]string{"value": chosen.Display, "found": foundIn(groups[key])},
 		})
 	}
-	opts = append(opts, choice{ID: choiceNone, Label: "none", Source: "choice"})
+	opts = append(opts, choice{ID: choiceNone, Label: "none", Source: "choice", Describe: noneOption})
 	return opts
+}
+
+// foundIn says where code found a value, in the order filename, labelled
+// cell, other page text. It is provenance, not a judgement.
+func foundIn(group []Candidate) string {
+	var file, labeled, text bool
+	for _, c := range group {
+		switch {
+		case c.Provenance.Origin == OriginFilename:
+			file = true
+		case c.Provenance.Labeled:
+			labeled = true
+		default:
+			text = true
+		}
+	}
+	var parts []string
+	if file {
+		parts = append(parts, "filename")
+	}
+	if labeled {
+		parts = append(parts, "next to a label on the page")
+	}
+	if text {
+		parts = append(parts, "page text")
+	}
+	return strings.Join(parts, "; ")
 }
 
 func catalogQuestion(field, instructions string, ids, labels []string) (builtQuestion, bool) {
@@ -174,8 +232,12 @@ func supersessionQuestion(priors []store.NumberedDocument) (builtQuestion, bool)
 func callFrom(state filingState, questions []builtQuestion) jev.Call {
 	out := make(map[string]jev.Question, len(questions))
 	for _, q := range questions {
-		criteria := make(map[string]string, len(q.Options))
+		criteria := make(map[string]any, len(q.Options))
 		for _, opt := range q.Options {
+			if opt.Describe != nil {
+				criteria[opt.ID] = opt.Describe
+				continue
+			}
 			label := opt.Label
 			if label == "" {
 				label = opt.ID

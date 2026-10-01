@@ -186,17 +186,17 @@ func (d *Draft) open() []builtQuestion {
 		}
 	}
 	if _, ok := d.by[FieldNumber]; !ok {
-		if q, ok := identityQuestion(FieldNumber, "Which candidate is this document's number? Choose none if none of them is. Do not invent a number.", d.harvested); ok {
+		if q, ok := identityQuestion(FieldNumber, numberQuestion, d.harvested); ok {
 			out = append(out, q)
 		}
 	}
 	if _, ok := d.by[FieldRevision]; !ok {
-		if q, ok := identityQuestion(FieldRevision, "Which candidate is this document's revision? Choose none if none of them is. Do not invent a revision.", d.harvested); ok {
+		if q, ok := identityQuestion(FieldRevision, revisionQuestion, d.harvested); ok {
 			out = append(out, q)
 		}
 	}
 	if _, ok := d.by[FieldTitle]; !ok {
-		if q, ok := identityQuestion(FieldTitle, "Which candidate is this document's title? Choose none if none of them is. Do not invent a title.", d.harvested); ok {
+		if q, ok := identityQuestion(FieldTitle, titleQuestion, d.harvested); ok {
 			out = append(out, q)
 		}
 	}

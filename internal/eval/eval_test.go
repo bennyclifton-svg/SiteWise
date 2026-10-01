@@ -335,7 +335,7 @@ func pickNumber(t *testing.T, confidence float64) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var call struct {
 			Questions map[string]struct {
-				Criteria map[string]string `json:"criteria"`
+				Criteria map[string]json.RawMessage `json:"criteria"`
 			} `json:"questions"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&call); err != nil {
@@ -344,7 +344,8 @@ func pickNumber(t *testing.T, confidence float64) http.Handler {
 		}
 		answers := map[string]any{}
 		for id, q := range call.Questions {
-			for opt, label := range q.Criteria {
+			for opt, raw := range q.Criteria {
+				label := optionValue(raw)
 				if id == intake.FieldNumber && strings.HasPrefix(label, "E-") || id != intake.FieldNumber && opt == "none" {
 					probs := map[string]float64{}
 					for o := range q.Criteria {
@@ -524,4 +525,18 @@ func TestSupersessionTruthIsTheLatestEarlierRevision(t *testing.T) {
 	if _, ok := supersessionTruth(noRev, []filedPrior{prior("p1", "E-01", "C1")}); ok {
 		t.Fatal("an unlabeled revision leaves supersession unknown")
 	}
+}
+
+// optionValue is an option's literal: the description string, or its value
+// field when the description is structured.
+func optionValue(raw json.RawMessage) string {
+	var s string
+	if json.Unmarshal(raw, &s) == nil {
+		return s
+	}
+	var obj struct {
+		Value string `json:"value"`
+	}
+	_ = json.Unmarshal(raw, &obj)
+	return obj.Value
 }

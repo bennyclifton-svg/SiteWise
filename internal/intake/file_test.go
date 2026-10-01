@@ -40,7 +40,7 @@ func TestThresholdFileDisablesAction(t *testing.T) {
 func TestPartialThresholdRejected(t *testing.T) {
 	dir := t.TempDir()
 	body := []byte(`{
-		"question_version": "intake-1",
+		"question_version": "intake-2",
 		"reconciliation": "partial cut-off",
 		"questions": {"number": [{"green": 0.9, "amber": null, "options": null}]}
 	}`)
@@ -82,7 +82,7 @@ func TestBandStaysWithQuestionShape(t *testing.T) {
 func TestOverlappingShapesRejected(t *testing.T) {
 	dir := t.TempDir()
 	body := []byte(`{
-		"question_version": "intake-1",
+		"question_version": "intake-2",
 		"reconciliation": "overlapping shapes",
 		"questions": {"number": [
 			{"options": 3, "max_options": 4, "green": 0.9, "amber": 0.6},
@@ -806,7 +806,7 @@ func findJob(t *testing.T, st *store.Store, org, docID, kind string) (store.Job,
 
 type recordedCall struct {
 	Questions map[string]struct {
-		Criteria map[string]string `json:"criteria"`
+		Criteria map[string]json.RawMessage `json:"criteria"`
 	} `json:"questions"`
 }
 
@@ -829,7 +829,7 @@ func questionKeys(t *testing.T, body []byte) map[string]int {
 	return out
 }
 
-func onlyPrior(t *testing.T, criteria map[string]string) string {
+func onlyPrior(t *testing.T, criteria map[string]json.RawMessage) string {
 	t.Helper()
 	var id string
 	for key := range criteria {

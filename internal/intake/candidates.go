@@ -54,6 +54,11 @@ func Harvest(filename string, text identity.Text) []Candidate {
 	return append(out, harvestRuns(text)...)
 }
 
+// titleWindow is how many runs either side of a standalone sheet-number cell
+// are read as its title-block neighbours. Title blocks often list values
+// apart from their captions, so a title has no label to follow.
+const titleWindow = 2
+
 const (
 	// Dates stay ahead of numbers so 12/03/2024 is not a document number.
 	dateRE = `\d{4}-\d{2}-\d{2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4}`
@@ -118,7 +123,24 @@ func harvestFilename(name string) []Candidate {
 		if fullMatch(datePattern, display) || fullMatch(prelimPattern, display) {
 			continue
 		}
-		add(FieldNumber, display, loc[0], loc[1], span{loc[0], loc[1]})
+		// S204-03 may be sheet S204 at revision 03. A stem that is only that
+		// is the sheet-and-revision naming convention, so code splits it.
+		// Inside a longer name both readings are offered and code does not
+		// choose; Jev reads the fused literal too literally to be asked.
+		m := suffixedSheet.FindStringSubmatchIndex(display)
+		if m == nil || loc[0] != 0 || loc[1] != len(stem) {
+			add(FieldNumber, display, loc[0], loc[1], span{loc[0], loc[1]})
+		}
+		if m != nil {
+			add(FieldNumber, display[m[2]:m[3]], loc[0]+m[2], loc[0]+m[3], span{loc[0], loc[1]})
+			add(FieldRevision, display[m[4]:m[5]], loc[0]+m[4], loc[0]+m[5], span{loc[0], loc[1]})
+		}
+	}
+	if end := leadToken(stem); end > 0 && isShortSheet(stem[:end]) && !overlaps(covered, 0, end) {
+		add(FieldNumber, stem[:end], 0, end, span{0, end})
+	}
+	if shortName(stem) {
+		return out
 	}
 	if display, start, end, ok := titleFromGaps(stem, covered); ok {
 		c, made := newCandidate(FieldTitle, display, filenameProv(base+start, base+end))
@@ -147,7 +169,40 @@ func harvestRuns(text identity.Text) []Candidate {
 		}
 		out = mergeCandidate(out, c)
 	}
+	return appendNeighbourTitles(out, text)
+}
+
+// appendNeighbourTitles offers title-like cells near a cell that holds only
+// a sheet number. They are unlabeled candidates; Jev chooses among them.
+func appendNeighbourTitles(out []Candidate, text identity.Text) []Candidate {
+	seen := map[int]bool{}
+	for i, run := range text.Runs {
+		v := strings.TrimSpace(run.Text)
+		if v == "" || strings.ContainsAny(v, " \t") || !(isNumber(v) || isShortSheet(v)) {
+			continue
+		}
+		for j := i - titleWindow; j <= i+titleWindow; j++ {
+			if j < 0 || j >= len(text.Runs) || j == i || seen[j] {
+				continue
+			}
+			display := strings.TrimSpace(text.Runs[j].Text)
+			if !cellTitle(display) {
+				continue
+			}
+			start := strings.Index(text.Runs[j].Text, display)
+			if c, ok := newCandidate(FieldTitle, display, textProv(text.Runs[j].Source, j, start, start+len(display), false)); ok {
+				out = append(out, c)
+				seen[j] = true
+			}
+		}
+	}
 	return out
+}
+
+// cellTitle is a short multi-word cell that reads as a title, not a note.
+func cellTitle(s string) bool {
+	words := strings.Fields(s)
+	return len(words) >= 2 && len(words) <= 12 && len(s) <= 120 && looksLikeTitle(s)
 }
 
 type word struct{ start, end int }
@@ -186,6 +241,20 @@ func appendRun(out []Candidate, run identity.Run, index int) ([]Candidate, strin
 		}
 		tok := tokens[i]
 		display := text[tok.start:tok.end]
+		standalone := len(tokens) == 1
+		if standalone && isShortSheet(display) {
+			if c, ok := newCandidate(FieldNumber, display, textProv(run.Source, index, tok.start, tok.end, false)); ok {
+				out = append(out, c)
+			}
+			i++
+			continue
+		}
+		// A P-number inside a note (a pit, a pump) is not a revision unless
+		// the note is about issue or revision.
+		if isPrelim(display) && !standalone && !revisionContext(text) {
+			i++
+			continue
+		}
 		if kind := kindOf(display); kind != "" {
 			if c, ok := newCandidate(kind, display, textProv(run.Source, index, tok.start, tok.end, false)); ok {
 				out = append(out, c)
@@ -362,8 +431,7 @@ func looksLikeTitle(s string) bool {
 	if len(s) < 2 {
 		return false
 	}
-	switch strings.ToLower(strings.Trim(s, ".:")) {
-	case "rev", "revision", "date", "drawing", "no", "number", "sheet", "title", "project":
+	if isCaption(s) {
 		return false
 	}
 	if isDate(s) || isNumber(s) {
@@ -475,7 +543,7 @@ func kindOf(s string) string {
 
 func isDate(s string) bool {
 	if len(s) == 10 && s[4] == '-' && s[7] == '-' && digitsOnly(s[:4]) && digitsOnly(s[5:7]) && digitsOnly(s[8:]) {
-		return true
+		return calendar(atoiOr(s[8:]), atoiOr(s[5:7]))
 	}
 	sep := byte(0)
 	parts := 0
@@ -504,8 +572,87 @@ func isDate(s string) bool {
 		}
 		run++
 	}
-	return parts == 2 && first >= 1 && first <= 2 && run >= 2 && run <= 4
+	if parts != 2 || first < 1 || first > 2 || run < 2 || run > 4 {
+		return false
+	}
+	// Day first, as Australian documents write it.
+	fields := strings.FieldsFunc(s, func(r rune) bool { return r == rune(sep) })
+	return calendar(atoiOr(fields[0]), atoiOr(fields[1]))
 }
+
+func calendar(day, month int) bool {
+	return day >= 1 && day <= 31 && month >= 1 && month <= 12
+}
+
+func atoiOr(s string) int {
+	n, ok := atoi(s)
+	if !ok {
+		return -1
+	}
+	return n
+}
+
+// isCaption is title-block caption text: a label, not a value.
+func isCaption(s string) bool {
+	s = strings.TrimSpace(s)
+	if strings.HasSuffix(s, ":") {
+		return true
+	}
+	return captions[strings.Join(strings.Fields(strings.ToLower(strings.Trim(s, ".:"))), " ")]
+}
+
+var captions = map[string]bool{
+	"rev": true, "revision": true, "date": true, "drawing": true, "no": true, "number": true,
+	"sheet": true, "title": true, "project": true, "drawn": true, "drawn by": true,
+	"checked": true, "checked by": true, "designed": true, "designed by": true,
+	"approved": true, "approved by": true, "architect": true, "client": true,
+	"scale": true, "job": true, "job no": true, "project no": true, "project title": true,
+	"drawing no": true, "drawing number": true, "drawing title": true, "sheet title": true,
+	"sheet no": true, "status": true, "issue": true, "amendment": true, "amendments": true,
+	"north": true, "notes": true, "consultant": true, "engineer": true, "description": true,
+}
+
+// revisionContext reports whether a run talks about issue or revision.
+func revisionContext(s string) bool {
+	l := strings.ToLower(s)
+	for _, w := range []string{"issue", "rev", "amend", "status", "prelim"} {
+		if strings.Contains(l, w) {
+			return true
+		}
+	}
+	return false
+}
+
+// isShortSheet is a one- or two-letter sheet id with two digits, such as
+// E01. It is only a number candidate where it stands alone.
+func isShortSheet(s string) bool {
+	if len(s) < 3 || len(s) > 4 || isPrelim(s) {
+		return false
+	}
+	letters, digits, ok := trailingDigits(s)
+	return ok && len(letters) <= 2 && len(digits) == 2 && strings.ToUpper(letters) == letters
+}
+
+// leadToken is the end of the first filename token, before a space, hyphen
+// or underscore.
+func leadToken(stem string) int {
+	for i := 0; i < len(stem); i++ {
+		switch stem[i] {
+		case ' ', '-', '_':
+			return i
+		}
+	}
+	return len(stem)
+}
+
+// shortName is a Windows 8.3 alias such as E01-EL~1: truncated, so its words
+// are not a title.
+func shortName(stem string) bool {
+	i := strings.IndexByte(stem, '~')
+	return i >= 0 && i+1 < len(stem) && stem[i+1] >= '0' && stem[i+1] <= '9'
+}
+
+var suffixedSheet = regexp.MustCompile(`^([A-Za-z]{1,3}\d{3,4})-(\d{2})$`)
 
 func isNumber(s string) bool {
 	if s == "" || isDate(s) || isPrelim(s) {

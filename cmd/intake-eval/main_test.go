@@ -102,13 +102,14 @@ func recordFake(t *testing.T, w workspace) {
 	fake := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		var call struct {
 			Questions map[string]struct {
-				Criteria map[string]string `json:"criteria"`
+				Criteria map[string]json.RawMessage `json:"criteria"`
 			} `json:"questions"`
 		}
 		json.NewDecoder(r.Body).Decode(&call)
 		answers := map[string]any{}
 		for id, q := range call.Questions {
-			for opt, label := range q.Criteria {
+			for opt, raw := range q.Criteria {
+				label := optionValue(raw)
 				if id == intake.FieldNumber && strings.HasPrefix(label, "E-") {
 					probs := map[string]float64{}
 					for o := range q.Criteria {
@@ -202,4 +203,18 @@ func TestEvalWorkflowFailsClosedThenAcceptsAReviewedBaseline(t *testing.T) {
 	if code, out := evalRun(t, w, "-replay"); code == 0 {
 		t.Fatalf("a stale recording must fail replay: %d\n%s", code, out)
 	}
+}
+
+// optionValue is an option's literal: the description string, or its value
+// field when the description is structured.
+func optionValue(raw json.RawMessage) string {
+	var s string
+	if json.Unmarshal(raw, &s) == nil {
+		return s
+	}
+	var obj struct {
+		Value string `json:"value"`
+	}
+	_ = json.Unmarshal(raw, &obj)
+	return obj.Value
 }

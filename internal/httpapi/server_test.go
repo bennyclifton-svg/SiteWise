@@ -330,7 +330,7 @@ func newApp(t *testing.T) *app {
 func recordedJev(w http.ResponseWriter, r *http.Request) {
 	var call struct {
 		Questions map[string]struct {
-			Criteria map[string]string `json:"criteria"`
+			Criteria map[string]json.RawMessage `json:"criteria"`
 		} `json:"questions"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&call); err != nil {

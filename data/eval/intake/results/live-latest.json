@@ -2,15 +2,15 @@
   "schema_version": 1,
   "mode": "live",
   "model": "jev-1.13.0",
-  "question_version": "intake-1",
-  "generated_at": "2026-10-01T09:58:40.925451Z",
+  "question_version": "intake-2",
+  "generated_at": "2026-10-01T10:20:48.1983072Z",
   "inputs": {
     "key:hale-design-docs.yaml": "5586ea53b5f0306a957915f12c61d37a45218d6b8c5ec2de83fdc9e3a7af544c",
     "key:newham-design-docs.yaml": "25ff60caa7d01501febfee9319c84a695c6ca36688ee3d706923fab46b74cfa3",
     "key:petersham-design-docs.yaml": "5fb17c9e3d6b7a79bd385bafafa5188f138cf1c9fdd95ca54abc5a5f79e67b88",
-    "manifest": "45f39479613284697a15492dc6f6ac1998e767f6ff3471f32a04ae5885bc660e",
-    "recordings": "016e29320865f2dc8d48bad6d75acb192b97842453733d631b237e742200e958",
-    "thresholds": "9f3be078ac7540090685e4d43ec0d6c9aeec8957df2d16490ac9653a3475470f"
+    "manifest": "b00fa16eb11200b8ebbfc34b29821c8ea841d290330981346efb53cca3811919",
+    "recordings": "58cbb763c3803f7f362e54df01b6b9c4fce26ca395353dd42af381db2a434571",
+    "thresholds": "4b3617bc30aaadc1b87a0c8481a4ae7847d61187e9d5b8b9156cd19a5f731640"
   },
   "cases": {
     "total": 184,
@@ -39,41 +39,41 @@
       "authoritative": {
         "date": {
           "scored": 56,
-          "applied": 11,
+          "applied": 10,
           "correct": 7,
           "amber": 0,
           "grey": 0,
-          "false_confident": 4,
-          "coverage": 0.19642857142857142,
-          "accuracy": 0.6363636363636364,
-          "accuracy_low": 0.39400679042815945,
-          "accuracy_high": 0.8248750516814239,
+          "false_confident": 3,
+          "coverage": 0.17857142857142858,
+          "accuracy": 0.7,
+          "accuracy_low": 0.4416781333357615,
+          "accuracy_high": 0.8731331471394461,
           "amber_rate": 0
         },
         "number": {
           "scored": 92,
-          "applied": 7,
-          "correct": 0,
+          "applied": 3,
+          "correct": 1,
           "amber": 0,
           "grey": 0,
-          "false_confident": 7,
-          "coverage": 0.07608695652173914,
-          "accuracy": 0,
-          "accuracy_low": 0,
-          "accuracy_high": 0.2787984782647891,
+          "false_confident": 2,
+          "coverage": 0.03260869565217391,
+          "accuracy": 0.3333333333333333,
+          "accuracy_low": 0.07825661547924025,
+          "accuracy_high": 0.7464900338957624,
           "amber_rate": 0
         },
         "revision": {
           "scored": 92,
-          "applied": 11,
-          "correct": 5,
+          "applied": 30,
+          "correct": 29,
           "amber": 0,
           "grey": 0,
-          "false_confident": 6,
-          "coverage": 0.11956521739130435,
-          "accuracy": 0.45454545454545453,
-          "accuracy_low": 0.24209040759667674,
-          "accuracy_high": 0.6849489783667957,
+          "false_confident": 1,
+          "coverage": 0.32608695652173914,
+          "accuracy": 0.9666666666666667,
+          "accuracy_low": 0.8635824059497517,
+          "accuracy_high": 0.9925289680249216,
           "amber_rate": 0
         },
         "supersedes": {
@@ -91,15 +91,15 @@
         },
         "title": {
           "scored": 98,
-          "applied": 10,
-          "correct": 3,
+          "applied": 8,
+          "correct": 2,
           "amber": 0,
           "grey": 0,
-          "false_confident": 7,
-          "coverage": 0.10204081632653061,
-          "accuracy": 0.3,
-          "accuracy_low": 0.12686685286055388,
-          "accuracy_high": 0.5583218666642384,
+          "false_confident": 6,
+          "coverage": 0.08163265306122448,
+          "accuracy": 0.25,
+          "accuracy_low": 0.0865070033792796,
+          "accuracy_high": 0.5398716011915112,
           "amber_rate": 0
         }
       },
@@ -175,15 +175,15 @@
       "authoritative": {
         "date": {
           "scored": 39,
-          "applied": 19,
-          "correct": 18,
+          "applied": 20,
+          "correct": 19,
           "amber": 0,
           "grey": 0,
           "false_confident": 1,
-          "coverage": 0.48717948717948717,
-          "accuracy": 0.9473684210526315,
-          "accuracy_low": 0.7950219783619278,
-          "accuracy_high": 0.9881707066183946,
+          "coverage": 0.5128205128205128,
+          "accuracy": 0.95,
+          "accuracy_low": 0.8039746756368371,
+          "accuracy_high": 0.9887664580490457,
           "amber_rate": 0
         },
         "number": {
@@ -201,15 +201,15 @@
         },
         "revision": {
           "scored": 35,
-          "applied": 16,
+          "applied": 14,
           "correct": 14,
           "amber": 0,
           "grey": 0,
-          "false_confident": 2,
-          "coverage": 0.45714285714285713,
-          "accuracy": 0.875,
-          "accuracy_low": 0.6837666133634829,
-          "accuracy_high": 0.9577379286223212,
+          "false_confident": 0,
+          "coverage": 0.4,
+          "accuracy": 1,
+          "accuracy_low": 0.8380210133769103,
+          "accuracy_high": 0.9999999999999998,
           "amber_rate": 0
         },
         "supersedes": {
@@ -227,15 +227,15 @@
         },
         "title": {
           "scored": 45,
-          "applied": 25,
-          "correct": 9,
+          "applied": 21,
+          "correct": 7,
           "amber": 0,
           "grey": 0,
-          "false_confident": 16,
-          "coverage": 0.5555555555555556,
-          "accuracy": 0.36,
-          "accuracy_low": 0.22304184752371925,
-          "accuracy_high": 0.5243055254754749,
+          "false_confident": 14,
+          "coverage": 0.4666666666666667,
+          "accuracy": 0.3333333333333333,
+          "accuracy_low": 0.1919573166303937,
+          "accuracy_high": 0.5127591003986105,
           "amber_rate": 0
         }
       },
@@ -351,12 +351,12 @@
     }
   },
   "jev": {
-    "calls": 127,
+    "calls": 128,
     "errors": 0,
     "grey_filings": 0,
     "replay_misses": 0,
-    "recorded_p50_us": 240107,
-    "recorded_p90_us": 372054,
+    "recorded_p50_us": 242843,
+    "recorded_p90_us": 284072,
     "recorded_over_interactive_deadline": 0,
     "interactive_deadline_us": 1200000
   },
@@ -367,7 +367,7 @@
         "min_options": 3,
         "max_options": 4
       },
-      "n": 35,
+      "n": 33,
       "green": null,
       "amber": null,
       "reason": "no cut-off meets the green bound"
@@ -378,10 +378,10 @@
         "min_options": 5,
         "max_options": 8
       },
-      "n": 5,
+      "n": 4,
       "green": null,
       "amber": null,
-      "reason": "5 calibration answers, need 30"
+      "reason": "4 calibration answers, need 30"
     },
     {
       "field": "number",
@@ -389,10 +389,21 @@
         "min_options": 9,
         "max_options": 16
       },
-      "n": 1,
+      "n": 6,
       "green": null,
       "amber": null,
-      "reason": "1 calibration answers, need 30"
+      "reason": "6 calibration answers, need 30"
+    },
+    {
+      "field": "number",
+      "shape": {
+        "min_options": 17,
+        "max_options": 32
+      },
+      "n": 2,
+      "green": null,
+      "amber": null,
+      "reason": "2 calibration answers, need 30"
     },
     {
       "field": "number",
@@ -411,10 +422,21 @@
         "min_options": 3,
         "max_options": 4
       },
-      "n": 5,
+      "n": 9,
       "green": null,
       "amber": null,
-      "reason": "5 calibration answers, need 30"
+      "reason": "9 calibration answers, need 30"
+    },
+    {
+      "field": "revision",
+      "shape": {
+        "min_options": 5,
+        "max_options": 8
+      },
+      "n": 2,
+      "green": null,
+      "amber": null,
+      "reason": "2 calibration answers, need 30"
     },
     {
       "field": "supersedes",
@@ -444,16 +466,38 @@
         "min_options": 3,
         "max_options": 4
       },
-      "n": 26,
+      "n": 3,
       "green": null,
       "amber": null,
-      "reason": "26 calibration answers, need 30"
+      "reason": "3 calibration answers, need 30"
     },
     {
       "field": "title",
       "shape": {
         "min_options": 5,
         "max_options": 8
+      },
+      "n": 24,
+      "green": null,
+      "amber": null,
+      "reason": "24 calibration answers, need 30"
+    },
+    {
+      "field": "title",
+      "shape": {
+        "min_options": 9,
+        "max_options": 16
+      },
+      "n": 4,
+      "green": null,
+      "amber": null,
+      "reason": "4 calibration answers, need 30"
+    },
+    {
+      "field": "title",
+      "shape": {
+        "min_options": 33,
+        "max_options": 64
       },
       "n": 1,
       "green": null,

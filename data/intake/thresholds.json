@@ -1,10 +1,10 @@
 {
-  "question_version": "intake-1",
+  "question_version": "intake-2",
   "reconciliation": "Fitted by cmd/intake-eval -fit on the calibration split only, per question and power-of-two option shape. A question or shape with no entry is unknown and disables automatic Jev action. No probability from the TypeSafe docs is a default. Labels are unreviewed register/transmittal transcriptions; see fit.results for sample sizes.",
   "fit": {
     "calibration_cases": 131,
-    "fitted_at": "2026-10-01T09:59:17.1801422Z",
-    "manifest_sha256": "45f39479613284697a15492dc6f6ac1998e767f6ff3471f32a04ae5885bc660e",
+    "fitted_at": "2026-10-01T10:21:08.6065793Z",
+    "manifest_sha256": "b00fa16eb11200b8ebbfc34b29821c8ea841d290330981346efb53cca3811919",
     "policy": {
       "number": {
         "z": 1.645,
@@ -39,7 +39,7 @@
         "max_errors": -1
       }
     },
-    "recordings_digest": "8be07975b6cd1a33a190b45ad3fdf445d99d5bdcd3b30df15fba835a377c301d",
+    "recordings_digest": "1f89f5b81fefe0037ef2455f821761f264b03a5eb0376426ea67cc1f48bec387",
     "results": [
       {
         "field": "number",
@@ -47,7 +47,7 @@
           "min_options": 3,
           "max_options": 4
         },
-        "n": 35,
+        "n": 33,
         "green": null,
         "amber": null,
         "reason": "no cut-off meets the green bound"
@@ -58,10 +58,10 @@
           "min_options": 5,
           "max_options": 8
         },
-        "n": 5,
+        "n": 4,
         "green": null,
         "amber": null,
-        "reason": "5 calibration answers, need 30"
+        "reason": "4 calibration answers, need 30"
       },
       {
         "field": "number",
@@ -69,10 +69,21 @@
           "min_options": 9,
           "max_options": 16
         },
-        "n": 1,
+        "n": 6,
         "green": null,
         "amber": null,
-        "reason": "1 calibration answers, need 30"
+        "reason": "6 calibration answers, need 30"
+      },
+      {
+        "field": "number",
+        "shape": {
+          "min_options": 17,
+          "max_options": 32
+        },
+        "n": 2,
+        "green": null,
+        "amber": null,
+        "reason": "2 calibration answers, need 30"
       },
       {
         "field": "number",
@@ -91,10 +102,21 @@
           "min_options": 3,
           "max_options": 4
         },
-        "n": 5,
+        "n": 9,
         "green": null,
         "amber": null,
-        "reason": "5 calibration answers, need 30"
+        "reason": "9 calibration answers, need 30"
+      },
+      {
+        "field": "revision",
+        "shape": {
+          "min_options": 5,
+          "max_options": 8
+        },
+        "n": 2,
+        "green": null,
+        "amber": null,
+        "reason": "2 calibration answers, need 30"
       },
       {
         "field": "supersedes",
@@ -124,16 +146,38 @@
           "min_options": 3,
           "max_options": 4
         },
-        "n": 26,
+        "n": 3,
         "green": null,
         "amber": null,
-        "reason": "26 calibration answers, need 30"
+        "reason": "3 calibration answers, need 30"
       },
       {
         "field": "title",
         "shape": {
           "min_options": 5,
           "max_options": 8
+        },
+        "n": 24,
+        "green": null,
+        "amber": null,
+        "reason": "24 calibration answers, need 30"
+      },
+      {
+        "field": "title",
+        "shape": {
+          "min_options": 9,
+          "max_options": 16
+        },
+        "n": 4,
+        "green": null,
+        "amber": null,
+        "reason": "4 calibration answers, need 30"
+      },
+      {
+        "field": "title",
+        "shape": {
+          "min_options": 33,
+          "max_options": 64
         },
         "n": 1,
         "green": null,
