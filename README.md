@@ -4,6 +4,17 @@ A fast construction-project app built on the physical building (systems, the
 rules that govern them, and the interfaces between them), with Jev as its only
 AI.
 
+## Launch
+
+Paste into PowerShell:
+
+```powershell
+& "D:\AI Projects\sitewise\tools\dev.ps1"
+```
+
+Open the sign-in link it prints (first run only). Then use
+http://127.0.0.1:8080. Press Ctrl+C to stop.
+
 - Design: [docs/design/2026-09-29-foundation-design.md](docs/design/2026-09-29-foundation-design.md)
 - Knowledge model: [knowledge/SCHEMA.md](knowledge/SCHEMA.md)
 - Agent rules: [AGENTS.md](AGENTS.md)
