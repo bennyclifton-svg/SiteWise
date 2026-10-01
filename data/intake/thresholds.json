@@ -1,13 +1,155 @@
 {
   "question_version": "intake-1",
-  "reconciliation": "Green and amber cut-offs are unknown until the calibration run fits them per question, version and option shape (cmd/intake-eval -fit). Unknown thresholds disable automatic Jev action. No example probability from the TypeSafe docs is a default. Supersession is its own question and is not copied from another field.",
+  "reconciliation": "Fitted by cmd/intake-eval -fit on the calibration split only, per question and power-of-two option shape. A question or shape with no entry is unknown and disables automatic Jev action. No probability from the TypeSafe docs is a default. Labels are unreviewed register/transmittal transcriptions; see fit.results for sample sizes.",
+  "fit": {
+    "calibration_cases": 131,
+    "fitted_at": "2026-10-01T09:59:17.1801422Z",
+    "manifest_sha256": "45f39479613284697a15492dc6f6ac1998e767f6ff3471f32a04ae5885bc660e",
+    "policy": {
+      "number": {
+        "z": 1.645,
+        "min_samples": 30,
+        "min_band_samples": 10,
+        "green_lower": 0.9,
+        "amber_lower": 0.6,
+        "max_errors": -1
+      },
+      "revision": {
+        "z": 1.645,
+        "min_samples": 30,
+        "min_band_samples": 10,
+        "green_lower": 0.9,
+        "amber_lower": 0.6,
+        "max_errors": -1
+      },
+      "supersedes": {
+        "z": 1.645,
+        "min_samples": 30,
+        "min_band_samples": 20,
+        "green_lower": 0.95,
+        "amber_lower": 0.95,
+        "max_errors": 0
+      },
+      "title": {
+        "z": 1.645,
+        "min_samples": 30,
+        "min_band_samples": 10,
+        "green_lower": 0.9,
+        "amber_lower": 0.6,
+        "max_errors": -1
+      }
+    },
+    "recordings_digest": "8be07975b6cd1a33a190b45ad3fdf445d99d5bdcd3b30df15fba835a377c301d",
+    "results": [
+      {
+        "field": "number",
+        "shape": {
+          "min_options": 3,
+          "max_options": 4
+        },
+        "n": 35,
+        "green": null,
+        "amber": null,
+        "reason": "no cut-off meets the green bound"
+      },
+      {
+        "field": "number",
+        "shape": {
+          "min_options": 5,
+          "max_options": 8
+        },
+        "n": 5,
+        "green": null,
+        "amber": null,
+        "reason": "5 calibration answers, need 30"
+      },
+      {
+        "field": "number",
+        "shape": {
+          "min_options": 9,
+          "max_options": 16
+        },
+        "n": 1,
+        "green": null,
+        "amber": null,
+        "reason": "1 calibration answers, need 30"
+      },
+      {
+        "field": "number",
+        "shape": {
+          "min_options": 33,
+          "max_options": 64
+        },
+        "n": 1,
+        "green": null,
+        "amber": null,
+        "reason": "1 calibration answers, need 30"
+      },
+      {
+        "field": "revision",
+        "shape": {
+          "min_options": 3,
+          "max_options": 4
+        },
+        "n": 5,
+        "green": null,
+        "amber": null,
+        "reason": "5 calibration answers, need 30"
+      },
+      {
+        "field": "supersedes",
+        "shape": {
+          "min_options": 2,
+          "max_options": 2
+        },
+        "n": 2,
+        "green": null,
+        "amber": null,
+        "reason": "2 calibration answers, need 30"
+      },
+      {
+        "field": "supersedes",
+        "shape": {
+          "min_options": 3,
+          "max_options": 4
+        },
+        "n": 1,
+        "green": null,
+        "amber": null,
+        "reason": "1 calibration answers, need 30"
+      },
+      {
+        "field": "title",
+        "shape": {
+          "min_options": 3,
+          "max_options": 4
+        },
+        "n": 26,
+        "green": null,
+        "amber": null,
+        "reason": "26 calibration answers, need 30"
+      },
+      {
+        "field": "title",
+        "shape": {
+          "min_options": 5,
+          "max_options": 8
+        },
+        "n": 1,
+        "green": null,
+        "amber": null,
+        "reason": "1 calibration answers, need 30"
+      }
+    ],
+    "split": "calibration"
+  },
   "questions": {
-    "kind": [],
     "discipline": [],
+    "kind": [],
     "lifecycle": [],
     "number": [],
     "revision": [],
-    "title": [],
-    "supersedes": []
+    "supersedes": [],
+    "title": []
   }
 }

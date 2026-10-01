@@ -61,7 +61,11 @@ func (r *Recorder) Err() error {
 }
 
 // RoundTrip forwards the request and records it with the full response body.
+// Only evaluation POSTs are recorded; the client's warm-up HEAD is not.
 func (r *Recorder) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.Method != http.MethodPost {
+		return r.next.RoundTrip(req)
+	}
 	body, err := readBody(req)
 	if err != nil {
 		return nil, err

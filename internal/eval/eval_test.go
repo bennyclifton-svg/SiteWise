@@ -258,6 +258,9 @@ func TestBuildCasesScopesLabels(t *testing.T) {
 func TestRecordThenReplayServesExactBytes(t *testing.T) {
 	var hits int
 	live := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead {
+			return
+		}
 		hits++
 		if r.Header.Get("Authorization") == "" {
 			t.Error("live call without credentials")
@@ -272,6 +275,9 @@ func TestRecordThenReplayServesExactBytes(t *testing.T) {
 	rec := NewRecorder(http.DefaultTransport, &log)
 	rec.SetCase("case-1")
 	client := newClient(t, live.URL, rec)
+	if err := client.Warm(context.Background()); err != nil {
+		t.Fatal(err)
+	}
 	call := jev.Call{State: "s", Questions: map[string]jev.Question{"q": {Type: jev.TypeNoul, Instructions: "q?"}}}
 	first, err := client.Ask(context.Background(), call)
 	if err != nil {

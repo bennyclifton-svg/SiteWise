@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-01T10:02:18.8251562Z",
+  "target": "dev",
+  "host": {
+    "os": "windows",
+    "arch": "amd64",
+    "cpus": 12,
+    "gomaxprocs": 12,
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "go": "go1.27.1"
+  },
+  "jev": "replayed-recorded-latency",
+  "model": "jev-1.13.0",
+  "workload": {
+    "files_per_round": 184,
+    "rounds": 2,
+    "concurrency": 4,
+    "background_jev_callers": 2,
+    "background_jev_calls": 213,
+    "degrade_percent": 10,
+    "stalled_jev_requests": 49,
+    "cold_round": "1"
+  },
+  "outcomes": {
+    "filing": 256,
+    "grey_filings": 19,
+    "not_filed": 112
+  },
+  "paths": {
+    "candidate_harvesting": {
+      "n": 256,
+      "p50_us": 0,
+      "p90_us": 173,
+      "max_us": 6015,
+      "pass": true
+    },
+    "commit_sse_enqueue": {
+      "n": 256,
+      "p50_us": 2544,
+      "p90_us": 3970,
+      "max_us": 11560,
+      "pass": true
+    },
+    "deterministic_field_rules": {
+      "n": 256,
+      "p50_us": 0,
+      "p90_us": 3007,
+      "max_us": 59674,
+      "pass": false
+    },
+    "field_correction": {
+      "n": 40,
+      "p50_us": 1630,
+      "p90_us": 1872,
+      "max_us": 4236,
+      "pass": true
+    },
+    "identity_text_extraction": {
+      "n": 368,
+      "p50_us": 125421,
+      "p90_us": 552814,
+      "max_us": 1536688,
+      "pass": false
+    },
+    "jev_admission_request": {
+      "n": 254,
+      "p50_us": 243706,
+      "p90_us": 509834,
+      "max_us": 1207581,
+      "pass": true
+    },
+    "project_document_list": {
+      "n": 40,
+      "p50_us": 143431,
+      "p90_us": 145895,
+      "max_us": 150122,
+      "pass": false
+    },
+    "project_invite_auth": {
+      "n": 42,
+      "p50_us": 1103,
+      "p90_us": 1202,
+      "max_us": 6500,
+      "pass": true
+    },
+    "sse_reconnect": {
+      "n": 40,
+      "p50_us": 521,
+      "p90_us": 572,
+      "max_us": 1045,
+      "pass": true
+    },
+    "whole_intake": {
+      "n": 368,
+      "p50_us": 459909,
+      "p90_us": 1070026,
+      "max_us": 2411248,
+      "pass": true
+    }
+  },
+  "whole_intake_by_round": {
+    "1": {
+      "n": 184,
+      "p50_us": 465491,
+      "p90_us": 1070026,
+      "max_us": 2411248
+    },
+    "2": {
+      "n": 184,
+      "p50_us": 442327,
+      "p90_us": 1058008,
+      "max_us": 2275612
+    }
+  },
+  "missing_paths": [
+    "health_speed"
+  ],
+  "gate": {
+    "code": 1,
+    "report": "identity_text_extraction: p50 125421us exceeds 80000us\nidentity_text_extraction: p90 552814us exceeds 250000us\ndeterministic_field_rules: p90 3007us exceeds 1000us\nproject_document_list: p50 143431us exceeds 50000us\nhealth_speed: insufficient samples: got 0 need 20\n"
+  },
+  "notes": [
+    "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
+    "Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
+    "Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
+    "health_speed has no endpoint until Task 12, so it has no samples and fails the gate as missing.",
+    "Jev latency is the recorded provider latency replayed per document, not a live measurement. Release evidence is a -live run on the intended VPS."
+  ]
+}
