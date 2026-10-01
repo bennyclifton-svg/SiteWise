@@ -59,7 +59,8 @@ if ($Build -or -not (Test-Path (Join-Path $Root 'web\dist\index.html'))) {
 $SecretFile = Join-Path $Tools 'dev-session-secret'
 if (-not (Test-Path $SecretFile)) {
     $bytes = New-Object byte[] 32
-    [Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+    # Create().GetBytes works in Windows PowerShell 5.1 as well as 7.
+    [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
     Set-Content -NoNewline -Path $SecretFile -Value ([Convert]::ToBase64String($bytes))
 }
 
