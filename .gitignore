@@ -11,3 +11,7 @@ web/playwright-report/
 data/eval/intake/private/
 # Raw latency samples are machine-local; bench/results/ holds the metadata.
 bench/samples.json
+# Local secrets for tools/dev.ps1. This repository is public.
+.env
+.env.*
+dist/

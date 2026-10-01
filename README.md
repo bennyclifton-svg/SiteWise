@@ -15,7 +15,7 @@ Check the knowledge files: `python tools/check_knowledge.py`
 Locally, with the repo-local PostgreSQL and Go in `.tools/`:
 
 ```powershell
-$env:SITEWISE_JEV_API_KEY = '<your TypeSafe key>'
+# once: put SITEWISE_JEV_API_KEY=<your TypeSafe key> in .env (git-ignored)
 ./tools/dev.ps1          # first run prints a one-time sign-in link
 ```
 

@@ -1,20 +1,24 @@
 # Run SiteWise locally against repo-local PostgreSQL 17 on port 5433.
 #
-#   $env:SITEWISE_JEV_API_KEY = '<your TypeSafe key>'
+# Put the TypeSafe key in a .env file at the repo root (git-ignored):
+#   SITEWISE_JEV_API_KEY=<your TypeSafe key>     (TYPESAFE_API_KEY= also works)
+# or set $env:SITEWISE_JEV_API_KEY in the shell, which wins over .env.
+#
 #   ./tools/dev.ps1            # first run prints a sign-in link
 #   ./tools/dev.ps1 -Invite    # print a fresh sign-in link (new local org)
 #   ./tools/dev.ps1 -Build     # rebuild the web UI first
 #
 # Data lives in the sitewise_dev database and .tools/dev-files, never in the
-# sitewise_test database the tests reset. The key is read from the shell and
-# never written to disk.
+# sitewise_test database the tests reset.
 param(
     [switch]$Invite,
     [switch]$Build,
     [string]$Addr = '127.0.0.1:8080',
     [string]$Email = 'owner@sitewise.local'
 )
-$ErrorActionPreference = 'Stop'
+# Continue, not Stop: Windows PowerShell 5.1 turns a native command's stderr
+# into a terminating error. Every native call below checks its exit code.
+$ErrorActionPreference = 'Continue'
 Set-StrictMode -Version Latest
 
 $Root = Split-Path -Parent $PSScriptRoot
@@ -26,8 +30,25 @@ $env:GOCACHE = Join-Path $Tools 'go-cache'
 $env:GOPATH = Join-Path $Tools 'go-path'
 $env:GOTOOLCHAIN = 'local'
 
+# .env holds KEY=VALUE lines. A variable already set in the shell is kept.
+$EnvFile = Join-Path $Root '.env'
+if (Test-Path $EnvFile) {
+    foreach ($line in Get-Content $EnvFile) {
+        $line = $line.Trim()
+        if ($line -eq '' -or $line.StartsWith('#') -or -not $line.Contains('=')) { continue }
+        $name, $value = $line.Split('=', 2)
+        $name = $name.Trim()
+        $value = $value.Trim().Trim('"').Trim("'")
+        if (-not [Environment]::GetEnvironmentVariable($name)) {
+            [Environment]::SetEnvironmentVariable($name, $value)
+        }
+    }
+}
+if (-not $env:SITEWISE_JEV_API_KEY -and $env:TYPESAFE_API_KEY) {
+    $env:SITEWISE_JEV_API_KEY = $env:TYPESAFE_API_KEY
+}
 if (-not $env:SITEWISE_JEV_API_KEY) {
-    Write-Error "Set your TypeSafe key first:  `$env:SITEWISE_JEV_API_KEY = '<key>'"
+    Write-Host "No TypeSafe key. Add SITEWISE_JEV_API_KEY=<key> to $EnvFile, or set `$env:SITEWISE_JEV_API_KEY."
     exit 1
 }
 
