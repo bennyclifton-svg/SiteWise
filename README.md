@@ -12,7 +12,20 @@ Check the knowledge files: `python tools/check_knowledge.py`
 
 ## Run
 
-The Go binary embeds the web build, so build the SPA first.
+Locally, with the repo-local PostgreSQL and Go in `.tools/`:
+
+```powershell
+$env:SITEWISE_JEV_API_KEY = '<your TypeSafe key>'
+./tools/dev.ps1          # first run prints a one-time sign-in link
+```
+
+It starts PostgreSQL on port 5433 if needed, uses its own `sitewise_dev`
+database and `.tools/dev-files`, builds the web UI once, and serves on
+`http://127.0.0.1:8080`. `-Invite` prints a fresh sign-in link; `-Build`
+rebuilds the UI. Until `intake-eval -fit` finds supported cut-offs, fields only
+Jev could decide show blank; rule-settled fields show green.
+
+By hand: the Go binary embeds the web build, so build the SPA first.
 
 ```powershell
 npm --prefix web ci
