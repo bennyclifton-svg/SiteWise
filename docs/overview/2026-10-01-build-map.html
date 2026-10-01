@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteWise Build Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one-page site board. Header strip, then a 12-col grid of drawing-sheet panels; azure = Jev inference, ember = code/evidence/user (the product's own convention). */
+:root{
+  --paper:#f6f3ec; --sheet:#fffdf8; --ink:#1d2430; --muted:#5d6672; --rule:#ddd6c8; --rule-soft:#ebe5d9;
+  --azure:#1f6fd1; --azure-soft:#e3eefb; --ember:#c2551b; --ember-soft:#fbe9dd;
+  --ok:#2f7d4a; --ok-soft:#e1f1e6; --warn:#a86a00; --warn-soft:#fbf0d6; --bad:#b3261e; --bad-soft:#f9e1df; --grey:#8a8f98; --grey-soft:#eceae5;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#14171c; --sheet:#1b1f26; --ink:#e7e9ec; --muted:#9aa3ae; --rule:#2f3540; --rule-soft:#262b34;
+  --azure:#6aa8f2; --azure-soft:#1a2a40; --ember:#ef8c55; --ember-soft:#3a2418;
+  --ok:#6cc58b; --ok-soft:#1b3324; --warn:#e3b04f; --warn-soft:#3a2f17; --bad:#f08079; --bad-soft:#3d1f1d; --grey:#8f96a0; --grey-soft:#262a31;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#14171c; --sheet:#1b1f26; --ink:#e7e9ec; --muted:#9aa3ae; --rule:#2f3540; --rule-soft:#262b34;
+  --azure:#6aa8f2; --azure-soft:#1a2a40; --ember:#ef8c55; --ember-soft:#3a2418;
+  --ok:#6cc58b; --ok-soft:#1b3324; --warn:#e3b04f; --warn-soft:#3a2f17; --bad:#f08079; --bad-soft:#3d1f1d; --grey:#8f96a0; --grey-soft:#262a31;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:14px/1.5 var(--f-body);margin:0}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:24px 48px;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:.005em}
+h2{font-size:19px;font-weight:600;display:flex;align-items:baseline;gap:10px}
+h2 .tag{font:500 11px var(--f-mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.az{color:var(--azure)} .em{color:var(--ember)}
+
+/* header */
+.head{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;background:var(--sheet);border:1px solid var(--rule);border-radius:4px;padding:18px 20px}
+.mark{width:52px;height:52px;border-radius:6px;background:var(--azure);display:grid;place-items:center;color:#fff;font:700 32px var(--f-display)}
+.head h1{font-size:30px;font-weight:700;line-height:1.1}
+.head .sub{color:var(--muted);max-width:72ch;margin-top:4px}
+.stamp{font:12px/1.55 var(--f-mono);border-left:1px solid var(--rule);padding-left:16px;color:var(--muted);white-space:nowrap}
+.stamp b{color:var(--ink);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12.5px;color:var(--muted);align-items:center}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+
+/* grid + panels */
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.p{background:var(--sheet);border:1px solid var(--rule);border-radius:4px;padding:16px 18px;display:grid;gap:12px;align-content:start;min-width:0}
+.c12{grid-column:span 12}.c7{grid-column:span 7}.c5{grid-column:span 5}.c6{grid-column:span 6}.c4{grid-column:span 4}.c8{grid-column:span 8}
+@media (max-width:980px){.c7,.c5,.c6,.c4,.c8{grid-column:span 12}.head{grid-template-columns:auto 1fr}.stamp{grid-column:1/-1;border-left:0;padding-left:0;white-space:normal}}
+
+/* objectives → functions */
+.objs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:760px){.objs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.obj{border:1px solid var(--rule-soft);border-radius:4px;padding:10px;display:grid;gap:4px;align-content:start}
+.obj .k{font:600 10.5px var(--f-mono);letter-spacing:.08em;color:var(--muted)}
+.obj b{font-family:var(--f-display);font-size:15px;font-weight:600;line-height:1.2}
+.obj span{font-size:12.5px;color:var(--muted)}
+table{border-collapse:collapse;width:100%}
+.tbl{overflow-x:auto}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--rule-soft);vertical-align:top;font-size:13px}
+th{font:600 10.5px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom-color:var(--rule)}
+td.dots{white-space:nowrap;font-family:var(--f-mono);font-size:12px;letter-spacing:2px}
+.pill{display:inline-block;font:500 11px var(--f-mono);padding:1px 7px;border-radius:3px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.part{background:var(--warn-soft);color:var(--warn)}
+.pill.no{background:var(--grey-soft);color:var(--muted)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.az{background:var(--azure-soft);color:var(--azure)}
+.pill.em{background:var(--ember-soft);color:var(--ember)}
+
+/* task tracker */
+.tasks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+@media (max-width:520px){.tasks{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.t{border:1px solid var(--rule-soft);border-radius:3px;padding:6px 7px;display:grid;gap:2px;background:var(--ok-soft)}
+.t.part{background:var(--warn-soft)} .t.todo{background:transparent;border-style:dashed}
+.t .n{font:600 11px var(--f-mono);color:var(--muted)}
+.t .l{font-size:11.5px;line-height:1.3}
+.big{display:flex;flex-wrap:wrap;gap:8px 22px}
+.big div{display:grid}
+.big b{font:600 26px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.big span{font-size:12px;color:var(--muted)}
+
+/* flow */
+.flow{display:flex;gap:0;overflow-x:auto;padding-bottom:6px}
+.st{flex:1 0 128px;display:grid;grid-template-rows:auto auto 1fr auto;gap:5px;padding:10px 10px 9px;border:1px solid var(--rule);border-radius:4px;background:var(--sheet);position:relative;min-width:128px}
+.st+.st{margin-left:22px}
+.st+.st::before{content:"";position:absolute;left:-19px;top:50%;width:14px;height:2px;background:var(--muted)}
+.st+.st::after{content:"";position:absolute;left:-8px;top:calc(50% - 4px);border:5px solid transparent;border-left:6px solid var(--muted);border-right:0}
+.st.code{border-top:4px solid var(--ember)}
+.st.jev{border-top:4px solid var(--azure);background:var(--azure-soft)}
+.st.user{border-top:4px solid var(--ember);background:var(--ember-soft)}
+.st .who{font:600 10px var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
+.st.code .who,.st.user .who{color:var(--ember)} .st.jev .who{color:var(--azure)}
+.st h3{font-size:14px;line-height:1.2}
+.st p{font-size:12px;color:var(--muted);line-height:1.4}
+.st .bud{font:11px/1.4 var(--f-mono);border-top:1px dashed var(--rule);padding-top:5px;display:grid;gap:1px}
+.bg{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;border:1px dashed var(--rule);border-radius:4px;padding:10px 12px;background:var(--paper)}
+.bg .chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px}
+.bg .chain i{font-style:normal;color:var(--muted)}
+@media (max-width:640px){.bg{grid-template-columns:1fr}}
+
+/* Jev */
+.jevgrid{display:grid;grid-template-columns:1.05fr 1fr 1fr;gap:16px}
+@media (max-width:1080px){.jevgrid{grid-template-columns:1fr}}
+.jevgrid>div{display:grid;gap:10px;align-content:start;min-width:0}
+.split td:first-child{width:62%}
+.qs{display:grid;gap:5px}
+.q{display:grid;grid-template-columns:110px 1fr;gap:8px;font-size:12.5px;align-items:baseline}
+.q code{font:500 12px var(--f-mono);color:var(--azure)}
+.bands{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.band{border-radius:3px;padding:6px 7px;font-size:11.5px;line-height:1.3;border:1px solid var(--rule-soft)}
+.band b{display:block;font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em}
+.band.g{background:var(--ok-soft)} .band.g b{color:var(--ok)}
+.band.a{background:var(--warn-soft)} .band.a b{color:var(--warn)}
+.band.b{background:var(--sheet);border-style:dashed} .band.b b{color:var(--muted)}
+.band.x{background:var(--grey-soft)} .band.x b{color:var(--grey)}
+.rules{margin:0;padding-left:18px;display:grid;gap:3px;font-size:12.5px}
+.callout{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:0 4px 4px 0;font-size:13px;display:grid;gap:6px}
+.callout.az{border-left-color:var(--azure);background:var(--azure-soft)}
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.kv div{border:1px solid var(--rule-soft);border-radius:3px;padding:7px 8px;display:grid}
+.kv b{font:600 20px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.kv span{font-size:11px;color:var(--muted)}
+.shapes{display:grid;gap:3px}
+.shape{display:grid;grid-template-columns:86px 54px 1fr;gap:8px;align-items:center;font:11.5px var(--f-mono)}
+.meter{height:8px;background:var(--grey-soft);border-radius:2px;position:relative;overflow:hidden}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--azure);border-radius:2px}
+.meter.full i{background:var(--warn)}
+
+/* speed bars */
+.sp{display:grid;gap:7px}
+.sprow{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 112px;gap:10px;align-items:center;font-size:12.5px}
+.track{height:14px;position:relative;background:var(--grey-soft);border-radius:2px}
+.track .bar{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--ok)}
+.track .bar.f{background:var(--bad)}
+.track .bud{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.sprow .v{font:11.5px var(--f-mono);text-align:right;white-space:nowrap}
+.sprow .v.f{color:var(--bad)}
+@media (max-width:520px){.sprow{grid-template-columns:1fr 92px}.sprow .track{grid-column:1/-1;grid-row:2}}
+
+/* accuracy */
+.acc{display:grid;gap:8px}
+.arow{display:grid;grid-template-columns:86px minmax(0,1fr) 150px;gap:10px;align-items:center;font-size:12.5px}
+.stack{display:flex;height:16px;border-radius:2px;overflow:hidden;background:var(--grey-soft)}
+.stack i{display:block;height:100%}
+.stack .c{background:var(--ok)} .stack .w{background:var(--bad)}
+.arow .v{font:11.5px var(--f-mono);text-align:right}
+@media (max-width:520px){.arow{grid-template-columns:70px 1fr}.arow .v{grid-column:1/-1;text-align:left}}
+
+/* stack */
+.layers{display:grid;gap:6px}
+.layer{display:grid;grid-template-columns:118px 1fr;gap:10px;border:1px solid var(--rule-soft);border-radius:3px;padding:7px 10px;align-items:baseline}
+.layer .lk{font:600 10.5px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.layer .lv{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font:500 12px var(--f-mono);padding:1px 7px;border:1px solid var(--rule);border-radius:3px;background:var(--paper)}
+.chip.no{text-decoration:line-through;color:var(--muted);border-style:dashed}
+@media (max-width:520px){.layer{grid-template-columns:1fr}}
+
+/* knowledge */
+.kn{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+@media (max-width:620px){.kn{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.kn div{border:1px solid var(--rule-soft);border-radius:3px;padding:8px;display:grid;text-align:left}
+.kn b{font:600 24px/1.05 var(--f-display);font-variant-numeric:tabular-nums}
+.kn span{font-size:11.5px;color:var(--muted)}
+.chain2{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px}
+.chain2 .chip{background:var(--sheet)}
+
+/* next */
+.next{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;counter-reset:n}
+@media (max-width:980px){.next{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.next{grid-template-columns:1fr}}
+.nx{border:1px solid var(--rule-soft);border-radius:4px;padding:12px;display:grid;gap:6px;align-content:start;counter-increment:n;position:relative}
+.nx::before{content:counter(n);position:absolute;top:10px;right:12px;font:700 22px var(--f-display);color:var(--rule)}
+.nx h3{padding-right:24px}
+.nx p{font-size:12.5px;color:var(--muted)}
+.nx .why{font-size:12px;color:var(--ink)}
+.foot{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px}
+a{color:var(--azure)}
+:focus-visible{outline:2px solid var(--azure);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="head">
+  <div class="mark" aria-hidden="true">S</div>
+  <div>
+    <h1>SiteWise build map</h1>
+    <p class="sub">A construction-project app rebuilt from first principles on the physical building. First slice: drop a consultant drawing, report, spec or schedule into a project and have it filed in about a second, with every field showing how it was decided. Jev (TypeSafe System One) is the only AI, and it only picks.</p>
+  </div>
+  <div class="stamp">
+    <b>main @ 5ac5e4d</b> · 24 commits<br>
+    29 Sep → 1 Oct 2026<br>
+    Plan: <b>11 of 12 tasks</b> built<br>
+    Release gate: <b class="em">not yet passed</b>
+  </div>
+</header>
+
+<div class="legend">
+  <span><i class="sw" style="background:var(--azure)"></i>Jev decides (inference)</span>
+  <span><i class="sw" style="background:var(--ember)"></i>Code / document evidence / user decides</span>
+  <span><i class="sw" style="background:var(--ok)"></i>Built or passing</span>
+  <span><i class="sw" style="background:var(--warn)"></i>Partly there</span>
+  <span><i class="sw" style="background:var(--bad)"></i>Failing a gate</span>
+  <span><i class="sw" style="border:1px dashed var(--muted)"></i>Not built</span>
+</div>
+
+<div class="grid">
+
+<!-- OBJECTIVES → FUNCTIONS -->
+<section class="p c7">
+  <h2>Why it exists <span class="tag">objectives → business functions</span></h2>
+  <div class="objs">
+    <div class="obj"><span class="k">OBJ 1</span><b>Fast is the feature</b><span>File in ≤1 s p50, ≤2 s p90. Build fails on a broken budget.</span></div>
+    <div class="obj"><span class="k">OBJ 2</span><b>Jev is the only AI</b><span>No LLMs, embeddings or chat. Code owns flow; Jev picks.</span></div>
+    <div class="obj"><span class="k">OBJ 3</span><b>Trust at a glance</b><span>Every field shows rule / Jev / user and how sure.</span></div>
+    <div class="obj"><span class="k">OBJ 4</span><b>User's word is final</b><span>Correct in one move. Nothing deleted or overwritten.</span></div>
+    <div class="obj"><span class="k">OBJ 5</span><b>Building is the model</b><span>Systems, rules, interfaces. Disciplines are a view.</span></div>
+  </div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Business function</th><th>What the app does</th><th>Serves</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><b>Document control</b><br><span class="muted small">filing consultant packages</span></td><td>Drop PDF/DOCX/XLSX → number, revision, title, date, kind, discipline, lifecycle filed per project</td><td class="mono small">1 2 3</td><td><span class="pill ok">built</span></td></tr>
+      <tr><td><b>Revision control</b></td><td>Supersession links to an immutable prior filing; strictest Jev band</td><td class="mono small">3 4</td><td><span class="pill part">built, 0 automatic</span></td></tr>
+      <tr><td><b>Corrections</b></td><td>Edit any field in place; kept as labelled examples</td><td class="mono small">3 4</td><td><span class="pill ok">built</span></td></tr>
+      <tr><td><b>Access &amp; tenancy</b></td><td>Invite-only orgs, single-use tokens, org-scoped keys</td><td class="mono small">—</td><td><span class="pill ok">built</span></td></tr>
+      <tr><td><b>Compliance knowledge</b><br><span class="muted small">NCC 2022 + Standards</span></td><td>Determinants → table lookups (Type of Construction, compartment limits)</td><td class="mono small">5</td><td><span class="pill part">2 tables verified</span></td></tr>
+      <tr><td><b>Design coordination</b></td><td>Interfaces + failure modes per system; background fire pilot</td><td class="mono small">5</td><td><span class="pill part">labelling only</span></td></tr>
+      <tr><td><b>Search &amp; retrieval</b></td><td>Postgres FTS shortlist → Jev judges; numbers go to direct lookup</td><td class="mono small">1 2</td><td><span class="pill no">designed</span></td></tr>
+      <tr><td><b>Operations</b></td><td>VPS, health/speed page, backups, restore rehearsal</td><td class="mono small">1</td><td><span class="pill no">Task 12</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- STATUS -->
+<section class="p c5">
+  <h2>Where it stands <span class="tag">instant-intake plan</span></h2>
+  <div class="tasks">
+    <div class="t"><span class="n">T1</span><span class="l">Config + failing speed gate</span></div>
+    <div class="t"><span class="n">T2</span><span class="l">Tenant schema, SQL boundary</span></div>
+    <div class="t"><span class="n">T3</span><span class="l">Invite + magic-link auth</span></div>
+    <div class="t"><span class="n">T4</span><span class="l">Durable upload, hash store</span></div>
+    <div class="t"><span class="n">T5</span><span class="l">Identity extraction (PDFium)</span></div>
+    <div class="t"><span class="n">T6</span><span class="l">Candidate harvest + rules</span></div>
+    <div class="t"><span class="n">T7</span><span class="l">Bounded Jev client</span></div>
+    <div class="t"><span class="n">T8</span><span class="l">Filing, bands, supersession</span></div>
+    <div class="t"><span class="n">T9</span><span class="l">Durable SSE + fire pilot jobs</span></div>
+    <div class="t"><span class="n">T10</span><span class="l">React drop zone + corrections</span></div>
+    <div class="t part"><span class="n">T11</span><span class="l">Calibration + latency gates</span></div>
+    <div class="t todo"><span class="n">T12</span><span class="l">Host, health, restore</span></div>
+  </div>
+  <div class="big">
+    <div><b>184</b><span>corpus files (Hale, Petersham, Newham)</span></div>
+    <div><b>131 / 53</b><span>calibration / held-out</span></div>
+    <div><b class="em">55</b><span>scans with no text layer, not filed</span></div>
+  </div>
+  <div class="callout">
+    <b>The honest read</b>
+    <span>The plumbing is done and fast. The intelligence is not switched on: no Jev confidence cut-off could be fitted, so Jev applies nothing automatically yet, and the deterministic title rule is confidently wrong 16 times in 25 on held-out files. T11 has a live run recorded but no accepted baseline.</span>
+  </div>
+</section>
+
+<!-- PROCESS FLOW -->
+<section class="p c12">
+  <h2>How a file gets filed <span class="tag">foreground path · budget p50/p90 · measured p50/p90 (dev bench, replayed Jev)</span></h2>
+  <div class="flow" role="list">
+    <div class="st user" role="listitem"><span class="who">User</span><h3>Drop files</h3><p>Into a chosen project, from the React title-block view.</p><div class="bud"><span>gate measured from</span><span>last byte received</span></div></div>
+    <div class="st code" role="listitem"><span class="who">Code</span><h3>Store by hash</h3><p>Content-addressed blob. Same hash = already filed. Re-drop is safe.</p><div class="bud"><span>durable before</span><span>anything else</span></div></div>
+    <div class="st code" role="listitem"><span class="who">Code</span><h3>Read identity pages</h3><p>Embedded PDFium, Go DOCX/XLSX. Title block, first page, headings.</p><div class="bud"><span>80 / 250 ms</span><span style="color:var(--bad)">125 / 553 ms ✕</span></div></div>
+    <div class="st code" role="listitem"><span class="who">Code</span><h3>Harvest candidates</h3><p>Over-find numbers, revisions, titles, dates from filename + text, with provenance.</p><div class="bud"><span>5 / 10 ms</span><span style="color:var(--ok)">0 / 0.2 ms ✓</span></div></div>
+    <div class="st code" role="listitem"><span class="who">Code</span><h3>Rules settle</h3><p>Unambiguous fields fixed in code and removed from the Jev call. Revisions ordered by code.</p><div class="bud"><span>1 / 1 ms</span><span style="color:var(--bad)">0 / 3 ms ✕</span></div></div>
+    <div class="st jev" role="listitem"><span class="who">Jev · one call</span><h3>One fan-out</h3><p>Every open question about this file in one request. Picks among candidates or "none".</p><div class="bud"><span>350 / 800 ms</span><span style="color:var(--ok)">244 / 510 ms ✓</span></div></div>
+    <div class="st code" role="listitem"><span class="who">Code</span><h3>Band + commit</h3><p>Confidence → green / amber / blank / grey per field. One decision row per field.</p><div class="bud"><span>5 / 15 ms</span><span style="color:var(--ok)">2.5 / 4 ms ✓</span></div></div>
+    <div class="st user" role="listitem"><span class="who">User</span><h3>See &amp; correct</h3><p>SSE push to the browser. Fix any field in one move; it is never overwritten.</p><div class="bud"><span>correction 50 / 150</span><span style="color:var(--ok)">1.6 / 1.9 ms ✓</span></div></div>
+  </div>
+  <div class="bg">
+    <span class="pill az">Whole intake 460 / 1,070 ms ✓ vs 1,000 / 2,000 gate</span>
+    <div class="chain"><b>Then in the background</b> <i>(foreground keeps reserved Jev capacity)</i> → full text → passages → Postgres full-text index → <span class="az">Jev system labels</span> (noul per top-level system + leaf choice) → <span class="az">knowledge questions</span> for those systems (fire pilot: 6 interfaces) → code works out status. Jobs are leased, so a crash resumes.</div>
+  </div>
+</section>
+
+<!-- JEV DEEP DIVE -->
+<section class="p c12">
+  <h2>Jev, in depth <span class="tag">TypeSafe System One · jev-1.13.0 pinned</span></h2>
+  <div class="jevgrid">
+    <div>
+      <h3>Who does what</h3>
+      <p class="small muted">TypeSafe's "AI-powered software" shape: code handles deterministic work and owns the control flow; the model appears only where common sense or unstructured reading is needed.</p>
+      <div class="tbl"><table class="split">
+        <thead><tr><th>Job</th><th>Who</th></tr></thead>
+        <tbody>
+          <tr><td>Parse files, harvest candidates, dedupe by hash</td><td><span class="pill em">code</span></td></tr>
+          <tr><td>Pick number / revision / title / date from candidates, or "none"</td><td><span class="pill az">Jev choice</span></td></tr>
+          <tr><td>Classify kind (16), discipline (57), lifecycle area</td><td><span class="pill az">Jev choice</span></td></tr>
+          <tr><td>Order revisions, compare dates, validate supersession</td><td><span class="pill em">code</span></td></tr>
+          <tr><td>Which systems a passage is about</td><td><span class="pill az">Jev noul</span></td></tr>
+          <tr><td>Type of Construction, FRLs, compartment limits</td><td><span class="pill em">code lookup</span></td></tr>
+          <tr><td>Which interfaces this building has</td><td><span class="pill em">code graph</span></td></tr>
+          <tr><td>Does a passage address a rule / failure mode</td><td><span class="pill az">Jev noul</span></td></tr>
+          <tr><td>Thresholds, weights, final status</td><td><span class="pill em">code</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Never asked of Jev</h3>
+      <ul class="rules muted">
+        <li>Counting, arithmetic, date comparison, ordering revisions</li>
+        <li>Generating text (titles are copied verbatim from a candidate)</li>
+        <li>Anything outside the relevant identity text</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>The filing call</h3>
+      <p class="small mono muted">POST api.typesafe.ai/v1/systemone<br>state = { filename, title_block, first_page, headings, candidates }</p>
+      <div class="qs">
+        <div class="q"><code>kind</code><span>choice of 16 document kinds</span></div>
+        <div class="q"><code>discipline</code><span>choice of 57, always asked speculatively</span></div>
+        <div class="q"><code>lifecycle</code><span>choice of lifecycle area</span></div>
+        <div class="q"><code>number · rev · title</code><span>choice among harvested candidates + "none"</span></div>
+        <div class="q"><code>supersedes</code><span>same-number filings in the project + "new"</span></div>
+      </div>
+      <h3>Client guardrails</h3>
+      <ul class="rules muted">
+        <li>HTTP/2, warm connections, ~24 in flight, admission control</li>
+        <li>One 1.2 s deadline including queue wait; no hot-path retries</li>
+        <li>Circuit breaker; failures become grey, never block filing</li>
+        <li>Answers applied only if model, question IDs, type, options and probabilities match the pinned contract</li>
+        <li>Every call logs latency, tokens and confidence; recordings replay in tests</li>
+      </ul>
+      <h3>Confidence → band (per question, version, option count)</h3>
+      <div class="bands">
+        <div class="band g"><b>Green</b>Above that question's threshold. Applied.</div>
+        <div class="band a"><b>Amber</b>Applied, flagged for a look.</div>
+        <div class="band b"><b>Blank</b>Below band. Not applied.</div>
+        <div class="band x"><b>Grey</b>Jev timed out. Rule values only.</div>
+      </div>
+    </div>
+
+    <div>
+      <h3>First live run · 1 Oct 2026</h3>
+      <div class="kv">
+        <div><b>127</b><span>calls</span></div>
+        <div><b class="ok" style="color:var(--ok)">0</b><span>errors</span></div>
+        <div><b>240</b><span>p50 ms</span></div>
+        <div><b>372</b><span>p90 ms</span></div>
+      </div>
+      <p class="small muted">None over the 1.2 s deadline. Jev is fast enough. Speed is not the Jev problem.</p>
+      <h3>Threshold fit (needs 30 calibration answers per shape)</h3>
+      <div class="shapes">
+        <div class="shape"><span>number</span><span>3–4 opt</span><div class="meter full"><i style="width:100%"></i></div></div>
+        <div class="shape"><span>title</span><span>3–4 opt</span><div class="meter"><i style="width:86.7%"></i></div></div>
+        <div class="shape"><span>number</span><span>5–8 opt</span><div class="meter"><i style="width:16.7%"></i></div></div>
+        <div class="shape"><span>revision</span><span>3–4 opt</span><div class="meter"><i style="width:16.7%"></i></div></div>
+        <div class="shape"><span>supersedes</span><span>2 opt</span><div class="meter"><i style="width:6.7%"></i></div></div>
+        <div class="shape"><span class="muted">4 more</span><span class="muted">—</span><div class="meter"><i style="width:3.3%"></i></div></div>
+      </div>
+      <p class="small muted">Bar = answers ÷ 30. Only <b>number (3–4 options, n=35)</b> had enough, and no cut-off met the green bound. All 9 thresholds stay unknown, so <b>Jev applies nothing automatically</b>.</p>
+      <div class="callout az">
+        <b>Why number failed: it is mostly a harvesting problem</b>
+        <span>Jev picked the right number once in 35. It prefers the sheet literal with the revision fused on (<span class="mono">S104-01</span> for <span class="mono">S104</span>) and consultant job numbers over drawing numbers. Titles are rarely among the harvested candidates at all. Jev can only pick from what code offers.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPEED -->
+<section class="p c6">
+  <h2>Speed scoreboard <span class="tag">p90 vs budget · line = budget</span></h2>
+  <div class="sp">
+    <div class="sprow"><span>Whole intake</span><div class="track"><div class="bar" style="width:26.8%"></div><div class="bud"></div></div><span class="v">1,070 / 2,000 ms</span></div>
+    <div class="sprow"><span>Jev admission + call</span><div class="track"><div class="bar" style="width:31.9%"></div><div class="bud"></div></div><span class="v">510 / 800 ms</span></div>
+    <div class="sprow"><span>Identity extraction</span><div class="track"><div class="bar f" style="width:100%"></div><div class="bud"></div></div><span class="v f">553 / 250 ms</span></div>
+    <div class="sprow"><span>Field rules</span><div class="track"><div class="bar f" style="width:100%"></div><div class="bud"></div></div><span class="v f">3.0 / 1 ms</span></div>
+    <div class="sprow"><span>Document list API <span class="muted small">(p50)</span></span><div class="track"><div class="bar f" style="width:100%"></div><div class="bud"></div></div><span class="v f">143 / 50 ms</span></div>
+    <div class="sprow"><span>Candidate harvest</span><div class="track"><div class="bar" style="width:0.9%"></div><div class="bud"></div></div><span class="v">0.2 / 10 ms</span></div>
+    <div class="sprow"><span>Commit + SSE</span><div class="track"><div class="bar" style="width:13.2%"></div><div class="bud"></div></div><span class="v">4.0 / 15 ms</span></div>
+    <div class="sprow"><span>Field correction</span><div class="track"><div class="bar" style="width:0.6%"></div><div class="bud"></div></div><span class="v">1.9 / 150 ms</span></div>
+    <div class="sprow"><span>Invite / auth</span><div class="track"><div class="bar" style="width:0.2%"></div><div class="bud"></div></div><span class="v">1.2 / 250 ms</span></div>
+    <div class="sprow"><span>SSE reconnect</span><div class="track"><div class="bar" style="width:0.1%"></div><div class="bud"></div></div><span class="v">0.6 / 250 ms</span></div>
+    <div class="sprow"><span>Health / speed</span><div class="track"></div><span class="v f">no endpoint</span></div>
+  </div>
+  <p class="small muted">Bar reaches the line at exactly the budget and fills the track at 2× or more. 184 files × 2 rounds, concurrency 4, 10% of Jev calls stalled, 19 grey filings. Dev host, not the VPS. The user-visible total passes; four component budgets break the build.</p>
+</section>
+
+<!-- ACCURACY -->
+<section class="p c6">
+  <h2>Accuracy scoreboard <span class="tag">held-out · authoritative fields</span></h2>
+  <div class="acc">
+    <div class="arow"><b>Date</b><div class="stack" title="18 correct, 1 wrong, of 39"><i class="c" style="width:46.2%"></i><i class="w" style="width:2.6%"></i></div><span class="v">18 ✓ 1 ✕ of 39 · 95%</span></div>
+    <div class="arow"><b>Revision</b><div class="stack" title="14 correct, 2 wrong, of 35"><i class="c" style="width:40%"></i><i class="w" style="width:5.7%"></i></div><span class="v">14 ✓ 2 ✕ of 35 · 88%</span></div>
+    <div class="arow"><b>Number</b><div class="stack" title="1 correct, 1 wrong, of 27"><i class="c" style="width:3.7%"></i><i class="w" style="width:3.7%"></i></div><span class="v">1 ✓ 1 ✕ of 27 · 50%</span></div>
+    <div class="arow"><b>Title</b><div class="stack" title="9 correct, 16 wrong, of 45"><i class="c" style="width:20%"></i><i class="w" style="width:35.6%"></i></div><span class="v" style="color:var(--bad)">9 ✓ 16 ✕ of 45 · 36%</span></div>
+    <div class="arow"><b>Supersedes</b><div class="stack"></div><span class="v">0 applied of 27</span></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>applied, correct</span><span><i class="sw" style="background:var(--bad)"></i>applied, wrong (false-confident)</span><span><i class="sw" style="background:var(--grey-soft);border:1px solid var(--rule)"></i>left blank for the user</span></div>
+  <p class="small muted">Every applied value here came from code rules (the rules-only run gives identical numbers), because no Jev threshold exists yet. Date and revision rules are useful now. The title rule is harmful: a wrong value shown as settled breaks objective 3. Kind (83% on calibration) and discipline are diagnostic only, since their keys are folder or model judgements. All three answer keys are still owner-unreviewed.</p>
+</section>
+
+<!-- TECH STACK -->
+<section class="p c6">
+  <h2>Tech stack <span class="tag">one binary, one host</span></h2>
+  <div class="layers">
+    <div class="layer"><span class="lk">Browser</span><div class="lv"><span class="chip">React</span><span class="chip">Vite</span><span class="chip">TypeScript</span><span class="chip">SSE client</span><span class="chip">IBM Plex</span></div></div>
+    <div class="layer"><span class="lk">Binary (Go 1.27)</span><div class="lv"><span class="chip">HTTP API</span><span class="chip">embedded SPA</span><span class="chip">SSE + event log</span><span class="chip">leased job workers</span><span class="chip">embedded PDFium</span><span class="chip">DOCX/XLSX readers</span><span class="chip">magic-link auth</span><span class="chip">latency observer</span></div></div>
+    <div class="layer"><span class="lk">AI</span><div class="lv"><span class="chip" style="border-color:var(--azure);color:var(--azure)">Jev 1.13.0 via hand-written HTTP/2 client</span><span class="chip no">LLMs</span><span class="chip no">embeddings</span><span class="chip no">pgvector</span></div></div>
+    <div class="layer"><span class="lk">Data</span><div class="lv"><span class="chip">PostgreSQL 17</span><span class="chip">sqlc + pgx</span><span class="chip">SQL migrations at start</span><span class="chip">full-text search</span><span class="chip">files by content hash</span></div></div>
+    <div class="layer"><span class="lk">Host (T12)</span><div class="lv"><span class="chip">VPS</span><span class="chip">Caddy</span><span class="chip">systemd</span><span class="chip">off-site backup</span><span class="chip no">Docker</span><span class="chip no">Supabase</span></div></div>
+    <div class="layer"><span class="lk">Gates</span><div class="lv"><span class="chip">Go tests</span><span class="chip">Playwright e2e</span><span class="chip">cmd/intake-eval</span><span class="chip">cmd/intake-bench</span><span class="chip">check_knowledge.py</span><span class="chip">tools/check.ps1</span><span class="chip">GitHub Actions (public checks)</span></div></div>
+  </div>
+  <p class="small muted">Tables: orgs, users, memberships, invites, sessions, projects, files, documents, decisions (one row per field: value, confidence, band, decided by rule/Jev/user, question version), passages, jobs, events. Every row carries <span class="mono">org_id</span>. The corpus is private and the repo is public, so accuracy and latency gates run locally, not in CI.</p>
+</section>
+
+<!-- KNOWLEDGE -->
+<section class="p c6">
+  <h2>The building model <span class="tag">knowledge/ · all draft</span></h2>
+  <div class="kn">
+    <div><b>143</b><span>systems</span></div>
+    <div><b>66</b><span>determinants</span></div>
+    <div><b>226</b><span>rules</span></div>
+    <div><b>140</b><span>interfaces</span></div>
+    <div><b>172</b><span>failure modes</span></div>
+  </div>
+  <div class="chain2"><span class="chip">determinants</span>→<span class="chip">NCC class · rise · height · sprinklered…</span>→<span class="chip">code table lookup</span>→<span class="chip">Type of Construction → FRLs</span></div>
+  <p class="small">Six clusters: <span class="muted">site/ground/structure · envelope/interiors/energy · fire/access · services (wet &amp; air) · electrical/comms/lifts · determinants.</span></p>
+  <div class="tbl"><table>
+    <tbody>
+      <tr><td>Primary-verified NCC 2022 tables</td><td class="mono">2</td><td><span class="pill ok">type of construction · compartment limits</span></td></tr>
+      <tr><td>Tables still missing</td><td class="mono">9</td><td><span class="pill part">11 derivations pending</span></td></tr>
+      <tr><td>Seed numbers executable</td><td class="mono">0</td><td><span class="pill no">by rule: instrument only</span></td></tr>
+      <tr><td>Owner-reviewed records</td><td class="mono">0</td><td><span class="pill part">all draft</span></td></tr>
+      <tr><td>Wired into the app</td><td class="mono">—</td><td><span class="pill part">fire pilot labelling + evaluator</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">This is the long-term moat: compliance and coordination reasoning built on the physical building rather than on consultant silos. It is compiled and checked but not yet visible to a user.</p>
+</section>
+
+<!-- NEXT -->
+<section class="p c12">
+  <h2>How to move it forward <span class="tag">in priority order</span></h2>
+  <div class="next">
+    <div class="nx"><h3>Stop rules being confidently wrong</h3><p>Fix or demote the title rule (16 wrong of 25 applied), and the revision, number and date misses. A rule should only settle what is unambiguous; everything else goes to Jev or stays blank.</p><span class="why">Trust at a glance is the product. One wrong green costs more than ten blanks.</span></div>
+    <div class="nx"><h3>Fix candidate harvesting</h3><p>Offer the bare sheet number alongside the fused form (<span class="mono">S104</span> and <span class="mono">S104-01</span>), tag consultant job numbers so they are not offered as drawing numbers, and harvest full title-block titles.</p><span class="why">Jev can only pick what code offers. This raises its ceiling the most.</span></div>
+    <div class="nx"><h3>Grow and review the answer keys</h3><p>Get each field × option-shape to 30+ calibration answers, have the owner review Hale, Petersham and Newham keys, then re-run live and accept a baseline with <span class="mono">-accept</span>.</p><span class="why">Without fitted thresholds, Jev is fast but switched off.</span></div>
+    <div class="nx"><h3>Close the three speed misses</h3><p>Identity extraction (read fewer pages, bound PDFium work), document list (index and query shape: 143 ms → 50 ms), rules p90 tail. Then measure on the real VPS, not the dev box.</p><span class="why">Whole intake already passes; components must too, or the build stays red.</span></div>
+    <div class="nx"><h3>Finish Task 12 and invite users</h3><p>Health and speed endpoints, systemd + Caddy packaging, continuous Postgres and nightly file backups, a rehearsed restore. Then the first invite.</p><span class="why">Real filings by real project managers are the best calibration data you can get.</span></div>
+    <div class="nx"><h3>Then widen the product</h3><p>Search (FTS shortlist + Jev rerank, pick the faster shape on a gold set), OCR path for the 55 scans, verify the 9 missing NCC tables, and surface the fire pilot as a coordination view.</p><span class="why">This is where the building model starts paying back.</span></div>
+  </div>
+</section>
+
+</div>
+
+<footer class="foot">
+  <span>Sources: docs/design/2026-09-29-foundation-design.md · docs/plans/2026-09-29-instant-intake.md · HANDOFF.md · PRODUCT.md · data/eval/intake/results/live-latest.json · bench/results/latest.json</span>
+  <span>Jev docs: <a href="https://docs.typesafe.ai/concepts/how-to-build-with-system-one">how to build</a> · <a href="https://docs.typesafe.ai/patterns/fan-out">fan-out</a> · <a href="https://docs.typesafe.ai/confidence">confidence</a> · <a href="https://docs.typesafe.ai/model-jaggedness/jev-1.13">jev-1.13 limits</a></span>
+</footer>
+</div>
+</body>
+</html>
