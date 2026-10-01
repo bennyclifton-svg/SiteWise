@@ -40,6 +40,8 @@ type Options struct {
 	MaxUploadBytes int64
 	Log            *log.Logger
 	FilingTimeout  time.Duration
+	// Observe receives per-path filing latency; nil records nothing.
+	Observe intake.Observer
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -69,6 +71,9 @@ func New(opts Options) (*Server, error) {
 	svc, err := intake.NewService(opts.Store, opts.Jev, opts.Catalog, opts.Thresholds)
 	if err != nil {
 		return nil, err
+	}
+	if opts.Observe != nil {
+		svc.Observe(opts.Observe)
 	}
 	broker := events.NewBroker(opts.Store)
 	runner := intake.NewRunner(opts.Blobs, opts.Store, svc)

@@ -1,0 +1,58 @@
+# Public CI runs every check that needs no private data: knowledge, Go tests
+# against PostgreSQL 17, the SPA build and the Playwright intake flow.
+#
+# It cannot run the accuracy or latency gates. The corpus, answer-key labels
+# and recorded Jev exchanges are private and this repository is public, so
+# they never reach a hosted runner. Those gates run with tools/check.ps1 on a
+# host that has the corpus (deterministic replay), and live on the intended
+# VPS before release (cmd/intake-eval -live, cmd/intake-bench -live). Passing
+# this workflow is not evidence that either gate passed.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  public:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: sitewise
+          POSTGRES_DB: sitewise_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sitewise -d sitewise_test"
+          --health-interval 2s --health-timeout 5s --health-retries 30
+    env:
+      SITEWISE_TEST_DATABASE_URL: postgres://sitewise@127.0.0.1:5433/sitewise_test?sslmode=disable
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - run: python tools/check_knowledge.py --strict
+      - run: python -m unittest discover -s tools -p 'test_*.py'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm --prefix web ci
+      - run: npm --prefix web run build
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test ./... -count=1
+      - run: npx --prefix web playwright install --with-deps chromium
+      - run: npm --prefix web run test:e2e

@@ -40,5 +40,14 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & npm --prefix web run test:e2e
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-& go run ./cmd/sitewise gate -budgets bench/budgets.json -samples bench/samples.json
+# Accuracy: deterministic replay of the recorded live Jev run over the private
+# corpus. A missing corpus, recording, sample floor, baseline or a regression
+# fails here. Record with -live (SITEWISE_JEV_API_KEY) before the first run.
+& go run ./cmd/intake-eval -manifest data/eval/intake/manifest.json -replay
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# Latency: every budgeted path through the real server, gated by
+# bench/budgets.json. The release gate is the same command with -live on the
+# intended VPS; replayed provider latency is a timing model, not evidence.
+& go run ./cmd/intake-bench -manifest data/eval/intake/manifest.json -budgets bench/budgets.json
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

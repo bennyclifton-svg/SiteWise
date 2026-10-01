@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "mode": "rules-only",
+  "model": "jev-1.13.0",
+  "question_version": "intake-1",
+  "generated_at": "2026-10-01T09:50:03.3828498Z",
+  "inputs": {
+    "key:hale-design-docs.yaml": "5586ea53b5f0306a957915f12c61d37a45218d6b8c5ec2de83fdc9e3a7af544c",
+    "key:newham-design-docs.yaml": "25ff60caa7d01501febfee9319c84a695c6ca36688ee3d706923fab46b74cfa3",
+    "key:petersham-design-docs.yaml": "5fb17c9e3d6b7a79bd385bafafa5188f138cf1c9fdd95ca54abc5a5f79e67b88",
+    "manifest": "45f39479613284697a15492dc6f6ac1998e767f6ff3471f32a04ae5885bc660e",
+    "thresholds": "9f3be078ac7540090685e4d43ec0d6c9aeec8957df2d16490ac9653a3475470f"
+  },
+  "cases": {
+    "total": 184,
+    "by_split": {
+      "calibration": 131,
+      "heldout": 53
+    },
+    "families": {
+      "calibration": 20,
+      "heldout": 17
+    },
+    "not_filed": {
+      "no_text_layer": 55,
+      "too_large": 1
+    },
+    "excluded": {
+      "duplicate_file": 1,
+      "later_page": 76
+    },
+    "adjudication": {
+      "unreviewed": 184
+    }
+  },
+  "metrics": {
+    "calibration": {
+      "authoritative": {
+        "date": {
+          "scored": 56,
+          "applied": 11,
+          "correct": 7,
+          "amber": 0,
+          "grey": 0,
+          "false_confident": 4,
+          "coverage": 0.19642857142857142,
+          "accuracy": 0.6363636363636364,
+          "accuracy_low": 0.39400679042815945,
+          "accuracy_high": 0.8248750516814239,
+          "amber_rate": 0
+        },
+        "number": {
+          "scored": 92,
+          "applied": 7,
+          "correct": 0,
+          "amber": 0,
+          "grey": 42,
+          "false_confident": 7,
+          "coverage": 0.07608695652173914,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0.2787984782647891,
+          "amber_rate": 0
+        },
+        "revision": {
+          "scored": 92,
+          "applied": 11,
+          "correct": 5,
+          "amber": 0,
+          "grey": 6,
+          "false_confident": 6,
+          "coverage": 0.11956521739130435,
+          "accuracy": 0.45454545454545453,
+          "accuracy_low": 0.24209040759667674,
+          "accuracy_high": 0.6849489783667957,
+          "amber_rate": 0
+        },
+        "supersedes": {
+          "scored": 92,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 3,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "title": {
+          "scored": 98,
+          "applied": 10,
+          "correct": 3,
+          "amber": 0,
+          "grey": 27,
+          "false_confident": 7,
+          "coverage": 0.10204081632653061,
+          "accuracy": 0.3,
+          "accuracy_low": 0.12686685286055388,
+          "accuracy_high": 0.5583218666642384,
+          "amber_rate": 0
+        }
+      },
+      "diagnostic": {
+        "discipline": {
+          "scored": 126,
+          "applied": 3,
+          "correct": 2,
+          "amber": 0,
+          "grey": 77,
+          "false_confident": 1,
+          "coverage": 0.023809523809523808,
+          "accuracy": 0.6666666666666666,
+          "accuracy_low": 0.2535099661042376,
+          "accuracy_high": 0.9217433845207598,
+          "amber_rate": 0
+        },
+        "kind": {
+          "scored": 130,
+          "applied": 47,
+          "correct": 39,
+          "amber": 0,
+          "grey": 36,
+          "false_confident": 8,
+          "coverage": 0.36153846153846153,
+          "accuracy": 0.8297872340425532,
+          "accuracy_low": 0.7223261736548598,
+          "accuracy_high": 0.9013406755852474,
+          "amber_rate": 0
+        },
+        "number": {
+          "scored": 27,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 27,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "supersedes": {
+          "scored": 27,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 3,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "title": {
+          "scored": 27,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 27,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        }
+      }
+    },
+    "heldout": {
+      "authoritative": {
+        "date": {
+          "scored": 39,
+          "applied": 19,
+          "correct": 18,
+          "amber": 0,
+          "grey": 0,
+          "false_confident": 1,
+          "coverage": 0.48717948717948717,
+          "accuracy": 0.9473684210526315,
+          "accuracy_low": 0.7950219783619278,
+          "accuracy_high": 0.9881707066183946,
+          "amber_rate": 0
+        },
+        "number": {
+          "scored": 27,
+          "applied": 2,
+          "correct": 1,
+          "amber": 0,
+          "grey": 14,
+          "false_confident": 1,
+          "coverage": 0.07407407407407407,
+          "accuracy": 0.5,
+          "accuracy_low": 0.12085198061245211,
+          "accuracy_high": 0.8791480193875478,
+          "amber_rate": 0
+        },
+        "revision": {
+          "scored": 35,
+          "applied": 16,
+          "correct": 14,
+          "amber": 0,
+          "grey": 1,
+          "false_confident": 2,
+          "coverage": 0.45714285714285713,
+          "accuracy": 0.875,
+          "accuracy_low": 0.6837666133634829,
+          "accuracy_high": 0.9577379286223212,
+          "amber_rate": 0
+        },
+        "supersedes": {
+          "scored": 27,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 1,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "title": {
+          "scored": 45,
+          "applied": 25,
+          "correct": 9,
+          "amber": 0,
+          "grey": 12,
+          "false_confident": 16,
+          "coverage": 0.5555555555555556,
+          "accuracy": 0.36,
+          "accuracy_low": 0.22304184752371925,
+          "accuracy_high": 0.5243055254754749,
+          "amber_rate": 0
+        }
+      },
+      "diagnostic": {
+        "date": {
+          "scored": 1,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 0,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "discipline": {
+          "scored": 38,
+          "applied": 5,
+          "correct": 2,
+          "amber": 0,
+          "grey": 25,
+          "false_confident": 3,
+          "coverage": 0.13157894736842105,
+          "accuracy": 0.4,
+          "accuracy_low": 0.14269339978831969,
+          "accuracy_high": 0.727538010050086,
+          "amber_rate": 0
+        },
+        "kind": {
+          "scored": 46,
+          "applied": 14,
+          "correct": 13,
+          "amber": 0,
+          "grey": 24,
+          "false_confident": 1,
+          "coverage": 0.30434782608695654,
+          "accuracy": 0.9285714285714286,
+          "accuracy_low": 0.7344017914683688,
+          "accuracy_high": 0.9839019342832684,
+          "amber_rate": 0
+        },
+        "number": {
+          "scored": 2,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 2,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "revision": {
+          "scored": 3,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 0,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "supersedes": {
+          "scored": 2,
+          "applied": 0,
+          "correct": 0,
+          "amber": 0,
+          "grey": 0,
+          "false_confident": 0,
+          "coverage": 0,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0,
+          "amber_rate": 0
+        },
+        "title": {
+          "scored": 3,
+          "applied": 2,
+          "correct": 0,
+          "amber": 0,
+          "grey": 1,
+          "false_confident": 2,
+          "coverage": 0.6666666666666666,
+          "accuracy": 0,
+          "accuracy_low": 0,
+          "accuracy_high": 0.5750128824220015,
+          "amber_rate": 0
+        }
+      }
+    }
+  },
+  "supersession": {
+    "calibration": {
+      "asked": 0,
+      "scored": 92,
+      "automatic": 0,
+      "incorrect": 0,
+      "unverified": 0
+    },
+    "heldout": {
+      "asked": 0,
+      "scored": 27,
+      "automatic": 0,
+      "incorrect": 0,
+      "unverified": 0
+    }
+  },
+  "jev": {
+    "calls": 127,
+    "errors": 127,
+    "grey_filings": 127,
+    "replay_misses": 0,
+    "recorded_over_interactive_deadline": 0,
+    "interactive_deadline_us": 1200000
+  },
+  "notes": [
+    "Every answer key is adjudication: unreviewed. Authoritative means transcribed from a register or transmittal, not owner-reviewed.",
+    "Accuracy is over applied values with a Wilson interval at the gate z; coverage is applied over scored. Read both with the sample sizes above.",
+    "Discipline and kind labels are model or folder judgements in every key and are diagnostic only; they neither fit thresholds nor gate."
+  ],
+  "gate": {
+    "passed": false,
+    "failures": [
+      "rules-only is diagnostic; the gate needs -replay of a live recording"
+    ]
+  }
+}

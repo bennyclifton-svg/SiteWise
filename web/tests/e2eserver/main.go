@@ -210,10 +210,10 @@ func thresholds(cat intake.Catalog) intake.Thresholds {
 	return intake.Thresholds{
 		QuestionVersion: intake.QuestionVersion,
 		Reconciliation:  "e2e fixture thresholds; not calibrated",
-		Questions: map[string]intake.Threshold{
-			intake.FieldKind:       cut(len(cat.Kinds)),
-			intake.FieldDiscipline: cut(len(cat.Disciplines)),
-			intake.FieldLifecycle:  cut(len(cat.Lifecycle)),
+		Questions: map[string][]intake.Threshold{
+			intake.FieldKind:       {cut(len(cat.Kinds))},
+			intake.FieldDiscipline: {cut(len(cat.Disciplines))},
+			intake.FieldLifecycle:  {cut(len(cat.Lifecycle))},
 		},
 	}
 }

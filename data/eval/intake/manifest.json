@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "question_version": "intake-1",
+  "model": "jev-1.13.0",
+  "privacy": "This repository is public. Corpus files, answer-key labels and recorded Jev requests contain private project text, so they stay outside Git: keys are read from the frozen clerk checkout and pinned here by hash, the corpus is read in place, and recordings and per-case results go to private_dir, which is ignored. Only hashes, counts and aggregate metrics are committed.",
+  "corpus_root": "../Test Data",
+  "keys_root": "../clerk/data/eval/jev/answer-keys",
+  "private_dir": "data/eval/intake/private",
+  "corpora": [
+    {"name": "hale", "key": "hale-design-docs.yaml", "key_sha256": "5586ea53b5f0306a957915f12c61d37a45218d6b8c5ec2de83fdc9e3a7af544c", "root": "Hale/Procurement/02 TENDER PACK"},
+    {"name": "petersham", "key": "petersham-design-docs.yaml", "key_sha256": "5fb17c9e3d6b7a79bd385bafafa5188f138cf1c9fdd95ca54abc5a5f79e67b88", "root": "delivery-petersham/03 ANX Q PPR"},
+    {"name": "newham", "key": "newham-design-docs.yaml", "key_sha256": "25ff60caa7d01501febfee9319c84a695c6ca36688ee3d706923fab46b74cfa3", "root": "Newham Kit"}
+  ],
+  "authoritative_label_sources": ["award-doc", "owner"],
+  "authoritative_fields": ["number", "revision", "title", "date"],
+  "diagnostic_fields": {
+    "discipline": "category is a folder or model judgement in every key (hale-design-docs notes, petersham folders, newham label_source model)",
+    "kind": "doc_type is a model judgement (hale-register-map.yaml); the keys use drawing/report/other, not the 12-label kind list",
+    "lifecycle": "no key labels lifecycle; it is not scored"
+  },
+  "kind_map": {"drawing": "drawing", "report": "report"},
+  "flags": {
+    "register_ref_is_revision_like": ["number"],
+    "register_revision_differs_from_filename": ["revision"],
+    "later_revision_than_transmittal": ["revision"],
+    "markup_over_architect_base_sheet": ["number", "revision", "title"],
+    "register_number_copy_error": ["number"],
+    "register_number_differs_from_filename": ["number"],
+    "register_title_typo": ["title"],
+    "register_rows_merged_in_file": ["title"],
+    "multi_sheet_listed_once": [],
+    "later_revision_also_in_pack": [],
+    "filed_twice_in_pack": [],
+    "index_pairing_by_model": [],
+    "windows_short_filename": [],
+    "builder_sheet_without_drawing_number": [],
+    "filename_says_cc_plans_but_structural_set": []
+  },
+  "split": {"salt": "intake-1", "calibration_percent": 60},
+  "fit": {
+    "number": {"z": 1.645, "min_samples": 30, "min_band_samples": 10, "green_lower": 0.9, "amber_lower": 0.6, "max_errors": -1},
+    "revision": {"z": 1.645, "min_samples": 30, "min_band_samples": 10, "green_lower": 0.9, "amber_lower": 0.6, "max_errors": -1},
+    "title": {"z": 1.645, "min_samples": 30, "min_band_samples": 10, "green_lower": 0.9, "amber_lower": 0.6, "max_errors": -1},
+    "supersedes": {"z": 1.645, "min_samples": 30, "min_band_samples": 20, "green_lower": 0.95, "amber_lower": 0.95, "max_errors": 0}
+  },
+  "gate": {
+    "z": 1.645,
+    "min_cases": 100,
+    "min_heldout": {"number": 20, "revision": 20, "title": 20},
+    "max_incorrect_supersession": 0
+  },
+  "baseline": "data/eval/intake/results/baseline.json"
+}

@@ -34,10 +34,12 @@ import (
 // A non-zero Slots value must be paired with InteractiveReserve; the default
 // reserve belongs to the default pool of TotalSlots.
 type Options struct {
-	BaseURL            string
-	APIKey             string
-	Model              string
-	Transport          *http.Transport
+	BaseURL string
+	APIKey  string
+	Model   string
+	// Transport defaults to NewTransport. Evaluation passes a recording or
+	// replaying round tripper; production keeps the default.
+	Transport          http.RoundTripper
 	Logger             *slog.Logger
 	Slots              int
 	InteractiveReserve int

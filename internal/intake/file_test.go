@@ -42,7 +42,7 @@ func TestPartialThresholdRejected(t *testing.T) {
 	body := []byte(`{
 		"question_version": "intake-1",
 		"reconciliation": "partial cut-off",
-		"questions": {"number": {"green": 0.9, "amber": null, "options": null}}
+		"questions": {"number": [{"green": 0.9, "amber": null, "options": null}]}
 	}`)
 	if err := os.WriteFile(filepath.Join(dir, "thresholds.json"), body, 0o600); err != nil {
 		t.Fatal(err)
@@ -55,8 +55,8 @@ func TestPartialThresholdRejected(t *testing.T) {
 func TestBandStaysWithQuestionShape(t *testing.T) {
 	thresholds := intake.Thresholds{
 		QuestionVersion: intake.QuestionVersion,
-		Questions: map[string]intake.Threshold{
-			intake.FieldNumber: cut(0.9, 0.6, 3),
+		Questions: map[string][]intake.Threshold{
+			intake.FieldNumber: {cut(0.9, 0.6, 3)},
 		},
 	}
 	high := 0.95
@@ -76,6 +76,44 @@ func TestBandStaysWithQuestionShape(t *testing.T) {
 	}
 	if _, ok := thresholds.Band(intake.FieldTitle, &high, 3); ok {
 		t.Fatal("threshold transferred to another question")
+	}
+}
+
+func TestOverlappingShapesRejected(t *testing.T) {
+	dir := t.TempDir()
+	body := []byte(`{
+		"question_version": "intake-1",
+		"reconciliation": "overlapping shapes",
+		"questions": {"number": [
+			{"options": 3, "max_options": 4, "green": 0.9, "amber": 0.6},
+			{"options": 4, "max_options": 8, "green": 0.9, "amber": 0.6}
+		]}
+	}`)
+	if err := os.WriteFile(filepath.Join(dir, "thresholds.json"), body, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := intake.LoadThresholds(dir); err == nil {
+		t.Fatal("one option count must not have two cut-offs")
+	}
+}
+
+func TestBandUsesTheShapeRangeHoldingTheOptionCount(t *testing.T) {
+	small, wide := cut(0.9, 0.6, 3), cut(0.95, 0.8, 5)
+	max4, max8 := 4, 8
+	small.MaxOptions, wide.MaxOptions = &max4, &max8
+	thresholds := intake.Thresholds{
+		QuestionVersion: intake.QuestionVersion,
+		Questions:       map[string][]intake.Threshold{intake.FieldNumber: {small, wide}},
+	}
+	c := 0.92
+	if band, ok := thresholds.Band(intake.FieldNumber, &c, 4); !ok || band != intake.BandGreen {
+		t.Fatalf("4 options %s %v", band, ok)
+	}
+	if band, ok := thresholds.Band(intake.FieldNumber, &c, 7); !ok || band != intake.BandAmber {
+		t.Fatalf("7 options %s %v", band, ok)
+	}
+	if _, ok := thresholds.Band(intake.FieldNumber, &c, 9); ok {
+		t.Fatal("no cut-off covers 9 options")
 	}
 }
 
@@ -133,7 +171,7 @@ func TestFileAmbiguousSendsOneJev(t *testing.T) {
 		writeRecorded(t, w, body, map[string]string{intake.FieldNumber: "A-100"}, map[string]float64{intake.FieldNumber: 0.97})
 	}), intake.Thresholds{
 		QuestionVersion: intake.QuestionVersion,
-		Questions:       map[string]intake.Threshold{intake.FieldNumber: cut(0.9, 0.6, 3)},
+		Questions:       map[string][]intake.Threshold{intake.FieldNumber: {cut(0.9, 0.6, 3)}},
 	}, 0)
 
 	ctx := context.Background()
@@ -210,7 +248,7 @@ func TestFileBlankDoesNotInvent(t *testing.T) {
 		writeRecorded(t, w, body, map[string]string{intake.FieldNumber: "B-200"}, map[string]float64{intake.FieldNumber: 0.2})
 	}), intake.Thresholds{
 		QuestionVersion: intake.QuestionVersion,
-		Questions:       map[string]intake.Threshold{intake.FieldNumber: cut(0.9, 0.6, 3)},
+		Questions:       map[string][]intake.Threshold{intake.FieldNumber: {cut(0.9, 0.6, 3)}},
 	}, 0)
 
 	ctx := context.Background()
@@ -247,7 +285,7 @@ func TestFileNoneIsNotANumber(t *testing.T) {
 		writeRecorded(t, w, body, map[string]string{intake.FieldNumber: "none"}, map[string]float64{intake.FieldNumber: 0.99})
 	}), intake.Thresholds{
 		QuestionVersion: intake.QuestionVersion,
-		Questions:       map[string]intake.Threshold{intake.FieldNumber: cut(0.9, 0.6, 3)},
+		Questions:       map[string][]intake.Threshold{intake.FieldNumber: {cut(0.9, 0.6, 3)}},
 	}, 0)
 
 	ctx := context.Background()
@@ -286,7 +324,7 @@ func TestFileCorrectionBeatsLateJev(t *testing.T) {
 		writeRecorded(t, w, body, map[string]string{intake.FieldNumber: "A-100"}, map[string]float64{intake.FieldNumber: 0.99})
 	}), intake.Thresholds{
 		QuestionVersion: intake.QuestionVersion,
-		Questions:       map[string]intake.Threshold{intake.FieldNumber: cut(0.9, 0.6, 3)},
+		Questions:       map[string][]intake.Threshold{intake.FieldNumber: {cut(0.9, 0.6, 3)}},
 	}, 5*time.Second)
 
 	ctx := context.Background()
@@ -477,9 +515,9 @@ func TestFileSupersessionStaysInSeries(t *testing.T) {
 			})
 		}), intake.Thresholds{
 			QuestionVersion: intake.QuestionVersion,
-			Questions: map[string]intake.Threshold{
-				intake.FieldNumber:     cut(0.9, 0.5, 3),
-				intake.FieldSupersedes: cut(0.9, 0.5, 3),
+			Questions: map[string][]intake.Threshold{
+				intake.FieldNumber:     {cut(0.9, 0.5, 3)},
+				intake.FieldSupersedes: {cut(0.9, 0.5, 3)},
 			},
 		}, 0)
 		project := testID(13)
@@ -520,9 +558,9 @@ func TestFileSupersessionStaysInSeries(t *testing.T) {
 			})
 		}), intake.Thresholds{
 			QuestionVersion: intake.QuestionVersion,
-			Questions: map[string]intake.Threshold{
-				intake.FieldNumber:     cut(0.9, 0.5, 3),
-				intake.FieldSupersedes: cut(0.9, 0.5, 3),
+			Questions: map[string][]intake.Threshold{
+				intake.FieldNumber:     {cut(0.9, 0.5, 3)},
+				intake.FieldSupersedes: {cut(0.9, 0.5, 3)},
 			},
 		}, 0)
 		project := testID(14)
@@ -609,8 +647,8 @@ func cut(green, amber float64, options int) intake.Threshold {
 func supersedesThreshold(options int, green, amber float64) intake.Thresholds {
 	return intake.Thresholds{
 		QuestionVersion: intake.QuestionVersion,
-		Questions: map[string]intake.Threshold{
-			intake.FieldSupersedes: cut(green, amber, options),
+		Questions: map[string][]intake.Threshold{
+			intake.FieldSupersedes: {cut(green, amber, options)},
 		},
 	}
 }

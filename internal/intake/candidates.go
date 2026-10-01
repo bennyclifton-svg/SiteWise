@@ -293,6 +293,12 @@ func newCandidate(field, display string, prov Provenance) (Candidate, bool) {
 	return Candidate{Field: field, Display: display, Normalized: normalized, Provenance: prov}, true
 }
 
+// Normalize is the comparison form intake uses for a harvested value. ok is
+// false when the value is not a valid number, revision, title or date.
+func Normalize(field, display string) (string, bool) {
+	return normalize(field, display)
+}
+
 func normalize(field, display string) (string, bool) {
 	switch field {
 	case FieldNumber:

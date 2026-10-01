@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"sitewise/internal/files"
 	"sitewise/internal/identity"
@@ -71,7 +72,9 @@ func (r *Runner) Run(ctx context.Context, orgID, documentID string) error {
 	if format == "" {
 		return r.notFiled(ctx, orgID, documentID, ReasonUnsupported)
 	}
+	start := time.Now()
 	text, err := r.identity(ctx, orgID, doc.FileID, format)
+	r.svc.observe(PathIdentity, time.Since(start))
 	switch {
 	case errors.Is(err, identity.ErrTooLarge):
 		return r.notFiled(ctx, orgID, documentID, ReasonTooLarge)

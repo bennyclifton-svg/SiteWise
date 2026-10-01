@@ -6,3 +6,8 @@ web/dist/*
 !web/dist/.gitkeep
 web/test-results/
 web/playwright-report/
+# Private evaluation data: recordings hold identity text from private corpus
+# documents, and per-case results hold their labels. This repository is public.
+data/eval/intake/private/
+# Raw latency samples are machine-local; bench/results/ holds the metadata.
+bench/samples.json

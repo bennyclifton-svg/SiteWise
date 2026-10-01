@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"sitewise/internal/identity"
 	"sitewise/internal/jev"
@@ -25,6 +26,7 @@ type Service struct {
 	jev        Asker
 	catalog    Catalog
 	thresholds Thresholds
+	observer   Observer
 }
 
 // Filed is the durable result of one intake pass.
@@ -66,90 +68,66 @@ func (s *Service) File(ctx context.Context, orgID, documentID string, text ident
 		return Filed{}, err
 	}
 	versions := make(map[string]int64, len(existing))
-	by := map[string]Decision{}
+	users := map[string]Decision{}
 	for _, row := range existing {
 		versions[row.Field] = row.Version
 		if row.DecidedBy == DecidedByUser {
-			by[row.Field] = decisionFromStored(row)
+			users[row.Field] = decisionFromStored(row)
 		}
 	}
 
+	start := time.Now()
 	harvested := Harvest(doc.Filename, text)
-	for _, result := range Decide(harvested) {
-		if _, user := by[result.Field]; user {
-			continue
-		}
-		if result.Settled {
-			by[result.Field] = ruleDecision(result, BandGreen)
-			continue
-		}
-		if result.Rule == RuleMissing {
-			by[result.Field] = Decision{Field: result.Field, Band: BandBlank, DecidedBy: DecidedByRule}
-		}
-	}
-	for _, result := range settleVocabulary(s.catalog, doc.Filename, text) {
-		if _, taken := by[result.Field]; taken {
-			continue
-		}
-		by[result.Field] = ruleDecision(result, BandGreen)
-	}
+	s.observe(PathHarvest, time.Since(start))
+	start = time.Now()
+	draft := NewDraft(s.catalog, doc.Filename, text, harvested, users)
+	s.observe(PathRules, time.Since(start))
 
 	docs, err := s.store.ProjectDocuments(ctx, orgID, doc.ProjectID)
 	if err != nil {
 		return Filed{}, err
 	}
-	priors := seriesPriors(harvested, docs, documentID)
-	questions := s.questions(by, harvested, priors)
-	if len(priors)+1 > jev.MaxChoiceOptions && by[FieldSupersedes].DecidedBy != DecidedByUser {
-		by[FieldSupersedes] = Decision{Field: FieldSupersedes, Band: BandBlank, DecidedBy: DecidedByRule}
-	}
+	draft.Plan(docs, documentID)
 
 	grey := false
-	if len(questions) > 0 {
-		result, err := s.jev.Ask(ctx, callFrom(filingStateOf(doc.Filename, text, harvested), questions))
-		if err != nil {
-			if ctx.Err() != nil {
-				return Filed{}, ctx.Err()
-			}
-			grey = true
+	if call, ok := draft.Call(); ok {
+		start = time.Now()
+		result, err := s.jev.Ask(ctx, call)
+		s.observe(PathJev, time.Since(start))
+		if err != nil && ctx.Err() != nil {
+			return Filed{}, ctx.Err()
 		}
-		for _, q := range questions {
-			if by[q.Field].DecidedBy == DecidedByUser {
-				continue
-			}
-			if grey {
-				by[q.Field] = Decision{
-					Field:           q.Field,
-					Band:            BandGrey,
-					DecidedBy:       DecidedByJev,
-					QuestionVersion: QuestionVersion,
-				}
-				continue
-			}
-			ans, ok := result.Answers[q.Field]
-			by[q.Field] = fromAnswer(q, ans, ok, s.thresholds)
-		}
-	}
-	for _, field := range []string{FieldNumber, FieldRevision, FieldTitle, FieldDate} {
-		if _, ok := by[field]; !ok {
-			by[field] = Decision{Field: field, Band: BandBlank, DecidedBy: DecidedByRule}
-		}
+		grey = draft.Apply(result, err, s.thresholds)
 	}
 
 	links, err := s.store.OrgSupersessions(ctx, orgID)
 	if err != nil {
 		return Filed{}, err
 	}
-	priorID := priorToLink(by, priors, by[FieldRevision].Value, documentID, links)
+	priorID := draft.Link(links, documentID)
+	draft.fillBlanks()
+	start = time.Now()
 	out, err := s.store.CommitFiling(ctx, orgID, documentID, store.CommitFiling{
-		Decisions: decisionWrites(by, versions),
+		Decisions: decisionWrites(draft.by, versions),
 		PriorID:   priorID,
 		RetryJev:  grey,
 	})
+	s.observe(PathCommit, time.Since(start))
 	if err != nil {
 		return Filed{}, err
 	}
 	return filedFrom(out), nil
+}
+
+// Observe reports per-path latency to o. Set it before the first filing.
+func (s *Service) Observe(o Observer) {
+	s.observer = o
+}
+
+func (s *Service) observe(path string, d time.Duration) {
+	if s.observer != nil {
+		s.observer(path, d)
+	}
 }
 
 // Correct stores a user value. An in-flight filing that answers the same field
@@ -163,46 +141,6 @@ func (s *Service) Correct(ctx context.Context, orgID, documentID, field, value s
 		return errors.New("correction is too long")
 	}
 	return s.store.CorrectDecision(ctx, orgID, documentID, field, value)
-}
-
-func (s *Service) questions(by map[string]Decision, harvested []Candidate, priors []store.NumberedDocument) []builtQuestion {
-	var out []builtQuestion
-	if _, ok := by[FieldKind]; !ok {
-		if q, ok := catalogQuestion(FieldKind, "Which kind is this document?", kindIDs(s.catalog), kindLabels(s.catalog)); ok {
-			out = append(out, q)
-		}
-	}
-	if _, ok := by[FieldDiscipline]; !ok {
-		if q, ok := catalogQuestion(FieldDiscipline, "Which discipline produced this document?", disciplineIDs(s.catalog), disciplineLabels(s.catalog)); ok {
-			out = append(out, q)
-		}
-	}
-	if _, ok := by[FieldLifecycle]; !ok {
-		if q, ok := catalogQuestion(FieldLifecycle, "Which lifecycle area does this document belong to?", lifecycleIDs(s.catalog), lifecycleLabels(s.catalog)); ok {
-			out = append(out, q)
-		}
-	}
-	if _, ok := by[FieldNumber]; !ok {
-		if q, ok := identityQuestion(FieldNumber, "Which candidate is this document's number? Choose none if none of them is. Do not invent a number.", harvested); ok {
-			out = append(out, q)
-		}
-	}
-	if _, ok := by[FieldRevision]; !ok {
-		if q, ok := identityQuestion(FieldRevision, "Which candidate is this document's revision? Choose none if none of them is. Do not invent a revision.", harvested); ok {
-			out = append(out, q)
-		}
-	}
-	if _, ok := by[FieldTitle]; !ok {
-		if q, ok := identityQuestion(FieldTitle, "Which candidate is this document's title? Choose none if none of them is. Do not invent a title.", harvested); ok {
-			out = append(out, q)
-		}
-	}
-	if _, ok := by[FieldSupersedes]; !ok {
-		if q, ok := supersessionQuestion(priors); ok {
-			out = append(out, q)
-		}
-	}
-	return out
 }
 
 func (s *Service) load(ctx context.Context, orgID, documentID string) (Filed, error) {

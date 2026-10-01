@@ -1,6 +1,7 @@
 package intake
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -43,19 +44,26 @@ type Decision struct {
 	Confidence      *float64
 }
 
-// Threshold is the calibrated cut-off for one question, version and option count.
-// A nil cut-off is unknown and must not authorise an automatic action.
+// Threshold is the calibrated cut-off for one question, version and option
+// shape. Options is the smallest option count it covers and MaxOptions the
+// largest; a nil MaxOptions covers Options exactly. A nil cut-off is unknown
+// and must not authorise an automatic action. N is the number of calibration
+// answers behind the fit; it is evidence, not a setting.
 type Threshold struct {
-	Green   *float64 `json:"green"`
-	Amber   *float64 `json:"amber"`
-	Options *int     `json:"options"`
+	Options    *int     `json:"options"`
+	MaxOptions *int     `json:"max_options,omitempty"`
+	Green      *float64 `json:"green"`
+	Amber      *float64 `json:"amber"`
+	N          int      `json:"n,omitempty"`
 }
 
-// Thresholds is the calibration file. Supersession is its own question.
+// Thresholds is the calibration file. Supersession is its own question. A
+// question with no entry, or no entry covering an option count, is unknown.
 type Thresholds struct {
-	QuestionVersion string               `json:"question_version"`
-	Reconciliation  string               `json:"reconciliation"`
-	Questions       map[string]Threshold `json:"questions"`
+	QuestionVersion string                 `json:"question_version"`
+	Reconciliation  string                 `json:"reconciliation"`
+	Fit             json.RawMessage        `json:"fit,omitempty"`
+	Questions       map[string][]Threshold `json:"questions"`
 }
 
 // LoadThresholds reads calibration data. Unknown cut-offs are valid; a partial
@@ -71,8 +79,13 @@ func LoadThresholds(dir string) (Thresholds, error) {
 	if strings.TrimSpace(got.Reconciliation) == "" {
 		return Thresholds{}, fmt.Errorf("threshold reconciliation is missing")
 	}
-	for field, q := range got.Questions {
-		if err := validateThreshold(field, q); err != nil {
+	for field, list := range got.Questions {
+		for _, q := range list {
+			if err := validateThreshold(field, q); err != nil {
+				return Thresholds{}, err
+			}
+		}
+		if err := validateShapes(field, list); err != nil {
 			return Thresholds{}, err
 		}
 	}
@@ -90,7 +103,7 @@ func validateThreshold(field string, q Threshold) error {
 	if q.Options != nil {
 		n++
 	}
-	if n == 0 {
+	if n == 0 && q.MaxOptions == nil {
 		return nil
 	}
 	if n != 3 {
@@ -99,15 +112,45 @@ func validateThreshold(field string, q Threshold) error {
 	if *q.Green < 0 || *q.Green > 1 || *q.Amber < 0 || *q.Amber > 1 || *q.Amber > *q.Green {
 		return fmt.Errorf("%s threshold is out of range", field)
 	}
-	if *q.Options < 2 || *q.Options > jev.MaxChoiceOptions {
+	lo, hi := q.shape()
+	if lo < 2 || hi > jev.MaxChoiceOptions || hi < lo {
 		return fmt.Errorf("%s option shape", field)
 	}
 	return nil
 }
 
+// validateShapes rejects two cut-offs that cover the same option count.
+func validateShapes(field string, list []Threshold) error {
+	for i := range list {
+		if list[i].Options == nil {
+			continue
+		}
+		lo, hi := list[i].shape()
+		for j := i + 1; j < len(list); j++ {
+			if list[j].Options == nil {
+				continue
+			}
+			lo2, hi2 := list[j].shape()
+			if lo <= hi2 && lo2 <= hi {
+				return fmt.Errorf("%s option shapes overlap", field)
+			}
+		}
+	}
+	return nil
+}
+
+func (q Threshold) shape() (lo, hi int) {
+	lo = *q.Options
+	hi = lo
+	if q.MaxOptions != nil {
+		hi = *q.MaxOptions
+	}
+	return lo, hi
+}
+
 // Band reports the colour for one answer. apply is false when the cut-off is
-// unknown, belongs to a different option count, or the answer sits below amber.
-// Choice confidence is not reused across questions or option shapes.
+// unknown, no cut-off covers this option count, or the answer sits below
+// amber. Choice confidence is not reused across questions or option shapes.
 //
 //	https://docs.typesafe.ai/confidence
 //	https://docs.typesafe.ai/patterns/confidence-routing
@@ -115,18 +158,23 @@ func (t Thresholds) Band(field string, confidence *float64, options int) (band s
 	if t.QuestionVersion != QuestionVersion || confidence == nil {
 		return BandBlank, false
 	}
-	q, ok := t.Questions[field]
-	if !ok || q.Green == nil || q.Amber == nil || q.Options == nil || *q.Options != options {
-		return BandBlank, false
+	for _, q := range t.Questions[field] {
+		if q.Green == nil || q.Amber == nil || q.Options == nil {
+			continue
+		}
+		if lo, hi := q.shape(); options < lo || options > hi {
+			continue
+		}
+		switch {
+		case *confidence >= *q.Green:
+			return BandGreen, true
+		case *confidence >= *q.Amber:
+			return BandAmber, true
+		default:
+			return BandBlank, false
+		}
 	}
-	switch {
-	case *confidence >= *q.Green:
-		return BandGreen, true
-	case *confidence >= *q.Amber:
-		return BandAmber, true
-	default:
-		return BandBlank, false
-	}
+	return BandBlank, false
 }
 
 // settleVocabulary closes kind, discipline and lifecycle when the identity
