@@ -44,6 +44,9 @@ type Options struct {
 	FilingTimeout  time.Duration
 	// Observe receives per-path filing latency; nil records nothing.
 	Observe intake.Observer
+	// DevLogin mounts GET /dev/login, which signs a visitor in as the local
+	// owner. serve enables it only on a loopback address outside production.
+	DevLogin bool
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -122,6 +125,9 @@ func New(opts Options) (*Server, error) {
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})
 	mux.Handle("/api/", http.StripPrefix("/api", noStore(api)))
+	if opts.DevLogin {
+		mux.Handle("GET /dev/login", noStore(devLogin(opts.Store, opts.SecureCookie, opts.Log)))
+	}
 	mux.Handle("/", spa(opts.Static))
 	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, closing: closing}, nil
 }

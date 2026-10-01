@@ -273,7 +273,7 @@ type app struct {
 	jevHits atomic.Int64
 }
 
-func newApp(t *testing.T) *app {
+func newApp(t *testing.T, adjust ...func(*httpapi.Options)) *app {
 	t.Helper()
 	st := openStore(t)
 	blobs, err := files.Open(t.TempDir(), 10<<20)
@@ -307,7 +307,7 @@ func newApp(t *testing.T) *app {
 	}
 	ts := httptest.NewUnstartedServer(nil)
 	origin := "http://" + ts.Listener.Addr().String()
-	srv, err := httpapi.New(httpapi.Options{
+	opts := httpapi.Options{
 		Store:          st,
 		Blobs:          blobs,
 		Jev:            client,
@@ -317,7 +317,11 @@ func newApp(t *testing.T) *app {
 		PublicOrigin:   origin,
 		MaxUploadBytes: 10 << 20,
 		Log:            log.New(io.Discard, "", 0),
-	})
+	}
+	for _, f := range adjust {
+		f(&opts)
+	}
+	srv, err := httpapi.New(opts)
 	if err != nil {
 		t.Fatal(err)
 	}

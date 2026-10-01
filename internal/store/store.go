@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"sitewise/internal/db"
@@ -161,6 +162,16 @@ func (s *Store) Migrate(ctx context.Context) error {
 // CreateOrg inserts an organisation.
 func (s *Store) CreateOrg(ctx context.Context, orgID, name string) error {
 	return s.q.CreateOrg(ctx, db.CreateOrgParams{ID: orgID, Name: name})
+}
+
+// EnsureOrg creates an organisation unless one with this id already exists.
+func (s *Store) EnsureOrg(ctx context.Context, orgID, name string) error {
+	err := s.q.CreateOrg(ctx, db.CreateOrgParams{ID: orgID, Name: name})
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		return nil
+	}
+	return err
 }
 
 // DeleteOrg removes one organisation and its tenant rows.

@@ -12,8 +12,8 @@ Paste into PowerShell:
 & "D:\AI Projects\sitewise\tools\dev.ps1"
 ```
 
-Open the sign-in link it prints (first run only). Then use
-http://127.0.0.1:8080. Press Ctrl+C to stop.
+It opens the app in your browser, signed in. Next time, bookmark
+http://127.0.0.1:8080/dev/login (it signs you in). Press Ctrl+C to stop.
 
 - Design: [docs/design/2026-09-29-foundation-design.md](docs/design/2026-09-29-foundation-design.md)
 - Knowledge model: [knowledge/SCHEMA.md](knowledge/SCHEMA.md)
@@ -27,13 +27,14 @@ Locally, with the repo-local PostgreSQL and Go in `.tools/`:
 
 ```powershell
 # once: put SITEWISE_JEV_API_KEY=<your TypeSafe key> in .env (git-ignored)
-./tools/dev.ps1          # first run prints a one-time sign-in link
+./tools/dev.ps1
 ```
 
 It starts PostgreSQL on port 5433 if needed, uses its own `sitewise_dev`
-database and `.tools/dev-files`, builds the web UI once, and serves on
-`http://127.0.0.1:8080`. `-Invite` prints a fresh sign-in link; `-Build`
-rebuilds the UI. Until `intake-eval -fit` finds supported cut-offs, fields only
+database and `.tools/dev-files`, builds the web UI once, serves on
+`http://127.0.0.1:8080` with `-dev-login`, and opens `/dev/login`, which signs
+you in as the local owner. `serve` refuses `-dev-login` in production or on
+any non-loopback address. `-Build` rebuilds the UI. Until `intake-eval -fit` finds supported cut-offs, fields only
 Jev could decide show blank; rule-settled fields show green.
 
 By hand: the Go binary embeds the web build, so build the SPA first.

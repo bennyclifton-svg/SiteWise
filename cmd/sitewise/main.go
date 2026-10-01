@@ -66,6 +66,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	addr := fs.String("addr", "127.0.0.1:8080", "listen address")
 	data := fs.String("data", "data/intake", "intake vocabulary and thresholds directory")
 	maxUpload := fs.Int64("max-upload", 200<<20, "largest accepted upload in bytes")
+	devLogin := fs.Bool("dev-login", false, "serve GET /dev/login, which signs in as the local owner; loopback only, never in production")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -73,6 +74,12 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
 		return 1
+	}
+	if *devLogin {
+		if err := devLoginAllowed(cfg.Env, *addr); err != nil {
+			fmt.Fprintln(stderr, err.Error())
+			return 2
+		}
 	}
 	origin := cfg.PublicOrigin
 	if origin == "" {
@@ -131,6 +138,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		Static:         web.Dist(),
 		PublicOrigin:   origin,
 		SecureCookie:   cfg.Env == "production",
+		DevLogin:       *devLogin,
 		MaxUploadBytes: *maxUpload,
 		Log:            logger,
 	})
@@ -167,6 +175,25 @@ func listen(ctx context.Context, hs *http.Server, srv *httpapi.Server, logger *l
 		logger.Printf("filings still running at shutdown resume on next start: %v", err)
 	}
 	return 0
+}
+
+// devLoginAllowed keeps the sign-in shortcut to this machine: it is refused in
+// production and on any address another machine could reach.
+func devLoginAllowed(env, addr string) error {
+	if env == "production" {
+		return errors.New("-dev-login is not allowed in production")
+	}
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		return fmt.Errorf("-dev-login: %w", err)
+	}
+	if host == "localhost" {
+		return nil
+	}
+	if ip := net.ParseIP(host); ip != nil && ip.IsLoopback() {
+		return nil
+	}
+	return fmt.Errorf("-dev-login needs a loopback address such as 127.0.0.1, not %q", addr)
 }
 
 // localOrigin is the development origin when none is configured. Production

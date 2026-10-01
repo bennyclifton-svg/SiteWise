@@ -1,20 +1,20 @@
-# Run SiteWise locally against repo-local PostgreSQL 17 on port 5433.
+# Run SiteWise locally and open it in the browser, signed in.
 #
-# Put the TypeSafe key in a .env file at the repo root (git-ignored):
+#   & "D:\AI Projects\sitewise\tools\dev.ps1"
+#
+# The TypeSafe key comes from .env at the repo root (git-ignored):
 #   SITEWISE_JEV_API_KEY=<your TypeSafe key>     (TYPESAFE_API_KEY= also works)
-# or set $env:SITEWISE_JEV_API_KEY in the shell, which wins over .env.
+# A key already set in the shell wins over .env.
 #
-#   ./tools/dev.ps1            # first run prints a sign-in link
-#   ./tools/dev.ps1 -Invite    # print a fresh sign-in link (new local org)
-#   ./tools/dev.ps1 -Build     # rebuild the web UI first
+# http://127.0.0.1:8080/dev/login signs you in as the local owner; bookmark it.
+# It exists only on this machine: serve refuses -dev-login on any other address
+# or in production. -Build rebuilds the web UI first.
 #
 # Data lives in the sitewise_dev database and .tools/dev-files, never in the
 # sitewise_test database the tests reset.
 param(
-    [switch]$Invite,
     [switch]$Build,
-    [string]$Addr = '127.0.0.1:8080',
-    [string]$Email = 'owner@sitewise.local'
+    [string]$Addr = '127.0.0.1:8080'
 )
 # Continue, not Stop: Windows PowerShell 5.1 turns a native command's stderr
 # into a terminating error. Every native call below checks its exit code.
@@ -52,6 +52,23 @@ if (-not $env:SITEWISE_JEV_API_KEY) {
     exit 1
 }
 
+$Port = [int]($Addr.Split(':')[-1])
+$Exe = Join-Path $Tools 'sitewise-dev.exe'
+
+# A previous run of this script may still hold the port; stop only that.
+$holder = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($holder) {
+    $proc = Get-Process -Id $holder.OwningProcess -ErrorAction SilentlyContinue
+    if ($proc -and $proc.Path -eq $Exe) {
+        Write-Host 'Stopping the previous SiteWise run...'
+        Stop-Process -Id $proc.Id -Force
+        Start-Sleep -Milliseconds 500
+    } else {
+        Write-Host "Port $Port is in use by another program (PID $($holder.OwningProcess)). Close it or use -Addr 127.0.0.1:<other port>."
+        exit 1
+    }
+}
+
 # PostgreSQL: start it if it is not already running.
 $PgBin = Join-Path $Tools 'pgsql-dist\pgsql\bin'
 $PgData = Join-Path $Tools 'pgdata'
@@ -76,6 +93,12 @@ if ($Build -or -not (Test-Path (Join-Path $Root 'web\dist\index.html'))) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
+# A built executable, not go run: Ctrl+C then stops the server itself rather
+# than leaving a child process holding the port.
+Write-Host 'Building SiteWise...'
+& go build -o $Exe ./cmd/sitewise
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 # A stable local session secret, kept in the ignored .tools directory.
 $SecretFile = Join-Path $Tools 'dev-session-secret'
 if (-not (Test-Path $SecretFile)) {
@@ -92,17 +115,23 @@ $env:SITEWISE_JEV_MODEL = 'jev-1.13.0'
 $env:SITEWISE_ENV = 'development'
 New-Item -ItemType Directory -Force $env:SITEWISE_FILE_DIR | Out-Null
 
-$InvitedMarker = Join-Path $Tools 'dev-invited'
-if ($Invite -or -not (Test-Path $InvitedMarker)) {
-    $token = & go run ./cmd/sitewise bootstrap -org 'Local dev' -email $Email 2>$null
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    Set-Content -Path $InvitedMarker -Value (Get-Date -Format o)
+$Login = "http://$Addr/dev/login"
+$server = Start-Process -FilePath $Exe -ArgumentList @('serve', '-addr', $Addr, '-dev-login') -NoNewWindow -PassThru
+try {
+    $deadline = (Get-Date).AddSeconds(60)
+    while (-not $server.HasExited -and (Get-Date) -lt $deadline) {
+        if (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue) { break }
+        Start-Sleep -Milliseconds 250
+    }
+    if ($server.HasExited) {
+        Write-Host 'SiteWise stopped during startup; see the messages above.'
+        exit 1
+    }
     Write-Host ''
-    Write-Host 'Sign in once with this link (single use, valid 24 hours):'
-    Write-Host "  http://$Addr/#token=$($token.Trim())"
-    Write-Host ''
+    Write-Host "SiteWise is running. Opening $Login"
+    Write-Host 'Bookmark that link: it signs you in. Press Ctrl+C here to stop.'
+    if (-not $env:SITEWISE_NO_BROWSER) { Start-Process $Login }
+    $server.WaitForExit()
+} finally {
+    if (-not $server.HasExited) { Stop-Process -Id $server.Id -Force }
 }
-
-Write-Host "SiteWise on http://$Addr  (Ctrl+C to stop)"
-& go run ./cmd/sitewise serve -addr $Addr
-exit $LASTEXITCODE
