@@ -84,3 +84,89 @@ class TableValidationTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def _det(**extra):
+    item = {'id': 'bal', 'label': 'BAL', 'value': 'choice', 'status': 'draft',
+            'sources': [{'seed': 'seed.md', 'anchor': '# Test'}],
+            'question': {'type': 'choice', 'instructions': 'Using `text`, which BAL?',
+                         'criteria': {}, 'runs_on': ['envelope']}}
+    item.update(extra)
+    return item
+
+
+def _check(kind, item, docs=None):
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        (root / 'seed.md').write_text('# Test\n')
+        report, refs = checker.Report(), []
+        with patch.object(checker, 'DOCUMENT_IDS', docs):
+            checker.check_item(kind, 'test', item, root, report, refs, {})
+        return report, refs
+
+
+class ProfileSchemaTests(unittest.TestCase):
+    def test_deprecated_requires_replaced_by(self):
+        report, _ = _check('determinants', _det(status='deprecated'))
+        self.assertTrue(any('replaced_by' in e for e in report.errors))
+        report, refs = _check('determinants', _det(status='deprecated', replaced_by='bal_new'))
+        self.assertEqual(report.errors, [])
+        self.assertIn(('determinant', 'test [bal]', 'bal_new'), refs)
+
+    def test_reference_to_deprecated_id_is_an_error(self):
+        report = checker.Report()
+        checker.check_deprecated_refs(
+            [('system', 'rule x', 'fire-passive.old'), ('system', 'rule y', 'envelope.new')],
+            {'system': {'fire-passive.old': 'envelope.new'}}, report)
+        self.assertEqual(len(report.errors), 1)
+        self.assertIn('deprecated', report.errors[0])
+
+    def test_replaced_by_cannot_be_deprecated(self):
+        report = checker.Report()
+        checker.check_replacements({'system': {'a.old': 'a.mid', 'a.mid': 'a.new'}},
+                                   {'system': {'a.old': 'f', 'a.mid': 'f', 'a.new': 'f'}}, report)
+        self.assertTrue(any('a.mid' in e for e in report.errors))
+
+    def test_document_source_must_be_in_manifest(self):
+        src = [{'document': 'hale-brief', 'anchor': 'Recessed Docks'}]
+        report, _ = _check('determinants', _det(sources=src), docs={'hale-brief'})
+        self.assertEqual(report.errors, [])
+        report, _ = _check('determinants', _det(sources=src), docs={'other'})
+        self.assertTrue(any('hale-brief' in e for e in report.errors))
+        report, _ = _check('determinants', _det(sources=src), docs=None)
+        self.assertTrue(any('manifest' in e for e in report.errors))
+
+    def test_clerk_file_source_must_exist(self):
+        report, _ = _check('determinants', _det(sources=[{'clerk_file': 'no/such.json'}]))
+        self.assertTrue(any('clerk file not found' in e for e in report.errors))
+
+    def test_triggers_must_compile_without_re2_gaps(self):
+        report, _ = _check('determinants', _det(triggers=[r'\bBAL[- ]?40\b']))
+        self.assertEqual(report.errors, [])
+        for bad in ['(unclosed', r'(?<=x)y', r'(a)\1']:
+            report, _ = _check('determinants', _det(triggers=[bad]))
+            self.assertTrue(report.errors, bad)
+
+    def test_stated_in_and_profile_group(self):
+        ok = [{'kind': 'report', 'discipline': 'consultant.bushfire', 'label': 'Bushfire report'}]
+        report, _ = _check('determinants', _det(stated_in=ok, profile_group='site'))
+        self.assertEqual(report.errors, [])
+        bad = [{'kind': 'nope', 'discipline': 'consultant.bushfire', 'label': 'x'}]
+        report, _ = _check('determinants', _det(stated_in=bad, profile_group='weather'))
+        self.assertEqual(len(report.errors), 2)
+
+    def test_typical_systems_must_name_live_leaves_and_known_types(self):
+        taxonomy = {'building_classes': [{'id': 'residential', 'label': 'Residential', 'subclasses': [
+            {'id': 'house', 'label': 'House', 'ncc_class': '1a', 'scale_fields': []}]}],
+            'work_types': [{'id': 'new', 'label': 'New build'}], 'conditions': []}
+        typical = {'typical': [{'subclass': 'house', 'work_type': 'new',
+                                'systems': ['hydraulic.gas', 'fire-passive.old', 'hydraulic']},
+                               {'subclass': 'shed', 'work_type': 'new', 'systems': []}]}
+        report = checker.Report()
+        checker.check_typical('typical', typical, taxonomy,
+                              {'hydraulic.gas': 'f', 'fire-passive.old': 'f', 'hydraulic': 'f'},
+                              {'fire-passive.old': 'x'}, report)
+        joined = ' '.join(report.errors)
+        self.assertIn('fire-passive.old', joined)
+        self.assertIn('hydraulic`', joined)
+        self.assertIn('shed', joined)

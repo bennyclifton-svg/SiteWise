@@ -7,17 +7,19 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 	"unicode/utf8"
 
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 )
 
 const (
-	questionVersion = "knowledge.v1"
+	questionVersion = "knowledge.v2+" + profile.QuestionVersion
 	maxPassageRunes = 2000
 	maxPassages     = 500
 )
@@ -51,6 +53,9 @@ type Worker struct {
 	Lease   time.Duration
 	Backoff time.Duration
 	MinNoul float64
+	// Profile holds the profile's per-shape floors. Empty floors apply
+	// nothing: readings are stored and rows stay blank.
+	Profile profile.Thresholds
 }
 
 // Once leases and runs one full-text, label or evidence job.
@@ -126,8 +131,9 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 	if err != nil {
 		return err
 	}
+	var facts []store.StoredFact
 	for _, passage := range passages {
-		call := LabelCall(w.Catalog, passage.Passage)
+		call, cands := labelCall(w.Catalog, passage.Passage)
 		if len(call.Questions) == 0 {
 			continue
 		}
@@ -139,6 +145,14 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		if err := w.Store.SetPassageSystems(ctx, job.OrgID, passage.ID, labels); err != nil {
 			return err
 		}
+		facts = append(facts, storedFacts(passage.ID, profile.Readings(result, call.Questions, cands, passage.Text))...)
+	}
+	if err := w.Store.ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr."}, profile.QuestionVersion, facts); err != nil {
+		return err
+	}
+	// Header and compliance readings show now; systems follow evidence.
+	if err := w.rebuildProfile(ctx, job.OrgID, job.DocumentID); err != nil {
+		return err
 	}
 	return w.Store.EnqueueStage(ctx, job.OrgID, job.DocumentID, store.JobKindEvidence)
 }
@@ -151,6 +165,7 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 	if err != nil {
 		return err
 	}
+	var facts []store.StoredFact
 	for i, passage := range passages {
 		labels, err := w.Store.PassageSystems(ctx, job.OrgID, passage.ID)
 		if err != nil {
@@ -168,8 +183,33 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		if err := w.Store.SetPassageEvidence(ctx, job.OrgID, passage.ID, evidenceStates(call.Questions, result, w.MinNoul)); err != nil {
 			return err
 		}
+		facts = append(facts, storedFacts(passage.ID, profile.Readings(result, call.Questions, nil, passage.Text))...)
 	}
-	return nil
+	if err := w.Store.ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"sys."}, profile.QuestionVersion, facts); err != nil {
+		return err
+	}
+	return w.rebuildProfile(ctx, job.OrgID, job.DocumentID)
+}
+
+// rebuildProfile reconciles the document's project in code after its
+// evidence stage. It never calls Jev.
+func (w *Worker) rebuildProfile(ctx context.Context, orgID, documentID string) error {
+	doc, err := w.Store.GetDocument(ctx, orgID, documentID)
+	if err != nil {
+		return err
+	}
+	return w.Store.RebuildProfile(ctx, orgID, doc.ProjectID, w.Profile.Version, func(s store.ProfileSnapshot) []profile.Row {
+		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: w.Profile}, w.Catalog)
+	})
+}
+
+func storedFacts(passageID string, readings []profile.Reading) []store.StoredFact {
+	out := make([]store.StoredFact, 0, len(readings))
+	for _, r := range readings {
+		out = append(out, store.StoredFact{PassageID: passageID, QuestionID: r.QuestionID, Value: r.Value, Unit: r.Unit,
+			Basis: r.Basis, Excerpt: r.Excerpt, Confidence: r.Confidence, DecidedBy: "jev"})
+	}
+	return out
 }
 
 func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPassage, error) {
@@ -185,12 +225,18 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 	discipline := decisionValue(decisions, "discipline")
 	title := decisionValue(decisions, "title")
 	out := make([]storedPassage, len(rows))
+	section := ""
 	for i, row := range rows {
+		// Passages carry the nearest heading above them; header routing reads it.
+		if h := sectionOf(row.Body); h != "" {
+			section = h
+		}
 		out[i] = storedPassage{
 			ID: row.ID,
 			Passage: Passage{
 				Ordinal:    int(row.Ordinal),
 				Text:       row.Body,
+				Section:    section,
 				Kind:       kind,
 				Discipline: discipline,
 				Title:      title,
@@ -294,9 +340,16 @@ func BackgroundCalls(cat *knowledge.Catalog, passages []Passage) []jev.Call {
 // choice into one request. Code decides which leaf answers to keep after the
 // response; the choices are not a second round trip.
 func LabelCall(cat *knowledge.Catalog, passage Passage) jev.Call {
+	call, _ := labelCall(cat, passage)
+	return call
+}
+
+// labelCall also returns the profile candidates offered in the call, so the
+// answers can be mapped back to verbatim values.
+func labelCall(cat *knowledge.Catalog, passage Passage) (jev.Call, map[string][]profile.Candidate) {
 	questions := map[string]jev.Question{}
 	if cat == nil {
-		return jev.Call{}
+		return jev.Call{}, nil
 	}
 	for _, sys := range cat.TopSystems() {
 		name := strings.TrimSpace(sys.Label)
@@ -327,12 +380,27 @@ func LabelCall(cat *knowledge.Catalog, passage Passage) jev.Call {
 			Criteria:     criteria,
 		}
 	}
+	// Profile questions read the same passage, so they join this request
+	// instead of adding a round trip (https://docs.typesafe.ai/patterns/fan-out).
+	extra, candidates := profile.LabelQuestions(passage.Info(), profile.Harvest(passage.Text, cat), cat)
+	for id, q := range extra {
+		questions[id] = q
+	}
+	state := passageState(passage)
+	if len(candidates) > 0 {
+		state["candidates"] = candidates
+	}
 	return jev.Call{
-		State:           passageState(passage),
+		State:           state,
 		Questions:       questions,
 		Priority:        jev.PriorityBackground,
 		QuestionVersion: questionVersion,
-	}
+	}, candidates
+}
+
+// Info is what profile header routing reads about a passage.
+func (p Passage) Info() profile.PassageInfo {
+	return profile.PassageInfo{Kind: p.Kind, Section: p.Section, Ordinal: p.Ordinal}
 }
 
 // EvidenceCall is one fan-out of the knowledge nouls that match the passage
@@ -350,8 +418,11 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 		questions[q.ID] = jev.Question{
 			Type:         jev.TypeNoul,
 			Instructions: q.Instructions,
-			Criteria:     q.Criteria,
+			Criteria:     noulCriteria(q.Criteria),
 		}
+	}
+	for id, q := range profile.EvidenceQuestions(passage.Labels, cat) {
+		questions[id] = q
 	}
 	if len(questions) == 0 {
 		return jev.Call{}, false
@@ -365,6 +436,29 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 }
 
 const knowledgeNoul = "noul"
+
+// noulCriteria gives a noul's criteria string keys. YAML reads `true:` and
+// `false:` as boolean keys, which cannot be encoded as a JSON object, so the
+// client would reject the whole call (https://docs.typesafe.ai/api).
+func noulCriteria(c any) any {
+	switch m := c.(type) {
+	case map[string]any:
+		return m
+	case map[any]any:
+		out := make(map[string]string, len(m))
+		for k, v := range m {
+			out[fmt.Sprint(k)] = strings.TrimSpace(fmt.Sprint(v))
+		}
+		return out
+	case map[bool]any:
+		out := make(map[string]string, len(m))
+		for k, v := range m {
+			out[fmt.Sprint(k)] = strings.TrimSpace(fmt.Sprint(v))
+		}
+		return out
+	}
+	return c
+}
 
 func passageState(p Passage) map[string]any {
 	return map[string]any{

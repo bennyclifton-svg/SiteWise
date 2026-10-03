@@ -44,7 +44,9 @@ import (
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
 	"sitewise/internal/jev"
+	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 	"sitewise/web"
 )
@@ -255,17 +257,29 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		return 0, err
 	}
 	origin := "http://" + ln.Addr().String()
+	// Knowledge and profile thresholds sit beside data/intake in the repo.
+	repo := filepath.Dir(filepath.Dir(filepath.Clean(o.data)))
+	building, err := knowledge.Load(filepath.Join(repo, "knowledge"))
+	if err != nil {
+		return 0, err
+	}
+	profileTh, err := profile.LoadThresholds(filepath.Join(repo, "data", "profile", "thresholds.json"))
+	if err != nil {
+		return 0, err
+	}
 	srv, err := httpapi.New(httpapi.Options{
-		Store:          st,
-		Blobs:          blobs,
-		Jev:            client,
-		Catalog:        cat,
-		Thresholds:     thresholds,
-		Static:         web.Dist(),
-		PublicOrigin:   origin,
-		MaxUploadBytes: 200 << 20,
-		Log:            log.New(io.Discard, "", 0),
-		Observe:        samples.Add,
+		Store:             st,
+		Blobs:             blobs,
+		Jev:               client,
+		Catalog:           cat,
+		Thresholds:        thresholds,
+		Static:            web.Dist(),
+		PublicOrigin:      origin,
+		MaxUploadBytes:    200 << 20,
+		Log:               log.New(io.Discard, "", 0),
+		Observe:           samples.Add,
+		Knowledge:         building,
+		ProfileThresholds: profileTh,
 	})
 	if err != nil {
 		return 0, err
@@ -317,6 +331,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		return 0, err
 	}
 	if err := api.correct(ctx, documents, o.apiSamples); err != nil {
+		return 0, err
+	}
+	if err := api.profileReadEdit(ctx, st, building, documents, o.apiSamples); err != nil {
 		return 0, err
 	}
 	if err := api.reconnect(ctx, arrived.cursor(), o.apiSamples); err != nil {
@@ -843,6 +860,45 @@ func (a *apiClient) correct(ctx context.Context, documents []string, n int) erro
 		doc := documents[i%len(documents)]
 		body, _ := json.Marshal(map[string]string{"value": fmt.Sprintf("BENCH-%d", i)})
 		if _, err := a.timed(ctx, "field_correction", http.MethodPut, "/documents/"+doc+"/fields/"+intake.FieldNumber, body, http.StatusOK); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// profileReadEdit seeds one project with profile readings for every leaf
+// system, as a large project would hold, then times n profile reads and n
+// edits (each edit rebuilds the profile in code).
+func (a *apiClient) profileReadEdit(ctx context.Context, st *store.Store, cat *knowledge.Catalog, documents []string, n int) error {
+	if len(documents) == 0 {
+		return errors.New("no filed documents for the profile benchmark")
+	}
+	doc, err := st.GetDocument(ctx, benchOrg, documents[0])
+	if err != nil {
+		return err
+	}
+	c := 0.8
+	var facts []store.StoredFact
+	for _, leaf := range cat.Leaves() {
+		facts = append(facts,
+			store.StoredFact{QuestionID: "sys." + leaf.ID + ".presence", Value: "included", Excerpt: leaf.Label, Confidence: &c, DecidedBy: "jev"},
+			store.StoredFact{QuestionID: "sys." + leaf.ID + ".provider", Value: "contractor", Excerpt: leaf.Label, Confidence: &c, DecidedBy: "jev"})
+	}
+	for _, d := range cat.ProfileDeterminants() {
+		if len(d.Options) > 0 {
+			facts = append(facts, store.StoredFact{QuestionID: "det." + d.ID, Value: d.Options[0].ID, Confidence: &c, DecidedBy: "jev"})
+		}
+	}
+	if err := st.ReplaceDocumentFacts(ctx, benchOrg, documents[0], []string{"sys.", "det."}, profile.QuestionVersion, facts); err != nil {
+		return err
+	}
+	subclasses := []string{"warehouse", "house"}
+	for i := 0; i < n; i++ {
+		if _, err := a.timed(ctx, "project_profile_read", http.MethodGet, "/projects/"+doc.ProjectID+"/profile", nil, http.StatusOK); err != nil {
+			return err
+		}
+		body, _ := json.Marshal(map[string]string{"value": subclasses[i%2]})
+		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/profile/hdr.subclass", body, http.StatusOK); err != nil {
 			return err
 		}
 	}

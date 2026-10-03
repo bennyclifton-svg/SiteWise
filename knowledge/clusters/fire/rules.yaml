@@ -183,6 +183,10 @@ rules:
       true: It explicitly states the floor area of a fire compartment.
       false: It does not state this, or only mentions the system generally.
     runs_on: *id002
+  derives:
+    table: compartment_limits
+    inputs: [ncc_class, type_of_construction]
+    gives: max_floor_area_m2
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -764,3 +768,23 @@ rules:
     runs_on:
     - fire-active.special-suppression
     - fire-active.sprinklers
+- id: rule.ncc.fire-compartment-volume-limit
+  title: Fire compartment volume limit
+  instrument: NCC 2022 Volume One
+  clause: C3D3, Table C3D3
+  clause_verified: true
+  primary_source: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c3-compartmentation-and-separation
+  checked_on: '2026-09-29'
+  systems:
+  - fire-passive.compartments
+  requires: Assess compartment volume using the applicable instrument table, together with the floor area limit.
+  derives:
+    table: compartment_limits
+    inputs: [ncc_class, type_of_construction]
+    gives: max_volume_m3
+  related_rules: [rule.ncc.fire-compartment-limits]
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire Compartment Sizes and Classification Separation'
+  notes: Same verified table as rule.ncc.fire-compartment-limits; one rule per table output because a derivation gives one value.

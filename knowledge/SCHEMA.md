@@ -257,3 +257,65 @@ State for passage questions is always:
 8. **No thresholds in questions.** Code applies thresholds per question.
 9. **Ask what a document can show.** "Does this passage state / specify / show
    X?" A document cannot prove a building complies.
+
+## Project profile additions (2026-10-03)
+
+See `docs/design/2026-10-03-project-profile.md`.
+
+**Deprecation.** `status` may also be `deprecated`, with `replaced_by: <id of
+the same kind>`. The replacement must exist and must not itself be
+deprecated. Nothing may refer to a deprecated id (`systems`, `runs_on`,
+`from`, `to`, `attaches_to`, `parent`, predicates, derivations). Deprecated
+systems are never offered to Jev. IDs stay permanent.
+
+**More source forms.** Besides `{seed, anchor}`:
+
+```yaml
+sources:
+  - {document: hale-brief, anchor: "Recessed Docks"}           # id from data/eval/profile/manifest.json
+  - {clerk_file: data/taxonomy/building-classes.json}         # Clerk data copied as data
+```
+
+Use `document` only when no seed heading covers the record. The anchor is
+recorded but cannot be checked, because the corpus is private.
+
+**Determinant routing and display.**
+
+```yaml
+- id: bal
+  triggers:                      # RE2 patterns, matched case-insensitively by code
+    - '\bBAL[- ]?(LOW|12\.5|19|29|40|FZ)\b'   # the question is asked for a passage only
+    - 'bush ?fire attack level'               # when a trigger matches it
+  stated_in:                     # where it is usually stated; ids from data/intake
+    - {kind: report, discipline: consultant.bushfire, label: Bushfire assessment report}
+  profile_group: site            # classification | site | services | fire
+```
+
+A determinant with `triggers` may omit `question.runs_on`. Triggers must be
+narrow: `rise_in_storeys` triggers on "rise in storeys", never on "5 storey".
+
+**Profile questions** (built by code from these templates; same authoring
+rules as above):
+
+| Id | Options | Meaning |
+|---|---|---|
+| `det.<id>.assertion` | `stated`, `required`, `allowance`, `not_stated` | How the passage presents the value. Only `stated` (and user) values feed derivations. |
+| `sys.<leaf>.presence` | `included`, `not_included`, `not_stated` | Whether the completed project will have the system. "Not applicable" is `not_included`; silence is `not_stated`. |
+| `sys.<leaf>.provider` | `contractor`, `owner`, `others`, `not_stated` | Who provides it. |
+
+The exact wording is in `docs/plans/2026-10-03-project-profile.md` §2.2.
+
+**Profile files** in `knowledge/profile/`, each with `version: 1`:
+
+- `taxonomy.yaml`: `status`, `sources`, `building_classes` (with
+  `subclasses`, each with `ncc_class` and `scale_fields`: `key`, `label`,
+  `type`, optional `unit`, `basis_required`, `triggers`), `work_types`, and
+  `conditions` (`key`, `label`, `options`). Copied from Clerk's taxonomy as
+  data, without cost-uplift text. Site conditions that determinants already
+  cover (bushfire, flood, heritage, contamination, water source) are left out.
+- `project_facts.yaml`: `facts:` list, with the same shape as determinants
+  (consent number and dates, contract form and basis, defects period, design
+  life). Ids must not collide with determinants.
+- `typical_systems.yaml`: `status`, `sources`, `typical:` list of
+  `{subclass, work_type, systems: [leaf ids]}`. These are suggestions for
+  the thin-brief workflow, never evidence.

@@ -20,6 +20,8 @@ type System struct {
 	Describes string `yaml:"describes"`
 	Excludes  string `yaml:"excludes"`
 	Status    string `yaml:"status"`
+	// ReplacedBy names the live system a deprecated one maps to.
+	ReplacedBy string `yaml:"replaced_by"`
 }
 
 // Question is one Jev question stored in the knowledge files.
@@ -84,6 +86,7 @@ type Catalog struct {
 	rules      map[string]Rule
 	tables     map[string]Table
 	evidence   []Question
+	profile    profileData
 }
 
 // Load reads knowledge/ (or a fixture with the same layout).
@@ -132,6 +135,12 @@ func Load(root string) (*Catalog, error) {
 		}
 	}
 	if err := c.loadTables(filepath.Join(root, "tables")); err != nil {
+		return nil, err
+	}
+	if err := c.loadDeterminants(filepath.Join(root, "determinants.yaml")); err != nil {
+		return nil, err
+	}
+	if err := c.loadProfile(filepath.Join(root, "profile")); err != nil {
 		return nil, err
 	}
 	sort.Slice(c.evidence, func(i, j int) bool { return c.evidence[i].ID < c.evidence[j].ID })
@@ -390,12 +399,13 @@ func (c *Catalog) TopSystems() []System {
 	return out
 }
 
-// Children returns the direct children of parent, ordered by id.
+// Children returns the live direct children of parent, ordered by id.
+// Deprecated systems are never offered to Jev.
 func (c *Catalog) Children(parent string) []System {
 	var out []System
 	for _, id := range c.systemIDs {
 		sys := c.systems[id]
-		if sys.Parent == parent {
+		if sys.Parent == parent && sys.Status != statusDeprecated {
 			out = append(out, sys)
 		}
 	}

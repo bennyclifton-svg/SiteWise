@@ -9,6 +9,7 @@ may define them) unless --strict.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -37,7 +38,14 @@ REQUIRED = {
 INTERFACE_TYPES = {"penetrates", "sequences", "loads", "supplies", "controls", "depends_on", "shares_space", "boundary"}
 SEVERITIES = {"life-safety", "compliance", "durability", "cost", "programme"}
 VALUE_TYPES = {"integer", "number", "boolean", "choice", "multi_choice"}
-STATUSES = {"draft", "reviewed"}
+STATUSES = {"draft", "reviewed", "deprecated"}
+PROFILE_GROUPS = {"classification", "site", "services", "fire"}
+PROFILE_DIR = "profile"
+# Ids of private evaluation documents a record may cite as a source. None
+# means the manifest is absent, so a document source cannot be checked.
+DOCUMENT_IDS: set | None = None
+INTAKE = ROOT / "data" / "intake"
+_VOCAB: dict = {}
 QUESTION_TYPES = {"noul", "choice", "score"}
 PREDICATE_OPS = {"any_of", "eq", "is", "gt", "gte", "lt", "lte"}
 
@@ -58,7 +66,7 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
     loaded = []
     for path in sorted(KNOWLEDGE.rglob("*.yaml")):
         rel = path.relative_to(ROOT).as_posix()
-        if path.parent.name == "tables":
+        if path.parent.name in ("tables", PROFILE_DIR):
             continue
         try:
             doc = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -83,11 +91,69 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
     return loaded
 
 
+def load_document_ids() -> set | None:
+    path = ROOT / "data" / "eval" / "profile" / "manifest.json"
+    if not path.is_file():
+        return None
+    return {d["id"] for d in json.loads(path.read_text(encoding="utf-8")).get("documents", [])}
+
+
+def vocab(name: str) -> set:
+    """Kind or discipline ids from data/intake, so stated_in cannot drift from intake."""
+    if name not in _VOCAB:
+        doc = json.loads((INTAKE / f"{name}.json").read_text(encoding="utf-8"))
+        _VOCAB[name] = {entry["id"] for entry in doc[name]}
+    return _VOCAB[name]
+
+
+def check_triggers(where: str, triggers, report: Report) -> None:
+    # Go's regexp is RE2: no look-around and no backreferences.
+    if not isinstance(triggers, list) or not triggers:
+        report.error(where, "triggers must be a non-empty list of patterns")
+        return
+    for pattern in triggers:
+        if not isinstance(pattern, str) or re.search(r"\(\?<?[=!]|\\[1-9]", pattern):
+            report.error(where, f"trigger is not valid RE2: {pattern!r}")
+            continue
+        try:
+            re.compile(pattern)
+        except re.error as exc:
+            report.error(where, f"trigger does not compile: {pattern!r}: {exc}")
+
+
+def check_profile_fields(where: str, item: dict, report: Report) -> None:
+    if "triggers" in item:
+        check_triggers(where, item["triggers"], report)
+    if "profile_group" in item and item["profile_group"] not in PROFILE_GROUPS:
+        report.error(where, f"profile_group must be one of {sorted(PROFILE_GROUPS)}")
+    for entry in item.get("stated_in") or []:
+        if not isinstance(entry, dict) or not str(entry.get("label", "")).strip():
+            report.error(where, f"stated_in entries need kind and label: {entry}")
+            continue
+        if entry.get("kind") not in vocab("kinds"):
+            report.error(where, f"stated_in kind is not an intake kind: {entry.get('kind')}")
+        if "discipline" in entry and entry["discipline"] not in vocab("disciplines"):
+            report.error(where, f"stated_in discipline is not an intake discipline: {entry['discipline']}")
+
+
 def check_sources(where: str, sources, seed_dir: Path, report: Report, heading_cache: dict) -> None:
     if not isinstance(sources, list) or not sources:
         report.error(where, "sources must be a non-empty list")
         return
     for src in sources:
+        if isinstance(src, dict) and "document" in src:
+            if DOCUMENT_IDS is None:
+                report.error(where, "document source needs data/eval/profile/manifest.json")
+            elif src["document"] not in DOCUMENT_IDS:
+                report.error(where, f"document not in the profile manifest: {src['document']}")
+            if not str(src.get("anchor", "")).strip():
+                report.error(where, "document source needs an anchor line")
+            continue
+        if isinstance(src, dict) and "clerk_file" in src:
+            # Clerk data (taxonomy JSON) is copied as data; cite the file it came from.
+            if not (seed_dir.parent.parent / src["clerk_file"]).is_file():
+                report.error(where, f"clerk file not found: {src['clerk_file']}")
+            continue
         if not isinstance(src, dict) or not {"seed", "anchor"} <= src.keys():
             report.error(where, f"source needs seed and anchor: {src}")
             continue
@@ -102,7 +168,7 @@ def check_sources(where: str, sources, seed_dir: Path, report: Report, heading_c
             report.error(where, f"anchor not found in {src['seed']}: {src['anchor']!r}")
 
 
-def check_question(where: str, q, report: Report, refs: list) -> None:
+def check_question(where: str, q, report: Report, refs: list, runs_on_required: bool = True) -> None:
     if not isinstance(q, dict):
         report.error(where, "question must be a mapping")
         return
@@ -120,6 +186,8 @@ def check_question(where: str, q, report: Report, refs: list) -> None:
     if qtype == "score" and not (isinstance(criteria, list) and 2 <= len(criteria) <= 10):
         report.error(where, "score criteria must be a list of 2-10 levels")
     runs_on = q.get("runs_on")
+    if runs_on is None and not runs_on_required:
+        return
     if not isinstance(runs_on, list) or not runs_on:
         report.error(where, "question needs a non-empty runs_on list")
     else:
@@ -165,6 +233,12 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
         report.error(where, f"id does not match {ID_PATTERNS[kind].pattern}")
     if item.get("status") not in STATUSES:
         report.error(where, f"status must be one of {sorted(STATUSES)}")
+    if item.get("status") == "deprecated":
+        if not item.get("replaced_by"):
+            report.error(where, "deprecated record needs replaced_by")
+        else:
+            refs.append(({"systems": "system", "determinants": "determinant", "rules": "rule",
+                          "interfaces": "interface", "failure_modes": "failure_mode"}[kind], where, item["replaced_by"]))
     check_sources(where, item.get("sources"), seed_dir, report, cache)
     if "applies_when" in item:
         check_predicate(where, item["applies_when"], report, refs)
@@ -182,6 +256,7 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
             else:
                 refs.append(("system", where, parent))
     elif kind == "determinants":
+        check_profile_fields(where, item, report)
         if item.get("value") not in VALUE_TYPES:
             report.error(where, f"value must be one of {sorted(VALUE_TYPES)}")
         if item.get("derived"):
@@ -194,7 +269,8 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
                     or set(q.get("criteria") or {}) != {"stated_true", "stated_false", "not_stated"}):
                 report.error(where, "boolean evidence needs explicit true, false and not_stated choices")
         if "question" in item:
-            check_question(where, item["question"], report, refs)
+            # A triggered question is routed by code patterns, not system labels.
+            check_question(where, item["question"], report, refs, runs_on_required="triggers" not in item)
     elif kind == "rules":
         for s in item.get("systems") or []:
             refs.append(("system", where, s))
@@ -296,6 +372,97 @@ def check_tables(report: Report, refs: list) -> dict:
     return known
 
 
+def check_deprecated_refs(refs: list, deprecated: dict, report: Report) -> None:
+    for ref_kind, where, target in refs:
+        if target in deprecated.get(ref_kind, {}):
+            report.error(where, f"refers to deprecated {ref_kind} {target}; use {deprecated[ref_kind][target]}")
+
+
+def check_replacements(deprecated: dict, known: dict, report: Report) -> None:
+    for kind, mapping in deprecated.items():
+        for old, new in mapping.items():
+            if new in mapping:
+                report.error(known[kind].get(old, old), f"{old} is replaced by {new}, which is itself deprecated")
+
+
+def check_typical(rel: str, doc: dict, taxonomy: dict, systems: dict, deprecated: dict, report: Report) -> None:
+    subclasses = {s.get("id") for c in taxonomy.get("building_classes") or [] for s in c.get("subclasses") or []}
+    work_types = {w.get("id") for w in taxonomy.get("work_types") or []}
+    for entry in doc.get("typical") or []:
+        where = f"{rel} [{entry.get('subclass')} x {entry.get('work_type')}]"
+        if entry.get("subclass") not in subclasses:
+            report.error(where, f"unknown subclass {entry.get('subclass')}")
+        if entry.get("work_type") not in work_types:
+            report.error(where, f"unknown work type {entry.get('work_type')}")
+        for sid in entry.get("systems") or []:
+            if sid not in systems:
+                report.error(where, f"unknown system {sid}")
+            elif "." not in sid:
+                report.error(where, f"`{sid}` is not a leaf system")
+            elif sid in deprecated:
+                report.error(where, f"{sid} is deprecated")
+
+
+def check_taxonomy(rel: str, doc: dict, report: Report) -> None:
+    for cls in doc.get("building_classes") or []:
+        where = f"{rel} [{cls.get('id')}]"
+        if not cls.get("id") or not cls.get("label") or not cls.get("subclasses"):
+            report.error(where, "building class needs id, label and subclasses")
+        for sub in cls.get("subclasses") or []:
+            if not sub.get("id") or not sub.get("label"):
+                report.error(where, f"subclass needs id and label: {sub}")
+            for field in sub.get("scale_fields") or []:
+                if not {"key", "label", "type"} <= field.keys():
+                    report.error(where, f"scale field needs key, label and type: {field}")
+                if "triggers" in field:
+                    check_triggers(f"{where} {field.get('key')}", field["triggers"], report)
+    for wt in doc.get("work_types") or []:
+        if not wt.get("id") or not wt.get("label"):
+            report.error(rel, f"work type needs id and label: {wt}")
+    for cond in doc.get("conditions") or []:
+        if not cond.get("key") or not cond.get("options"):
+            report.error(rel, f"condition needs key and options: {cond}")
+        for opt in cond.get("options") or []:
+            if re.search(r"\(\+\d", str(opt.get("label", ""))):
+                report.error(rel, f"condition option label carries cost-uplift text: {opt.get('label')}")
+
+
+def check_profile(report: Report, seed_dir: Path, known: dict, deprecated: dict, refs: list, cache: dict) -> None:
+    folder = KNOWLEDGE / PROFILE_DIR
+    if not folder.is_dir():
+        return
+    docs = {}
+    for name in ("taxonomy", "project_facts", "typical_systems"):
+        path = folder / f"{name}.yaml"
+        rel = path.relative_to(ROOT).as_posix()
+        if not path.is_file():
+            report.error(rel, "profile file is missing")
+            continue
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(doc, dict) or doc.get("version") != 1:
+            report.error(rel, "must be a mapping with version: 1")
+            continue
+        docs[name] = (rel, doc)
+    if "taxonomy" in docs:
+        rel, doc = docs["taxonomy"]
+        if doc.get("status") not in STATUSES:
+            report.error(rel, "taxonomy needs a status")
+        check_sources(rel, doc.get("sources"), seed_dir, report, cache)
+        check_taxonomy(rel, doc, report)
+    if "project_facts" in docs:
+        rel, doc = docs["project_facts"]
+        for item in doc.get("facts") or []:
+            check_item("determinants", rel, item, seed_dir, report, refs, cache)
+            if isinstance(item, dict) and item.get("id") in known["determinant"]:
+                report.error(rel, f"project fact id collides with a determinant: {item['id']}")
+    if "typical_systems" in docs and "taxonomy" in docs:
+        rel, doc = docs["typical_systems"]
+        if doc.get("status") not in STATUSES:
+            report.error(rel, "typical systems need a status")
+        check_sources(rel, doc.get("sources"), seed_dir, report, cache)
+        check_typical(rel, doc, docs["taxonomy"][1], known["system"], deprecated.get("system", {}), report)
+
+
 def check_derivation_output(where: str, rule: dict, determinants: dict, report: Report) -> None:
     derives = rule.get("derives")
     if not isinstance(derives, dict):
@@ -315,8 +482,11 @@ def main() -> int:
         print(f"seed dir not found: {args.seed_dir}", file=sys.stderr)
         return 2
 
+    global DOCUMENT_IDS
+    DOCUMENT_IDS = load_document_ids()
     report = Report()
     refs: list[tuple[str, str, str]] = []
+    deprecated: dict = {}
     known = {k: {} for k in ("system", "determinant", "rule", "interface", "failure_mode")}
     kind_key = {"systems": "system", "determinants": "determinant", "rules": "rule",
                 "interfaces": "interface", "failure_modes": "failure_mode"}
@@ -334,6 +504,8 @@ def main() -> int:
                     determinants[item["id"]] = item
                 elif kind == "rules":
                     rules.append((f"{rel} [{item['id']}]", item))
+                if item.get("status") == "deprecated":
+                    deprecated.setdefault(kind_key[kind], {})[item["id"]] = item.get("replaced_by")
                 bucket = known[kind_key[kind]]
                 if item["id"] in bucket:
                     report.error(rel, f"duplicate id {item['id']} (also in {bucket[item['id']]})")
@@ -341,6 +513,9 @@ def main() -> int:
 
     for where, rule in rules:
         check_derivation_output(where, rule, determinants, report)
+    check_profile(report, args.seed_dir, known, deprecated, refs, cache)
+    check_replacements(deprecated, known, report)
+    check_deprecated_refs(refs, deprecated, report)
 
     for ref_kind, where, target in refs:
         if target not in known[ref_kind]:

@@ -41,7 +41,7 @@ interface Props {
 
 type CellState = "confirmed" | "check" | "unset" | "unchecked" | "user";
 
-const FIELDS: { field: string; label: string; vocab?: keyof Catalog; editable: boolean }[] = [
+export const FIELDS: { field: string; label: string; vocab?: keyof Catalog; editable: boolean }[] = [
   { field: "number", label: "Doc no.", editable: true },
   { field: "revision", label: "Rev", editable: true },
   { field: "title", label: "Title", editable: true },
@@ -52,7 +52,7 @@ const FIELDS: { field: string; label: string; vocab?: keyof Catalog; editable: b
   { field: "supersedes", label: "Supersedes", editable: false },
 ];
 
-const REASONS: Record<string, string> = {
+export const REASONS: Record<string, string> = {
   no_text_layer:
     "This PDF has no readable text layer. Its lettering may be scanned or saved as shapes. The original file is kept; its identity can't be read yet.",
   unsupported_format: "SiteWise files PDF, DOCX and XLSX. This file is kept exactly as uploaded but not filed.",
@@ -197,7 +197,7 @@ export function DocumentRow({ row, catalog, priorLabel, onCorrect, onRetry, onJu
   );
 }
 
-function HeadState({
+export function HeadState({
   row,
   onRetry,
   onDismiss,
@@ -267,7 +267,7 @@ interface CellProps {
   onJump: (docId: string) => void;
 }
 
-function FieldCell({ index, spec, doc, catalog, priorLabel, onCorrect, onJump }: CellProps) {
+export function FieldCell({ index, spec, doc, catalog, priorLabel, onCorrect, onJump }: CellProps) {
   const field = doc.fields.find((f) => f.field === spec.field);
   const state = stateOf(field);
   const [editing, setEditing] = useState(false);

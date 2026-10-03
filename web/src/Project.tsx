@@ -13,8 +13,9 @@ import {
   type DocumentList,
   type StreamEvent,
 } from "./api";
-import { DocumentRow, stateOf, type RowModel } from "./DocumentRow";
-import { IconCheck, IconConfirmed, IconNotChecked, IconNotSet, IconUpload, IconYou } from "./icons";
+import { type RowModel } from "./DocumentRow";
+import { Profile } from "./Profile";
+import { Register } from "./Register";
 
 const STALE_MS = 8000;
 const UPLOAD_CONCURRENCY = 4;
@@ -200,6 +201,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   const [announcement, setAnnouncement] = useState("");
   const [flash, setFlash] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [profileTick, setProfileTick] = useState(0);
   const lastId = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const queue = useRef<{ key: string; file: File }[]>([]);
@@ -264,6 +266,10 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
             api.documents(projectId).then((list) => {
               if (!stopped) dispatch({ type: "loaded", list });
             }).catch(() => setAnnouncement("Could not refresh drawing sheets. Reload this project."));
+            return;
+          }
+          if (ev.kind === "profile") {
+            setProfileTick((t) => t + 1);
             return;
           }
           dispatch({ type: "event", ev, at: performance.now() });
@@ -428,19 +434,6 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
     [state, now, flash],
   );
 
-  const tally = useMemo(() => {
-    let filed = 0;
-    let attention = 0;
-    let notFiled = 0;
-    for (const d of Object.values(state.docs)) {
-      if (d.status === "not_filed") notFiled++;
-      if (d.status !== "filed") continue;
-      filed++;
-      if (d.fields.some((f) => f.field !== "supersedes" && ["check", "unchecked"].includes(stateOf(f)))) attention++;
-    }
-    return { filed, attention, notFiled };
-  }, [state.docs]);
-
   if (state.phase === "loading") {
     return (
       <main className="page" aria-busy="true">
@@ -477,107 +470,40 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   }
 
   return (
-    <main className="page" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-      <div className="project-head">
-        <h1>{state.projectName}</h1>
-        <div className="tally">
-          <span>
-            <strong>{tally.filed}</strong> filed
-          </span>
-          <span>
-            <strong>{tally.attention}</strong> to check
-          </span>
-          <span>
-            <strong>{tally.notFiled}</strong> stored, not filed
-          </span>
-          <span className="live" data-state={live} role="status">
-            {live === "live" ? "Live" : live === "reconnecting" ? "Reconnecting…" : "Offline, retrying"}
-          </span>
-        </div>
-      </div>
-
-      <section className="drop" data-over={over ? "true" : undefined} aria-label={`Add files to ${state.projectName}`}>
-        <span className="drop-mark">
-          <IconUpload />
-        </span>
-        <div>
-          <p className="drop-title">{over ? `Release to file into ${state.projectName}` : "Drop drawings, reports and schedules anywhere"}</p>
-          <p className="drop-sub">PDF, DOCX or XLSX. Each one is filed in about a second; anything else is kept, not filed.</p>
-        </div>
-        <button type="button" className="btn btn-primary" onClick={() => fileInput.current?.click()}>
-          <IconUpload />
-          Choose files
-        </button>
-        <input
-          ref={fileInput}
-          type="file"
-          multiple
-          accept={ACCEPT}
-          hidden
-          data-testid="file-input"
-          onChange={(e) => {
-            if (e.target.files) addFiles(e.target.files);
-            e.target.value = "";
-          }}
-        />
+    <main className="workspace" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <section className="profile-col" aria-label="Project profile">
+        <h1 className="project-title">{state.projectName}</h1>
+        <Profile projectId={projectId} tick={profileTick} onJump={jump} onSignedOut={onSignedOut} />
       </section>
-
-      <ul className="legend" aria-label="How to read each box">
-        <li>
-          <span className="mark" style={{ color: "var(--ok)" }}>
-            <IconConfirmed />
-          </span>
-          From document or confirmed
-        </li>
-        <li>
-          <span className="mark" style={{ color: "var(--warn)" }}>
-            <IconCheck />
-          </span>
-          Check: value needs review
-        </li>
-        <li>
-          <span className="mark">
-            <IconNotSet />
-          </span>
-          Not set
-        </li>
-        <li>
-          <span className="mark">
-            <IconNotChecked />
-          </span>
-          Not checked: Jev didn't answer in time
-        </li>
-        <li>
-          <span className="mark" style={{ color: "var(--ember-hot)" }}>
-            <IconYou />
-          </span>
-          Set by you. Click any box to correct it.
-        </li>
-      </ul>
-
-      {rows.length === 0 ? (
-        <div className="empty">
-          <strong>Nothing filed in {state.projectName} yet.</strong>
-          Drop a consultant package on this page. Each file becomes a title block showing its number, revision and
-          title, and how each was decided.
-        </div>
-      ) : (
-        <div className="stack">
-          {rows.map((row) => (
-            <DocumentRow
-              key={row.key}
-              row={row}
-              catalog={catalog}
-              priorLabel={priorLabel}
-              onCorrect={correct}
-              onRetry={retry}
-              onJump={jump}
-              onDismiss={(key) => dispatch({ type: "dismiss", key })}
-            />
-          ))}
-        </div>
-      )}
-
+      <aside className="register-col" aria-label="Document register">
+        <Register
+          rows={rows}
+          catalog={catalog}
+          live={live}
+          priorLabel={priorLabel}
+          onCorrect={correct}
+          onRetry={retry}
+          onJump={jump}
+          onDismiss={(key) => dispatch({ type: "dismiss", key })}
+          onAddFiles={() => fileInput.current?.click()}
+        />
+      </aside>
+      {/* Drop overlay: invisible until files are dragged over the page. */}
+      <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>
+        <p className="drop-title">Release to file into {state.projectName}</p>
+      </div>
+      <input
+        ref={fileInput}
+        type="file"
+        multiple
+        accept={ACCEPT}
+        hidden
+        data-testid="file-input"
+        onChange={(e) => {
+          if (e.target.files) addFiles(e.target.files);
+          e.target.value = "";
+        }}
+      />
       <p className="sr-only" aria-live="polite">
         {announcement}
       </p>
