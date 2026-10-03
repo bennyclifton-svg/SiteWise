@@ -56,11 +56,11 @@ func TestProfileStoreRoundTrip(t *testing.T) {
 		{PassageID: passageA, QuestionID: "det.bal", Value: "BAL-40", Confidence: conf(0.8), DecidedBy: "jev"},
 	}
 	for i := 0; i < 2; i++ { // a rerun replaces, never duplicates
-		if err := st.ReplaceDocumentFacts(ctx, orgA, docA, "sys.", "profile-1", facts); err != nil {
+		if err := st.ReplaceDocumentFacts(ctx, orgA, docA, []string{"sys."}, "profile-1", facts); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if err := st.ReplaceDocumentFacts(ctx, orgA, docA, "det.", "profile-1", facts); err != nil {
+	if err := st.ReplaceDocumentFacts(ctx, orgA, docA, []string{"det."}, "profile-1", facts); err != nil {
 		t.Fatal(err)
 	}
 	snap, err := st.ProfileInput(ctx, orgA, projectA)
@@ -128,7 +128,7 @@ func TestProfileOrgIsolation(t *testing.T) {
 	if err := st.SetUserValue(ctx, orgB, projectA, whole.ID, userB, "hdr.subclass", strPtr("x"), ""); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("cross-org user value: %v", err)
 	}
-	if err := st.ReplaceDocumentFacts(ctx, orgB, docA, "sys.", "profile-1", nil); !errors.Is(err, store.ErrNotFound) {
+	if err := st.ReplaceDocumentFacts(ctx, orgB, docA, []string{"sys."}, "profile-1", nil); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("cross-org facts: %v", err)
 	}
 	snap, err := st.ProfileInput(ctx, orgB, projectA)

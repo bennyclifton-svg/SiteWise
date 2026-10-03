@@ -22,7 +22,10 @@ import (
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
 	"sitewise/internal/jev"
+	"sitewise/internal/jobs"
+	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 	"sitewise/web"
 )
@@ -67,6 +70,9 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	data := fs.String("data", "data/intake", "intake vocabulary and thresholds directory")
 	maxUpload := fs.Int64("max-upload", 200<<20, "largest accepted upload in bytes")
 	devLogin := fs.Bool("dev-login", false, "serve GET /dev/login, which signs in as the local owner; loopback only, never in production")
+	knowledgeDir := fs.String("knowledge", "knowledge", "building knowledge directory")
+	profileThresholds := fs.String("profile-thresholds", "data/profile/thresholds.json", "project profile thresholds")
+	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -114,6 +120,12 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		fmt.Fprintln(stderr, err.Error())
 		return 1
 	}
+	building, err := knowledge.Load(*knowledgeDir)
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	profileTh, minNoul := loadProfileThresholds(*profileThresholds, *provisional, logger)
 	client, err := jev.New(jev.Options{APIKey: cfg.JevAPIKey, Model: cfg.JevModel, Logger: slog.New(slog.NewJSONHandler(stderr, nil))})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -146,12 +158,33 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		fmt.Fprintln(stderr, err.Error())
 		return 1
 	}
+	// Passages, labels, evidence and the project profile run in the
+	// background; filing keeps its slots and the interactive Jev reserve.
+	worker := &jobs.Worker{Store: st, Ask: client, Catalog: building, Text: jobs.FullText(st, blobs),
+		MinNoul: minNoul, Profile: profileTh}
+	go jobs.Run(ctx, worker, st.OrgsWithBackgroundJobs, 2*time.Second, logger.Printf)
 	if n, err := srv.Resume(ctx); err != nil {
 		logger.Printf("resume failed: %v", err)
 	} else if n > 0 {
 		logger.Printf("resumed %d filings", n)
 	}
 	return listen(ctx, &http.Server{Addr: *addr, Handler: srv, ReadHeaderTimeout: 10 * time.Second}, srv, logger, stdout, cfg.JevModel)
+}
+
+// loadProfileThresholds applies profile floors only when the owner approved
+// them or the operator asked for provisional ones. Otherwise readings are
+// stored and nothing is applied, and the log says so.
+func loadProfileThresholds(path string, provisional bool, logger *log.Logger) (profile.Thresholds, float64) {
+	th, err := profile.LoadThresholds(path)
+	if err != nil {
+		logger.Printf("profile thresholds not loaded (%v); profile readings are stored but not applied", err)
+		return profile.Thresholds{Amber: map[string]float64{}, Green: map[string]*float64{}}, 0
+	}
+	if !th.Approved && !provisional {
+		logger.Printf("profile thresholds %s are not owner-approved; run with -profile-provisional to apply them", th.Version)
+		return profile.Thresholds{Version: th.Version, Amber: map[string]float64{}, Green: map[string]*float64{}}, 0
+	}
+	return th, th.LabelMinNoul
 }
 
 func listen(ctx context.Context, hs *http.Server, srv *httpapi.Server, logger *log.Logger, stdout io.Writer, model string) int {

@@ -110,8 +110,8 @@ type StoredFact struct {
 }
 
 // ReplaceDocumentFacts replaces one document's facts whose question id
-// starts with prefix, so a rerun stage never duplicates its readings.
-func (s *Store) ReplaceDocumentFacts(ctx context.Context, orgID, documentID, prefix, questionVersion string, facts []StoredFact) error {
+// starts with any of prefixes, so a rerun stage never duplicates readings.
+func (s *Store) ReplaceDocumentFacts(ctx context.Context, orgID, documentID string, prefixes []string, questionVersion string, facts []StoredFact) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -125,13 +125,15 @@ func (s *Store) ReplaceDocumentFacts(ctx context.Context, orgID, documentID, pre
 		}
 		return err
 	}
-	if _, err := tx.Exec(ctx, `DELETE FROM profile_facts WHERE org_id = $1::uuid AND document_id = $2::uuid AND starts_with(question_id, $3)`,
-		orgID, documentID, prefix); err != nil {
-		return err
+	for _, prefix := range prefixes {
+		if _, err := tx.Exec(ctx, `DELETE FROM profile_facts WHERE org_id = $1::uuid AND document_id = $2::uuid AND starts_with(question_id, $3)`,
+			orgID, documentID, prefix); err != nil {
+			return err
+		}
 	}
 	batch := &pgx.Batch{}
 	for _, f := range facts {
-		if !strings.HasPrefix(f.QuestionID, prefix) {
+		if !hasAnyPrefix(f.QuestionID, prefixes) {
 			continue
 		}
 		batch.Queue(`
@@ -370,4 +372,13 @@ func cutRunes(s string, n int) string {
 		return s
 	}
 	return string(r[:n])
+}
+
+func hasAnyPrefix(s string, prefixes []string) bool {
+	for _, p := range prefixes {
+		if strings.HasPrefix(s, p) {
+			return true
+		}
+	}
+	return false
 }
