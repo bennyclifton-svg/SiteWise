@@ -155,18 +155,44 @@ class ProfileSchemaTests(unittest.TestCase):
         report, _ = _check('determinants', _det(stated_in=bad, profile_group='weather'))
         self.assertEqual(len(report.errors), 2)
 
-    def test_typical_systems_must_name_live_leaves_and_known_types(self):
+    def test_scope_defaults_must_name_live_leaves_and_known_types(self):
         taxonomy = {'building_classes': [{'id': 'residential', 'label': 'Residential', 'subclasses': [
             {'id': 'house', 'label': 'House', 'ncc_class': '1a', 'scale_fields': []}]}],
             'work_types': [{'id': 'new', 'label': 'New build'}], 'conditions': []}
-        typical = {'typical': [{'subclass': 'house', 'work_type': 'new',
-                                'systems': ['hydraulic.gas', 'fire-passive.old', 'hydraulic']},
-                               {'subclass': 'shed', 'work_type': 'new', 'systems': []}]}
+        doc = {'always_shown': ['state', 'nope'],
+               'empty_work_types': ['refurb'],
+               'presets': [{'id': 'fit', 'label': 'Fit-out', 'systems': ['hydraulic.gas']}, {'id': 'fit', 'systems': []}],
+               'classes': [{'class': 'house', 'work_type': 'new', 'systems': ['hydraulic.gas', 'fire-passive.old', 'hydraulic']},
+                           {'class': 'shed', 'work_type': 'new', 'systems': ['hydraulic.gas']}],
+               'categories': [{'category': 'castles', 'systems': ['hydraulic.gas']}]}
         report = checker.Report()
-        checker.check_typical('typical', typical, taxonomy,
-                              {'hydraulic.gas': 'f', 'fire-passive.old': 'f', 'hydraulic': 'f'},
-                              {'fire-passive.old': 'x'}, report)
+        checker.check_scope_defaults('scope', doc, taxonomy,
+                                     {'hydraulic.gas': 'f', 'fire-passive.old': 'f', 'hydraulic': 'f'},
+                                     {'fire-passive.old': 'x'}, {'state': {'profile_group': 'site'}}, report)
         joined = ' '.join(report.errors)
-        self.assertIn('fire-passive.old', joined)
-        self.assertIn('hydraulic`', joined)
-        self.assertIn('shed', joined)
+        for expected in ('fire-passive.old', 'hydraulic`', 'shed', 'castles', 'refurb', 'nope', 'duplicate preset',
+                         'preset needs id and label'):
+            self.assertIn(expected, joined)
+
+    def test_a_profile_determinant_must_be_able_to_become_relevant(self):
+        determinants = {
+            'by_rule': {'profile_group': 'site'},
+            'by_derivation': {'profile_group': 'fire'},
+            'by_systems': {'profile_group': 'site', 'systems': ['substructure']},
+            'always': {'profile_group': 'classification'},
+            'orphan': {'profile_group': 'site'},
+            'not_profile': {},
+        }
+        rules = [('r1', {'applies_when': {'all': [{'det': 'by_rule', 'eq': 'x'}]}}),
+                 ('r2', {'derives': {'table': 't', 'inputs': ['by_derivation'], 'gives': 'out'}})]
+        report = checker.Report()
+        checker.check_relevance('scope', {'always_shown': ['always']}, determinants, rules, report)
+        self.assertEqual(len(report.warnings), 1)
+        self.assertIn('orphan', report.warnings[0])
+
+    def test_determinant_systems_are_references(self):
+        report, refs = _check('determinants', _det(systems=['substructure', 'hydraulic.gas']))
+        self.assertEqual(report.errors, [])
+        self.assertIn(('system', 'substructure'), [(k, t) for k, _, t in refs])
+        report, _ = _check('determinants', _det(systems=[]))
+        self.assertTrue(report.errors)

@@ -917,6 +917,11 @@ func (a *apiClient) profileReadEdit(ctx context.Context, st *store.Store, cat *k
 		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/documents/profile-read", reading, http.StatusOK); err != nil {
 			return err
 		}
+		// So is a scope of works change: one write, then a code-only rebuild.
+		scope, _ := json.Marshal(map[string]any{"systems": map[string]any{"fire-active.sprinklers": []any{"in", nil}[i%2]}})
+		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/profile/scope", scope, http.StatusOK); err != nil {
+			return err
+		}
 	}
 	return nil
 }

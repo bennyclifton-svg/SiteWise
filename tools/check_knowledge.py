@@ -257,6 +257,11 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
                 refs.append(("system", where, parent))
     elif kind == "determinants":
         check_profile_fields(where, item, report)
+        if "systems" in item:
+            if not isinstance(item["systems"], list) or not item["systems"]:
+                report.error(where, "determinant systems must be a non-empty list")
+            else:
+                refs.extend(("system", where, s) for s in item["systems"])
         if item.get("value") not in VALUE_TYPES:
             report.error(where, f"value must be one of {sorted(VALUE_TYPES)}")
         if item.get("derived"):
@@ -385,22 +390,83 @@ def check_replacements(deprecated: dict, known: dict, report: Report) -> None:
                 report.error(known[kind].get(old, old), f"{old} is replaced by {new}, which is itself deprecated")
 
 
-def check_typical(rel: str, doc: dict, taxonomy: dict, systems: dict, deprecated: dict, report: Report) -> None:
-    subclasses = {s.get("id") for c in taxonomy.get("building_classes") or [] for s in c.get("subclasses") or []}
+def check_scope_defaults(rel: str, doc: dict, taxonomy: dict, systems: dict, deprecated: dict,
+                         determinants: dict, report: Report) -> None:
+    categories = {c.get("id") for c in taxonomy.get("building_classes") or []}
+    classes = {s.get("id") for c in taxonomy.get("building_classes") or [] for s in c.get("subclasses") or []}
     work_types = {w.get("id") for w in taxonomy.get("work_types") or []}
-    for entry in doc.get("typical") or []:
-        where = f"{rel} [{entry.get('subclass')} x {entry.get('work_type')}]"
-        if entry.get("subclass") not in subclasses:
-            report.error(where, f"unknown subclass {entry.get('subclass')}")
-        if entry.get("work_type") not in work_types:
-            report.error(where, f"unknown work type {entry.get('work_type')}")
-        for sid in entry.get("systems") or []:
+
+    def leaves(where: str, ids) -> None:
+        if not isinstance(ids, list) or not ids:
+            report.error(where, "systems must be a non-empty list of leaf ids")
+            return
+        for sid in ids:
             if sid not in systems:
                 report.error(where, f"unknown system {sid}")
             elif "." not in sid:
                 report.error(where, f"`{sid}` is not a leaf system")
             elif sid in deprecated:
                 report.error(where, f"{sid} is deprecated")
+
+    for w in doc.get("empty_work_types") or []:
+        if w not in work_types:
+            report.error(rel, f"unknown work type {w}")
+    for d in doc.get("always_shown") or []:
+        if d not in determinants or not determinants[d].get("profile_group"):
+            report.error(rel, f"always_shown must name a profile determinant: {d}")
+    seen = set()
+    for preset in doc.get("presets") or []:
+        where = f"{rel} [preset {preset.get('id')}]"
+        if not preset.get("id") or not str(preset.get("label", "")).strip():
+            report.error(where, "preset needs id and label")
+        if preset.get("id") in seen:
+            report.error(where, "duplicate preset id")
+        seen.add(preset.get("id"))
+        leaves(where, preset.get("systems"))
+    for entry in doc.get("classes") or []:
+        where = f"{rel} [{entry.get('class')} x {entry.get('work_type')}]"
+        if entry.get("class") not in classes:
+            report.error(where, f"unknown building class {entry.get('class')}")
+        if entry.get("work_type") not in work_types:
+            report.error(where, f"unknown work type {entry.get('work_type')}")
+        leaves(where, entry.get("systems"))
+    for entry in doc.get("categories") or []:
+        where = f"{rel} [{entry.get('category')}]"
+        if entry.get("category") not in categories:
+            report.error(where, f"unknown building category {entry.get('category')}")
+        leaves(where, entry.get("systems"))
+
+
+def predicate_determinants(pred) -> set:
+    """Determinant ids a predicate reads."""
+    out = set()
+    if isinstance(pred, dict):
+        if "det" in pred:
+            out.add(pred["det"])
+        for val in pred.values():
+            out |= predicate_determinants(val)
+    elif isinstance(pred, list):
+        for val in pred:
+            out |= predicate_determinants(val)
+    return out
+
+
+def check_relevance(rel: str, doc: dict, determinants: dict, rules: list, report: Report) -> None:
+    """A profile determinant must be able to become relevant: a rule reads it,
+    it names its own systems, or it is always shown. Otherwise the scope-led
+    profile can never show it (docs/design/2026-10-03-profile-scope.md)."""
+    read = set()
+    for _, rule in rules:
+        read |= predicate_determinants(rule.get("applies_when"))
+        derives = rule.get("derives")
+        if isinstance(derives, dict):
+            read |= set(derives.get("inputs") or []) | {derives.get("gives")}
+    always = set(doc.get("always_shown") or [])
+    for did, item in sorted(determinants.items()):
+        if not item.get("profile_group") or item.get("status") == "deprecated":
+            continue
+        if did not in read and did not in always and not item.get("systems"):
+            report.warn(rel, f"profile determinant {did} is read by no rule and has no systems; the scoped profile never shows it")
 
 
 def check_taxonomy(rel: str, doc: dict, report: Report) -> None:
@@ -427,12 +493,13 @@ def check_taxonomy(rel: str, doc: dict, report: Report) -> None:
                 report.error(rel, f"condition option label carries cost-uplift text: {opt.get('label')}")
 
 
-def check_profile(report: Report, seed_dir: Path, known: dict, deprecated: dict, refs: list, cache: dict) -> None:
+def check_profile(report: Report, seed_dir: Path, known: dict, deprecated: dict, refs: list, cache: dict,
+                  determinants: dict | None = None, rules: list | None = None) -> None:
     folder = KNOWLEDGE / PROFILE_DIR
     if not folder.is_dir():
         return
     docs = {}
-    for name in ("taxonomy", "project_facts", "typical_systems"):
+    for name in ("taxonomy", "project_facts", "scope_defaults"):
         path = folder / f"{name}.yaml"
         rel = path.relative_to(ROOT).as_posix()
         if not path.is_file():
@@ -455,12 +522,14 @@ def check_profile(report: Report, seed_dir: Path, known: dict, deprecated: dict,
             check_item("determinants", rel, item, seed_dir, report, refs, cache)
             if isinstance(item, dict) and item.get("id") in known["determinant"]:
                 report.error(rel, f"project fact id collides with a determinant: {item['id']}")
-    if "typical_systems" in docs and "taxonomy" in docs:
-        rel, doc = docs["typical_systems"]
+    if "scope_defaults" in docs and "taxonomy" in docs:
+        rel, doc = docs["scope_defaults"]
         if doc.get("status") not in STATUSES:
-            report.error(rel, "typical systems need a status")
+            report.error(rel, "scope defaults need a status")
         check_sources(rel, doc.get("sources"), seed_dir, report, cache)
-        check_typical(rel, doc, docs["taxonomy"][1], known["system"], deprecated.get("system", {}), report)
+        check_scope_defaults(rel, doc, docs["taxonomy"][1], known["system"], deprecated.get("system", {}),
+                             determinants or {}, report)
+        check_relevance(rel, doc, determinants or {}, rules or [], report)
 
 
 def check_derivation_output(where: str, rule: dict, determinants: dict, report: Report) -> None:
@@ -513,7 +582,7 @@ def main() -> int:
 
     for where, rule in rules:
         check_derivation_output(where, rule, determinants, report)
-    check_profile(report, args.seed_dir, known, deprecated, refs, cache)
+    check_profile(report, args.seed_dir, known, deprecated, refs, cache, determinants, rules)
     check_replacements(deprecated, known, report)
     check_deprecated_refs(refs, deprecated, report)
 

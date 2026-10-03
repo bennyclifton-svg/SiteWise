@@ -11,6 +11,7 @@ work_types:
   label: New build
 - id: refurb
   label: Refurbishment
+  display_label: Refurbishment / fit-out / upgrade
 - id: extend
   label: Extension / addition
 - id: remediation

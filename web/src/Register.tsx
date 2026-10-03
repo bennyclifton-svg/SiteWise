@@ -242,7 +242,8 @@ export function Register({
                 );
               })}
               <th scope="col" className="reg-prof" title="Read by the project profile">
-                <span className="reg-th-text">Profile</span>
+                <span className="reg-th-text" aria-hidden>Read</span>
+                <span className="sr-only">Read by the project profile</span>
               </th>
               <th scope="col">
                 <span className="sr-only">State</span>

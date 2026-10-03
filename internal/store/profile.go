@@ -481,3 +481,40 @@ ON CONFLICT (org_id, document_id, kind) DO NOTHING`, orgID, projectID, kinds)
 	}
 	return tag.RowsAffected(), tx.Commit(ctx)
 }
+
+// SetScope records the user's scope choices on the whole project in one
+// transaction: "in" or "out" per system key, or nil to remove the choice so
+// defaults and documents decide again. The caller rebuilds the profile.
+func (s *Store) SetScope(ctx context.Context, orgID, projectID, partID, userID string, choices map[string]*string) error {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	var ok bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM project_parts WHERE org_id = $1::uuid AND project_id = $2::uuid AND id = $3::uuid)`,
+		orgID, projectID, partID).Scan(&ok); err != nil {
+		return err
+	}
+	if !ok {
+		return ErrNotFound
+	}
+	for key, value := range choices {
+		if value == nil {
+			if _, err := tx.Exec(ctx, `DELETE FROM profile_user_values
+WHERE org_id = $1::uuid AND project_id = $2::uuid AND part_id = $3::uuid AND key = $4`, orgID, projectID, partID, key); err != nil {
+				return err
+			}
+			continue
+		}
+		if _, err := tx.Exec(ctx, `
+INSERT INTO profile_user_values (org_id, project_id, part_id, key, value, note, user_id)
+VALUES ($1::uuid, $2::uuid, $3::uuid, $4, $5, '', $6::uuid)
+ON CONFLICT (org_id, project_id, part_id, key) DO UPDATE
+SET value = EXCLUDED.value, user_id = EXCLUDED.user_id, version = profile_user_values.version + 1, updated_at = now()`,
+			orgID, projectID, partID, key, *value, userID); err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
+}

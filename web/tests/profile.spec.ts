@@ -115,8 +115,8 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   // Nothing read yet: compliance says where a value is usually stated.
   await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
 
-  await page.getByLabel("Building class", { exact: true }).selectOption("residential");
-  await page.getByLabel("Building type", { exact: true }).selectOption("house");
+  await page.getByLabel("Building category", { exact: true }).selectOption("residential");
+  await page.getByLabel("Building class", { exact: true }).selectOption("house");
   await page.getByLabel("Work type", { exact: true }).selectOption("new");
 
   // Typical systems appear, marked as suggestions rather than evidence.
@@ -226,4 +226,41 @@ test("delete documents from the register after confirming", async ({ browser }) 
   await page.reload();
   await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
   await expect(page.locator("tbody.reg-doc")).toHaveCount(0);
+});
+
+test("scope of works: a sprinkler pump replacement sees only what it needs", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Sprinkler pump replacement");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("heading", { name: "Scope of works" })).toBeVisible();
+
+  await page.getByLabel("Building category", { exact: true }).selectOption("industrial");
+  await page.getByLabel("Building class", { exact: true }).selectOption("warehouse");
+  await page.getByLabel("Work type", { exact: true }).selectOption({ label: "Refurbishment / fit-out / upgrade" });
+  const scope = page.getByRole("region", { name: "Scope of works" });
+  await expect(scope).toContainText("0 systems");
+  // Nothing in scope yet: no basis to hide a compliance row.
+  await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
+
+  const fire = scope.locator(".pf-scope-group", { hasText: "Active fire protection" });
+  await fire.locator("summary").click();
+  await fire.getByLabel("Automatic fire sprinklers").check();
+  await expect(scope).toContainText("1 system");
+  await expect(fire.locator(".pf-scope-origin")).toHaveText("You");
+
+  // The checklist and compliance follow the scope.
+  await expect(page.locator(".pf-sys", { hasText: "Automatic fire sprinklers" })).toBeVisible();
+  await expect(page.locator(".pf-sys", { hasText: "Heated water" })).toHaveCount(0);
+  await expect(page.getByText(/Showing \d+ of \d+ compliance items for this scope/)).toBeVisible();
+  await expect(page.getByLabel("Top of storage height")).toBeVisible();
+  await expect(page.getByText("Usually in: Geotechnical report")).toBeHidden();
+  await page.getByLabel("Show everything").check();
+  await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
+  await page.getByLabel("Show everything").uncheck();
+
+  // A preset adds a set at once; Reset hands every choice back.
+  await scope.getByRole("button", { name: "Typical fit-out" }).click();
+  await expect(scope).not.toContainText("1 system");
+  await scope.getByRole("button", { name: "Reset to defaults" }).click();
+  await expect(scope).toContainText("0 systems");
 });

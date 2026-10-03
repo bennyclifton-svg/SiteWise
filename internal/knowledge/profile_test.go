@@ -68,11 +68,17 @@ building_classes:
 conditions:
   - {key: planning, label: Planning, options: [{id: da, label: DA}]}
 `)
-	mustWrite(t, filepath.Join(root, "profile", "typical_systems.yaml"), `
+	mustWrite(t, filepath.Join(root, "profile", "scope_defaults.yaml"), `
 version: 1
 status: draft
-typical:
-  - {subclass: house, work_type: new, systems: [envelope.bushfire-construction]}
+always_shown: [bal]
+empty_work_types: [refurb]
+presets:
+  - {id: fit, label: Fit-out, systems: [envelope.bushfire-construction]}
+classes:
+  - {class: house, work_type: new, systems: [envelope.bushfire-construction]}
+categories:
+  - {category: residential, systems: [envelope.bushfire-construction]}
 `)
 	mustWrite(t, filepath.Join(root, "profile", "project_facts.yaml"), `
 version: 1
@@ -142,11 +148,14 @@ func TestTaxonomyTypicalAndFacts(t *testing.T) {
 	if !ok || sub.NCCClass != "1a" || !sub.ScaleFields[0].Triggered("double storey") {
 		t.Fatalf("subclass = %+v", sub)
 	}
-	if got := cat.Typical("house", "new"); len(got) != 1 || got[0] != "envelope.bushfire-construction" {
-		t.Fatalf("typical = %v", got)
+	if got := cat.ScopeDefaults("", "house", "new"); len(got) != 1 || got[0] != "envelope.bushfire-construction" {
+		t.Fatalf("scope defaults = %v", got)
 	}
-	if cat.Typical("shed", "new") != nil {
-		t.Fatal("unknown pair must be nil")
+	if cat.ScopeDefaults("", "shed", "new") != nil || cat.ScopeDefaults("residential", "house", "refurb") != nil {
+		t.Fatal("unknown class or an empty work type must be nil")
+	}
+	if p, ok := cat.Preset("fit"); !ok || p.Label != "Fit-out" || len(cat.AlwaysShown()) != 1 {
+		t.Fatalf("preset %+v always %v", p, cat.AlwaysShown())
 	}
 	if f, ok := cat.ProjectFact("contract_basis"); !ok || !f.Triggered("on a Cost Plus basis") {
 		t.Fatalf("fact = %+v", f)
@@ -165,8 +174,8 @@ func TestRealKnowledgeLoadsProfile(t *testing.T) {
 	if _, ok := cat.Taxonomy().Subclass("warehouse"); !ok {
 		t.Fatal("warehouse subclass missing")
 	}
-	if len(cat.Typical("house", "new")) == 0 {
-		t.Fatal("house x new typical systems missing")
+	if len(cat.ScopeDefaults("", "house", "new")) == 0 {
+		t.Fatal("house x new scope defaults missing")
 	}
 	bal, _ := cat.Determinant("bal")
 	if !bal.Triggered("with BAL 40 compliance") || !bal.Triggered("Bush Fire Attack Level Low") {

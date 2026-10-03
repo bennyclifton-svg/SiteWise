@@ -1,4 +1,4 @@
-# typical_systems.yaml: see knowledge/SCHEMA.md 'Project profile additions'. Draft; owner review pending.
+# scope_defaults.yaml: see knowledge/SCHEMA.md 'Project profile additions'. Draft; owner review pending.
 version: 1
 status: draft
 sources:
@@ -11,10 +11,44 @@ sources:
   anchor: 3.0 Development Outline
 - document: petersham-ppr
   anchor: 3.2. SCOPE OF WORK
-notes: 'Suggestions for the thin-brief workflow, never evidence. When unsure a system is left out: an unwanted suggestion
-  costs the user more than a missing one.'
-typical:
-- subclass: house
+notes: Scope defaults for the project profile (docs/design/2026-10-03-profile-scope.md). New build and extension start from
+  the building class list for that work type, else the class new-build list, else the building category list. Refurbishment
+  / fit-out / upgrade, remediation and advisory start empty; the picker offers presets. Defaults are suggestions, never evidence.
+  Category lists and the fit-out preset are drafted from the class lists; owner review pending.
+always_shown:
+- state
+- ncc_class
+- ncc_edition
+empty_work_types:
+- refurb
+- remediation
+- advisory
+presets:
+- id: typical_fit_out
+  label: Typical fit-out
+  systems:
+  - interiors.walls-linings
+  - interiors.ceilings
+  - interiors.floor-finishes
+  - interiors.joinery
+  - interiors.internal-doors
+  - interiors.internal-glazing
+  - interiors.painting
+  - mechanical.air-conditioning
+  - mechanical.air-distribution
+  - electrical.lighting
+  - electrical.cabling-wiring
+  - comms-security.structured-cabling
+  - fire-active.sprinklers
+  - fire-active.detection
+  - fire-active.occupant-warning
+  - fire-active.emergency-lighting
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  - hydraulic.sanitary
+  - comms-security.access-control
+classes:
+- class: house
   work_type: new
   systems:
   - site.survey-boundaries
@@ -58,7 +92,7 @@ typical:
   - comms-security.carrier-lead-in
   - comms-security.structured-cabling
   - fire-active.smoke-alarms
-- subclass: townhouses
+- class: townhouses
   work_type: new
   systems:
   - site.survey-boundaries
@@ -106,7 +140,7 @@ typical:
   - fire-passive.rated-elements
   - access-egress.stairs-and-ramps
   - access-egress.barriers
-- subclass: house
+- class: house
   work_type: extend
   systems:
   - structure.alterations
@@ -125,9 +159,9 @@ typical:
   - electrical.lighting
   - hydraulic.roof-drainage
   - fire-active.smoke-alarms
-- subclass: warehouse
+- class: warehouse
   work_type: new
-  systems:
+  systems: &id003
   - site.survey-boundaries
   - site.earthworks
   - site.stormwater-detention
@@ -174,7 +208,7 @@ typical:
   - fire-active.fire-water
   - electrical.utility-supply
   - comms-security.carrier-lead-in
-- subclass: warehouse
+- class: warehouse
   work_type: extend
   systems:
   - structure.alterations
@@ -216,9 +250,9 @@ typical:
   - electrical.cabling-wiring
   - electrical.lighting
   - electrical.metering
-- subclass: apartments
+- class: apartments
   work_type: new
-  systems:
+  systems: &id001
   - site.survey-boundaries
   - site.earthworks
   - site.stormwater-detention
@@ -281,18 +315,90 @@ typical:
   - comms-security.access-control
   - vertical-transport.passenger-lifts
   - vertical-transport.lift-shafts-pits
-- subclass: office
-  work_type: refurb
-  systems:
+categories:
+- category: residential
+  systems: *id001
+- category: mixed
+  systems: *id001
+- category: commercial
+  systems: &id002
+  - site.survey-boundaries
+  - site.earthworks
+  - site.stormwater-detention
+  - site.services-connections
+  - site.erosion-sediment-control
+  - site.landscape
+  - site.vehicle-access
+  - site.waste-storage
+  - site.public-domain
+  - site.adjoining-structures
+  - substructure.basement-retention
+  - substructure.footings
+  - substructure.damp-waterproofing
+  - structure.concrete
+  - envelope.external-walls
+  - envelope.windows-doors
+  - envelope.external-waterproofing
+  - envelope.thermal-insulation
+  - envelope.thermal-performance
   - interiors.walls-linings
   - interiors.ceilings
+  - interiors.wet-area-waterproofing
+  - interiors.tiling
   - interiors.floor-finishes
   - interiors.joinery
   - interiors.internal-doors
   - interiors.internal-glazing
   - interiors.painting
+  - fire-passive.rated-elements
+  - fire-passive.compartments
+  - fire-passive.penetrations
+  - fire-active.detection
+  - fire-active.hydrants
+  - fire-active.emergency-lighting
+  - fire-active.portable-extinguishers
+  - access-egress.exits
+  - access-egress.stairs-and-ramps
+  - access-egress.barriers
+  - access-egress.egress-doors
+  - access-egress.accessible-access
   - mechanical.air-conditioning
-  - mechanical.air-distribution
-  - electrical.lighting
+  - mechanical.ventilation
+  - mechanical.local-exhaust
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  - hydraulic.sanitary
+  - hydraulic.roof-drainage
+  - electrical.utility-supply
+  - electrical.switchboards
   - electrical.cabling-wiring
+  - electrical.lighting
+  - electrical.metering
+  - comms-security.carrier-lead-in
   - comms-security.structured-cabling
+  - comms-security.access-control
+  - vertical-transport.passenger-lifts
+  - vertical-transport.lift-shafts-pits
+  - fire-active.sprinklers
+  - fire-active.occupant-warning
+  - mechanical.air-distribution
+  - mechanical.central-plant
+  - mechanical.controls-bms
+  - access-egress.accessible-facilities
+  - comms-security.cctv
+- category: institution
+  systems: *id002
+- category: industrial
+  systems: *id003
+- category: infrastructure
+  systems:
+  - site.survey-boundaries
+  - site.earthworks
+  - site.ground-conditions
+  - site.stormwater-detention
+  - site.services-connections
+  - site.erosion-sediment-control
+  - site.vehicle-access
+  - substructure.footings
+  - structure.concrete
+  - electrical.utility-supply

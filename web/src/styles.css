@@ -1029,33 +1029,33 @@ button.cell[data-state="check"]:hover {
 }
 
 .reg-table col.reg-no {
-  width: 12%;
+  width: 13%;
 }
 .reg-table col.reg-rev {
   width: 6%;
 }
 .reg-table col.reg-date {
-  width: 13%;
+  width: 11%;
 }
 .reg-table col.reg-disc {
-  width: 16%;
+  width: 12%;
 }
 .reg-table col.reg-kind {
-  width: 13%;
+  width: 11%;
 }
 .reg-table col.reg-mark {
   width: 2.5rem;
 }
 /* Selection and profile-reading columns. */
 .reg-table col.reg-sel {
-  width: 1.75rem;
+  width: 1.5rem;
 }
 .reg-table col.reg-prof {
-  width: 3.25rem;
+  width: 2.25rem;
 }
 .reg-table th.reg-sel,
 .reg-line td.reg-sel {
-  padding: 6px 0 0 6px;
+  padding: 6px 0 0 4px;
 }
 .reg-table th.reg-sel {
   padding-top: 7px;
@@ -1675,7 +1675,7 @@ button.cell[data-state="check"]:hover {
 
 /* Deletion: a quiet bin per row and in the header; the dialog confirms. */
 .reg-table col.reg-bin {
-  width: 2rem;
+  width: 1.75rem;
 }
 .reg-table th.reg-bin,
 .reg-line td.reg-bin {
@@ -1742,4 +1742,98 @@ button.cell[data-state="check"]:hover {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+/* Scope of works: a compact picker grouped by top-level system. */
+.pf-scope-head {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.pf-scope-head h2 {
+  margin-right: 2px;
+}
+.pf-scope-hint {
+  margin: 0 0 8px;
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+.pf-scope-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 4px 12px;
+}
+.pf-scope-group summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  cursor: pointer;
+  list-style: none;
+}
+.pf-scope-group summary::-webkit-details-marker {
+  display: none;
+}
+.pf-scope-group[data-active] summary {
+  border-color: var(--azure);
+  background: var(--azure-soft);
+}
+.pf-scope-group[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.pf-scope-label {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.pf-scope-group input {
+  margin: 0;
+  accent-color: var(--azure);
+}
+.pf-scope-group ul {
+  margin: 0;
+  padding: 4px 6px 6px;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  list-style: none;
+}
+.pf-scope-group li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 2px 0;
+  font-size: 12.5px;
+}
+.pf-scope-group li label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.pf-scope-origin {
+  padding: 0 6px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 11px;
+}
+.pf-scope-origin[data-origin="default"] {
+  border-color: var(--azure);
+  color: var(--azure);
+}
+.pf-scope-origin[data-origin="user"] {
+  border-style: solid;
+  border-color: var(--ember);
+  color: var(--ember-hot);
+}
+.pf-scope-note {
+  flex-basis: 100%;
+  color: var(--warn);
+  font-size: 11.5px;
 }
