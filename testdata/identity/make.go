@@ -36,6 +36,7 @@ func main() {
 		{"rotated-title-block.pdf", rotatedTitleBlockPDF()},
 		{"scanned-empty.pdf", emptyPagePDF()},
 		{"identity-page.pdf", denseIdentityPDF()},
+		{"fragmented-title-block.pdf", fragmentedTitleBlockPDF()},
 		{"malformed.docx", []byte("this is not a zip document")},
 		{"large-shared-strings.xlsx", largeSharedStringsXLSX()},
 		{"merged-cells.xlsx", mergedCellsXLSX()},
@@ -141,6 +142,46 @@ func denseIdentityPDF() []byte {
 		fmt.Fprintf(&content, "1 0 0 1 36 %d Tm\n(Fire note %02d hydrant booster pump room access) Tj\n", y, i)
 	}
 	content.WriteString("0 1 -1 0 800 48 Tm\n(A-101) Tj\nET")
+	return writePDF([]string{
+		"<< /Type /Catalog /Pages 2 0 R >>",
+		"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+		pageDict(4, 5),
+		pdfStream(content.String()),
+		fontDict,
+	})
+}
+
+// fragmentedTitleBlockPDF writes text the way ArchiCAD publishes it: every
+// word and punctuation mark is its own text object, placed edge to edge.
+// 500 note words come first in the content stream, so a reader that keeps
+// the first 400 fragments never reaches the title block.
+func fragmentedTitleBlockPDF() []byte {
+	var content strings.Builder
+	frag := func(x, y float64, s string) {
+		fmt.Fprintf(&content, "BT\n/F1 10 Tf\n1 0 0 1 %.2f %.2f Tm\n(%s) Tj\nET\n", x, y, s)
+	}
+	// Helvetica advance widths at 10 pt.
+	width := map[rune]float64{'C': 7.22, '-': 3.33, 'A': 6.67, '0': 5.56, '1': 5.56, '2': 5.56, '3': 5.56, '6': 5.56, '.': 2.78, 'S': 6.67, 'I': 2.78, 'T': 6.11, 'E': 6.67, 'P': 6.67, 'L': 5.56, 'N': 7.22}
+	run := func(x, y float64, parts ...string) {
+		for _, p := range parts {
+			frag(x, y, p)
+			for _, r := range p {
+				x += width[r]
+			}
+		}
+	}
+	for line := 0; line < 50; line++ {
+		for w := 0; w < 10; w++ {
+			frag(36+float64(w)*36, 560-float64(line)*10, "note")
+		}
+	}
+	// Words are separated by a gap, not a space character.
+	run(600, 80, "SITE")
+	frag(600+22.23+2.78, 80, "PLAN")
+	run(600, 60, "CC", "-", "A", "-", "010")
+	run(600, 40, "06", ".", "11", ".", "2023")
+	frag(420, 100, "DRAWING TITLE")
+	frag(640, 100, "DRAWING NUMBER")
 	return writePDF([]string{
 		"<< /Type /Catalog /Pages 2 0 R >>",
 		"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",

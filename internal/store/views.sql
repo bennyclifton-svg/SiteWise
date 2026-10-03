@@ -47,6 +47,7 @@ SELECT
     COALESCE(dc.value, '') AS value,
     dc.band,
     dc.decided_by,
+    COALESCE(dc.question_version, '') AS question_version,
     dc.confidence
 FROM decisions dc
 JOIN documents d

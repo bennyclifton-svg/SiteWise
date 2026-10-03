@@ -515,6 +515,7 @@ WHERE EXISTS (
     WHERE org_id = $1::uuid
       AND id = $3::uuid
 )
+ON CONFLICT (org_id, document_id, kind) DO NOTHING
 `
 
 type EnqueueJobParams struct {

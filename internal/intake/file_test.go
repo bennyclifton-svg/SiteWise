@@ -40,7 +40,7 @@ func TestThresholdFileDisablesAction(t *testing.T) {
 func TestPartialThresholdRejected(t *testing.T) {
 	dir := t.TempDir()
 	body := []byte(`{
-		"question_version": "intake-2",
+		"question_version": "intake-75",
 		"reconciliation": "partial cut-off",
 		"questions": {"number": [{"green": 0.9, "amber": null, "options": null}]}
 	}`)
@@ -82,7 +82,7 @@ func TestBandStaysWithQuestionShape(t *testing.T) {
 func TestOverlappingShapesRejected(t *testing.T) {
 	dir := t.TempDir()
 	body := []byte(`{
-		"question_version": "intake-2",
+		"question_version": "intake-75",
 		"reconciliation": "overlapping shapes",
 		"questions": {"number": [
 			{"options": 3, "max_options": 4, "green": 0.9, "amber": 0.6},
@@ -146,7 +146,7 @@ func TestFileAllRuleSendsNoJev(t *testing.T) {
 	assertDecision(t, filed.Decisions, intake.FieldTitle, "Floor Plan", intake.BandGreen, intake.DecidedByRule)
 	assertDecision(t, filed.Decisions, intake.FieldKind, "drawing", intake.BandGreen, intake.DecidedByRule)
 	assertDecision(t, filed.Decisions, intake.FieldDiscipline, "consultant.architect", intake.BandGreen, intake.DecidedByRule)
-	assertDecision(t, filed.Decisions, intake.FieldLifecycle, "construction", intake.BandGreen, intake.DecidedByRule)
+	assertDecision(t, filed.Decisions, intake.FieldLifecycle, "design", intake.BandGreen, intake.DecidedByRule)
 	assertDecision(t, filed.Decisions, intake.FieldDate, "", intake.BandBlank, intake.DecidedByRule)
 	if jobStatus(t, st, org, docID, store.JobKindIntake) != store.JobStatusDone {
 		t.Fatal("intake job")
@@ -688,7 +688,7 @@ func ruledText(number, revision, title string) identity.Text {
 		{Text: "Rev " + revision},
 		{Text: "Title " + title},
 		{Text: "Drawing"},
-		{Text: "Architectural"},
+		{Text: "Discipline: Architectural"},
 		{Text: "Construction"},
 	}}
 }

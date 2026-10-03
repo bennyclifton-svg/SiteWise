@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"sort"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -24,25 +25,31 @@ const (
 
 // FieldView is one field as the UI shows it.
 type FieldView struct {
-	Field      string   `json:"field"`
-	Value      string   `json:"value"`
-	Band       string   `json:"band"`
-	DecidedBy  string   `json:"decided_by"`
-	Confidence *float64 `json:"confidence,omitempty"`
+	Field           string   `json:"field"`
+	Value           string   `json:"value"`
+	Band            string   `json:"band"`
+	DecidedBy       string   `json:"decided_by"`
+	QuestionVersion string   `json:"question_version,omitempty"`
+	Confidence      *float64 `json:"confidence,omitempty"`
 }
 
 // DocumentView is one filing with its fields, for the project list.
 type DocumentView struct {
-	ID           string      `json:"id"`
-	ProjectID    string      `json:"project_id"`
-	Filename     string      `json:"filename"`
-	Status       string      `json:"status"`
-	Reason       string      `json:"reason,omitempty"`
-	Number       string      `json:"number,omitempty"`
-	Revision     string      `json:"revision,omitempty"`
-	SupersedesID string      `json:"supersedes_id,omitempty"`
-	CreatedAt    time.Time   `json:"created_at"`
-	Fields       []FieldView `json:"fields"`
+	ID             string            `json:"id"`
+	ProjectID      string            `json:"project_id"`
+	Filename       string            `json:"filename"`
+	Status         string            `json:"status"`
+	Reason         string            `json:"reason,omitempty"`
+	Number         string            `json:"number,omitempty"`
+	Revision       string            `json:"revision,omitempty"`
+	SupersedesID   string            `json:"supersedes_id,omitempty"`
+	CreatedAt      time.Time         `json:"created_at"`
+	Fields         []FieldView       `json:"fields"`
+	SourceID       string            `json:"source_id,omitempty"`
+	SourceFilename string            `json:"source_filename,omitempty"`
+	SheetPage      int               `json:"sheet_page,omitempty"`
+	SheetTotal     int               `json:"sheet_total,omitempty"`
+	Expansion      *DrawingExpansion `json:"expansion,omitempty"`
 }
 
 // PendingIntake is a filing to resume after a restart.
@@ -78,11 +85,12 @@ func (s *Store) ProjectDocumentViews(ctx context.Context, orgID, projectID strin
 	byDoc := make(map[string][]FieldView, len(docs))
 	for _, row := range fields {
 		byDoc[row.DocumentID] = append(byDoc[row.DocumentID], FieldView{
-			Field:      row.Field,
-			Value:      row.Value,
-			Band:       row.Band,
-			DecidedBy:  row.DecidedBy,
-			Confidence: confidencePtr(row.Confidence),
+			Field:           row.Field,
+			Value:           row.Value,
+			Band:            row.Band,
+			DecidedBy:       row.DecidedBy,
+			QuestionVersion: row.QuestionVersion,
+			Confidence:      confidencePtr(row.Confidence),
 		})
 	}
 	out := make([]DocumentView, len(docs))
@@ -100,6 +108,29 @@ func (s *Store) ProjectDocumentViews(ctx context.Context, orgID, projectID strin
 			Fields:       nonNilFields(byDoc[row.ID]),
 		}
 	}
+	if err := s.sheetViews(ctx, orgID, projectID, out); err != nil {
+		return nil, err
+	}
+	byID := make(map[string]DocumentView, len(out))
+	for _, d := range out {
+		byID[d.ID] = d
+	}
+	group := func(d DocumentView) DocumentView {
+		if source, ok := byID[d.SourceID]; ok {
+			return source
+		}
+		return d
+	}
+	sort.SliceStable(out, func(i, j int) bool {
+		a, b := group(out[i]), group(out[j])
+		if a.ID == b.ID {
+			return out[i].SheetPage < out[j].SheetPage
+		}
+		if a.CreatedAt.Equal(b.CreatedAt) {
+			return a.ID < b.ID
+		}
+		return a.CreatedAt.After(b.CreatedAt)
+	})
 	return out, nil
 }
 
@@ -116,7 +147,7 @@ func (s *Store) DocumentView(ctx context.Context, orgID, documentID string) (Doc
 	if err != nil {
 		return DocumentView{}, err
 	}
-	return DocumentView{
+	out := DocumentView{
 		ID:           row.ID,
 		ProjectID:    row.ProjectID,
 		Filename:     row.Filename,
@@ -127,7 +158,12 @@ func (s *Store) DocumentView(ctx context.Context, orgID, documentID string) (Doc
 		SupersedesID: row.SupersedesID,
 		CreatedAt:    row.CreatedAt,
 		Fields:       fieldViews(rows),
-	}, nil
+	}
+	views := []DocumentView{out}
+	if err := s.sheetViews(ctx, orgID, row.ProjectID, views); err != nil {
+		return DocumentView{}, err
+	}
+	return views[0], nil
 }
 
 // LatestEventID is orgID's newest event id, or zero. A client that reads it
@@ -203,11 +239,12 @@ func fieldViews(rows []db.ListFilingDecisionsRow) []FieldView {
 	out := make([]FieldView, len(rows))
 	for i, row := range rows {
 		out[i] = FieldView{
-			Field:      row.Field,
-			Value:      row.Value,
-			Band:       row.Band,
-			DecidedBy:  row.DecidedBy,
-			Confidence: confidencePtr(row.Confidence),
+			Field:           row.Field,
+			Value:           row.Value,
+			Band:            row.Band,
+			DecidedBy:       row.DecidedBy,
+			QuestionVersion: row.QuestionVersion,
+			Confidence:      confidencePtr(row.Confidence),
 		}
 	}
 	return out

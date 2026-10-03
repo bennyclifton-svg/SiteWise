@@ -102,6 +102,13 @@ func (d *Draft) Apply(result jev.Result, err error, thresholds Thresholds) (grey
 		ans, ok := result.Answers[q.Field]
 		d.by[q.Field] = fromAnswer(q, ans, ok, thresholds)
 	}
+	// Owner filing policy: technical drawings stay in Design, including IFC.
+	// Apply only an admitted kind; an amber kind cannot produce a green
+	// lifecycle. A user's explicit lifecycle remains authoritative.
+	kind := d.by[FieldKind]
+	if kind.Value == "drawing" && (kind.Band == BandAmber || kind.Band == BandGreen) && d.by[FieldLifecycle].DecidedBy != DecidedByUser {
+		d.by[FieldLifecycle] = Decision{Field: FieldLifecycle, Value: "design", Band: kind.Band, DecidedBy: DecidedByRule}
+	}
 	return grey
 }
 
@@ -171,17 +178,22 @@ func (d *Draft) open() []builtQuestion {
 	var out []builtQuestion
 	cat := d.catalog
 	if _, ok := d.by[FieldKind]; !ok {
-		if q, ok := catalogQuestion(FieldKind, "Which kind is this document?", kindIDs(cat), kindLabels(cat)); ok {
+		if q, ok := catalogQuestion(FieldKind, "Which kind describes the primary document? Engineering drawing sets, including their general-notes sheets, are Drawing. Standalone technical specifications and product data sheets are Specification. Tabulated schedules and registers are Schedule. Commercial is pricing or payments; signed agreements and deeds are Contract. A standalone declaration is Certificate; an attached declaration does not change the main report's kind.", kindIDs(cat), kindLabels(cat)); ok {
 			out = append(out, q)
 		}
 	}
 	if _, ok := d.by[FieldDiscipline]; !ok {
-		if q, ok := catalogQuestion(FieldDiscipline, "Which discipline produced this document?", disciplineIDs(cat), disciplineLabels(cat)); ok {
+		if q, ok := catalogQuestion(FieldDiscipline, "Which discipline produced this document? Use its author or issuing practitioner. An architect's concrete, waterproofing or fire-compartment sheet remains Architectural. A referenced standard, client, reviewer or contact for another consultant does not identify the author. Engineering design drawings, including installation detail drawings, belong to the consultant. Records of completed site installations belong to the trade.", disciplineIDs(cat), disciplineLabels(cat)); ok {
+			// Unrepresented issuers and contract parties must not force a
+			// consultant/trade guess. https://docs.typesafe.ai/model-jaggedness/jev-1.13
+			if len(q.Options) < jev.MaxChoiceOptions {
+				q.Options = append(q.Options, choice{ID: choiceNone, Label: "Not established", Source: "choice", Describe: "The issuing discipline is not evidenced or is not represented by these options. Contract parties alone do not establish the document author's discipline."})
+			}
 			out = append(out, q)
 		}
 	}
 	if _, ok := d.by[FieldLifecycle]; !ok {
-		if q, ok := catalogQuestion(FieldLifecycle, "Which lifecycle area does this document belong to?", lifecycleIDs(cat), lifecycleLabels(cat)); ok {
+		if q, ok := catalogQuestion(FieldLifecycle, "Which lifecycle area describes this document's purpose? Technical drawings belong to Design even when stamped Issued for Construction. Construction is for site execution records, inspections and as-built delivery activities. An issue stamp is not the filing area.", lifecycleIDs(cat), lifecycleLabels(cat)); ok {
 			out = append(out, q)
 		}
 	}
@@ -197,6 +209,11 @@ func (d *Draft) open() []builtQuestion {
 	}
 	if _, ok := d.by[FieldTitle]; !ok {
 		if q, ok := identityQuestion(FieldTitle, titleQuestion, d.harvested); ok {
+			out = append(out, q)
+		}
+	}
+	if _, ok := d.by[FieldDate]; !ok {
+		if q, ok := identityQuestion(FieldDate, dateQuestion, d.harvested); ok {
 			out = append(out, q)
 		}
 	}

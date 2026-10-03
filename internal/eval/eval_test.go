@@ -147,7 +147,7 @@ func sheet(n int) fixtureEntry {
 }
 
 func withBody(t *testing.T, e fixtureEntry) fixtureEntry {
-	e.body = docx(t, "Drawing No "+e.number, "Rev "+e.revision, "Title "+e.title, "Electrical", "Construction")
+	e.body = docx(t, "Drawing No "+e.number, "Kind: Drawing", "Rev "+e.revision, "Title "+e.title, "Discipline: Electrical", "Construction")
 	return e
 }
 
@@ -325,7 +325,7 @@ func newClient(t *testing.T, base string, rt http.RoundTripper) *jev.Client {
 func ambiguous(t *testing.T, n int) fixtureEntry {
 	e := sheet(n)
 	e.path = fmt.Sprintf("SET%d/sheet-%d.docx", n, n)
-	e.body = docx(t, "Drawing No "+e.number, "Ref Drawing No X-"+fmt.Sprint(900+n), "Rev C1", "Title Lighting", "Electrical", "Construction")
+	e.body = docx(t, "Drawing No "+e.number, "Ref Drawing No X-"+fmt.Sprint(900+n), "Rev C1", "Title Lighting", "Discipline: Electrical", "Construction")
 	return e
 }
 
@@ -539,4 +539,13 @@ func optionValue(raw json.RawMessage) string {
 	}
 	_ = json.Unmarshal(raw, &obj)
 	return obj.Value
+}
+
+func TestOrdinalDateComparisonPreservesCalendarDay(t *testing.T) {
+	if !SameValue("date", "15 August 2014", "15th August, 2014") {
+		t.Fatal("same ordinal date rejected")
+	}
+	if SameValue("date", "16 August 2014", "15th August, 2014") {
+		t.Fatal("different day accepted")
+	}
 }

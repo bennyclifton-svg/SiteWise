@@ -161,6 +161,27 @@ func TestAskDropsInvalidChoice(t *testing.T) {
 	}
 }
 
+func TestAskAcceptsOneCentRoundedProbabilityTotal(t *testing.T) {
+	for _, distribution := range []string{`{"drawing":0.8,"report":0.19}`, `{"drawing":0.8,"report":0.21}`} {
+		body := []byte(`{"model":"jev-1.13.0","answers":{"kind":{"type":"choice","choice":"drawing","probabilities":` + distribution + `,"confidence":0.6}},"usage":{"input_tokens":1,"output_tokens":1}}`)
+		res, err := askBody(t, body, http.StatusOK)
+		if err != nil || res.Answers["kind"].Choice != "drawing" {
+			t.Fatalf("rounded valid choice discarded: %+v %v", res, err)
+		}
+		near(t, *res.Answers["kind"].Confidence, .6)
+	}
+	for _, distribution := range []string{`{"drawing":0.8,"report":0.18}`, `{"drawing":0.805,"report":0.185}`, `{"drawing":0.99}`, `{"drawing":0.8,"other":0.19}`} {
+		body := []byte(`{"model":"jev-1.13.0","answers":{"kind":{"type":"choice","choice":"drawing","probabilities":` + distribution + `,"confidence":0.6}}}`)
+		res, err := askBody(t, body, http.StatusOK)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := res.Answers["kind"]; ok {
+			t.Fatalf("malformed distribution accepted: %s", distribution)
+		}
+	}
+}
+
 func TestAskRejectsWrongModel(t *testing.T) {
 	res, err := askFixture(t, "wrong_model.json")
 	if !errors.Is(err, jev.ErrBadResponse) {

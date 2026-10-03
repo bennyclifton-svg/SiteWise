@@ -715,13 +715,22 @@ func distributionOK(probs map[string]float64, keys map[string]struct{}) bool {
 		return false
 	}
 	var sum float64
+	centPrecision := true
 	for key, value := range probs {
 		if _, ok := keys[key]; !ok || !finiteUnit(value) {
 			return false
 		}
 		sum += value
+		centPrecision = centPrecision && math.Abs(value*100-math.Round(value*100)) < 1e-8
 	}
-	return math.Abs(sum-1) <= 1e-3
+	if math.Abs(sum-1) <= 1e-3 {
+		return true
+	}
+	// The API specifies a unit-sum distribution (https://docs.typesafe.ai/api).
+	// Recorded jev-1.13.0 responses sometimes round every probability to cents
+	// and total 0.99. Tolerate only one cent at that precision; retain the raw
+	// values and provider confidence rather than inventing a new confidence.
+	return centPrecision && math.Abs(sum-1) <= .0100000001
 }
 
 func finiteUnit(v float64) bool {

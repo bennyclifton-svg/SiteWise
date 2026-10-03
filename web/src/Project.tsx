@@ -260,6 +260,12 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
           const ev = JSON.parse((msg as MessageEvent<string>).data) as StreamEvent;
           if (ev.id <= lastId.current) return;
           lastId.current = ev.id;
+          if (ev.kind === "sheets") {
+            api.documents(projectId).then((list) => {
+              if (!stopped) dispatch({ type: "loaded", list });
+            }).catch(() => setAnnouncement("Could not refresh drawing sheets. Reload this project."));
+            return;
+          }
           dispatch({ type: "event", ev, at: performance.now() });
           const doc = docsRef.current[ev.payload?.document_id ?? ""];
           if (!doc) return;
@@ -527,7 +533,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
           <span className="mark" style={{ color: "var(--warn)" }}>
             <IconCheck />
           </span>
-          Check: Jev's pick, flagged
+          Check: value needs review
         </li>
         <li>
           <span className="mark">

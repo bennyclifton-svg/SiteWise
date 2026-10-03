@@ -107,6 +107,7 @@ WHERE sqlc.arg(document_id)::uuid <> sqlc.arg(prior_document_id)::uuid
     JOIN documents prior
         ON prior.org_id = newer.org_id
        AND prior.project_id = newer.project_id
+       AND prior.identity_page = newer.identity_page
        AND upper(prior.document_number) = upper(newer.document_number)
        AND prior.document_number IS NOT NULL
        AND prior.id <> newer.id

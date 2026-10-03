@@ -1,0 +1,2647 @@
+{
+  "date": "2026-10-02",
+  "question_version": "intake-12",
+  "model": "jev-1.13.0",
+  "unique_pdfs": 538,
+  "duplicate_copies": 6,
+  "appledouble_excluded": 179,
+  "gold_cases": 332,
+  "unlabelled": 206,
+  "expected_extraction_abstentions": 86,
+  "app_statuses": {
+    "filed": 452,
+    "not_filed": 85,
+    "upload_rejected": 1
+  },
+  "release_passed": false,
+  "before_extended": {
+    "bankstown/discipline": {
+      "Scored": 9,
+      "Correct": 0,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 8,
+      "RawJevCorrect": 8
+    },
+    "bankstown/kind": {
+      "Scored": 15,
+      "Correct": 3,
+      "Blank": 12,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 12,
+      "RawJevCorrect": 11
+    },
+    "bankstown/lifecycle": {
+      "Scored": 4,
+      "Correct": 4,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/date": {
+      "Scored": 60,
+      "Correct": 32,
+      "Blank": 28,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 27,
+      "RawJevCorrect": 27
+    },
+    "calibration/discipline": {
+      "Scored": 79,
+      "Correct": 0,
+      "Blank": 79,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 79,
+      "RawJevCorrect": 78
+    },
+    "calibration/kind": {
+      "Scored": 93,
+      "Correct": 11,
+      "Blank": 81,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 81,
+      "RawJevCorrect": 78
+    },
+    "calibration/lifecycle": {
+      "Scored": 73,
+      "Correct": 68,
+      "Blank": 5,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 5,
+      "RawJevCorrect": 5
+    },
+    "calibration/number": {
+      "Scored": 59,
+      "Correct": 59,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/revision": {
+      "Scored": 60,
+      "Correct": 52,
+      "Blank": 8,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 8,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/title": {
+      "Scored": 57,
+      "Correct": 0,
+      "Blank": 57,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 57,
+      "RawJevCorrect": 57
+    },
+    "date": {
+      "Scored": 131,
+      "Correct": 65,
+      "Blank": 66,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 9,
+      "RawJevScored": 63,
+      "RawJevCorrect": 56
+    },
+    "discipline": {
+      "Scored": 190,
+      "Correct": 0,
+      "Blank": 190,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 189,
+      "RawJevCorrect": 186
+    },
+    "discipline:consultant.access/discipline": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.access/kind": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.acoustic/discipline": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.acoustic/kind": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.arborist/discipline": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.arborist/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/date": {
+      "Scored": 81,
+      "Correct": 49,
+      "Blank": 32,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 31,
+      "RawJevCorrect": 31
+    },
+    "discipline:consultant.architect/discipline": {
+      "Scored": 93,
+      "Correct": 0,
+      "Blank": 93,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 93,
+      "RawJevCorrect": 93
+    },
+    "discipline:consultant.architect/kind": {
+      "Scored": 84,
+      "Correct": 6,
+      "Blank": 78,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 78,
+      "RawJevCorrect": 78
+    },
+    "discipline:consultant.architect/lifecycle": {
+      "Scored": 92,
+      "Correct": 91,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.architect/number": {
+      "Scored": 80,
+      "Correct": 80,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/revision": {
+      "Scored": 81,
+      "Correct": 72,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 8,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.architect/title": {
+      "Scored": 78,
+      "Correct": 0,
+      "Blank": 78,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 1,
+      "RawJevScored": 78,
+      "RawJevCorrect": 77
+    },
+    "discipline:consultant.basix/discipline": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.basix/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.civil/discipline": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.civil/kind": {
+      "Scored": 3,
+      "Correct": 2,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.civil/lifecycle": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.electrical/date": {
+      "Scored": 13,
+      "Correct": 10,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.electrical/discipline": {
+      "Scored": 19,
+      "Correct": 0,
+      "Blank": 19,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 19,
+      "RawJevCorrect": 18
+    },
+    "discipline:consultant.electrical/kind": {
+      "Scored": 19,
+      "Correct": 0,
+      "Blank": 19,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 19,
+      "RawJevCorrect": 19
+    },
+    "discipline:consultant.electrical/lifecycle": {
+      "Scored": 18,
+      "Correct": 15,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.electrical/number": {
+      "Scored": 13,
+      "Correct": 13,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/revision": {
+      "Scored": 13,
+      "Correct": 5,
+      "Blank": 8,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 7,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.electrical/title": {
+      "Scored": 12,
+      "Correct": 0,
+      "Blank": 12,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 12,
+      "RawJevCorrect": 12
+    },
+    "discipline:consultant.fire_engineer/discipline": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.fire_engineer/kind": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.hydraulic/discipline": {
+      "Scored": 21,
+      "Correct": 0,
+      "Blank": 21,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 20,
+      "RawJevCorrect": 20
+    },
+    "discipline:consultant.hydraulic/kind": {
+      "Scored": 4,
+      "Correct": 0,
+      "Blank": 4,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 4,
+      "RawJevCorrect": 4
+    },
+    "discipline:consultant.hydraulic/lifecycle": {
+      "Scored": 21,
+      "Correct": 21,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/number": {
+      "Scored": 17,
+      "Correct": 17,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/revision": {
+      "Scored": 18,
+      "Correct": 4,
+      "Blank": 10,
+      "Wrong": 4,
+      "FalseGreen": 4,
+      "CandidateMissing": 14,
+      "RawJevScored": 1,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/title": {
+      "Scored": 18,
+      "Correct": 0,
+      "Blank": 18,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 18,
+      "RawJevCorrect": 17
+    },
+    "discipline:consultant.landscape/discipline": {
+      "Scored": 2,
+      "Correct": 0,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.landscape/kind": {
+      "Scored": 2,
+      "Correct": 0,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.landscape/lifecycle": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.mechanical/discipline": {
+      "Scored": 2,
+      "Correct": 0,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.mechanical/kind": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.mechanical/lifecycle": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/date": {
+      "Scored": 35,
+      "Correct": 6,
+      "Blank": 29,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 7,
+      "RawJevScored": 29,
+      "RawJevCorrect": 22
+    },
+    "discipline:consultant.structural/discipline": {
+      "Scored": 37,
+      "Correct": 0,
+      "Blank": 37,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 37,
+      "RawJevCorrect": 36
+    },
+    "discipline:consultant.structural/kind": {
+      "Scored": 4,
+      "Correct": 1,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.structural/lifecycle": {
+      "Scored": 36,
+      "Correct": 35,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.structural/number": {
+      "Scored": 35,
+      "Correct": 35,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/revision": {
+      "Scored": 34,
+      "Correct": 25,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 9,
+      "RawJevCorrect": 9
+    },
+    "discipline:consultant.structural/title": {
+      "Scored": 35,
+      "Correct": 0,
+      "Blank": 35,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 5,
+      "RawJevScored": 35,
+      "RawJevCorrect": 29
+    },
+    "discipline:consultant.traffic/discipline": {
+      "Scored": 2,
+      "Correct": 0,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.traffic/kind": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.vertical_transport/discipline": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.vertical_transport/kind": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.vertical_transport/lifecycle": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.waterproofing/discipline": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.waterproofing/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/date": {
+      "Scored": 71,
+      "Correct": 33,
+      "Blank": 38,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 9,
+      "RawJevScored": 36,
+      "RawJevCorrect": 29
+    },
+    "heldout/discipline": {
+      "Scored": 111,
+      "Correct": 0,
+      "Blank": 111,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 110,
+      "RawJevCorrect": 108
+    },
+    "heldout/kind": {
+      "Scored": 92,
+      "Correct": 8,
+      "Blank": 84,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 81,
+      "RawJevCorrect": 71
+    },
+    "heldout/lifecycle": {
+      "Scored": 108,
+      "Correct": 99,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 9,
+      "RawJevCorrect": 7
+    },
+    "heldout/number": {
+      "Scored": 86,
+      "Correct": 86,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/revision": {
+      "Scored": 88,
+      "Correct": 56,
+      "Blank": 28,
+      "Wrong": 4,
+      "FalseGreen": 4,
+      "CandidateMissing": 21,
+      "RawJevScored": 12,
+      "RawJevCorrect": 11
+    },
+    "heldout/title": {
+      "Scored": 88,
+      "Correct": 1,
+      "Blank": 86,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 7,
+      "RawJevScored": 86,
+      "RawJevCorrect": 78
+    },
+    "kind": {
+      "Scored": 185,
+      "Correct": 19,
+      "Blank": 165,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 162,
+      "RawJevCorrect": 149
+    },
+    "lifecycle": {
+      "Scored": 181,
+      "Correct": 167,
+      "Blank": 14,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 14,
+      "RawJevCorrect": 12
+    },
+    "newham/discipline": {
+      "Scored": 2,
+      "Correct": 0,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "newham/kind": {
+      "Scored": 3,
+      "Correct": 1,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "newham/lifecycle": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "number": {
+      "Scored": 145,
+      "Correct": 145,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/date": {
+      "Scored": 131,
+      "Correct": 65,
+      "Blank": 66,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 9,
+      "RawJevScored": 63,
+      "RawJevCorrect": 56
+    },
+    "petersham/discipline": {
+      "Scored": 179,
+      "Correct": 0,
+      "Blank": 179,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 179,
+      "RawJevCorrect": 176
+    },
+    "petersham/kind": {
+      "Scored": 167,
+      "Correct": 15,
+      "Blank": 151,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 148,
+      "RawJevCorrect": 136
+    },
+    "petersham/lifecycle": {
+      "Scored": 174,
+      "Correct": 163,
+      "Blank": 11,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 11,
+      "RawJevCorrect": 9
+    },
+    "petersham/number": {
+      "Scored": 145,
+      "Correct": 145,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/revision": {
+      "Scored": 148,
+      "Correct": 108,
+      "Blank": 36,
+      "Wrong": 4,
+      "FalseGreen": 4,
+      "CandidateMissing": 29,
+      "RawJevScored": 12,
+      "RawJevCorrect": 11
+    },
+    "petersham/title": {
+      "Scored": 145,
+      "Correct": 1,
+      "Blank": 143,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 7,
+      "RawJevScored": 143,
+      "RawJevCorrect": 135
+    },
+    "revision": {
+      "Scored": 148,
+      "Correct": 108,
+      "Blank": 36,
+      "Wrong": 4,
+      "FalseGreen": 4,
+      "CandidateMissing": 29,
+      "RawJevScored": 12,
+      "RawJevCorrect": 11
+    },
+    "title": {
+      "Scored": 145,
+      "Correct": 1,
+      "Blank": 143,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 7,
+      "RawJevScored": 143,
+      "RawJevCorrect": 135
+    }
+  },
+  "final_replay": {
+    "bankstown/discipline": {
+      "Scored": 9,
+      "Correct": 8,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 8,
+      "RawJevCorrect": 8
+    },
+    "bankstown/kind": {
+      "Scored": 15,
+      "Correct": 14,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 15,
+      "RawJevCorrect": 14
+    },
+    "bankstown/lifecycle": {
+      "Scored": 4,
+      "Correct": 4,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/date": {
+      "Scored": 60,
+      "Correct": 60,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/discipline": {
+      "Scored": 79,
+      "Correct": 76,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 79,
+      "RawJevCorrect": 78
+    },
+    "calibration/kind": {
+      "Scored": 93,
+      "Correct": 86,
+      "Blank": 7,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 93,
+      "RawJevCorrect": 92
+    },
+    "calibration/lifecycle": {
+      "Scored": 73,
+      "Correct": 68,
+      "Blank": 5,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 5,
+      "RawJevCorrect": 5
+    },
+    "calibration/number": {
+      "Scored": 59,
+      "Correct": 59,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/revision": {
+      "Scored": 60,
+      "Correct": 52,
+      "Blank": 8,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 8,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/title": {
+      "Scored": 57,
+      "Correct": 55,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "date": {
+      "Scored": 131,
+      "Correct": 96,
+      "Blank": 35,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 9,
+      "RawJevScored": 30,
+      "RawJevCorrect": 23
+    },
+    "discipline": {
+      "Scored": 190,
+      "Correct": 183,
+      "Blank": 6,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 188,
+      "RawJevCorrect": 185
+    },
+    "discipline:consultant.access/discipline": {
+      "Scored": 3,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.access/kind": {
+      "Scored": 3,
+      "Correct": 1,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.acoustic/discipline": {
+      "Scored": 3,
+      "Correct": 3,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.acoustic/kind": {
+      "Scored": 3,
+      "Correct": 1,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.arborist/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.arborist/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.architect/date": {
+      "Scored": 81,
+      "Correct": 80,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.architect/discipline": {
+      "Scored": 93,
+      "Correct": 93,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 93,
+      "RawJevCorrect": 93
+    },
+    "discipline:consultant.architect/kind": {
+      "Scored": 84,
+      "Correct": 83,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 84,
+      "RawJevCorrect": 84
+    },
+    "discipline:consultant.architect/lifecycle": {
+      "Scored": 92,
+      "Correct": 91,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.architect/number": {
+      "Scored": 80,
+      "Correct": 80,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/revision": {
+      "Scored": 81,
+      "Correct": 72,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 8,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.architect/title": {
+      "Scored": 78,
+      "Correct": 76,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.basix/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.basix/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.civil/discipline": {
+      "Scored": 3,
+      "Correct": 2,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.civil/kind": {
+      "Scored": 3,
+      "Correct": 3,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.civil/lifecycle": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.electrical/date": {
+      "Scored": 13,
+      "Correct": 10,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.electrical/discipline": {
+      "Scored": 19,
+      "Correct": 16,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 18,
+      "RawJevCorrect": 17
+    },
+    "discipline:consultant.electrical/kind": {
+      "Scored": 19,
+      "Correct": 18,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 19,
+      "RawJevCorrect": 18
+    },
+    "discipline:consultant.electrical/lifecycle": {
+      "Scored": 18,
+      "Correct": 15,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "discipline:consultant.electrical/number": {
+      "Scored": 13,
+      "Correct": 13,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/revision": {
+      "Scored": 13,
+      "Correct": 5,
+      "Blank": 8,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 7,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.electrical/title": {
+      "Scored": 12,
+      "Correct": 7,
+      "Blank": 5,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 5,
+      "RawJevCorrect": 5
+    },
+    "discipline:consultant.fire_engineer/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.fire_engineer/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.hydraulic/discipline": {
+      "Scored": 21,
+      "Correct": 20,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 20,
+      "RawJevCorrect": 20
+    },
+    "discipline:consultant.hydraulic/kind": {
+      "Scored": 4,
+      "Correct": 4,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 4,
+      "RawJevCorrect": 4
+    },
+    "discipline:consultant.hydraulic/lifecycle": {
+      "Scored": 21,
+      "Correct": 21,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/number": {
+      "Scored": 17,
+      "Correct": 17,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/revision": {
+      "Scored": 18,
+      "Correct": 18,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/title": {
+      "Scored": 18,
+      "Correct": 18,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.landscape/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.landscape/kind": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.landscape/lifecycle": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.mechanical/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.mechanical/kind": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.mechanical/lifecycle": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/date": {
+      "Scored": 35,
+      "Correct": 6,
+      "Blank": 29,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 7,
+      "RawJevScored": 26,
+      "RawJevCorrect": 19
+    },
+    "discipline:consultant.structural/discipline": {
+      "Scored": 37,
+      "Correct": 36,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 37,
+      "RawJevCorrect": 36
+    },
+    "discipline:consultant.structural/kind": {
+      "Scored": 4,
+      "Correct": 4,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 4,
+      "RawJevCorrect": 4
+    },
+    "discipline:consultant.structural/lifecycle": {
+      "Scored": 36,
+      "Correct": 35,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.structural/number": {
+      "Scored": 35,
+      "Correct": 35,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/revision": {
+      "Scored": 34,
+      "Correct": 25,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 9,
+      "RawJevCorrect": 9
+    },
+    "discipline:consultant.structural/title": {
+      "Scored": 35,
+      "Correct": 32,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 3,
+      "RawJevScored": 3,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.traffic/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "discipline:consultant.traffic/kind": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.vertical_transport/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.vertical_transport/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.vertical_transport/lifecycle": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.waterproofing/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "discipline:consultant.waterproofing/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 1,
+      "RawJevCorrect": 1
+    },
+    "heldout/date": {
+      "Scored": 71,
+      "Correct": 36,
+      "Blank": 35,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 9,
+      "RawJevScored": 30,
+      "RawJevCorrect": 23
+    },
+    "heldout/discipline": {
+      "Scored": 111,
+      "Correct": 107,
+      "Blank": 3,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 109,
+      "RawJevCorrect": 107
+    },
+    "heldout/kind": {
+      "Scored": 92,
+      "Correct": 79,
+      "Blank": 13,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 91,
+      "RawJevCorrect": 85
+    },
+    "heldout/lifecycle": {
+      "Scored": 108,
+      "Correct": 99,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 8,
+      "RawJevCorrect": 6
+    },
+    "heldout/number": {
+      "Scored": 86,
+      "Correct": 86,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/revision": {
+      "Scored": 88,
+      "Correct": 70,
+      "Blank": 18,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 7,
+      "RawJevScored": 11,
+      "RawJevCorrect": 11
+    },
+    "heldout/title": {
+      "Scored": 88,
+      "Correct": 79,
+      "Blank": 8,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 4,
+      "RawJevScored": 8,
+      "RawJevCorrect": 5
+    },
+    "kind": {
+      "Scored": 185,
+      "Correct": 165,
+      "Blank": 20,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 184,
+      "RawJevCorrect": 177
+    },
+    "lifecycle": {
+      "Scored": 181,
+      "Correct": 167,
+      "Blank": 14,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 13,
+      "RawJevCorrect": 11
+    },
+    "newham/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 2,
+      "RawJevCorrect": 2
+    },
+    "newham/kind": {
+      "Scored": 3,
+      "Correct": 3,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "newham/lifecycle": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 3,
+      "RawJevCorrect": 3
+    },
+    "number": {
+      "Scored": 145,
+      "Correct": 145,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/date": {
+      "Scored": 131,
+      "Correct": 96,
+      "Blank": 35,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 9,
+      "RawJevScored": 30,
+      "RawJevCorrect": 23
+    },
+    "petersham/discipline": {
+      "Scored": 179,
+      "Correct": 173,
+      "Blank": 5,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 178,
+      "RawJevCorrect": 175
+    },
+    "petersham/kind": {
+      "Scored": 167,
+      "Correct": 148,
+      "Blank": 19,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 166,
+      "RawJevCorrect": 160
+    },
+    "petersham/lifecycle": {
+      "Scored": 174,
+      "Correct": 163,
+      "Blank": 11,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 10,
+      "RawJevCorrect": 8
+    },
+    "petersham/number": {
+      "Scored": 145,
+      "Correct": 145,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/revision": {
+      "Scored": 148,
+      "Correct": 122,
+      "Blank": 26,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 15,
+      "RawJevScored": 11,
+      "RawJevCorrect": 11
+    },
+    "petersham/title": {
+      "Scored": 145,
+      "Correct": 134,
+      "Blank": 10,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 4,
+      "RawJevScored": 10,
+      "RawJevCorrect": 7
+    },
+    "revision": {
+      "Scored": 148,
+      "Correct": 122,
+      "Blank": 26,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 15,
+      "RawJevScored": 11,
+      "RawJevCorrect": 11
+    },
+    "title": {
+      "Scored": 145,
+      "Correct": 134,
+      "Blank": 10,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 4,
+      "RawJevScored": 10,
+      "RawJevCorrect": 7
+    }
+  },
+  "full_app_before_final_discipline_band_change": {
+    "bankstown/discipline": {
+      "Scored": 9,
+      "Correct": 8,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "bankstown/kind": {
+      "Scored": 15,
+      "Correct": 14,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "bankstown/lifecycle": {
+      "Scored": 4,
+      "Correct": 4,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/date": {
+      "Scored": 60,
+      "Correct": 60,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/discipline": {
+      "Scored": 79,
+      "Correct": 75,
+      "Blank": 4,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/kind": {
+      "Scored": 93,
+      "Correct": 87,
+      "Blank": 6,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/lifecycle": {
+      "Scored": 73,
+      "Correct": 68,
+      "Blank": 5,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/number": {
+      "Scored": 59,
+      "Correct": 59,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/revision": {
+      "Scored": 60,
+      "Correct": 52,
+      "Blank": 8,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "calibration/title": {
+      "Scored": 57,
+      "Correct": 55,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "date": {
+      "Scored": 131,
+      "Correct": 96,
+      "Blank": 35,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline": {
+      "Scored": 190,
+      "Correct": 183,
+      "Blank": 6,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.access/discipline": {
+      "Scored": 3,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.access/kind": {
+      "Scored": 3,
+      "Correct": 1,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.acoustic/discipline": {
+      "Scored": 3,
+      "Correct": 3,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.acoustic/kind": {
+      "Scored": 3,
+      "Correct": 1,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.arborist/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.arborist/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/date": {
+      "Scored": 81,
+      "Correct": 80,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/discipline": {
+      "Scored": 93,
+      "Correct": 93,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/kind": {
+      "Scored": 84,
+      "Correct": 82,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/lifecycle": {
+      "Scored": 92,
+      "Correct": 91,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/number": {
+      "Scored": 80,
+      "Correct": 80,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/revision": {
+      "Scored": 81,
+      "Correct": 72,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.architect/title": {
+      "Scored": 78,
+      "Correct": 76,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.basix/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.basix/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.civil/discipline": {
+      "Scored": 3,
+      "Correct": 1,
+      "Blank": 2,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.civil/kind": {
+      "Scored": 3,
+      "Correct": 3,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.civil/lifecycle": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/date": {
+      "Scored": 13,
+      "Correct": 10,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/discipline": {
+      "Scored": 19,
+      "Correct": 16,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/kind": {
+      "Scored": 19,
+      "Correct": 18,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/lifecycle": {
+      "Scored": 18,
+      "Correct": 15,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/number": {
+      "Scored": 13,
+      "Correct": 13,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/revision": {
+      "Scored": 13,
+      "Correct": 5,
+      "Blank": 8,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.electrical/title": {
+      "Scored": 12,
+      "Correct": 7,
+      "Blank": 5,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.fire_engineer/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.fire_engineer/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/discipline": {
+      "Scored": 21,
+      "Correct": 21,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/kind": {
+      "Scored": 4,
+      "Correct": 4,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/lifecycle": {
+      "Scored": 21,
+      "Correct": 21,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/number": {
+      "Scored": 17,
+      "Correct": 17,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/revision": {
+      "Scored": 18,
+      "Correct": 18,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.hydraulic/title": {
+      "Scored": 18,
+      "Correct": 18,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.landscape/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.landscape/kind": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.landscape/lifecycle": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.mechanical/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.mechanical/kind": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.mechanical/lifecycle": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/date": {
+      "Scored": 35,
+      "Correct": 6,
+      "Blank": 29,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/discipline": {
+      "Scored": 37,
+      "Correct": 36,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/kind": {
+      "Scored": 4,
+      "Correct": 4,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/lifecycle": {
+      "Scored": 36,
+      "Correct": 35,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/number": {
+      "Scored": 35,
+      "Correct": 35,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/revision": {
+      "Scored": 34,
+      "Correct": 25,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.structural/title": {
+      "Scored": 35,
+      "Correct": 32,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.traffic/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.traffic/kind": {
+      "Scored": 2,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.vertical_transport/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.vertical_transport/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.vertical_transport/lifecycle": {
+      "Scored": 1,
+      "Correct": 0,
+      "Blank": 1,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.waterproofing/discipline": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "discipline:consultant.waterproofing/kind": {
+      "Scored": 1,
+      "Correct": 1,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/date": {
+      "Scored": 71,
+      "Correct": 36,
+      "Blank": 35,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/discipline": {
+      "Scored": 111,
+      "Correct": 108,
+      "Blank": 2,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/kind": {
+      "Scored": 92,
+      "Correct": 78,
+      "Blank": 13,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/lifecycle": {
+      "Scored": 108,
+      "Correct": 99,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/number": {
+      "Scored": 86,
+      "Correct": 86,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/revision": {
+      "Scored": 88,
+      "Correct": 70,
+      "Blank": 18,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "heldout/title": {
+      "Scored": 88,
+      "Correct": 79,
+      "Blank": 8,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "kind": {
+      "Scored": 185,
+      "Correct": 165,
+      "Blank": 19,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "lifecycle": {
+      "Scored": 181,
+      "Correct": 167,
+      "Blank": 14,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "newham/discipline": {
+      "Scored": 2,
+      "Correct": 2,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "newham/kind": {
+      "Scored": 3,
+      "Correct": 3,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "newham/lifecycle": {
+      "Scored": 3,
+      "Correct": 0,
+      "Blank": 3,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "number": {
+      "Scored": 145,
+      "Correct": 145,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/date": {
+      "Scored": 131,
+      "Correct": 96,
+      "Blank": 35,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/discipline": {
+      "Scored": 179,
+      "Correct": 173,
+      "Blank": 5,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/kind": {
+      "Scored": 167,
+      "Correct": 148,
+      "Blank": 18,
+      "Wrong": 1,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/lifecycle": {
+      "Scored": 174,
+      "Correct": 163,
+      "Blank": 11,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/number": {
+      "Scored": 145,
+      "Correct": 145,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/revision": {
+      "Scored": 148,
+      "Correct": 122,
+      "Blank": 26,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "petersham/title": {
+      "Scored": 145,
+      "Correct": 134,
+      "Blank": 10,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "revision": {
+      "Scored": 148,
+      "Correct": 122,
+      "Blank": 26,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    },
+    "title": {
+      "Scored": 145,
+      "Correct": 134,
+      "Blank": 10,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0,
+      "RawJevScored": 0,
+      "RawJevCorrect": 0
+    }
+  },
+  "final_band_probe": {
+    "files": 12,
+    "populated_kind_and_discipline": 13,
+    "amber": 13,
+    "green": 0
+  },
+  "latency_ms": {
+    "identity_live_p50": 70.081,
+    "identity_live_p90": 373.771,
+    "draft_live_p50": 311.395,
+    "draft_live_p90": 507.565,
+    "app_observed_p50": 344.0000000409782,
+    "app_observed_p90": 561.9999999180436
+  }
+}

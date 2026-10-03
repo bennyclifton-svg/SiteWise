@@ -16,6 +16,11 @@
       "bytes": 3351
     },
     {
+      "file": "fragmented-title-block.pdf",
+      "sha256": "666c59614e8c460f9907f2c479f59bae404232928c11a369528378829ae11c1e",
+      "bytes": 26618
+    },
+    {
       "file": "malformed.docx",
       "sha256": "bffb82716cbef7c8bbf51b494b0660a125e4bba7ff8dc82104bca838627b4ca4",
       "bytes": 26

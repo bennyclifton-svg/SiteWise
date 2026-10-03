@@ -100,6 +100,27 @@ func TestFitLeavesUnknownWithTooFewSamples(t *testing.T) {
 	}
 }
 
+func TestFitAmberDoesNotRequireAutomaticGreen(t *testing.T) {
+	p := FitPolicy{Z: 1.645, MinSamples: 30, MinBandSamples: 20, GreenLower: .95, AmberLower: .8, MaxErrors: -1}
+	obs := answers("title", 3, .94, true, 30)
+	obs = append(obs, answers("title", 3, .5, false, 10)...)
+	f := Fit(obs, map[string]FitPolicy{"title": p})[0]
+	// 30/30 supports an amber lower bound of .8, but not green .95.
+	if f.Green != nil || f.Amber == nil || *f.Amber != .94 {
+		t.Fatalf("independent review band: %+v", f)
+	}
+	thresholds := ThresholdsFrom([]FitResult{f}, "test", nil)
+	if got := thresholds.Questions["title"]; len(got) != 1 || got[0].Green != nil || got[0].Amber == nil || *got[0].Amber != .94 {
+		t.Fatalf("review-only fit lost on export: %+v", got)
+	}
+	p.MaxErrors = 0
+	obs = append(obs, answers("title", 3, .94, false, 1)...)
+	f = Fit(obs, map[string]FitPolicy{"title": p})[0]
+	if f.Green != nil || f.Amber != nil {
+		t.Fatalf("amber must still respect error policy: %+v", f)
+	}
+}
+
 func TestFitWithoutPolicyIsUnknown(t *testing.T) {
 	fits := Fit(answers("kind", 12, 0.99, true, 100), nil)
 	if len(fits) != 1 || fits[0].Green != nil {

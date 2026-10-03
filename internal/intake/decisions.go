@@ -27,7 +27,7 @@ const (
 
 	// QuestionVersion is the intake question map this process asks.
 	// Thresholds calibrated for another version do not apply.
-	QuestionVersion = "intake-2"
+	QuestionVersion = "intake-75"
 
 	choiceNone = "none"
 	choiceNew  = "new"
@@ -66,8 +66,8 @@ type Thresholds struct {
 	Questions       map[string][]Threshold `json:"questions"`
 }
 
-// LoadThresholds reads calibration data. Unknown cut-offs are valid; a partial
-// cut-off is not, because a lone number would become a production default.
+// LoadThresholds reads calibration data. A calibrated amber-only band may
+// suggest review values when validation does not support automatic green.
 func LoadThresholds(dir string) (Thresholds, error) {
 	var got Thresholds
 	if err := readJSON(filepath.Join(dir, "thresholds.json"), &got); err != nil {
@@ -106,10 +106,11 @@ func validateThreshold(field string, q Threshold) error {
 	if n == 0 && q.MaxOptions == nil {
 		return nil
 	}
-	if n != 3 {
+	amberOnly := q.Green == nil && q.Amber != nil && q.Options != nil && q.N > 0
+	if n != 3 && !amberOnly {
 		return fmt.Errorf("%s threshold is partial", field)
 	}
-	if *q.Green < 0 || *q.Green > 1 || *q.Amber < 0 || *q.Amber > 1 || *q.Amber > *q.Green {
+	if *q.Amber < 0 || *q.Amber > 1 || (q.Green != nil && (*q.Green < 0 || *q.Green > 1 || *q.Amber > *q.Green)) {
 		return fmt.Errorf("%s threshold is out of range", field)
 	}
 	lo, hi := q.shape()
@@ -159,14 +160,14 @@ func (t Thresholds) Band(field string, confidence *float64, options int) (band s
 		return BandBlank, false
 	}
 	for _, q := range t.Questions[field] {
-		if q.Green == nil || q.Amber == nil || q.Options == nil {
+		if q.Amber == nil || q.Options == nil {
 			continue
 		}
 		if lo, hi := q.shape(); options < lo || options > hi {
 			continue
 		}
 		switch {
-		case *confidence >= *q.Green:
+		case q.Green != nil && *confidence >= *q.Green:
 			return BandGreen, true
 		case *confidence >= *q.Amber:
 			return BandAmber, true
@@ -177,21 +178,66 @@ func (t Thresholds) Band(field string, confidence *float64, options int) (band s
 	return BandBlank, false
 }
 
-// settleVocabulary closes kind, discipline and lifecycle when the identity
-// text names exactly one catalog entry. Zero or several stay unresolved.
+// Only identity assertions can settle vocabulary. A mention in body prose
+// (BCA compliance, contract terms, a schedule reference) is not authorship or kind.
 func settleVocabulary(cat Catalog, filename string, text identity.Text) []Result {
-	haystack := filename + "\n" + runText(text)
 	var out []Result
-	if id, ok := onePhrase(haystack, kindPhrases(cat)); ok {
+	kind, kindKnown := onePhrase(vocabularyEvidence("", text, "Kind", kindPhrases(cat)), kindPhrases(cat))
+	if kindKnown {
+		id := kind
 		out = append(out, Result{Field: FieldKind, Settled: true, Rule: RuleUnique, Display: id, Normalized: id})
 	}
-	if id, ok := onePhrase(haystack, disciplinePhrases(cat)); ok {
+	if id, ok := onePhrase(vocabularyEvidence("", text, "Discipline", disciplinePhrases(cat)), disciplinePhrases(cat)); ok {
 		out = append(out, Result{Field: FieldDiscipline, Settled: true, Rule: RuleUnique, Display: id, Normalized: id})
 	}
-	if id, ok := onePhrase(haystack, lifecyclePhrases(cat)); ok {
+	// Lifecycle is filing purpose, not the issue stamp. Technical drawings
+	// remain Design even when issued for construction (owner decision).
+	if (kindKnown && kind == "drawing") || hasDrawingIdentity(text) {
+		out = append(out, Result{Field: FieldLifecycle, Settled: true, Rule: RuleUnique, Display: "design", Normalized: "design"})
+	} else if id, ok := explicitLifecycle(cat, text); ok {
 		out = append(out, Result{Field: FieldLifecycle, Settled: true, Rule: RuleUnique, Display: id, Normalized: id})
 	}
 	return out
+}
+
+func vocabularyEvidence(filename string, text identity.Text, caption string, phrases map[string][]string) string {
+	lines := []string{filename}
+	for _, run := range text.Runs {
+		s := strings.TrimSpace(run.Text)
+		for _, list := range phrases {
+			for _, phrase := range list {
+				if strings.EqualFold(s, caption+": "+phrase) || (caption == "Kind" && strings.EqualFold(s, "Drawing") && strings.EqualFold(phrase, "Drawing")) {
+					lines = append(lines, s)
+				}
+			}
+		}
+	}
+	return strings.Join(lines, "\n")
+}
+
+func explicitLifecycle(cat Catalog, text identity.Text) (string, bool) {
+	var lines []string
+	for _, run := range text.Runs {
+		s := strings.TrimSpace(run.Text)
+		for _, area := range cat.Lifecycle {
+			if strings.EqualFold(s, "Lifecycle: "+area.Label) {
+				lines = append(lines, s)
+			}
+		}
+	}
+	return onePhrase(strings.Join(lines, "\n"), lifecyclePhrases(cat))
+}
+
+func hasDrawingIdentity(text identity.Text) bool {
+	for _, run := range text.Runs {
+		s := strings.ToLower(strings.TrimSpace(run.Text))
+		for _, caption := range []string{"drawing no", "drawing number", "dwg no", "drg no", "project number/drawing number"} {
+			if strings.TrimRight(s, ":.") == caption || strings.HasPrefix(s, caption+" ") {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func kindPhrases(cat Catalog) map[string][]string {

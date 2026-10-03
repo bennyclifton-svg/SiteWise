@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"syscall"
 )
 
@@ -32,9 +33,10 @@ type Blob struct {
 // Store writes content-addressed blobs under a single directory.
 // Temporary files live inside that directory so the final rename stays on one filesystem.
 type Store struct {
-	root string
-	tmp  string
-	max  int64
+	root    string
+	tmp     string
+	max     int64
+	publish [256]sync.Mutex
 }
 
 // Open creates the blob directory. maxBytes is the maximum accepted upload.
@@ -109,6 +111,13 @@ func (s *Store) Put(ctx context.Context, r io.Reader) (Blob, error) {
 	if err := os.MkdirAll(filepath.Dir(final), 0o755); err != nil {
 		return Blob{}, err
 	}
+	// Concurrent duplicates must not both observe a missing path and then
+	// replace it while another upload inspects it. Windows rejects that open
+	// during replacement. Serialize publication by hash prefix; streaming and
+	// hashing stay parallel, and an existing immutable blob is never replaced.
+	lock := &s.publish[sum[0]]
+	lock.Lock()
+	defer lock.Unlock()
 	switch err := inspect(final, sum); {
 	case err == nil:
 		return Blob{SHA256: bytes.Clone(sum), Size: n}, nil

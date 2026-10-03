@@ -54,7 +54,7 @@ const FIELDS: { field: string; label: string; vocab?: keyof Catalog; editable: b
 
 const REASONS: Record<string, string> = {
   no_text_layer:
-    "This PDF has no text layer, so it looks scanned. The file is kept exactly as uploaded; its identity can't be read yet.",
+    "This PDF has no readable text layer. Its lettering may be scanned or saved as shapes. The original file is kept; its identity can't be read yet.",
   unsupported_format: "SiteWise files PDF, DOCX and XLSX. This file is kept exactly as uploaded but not filed.",
   unreadable:
     "The file couldn't be opened. It may be damaged or password protected. It's kept exactly as uploaded.",
@@ -93,7 +93,7 @@ function Why({ field, state }: { field: Field | undefined; state: CellState }) {
         <span className="cell-why">
           <IconCheck />
           <span>
-            Check · <span className="cell-who">Jev</span>
+            Check · <span className="cell-who">{field?.decided_by === "jev" ? "Jev" : "Rule"}</span>
           </span>
         </span>
       );
@@ -146,10 +146,22 @@ export function DocumentRow({ row, catalog, priorLabel, onCorrect, onRetry, onJu
           {row.filename}
         </h2>
         <HeadState row={row} onRetry={onRetry} onDismiss={onDismiss} />
+        {doc && <a className="cell-link" href={`/api/documents/${doc.id}/file`}>Download</a>}
         {row.progress !== undefined && !doc && (
           <span className="tb-progress" style={{ transform: `scaleX(${row.progress})` }} />
         )}
       </header>
+
+      {doc?.source_id && (
+        <p className="tb-note">Sheet {doc.sheet_page} of {doc.sheet_total} · <button type="button" className="cell-link" onClick={() => onJump(doc.source_id!)}>{doc.source_filename}</button></p>
+      )}
+      {doc?.expansion && (
+        <p className="tb-note">
+          {doc.expansion.status === "complete" ? `${doc.expansion.page_count} sheets listed separately. Original drawing set retained.` :
+            doc.expansion.status === "pending" ? `Checking ${doc.expansion.page_count} pages for separate drawing sheets…` : doc.expansion.reason}
+          {doc.expansion.status === "review" && <button type="button" className="btn btn-small" onClick={() => onRetry(doc.id)}>Retry sheet processing</button>}
+        </p>
+      )}
 
       {notFiled && (
         <p className="tb-note">
@@ -158,7 +170,7 @@ export function DocumentRow({ row, catalog, priorLabel, onCorrect, onRetry, onJu
       )}
       {row.uploadError && !doc && <p className="tb-note error-text">{row.uploadError}</p>}
 
-      {!notFiled && !row.uploadError && (
+      {!notFiled && doc?.status !== "split" && !row.uploadError && (
         <div className="tb-grid">
           {FIELDS.map((spec, i) =>
             filed ? (
@@ -195,6 +207,7 @@ function HeadState({
   onDismiss: (key: string) => void;
 }) {
   const doc = row.doc;
+  if (doc?.status === "split") return <span className="tb-state">Drawing set · original retained</span>;
   if (!doc) {
     if (row.uploadError) {
       return (

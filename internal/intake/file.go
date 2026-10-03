@@ -109,6 +109,7 @@ func (s *Service) File(ctx context.Context, orgID, documentID string, text ident
 	start = time.Now()
 	out, err := s.store.CommitFiling(ctx, orgID, documentID, store.CommitFiling{
 		Decisions: decisionWrites(draft.by, versions),
+		PDFPages:  text.PageCount,
 		PriorID:   priorID,
 		RetryJev:  grey,
 	})

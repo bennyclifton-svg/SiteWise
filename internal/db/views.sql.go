@@ -158,6 +158,7 @@ SELECT
     COALESCE(dc.value, '') AS value,
     dc.band,
     dc.decided_by,
+    COALESCE(dc.question_version, '') AS question_version,
     dc.confidence
 FROM decisions dc
 JOIN documents d
@@ -174,12 +175,13 @@ type ListProjectDecisionViewsParams struct {
 }
 
 type ListProjectDecisionViewsRow struct {
-	DocumentID string
-	Field      string
-	Value      string
-	Band       string
-	DecidedBy  string
-	Confidence pgtype.Float8
+	DocumentID      string
+	Field           string
+	Value           string
+	Band            string
+	DecidedBy       string
+	QuestionVersion string
+	Confidence      pgtype.Float8
 }
 
 func (q *Queries) ListProjectDecisionViews(ctx context.Context, arg ListProjectDecisionViewsParams) ([]ListProjectDecisionViewsRow, error) {
@@ -197,6 +199,7 @@ func (q *Queries) ListProjectDecisionViews(ctx context.Context, arg ListProjectD
 			&i.Value,
 			&i.Band,
 			&i.DecidedBy,
+			&i.QuestionVersion,
 			&i.Confidence,
 		); err != nil {
 			return nil, err

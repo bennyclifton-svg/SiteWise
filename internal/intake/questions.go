@@ -3,6 +3,7 @@ package intake
 import (
 	"sort"
 	"strings"
+	"unicode/utf8"
 
 	"sitewise/internal/identity"
 	"sitewise/internal/jev"
@@ -48,8 +49,12 @@ var (
 		NotFor:   "A pit, pump, page or grid reference, or any value that is not a revision.",
 	}
 	titleQuestion = roleQuestion{
-		Question: "Which candidate is this sheet's or document's own title, as a drawing register would list it?",
-		NotFor:   "A project, site or company name, a caption such as Drawing Title, a general note, or a filename fragment.",
+		Question: "Which candidate reproduces the title printed on this sheet or report cover? Prefer the complete printed title, including its subtitle, over an abbreviated or renamed filename. Use a filename title only when no printed document title is available.",
+		NotFor:   "A project, site or company name by itself, a caption such as Drawing Title, or a general note. A printed document title may include a project or site name as part of its subtitle.",
+	}
+	dateQuestion = roleQuestion{
+		Question: "Which candidate is the stated issue date for this document's own revision in its title block or document control?",
+		NotFor:   "A print timestamp, a referenced document's date, or a historical revision's date. Select the explicit issue-date value; do not compare or order dates. Choose none when the current issue date is not identifiable.",
 	}
 	noneOption = map[string]string{"what": "None of these is the requested value."}
 )
@@ -58,6 +63,7 @@ type filingState struct {
 	Filename   string   `json:"filename"`
 	TitleBlock string   `json:"title_block,omitempty"`
 	FirstPage  string   `json:"first_page,omitempty"`
+	Authorship string   `json:"authorship_text,omitempty"`
 	Headings   []string `json:"headings,omitempty"`
 	Candidates []choice `json:"candidates"`
 }
@@ -66,7 +72,8 @@ func filingStateOf(filename string, text identity.Text, harvested []Candidate) f
 	state := filingState{
 		Filename:   filename,
 		TitleBlock: clip(labeledText(harvested), 1000),
-		FirstPage:  clip(runText(text), 2000),
+		FirstPage:  identityExcerpt(runText(text), 2400),
+		Authorship: authorshipText(text),
 		Candidates: harvestedChoices(harvested),
 	}
 	for _, run := range text.Runs {
@@ -83,6 +90,36 @@ func filingStateOf(filename string, text identity.Text, harvested []Candidate) f
 		}
 	}
 	return state
+}
+
+// Preserve literal author cues even when drawing notes occupy both excerpt
+// ends. These spans are evidence for Jev, never a discipline rule.
+func authorshipText(text identity.Text) string {
+	var lines []string
+	for _, run := range text.Runs {
+		s := strings.ToLower(run.Text)
+		if strings.Contains(s, "©") || strings.Contains(s, "copyright") || strings.Contains(s, "prepared by") || strings.Contains(s, "pty ltd") || strings.Contains(s, "@") {
+			lines = append(lines, strings.TrimSpace(run.Text))
+		}
+	}
+	return identityExcerpt(strings.Join(lines, "\n"), 1200)
+}
+
+// The PDF's final text objects often hold the author and revision table.
+// Keep both ends without growing state with every annotation on the sheet.
+func identityExcerpt(s string, max int) string {
+	if len(s) <= max {
+		return s
+	}
+	head := max / 2
+	for head > 0 && !utf8.RuneStart(s[head]) {
+		head--
+	}
+	tail := len(s) - (max - head)
+	for tail < len(s) && !utf8.RuneStart(s[tail]) {
+		tail++
+	}
+	return s[:head] + "\n[identity text omitted]\n" + s[tail:]
 }
 
 func harvestedChoices(harvested []Candidate) []choice {
@@ -172,8 +209,9 @@ func identityOptions(harvested []Candidate, field string) []choice {
 // foundIn says where code found a value, in the order filename, labelled
 // cell, other page text. It is provenance, not a judgement.
 func foundIn(group []Candidate) string {
-	var file, labeled, text bool
+	var file, labeled, text, heading bool
 	for _, c := range group {
+		heading = heading || (c.Provenance.Origin == OriginText && c.Provenance.Heading)
 		switch {
 		case c.Provenance.Origin == OriginFilename:
 			file = true
@@ -189,6 +227,9 @@ func foundIn(group []Candidate) string {
 	}
 	if labeled {
 		parts = append(parts, "next to a label on the page")
+	}
+	if heading {
+		parts = append(parts, "printed cover heading")
 	}
 	if text {
 		parts = append(parts, "page text")

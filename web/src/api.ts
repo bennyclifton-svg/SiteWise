@@ -3,7 +3,7 @@
 
 export type Band = "green" | "amber" | "blank" | "grey";
 export type DecidedBy = "rule" | "jev" | "user";
-export type Status = "pending" | "filed" | "not_filed";
+export type Status = "pending" | "filed" | "not_filed" | "split";
 
 export interface Field {
   field: string;
@@ -24,6 +24,11 @@ export interface Doc {
   supersedes_id?: string;
   created_at: string;
   fields: Field[];
+  source_id?: string;
+  source_filename?: string;
+  sheet_page?: number;
+  sheet_total?: number;
+  expansion?: { source_id: string; page_count: number; status: "pending" | "complete" | "review"; reason?: string };
 }
 
 export interface Project {
@@ -133,7 +138,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed"] as const;
+export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {

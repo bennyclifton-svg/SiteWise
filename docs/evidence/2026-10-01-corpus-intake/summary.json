@@ -1,0 +1,154 @@
+{
+  "date": "2026-10-01",
+  "status": "FAIL: diagnostic improvement, not a release accuracy pass",
+  "question_version": "intake-6",
+  "inventory": {
+    "pdf_files": 544,
+    "unique_pdfs": 538,
+    "duplicates": 6,
+    "appledouble_sidecars_excluded": 179
+  },
+  "approved_live_sample": 153,
+  "label_status": "Independent draft annotations and unreviewed register transcriptions. Incomplete and not owner-adjudicated.",
+  "metrics_before": {
+    "date": {
+      "Scored": 26,
+      "Correct": 17,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 1
+    },
+    "discipline": {
+      "Scored": 65,
+      "Correct": 9,
+      "Blank": 55,
+      "Wrong": 1,
+      "FalseGreen": 1,
+      "CandidateMissing": 0
+    },
+    "kind": {
+      "Scored": 119,
+      "Correct": 30,
+      "Blank": 78,
+      "Wrong": 11,
+      "FalseGreen": 11,
+      "CandidateMissing": 0
+    },
+    "lifecycle": {
+      "Scored": 56,
+      "Correct": 1,
+      "Blank": 51,
+      "Wrong": 4,
+      "FalseGreen": 4,
+      "CandidateMissing": 0
+    },
+    "number": {
+      "Scored": 29,
+      "Correct": 0,
+      "Blank": 29,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0
+    },
+    "revision": {
+      "Scored": 26,
+      "Correct": 22,
+      "Blank": 4,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 2
+    },
+    "title": {
+      "Scored": 26,
+      "Correct": 0,
+      "Blank": 26,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0
+    }
+  },
+  "metrics_after": {
+    "date": {
+      "Scored": 26,
+      "Correct": 17,
+      "Blank": 9,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 1
+    },
+    "discipline": {
+      "Scored": 65,
+      "Correct": 0,
+      "Blank": 65,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0
+    },
+    "kind": {
+      "Scored": 119,
+      "Correct": 15,
+      "Blank": 102,
+      "Wrong": 2,
+      "FalseGreen": 2,
+      "CandidateMissing": 0
+    },
+    "lifecycle": {
+      "Scored": 56,
+      "Correct": 42,
+      "Blank": 14,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0
+    },
+    "number": {
+      "Scored": 29,
+      "Correct": 29,
+      "Blank": 0,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0
+    },
+    "revision": {
+      "Scored": 26,
+      "Correct": 22,
+      "Blank": 4,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 2
+    },
+    "title": {
+      "Scored": 26,
+      "Correct": 0,
+      "Blank": 26,
+      "Wrong": 0,
+      "FalseGreen": 0,
+      "CandidateMissing": 0
+    }
+  },
+  "draft_latency_ms": {
+    "p50": 266.618,
+    "p90": 501.528
+  },
+  "app_observed_filing_ms": {
+    "p50": 329.00000002700835,
+    "p90": 532.0000000065193
+  },
+  "full_corpus_extraction_ms": {
+    "p50": 72.729,
+    "p90": 385.458
+  },
+  "persisted_app": {
+    "filed": 133,
+    "no_identity_text": 19,
+    "upload_rejected": 1,
+    "field_differences_from_draft": 0
+  },
+  "calibration": "No supported cutoffs; production remains uncalibrated",
+  "remaining": [
+    "Incomplete independent gold and ambiguous kind labels",
+    "Raw selections are not applied accuracy",
+    "Full-corpus extraction p90 exceeds 250 ms budget",
+    "Full-corpus live provider approval pending"
+  ]
+}

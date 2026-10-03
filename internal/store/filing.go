@@ -52,6 +52,7 @@ type DecisionWrite struct {
 // CommitFiling is the atomic result of one intake pass.
 type CommitFiling struct {
 	Decisions []DecisionWrite
+	PDFPages  int
 	// PriorID is the document this filing supersedes. Empty stores no link.
 	// The link is refused unless both rows share an org, project and number,
 	// the ids differ, and the existing chain does not already reach this one.
@@ -163,7 +164,18 @@ func (s *Store) CommitFiling(ctx context.Context, orgID, documentID string, in C
 		return FilingOutcome{}, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
-	q := s.q.WithTx(tx)
+	out, err := commitFilingTx(ctx, tx, orgID, documentID, in)
+	if err != nil {
+		return FilingOutcome{}, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return FilingOutcome{}, err
+	}
+	return out, nil
+}
+
+func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in CommitFiling) (FilingOutcome, error) {
+	q := db.New(tx)
 
 	doc, err := q.LockFilingDocument(ctx, db.LockFilingDocumentParams{OrgID: orgID, ID: documentID})
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -178,9 +190,7 @@ func (s *Store) CommitFiling(ctx context.Context, orgID, documentID string, in C
 			return FilingOutcome{}, err
 		}
 		out.AlreadyFiled = true
-		if err := tx.Commit(ctx); err != nil {
-			return FilingOutcome{}, err
-		}
+
 		return out, nil
 	}
 
@@ -281,10 +291,15 @@ func (s *Store) CommitFiling(ctx context.Context, orgID, documentID string, in C
 	if _, err := appendEvent(ctx, q, orgID, EventFiling, documentID, payload); err != nil {
 		return FilingOutcome{}, err
 	}
-	if err := tx.Commit(ctx); err != nil {
-		return FilingOutcome{}, err
+	if in.PDFPages > 1 {
+		if _, err := tx.Exec(ctx, `INSERT INTO drawing_expansions (org_id, source_id, page_count)
+		SELECT $1::uuid, $2::uuid, $3 WHERE EXISTS (SELECT 1 FROM decisions
+		WHERE org_id=$1::uuid AND document_id=$2::uuid AND field='kind' AND value='drawing' AND band IN ('amber','green'))
+		ON CONFLICT DO NOTHING`, orgID, documentID, in.PDFPages); err != nil {
+			return FilingOutcome{}, err
+		}
 	}
-	out, err := readOutcome(ctx, s.q, orgID, documentID)
+	out, err := readOutcome(ctx, q, orgID, documentID)
 	if err != nil {
 		return FilingOutcome{}, err
 	}
@@ -292,7 +307,7 @@ func (s *Store) CommitFiling(ctx context.Context, orgID, documentID string, in C
 }
 
 func enqueueKind(ctx context.Context, q *db.Queries, orgID, documentID, kind string) error {
-	n, err := q.EnqueueJob(ctx, db.EnqueueJobParams{
+	_, err := q.EnqueueJob(ctx, db.EnqueueJobParams{
 		OrgID:      orgID,
 		ID:         newID(),
 		DocumentID: documentID,
@@ -301,9 +316,8 @@ func enqueueKind(ctx context.Context, q *db.Queries, orgID, documentID, kind str
 	if err != nil {
 		return err
 	}
-	if n == 0 {
-		return ErrNotFound
-	}
+	// The caller holds the document lock. A previously completed background
+	// stage must not prevent a fresh filing of these same stored bytes.
 	return nil
 }
 

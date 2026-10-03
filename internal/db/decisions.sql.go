@@ -89,6 +89,7 @@ WHERE $2::uuid <> $3::uuid
     JOIN documents prior
         ON prior.org_id = newer.org_id
        AND prior.project_id = newer.project_id
+       AND prior.identity_page = newer.identity_page
        AND upper(prior.document_number) = upper(newer.document_number)
        AND prior.document_number IS NOT NULL
        AND prior.id <> newer.id

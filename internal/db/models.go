@@ -35,6 +35,22 @@ type Document struct {
 	Revision       *string
 	CreatedAt      time.Time
 	Reason         string
+	IdentityPage   int32
+}
+
+type DrawingExpansion struct {
+	OrgID     string
+	SourceID  string
+	PageCount int32
+	Status    string
+	Reason    string
+}
+
+type DrawingSheet struct {
+	OrgID      string
+	SourceID   string
+	PageNumber int32
+	DocumentID string
 }
 
 type Event struct {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -358,8 +359,11 @@ var dateLayouts = []string{
 	"2 Jan. 2006", "January 2, 2006",
 }
 
+var ordinalDate = regexp.MustCompile(`(?i)^(\d{1,2})(?:st|nd|rd|th) ([a-z]+),? (\d{4})$`)
+
 func parseDate(s string) (time.Time, bool) {
 	s = strings.TrimSpace(s)
+	s = ordinalDate.ReplaceAllString(s, "${1} ${2} ${3}")
 	for _, layout := range dateLayouts {
 		if t, err := time.Parse(layout, s); err == nil {
 			return t, true

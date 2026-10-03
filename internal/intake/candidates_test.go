@@ -43,8 +43,8 @@ func TestCandidateMultipleNumbers(t *testing.T) {
 		t.Fatalf("revision harvested as a number: %+v", c)
 	}
 	number := fieldResult(t, intake.Decide(got), intake.FieldNumber)
-	if number.Settled || number.Rule != intake.RuleAmbiguous {
-		t.Fatalf("multiple numbers settled: %+v", number)
+	if !number.Settled || number.Rule != intake.RuleCorroborated || number.Display != "A-101" {
+		t.Fatalf("filename and explicit own-number label did not resolve references: %+v", number)
 	}
 }
 
@@ -469,5 +469,26 @@ func TestCandidateTitleNextToTheSheetNumberCell(t *testing.T) {
 	titles := displays(got, intake.FieldTitle)
 	if len(titles) != 1 || titles[0] != "PLANT ROOM - MECHANICAL LAYOUT" {
 		t.Fatalf("a title-like cell beside the sheet number is a title candidate; notes and distant cells are not: %v", titles)
+	}
+}
+
+func TestSlashYearReferenceIsOneLiteralCandidate(t *testing.T) {
+	text := identity.Text{TextLayer: true, Runs: []identity.Run{{Text: "FLA0137/24"}}}
+	got := intake.Harvest("advice.pdf", text)
+	c, ok := findCandidate(got, intake.FieldNumber, "FLA0137/24")
+	if !ok {
+		t.Fatalf("full reference missing: %+v", displays(got, intake.FieldNumber))
+	}
+	if c.Provenance.End-c.Provenance.Start != len("FLA0137/24") {
+		t.Fatal("reference span truncated")
+	}
+	if _, ok := findCandidate(got, intake.FieldNumber, "FLA0137"); ok {
+		t.Fatal("partial reference harvested")
+	}
+	for _, invalid := range []string{"FLA0137/24/5", "FLA0137/"} {
+		got := intake.Harvest("advice.pdf", identity.Text{Runs: []identity.Run{{Text: invalid}}})
+		if len(displays(got, intake.FieldNumber)) != 0 {
+			t.Fatalf("invalid reference fragmented: %s", invalid)
+		}
 	}
 }

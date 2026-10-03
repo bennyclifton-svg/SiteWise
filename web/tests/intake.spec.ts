@@ -77,7 +77,7 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   // Stored but not filed says so in words, not only colour.
   const scan = block(page, "scanned-empty.pdf");
   await expect(scan.locator(".tb-state")).toHaveText("Stored · not filed");
-  await expect(scan).toContainText("no text layer");
+  await expect(scan).toContainText("no readable text layer");
 
   // Jev missed its deadline: the unanswered boxes read "Not checked" and
   // carry no value, so they cannot pass for a judgement.

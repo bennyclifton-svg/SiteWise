@@ -70,3 +70,27 @@ func TestDevLoginIsOffByDefault(t *testing.T) {
 		t.Fatalf("an unknown path serves the app shell: %d %s", resp.StatusCode, body)
 	}
 }
+
+func TestLocalProjectVisitSignsInWithoutToken(t *testing.T) {
+	a := newApp(t, func(o *httpapi.Options) { o.DevLogin = true })
+	t.Cleanup(func() { _ = a.store.DeleteOrg(t.Context(), httpapi.DevOrgID) })
+	c := noFollow(t)
+	for _, path := range []string{"/projects/91a356f3-a906-4609-ad7b-ef9f3fca1944", "/"} {
+		resp, err := c.Get(a.url + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("page: %d", resp.StatusCode)
+		}
+		check, err := c.Get(a.url + "/api/session")
+		if err != nil {
+			t.Fatal(err)
+		}
+		check.Body.Close()
+		if check.StatusCode != http.StatusNoContent && check.StatusCode != http.StatusOK {
+			t.Fatalf("direct project visit did not establish session: %d", check.StatusCode)
+		}
+	}
+}

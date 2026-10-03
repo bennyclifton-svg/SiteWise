@@ -1,5 +1,10 @@
 # Intake evaluation
 
+For the complete Petersham, Newham and Bankstown PDF census, deterministic
+sampling, extraction traces and actual-app upload loop, see [CORPUS.md](CORPUS.md).
+Intake-12 requires fresh recordings and calibration; earlier reports remain
+historical evidence, not a passing baseline for the current code.
+
 `manifest.json` is the evaluation contract for intake filing. It pins the
 Hale, Petersham and Newham answer keys (read from the frozen `../clerk`
 checkout) by SHA-256 and names the corpus folders under `../Test Data`. It

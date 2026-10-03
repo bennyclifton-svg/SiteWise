@@ -204,12 +204,16 @@ func ThresholdsFrom(fits []FitResult, reconciliation string, meta any) intake.Th
 		t.Questions[f] = []intake.Threshold{}
 	}
 	for _, fit := range fits {
-		if fit.Green == nil || fit.Amber == nil {
+		if fit.Amber == nil {
 			continue
 		}
 		lo, hi := fit.Shape.Min, fit.Shape.Max
-		g, a := *fit.Green, *fit.Amber
-		th := intake.Threshold{Options: &lo, Green: &g, Amber: &a, N: fit.N}
+		a := *fit.Amber
+		th := intake.Threshold{Options: &lo, Amber: &a, N: fit.N}
+		if fit.Green != nil {
+			g := *fit.Green
+			th.Green = &g
+		}
 		if hi != lo {
 			th.MaxOptions = &hi
 		}

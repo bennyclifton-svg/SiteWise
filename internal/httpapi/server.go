@@ -97,17 +97,23 @@ func New(opts Options) (*Server, error) {
 	broker := events.NewBroker(opts.Store)
 	runner := intake.NewRunner(opts.Blobs, opts.Store, svc)
 	f := &filer{
-		observe:  speed.Observe,
-		run:      runner.Run,
-		broker:   broker,
-		log:      opts.Log,
-		timeout:  opts.FilingTimeout,
-		slots:    make(chan struct{}, defaultFilingSlots),
-		inflight: map[string]struct{}{},
+		observe: speed.Observe,
+		run:     runner.Run,
+		expand:  runner.ExpandDrawing,
+		expansionFailed: func(orgID, documentID string) {
+			_ = opts.Store.ReviewDrawingExpansion(context.Background(), orgID, documentID, "Sheet processing stopped. The original is retained. You can retry processing.")
+		},
+		splitSlots: make(chan struct{}, 1),
+		broker:     broker,
+		log:        opts.Log,
+		timeout:    opts.FilingTimeout,
+		slots:      make(chan struct{}, defaultFilingSlots),
+		inflight:   map[string]struct{}{},
 	}
 	closing := make(chan struct{})
 	api := Handler(Deps{
 		Store:          opts.Store,
+		Blobs:          opts.Blobs,
 		PublicOrigin:   opts.PublicOrigin,
 		Log:            opts.Log,
 		SecureCookie:   opts.SecureCookie,
@@ -125,10 +131,12 @@ func New(opts Options) (*Server, error) {
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})
 	mux.Handle("/api/", http.StripPrefix("/api", noStore(api)))
+	app := spa(opts.Static)
 	if opts.DevLogin {
 		mux.Handle("GET /dev/login", noStore(devLogin(opts.Store, opts.SecureCookie, opts.Log)))
+		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
-	mux.Handle("/", spa(opts.Static))
+	mux.Handle("/", app)
 	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, closing: closing}, nil
 }
 
@@ -152,7 +160,14 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 	for _, p := range pending {
 		s.filer.start(p.OrgID, p.DocumentID, false)
 	}
-	return len(pending), nil
+	expansions, err := s.store.PendingDrawingExpansions(ctx)
+	if err != nil {
+		return len(pending), err
+	}
+	for _, p := range expansions {
+		s.filer.startExpansion(p.OrgID, p.DocumentID)
+	}
+	return len(pending) + len(expansions), nil
 }
 
 // Wait blocks until started filings finish or ctx ends.
@@ -174,13 +189,16 @@ func (s *Server) Wait(ctx context.Context) error {
 // does not abort a filing whose bytes are already stored.
 type filer struct {
 	// observe records whole_intake for filings started by an upload or retry.
-	observe func(string, time.Duration)
-	run     func(ctx context.Context, orgID, documentID string) error
-	broker  *events.Broker
-	log     *log.Logger
-	timeout time.Duration
-	slots   chan struct{}
-	wg      sync.WaitGroup
+	observe         func(string, time.Duration)
+	run             func(ctx context.Context, orgID, documentID string) error
+	expand          func(ctx context.Context, orgID, documentID string) error
+	splitSlots      chan struct{}
+	expansionFailed func(orgID, documentID string)
+	broker          *events.Broker
+	log             *log.Logger
+	timeout         time.Duration
+	slots           chan struct{}
+	wg              sync.WaitGroup
 
 	mu       sync.Mutex
 	inflight map[string]struct{}
@@ -227,9 +245,34 @@ func (f *filer) start(orgID, documentID string, timed bool) {
 			}
 		}
 		f.broker.Wake(orgID)
+		if err == nil {
+			f.startExpansion(orgID, documentID)
+		}
 		if timed && f.observe != nil {
 			f.observe(pathWholeIntake, time.Since(began))
 		}
+	}()
+}
+
+// Expansion never occupies a foreground filing slot while waiting for later sheets.
+func (f *filer) startExpansion(orgID, documentID string) {
+	if f.expand == nil {
+		return
+	}
+	f.wg.Add(1)
+	go func() {
+		defer f.wg.Done()
+		f.splitSlots <- struct{}{}
+		defer func() { <-f.splitSlots }()
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+		defer cancel()
+		if err := f.expand(ctx, orgID, documentID); err != nil {
+			f.log.Printf("drawing expansion stopped org=%s document=%s: %v", orgID, documentID, err)
+			if f.expansionFailed != nil {
+				f.expansionFailed(orgID, documentID)
+			}
+		}
+		f.broker.Wake(orgID)
 	}()
 }
 

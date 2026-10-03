@@ -23,12 +23,18 @@ var ErrMalformed = errors.New("malformed document")
 var ErrTooLarge = errors.New("document exceeds identity limit")
 
 // Limits bound how much of a file is identity text.
-// Zero values are replaced by DefaultLimits.
+// Zero numeric limits are replaced by DefaultLimits. An unspecified MaxPages
+// also enables the default control-page probe.
 type Limits struct {
-	// MaxBytes caps the PDF bytes loaded and the sum of decompressed zip members.
+	// MaxBytes caps PDF bytes loaded/read and the sum of decompressed zip members.
+	// Larger PDFs use bounded range reads instead of loading the whole file.
 	MaxBytes int64
 	// MaxPages is how many leading PDF pages are identity pages.
 	MaxPages int
+	// ReadControlPage permits one additional explicit document-control page
+	// after a sparse report cover (or its repeated publisher cover).
+	// At most two further pages are probed; drawing sheets never trigger it.
+	ReadControlPage bool
 	// MaxSheets is how many leading workbook sheets are read.
 	MaxSheets int
 	// MaxRows caps spreadsheet rows and DOCX table rows.
@@ -43,12 +49,13 @@ type Limits struct {
 // whole file. Later full text is a background job.
 func DefaultLimits() Limits {
 	return Limits{
-		MaxBytes:  32 << 20,
-		MaxPages:  1,
-		MaxSheets: 1,
-		MaxRows:   40,
-		MaxCols:   16,
-		MaxRuns:   400,
+		MaxBytes:        32 << 20,
+		MaxPages:        1,
+		ReadControlPage: true,
+		MaxSheets:       1,
+		MaxRows:         40,
+		MaxCols:         16,
+		MaxRuns:         400,
 	}
 }
 
@@ -59,6 +66,7 @@ func (l Limits) norm() Limits {
 	}
 	if l.MaxPages <= 0 {
 		l.MaxPages = d.MaxPages
+		l.ReadControlPage = d.ReadControlPage
 	}
 	if l.MaxSheets <= 0 {
 		l.MaxSheets = d.MaxSheets
@@ -77,16 +85,20 @@ func (l Limits) norm() Limits {
 
 // Source locates a run. It is provenance, not a filing decision.
 type Source struct {
-	Page     int // 1-based PDF page
-	Rotation int // degrees counterclockwise, snapped to a right angle when close
-	Sheet    string
-	Cell     string // anchor, such as A1
-	Merge    string // A1:C1 when the anchor is a merged cell
-	Table    int    // 1-based DOCX table; 0 is not a table
-	Row      int    // 1-based table row or sheet row
-	Col      int    // 1-based table column or sheet column
-	Heading  bool   // paragraph style is a heading style
-	Cached   bool   // spreadsheet value is the stored formula cache, not a calculated result
+	Annotation string // named CAD text annotation; ordinary comments are excluded
+	// PDF page coordinates in points, origin bottom-left. Zero size means
+	// geometry is unavailable. They allow captions to bind to their own cell.
+	X, Y, Width, Height float64
+	Page                int // 1-based PDF page
+	Rotation            int // degrees counterclockwise, snapped to a right angle when close
+	Sheet               string
+	Cell                string // anchor, such as A1
+	Merge               string // A1:C1 when the anchor is a merged cell
+	Table               int    // 1-based DOCX table; 0 is not a table
+	Row                 int    // 1-based table row or sheet row
+	Col                 int    // 1-based table column or sheet column
+	Heading             bool   // paragraph style is a heading style
+	Cached              bool   // spreadsheet value is the stored formula cache, not a calculated result
 }
 
 // Run is one piece of identity text.
@@ -98,6 +110,7 @@ type Run struct {
 // Text is the identity text of one file.
 // TextLayer is false for a readable PDF page that has no text (a scan or a blank).
 type Text struct {
+	PageCount int // physical PDF pages; zero for other formats
 	Format    string
 	TextLayer bool
 	Runs      []Run

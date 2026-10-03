@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"sitewise/internal/auth"
@@ -49,4 +50,31 @@ func devSession(ctx context.Context, st *store.Store) (store.Session, error) {
 		return store.Session{}, err
 	}
 	return st.ConsumeInvite(ctx, auth.HashToken(raw), time.Now())
+}
+
+// Local testing should work from a bookmarked project, not only /dev/login.
+// This is mounted only behind the existing loopback-only DevLogin option.
+// API calls and assets never establish a session on their own.
+func localAppSession(next http.Handler, st *store.Store, secure bool, logger interface{ Printf(string, ...any) }) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		page := r.URL.Path == "/" || r.URL.Path == "/index.html" || strings.HasPrefix(r.URL.Path, "/projects/")
+		if r.Method != http.MethodGet || !page {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if cookie, err := r.Cookie(auth.SessionCookie); err == nil {
+			if _, expires, err := st.LookupSession(r.Context(), cookie.Value); err == nil && expires.After(time.Now()) {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+		session, err := devSession(r.Context(), st)
+		if err != nil {
+			logger.Printf("local sign-in failed: %v", err)
+			http.Error(w, "Local sign-in failed. Refresh to try again.", http.StatusInternalServerError)
+			return
+		}
+		http.SetCookie(w, &http.Cookie{Name: auth.SessionCookie, Value: session.ID, Path: "/", HttpOnly: true, Secure: secure, SameSite: http.SameSiteLaxMode})
+		next.ServeHTTP(w, r)
+	})
 }

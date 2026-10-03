@@ -12,6 +12,7 @@ import (
 
 	"sitewise/internal/auth"
 	"sitewise/internal/events"
+	"sitewise/internal/files"
 	"sitewise/internal/intake"
 	"sitewise/internal/latency"
 	"sitewise/internal/store"
@@ -21,6 +22,7 @@ import (
 // projects; the intake fields serve uploads, corrections and events.
 type Deps struct {
 	Store          *store.Store
+	Blobs          *files.Store
 	PublicOrigin   string
 	Log            *log.Logger
 	MaxBodyBytes   int64
@@ -66,6 +68,7 @@ func Handler(deps Deps) http.Handler {
 		"GET /projects/{id}/documents":       listDocuments,
 		"POST /projects/{id}/files":          uploadFile,
 		"GET /documents/{id}":                getDocument,
+		"GET /documents/{id}/file":           downloadDocument,
 		"POST /documents/{id}/filing":        retryFiling,
 		"PUT /documents/{id}/fields/{field}": correctField,
 		"GET /catalog":                       getCatalog,

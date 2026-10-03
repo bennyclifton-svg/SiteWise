@@ -25,6 +25,68 @@ func draftCatalog(t *testing.T) intake.Catalog {
 	return cat
 }
 
+func TestDisciplineCanExplicitlyAbstain(t *testing.T) {
+	d := intake.NewDraft(draftCatalog(t), "agreement.pdf", identity.Text{}, nil, nil)
+	d.Plan(nil, "self")
+	call, ok := d.Call()
+	if !ok {
+		t.Fatal("missing classification questions")
+	}
+	raw, _ := json.Marshal(call.Questions[intake.FieldDiscipline].Criteria)
+	var criteria map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &criteria); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := criteria["none"]; !ok {
+		t.Fatal("a document without an evidenced discipline is forced into the catalog")
+	}
+	confidence := .99
+	result := jev.Result{Answers: map[string]jev.Answer{intake.FieldDiscipline: {Type: jev.TypeChoice, Choice: "none", Confidence: &confidence}}}
+	choices := d.Choices(result)
+	if len(choices) != 1 || choices[0].Value != "" || choices[0].Confidence == nil {
+		t.Fatalf("abstention must be recorded as an empty discipline: %+v", choices)
+	}
+}
+
+func TestTitleChoiceRetainsPrintedHeadingProvenance(t *testing.T) {
+	candidates := []intake.Candidate{
+		{Field: intake.FieldTitle, Display: "Renamed report", Normalized: "renamed report", Provenance: intake.Provenance{Origin: intake.OriginFilename, Heading: true}},
+		{Field: intake.FieldTitle, Display: "Printed report title", Normalized: "printed report title", Provenance: intake.Provenance{Origin: intake.OriginText, Heading: true, Page: 1}},
+	}
+	d := intake.NewDraft(draftCatalog(t), "Renamed report.pdf", identity.Text{Format: "pdf", TextLayer: true}, candidates, nil)
+	d.Plan(nil, "")
+	call, ok := d.Call()
+	if !ok {
+		t.Fatal("ambiguous title was settled without Jev")
+	}
+	raw, err := json.Marshal(call.Questions[intake.FieldTitle].Criteria)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var options map[string]map[string]string
+	if err := json.Unmarshal(raw, &options); err != nil {
+		t.Fatal(err)
+	}
+	seen := 0
+	for _, option := range options {
+		switch option["value"] {
+		case "Renamed report":
+			if strings.Contains(option["found"], "printed cover heading") {
+				t.Fatal("filename promoted to printed heading")
+			}
+			seen++
+		case "Printed report title":
+			if !strings.Contains(option["found"], "printed cover heading") {
+				t.Fatal("heading evidence omitted")
+			}
+			seen++
+		}
+	}
+	if seen != 2 {
+		t.Fatalf("title choices missing: %s", raw)
+	}
+}
+
 // Two number candidates leave the number open, so the draft asks one question
 // about it. Nothing in the draft touches a database.
 func ambiguousNumber() (string, identity.Text) {
@@ -44,6 +106,35 @@ func TestDraftAllRuleHasNoCall(t *testing.T) {
 	got := d.Decisions()
 	assertDecision(t, got, intake.FieldNumber, "A-100", intake.BandGreen, intake.DecidedByRule)
 	assertDecision(t, got, intake.FieldDate, "", intake.BandBlank, intake.DecidedByRule)
+}
+
+func TestAcceptedDrawingUsesDesignLifecycleWithoutPromotingConfidence(t *testing.T) {
+	thresholds, err := intake.LoadThresholds(intakeData(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name           string
+		confidence     float64
+		userLifecycle  bool
+		want, band, by string
+	}{
+		{"accepted drawing", 1, false, "design", intake.BandAmber, intake.DecidedByRule},
+		{"withheld drawing", .1, false, "", intake.BandBlank, intake.DecidedByJev},
+		{"user lifecycle", 1, true, "construction", intake.BandGreen, intake.DecidedByUser},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			users := map[string]intake.Decision{}
+			if tc.userLifecycle {
+				users[intake.FieldLifecycle] = intake.Decision{Field: intake.FieldLifecycle, Value: "construction", Band: intake.BandGreen, DecidedBy: intake.DecidedByUser}
+			}
+			text := identity.Text{Runs: []identity.Run{{Text: "Utility supply layout"}}}
+			d := intake.NewDraft(draftCatalog(t), "utility.pdf", text, intake.Harvest("utility.pdf", text), users)
+			d.Plan(nil, "self")
+			d.Apply(jev.Result{Answers: map[string]jev.Answer{intake.FieldKind: {Type: jev.TypeChoice, Choice: "drawing", Confidence: &tc.confidence}}}, nil, thresholds)
+			assertDecision(t, d.Decisions(), intake.FieldLifecycle, tc.want, tc.band, tc.by)
+		})
+	}
 }
 
 func TestDraftChoicesKeepTheRawAnswerBeforeThresholds(t *testing.T) {
@@ -152,7 +243,7 @@ func TestNumberQuestionStatesTheRoleAndWhereEachOptionWasFound(t *testing.T) {
 	d := intake.NewDraft(draftCatalog(t), name, text, intake.Harvest(name, text), nil)
 	d.Plan(nil, "self")
 	call, ok := d.Call()
-	if !ok || call.QuestionVersion != "intake-2" {
+	if !ok || call.QuestionVersion != "intake-75" {
 		t.Fatalf("version %q", call.QuestionVersion)
 	}
 	raw, err := json.Marshal(call.Questions[intake.FieldNumber])

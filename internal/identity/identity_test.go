@@ -66,6 +66,27 @@ func TestRotatedTitleBlockProvenance(t *testing.T) {
 	}
 }
 
+// ArchiCAD publishes every word and punctuation mark as its own text object.
+// Identity text must be lines, or CC-A-010 and 06.11.2023 never exist as
+// values, and 500 note words must not use up the run limit first.
+func TestFragmentedTitleBlockIsReadAsLines(t *testing.T) {
+	got := extractFixture(t, "fragmented-title-block.pdf", "pdf", identity.Limits{})
+	for _, want := range []string{"CC-A-010", "06.11.2023", "SITE PLAN"} {
+		if _, ok := findRun(got, want); !ok {
+			t.Errorf("missing line %q", want)
+		}
+	}
+	// Two title-block cells on one baseline stay two runs.
+	for _, want := range []string{"DRAWING TITLE", "DRAWING NUMBER"} {
+		if _, ok := findRun(got, want); !ok {
+			t.Errorf("missing cell %q", want)
+		}
+	}
+	if t.Failed() {
+		t.Logf("runs: %d, last: %+v", len(got.Runs), got.Runs[max(0, len(got.Runs)-8):])
+	}
+}
+
 func TestSecondPageIncludedWhenLimitAllows(t *testing.T) {
 	got := extractFixture(t, "rotated-title-block.pdf", "pdf", identity.Limits{MaxPages: 2})
 	if _, ok := findRun(got, "PAGE TWO SECRET"); !ok {

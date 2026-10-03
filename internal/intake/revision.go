@@ -147,7 +147,20 @@ func atoi(s string) (int, bool) {
 	return n, true
 }
 
+var reportRevision = regexp.MustCompile(`(?i)^(?:[A-Z]{1,8}\s*)?\d{1,3}\.\d{1,3}$`)
+
+var stagedReportRevision = regexp.MustCompile(`(?i)^(?:draft|final)\s+(v?\d{1,3}\.\d{1,3})$`)
+
 func revisionNormalized(token string) (string, bool) {
+	if stagedReportRevision.MatchString(strings.TrimSpace(token)) {
+		// Draft and final issues can share a version number; preserve the stage.
+		return strings.ToUpper(strings.Join(strings.Fields(token), " ")), true
+	}
+	if reportRevision.MatchString(strings.TrimSpace(token)) {
+		// These are literal report versions, not an established ordered series.
+		// parseRevision deliberately still declines automatic supersession.
+		return strings.ToUpper(strings.Join(strings.Fields(token), " ")), true
+	}
 	parsed, ok := parseRevision(token)
 	if !ok {
 		return "", false

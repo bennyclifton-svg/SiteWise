@@ -3,6 +3,8 @@ package httpapi
 import (
 	"encoding/json"
 	"errors"
+	"io"
+	"mime"
 	"net/http"
 	"regexp"
 	"strings"
@@ -11,6 +13,41 @@ import (
 	"sitewise/internal/intake"
 	"sitewise/internal/store"
 )
+
+func downloadDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	id := r.PathValue("id")
+	if !uuidPattern.MatchString(id) {
+		http.NotFound(w, r)
+		return
+	}
+	doc, err := deps.Store.GetDocument(r.Context(), session.OrgID, id)
+	if errors.Is(err, store.ErrNotFound) {
+		http.NotFound(w, r)
+		return
+	}
+	if err != nil || deps.Blobs == nil {
+		http.Error(w, "read failed", 500)
+		return
+	}
+	file, err := deps.Store.GetFile(r.Context(), session.OrgID, doc.FileID)
+	if err != nil {
+		http.Error(w, "read failed", 500)
+		return
+	}
+	f, err := deps.Blobs.Open(file.SHA256)
+	if err != nil {
+		http.Error(w, "file unavailable", 500)
+		return
+	}
+	defer f.Close()
+	w.Header().Set("Content-Type", file.MediaType)
+	w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": doc.Filename}))
+	_, _ = io.Copy(w, f)
+}
 
 // uuidPattern rejects malformed ids before they reach a uuid cast, so a bad
 // path is a 404 rather than a database error.
@@ -170,7 +207,13 @@ func retryFiling(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
-	if view.Status == store.StatusPending {
+	if view.Expansion != nil && view.Expansion.Status == "review" {
+		if err := deps.Store.RetryDrawingExpansion(r.Context(), session.OrgID, view.ID); err != nil {
+			http.Error(w, "retry failed", 500)
+			return
+		}
+	}
+	if view.Status == store.StatusPending || (view.Expansion != nil && view.Expansion.Status != "complete") {
 		deps.Filer.Start(session.OrgID, view.ID)
 	}
 	writeJSON(w, http.StatusAccepted, view)

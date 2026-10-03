@@ -223,7 +223,8 @@ WHERE EXISTS (
     SELECT 1 FROM documents
     WHERE org_id = sqlc.arg(org_id)::uuid
       AND id = sqlc.arg(document_id)::uuid
-);
+)
+ON CONFLICT (org_id, document_id, kind) DO NOTHING;
 
 -- name: ListJobs :many
 SELECT id::text AS id, document_id::text AS document_id, kind, status

@@ -169,7 +169,8 @@ type FitResult struct {
 // Fit returns one result per field and shape seen in answers. Green is the
 // lowest observed confidence whose at-or-above set meets the green bound;
 // amber is the lowest whose band below green meets the amber bound, or green
-// itself when no band qualifies. A field with no policy stays unknown.
+// itself when no band qualifies. Without green, amber is independently fitted
+// over the at-or-above set. A field with no policy stays unknown.
 func Fit(answers []Answer, policies map[string]FitPolicy) []FitResult {
 	type key struct {
 		field string
@@ -229,15 +230,17 @@ func fitGroup(group []Answer, p FitPolicy) (green, amber *float64, reason string
 			found = true
 		}
 	}
-	if !found {
-		return nil, nil, "no cut-off meets the green bound"
+	upper := math.Inf(1)
+	if found {
+		green = &g
+		upper = g
+		amber = &g
 	}
-	a := g
 	for _, c := range cuts {
-		if c >= g {
+		if c >= upper {
 			continue
 		}
-		k, n := tally(group, c, g)
+		k, n := tally(group, c, upper)
 		if n < p.MinBandSamples {
 			continue
 		}
@@ -245,10 +248,17 @@ func fitGroup(group []Answer, p FitPolicy) (green, amber *float64, reason string
 			continue
 		}
 		if lo, _ := Wilson(k, n, p.Z); lo >= p.AmberLower {
-			a = c
+			cut := c
+			amber = &cut
 		}
 	}
-	return &g, &a, ""
+	if green == nil && amber == nil {
+		return nil, nil, "no cut-off meets either accuracy bound"
+	}
+	if green == nil {
+		return nil, amber, "review only; no cut-off meets the green bound"
+	}
+	return green, amber, ""
 }
 
 // tally counts correct and total answers with from <= confidence < below.

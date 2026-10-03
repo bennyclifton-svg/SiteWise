@@ -1,199 +1,43 @@
 {
-  "question_version": "intake-2",
-  "reconciliation": "Fitted by cmd/intake-eval -fit on the calibration split only, per question and power-of-two option shape. A question or shape with no entry is unknown and disables automatic Jev action. No probability from the TypeSafe docs is a default. Labels are unreviewed register/transmittal transcriptions; see fit.results for sample sizes.",
+  "question_version": "intake-75",
+  "reconciliation": "Intake-71: parser fixes, explicit discipline abstention, and bounded response-rounding compatibility. Kind and discipline retain provisional amber-only review cutoffs; no automatic green cutoff is enabled. The 98-source diagnostic and exact-response replay are development evidence, not an independent release holdout. Metadata and lifecycle Jev bands remain uncalibrated; no experimental fitted cutoff is promoted.",
   "fit": {
-    "calibration_cases": 131,
-    "fitted_at": "2026-10-01T10:21:08.6065793Z",
-    "manifest_sha256": "b00fa16eb11200b8ebbfc34b29821c8ea841d290330981346efb53cca3811919",
+    "seed": "sitewise-corpus-1",
+    "calibration_answers": 179,
     "policy": {
-      "number": {
-        "z": 1.645,
-        "min_samples": 30,
-        "min_band_samples": 10,
-        "green_lower": 0.9,
-        "amber_lower": 0.6,
-        "max_errors": -1
-      },
-      "revision": {
-        "z": 1.645,
-        "min_samples": 30,
-        "min_band_samples": 10,
-        "green_lower": 0.9,
-        "amber_lower": 0.6,
-        "max_errors": -1
-      },
-      "supersedes": {
-        "z": 1.645,
-        "min_samples": 30,
-        "min_band_samples": 20,
-        "green_lower": 0.95,
-        "amber_lower": 0.95,
-        "max_errors": 0
-      },
-      "title": {
-        "z": 1.645,
-        "min_samples": 30,
-        "min_band_samples": 10,
-        "green_lower": 0.9,
-        "amber_lower": 0.6,
-        "max_errors": -1
-      }
+      "min_shape_samples": 30,
+      "min_band_samples": 20,
+      "amber_lower_bound": 0.8,
+      "z": 1.645
     },
-    "recordings_digest": "1f89f5b81fefe0037ef2455f821761f264b03a5eb0376426ea67cc1f48bec387",
-    "results": [
-      {
-        "field": "number",
-        "shape": {
-          "min_options": 3,
-          "max_options": 4
-        },
-        "n": 33,
-        "green": null,
-        "amber": null,
-        "reason": "no cut-off meets the green bound"
-      },
-      {
-        "field": "number",
-        "shape": {
-          "min_options": 5,
-          "max_options": 8
-        },
-        "n": 4,
-        "green": null,
-        "amber": null,
-        "reason": "4 calibration answers, need 30"
-      },
-      {
-        "field": "number",
-        "shape": {
-          "min_options": 9,
-          "max_options": 16
-        },
-        "n": 6,
-        "green": null,
-        "amber": null,
-        "reason": "6 calibration answers, need 30"
-      },
-      {
-        "field": "number",
-        "shape": {
-          "min_options": 17,
-          "max_options": 32
-        },
-        "n": 2,
-        "green": null,
-        "amber": null,
-        "reason": "2 calibration answers, need 30"
-      },
-      {
-        "field": "number",
-        "shape": {
-          "min_options": 33,
-          "max_options": 64
-        },
-        "n": 1,
-        "green": null,
-        "amber": null,
-        "reason": "1 calibration answers, need 30"
-      },
-      {
-        "field": "revision",
-        "shape": {
-          "min_options": 3,
-          "max_options": 4
-        },
-        "n": 9,
-        "green": null,
-        "amber": null,
-        "reason": "9 calibration answers, need 30"
-      },
-      {
-        "field": "revision",
-        "shape": {
-          "min_options": 5,
-          "max_options": 8
-        },
-        "n": 2,
-        "green": null,
-        "amber": null,
-        "reason": "2 calibration answers, need 30"
-      },
-      {
-        "field": "supersedes",
-        "shape": {
-          "min_options": 2,
-          "max_options": 2
-        },
-        "n": 2,
-        "green": null,
-        "amber": null,
-        "reason": "2 calibration answers, need 30"
-      },
-      {
-        "field": "supersedes",
-        "shape": {
-          "min_options": 3,
-          "max_options": 4
-        },
-        "n": 1,
-        "green": null,
-        "amber": null,
-        "reason": "1 calibration answers, need 30"
-      },
-      {
-        "field": "title",
-        "shape": {
-          "min_options": 3,
-          "max_options": 4
-        },
-        "n": 3,
-        "green": null,
-        "amber": null,
-        "reason": "3 calibration answers, need 30"
-      },
-      {
-        "field": "title",
-        "shape": {
-          "min_options": 5,
-          "max_options": 8
-        },
-        "n": 24,
-        "green": null,
-        "amber": null,
-        "reason": "24 calibration answers, need 30"
-      },
-      {
-        "field": "title",
-        "shape": {
-          "min_options": 9,
-          "max_options": 16
-        },
-        "n": 4,
-        "green": null,
-        "amber": null,
-        "reason": "4 calibration answers, need 30"
-      },
-      {
-        "field": "title",
-        "shape": {
-          "min_options": 33,
-          "max_options": 64
-        },
-        "n": 1,
-        "green": null,
-        "amber": null,
-        "reason": "1 calibration answers, need 30"
-      }
-    ],
-    "split": "calibration"
+    "retained_conservative_cutoffs": true,
+    "validation": "Full 538-PDF live and persisted-app experiments; 332 partially labelled or expected-abstention cases. Repeated validation is a development set, not an untouched release holdout. Green withheld after response variation produced errors.",
+    "calibration_question_version": "intake-12"
   },
   "questions": {
-    "discipline": [],
-    "kind": [],
+    "discipline": [
+      {
+        "options": 33,
+        "max_options": 64,
+        "green": null,
+        "amber": 0.6,
+        "n": 79
+      }
+    ],
+    "kind": [
+      {
+        "options": 9,
+        "max_options": 16,
+        "green": null,
+        "amber": 0.8,
+        "n": 93
+      }
+    ],
     "lifecycle": [],
     "number": [],
     "revision": [],
     "supersedes": [],
-    "title": []
+    "title": [],
+    "date": []
   }
 }
