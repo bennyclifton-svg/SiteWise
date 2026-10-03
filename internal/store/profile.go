@@ -171,6 +171,13 @@ SET value = EXCLUDED.value, note = EXCLUDED.note, user_id = EXCLUDED.user_id,
 	return nil
 }
 
+// DeleteUserValue removes the user's word for one key, so evidence shows again.
+func (s *Store) DeleteUserValue(ctx context.Context, orgID, projectID, partID, key string) error {
+	_, err := s.pool.Exec(ctx, `DELETE FROM profile_user_values
+WHERE org_id = $1::uuid AND project_id = $2::uuid AND part_id = $3::uuid AND key = $4`, orgID, projectID, partID, key)
+	return err
+}
+
 // RebuildProfile reconciles one project under a per-project lock, writes
 // every row, records the build and appends a profile event, in one
 // transaction. Concurrent rebuilds and edits serialise on the lock, so a

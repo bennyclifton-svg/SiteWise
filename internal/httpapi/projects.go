@@ -13,7 +13,9 @@ import (
 	"sitewise/internal/auth"
 	"sitewise/internal/events"
 	"sitewise/internal/intake"
+	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 )
 
@@ -38,6 +40,9 @@ type Deps struct {
 	Health  *healthChecker
 	Speed   *recorder
 	Budgets latency.Budgets
+	// Knowledge and ProfileThresholds serve the project profile.
+	Knowledge         *knowledge.Catalog
+	ProfileThresholds profile.Thresholds
 }
 
 // Filer starts a foreground filing that outlives the upload request.
@@ -72,6 +77,10 @@ func Handler(deps Deps) http.Handler {
 		"GET /events":                        streamEvents,
 		"GET /health":                        getHealth,
 		"GET /speed":                         getSpeed,
+		"GET /projects/{id}/profile":         getProfile,
+		"PUT /projects/{id}/profile/{key}":   putProfileValue,
+		"POST /projects/{id}/parts":          createPart,
+		"PATCH /projects/{id}/parts/{part}":  updatePart,
 	}
 	for pattern, h := range routes {
 		path, timed := routePaths[pattern]
@@ -99,6 +108,10 @@ var routePaths = map[string]string{
 	"PUT /documents/{id}/fields/{field}": pathFieldCorrection,
 	"GET /health":                        pathHealthSpeed,
 	"GET /speed":                         pathHealthSpeed,
+	"GET /projects/{id}/profile":         pathProfileRead,
+	"PUT /projects/{id}/profile/{key}":   pathProfileEdit,
+	"POST /projects/{id}/parts":          pathProfileEdit,
+	"PATCH /projects/{id}/parts/{part}":  pathProfileEdit,
 }
 
 func consumeSession(w http.ResponseWriter, r *http.Request, deps Deps) {

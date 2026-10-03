@@ -17,6 +17,8 @@ import (
 	"sitewise/internal/files"
 	"sitewise/internal/intake"
 	"sitewise/internal/jev"
+	"sitewise/internal/knowledge"
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 )
 
@@ -47,6 +49,10 @@ type Options struct {
 	// DevLogin mounts GET /dev/login, which signs a visitor in as the local
 	// owner. serve enables it only on a loopback address outside production.
 	DevLogin bool
+	// Knowledge and ProfileThresholds serve the project profile. Nil
+	// knowledge disables the profile routes (404).
+	Knowledge         *knowledge.Catalog
+	ProfileThresholds profile.Thresholds
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -121,6 +127,9 @@ func New(opts Options) (*Server, error) {
 		Health:         checker,
 		Speed:          speed,
 		Budgets:        budgets,
+
+		Knowledge:         opts.Knowledge,
+		ProfileThresholds: opts.ProfileThresholds,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})

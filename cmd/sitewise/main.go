@@ -153,6 +153,9 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		DevLogin:       *devLogin,
 		MaxUploadBytes: *maxUpload,
 		Log:            logger,
+
+		Knowledge:         building,
+		ProfileThresholds: profileTh,
 	})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())

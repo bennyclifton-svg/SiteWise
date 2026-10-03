@@ -1,16 +1,70 @@
 {
   "min_samples": 20,
   "paths": [
-    {"name": "identity_text_extraction", "p50_us": 80000, "p90_us": 250000},
-    {"name": "candidate_harvesting", "p50_us": 5000, "p90_us": 10000},
-    {"name": "deterministic_field_rules", "p50_us": 1000, "p90_us": 1000},
-    {"name": "jev_admission_request", "p50_us": 350000, "p90_us": 800000},
-    {"name": "commit_sse_enqueue", "p50_us": 5000, "p90_us": 15000},
-    {"name": "whole_intake", "p50_us": 1000000, "p90_us": 2000000},
-    {"name": "project_document_list", "p50_us": 50000, "p90_us": 150000},
-    {"name": "field_correction", "p50_us": 50000, "p90_us": 150000},
-    {"name": "project_invite_auth", "p50_us": 100000, "p90_us": 250000},
-    {"name": "health_speed", "p50_us": 25000, "p90_us": 100000},
-    {"name": "sse_reconnect", "p50_us": 100000, "p90_us": 250000}
+    {
+      "name": "identity_text_extraction",
+      "p50_us": 80000,
+      "p90_us": 250000
+    },
+    {
+      "name": "candidate_harvesting",
+      "p50_us": 5000,
+      "p90_us": 10000
+    },
+    {
+      "name": "deterministic_field_rules",
+      "p50_us": 1000,
+      "p90_us": 1000
+    },
+    {
+      "name": "jev_admission_request",
+      "p50_us": 350000,
+      "p90_us": 800000
+    },
+    {
+      "name": "commit_sse_enqueue",
+      "p50_us": 5000,
+      "p90_us": 15000
+    },
+    {
+      "name": "whole_intake",
+      "p50_us": 1000000,
+      "p90_us": 2000000
+    },
+    {
+      "name": "project_document_list",
+      "p50_us": 50000,
+      "p90_us": 150000
+    },
+    {
+      "name": "field_correction",
+      "p50_us": 50000,
+      "p90_us": 150000
+    },
+    {
+      "name": "project_invite_auth",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "health_speed",
+      "p50_us": 25000,
+      "p90_us": 100000
+    },
+    {
+      "name": "sse_reconnect",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "project_profile_read",
+      "p50_us": 50000,
+      "p90_us": 150000
+    },
+    {
+      "name": "profile_edit",
+      "p50_us": 50000,
+      "p90_us": 150000
+    }
   ]
 }
