@@ -139,10 +139,72 @@ type PassageSystem struct {
 	SystemID  string
 }
 
+type ProfileBuild struct {
+	OrgID             string
+	ProjectID         string
+	BuiltAt           time.Time
+	ThresholdsVersion string
+}
+
+type ProfileFact struct {
+	OrgID           string
+	ID              string
+	ProjectID       string
+	DocumentID      string
+	PassageID       pgtype.UUID
+	QuestionID      string
+	Value           string
+	Unit            string
+	Basis           string
+	PartLabel       string
+	Excerpt         string
+	Confidence      pgtype.Float8
+	DecidedBy       string
+	QuestionVersion string
+	CreatedAt       time.Time
+}
+
+type ProfileRow struct {
+	OrgID        string
+	ProjectID    string
+	PartID       string
+	Key          string
+	Value        string
+	Band         string
+	Assertion    string
+	Note         string
+	Tenders      string
+	Sources      []byte
+	Alternatives []byte
+	Derived      []byte
+}
+
+type ProfileUserValue struct {
+	OrgID     string
+	ProjectID string
+	PartID    string
+	Key       string
+	Value     *string
+	Note      string
+	UserID    string
+	Version   int64
+	UpdatedAt time.Time
+}
+
 type Project struct {
 	OrgID     string
 	ID        string
 	Name      string
+	CreatedAt time.Time
+}
+
+type ProjectPart struct {
+	OrgID     string
+	ID        string
+	ProjectID string
+	Label     string
+	Kind      string
+	NccClass  *string
 	CreatedAt time.Time
 }
 

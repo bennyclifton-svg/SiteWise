@@ -89,6 +89,7 @@ WITH picked AS MATERIALIZED (
       AND c.kind <> 'intake'
       AND c.attempts < c.max_attempts
       AND c.run_after <= now()
+      AND c.created_at >= $5::timestamptz
       AND (
           c.status = 'queued'
           OR (c.status = 'leased' AND c.locked_until < now())
@@ -121,6 +122,7 @@ type ClaimJobParams struct {
 	LeaseSeconds float64
 	OrgID        string
 	Kinds        []string
+	CreatedAfter time.Time
 }
 
 type ClaimJobRow struct {
@@ -141,6 +143,7 @@ func (q *Queries) ClaimJob(ctx context.Context, arg ClaimJobParams) (ClaimJobRow
 		arg.LeaseSeconds,
 		arg.OrgID,
 		arg.Kinds,
+		arg.CreatedAfter,
 	)
 	var i ClaimJobRow
 	err := row.Scan(

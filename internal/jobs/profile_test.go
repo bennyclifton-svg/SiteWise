@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"sitewise/internal/jev"
 	"sitewise/internal/jobs"
@@ -126,5 +127,26 @@ func TestEvidenceQuestionsEncode(t *testing.T) {
 		if err != nil || len(raw) == 0 || raw[0] != '{' {
 			t.Fatalf("%s criteria do not encode: %v %s", id, err, raw)
 		}
+	}
+}
+
+func TestClaimSinceLeavesOlderBacklogQueued(t *testing.T) {
+	st := openStore(t)
+	ctx := context.Background()
+	org, project := newID(t), newID(t)
+	seedOrg(t, st, org, project)
+	doc := seedDoc(t, st, org, project, store.StatusFiled)
+	if err := st.EnqueueJob(ctx, org, newID(t), doc, store.JobKindFullText); err != nil {
+		t.Fatal(err)
+	}
+	later := time.Now().Add(time.Hour)
+	if _, err := st.ClaimJobSince(ctx, org, time.Minute, []string{store.JobKindFullText}, later); err != store.ErrIdle {
+		t.Fatalf("backlog must stay queued, got %v", err)
+	}
+	if orgs, _ := st.OrgsWithBackgroundJobsSince(ctx, later); contains(orgs, org) {
+		t.Fatal("org listed for backlog only")
+	}
+	if _, err := st.ClaimJobSince(ctx, org, time.Minute, []string{store.JobKindFullText}, time.Time{}); err != nil {
+		t.Fatalf("zero since claims everything: %v", err)
 	}
 }

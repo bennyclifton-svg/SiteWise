@@ -37,6 +37,13 @@ type JobRecord struct {
 // ordered ahead of background work. An expired lease can be claimed again;
 // the previous token then loses the race.
 func (s *Store) ClaimJob(ctx context.Context, orgID string, lease time.Duration, kinds []string) (ClaimedJob, error) {
+	return s.ClaimJobSince(ctx, orgID, lease, kinds, time.Time{})
+}
+
+// ClaimJobSince is ClaimJob limited to jobs created at or after since. A
+// development server uses it to read only new uploads and leave an existing
+// backlog untouched.
+func (s *Store) ClaimJobSince(ctx context.Context, orgID string, lease time.Duration, kinds []string, since time.Time) (ClaimedJob, error) {
 	if orgID == "" {
 		return ClaimedJob{}, errors.New("org is required")
 	}
@@ -65,6 +72,7 @@ func (s *Store) ClaimJob(ctx context.Context, orgID string, lease time.Duration,
 		LeaseSeconds: lease.Seconds(),
 		OrgID:        orgID,
 		Kinds:        kinds,
+		CreatedAfter: since,
 	})
 	if errors.Is(err, pgx.ErrNoRows) {
 		if err := tx.Commit(ctx); err != nil {

@@ -53,6 +53,9 @@ type Worker struct {
 	Lease   time.Duration
 	Backoff time.Duration
 	MinNoul float64
+	// Since limits the worker to jobs created at or after it; zero works
+	// every job, including a backlog.
+	Since time.Time
 	// Profile holds the profile's per-shape floors. Empty floors apply
 	// nothing: readings are stored and rows stay blank.
 	Profile profile.Thresholds
@@ -64,11 +67,11 @@ func (w *Worker) Once(ctx context.Context, orgID string) error {
 	if lease <= 0 {
 		lease = 30 * time.Second
 	}
-	job, err := w.Store.ClaimJob(ctx, orgID, lease, []string{
+	job, err := w.Store.ClaimJobSince(ctx, orgID, lease, []string{
 		store.JobKindFullText,
 		store.JobKindLabel,
 		store.JobKindEvidence,
-	})
+	}, w.Since)
 	if err != nil {
 		return err
 	}

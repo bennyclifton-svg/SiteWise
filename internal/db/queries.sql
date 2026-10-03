@@ -330,6 +330,7 @@ WITH picked AS MATERIALIZED (
       AND c.kind <> 'intake'
       AND c.attempts < c.max_attempts
       AND c.run_after <= now()
+      AND c.created_at >= sqlc.arg(created_after)::timestamptz
       AND (
           c.status = 'queued'
           OR (c.status = 'leased' AND c.locked_until < now())

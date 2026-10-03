@@ -73,6 +73,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	knowledgeDir := fs.String("knowledge", "knowledge", "building knowledge directory")
 	profileThresholds := fs.String("profile-thresholds", "data/profile/thresholds.json", "project profile thresholds")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
+	backlog := fs.Bool("background-backlog", true, "read documents queued before this start; false reads only new uploads")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -165,7 +166,13 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	// background; filing keeps its slots and the interactive Jev reserve.
 	worker := &jobs.Worker{Store: st, Ask: client, Catalog: building, Text: jobs.FullText(st, blobs),
 		MinNoul: minNoul, Profile: profileTh}
-	go jobs.Run(ctx, worker, st.OrgsWithBackgroundJobs, 2*time.Second, logger.Printf)
+	orgs := st.OrgsWithBackgroundJobs
+	if !*backlog {
+		worker.Since = time.Now()
+		orgs = func(ctx context.Context) ([]string, error) { return st.OrgsWithBackgroundJobsSince(ctx, worker.Since) }
+		logger.Printf("background: reading only documents uploaded from now; the existing backlog stays queued")
+	}
+	go jobs.Run(ctx, worker, orgs, 2*time.Second, logger.Printf)
 	if n, err := srv.Resume(ctx); err != nil {
 		logger.Printf("resume failed: %v", err)
 	} else if n > 0 {
