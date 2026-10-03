@@ -84,7 +84,9 @@ systems:
   describes: 'Exhaust that removes moisture, odour or contaminants at the source: bathroom, ensuite, toilet
     and laundry exhaust fans, domestic rangehoods, commercial kitchen hoods and grease exhaust ducts,
     refuse room and bin store exhaust, cleaners'' rooms, plant rooms, battery and charging rooms, clothes
-    dryer discharge, make-up air for these systems and their discharge points to outside.'
+    dryer discharge, make-up air for these systems and their discharge points to outside.
+    Includes ventilation of open forklift or materials handling equipment (MHE) charging areas
+    to remove gases released from battery charging; an enclosed charging room is not required.'
   excludes: Enclosed car-park ventilation (carpark-ventilation); general outdoor-air supply (ventilation);
     laboratory fume and process exhaust (process-specialist); smoke exhaust (fire-mode-air-systems).
   status: draft
@@ -222,7 +224,8 @@ systems:
   describes: 'Hot and warm water generation, storage and distribution for fixtures: electric, gas, heat
     pump and solar water heaters, storage and instantaneous units, flow and return circulation, storage
     temperature for Legionella control, tempering and thermostatic mixing valves, delivery temperature
-    limits, expansion control and pressure relief valves and their drains.'
+    limits, expansion control and pressure relief valves and their drains. Includes hot water meters
+    and distribution, even where the clause does not specify a water heater.'
   excludes: Heating water for space heating (mechanical.central-plant); gas supply pipework to the heater
     (gas).
   status: draft

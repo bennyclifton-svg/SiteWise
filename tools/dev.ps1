@@ -113,12 +113,23 @@ $env:SITEWISE_FILE_DIR = Join-Path $Tools 'dev-files'
 $env:SITEWISE_SESSION_SECRET = Get-Content -Raw $SecretFile
 $env:SITEWISE_JEV_MODEL = 'jev-1.13.0'
 $env:SITEWISE_ENV = 'development'
+# Honour configured installations; otherwise use the local Windows install.
+if (-not $env:SITEWISE_TESSERACT -and (Test-Path 'C:\Program Files\Tesseract-OCR\tesseract.exe')) {
+    $env:SITEWISE_TESSERACT = 'C:\Program Files\Tesseract-OCR\tesseract.exe'
+}
+if (-not $env:SITEWISE_TESSDATA -and (Test-Path (Join-Path $Tools 'tesseract\tessdata\eng.traineddata'))) {
+    $env:SITEWISE_TESSDATA = Join-Path $Tools 'tesseract\tessdata'
+}
+if (-not $env:SITEWISE_OCR_PYTHON) {
+    $BundledPython = Join-Path $env:USERPROFILE '.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+    if (Test-Path $BundledPython) { $env:SITEWISE_OCR_PYTHON = $BundledPython }
+}
 New-Item -ItemType Directory -Force $env:SITEWISE_FILE_DIR | Out-Null
 
 $Login = "http://$Addr/dev/login"
-# Development reads only documents uploaded from now (the dev database holds a
-# large unread corpus backlog) and applies the provisional profile floors.
-$server = Start-Process -FilePath $Exe -ArgumentList @('serve', '-addr', $Addr, '-dev-login', '-background-backlog=false', '-profile-provisional') -NoNewWindow -PassThru
+# Resume interrupted work across development restarts. Uploads only prepare
+# text; profile reading is still requested explicitly with the update button.
+$server = Start-Process -FilePath $Exe -ArgumentList @('serve', '-addr', $Addr, '-dev-login', '-profile-provisional') -WindowStyle Hidden -PassThru
 try {
     $deadline = (Get-Date).AddSeconds(60)
     while (-not $server.HasExited -and (Get-Date) -lt $deadline) {

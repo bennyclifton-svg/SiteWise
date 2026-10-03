@@ -1,6 +1,7 @@
 package httpapi_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"path/filepath"
@@ -9,7 +10,45 @@ import (
 	"sitewise/internal/httpapi"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
+	"sitewise/internal/store"
+	"sort"
+	"strconv"
+	"time"
 )
+
+func TestProfileSourceReadIsolationAndLatencyBudget(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Source coverage")
+	// The authenticated empty-project path is also a real endpoint budget check.
+	var durations []time.Duration
+	for i := 0; i < 25; i++ {
+		started := time.Now()
+		var v store.SourceRecords
+		m.getJSON(t, "/api/projects/"+project+"/profile/sources", &v)
+		durations = append(durations, time.Since(started))
+		if v.Records == nil {
+			t.Fatal("records must encode as an array")
+		}
+	}
+	sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
+	if durations[12] > 50*time.Millisecond || durations[22] > 150*time.Millisecond {
+		t.Fatalf("source endpoint exceeded p50/p90 budget: %s/%s", durations[12], durations[22])
+	}
+	other := a.member(t, newUUID(t))
+	if got := other.status(t, http.MethodGet, "/api/projects/"+project+"/profile/sources", nil); got != 404 {
+		t.Fatalf("foreign source read %d", got)
+	}
+	for _, q := range []string{"offset=-1", "outcome=invalid", "system=invalid"} {
+		if got := m.status(t, http.MethodGet, "/api/projects/"+project+"/profile/sources?"+q, nil); got != 400 {
+			t.Fatalf("invalid query %s=%d", q, got)
+		}
+	}
+	// Coverage remains org-scoped even though profiles expose per-document counts.
+	if v, err := a.store.SourceCoverage(context.Background(), other.orgID, project); err != nil || len(v) != 0 {
+		t.Fatalf("foreign coverage %+v %v", v, err)
+	}
+}
 
 type profileBody struct {
 	ProjectID  string         `json:"project_id"`
@@ -109,6 +148,52 @@ func TestProfileReadEditAndSuggestions(t *testing.T) {
 	}
 }
 
+func TestProfileShowsKnownScaleBeforeBuildingType(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Unclassified brief")
+	var p profileBody
+	put(t, m, project, "hdr.scale.gla_sqm", map[string]any{"value": "2135"}, http.StatusOK, &p)
+	check := func() {
+		t.Helper()
+		for _, f := range p.Header {
+			if f.Key == "hdr.scale.gla_sqm" && f.Value == "2135" {
+				return
+			}
+		}
+		t.Fatal("saved scale hidden by building type")
+	}
+	check()
+	put(t, m, project, "hdr.subclass", map[string]any{"value": "warehouse"}, http.StatusOK, &p)
+	check()
+}
+
+func TestProfileReadEditLatencyBudgets(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Profile timing")
+	put(t, m, project, "hdr.subclass", map[string]any{"value": "warehouse"}, http.StatusOK, nil)
+	put(t, m, project, "hdr.work_type", map[string]any{"value": "extend"}, http.StatusOK, nil)
+	for _, path := range []string{"project_profile_read", "profile_edit"} {
+		var durations []time.Duration
+		for i := 0; i < 25; i++ {
+			start := time.Now()
+			if path == "profile_edit" {
+				put(t, m, project, "hdr.scale.gla_sqm", map[string]any{"value": strconv.Itoa(2100 + i)}, http.StatusOK, nil)
+			} else {
+				var p profileBody
+				m.getJSON(t, "/api/projects/"+project+"/profile", &p)
+			}
+			durations = append(durations, time.Since(start))
+		}
+		sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
+		t.Logf("%s p50=%s p90=%s (budget 50ms/150ms)", path, durations[12], durations[22])
+		if durations[12] > 50*time.Millisecond || durations[22] > 150*time.Millisecond {
+			t.Fatalf("%s exceeded budget", path)
+		}
+	}
+}
+
 func presence(p profileBody, leaf string) struct{ Value, Band string } {
 	for _, g := range p.Systems {
 		for _, r := range g.Rows {
@@ -163,5 +248,24 @@ func TestPartsCreateAndRename(t *testing.T) {
 	m.call(t, http.MethodPost, "/api/projects/"+project+"/parts", []byte(`{"label":"Whole project","kind":"building"}`), http.StatusUnprocessableEntity, nil)
 	if got := m.status(t, http.MethodDelete, "/api/projects/"+project+"/parts/"+part.ID, nil); got != http.StatusMethodNotAllowed && got != http.StatusNotFound {
 		t.Fatalf("delete = %d", got)
+	}
+}
+
+func TestProfileReadRequest(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Hale")
+	var got struct {
+		ProjectID string `json:"project_id"`
+		Queued    *int   `json:"queued"`
+		Unread    *int   `json:"unread_documents"`
+	}
+	m.call(t, http.MethodPost, "/api/projects/"+project+"/profile/read", nil, http.StatusOK, &got)
+	if got.ProjectID != project || got.Queued == nil || *got.Queued != 0 || got.Unread == nil || *got.Unread != 0 {
+		t.Fatalf("read request %+v", got)
+	}
+	other := a.member(t, newUUID(t))
+	if code := other.status(t, http.MethodPost, "/api/projects/"+project+"/profile/read", nil); code != http.StatusNotFound {
+		t.Fatalf("cross-org read request = %d", code)
 	}
 }

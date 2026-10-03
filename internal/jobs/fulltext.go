@@ -2,9 +2,6 @@ package jobs
 
 import (
 	"context"
-	"errors"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -31,33 +28,17 @@ type BlobPaths interface {
 // FullText returns Worker.Text: the document's whole text, with a blank line
 // between pages and before headings so passages break at them.
 func FullText(st *store.Store, blobs BlobPaths) func(ctx context.Context, orgID, documentID string) (string, error) {
+	source := FullSource(st, blobs)
 	return func(ctx context.Context, orgID, documentID string) (string, error) {
-		doc, err := st.GetDocument(ctx, orgID, documentID)
+		src, err := source(ctx, orgID, documentID)
 		if err != nil {
 			return "", err
 		}
-		format := strings.TrimPrefix(strings.ToLower(filepath.Ext(doc.Filename)), ".")
-		if format != "pdf" && format != "docx" && format != "xlsx" {
-			return "", errors.New("unsupported format for full text")
+		var parts []string
+		for _, p := range src.Source {
+			parts = append(parts, p.Text)
 		}
-		file, err := st.GetFile(ctx, orgID, doc.FileID)
-		if err != nil {
-			return "", err
-		}
-		path, err := blobs.Path(file.SHA256)
-		if err != nil {
-			return "", err
-		}
-		f, err := os.Open(path)
-		if err != nil {
-			return "", err
-		}
-		defer f.Close()
-		text, err := identity.Extract(ctx, format, f, file.ByteSize, fullLimits)
-		if err != nil {
-			return "", err
-		}
-		return joinRuns(text.Runs), nil
+		return strings.Join(parts, "\n\n"), nil
 	}
 }
 
@@ -87,8 +68,12 @@ var headingRe = regexp.MustCompile(`^(\d+(\.\d+)*\.?\s+[A-Za-z]|[A-Z][A-Z0-9 &/,
 // looksLikeHeading is a numbered heading ("7.13. Garbage Systems") or a short
 // upper-case line ("FIRE SERVICES").
 func looksLikeHeading(line string) bool {
-	return len(line) <= 80 && headingRe.MatchString(line)
+	return len(line) <= 80 && headingRe.MatchString(line) && !quantityHeading.MatchString(line) && !tableCodeHeading.MatchString(line) && line != "TOTAL"
 }
+
+// PDF table cells can resemble numbered or all-caps headings.
+var quantityHeading = regexp.MustCompile(`(?i)^\d+(?:\.\d+)?\s*(?:m2|m²|mm|m|sqm|kpa|mpa|a|kn|t)\b`)
+var tableCodeHeading = regexp.MustCompile(`^[A-Z]\d+(?:,\s*[A-Z]\d+)*$`)
 
 // sectionOf is the heading a passage starts with, if any.
 func sectionOf(body string) string {

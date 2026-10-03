@@ -31,8 +31,8 @@ func (f *profileAsk) Ask(_ context.Context, call jev.Call) (jev.Result, error) {
 		switch {
 		case id == "system.fire-active":
 			answers[id] = jev.Answer{Type: jev.TypeNoul, Noul: 0.99}
-		case id == "leaf.fire-active":
-			answers[id] = jev.Answer{Type: jev.TypeChoice, Choice: "fire-active.sprinklers", Confidence: &c}
+		case id == "system.fire-active.sprinklers":
+			answers[id] = jev.Answer{Type: jev.TypeNoul, Noul: 0.99}
 		case id == "det.bal":
 			answers[id] = jev.Answer{Type: jev.TypeChoice, Choice: "BAL-40", Confidence: &c}
 		case id == "det.bal.assertion":
@@ -66,6 +66,11 @@ func TestStagesStoreProfileFactsAndRebuild(t *testing.T) {
 		t.Fatal(err)
 	}
 	for i := 0; i < 3; i++ { // full text, label, evidence
+		if i == 1 { // the user asks for the profile update
+			if _, err := st.RequestProfileRead(ctx, org, project); err != nil {
+				t.Fatal(err)
+			}
+		}
 		if err := worker.Once(ctx, org); err != nil {
 			t.Fatalf("stage %d: %v", i, err)
 		}

@@ -46,6 +46,7 @@ func formatOf(filename string) string {
 
 // Runner is the foreground path from stored bytes to a committed filing.
 type Runner struct {
+	OCR    func(context.Context, string) (identity.Text, error)
 	blobs  *files.Store
 	store  *store.Store
 	svc    *Service
@@ -68,6 +69,9 @@ func (r *Runner) Run(ctx context.Context, orgID, documentID string) error {
 	if doc.Status != store.StatusPending {
 		return nil
 	}
+	if strings.HasPrefix(doc.Reason, "ocr_") {
+		return nil
+	}
 	format := formatOf(doc.Filename)
 	if format == "" {
 		return r.notFiled(ctx, orgID, documentID, ReasonUnsupported)
@@ -83,6 +87,9 @@ func (r *Runner) Run(ctx context.Context, orgID, documentID string) error {
 	case err != nil:
 		return err
 	case !text.TextLayer:
+		if format == "pdf" && r.OCR != nil {
+			return r.store.QueueOCR(ctx, orgID, documentID)
+		}
 		return r.notFiled(ctx, orgID, documentID, ReasonNoText)
 	}
 	_, err = r.svc.File(ctx, orgID, documentID, text)

@@ -59,10 +59,30 @@ export interface Part {
   ncc_class: string;
 }
 
+export interface SourceCoverage {
+ document_id: string; filename: string; pages: number; empty_pages: number[];
+ current: boolean; units: number; labelled: number; evidence: number;
+ needs_mapping: number; mapped: number; background: number;
+}
+export interface SourceRecord {
+ id: string; document_id: string; filename: string; ordinal: number; text: string;
+ page: number; location: string; section: string; context: string; category: string;
+ provider: string; scope: string; outcome: string; confidence?: number;
+ keys: string[]; unresolved: string[]; systems: string[];
+}
+export interface SourceRecords { records: SourceRecord[]; more: boolean }
 export interface Profile {
+ coverage?: SourceCoverage[];
   project_id: string;
   built_at: string | null;
   pending_documents: number;
+  active_documents: number;
+  /** Text split, not yet read by Jev; "Update project profile" reads them. */
+  unread_documents: number;
+  failed_documents: number;
+  payment_required: boolean;
+  /** Set only on an update request: documents it sent to Jev. */
+  queued?: number;
   thresholds: { version: string; provisional: boolean; applied: boolean };
   parts: Part[];
   header: ProfileField[];
@@ -88,7 +108,10 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 }
 
 export const profileApi = {
+ sources: (projectId: string, system = "", outcome = "", offset = 0) => call<SourceRecords>("GET", `/projects/${projectId}/profile/sources?${new URLSearchParams({ system, outcome, offset: String(offset) })}`),
   get: (projectId: string) => call<Profile>("GET", `/projects/${projectId}/profile`),
+  /** Queue Jev reading for unread documents; the profile fills in as each finishes. */
+  read: (projectId: string) => call<Profile>("POST", `/projects/${projectId}/profile/read`),
   /** value null records "unknown" as the user's word; reset returns to the evidence. */
   set: (projectId: string, key: string, body: { part_id?: string; value?: string | null; note?: string; reset?: boolean }) =>
     call<Profile>("PUT", `/projects/${projectId}/profile/${encodeURIComponent(key)}`, body),

@@ -119,7 +119,8 @@ systems:
   - id: hydraulic
     label: Hydraulic services
     describes: >-
-      Potable and non-potable water, sanitary plumbing and sewer, hot water,
+      Potable and non-potable water, rainwater harvesting and reuse for landscape irrigation,
+      sanitary plumbing and sewer, hot water,
       trade waste, roof and building stormwater drainage, gas, and fire-water
       supply where it is part of the hydraulic scope.
     excludes: >-

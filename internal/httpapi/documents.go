@@ -45,7 +45,11 @@ func downloadDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	defer f.Close()
 	w.Header().Set("Content-Type", file.MediaType)
-	w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": doc.Filename}))
+	disposition := "attachment"
+	if r.URL.Query().Get("view") == "1" && file.MediaType == "application/pdf" {
+		disposition = "inline"
+	}
+	w.Header().Set("Content-Disposition", mime.FormatMediaType(disposition, map[string]string{"filename": doc.Filename}))
 	_, _ = io.Copy(w, f)
 }
 
@@ -207,6 +211,20 @@ func retryFiling(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
+	if view.Status == store.StatusNotFiled && (view.Reason == "no_text_layer" || strings.HasPrefix(view.Reason, "ocr_")) {
+		if err := deps.Store.RetryOCR(r.Context(), session.OrgID, view.ID); err != nil {
+			http.Error(w, "OCR retry failed", http.StatusConflict)
+			return
+		}
+		deps.Broker.Wake(session.OrgID)
+		view, err := deps.Store.DocumentView(r.Context(), session.OrgID, view.ID)
+		if err != nil {
+			http.Error(w, "read failed", 500)
+			return
+		}
+		writeJSON(w, http.StatusAccepted, view)
+		return
+	}
 	if view.Expansion != nil && view.Expansion.Status == "review" {
 		if err := deps.Store.RetryDrawingExpansion(r.Context(), session.OrgID, view.ID); err != nil {
 			http.Error(w, "retry failed", 500)
@@ -215,6 +233,32 @@ func retryFiling(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	if view.Status == store.StatusPending || (view.Expansion != nil && view.Expansion.Status != "complete") {
 		deps.Filer.Start(session.OrgID, view.ID)
+	}
+	writeJSON(w, http.StatusAccepted, view)
+}
+
+func reprocessDetails(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	view, ok := visibleDocument(w, r, deps, session.OrgID)
+	if !ok {
+		return
+	}
+	if err := deps.Store.ReprocessOCRDetails(r.Context(), session.OrgID, view.ID); err != nil {
+		http.Error(w, "Missing-detail recovery is not available for this document. Refresh and check its current details.", http.StatusConflict)
+		return
+	}
+	deps.Broker.Wake(session.OrgID)
+	view, err := deps.Store.DocumentView(r.Context(), session.OrgID, view.ID)
+	if err != nil {
+		http.Error(w, "read failed", 500)
+		return
 	}
 	writeJSON(w, http.StatusAccepted, view)
 }

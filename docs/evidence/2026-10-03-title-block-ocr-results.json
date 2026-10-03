@@ -1,0 +1,942 @@
+{
+  "platform": "Windows-10-10.0.19045-SP0",
+  "processor": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+  "pdfium": "153.0.7999.0",
+  "pypdfium2": "5.13.0",
+  "tesseract": "tesseract v5.4.0.20240606\n leptonica-1.84.1\n  libgif 5.2.1 : libjpeg 8d (libjpeg-turbo 3.0.1) : libpng 1.6.43 : libtiff 4.6.0 : zlib 1.3 : libwebp 1.4.0 : libopenjp2 2.5.2\n Found AVX2\n Found AVX\n Found FMA\n Found SSE4.1\n Found libarchive 3.7.4 zlib/1.3.1 liblzma/5.6.1 bz2lib/1.0.8 liblz4/1.9.4 libzstd/1.5.6\n",
+  "model_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+  "input_sha256": {
+    "1115 CC-01 SETOUT PLAN D.pdf": "d66ef30ef933bcfc21ece58e959ed01927431b996ffee7d10c33f4db9f20e6ca",
+    "1115 CC-02 BASEMENT 2 F.pdf": "877e7462b11e786f55fb0fa600d1d7217ec1b65384408908659a2e978aa442e4",
+    "1115 CC-03 BASEMENT 1 F.pdf": "1015e24116360b8f5c1b99c4767dfd01e5648af402a3ffdf3411dd188ba14a7c",
+    "1115 CC-04 GROUND FLOOR J.pdf": "238e19b559897dab9d796971b6ff05e7be9198ba391521873bc7b687c39bd1ad",
+    "1115 CC-05 LEVEL 01 H.pdf": "a9624539fdf865a54483672b6d2499e516e157042d6f6aed51709509fee6e206"
+  },
+  "regions": [
+    [
+      0.855,
+      0.031,
+      0.987,
+      0.085
+    ],
+    [
+      0.855,
+      0.735,
+      0.987,
+      0.975
+    ]
+  ],
+  "psm": 6,
+  "omp_thread_limit": 1,
+  "method": "Sequential; reopen PDF and launch OCR per sample; no warm-up discarded. OS cache may be warm. Includes PNG encoding and OCR startup; excludes Jev, database and upload.",
+  "samples": [
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 150,
+      "repeat": 0,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 167.1339999884367,
+      "ocr_ms": 427.6647000806406,
+      "total_ms": 594.7987000690773,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 200,
+      "repeat": 0,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 149.25999997649342,
+      "ocr_ms": 497.47050006408244,
+      "total_ms": 646.7305000405759,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 300,
+      "repeat": 0,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 166.40820004977286,
+      "ocr_ms": 583.7094000307843,
+      "total_ms": 750.1176000805572,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 150,
+      "repeat": 0,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 183.90369997359812,
+      "ocr_ms": 409.92150001693517,
+      "total_ms": 593.8251999905333,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 200,
+      "repeat": 0,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 191.913100075908,
+      "ocr_ms": 491.0194999538362,
+      "total_ms": 682.9326000297442,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 300,
+      "repeat": 0,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 206.19990001432598,
+      "ocr_ms": 572.3028000211343,
+      "total_ms": 778.5027000354603,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 150,
+      "repeat": 0,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 197.4135999334976,
+      "ocr_ms": 412.11900010239333,
+      "total_ms": 609.5326000358909,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 200,
+      "repeat": 0,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 203.64630001131445,
+      "ocr_ms": 483.2978999475017,
+      "total_ms": 686.9441999588162,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 300,
+      "repeat": 0,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 234.66269997879863,
+      "ocr_ms": 589.4592000404373,
+      "total_ms": 824.1219000192359,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 150,
+      "repeat": 0,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 286.0396000323817,
+      "ocr_ms": 416.7339999694377,
+      "total_ms": 702.7736000018194,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 200,
+      "repeat": 0,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 295.8616999676451,
+      "ocr_ms": 491.8677000096068,
+      "total_ms": 787.7293999772519,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 300,
+      "repeat": 0,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 307.0501000620425,
+      "ocr_ms": 584.6861000172794,
+      "total_ms": 891.7362000793219,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 150,
+      "repeat": 0,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 264.9972999934107,
+      "ocr_ms": 425.39119999855757,
+      "total_ms": 690.3884999919683,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 200,
+      "repeat": 0,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 270.01099998597056,
+      "ocr_ms": 512.0893999701366,
+      "total_ms": 782.1003999561071,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 300,
+      "repeat": 0,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 284.91390007548034,
+      "ocr_ms": 635.1001999573782,
+      "total_ms": 920.0141000328586,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 200,
+      "repeat": 1,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 153.23169995099306,
+      "ocr_ms": 494.1022000275552,
+      "total_ms": 647.3338999785483,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 300,
+      "repeat": 1,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 161.7407000157982,
+      "ocr_ms": 579.0176000446081,
+      "total_ms": 740.7583000604063,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 150,
+      "repeat": 1,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 144.19199991971254,
+      "ocr_ms": 411.13690007478,
+      "total_ms": 555.3288999944925,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 200,
+      "repeat": 1,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 190.2558000292629,
+      "ocr_ms": 481.9631000282243,
+      "total_ms": 672.2189000574872,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 300,
+      "repeat": 1,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 203.70259997434914,
+      "ocr_ms": 565.6441999599338,
+      "total_ms": 769.3467999342829,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 150,
+      "repeat": 1,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 186.54719996266067,
+      "ocr_ms": 409.42669997457415,
+      "total_ms": 595.9738999372348,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 200,
+      "repeat": 1,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 202.57890003267676,
+      "ocr_ms": 494.8466999921948,
+      "total_ms": 697.4256000248715,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 300,
+      "repeat": 1,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 276.4339999994263,
+      "ocr_ms": 615.9929999848828,
+      "total_ms": 892.4269999843091,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 150,
+      "repeat": 1,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 201.99299999512732,
+      "ocr_ms": 423.3234999701381,
+      "total_ms": 625.3164999652654,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 200,
+      "repeat": 1,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 292.78679995331913,
+      "ocr_ms": 497.3310000495985,
+      "total_ms": 790.1178000029176,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 300,
+      "repeat": 1,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 335.3258999995887,
+      "ocr_ms": 601.5561000676826,
+      "total_ms": 936.8820000672713,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 150,
+      "repeat": 1,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 311.20120000559837,
+      "ocr_ms": 431.7155000753701,
+      "total_ms": 742.9167000809684,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 200,
+      "repeat": 1,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 276.4002000913024,
+      "ocr_ms": 515.7642998965457,
+      "total_ms": 792.1644999878481,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 300,
+      "repeat": 1,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 285.0000000325963,
+      "ocr_ms": 607.3072999715805,
+      "total_ms": 892.3073000041768,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 150,
+      "repeat": 1,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 267.3192999791354,
+      "ocr_ms": 455.7155000511557,
+      "total_ms": 723.0348000302911,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 300,
+      "repeat": 2,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 162.0386999566108,
+      "ocr_ms": 580.790700041689,
+      "total_ms": 742.8293999982998,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 150,
+      "repeat": 2,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 143.1864999467507,
+      "ocr_ms": 411.0819000052288,
+      "total_ms": 554.2683999519795,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-01 SETOUT PLAN D.pdf",
+      "dpi": 200,
+      "repeat": 2,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 148.90149992424995,
+      "ocr_ms": 492.4676000373438,
+      "total_ms": 641.3690999615937,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 300,
+      "repeat": 2,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 207.6179999858141,
+      "ocr_ms": 613.9555999543518,
+      "total_ms": 821.5735999401659,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 150,
+      "repeat": 2,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 186.35099998209625,
+      "ocr_ms": 405.9185000369325,
+      "total_ms": 592.2695000190288,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-02 BASEMENT 2 F.pdf",
+      "dpi": 200,
+      "repeat": 2,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 188.1386999739334,
+      "ocr_ms": 478.08409994468093,
+      "total_ms": 666.2227999186143,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 300,
+      "repeat": 2,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 212.55609998479486,
+      "ocr_ms": 565.6829999061301,
+      "total_ms": 778.239099890925,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 150,
+      "repeat": 2,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 198.86020000558347,
+      "ocr_ms": 428.7650000769645,
+      "total_ms": 627.625200082548,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-03 BASEMENT 1 F.pdf",
+      "dpi": 200,
+      "repeat": 2,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 201.3093999121338,
+      "ocr_ms": 499.30080003105104,
+      "total_ms": 700.6101999431849,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 300,
+      "repeat": 2,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 304.2345999274403,
+      "ocr_ms": 581.545100081712,
+      "total_ms": 885.7797000091523,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 150,
+      "repeat": 2,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 280.3929999936372,
+      "ocr_ms": 409.0989000396803,
+      "total_ms": 689.4919000333175,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-04 GROUND FLOOR J.pdf",
+      "dpi": 200,
+      "repeat": 2,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 286.71109990682453,
+      "ocr_ms": 486.99370003305376,
+      "total_ms": 773.7047999398783,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 300,
+      "repeat": 2,
+      "size": [
+        1351,
+        2121
+      ],
+      "render_ms": 280.7907999958843,
+      "ocr_ms": 598.1879000319168,
+      "total_ms": 878.9787000278011,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 150,
+      "repeat": 2,
+      "size": [
+        695,
+        1091
+      ],
+      "render_ms": 261.6787999868393,
+      "ocr_ms": 421.92310001701117,
+      "total_ms": 683.6019000038505,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    },
+    {
+      "file": "1115 CC-05 LEVEL 01 H.pdf",
+      "dpi": 200,
+      "repeat": 2,
+      "size": [
+        914,
+        1433
+      ],
+      "render_ms": 267.7305999677628,
+      "ocr_ms": 530.6132000405341,
+      "total_ms": 798.343800008297,
+      "stderr": "",
+      "evidence_checks": {
+        "title_present": true,
+        "number_present": true,
+        "revision_label_and_value": true,
+        "current_revision_date_row": true
+      }
+    }
+  ],
+  "summary": {
+    "150": {
+      "render_ms": {
+        "p50": 198.9,
+        "p90": 286.0
+      },
+      "ocr_ms": {
+        "p50": 416.7,
+        "p90": 431.7
+      },
+      "total_ms": {
+        "p50": 625.3,
+        "p90": 723.0
+      },
+      "samples": 15,
+      "all_four_evidence_checks_pass": 15,
+      "repeat_text_stable": true
+    },
+    "200": {
+      "render_ms": {
+        "p50": 202.6,
+        "p90": 292.8
+      },
+      "ocr_ms": {
+        "p50": 494.1,
+        "p90": 515.8
+      },
+      "total_ms": {
+        "p50": 697.4,
+        "p90": 792.2
+      },
+      "samples": 15,
+      "all_four_evidence_checks_pass": 15,
+      "repeat_text_stable": true
+    },
+    "300": {
+      "render_ms": {
+        "p50": 234.7,
+        "p90": 307.1
+      },
+      "ocr_ms": {
+        "p50": 584.7,
+        "p90": 616.0
+      },
+      "total_ms": {
+        "p50": 824.1,
+        "p90": 920.0
+      },
+      "samples": 15,
+      "all_four_evidence_checks_pass": 15,
+      "repeat_text_stable": true
+    }
+  }
+}

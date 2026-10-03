@@ -1,14 +1,32 @@
 {
-  "question_version": "profile-1",
+  "question_version": "profile-3",
   "status": "provisional",
   "approved_by_owner": false,
-  "note": "Provisional floors before any calibration run. Green is withheld (null) until a question shape has at least 30 keyed answers. Applied only when approved_by_owner is true or serve runs with -profile-provisional.",
+  "note": "Provisional floors for profile-3. Questions now retain clause context and system boundaries. Source regression suites are not threshold calibration: green remains withheld until representative keyed evaluations and owner approval. Only -profile-provisional applies these floors before approval.",
   "label_min_noul": 0.5,
   "shapes": {
-    "presence": {"options": 3, "amber": 0.6, "green": null},
-    "provider": {"options": 4, "amber": 0.6, "green": null},
-    "assertion": {"options": 4, "amber": 0.6, "green": null},
-    "header": {"amber": 0.6, "green": null},
-    "determinant": {"amber": 0.6, "green": null}
+    "presence": {
+      "options": 4,
+      "amber": 0.6,
+      "green": null
+    },
+    "provider": {
+      "options": 4,
+      "amber": 0.6,
+      "green": null
+    },
+    "assertion": {
+      "options": 4,
+      "amber": 0.6,
+      "green": null
+    },
+    "header": {
+      "amber": 0.6,
+      "green": null
+    },
+    "determinant": {
+      "amber": 0.6,
+      "green": null
+    }
   }
 }

@@ -35,21 +35,25 @@ type FieldView struct {
 
 // DocumentView is one filing with its fields, for the project list.
 type DocumentView struct {
-	ID             string            `json:"id"`
-	ProjectID      string            `json:"project_id"`
-	Filename       string            `json:"filename"`
-	Status         string            `json:"status"`
-	Reason         string            `json:"reason,omitempty"`
-	Number         string            `json:"number,omitempty"`
-	Revision       string            `json:"revision,omitempty"`
-	SupersedesID   string            `json:"supersedes_id,omitempty"`
-	CreatedAt      time.Time         `json:"created_at"`
-	Fields         []FieldView       `json:"fields"`
-	SourceID       string            `json:"source_id,omitempty"`
-	SourceFilename string            `json:"source_filename,omitempty"`
-	SheetPage      int               `json:"sheet_page,omitempty"`
-	SheetTotal     int               `json:"sheet_total,omitempty"`
-	Expansion      *DrawingExpansion `json:"expansion,omitempty"`
+	ID                string            `json:"id"`
+	ProjectID         string            `json:"project_id"`
+	Filename          string            `json:"filename"`
+	Status            string            `json:"status"`
+	TextPages         int32             `json:"text_pages"`
+	TextEmptyPages    int32             `json:"text_empty_pages"`
+	TextSourceVersion string            `json:"text_source_version"`
+	TextStatus        string            `json:"text_status,omitempty"`
+	Reason            string            `json:"reason,omitempty"`
+	Number            string            `json:"number,omitempty"`
+	Revision          string            `json:"revision,omitempty"`
+	SupersedesID      string            `json:"supersedes_id,omitempty"`
+	CreatedAt         time.Time         `json:"created_at"`
+	Fields            []FieldView       `json:"fields"`
+	SourceID          string            `json:"source_id,omitempty"`
+	SourceFilename    string            `json:"source_filename,omitempty"`
+	SheetPage         int               `json:"sheet_page,omitempty"`
+	SheetTotal        int               `json:"sheet_total,omitempty"`
+	Expansion         *DrawingExpansion `json:"expansion,omitempty"`
 }
 
 // PendingIntake is a filing to resume after a restart.
@@ -96,10 +100,12 @@ func (s *Store) ProjectDocumentViews(ctx context.Context, orgID, projectID strin
 	out := make([]DocumentView, len(docs))
 	for i, row := range docs {
 		out[i] = DocumentView{
-			ID:           row.ID,
-			ProjectID:    projectID,
-			Filename:     row.Filename,
-			Status:       row.Status,
+			ID:         row.ID,
+			ProjectID:  projectID,
+			Filename:   row.Filename,
+			Status:     row.Status,
+			TextStatus: row.TextStatus,
+			TextPages:  row.TextPages, TextEmptyPages: row.TextEmptyPages, TextSourceVersion: row.TextSourceVersion,
 			Reason:       row.Reason,
 			Number:       row.DocumentNumber,
 			Revision:     row.Revision,
@@ -148,10 +154,12 @@ func (s *Store) DocumentView(ctx context.Context, orgID, documentID string) (Doc
 		return DocumentView{}, err
 	}
 	out := DocumentView{
-		ID:           row.ID,
-		ProjectID:    row.ProjectID,
-		Filename:     row.Filename,
-		Status:       row.Status,
+		ID:         row.ID,
+		ProjectID:  row.ProjectID,
+		Filename:   row.Filename,
+		Status:     row.Status,
+		TextStatus: row.TextStatus,
+		TextPages:  row.TextPages, TextEmptyPages: row.TextEmptyPages, TextSourceVersion: row.TextSourceVersion,
 		Reason:       row.Reason,
 		Number:       row.DocumentNumber,
 		Revision:     row.Revision,

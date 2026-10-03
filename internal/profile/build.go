@@ -28,7 +28,7 @@ func IsProfileQuestion(id string) bool {
 
 // Readings turns one call's profile answers into readings. A pre-parsed pick
 // stores the candidate's normalised value with its verbatim context as the
-// excerpt; silence (none, not_stated) is not stored. Code copies text; Jev
+// excerpt; candidate silence and not_stated are not stored. Code copies text; Jev
 // never writes it (https://docs.typesafe.ai/model-jaggedness/jev-1.13).
 func Readings(result jev.Result, questions map[string]jev.Question, cands map[string][]Candidate, passage string) []Reading {
 	excerpt := cut(strings.Join(strings.Fields(passage), " "), maxNote)
@@ -38,10 +38,23 @@ func Readings(result jev.Result, questions map[string]jev.Question, cands map[st
 			continue
 		}
 		a, ok := result.Answers[id]
-		if !ok || a.Type != jev.TypeChoice || a.Choice == "" || a.Choice == "none" || a.Choice == "not_stated" {
+		if !ok || a.Type != jev.TypeChoice || a.Choice == "" || a.Choice == "not_stated" {
 			continue
 		}
+		// "none" is an extraction sentinel only for candidate questions. It is
+		// also a real enumerated value, for example no fuel gas supply.
+		if _, candidateQuestion := cands[id]; candidateQuestion && a.Choice == "none" {
+			continue
+		}
+		if criteria, ok := questions[id].Criteria.(map[string]string); ok {
+			if _, offered := criteria[a.Choice]; !offered {
+				continue
+			}
+		}
 		r := Reading{QuestionID: id, Value: a.Choice, Excerpt: excerpt, Confidence: a.Confidence}
+		if strings.HasSuffix(id, ".presence") && r.Value == "included_by_others" {
+			r.Value = "included"
+		}
 		if list, ok := cands[id]; ok {
 			c, found := pick(list, a.Choice)
 			if !found {

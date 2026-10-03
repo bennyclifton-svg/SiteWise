@@ -1,6 +1,6 @@
 {
-  "question_version": "intake-75",
-  "reconciliation": "Intake-71: parser fixes, explicit discipline abstention, and bounded response-rounding compatibility. Kind and discipline retain provisional amber-only review cutoffs; no automatic green cutoff is enabled. The 98-source diagnostic and exact-response replay are development evidence, not an independent release holdout. Metadata and lifecycle Jev bands remain uncalibrated; no experimental fitted cutoff is promoted.",
+  "question_version": "intake-76",
+  "reconciliation": "Intake-76: distinguish issuing discipline from title-block project contacts, using filename descriptions when PDF text is incomplete. Kind and discipline retain provisional amber-only review cutoffs; no automatic green cutoff is enabled. The Bankstown repair is development evidence, not an independent release holdout or recalibration. Metadata and lifecycle Jev bands remain uncalibrated; no experimental fitted cutoff is promoted.",
   "fit": {
     "seed": "sitewise-corpus-1",
     "calibration_answers": 179,

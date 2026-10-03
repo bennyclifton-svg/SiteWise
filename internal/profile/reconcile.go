@@ -174,11 +174,17 @@ func Reconcile(in Input, cat *knowledge.Catalog) []Row {
 }
 
 // normalise maps a question id and answer to a row key and value. Silence
-// ("none", "not_stated") is not evidence. A per-option class question
+// ("not_stated" or a candidate sentinel) is not evidence; enumerated "none" is.
+// A per-option class question
 // (det.ncc_class.7b answered stated_true) becomes the value 7b of det.ncc_class.
 func normalise(qid, value string, cat *knowledge.Catalog) (string, string, bool) {
-	if value == "" || value == "none" || value == "not_stated" {
+	if value == "" || value == "not_stated" {
 		return "", "", false
+	}
+	if value == "none" {
+		if !enumeratedNone(qid, cat) {
+			return "", "", false
+		}
 	}
 	switch {
 	case strings.HasPrefix(qid, "sys."):
@@ -204,6 +210,31 @@ func normalise(qid, value string, cat *knowledge.Catalog) (string, string, bool)
 		return "det." + cat.Resolve(rest), value, true
 	}
 	return qid, value, true
+}
+
+func enumeratedNone(qid string, cat *knowledge.Catalog) bool {
+	var d knowledge.Determinant
+	if strings.HasPrefix(qid, "det.") {
+		d, _ = cat.Determinant(strings.TrimPrefix(qid, "det."))
+	}
+	if strings.HasPrefix(qid, "fact.") {
+		d, _ = cat.ProjectFact(strings.TrimPrefix(qid, "fact."))
+	}
+	for _, o := range d.Options {
+		if o.ID == "none" {
+			return true
+		}
+	}
+	for _, c := range cat.Taxonomy().Conditions {
+		if qid == "hdr.cond."+c.Key {
+			for _, o := range c.Options {
+				if o.ID == "none" {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func shapeOf(key string) string {

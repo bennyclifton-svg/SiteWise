@@ -87,6 +87,17 @@ WITH picked AS MATERIALIZED (
     WHERE c.org_id = $3::uuid
       AND c.kind = ANY($4::text[])
       AND c.kind <> 'intake'
+      -- A profile update can be requested before extraction finishes.
+      AND (c.kind <> 'label' OR NOT EXISTS (
+          SELECT 1 FROM jobs preparation
+          WHERE preparation.org_id = c.org_id AND preparation.document_id = c.document_id
+            AND preparation.kind = 'full_text' AND preparation.status <> 'done'
+      ))
+      AND (c.kind <> 'evidence' OR NOT EXISTS (
+          SELECT 1 FROM jobs preparation
+          WHERE preparation.org_id = c.org_id AND preparation.document_id = c.document_id
+            AND preparation.kind IN ('full_text', 'label') AND preparation.status <> 'done'
+      ))
       AND c.attempts < c.max_attempts
       AND c.run_after <= now()
       AND c.created_at >= $5::timestamptz

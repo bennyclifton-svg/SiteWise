@@ -16,6 +16,7 @@ import {
 import { type RowModel } from "./DocumentRow";
 import { Profile } from "./Profile";
 import { Register } from "./Register";
+import { ocrStage } from "./OCRStatus";
 
 const STALE_MS = 8000;
 const UPLOAD_CONCURRENCY = 4;
@@ -268,8 +269,13 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
             }).catch(() => setAnnouncement("Could not refresh drawing sheets. Reload this project."));
             return;
           }
-          if (ev.kind === "profile") {
+          if (ev.kind === "profile" || ev.kind === "job") {
             setProfileTick((t) => t + 1);
+            if (ev.kind === "job") {
+              api.documents(projectId).then((list) => {
+                if (!stopped) dispatch({ type: "loaded", list });
+              }).catch(() => setAnnouncement("Could not refresh document preparation status. Reload this project."));
+            }
             return;
           }
           dispatch({ type: "event", ev, at: performance.now() });
@@ -298,6 +304,24 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   }, [state.landed]);
 
   const anyPending = Object.values(state.docs).some((d) => d.status === "pending");
+
+  // Recovery leaves documents filed. Poll its small document endpoint while
+  // active so a missed completion event cannot strand a progress indicator.
+  const recovering = Object.values(state.docs).filter(d => d.status === "filed" && ocrStage(d)).map(d => d.id).sort().join(",");
+  useEffect(() => {
+    if (!recovering) return;
+    let live = true;
+    let timer: ReturnType<typeof setTimeout>;
+    const refresh = async () => {
+      await Promise.all(recovering.split(",").map(async id => {
+        try { const doc = await api.document(id); if (live) dispatch({ type: "doc", doc }); }
+        catch (e) { if (live && e instanceof ApiError && e.status === 401) onSignedOut(); }
+      }));
+      if (live) timer = setTimeout(refresh, 2000);
+    };
+    timer = setTimeout(refresh, 2000);
+    return () => { live = false; clearTimeout(timer); };
+  }, [recovering, onSignedOut]);
   useEffect(() => {
     if (!anyPending) return;
     const t = setInterval(() => setNow(Date.now()), 2000);
@@ -376,13 +400,14 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   );
 
   const retry = useCallback(
-    (docId: string) => {
+    (docId: string, missingOnly = false) => {
       dispatch({ type: "retrying", id: docId });
-      api.retry(docId).then(
-        (doc) => dispatch({ type: "doc", doc }),
+      return api.retry(docId, missingOnly).then(
+        (doc) => { dispatch({ type: "doc", doc }); return true; },
         (e: unknown) => {
           if (e instanceof ApiError && e.status === 401) onSignedOut();
           setAnnouncement("Retry didn't start. Check your connection and try again.");
+          return false;
         },
       );
     },

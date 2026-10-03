@@ -37,6 +37,9 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & go test ./...
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+& "$PSScriptRoot/check-ocr.ps1"
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 & npm --prefix web run test:e2e
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
@@ -44,6 +47,12 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 # corpus. A missing corpus, recording, sample floor, baseline or a regression
 # fails here. Record with -live (SITEWISE_JEV_API_KEY) before the first run.
 & go run ./cmd/intake-eval -manifest data/eval/intake/manifest.json -replay
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# Profile regression gate uses private source excerpts and recorded Jev answers.
+& go run ./cmd/profile-eval
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& go run ./cmd/profile-eval -cases data/eval/profile/private/hale-cases.json -recording data/eval/profile/private/hale-recording.json
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 # Latency: every budgeted path through the real server, gated by

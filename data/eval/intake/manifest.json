@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "question_version": "intake-75",
+  "question_version": "intake-76",
   "model": "jev-1.13.0",
   "privacy": "This repository is public. Corpus files, answer-key labels and recorded Jev requests contain private project text, so they stay outside Git: keys are read from the frozen clerk checkout and pinned here by hash, the corpus is read in place, and recordings and per-case results go to private_dir, which is ignored. Only hashes, counts and aggregate metrics are committed.",
   "corpus_root": "../Test Data",

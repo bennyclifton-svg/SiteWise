@@ -20,11 +20,19 @@ const wholePartLabel = "Whole project"
 // ProfileView is what the profile page reads: parts, precomputed rows and
 // how fresh they are.
 type ProfileView struct {
+	Coverage          []SourceCoverage
 	Parts             []profile.Part
 	Rows              []profile.Row
 	BuiltAt           *time.Time
 	ThresholdsVersion string
 	PendingDocuments  int
+	// ActiveDocuments counts live leases, never merely queued or expired work.
+	ActiveDocuments int
+	// UnreadDocuments have their text split but have not been asked for
+	// reading; the user's "Update project profile" queues them.
+	UnreadDocuments int
+	FailedDocuments int
+	PaymentRequired bool
 }
 
 // ProfileSnapshot is the input one rebuild reconciles, read under the
@@ -324,13 +332,26 @@ SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)
        COALESCE((SELECT thresholds_version FROM profile_builds WHERE org_id = $1::uuid AND project_id = $2::uuid), ''),
        (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id = j.org_id AND d.id = j.document_id
         WHERE j.org_id = $1::uuid AND d.project_id = $2::uuid AND j.status IN ('queued', 'leased')
-          AND j.kind IN ('full_text', 'label', 'evidence'))`,
-		orgID, projectID).Scan(&exists, &v.BuiltAt, &v.ThresholdsVersion, &v.PendingDocuments)
+          AND j.kind IN ('full_text', 'label', 'evidence')),
+       (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
+        WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='leased' AND j.locked_until > now()
+          AND j.kind IN ('full_text','label','evidence')),
+       (SELECT count(*) FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid
+          AND EXISTS (SELECT 1 FROM jobs f WHERE f.org_id = d.org_id AND f.document_id = d.id AND f.kind = 'full_text' AND f.status = 'done')
+          AND NOT EXISTS (SELECT 1 FROM jobs l WHERE l.org_id = d.org_id AND l.document_id = d.id AND l.kind = 'label')),
+       (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
+        WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='failed' AND j.kind IN ('full_text','label','evidence')),
+       EXISTS (SELECT 1 FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
+        WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='failed' AND j.kind IN ('label','evidence') AND j.last_error LIKE '%status 402%')`,
+		orgID, projectID).Scan(&exists, &v.BuiltAt, &v.ThresholdsVersion, &v.PendingDocuments, &v.ActiveDocuments, &v.UnreadDocuments, &v.FailedDocuments, &v.PaymentRequired)
 	if err != nil {
 		return v, err
 	}
 	if !exists {
 		return v, ErrNotFound
+	}
+	if v.Coverage, err = s.SourceCoverage(ctx, orgID, projectID); err != nil {
+		return v, err
 	}
 	if v.Parts, err = readParts(ctx, s.pool, orgID, projectID); err != nil {
 		return v, err
@@ -388,4 +409,52 @@ func hasAnyPrefix(s string, prefixes []string) bool {
 		}
 	}
 	return false
+}
+
+// RequestProfileRead remembers the request even while text is being prepared.
+// The job claimer waits for extraction to finish before starting labels. Filing never
+// queues reading itself: the user asks for it, so a profile update is a
+// deliberate act and an upload costs no Jev calls beyond filing. Reading jobs
+// already queued are restamped so a worker started with -background-backlog
+// =false, which claims only jobs created after it started, picks them up.
+func (s *Store) RequestProfileRead(ctx context.Context, orgID, projectID string) (int64, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback(ctx)
+	// Upgrade old extractions only on an explicit update. Never race a live reader.
+	if _, err := tx.Exec(ctx, `WITH stale AS MATERIALIZED (
+ SELECT d.id FROM documents d LEFT JOIN document_sources ds ON ds.org_id=d.org_id AND ds.document_id=d.id
+ WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND COALESCE(ds.version,'')<>$3
+ AND EXISTS(SELECT 1 FROM passages p WHERE p.org_id=d.org_id AND p.document_id=d.id)
+ AND NOT EXISTS(SELECT 1 FROM jobs j WHERE j.org_id=d.org_id AND j.document_id=d.id AND j.status IN ('queued','leased'))
+ ) UPDATE jobs j SET status='queued',attempts=0,last_error='',run_after=now(),created_at=now()
+ WHERE j.org_id=$1::uuid AND j.document_id IN (SELECT id FROM stale) AND j.kind IN ('full_text','label','evidence')`, orgID, projectID, SourceVersion); err != nil {
+		return 0, err
+	}
+	// An explicit click retries failed work; completed readings are retained.
+	if _, err := tx.Exec(ctx, `UPDATE jobs j SET status='queued', attempts=0, last_error='', run_after=now(), created_at=now()
+FROM documents d WHERE j.org_id=$1::uuid AND d.org_id=j.org_id AND d.id=j.document_id AND d.project_id=$2::uuid
+ AND j.status='failed' AND j.kind IN ('full_text','label','evidence')`, orgID, projectID); err != nil {
+		return 0, err
+	}
+	if _, err := tx.Exec(ctx, `
+UPDATE jobs j SET created_at = now()
+FROM documents d
+WHERE j.org_id = $1::uuid AND d.org_id = j.org_id AND d.id = j.document_id AND d.project_id = $2::uuid
+  AND j.status = 'queued' AND j.kind IN ('full_text', 'label', 'evidence')`, orgID, projectID); err != nil {
+		return 0, err
+	}
+	tag, err := tx.Exec(ctx, `
+INSERT INTO jobs (org_id, id, document_id, kind, status, priority)
+SELECT d.org_id, gen_random_uuid(), d.id, 'label', 'queued', 0
+FROM documents d
+WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid
+  AND EXISTS (SELECT 1 FROM jobs f WHERE f.org_id = d.org_id AND f.document_id = d.id AND f.kind = 'full_text' AND f.status IN ('queued', 'leased', 'done'))
+ON CONFLICT (org_id, document_id, kind) DO NOTHING`, orgID, projectID)
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), tx.Commit(ctx)
 }

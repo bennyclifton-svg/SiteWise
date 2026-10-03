@@ -13,7 +13,11 @@ SELECT
     COALESCE(d.document_number, '') AS document_number,
     COALESCE(d.revision, '') AS revision,
     COALESCE(s.prior_document_id::text, '')::text AS supersedes_id,
-    d.created_at
+    d.created_at,
+    COALESCE((SELECT j.status FROM jobs j WHERE j.org_id = d.org_id AND j.document_id = d.id AND j.kind = 'full_text'), '')::text AS text_status,
+    COALESCE((SELECT ds.pages FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_pages,
+    COALESCE((SELECT cardinality(ds.empty_pages) FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_empty_pages,
+    COALESCE((SELECT ds.version FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),'')::text AS text_source_version
 FROM documents d
 LEFT JOIN supersessions s
     ON s.org_id = d.org_id
@@ -32,7 +36,11 @@ SELECT
     COALESCE(d.document_number, '') AS document_number,
     COALESCE(d.revision, '') AS revision,
     COALESCE(s.prior_document_id::text, '')::text AS supersedes_id,
-    d.created_at
+    d.created_at,
+    COALESCE((SELECT j.status FROM jobs j WHERE j.org_id = d.org_id AND j.document_id = d.id AND j.kind = 'full_text'), '')::text AS text_status,
+    COALESCE((SELECT ds.pages FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_pages,
+    COALESCE((SELECT cardinality(ds.empty_pages) FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_empty_pages,
+    COALESCE((SELECT ds.version FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),'')::text AS text_source_version
 FROM documents d
 LEFT JOIN supersessions s
     ON s.org_id = d.org_id

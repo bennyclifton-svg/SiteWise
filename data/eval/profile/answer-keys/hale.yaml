@@ -23,13 +23,11 @@ header:
     accept:
     - '2135'
     evidence: 3.02 area schedule total building area 2,135 m2 (GLA)
-    blank_ok: true
   hdr.cond.operational_constraints:
     accept:
     - live_environment
     - partial_occupation
     evidence: 3.01 must not affect operation of the existing tenancies
-    blank_ok: true
 facts: {}
 determinants:
   det.water_supply_source:
@@ -52,7 +50,7 @@ determinants:
     accept:
     - stated_true
     evidence: 9.01 ESFR sprinklers to AS2118.1
-    blank_ok: true
+    assertion: required
 systems:
   fire-active.sprinklers:
     presence: included
@@ -76,11 +74,11 @@ systems:
     presence: not_included
     evidence: '10.03 Natural Gas: Not applicable'
   hydraulic.non-potable-water:
-    presence: not_included
-    evidence: '10.01 Rainwater Re-use System: Not applicable'
+    presence: conflict
+    evidence: '6.04 connects irrigation to rainwater harvesting; 10.01 says rainwater reuse is not applicable. Retain both scopes for review.'
   site.loading-docks:
-    presence: not_included
-    evidence: '4 Recessed Docks: Not applicable'
+    presence: included
+    evidence: '3.06 requires an on-grade loading bay; 4.07 excludes recessed docks only. Retain the scoped exclusion in source records.'
   envelope.vehicle-doors:
     presence: included
     evidence: 4 roller shutter doors

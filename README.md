@@ -18,6 +18,7 @@ http://127.0.0.1:8080/dev/login (it signs you in). Press Ctrl+C to stop.
 - Design: [docs/design/2026-09-29-foundation-design.md](docs/design/2026-09-29-foundation-design.md)
 - Knowledge model: [knowledge/SCHEMA.md](knowledge/SCHEMA.md)
 - Agent rules: [AGENTS.md](AGENTS.md)
+- How to start a feature: [docs/developing.md](docs/developing.md)
 
 Check the knowledge files: `python tools/check_knowledge.py`
 

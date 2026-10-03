@@ -45,7 +45,7 @@ func TestBackgroundFanOutIsOneCallPerState(t *testing.T) {
 		case jev.TypeChoice:
 			choices++
 			// Profile questions read the same passage and join this call.
-			if !strings.HasPrefix(id, "leaf.") && !strings.HasPrefix(id, "hdr.") &&
+			if !strings.HasPrefix(id, "source.") && !strings.HasPrefix(id, "hdr.") &&
 				!strings.HasPrefix(id, "det.") && !strings.HasPrefix(id, "fact.") {
 				t.Fatalf("choice id %s", id)
 			}
@@ -136,6 +136,13 @@ func TestStagesLeaseAndPriority(t *testing.T) {
 		t.Fatalf("cross-org hits %+v", hits)
 	}
 
+	// Splitting text queues no reading; the user's profile update does.
+	if err := worker.Once(ctx, org); !errors.Is(err, store.ErrIdle) {
+		t.Fatalf("reading ran unasked: %v", err)
+	}
+	if _, err := st.RequestProfileRead(ctx, org, project); err != nil {
+		t.Fatal(err)
+	}
 	if err := worker.Once(ctx, org); err != nil {
 		t.Fatal(err)
 	}
@@ -339,7 +346,7 @@ func (f *fakeAsk) Ask(_ context.Context, call jev.Call) (jev.Result, error) {
 	answers := map[string]jev.Answer{}
 	if _, ok := call.Questions["system.fire-active"]; ok {
 		answers["system.fire-active"] = jev.Answer{Type: jev.TypeNoul, Noul: 0.99}
-		answers["leaf.fire-active"] = jev.Answer{Type: jev.TypeChoice, Choice: "fire-active.sprinklers"}
+		answers["system.fire-active.sprinklers"] = jev.Answer{Type: jev.TypeNoul, Noul: 0.99}
 	}
 	for id, q := range call.Questions {
 		if q.Type == jev.TypeNoul && !strings.HasPrefix(id, "system.") {

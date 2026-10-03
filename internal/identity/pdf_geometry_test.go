@@ -22,7 +22,7 @@ func TestLargeBadgeDoesNotMergeWithSmallerHeading(t *testing.T) {
 	for i := 7; i < len(chars); i++ {
 		boxes[i] = charBox{left: 125 + float64(i-7)*7, right: 131 + float64(i-7)*7, bottom: 32, top: 45}
 	}
-	got := pdfLines(chars, boxes)
+	got := pdfLines(chars, boxes, nil)
 	if len(got) != 2 {
 		t.Fatalf("badge and heading merged: %+v", got)
 	}

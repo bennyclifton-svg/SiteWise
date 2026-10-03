@@ -76,15 +76,22 @@ type partJSON struct {
 }
 
 type profileJSON struct {
-	ProjectID        string                `json:"project_id"`
-	BuiltAt          *time.Time            `json:"built_at"`
-	PendingDocuments int                   `json:"pending_documents"`
-	Thresholds       map[string]any        `json:"thresholds"`
-	Parts            []partJSON            `json:"parts"`
-	Header           []fieldJSON           `json:"header"`
-	Facts            []fieldJSON           `json:"facts"`
-	Systems          []systemGroupJSON     `json:"systems"`
-	Compliance       []complianceGroupJSON `json:"compliance"`
+	Coverage         []store.SourceCoverage `json:"coverage"`
+	ProjectID        string                 `json:"project_id"`
+	BuiltAt          *time.Time             `json:"built_at"`
+	PendingDocuments int                    `json:"pending_documents"`
+	ActiveDocuments  int                    `json:"active_documents"`
+	UnreadDocuments  int                    `json:"unread_documents"`
+	FailedDocuments  int                    `json:"failed_documents"`
+	PaymentRequired  bool                   `json:"payment_required"`
+	// Queued answers a profile read request: documents it sent to Jev.
+	Queued     *int64                `json:"queued,omitempty"`
+	Thresholds map[string]any        `json:"thresholds"`
+	Parts      []partJSON            `json:"parts"`
+	Header     []fieldJSON           `json:"header"`
+	Facts      []fieldJSON           `json:"facts"`
+	Systems    []systemGroupJSON     `json:"systems"`
+	Compliance []complianceGroupJSON `json:"compliance"`
 }
 
 func getProfile(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -95,7 +102,38 @@ func getProfile(w http.ResponseWriter, r *http.Request, deps Deps) {
 	writeProfile(w, r, deps, session.OrgID, r.PathValue("id"))
 }
 
+// requestProfileRead is the "Update project profile" button: it queues Jev
+// reading for the project's unread documents and returns the profile, which
+// then fills in as each document's profile event arrives.
+func requestProfileRead(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	projectID := r.PathValue("id")
+	if !uuidPattern.MatchString(projectID) || deps.Knowledge == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	// The read below 404s an unknown or foreign project; the queue is
+	// org-scoped, so a foreign id queues nothing first.
+	queued, err := deps.Store.RequestProfileRead(r.Context(), session.OrgID, projectID)
+	if err != nil {
+		http.Error(w, "request failed", http.StatusInternalServerError)
+		return
+	}
+	writeProfileQueued(w, r, deps, session.OrgID, projectID, &queued)
+}
+
 func writeProfile(w http.ResponseWriter, r *http.Request, deps Deps, orgID, projectID string) {
+	writeProfileQueued(w, r, deps, orgID, projectID, nil)
+}
+
+func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID, projectID string, queued *int64) {
 	if !uuidPattern.MatchString(projectID) || deps.Knowledge == nil {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -116,13 +154,16 @@ func writeProfile(w http.ResponseWriter, r *http.Request, deps Deps, orgID, proj
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, http.StatusOK, profileBody(projectID, view, deps))
+	body := profileBody(projectID, view, deps)
+	body.Queued = queued
+	writeJSON(w, http.StatusOK, body)
 }
 
 func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSON {
 	cat := deps.Knowledge
 	whole := ""
-	out := profileJSON{ProjectID: projectID, BuiltAt: view.BuiltAt, PendingDocuments: view.PendingDocuments,
+	out := profileJSON{Coverage: view.Coverage, ProjectID: projectID, BuiltAt: view.BuiltAt, PendingDocuments: view.PendingDocuments, UnreadDocuments: view.UnreadDocuments,
+		ActiveDocuments: view.ActiveDocuments, FailedDocuments: view.FailedDocuments, PaymentRequired: view.PaymentRequired,
 		Thresholds: map[string]any{"version": deps.ProfileThresholds.Version, "provisional": !deps.ProfileThresholds.Approved,
 			"applied": len(deps.ProfileThresholds.Amber) > 0}}
 	for _, p := range view.Parts {
@@ -174,16 +215,30 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 	}
 	out.Header = append(out.Header, field("hdr.building_class", "Building class", "choice", classes),
 		field("hdr.subclass", "Building type", "choice", subclasses), field("hdr.work_type", "Work type", "choice", works))
+	var scaleFields []knowledge.ScaleField
+	seenScale := map[string]bool{}
 	if sub, ok := tax.Subclass(subclass); ok {
 		for _, f := range sub.ScaleFields {
-			kind := "number"
-			if f.Type == "text" {
-				kind = "text"
-			}
-			sf := field("hdr.scale."+f.Key, f.Label, kind, nil)
-			sf.Unit = f.Unit
-			out.Header = append(out.Header, sf)
+			scaleFields = append(scaleFields, f)
+			seenScale[f.Key] = true
 		}
+	}
+	// A type's default fields must not hide evidence in another measurement
+	// basis (for example a warehouse brief states GLA, while defaults ask GFA).
+	for _, f := range cat.ScaleFields() {
+		c := cell(whole, "hdr.scale."+f.Key)
+		if !seenScale[f.Key] && (c.Value != "" || len(c.Sources) > 0) {
+			scaleFields = append(scaleFields, f)
+		}
+	}
+	for _, f := range scaleFields {
+		kind := "number"
+		if f.Type == "text" {
+			kind = "text"
+		}
+		sf := field("hdr.scale."+f.Key, f.Label, kind, nil)
+		sf.Unit = f.Unit
+		out.Header = append(out.Header, sf)
 	}
 	for _, c := range tax.Conditions {
 		if len(c.AppliesTo) > 0 && !contains(c.AppliesTo, class) {

@@ -15,6 +15,7 @@ import (
 	"sitewise/bench"
 	"sitewise/internal/events"
 	"sitewise/internal/files"
+	"sitewise/internal/identity"
 	"sitewise/internal/intake"
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
@@ -33,6 +34,7 @@ const (
 
 // Options is the process wiring for one server.
 type Options struct {
+	OCR            func(context.Context, string) (identity.Text, error)
 	Store          *store.Store
 	Blobs          *files.Store
 	Jev            intake.Asker
@@ -102,6 +104,7 @@ func New(opts Options) (*Server, error) {
 	}
 	broker := events.NewBroker(opts.Store)
 	runner := intake.NewRunner(opts.Blobs, opts.Store, svc)
+	runner.OCR = opts.OCR
 	f := &filer{
 		observe: speed.Observe,
 		run:     runner.Run,
@@ -115,6 +118,12 @@ func New(opts Options) (*Server, error) {
 		timeout:    opts.FilingTimeout,
 		slots:      make(chan struct{}, defaultFilingSlots),
 		inflight:   map[string]struct{}{},
+	}
+	if opts.OCR != nil {
+		f.isOCR = func(ctx context.Context, orgID, documentID string) bool {
+			doc, err := opts.Store.GetDocument(ctx, orgID, documentID)
+			return err == nil && strings.HasPrefix(doc.Reason, "ocr_")
+		}
 	}
 	closing := make(chan struct{})
 	api := Handler(Deps{
@@ -143,6 +152,8 @@ func New(opts Options) (*Server, error) {
 	app := spa(opts.Static)
 	if opts.DevLogin {
 		mux.Handle("GET /dev/login", noStore(devLogin(opts.Store, opts.SecureCookie, opts.Log)))
+		// tools/dev.ps1 starts serve in the repo root, so "." is the source tree.
+		mux.Handle("GET /dev/build", noStore(devBuild(".", time.Now())))
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
@@ -197,6 +208,7 @@ func (s *Server) Wait(ctx context.Context) error {
 // filer runs foreground filings outside the upload request, so a closed tab
 // does not abort a filing whose bytes are already stored.
 type filer struct {
+	isOCR func(context.Context, string, string) bool
 	// observe records whole_intake for filings started by an upload or retry.
 	observe         func(string, time.Duration)
 	run             func(ctx context.Context, orgID, documentID string) error
@@ -258,7 +270,12 @@ func (f *filer) start(orgID, documentID string, timed bool) {
 			f.startExpansion(orgID, documentID)
 		}
 		if timed && f.observe != nil {
-			f.observe(pathWholeIntake, time.Since(began))
+			elapsed := time.Since(began)
+			// A queue handoff is not a completed filing. OCR has its own gate;
+			// do not make whole_intake look faster by counting queued scans.
+			if f.isOCR == nil || !f.isOCR(context.Background(), orgID, documentID) {
+				f.observe(pathWholeIntake, elapsed)
+			}
 		}
 	}()
 }

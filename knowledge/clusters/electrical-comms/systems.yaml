@@ -160,13 +160,15 @@ systems:
     parent: electrical
     label: Electric vehicle charging
     describes: >-
-      Electric vehicle chargers and EV-ready provisions: dedicated EV
+      Road-going electric vehicle chargers and EV-ready provisions: dedicated EV
       circuits or distribution boards, conduit and cable routes to parking
       spaces, spare switchboard capacity for future chargers, charging
       demand and load management, and allocation of chargers to users.
     excludes: >-
       Car-park ventilation (mechanical), car-park sprinklers (fire-active),
-      and parking layout (site or access-egress).
+      and parking layout (site or access-egress). Forklift, materials handling equipment (MHE)
+      and industrial battery charging outlets are general power, not road-vehicle EV charging.
+      Ordinary power outlets or spare capacity without an explicit EV purpose do not establish EV charging.
     status: draft
     sources:
       - {seed: electrical-services-guide.md, anchor: "## Generation, storage and EV infrastructure"}

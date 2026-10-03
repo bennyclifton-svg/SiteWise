@@ -52,6 +52,10 @@ func NewService(db *store.Store, ask Asker, cat Catalog, thresholds Thresholds) 
 // File harvests identity, asks Jev once when a field is still open, and commits
 // the decisions. A timeout keeps rule values and marks the unanswered fields grey.
 func (s *Service) File(ctx context.Context, orgID, documentID string, text identity.Text) (Filed, error) {
+	return s.file(ctx, orgID, documentID, text, false)
+}
+
+func (s *Service) file(ctx context.Context, orgID, documentID string, text identity.Text, missingOnly bool) (Filed, error) {
 	doc, err := s.store.GetDocument(ctx, orgID, documentID)
 	if err != nil {
 		return Filed{}, err
@@ -59,7 +63,10 @@ func (s *Service) File(ctx context.Context, orgID, documentID string, text ident
 	if doc.Status == store.StatusNotFiled {
 		return Filed{}, errors.New("document is not filed")
 	}
-	if doc.Status != store.StatusPending {
+	if missingOnly && (doc.Status != store.StatusFiled || !store.OCRDetailsActive(doc.Reason)) {
+		return Filed{}, store.ErrNotFound
+	}
+	if doc.Status != store.StatusPending && !missingOnly {
 		return s.load(ctx, orgID, documentID)
 	}
 
@@ -71,7 +78,7 @@ func (s *Service) File(ctx context.Context, orgID, documentID string, text ident
 	users := map[string]Decision{}
 	for _, row := range existing {
 		versions[row.Field] = row.Version
-		if row.DecidedBy == DecidedByUser {
+		if row.DecidedBy == DecidedByUser || (missingOnly && row.Value != "") {
 			users[row.Field] = decisionFromStored(row)
 		}
 	}
@@ -88,10 +95,16 @@ func (s *Service) File(ctx context.Context, orgID, documentID string, text ident
 		return Filed{}, err
 	}
 	draft.Plan(docs, documentID)
+	if text.OCR {
+		draft.Plan(nil, documentID)
+	}
 
 	grey := false
 	if call, ok := draft.Call(); ok {
 		start = time.Now()
+		if text.OCR {
+			call.Priority = jev.PriorityBackground
+		}
 		result, err := s.jev.Ask(ctx, call)
 		s.observe(PathJev, time.Since(start))
 		if err != nil && ctx.Err() != nil {
@@ -106,9 +119,31 @@ func (s *Service) File(ctx context.Context, orgID, documentID string, text ident
 	}
 	priorID := draft.Link(links, documentID)
 	draft.fillBlanks()
+	writes := decisionWrites(draft.by, versions)
+	if text.OCR {
+		priorID, grey = "", false // OCR cannot establish supersession or a later green retry.
+		filtered := writes[:0]
+		for _, d := range writes {
+			if d.Field == FieldSupersedes {
+				continue
+			}
+			if d.Band == BandGreen {
+				d.Band = BandAmber
+			}
+			d.QuestionVersion = "ocr-tesseract-v1+" + QuestionVersion
+			filtered = append(filtered, d)
+		}
+		writes = filtered
+	}
 	start = time.Now()
+	if missingOnly {
+		out, err := s.store.CommitMissingDetails(ctx, orgID, documentID, writes)
+		s.observe(PathCommit, time.Since(start))
+		return filedFrom(out), err
+	}
 	out, err := s.store.CommitFiling(ctx, orgID, documentID, store.CommitFiling{
-		Decisions: decisionWrites(draft.by, versions),
+		OCR:       text.OCR,
+		Decisions: writes,
 		PDFPages:  text.PageCount,
 		PriorID:   priorID,
 		RetryJev:  grey,

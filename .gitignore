@@ -15,3 +15,8 @@ bench/samples.json
 .env
 .env.*
 dist/
+tmp/
+web/.*-playwright.config.ts
+
+# Profile source cases and Jev responses contain private PPR text.
+data/eval/profile/private/

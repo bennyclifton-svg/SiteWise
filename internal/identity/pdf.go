@@ -246,7 +246,9 @@ func pdfPageTextRuns(ctx context.Context, inst pdfium.Pdfium, doc references.FPD
 			}
 		}
 	}
-	lines := pdfLines(chars, boxes)
+	lines := pdfLines(chars, boxes, func(index int) int {
+		return charRotation(inst, loaded.TextPage, index, boxes != nil)
+	})
 	// Drawing publishers often put the title block last in the content stream.
 	// Keep both ends of the identity page under the same budget; retaining only
 	// the prefix loses identity behind hundreds of dimensions and annotations.
@@ -330,10 +332,11 @@ type pdfLine struct {
 // pdfLines splits PDFium page text into lines at its line breaks, then splits
 // a line again wherever two visible glyphs are a cell gap apart. boxes may be
 // nil, which keeps PDFium's lines whole.
-func pdfLines(chars []rune, boxes []charBox) []pdfLine {
+func pdfLines(chars []rune, boxes []charBox, rotation func(int) int) []pdfLine {
 	var out []pdfLine
 	var b strings.Builder
 	first, last := -1, -1
+	angle := -1
 	flush := func() {
 		if b.Len() > 0 {
 			line := pdfLine{text: b.String(), first: first}
@@ -345,19 +348,37 @@ func pdfLines(chars []rune, boxes []charBox) []pdfLine {
 		}
 		b.Reset()
 		first, last = -1, -1
+		angle = -1
 	}
-	for i, r := range chars {
+	for i := 0; i < len(chars); i++ {
+		r := chars[i]
 		if r == '\r' || r == '\n' || r == 0 {
 			// PDFium can insert a line break between adjacent text objects,
-			// even inside a sheet number. Join only physically touching glyphs
-			// on the same horizontal baseline; never join separate rows/cells.
+			// even inside a sheet number. Join only adjacent glyphs
+			// on the same baseline in reading coordinates, including rotated
+			// CAD titles; never join separate rows/cells.
 			if boxes != nil && last >= 0 {
 				next := i + 1
 				for next < len(chars) && (chars[next] == '\r' || chars[next] == '\n' || chars[next] == 0) {
 					next++
 				}
-				if next < len(chars) && touchingGlyphs(boxes[last], boxes[next]) {
-					continue
+				if next < len(chars) {
+					if angle < 0 {
+						angle = 0
+						if rotation != nil {
+							angle = rotation(first)
+						}
+					}
+					a, z := readingBox(boxes[last], angle), readingBox(boxes[next], angle)
+					if adjacentGlyphs(a, z, .5) && (rotation == nil || rotation(next) == angle) {
+						// A word-sized printed gap survives as a space even when
+						// PDFium represented it with a line break.
+						if !touchingGlyphs(a, z) && i > 0 && chars[i-1] != ' ' {
+							b.WriteByte(' ')
+						}
+						i = next - 1
+						continue
+					}
 				}
 			}
 			flush()
@@ -386,13 +407,34 @@ func pdfLines(chars []rune, boxes []charBox) []pdfLine {
 	return out
 }
 
+// Compare glyph adjacency along the text's baseline, not the page's x axis.
+// Keep the original boxes for source provenance and downstream title binding.
+func readingBox(b charBox, rotation int) charBox {
+	switch rotation {
+	case 0:
+		return b
+	case 90:
+		return charBox{left: -b.top, right: -b.bottom, bottom: b.left, top: b.right}
+	case 180:
+		return charBox{left: -b.right, right: -b.left, bottom: -b.top, top: -b.bottom}
+	case 270:
+		return charBox{left: b.bottom, right: b.top, bottom: -b.right, top: -b.left}
+	default:
+		return charBox{}
+	}
+}
+
 func touchingGlyphs(a, b charBox) bool {
+	return adjacentGlyphs(a, b, .15)
+}
+
+func adjacentGlyphs(a, b charBox, maxGap float64) bool {
 	if !a.visible() || !b.visible() {
 		return false
 	}
 	h := math.Max(a.top-a.bottom, b.top-b.bottom)
 	gap := b.left - a.right
-	return h > 0 && math.Abs(a.bottom-b.bottom) < h*.2 && math.Abs(a.top-b.top) < h*.2 && b.left > a.left && gap >= -h*.15 && gap <= h*.15
+	return h > 0 && math.Abs(a.bottom-b.bottom) < h*.2 && math.Abs(a.top-b.top) < h*.2 && b.left > a.left && gap >= -h*.15 && gap <= h*maxGap
 }
 
 func degreesCCW(rad float64) int {

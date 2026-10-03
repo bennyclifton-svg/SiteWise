@@ -2,6 +2,7 @@
 // after the Clerk project nav. More destinations join here later.
 
 import { useEffect, useRef, useState } from "react";
+import { DevStatus } from "./DevStatus";
 
 interface Props {
   projects: { id: string; name: string }[] | null;
@@ -72,6 +73,7 @@ export function LeftNav({ projects, currentId, navigate }: Props) {
           </ul>
         )}
       </div>
+      <DevStatus />
     </nav>
   );
 }

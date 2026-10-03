@@ -27,7 +27,7 @@ const (
 
 	// QuestionVersion is the intake question map this process asks.
 	// Thresholds calibrated for another version do not apply.
-	QuestionVersion = "intake-75"
+	QuestionVersion = "intake-76"
 
 	choiceNone = "none"
 	choiceNew  = "new"

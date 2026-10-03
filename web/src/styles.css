@@ -88,6 +88,23 @@ select {
 }
 
 /* ---------- shell ---------- */
+.ocr-summary { display: flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--ink-muted); font-size: 12px; font-weight: 500; }
+.ocr-summary[data-complete] { color: var(--warn); }
+.ocr-summary svg { width: 14px; height: 14px; }
+.ocr-status { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 18px; background: var(--ground); border-bottom: 1px solid var(--line); }
+.ocr-status-copy { min-width: 0; max-width: 62ch; }
+.ocr-status-copy strong { color: var(--ink); font-size: 14px; font-weight: 600; }
+.ocr-status-copy p { margin-top: 4px; color: var(--ink-muted); font-size: 13px; line-height: 1.5; }
+.ocr-steps { display: flex; flex-shrink: 0; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.ocr-steps li { display: flex; align-items: center; gap: 6px; color: var(--ink-muted); font-size: 12px; white-space: nowrap; }
+.ocr-steps li[data-state="active"] { color: var(--ink); font-weight: 600; }
+.ocr-step-mark { display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid var(--line-strong); border-radius: 50%; }
+.ocr-step-mark > span { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-muted); }
+.ocr-step-mark svg { width: 12px; height: 12px; }
+.ocr-steps li[data-state="done"] .ocr-step-mark { color: var(--ok); border-color: var(--ok); }
+.ocr-steps li[data-state="active"] .ocr-step-mark { border-color: var(--ink); }
+@media (max-width: 800px) { .ocr-status { align-items: flex-start; flex-direction: column; gap: 12px; } .ocr-steps { flex-wrap: wrap; gap: 12px; } }
+
 
 .bar {
   position: sticky;
@@ -954,6 +971,8 @@ button.cell[data-state="check"]:hover {
 
 .workspace .drop {
   position: absolute;
+  grid-column: 2;
+  grid-row: 1;
   inset: 8px;
   z-index: 30;
   display: none;
@@ -976,6 +995,7 @@ button.cell[data-state="check"]:hover {
 .reg-head {
   position: sticky;
   top: 0;
+  left: 0;
   z-index: 2;
   display: flex;
   align-items: center;
@@ -1009,19 +1029,22 @@ button.cell[data-state="check"]:hover {
 }
 
 .reg-table col.reg-no {
-  width: 5.5rem;
+  width: 12%;
 }
 .reg-table col.reg-rev {
-  width: 2.5rem;
+  width: 6%;
 }
 .reg-table col.reg-date {
-  width: 4.75rem;
+  width: 13%;
 }
 .reg-table col.reg-disc {
-  width: 3rem;
+  width: 16%;
+}
+.reg-table col.reg-kind {
+  width: 13%;
 }
 .reg-table col.reg-mark {
-  width: 1.5rem;
+  width: 2.5rem;
 }
 
 .reg-table thead th {
@@ -1037,7 +1060,8 @@ button.cell[data-state="check"]:hover {
 
 .reg-table thead button {
   width: 100%;
-  padding: 6px;
+  padding: 6px 3px;
+  overflow-wrap: anywhere;
   border: 0;
   background: none;
   color: var(--ink-muted);
@@ -1058,11 +1082,11 @@ button.cell[data-state="check"]:hover {
 .reg-line td {
   position: relative;
   height: 30px;
-  padding: 0 6px;
+  padding: 6px 3px;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  vertical-align: top;
 }
 
 .reg-line {
@@ -1102,6 +1126,25 @@ button.cell[data-state="check"]:hover {
   height: 2px;
   background: var(--azure);
   transform-origin: left;
+}
+
+.reg-file-hint {
+  display: block;
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-size: 11px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+}
+
+.reg-text-status {
+  display: block;
+  color: var(--ink-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.reg-text-status[data-state="failed"] {
+  color: var(--ember);
 }
 
 .reg-flag {
@@ -1412,6 +1455,10 @@ button.cell[data-state="check"]:hover {
 }
 
 @media (max-width: 1100px) {
+  .workspace .drop {
+    grid-column: 1;
+    grid-row: 2;
+  }
   .workspace {
     grid-template-columns: minmax(0, 1fr);
     height: auto;
@@ -1424,6 +1471,7 @@ button.cell[data-state="check"]:hover {
   .register-col {
     border-top: 1px solid var(--line);
     border-left: 0;
+    overflow-x: auto;
   }
   .reg-table thead th {
     top: 0;
@@ -1455,11 +1503,6 @@ button.cell[data-state="check"]:hover {
   .pf-sys {
     grid-template-columns: minmax(0, 1fr);
   }
-  .reg-table col.reg-date,
-  .reg-line td.reg-date,
-  .reg-table thead th:nth-child(4) {
-    display: none;
-  }
 }
 
 .reg-set {
@@ -1470,3 +1513,69 @@ button.cell[data-state="check"]:hover {
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+/* profile update button */
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+
+.profile-actions-note {
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+/* development server status, foot of the left nav */
+
+.devstatus {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-body);
+  font-size: 12px;
+}
+
+.devstatus small {
+  display: block;
+  color: var(--ink-muted);
+  font-size: 11px;
+}
+
+.devstatus-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.devstatus[data-state="stale"] .devstatus-dot {
+  background: var(--warn);
+}
+
+.devstatus[data-state="offline"] .devstatus-dot {
+  background: var(--alert);
+}
+
+.pf-sources { border-block: 1px solid var(--line); padding: 14px 0; scroll-margin-top: 16px; }
+.pf-sources h2 button { font: inherit; }
+.pf-source-filters { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+.pf-source-filters label { display: grid; gap: 4px; flex: 1 1 220px; min-width: 0; }
+.pf-source-filters select { width: 100%; }
+.pf-source-list { list-style: none; margin: 0; padding: 0; }
+.pf-source-list > li { border-top: 1px solid var(--line); padding: 14px 0; }
+.pf-source-list blockquote { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; }
+.pf-source-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--ink-muted); overflow-wrap: anywhere; }
+.pf-source-context { margin: 6px 0; white-space: pre-wrap; }
+.pf-source-warning { color: var(--ember); font-size: 12px; }
+.pf-source-pages { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
+.pf-coverage { padding-left: 20px; }
+.pf-coverage li { margin: 8px 0; overflow-wrap: anywhere; }

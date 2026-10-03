@@ -73,7 +73,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	knowledgeDir := fs.String("knowledge", "knowledge", "building knowledge directory")
 	profileThresholds := fs.String("profile-thresholds", "data/profile/thresholds.json", "project profile thresholds")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
-	backlog := fs.Bool("background-backlog", true, "read documents queued before this start; false reads only new uploads")
+	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -142,7 +142,26 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	// Health judges Jev reachability from this probe, never from a call made
 	// for it. It also keeps the pooled connection warm between filings.
 	go client.Probe(ctx, jevProbeInterval)
+	ocrExecutable := getenv("SITEWISE_TESSERACT")
+	if ocrExecutable == "" {
+		ocrExecutable = "tesseract"
+	}
+	ocrPython := getenv("SITEWISE_OCR_PYTHON")
+	if ocrPython == "" {
+		ocrPython = "python"
+	}
+	ocr, ocrErr := identity.NewOCR(ocrExecutable, getenv("SITEWISE_TESSDATA"), ocrPython)
+	ocrExtract := func(ctx context.Context, path string) (identity.Text, error) {
+		if ocrErr != nil {
+			return identity.Text{}, identity.ErrOCRUnavailable
+		}
+		return ocr.Extract(ctx, path)
+	}
+	if ocrErr != nil {
+		logger.Printf("OCR unavailable: %v; text PDFs still file normally", ocrErr)
+	}
 	srv, err := httpapi.New(httpapi.Options{
+		OCR:            ocrExtract,
 		Store:          st,
 		Blobs:          blobs,
 		Jev:            client,
@@ -164,15 +183,21 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	}
 	// Passages, labels, evidence and the project profile run in the
 	// background; filing keeps its slots and the interactive Jev reserve.
-	worker := &jobs.Worker{Store: st, Ask: client, Catalog: building, Text: jobs.FullText(st, blobs),
+	worker := &jobs.Worker{Store: st, Ask: client, Catalog: building, Source: jobs.FullSource(st, blobs),
 		MinNoul: minNoul, Profile: profileTh}
-	orgs := st.OrgsWithBackgroundJobs
+	ocrService, err := intake.NewService(st, client, cat, thresholds)
+	if err != nil {
+		fmt.Fprintln(stderr, err)
+		return 1
+	}
+	ocrRunner := intake.NewRunner(blobs, st, ocrService)
+	ocrRunner.OCR = ocrExtract
+	worker.OCR = ocrRunner.RunOCR
 	if !*backlog {
 		worker.Since = time.Now()
-		orgs = func(ctx context.Context) ([]string, error) { return st.OrgsWithBackgroundJobsSince(ctx, worker.Since) }
-		logger.Printf("background: reading only documents uploaded from now; the existing backlog stays queued")
+		logger.Printf("background: old profile reading stays queued; text extraction always resumes")
 	}
-	go jobs.Run(ctx, worker, orgs, 2*time.Second, logger.Printf)
+	go jobs.RunBackground(ctx, worker, 2*time.Second, logger.Printf)
 	if n, err := srv.Resume(ctx); err != nil {
 		logger.Printf("resume failed: %v", err)
 	} else if n > 0 {

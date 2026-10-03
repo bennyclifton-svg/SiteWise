@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"strings"
 )
@@ -96,6 +97,9 @@ func docxRuns(ctx context.Context, r io.Reader, limits Limits) ([]Run, error) {
 		case xml.StartElement:
 			switch el.Name.Local {
 			case "tbl":
+				if limits.RequireComplete && tableDepth > 0 {
+					return nil, fmt.Errorf("%w: nested table requires source review", ErrMalformed)
+				}
 				flushPara()
 				if tableDepth == 0 {
 					tableIndex++

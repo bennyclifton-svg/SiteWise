@@ -14,10 +14,17 @@ func (s *Store) OrgsWithBackgroundJobs(ctx context.Context) ([]string, error) {
 
 // OrgsWithBackgroundJobsSince counts only jobs created at or after since.
 func (s *Store) OrgsWithBackgroundJobsSince(ctx context.Context, since time.Time) ([]string, error) {
+	return s.OrgsWithJobKindsSince(ctx, []string{JobKindFullText, JobKindLabel, JobKindEvidence}, since)
+}
+
+// OrgsWithJobKindsSince also discovers abandoned leases so restarting a
+// worker recovers interrupted work even when no other jobs are queued.
+func (s *Store) OrgsWithJobKindsSince(ctx context.Context, kinds []string, since time.Time) ([]string, error) {
 	rows, err := s.pool.Query(ctx, `
 SELECT DISTINCT org_id::text FROM jobs
-WHERE status = 'queued' AND run_after <= now() AND kind = ANY($1) AND created_at >= $2
-ORDER BY 1`, []string{JobKindFullText, JobKindLabel, JobKindEvidence}, since)
+WHERE (status = 'queued' OR (status = 'leased' AND locked_until < now()))
+  AND run_after <= now() AND kind = ANY($1) AND created_at >= $2
+ORDER BY 1`, kinds, since)
 	if err != nil {
 		return nil, err
 	}

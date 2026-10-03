@@ -87,11 +87,11 @@ func TestWordingMatchesContract(t *testing.T) {
 	cat := repoCatalog(t)
 	qs := profile.EvidenceQuestions([]string{"hydraulic.gas"}, cat)
 	p := qs["sys.hydraulic.gas.presence"]
-	if p.Instructions != "Using `text`, does the passage say whether the completed project will have Fuel gas?" {
+	if !strings.Contains(p.Instructions.(string), "any of its components") {
 		t.Fatalf("instructions %q", p.Instructions)
 	}
 	crit := p.Criteria.(map[string]string)
-	if crit["not_included"] != "It says the project will not have it: not applicable, not required, or not part of the project." {
+	if !strings.Contains(crit["not_included"], "Broader parent categories") {
 		t.Fatalf("criteria %q", crit["not_included"])
 	}
 	lq, _ := profile.LabelQuestions(profile.PassageInfo{}, profile.Harvest("Bush Fire Attack Level Low", cat), cat)

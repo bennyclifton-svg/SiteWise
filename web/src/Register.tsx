@@ -5,8 +5,9 @@ import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import type { Catalog, Doc } from "./api";
 import { FIELDS, FieldCell, HeadState, REASONS, stateOf, type RowModel } from "./DocumentRow";
 import { IconCheck, IconNotChecked, IconRetry, IconStored, IconUpload } from "./icons";
+import { OCRStatus, ocrStage } from "./OCRStatus";
 
-type Col = "number" | "title" | "revision" | "date" | "discipline";
+type Col = "number" | "title" | "revision" | "date" | "discipline" | "kind";
 
 interface Props {
   rows: RowModel[];
@@ -14,18 +15,19 @@ interface Props {
   live: "live" | "reconnecting" | "offline";
   priorLabel: (id: string) => string | undefined;
   onCorrect: (docId: string, field: string, value: string) => Promise<void>;
-  onRetry: (docId: string) => void;
+  onRetry: (docId: string, missingOnly?: boolean) => Promise<boolean>;
   onJump: (docId: string) => void;
   onDismiss: (key: string) => void;
   onAddFiles: () => void;
 }
 
 const COLUMNS: { col: Col; label: string; className: string }[] = [
-  { col: "number", label: "No.", className: "reg-no" },
+  { col: "number", label: "DWG No.", className: "reg-no" },
   { col: "title", label: "Title", className: "reg-title" },
   { col: "revision", label: "Rev", className: "reg-rev" },
   { col: "date", label: "Date", className: "reg-date" },
-  { col: "discipline", label: "Disc.", className: "reg-disc" },
+  { col: "discipline", label: "Discipline", className: "reg-disc" },
+  { col: "kind", label: "Kind", className: "reg-kind" },
 ];
 
 function fieldValue(doc: Doc | undefined, field: string): string {
@@ -40,12 +42,6 @@ function fieldValue(doc: Doc | undefined, field: string): string {
 function shortDate(iso: string): string {
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
   return m ? `${m[3]}/${m[2]}/${m[1].slice(2)}` : iso;
-}
-
-/** A short code for a discipline id: consultant.architect -> ARCH. */
-function discCode(id: string): string {
-  const last = id.split(".").pop() ?? id;
-  return last.replace(/[^a-z]/gi, "").slice(0, 4).toUpperCase();
 }
 
 function sortValue(row: RowModel, col: Col): string {
@@ -221,13 +217,15 @@ function RegisterRow({
   disciplineLabel: (id: string) => string;
   priorLabel: (id: string) => string | undefined;
   onCorrect: (docId: string, field: string, value: string) => Promise<void>;
-  onRetry: (docId: string) => void;
+  onRetry: (docId: string, missingOnly?: boolean) => Promise<boolean>;
   onJump: (docId: string) => void;
   onDismiss: (key: string) => void;
 }) {
   const doc = row.doc;
-  const title = fieldValue(doc, "title") || row.filename;
+  const title = fieldValue(doc, "title");
   const discipline = fieldValue(doc, "discipline");
+  const kind = fieldValue(doc, "kind");
+  const kindLabel = catalog?.kinds.find((k) => k.id === kind)?.label ?? kind;
   const date = fieldValue(doc, "date");
   const userSet = (field: string) => doc?.fields.find((f) => f.field === field)?.decided_by === "user";
   const keys = (e: KeyboardEvent) => {
@@ -260,16 +258,35 @@ function RegisterRow({
         <td className="reg-no" title={fieldValue(doc, "number")} data-user={userSet("number") || undefined}>
           {fieldValue(doc, "number")}
         </td>
-        <td className="reg-title" title={`${title}\n${row.filename}`} data-user={userSet("title") || undefined}>
-          {row.uploadError ? <span className="error-text">{row.uploadError}</span> : title}
+        <td className="reg-title" title={`${title || "Title not extracted"}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
+          {row.uploadError ? <span className="error-text">{row.uploadError}</span> : title || (
+            <>
+              <span className="muted">{ocrStage(doc) ? "Recovering document details" : !doc || doc.status === "pending" ? "Reading title…" : "Title not extracted"}</span>
+              <span className="reg-file-hint">File: {row.filename}</span>
+            </>
+          )}
+          {doc && <OCRStatus doc={doc} compact />}
+          {doc?.status === "not_filed" && (
+            <span className="reg-file-hint" title={REASONS[doc.reason ?? ""] ?? doc.reason}>
+              {doc.reason === "no_text_layer" ? "Not filed · no readable text" : "Not filed · open for details"}
+            </span>
+          )}
+          {doc?.text_status && (
+            <span className="reg-text-status" data-state={doc.text_status} title={doc.text_status === "done" ? "Extracted text is saved. Check source coverage in the profile for unreadable pages and unresolved requirements." : undefined}>
+              {doc.text_status === "done" ? (doc.text_empty_pages ? "! Check text coverage" : doc.text_source_version ? `✓ Text ready${doc.text_pages ? ` · ${doc.text_pages} pages` : ""}` : "Text prepared · update profile") : doc.text_status === "failed" ? "! Text preparation failed" : "◷ Preparing text…"}
+            </span>
+          )}
           {row.progress !== undefined && !doc && <span className="reg-progress" style={{ transform: `scaleX(${row.progress})` }} />}
         </td>
         <td className="reg-rev" data-user={userSet("revision") || undefined}>
           {fieldValue(doc, "revision")}
         </td>
         <td className="reg-date">{date ? shortDate(date) : ""}</td>
-        <td className="reg-disc" title={discipline ? disciplineLabel(discipline) : undefined}>
-          {discipline ? discCode(discipline) : ""}
+        <td className="reg-disc" title={discipline ? disciplineLabel(discipline) : undefined} data-user={userSet("discipline") || undefined}>
+          {discipline ? disciplineLabel(discipline) : ""}
+        </td>
+        <td className="reg-kind" title={kindLabel || undefined} data-user={userSet("kind") || undefined}>
+          {kindLabel}
         </td>
         <td className="reg-mark">
           <RowMark row={row} />
@@ -277,7 +294,7 @@ function RegisterRow({
       </tr>
       {open && (
         <tr className="reg-detail" id={detailId}>
-          <td colSpan={6}>
+          <td colSpan={COLUMNS.length + 1}>
             <div className="reg-detail-head">
               <span className="reg-file" title={row.filename}>
                 {row.filename}
@@ -289,6 +306,7 @@ function RegisterRow({
                 </a>
               )}
             </div>
+            {doc && <OCRStatus doc={doc} onReprocess={onRetry} />}
             {doc?.source_id && (
               <p className="tb-note">
                 Sheet {doc.sheet_page} of {doc.sheet_total} ·{" "}

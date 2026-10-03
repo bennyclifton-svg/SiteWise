@@ -18,6 +18,10 @@ export interface Doc {
   project_id: string;
   filename: string;
   status: Status;
+  text_pages?: number;
+  text_empty_pages?: number;
+  text_source_version?: string;
+  text_status?: "queued" | "leased" | "done" | "failed";
   reason?: string;
   number?: string;
   revision?: string;
@@ -99,7 +103,8 @@ export const api = {
   catalog: () => request<Catalog>("GET", "/catalog"),
   correct: (docId: string, field: string, value: string) =>
     request<Doc>("PUT", `/documents/${docId}/fields/${field}`, { value }),
-  retry: (docId: string) => request<Doc>("POST", `/documents/${docId}/filing`),
+  retry: (docId: string, missingOnly = false) => request<Doc>("POST", `/documents/${docId}/${missingOnly ? "details/reprocess" : "filing"}`),
+  document: (docId: string) => request<Doc>("GET", `/documents/${docId}`),
 };
 
 /** created is false when these bytes were already filed in the project. */
@@ -138,7 +143,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile"] as const;
+export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {

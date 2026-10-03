@@ -150,6 +150,7 @@ func TestNoAccessFromAnotherOrg(t *testing.T) {
 		{http.MethodPost, "/api/projects/" + project + "/files?name=x.pdf", []byte("%PDF-1.4")},
 		{http.MethodGet, "/api/documents/" + doc.ID, nil},
 		{http.MethodPost, "/api/documents/" + doc.ID + "/filing", nil},
+		{http.MethodPost, "/api/documents/" + doc.ID + "/details/reprocess", nil},
 		{http.MethodPut, "/api/documents/" + doc.ID + "/fields/title", []byte(`{"value":"stolen"}`)},
 	}
 	for _, c := range checks {

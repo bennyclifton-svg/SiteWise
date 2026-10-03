@@ -50,3 +50,34 @@ supersedes them.
 Small obvious functions, validation at boundaries, no speculative
 abstraction, comments explain why. Dependencies only when the alternative is
 non-trivial; justify each in the commit message.
+
+## Starting a feature
+
+The why, the three lanes, and the prompt run sheets live in
+`docs/developing.md`. Follow them.
+
+A change is one lane:
+
+- **A, product core** (filing, org isolation, rule numbers, anything a user
+  trusts). An existing test or answer key must still pass, and the speed
+  budget must still pass. Unverified rule numbers stay `verified: false`.
+- **B, edge** (a label, an empty state, a layout). Move fast. Do not break
+  filing.
+- **C, security and dependencies** (login, file access, anything new in the
+  build). Handle a missing file, a wrong org, and unexpected input. Prefer
+  a small dependency many people already watch over one this repo would be
+  the only watcher of.
+
+Before coding a new feature, the task states the user outcome, why it
+serves filing speed, answer trust, or time-to-decision, the lane, what is
+out of scope, the p50/p90 budget in milliseconds, what "done" looks like,
+and the edge cases. When those are missing, apply these defaults and do
+not invent a wider task: filing stays p50 ≤ 1 s and p90 ≤ 2 s, one Jev
+fan-out, every row scoped to `org_id`, no new service or dependency
+without a stated reason.
+
+A clear defect is fixed only as far as that defect. A direction choice
+(what the next screen or workflow should be) is decided in prose before
+code. After implementing, report timing against the budget, what changed
+in plain language (what calls what, what could fail), and any new
+dependency. Do not widen the feature.

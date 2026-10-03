@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -21,7 +23,6 @@ import (
 const (
 	questionVersion = "knowledge.v2+" + profile.QuestionVersion
 	maxPassageRunes = 2000
-	maxPassages     = 500
 )
 
 // Asker is the background Jev client. Calls from this package use background
@@ -36,6 +37,8 @@ type Passage struct {
 	Ordinal    int
 	Text       string
 	Section    string
+	Context    string
+	Page       int
 	Kind       string
 	Discipline string
 	Title      string
@@ -46,9 +49,11 @@ type Passage struct {
 // band for accepting a label or an evidence noul. Zero accepts nothing, so a
 // missing calibration cannot become an automatic action.
 type Worker struct {
+	OCR     func(context.Context, string, string) error
 	Store   *store.Store
 	Ask     Asker
 	Text    func(ctx context.Context, orgID, documentID string) (string, error)
+	Source  func(context.Context, string, string) (store.DocumentSource, error)
 	Catalog *knowledge.Catalog
 	Lease   time.Duration
 	Backoff time.Duration
@@ -56,6 +61,9 @@ type Worker struct {
 	// Since limits the worker to jobs created at or after it; zero works
 	// every job, including a backlog.
 	Since time.Time
+	// Kinds separates text extraction from slower profile reading. Empty
+	// preserves the all-stage worker used by tests and command-line tools.
+	Kinds []string
 	// Profile holds the profile's per-shape floors. Empty floors apply
 	// nothing: readings are stored and rows stay blank.
 	Profile profile.Thresholds
@@ -67,15 +75,36 @@ func (w *Worker) Once(ctx context.Context, orgID string) error {
 	if lease <= 0 {
 		lease = 30 * time.Second
 	}
-	job, err := w.Store.ClaimJobSince(ctx, orgID, lease, []string{
-		store.JobKindFullText,
-		store.JobKindLabel,
-		store.JobKindEvidence,
-	}, w.Since)
+	kinds := w.Kinds
+	if len(kinds) == 0 {
+		kinds = []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence}
+	}
+	job, err := w.Store.ClaimJobSince(ctx, orgID, lease, kinds, w.Since)
 	if err != nil {
 		return err
 	}
-	if err := w.Perform(ctx, job); err != nil {
+	runCtx, cancel := context.WithCancel(ctx)
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		ticker := time.NewTicker(lease / 3)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-runCtx.Done():
+				return
+			case <-ticker.C:
+				if err := w.Store.RenewBackgroundLease(runCtx, job, lease.Seconds()); err != nil {
+					cancel()
+					return
+				}
+			}
+		}
+	}()
+	runErr := w.Perform(runCtx, job)
+	cancel()
+	<-stopped
+	if err := runErr; err != nil {
 		_ = w.Store.FailJob(ctx, job.OrgID, job.ID, job.Token, err.Error(), w.backoff(), store.EventWrite{
 			Kind:       "job",
 			DocumentID: job.DocumentID,
@@ -101,6 +130,11 @@ func (w *Worker) backoff() time.Duration {
 // the same stage replaces passages and labels instead of appending them.
 func (w *Worker) Perform(ctx context.Context, job store.ClaimedJob) error {
 	switch job.Kind {
+	case store.JobKindOCR:
+		if w.OCR == nil {
+			return errors.New("OCR worker unavailable")
+		}
+		return w.OCR(ctx, job.OrgID, job.DocumentID)
 	case store.JobKindFullText:
 		return w.fullText(ctx, job)
 	case store.JobKindLabel:
@@ -113,6 +147,13 @@ func (w *Worker) Perform(ctx context.Context, job store.ClaimedJob) error {
 }
 
 func (w *Worker) fullText(ctx context.Context, job store.ClaimedJob) error {
+	if w.Source != nil {
+		src, err := w.Source(ctx, job.OrgID, job.DocumentID)
+		if err != nil {
+			return err
+		}
+		return w.Store.ReplaceSource(ctx, job.OrgID, job.DocumentID, src)
+	}
 	if w.Text == nil {
 		return errors.New("document text is unavailable")
 	}
@@ -120,10 +161,13 @@ func (w *Worker) fullText(ctx context.Context, job store.ClaimedJob) error {
 	if err != nil {
 		return err
 	}
-	if err := w.Store.ReplacePassages(ctx, job.OrgID, job.DocumentID, SplitPassages(text)); err != nil {
-		return err
+	// Reading (label, then evidence) waits for the user's "Update project
+	// profile" (store.RequestProfileRead), so filing and profiling stay apart.
+	src := store.DocumentSource{Source: []store.SourcePage{{Text: text, Location: "Document"}}}
+	for _, body := range SplitPassages(text) {
+		src.Units = append(src.Units, store.SourceUnit{Body: body})
 	}
-	return w.Store.EnqueueStage(ctx, job.OrgID, job.DocumentID, store.JobKindLabel)
+	return w.Store.ReplaceSource(ctx, job.OrgID, job.DocumentID, src)
 }
 
 func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
@@ -134,13 +178,14 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 	if err != nil {
 		return err
 	}
-	var facts []store.StoredFact
-	for _, passage := range passages {
+	factSets := make([][]store.StoredFact, len(passages))
+	err = eachPassage(ctx, len(passages), func(ctx context.Context, i int) error {
+		passage := passages[i]
 		call, cands := labelCall(w.Catalog, passage.Passage)
 		if len(call.Questions) == 0 {
-			continue
+			return nil
 		}
-		result, err := w.ask(ctx, call)
+		result, err := w.cachedAsk(ctx, job, passage.ID, "label", call)
 		if err != nil {
 			return err
 		}
@@ -148,8 +193,18 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		if err := w.Store.SetPassageSystems(ctx, job.OrgID, passage.ID, labels); err != nil {
 			return err
 		}
-		facts = append(facts, storedFacts(passage.ID, profile.Readings(result, call.Questions, cands, passage.Text))...)
+		readings := profile.Readings(result, call.Questions, cands, passage.Text)
+		factSets[i] = storedFacts(passage.ID, readings)
+		return w.Store.SetSourceReading(ctx, job.OrgID, passage.ID, sourceReading(result, labels, readings))
+	})
+	if err != nil {
+		return err
 	}
+	var facts []store.StoredFact
+	for _, set := range factSets {
+		facts = append(facts, set...)
+	}
+
 	if err := w.Store.ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr."}, profile.QuestionVersion, facts); err != nil {
 		return err
 	}
@@ -168,26 +223,60 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 	if err != nil {
 		return err
 	}
-	var facts []store.StoredFact
-	for i, passage := range passages {
+	factSets := make([][]store.StoredFact, len(passages))
+	err = eachPassage(ctx, len(passages), func(ctx context.Context, i int) error {
+		passage := passages[i]
+		if passage.SkipEvidence {
+			return nil
+		}
 		labels, err := w.Store.PassageSystems(ctx, job.OrgID, passage.ID)
 		if err != nil {
 			return err
 		}
-		passages[i].Labels = labels
-		call, ok := EvidenceCall(w.Catalog, passages[i].Passage)
+		passage.Labels = labels
+		call, ok := EvidenceCall(w.Catalog, passage.Passage)
 		if !ok {
-			continue
+			return nil
 		}
-		result, err := w.ask(ctx, call)
+		result, err := w.cachedAsk(ctx, job, passage.ID, "evidence", call)
 		if err != nil {
 			return err
 		}
 		if err := w.Store.SetPassageEvidence(ctx, job.OrgID, passage.ID, evidenceStates(call.Questions, result, w.MinNoul)); err != nil {
 			return err
 		}
-		facts = append(facts, storedFacts(passage.ID, profile.Readings(result, call.Questions, nil, passage.Text))...)
+		readings := profile.Readings(result, call.Questions, nil, passage.Text)
+		labels = append(labels, AcceptLabels(w.Catalog, result, w.MinNoul)...)
+		for _, r := range readings {
+			if strings.HasPrefix(r.QuestionID, "sys.") && r.Confidence != nil && *r.Confidence >= 0.6 {
+				id := strings.TrimPrefix(r.QuestionID, "sys.")
+				if at := strings.LastIndex(id, "."); at > 0 {
+					labels = append(labels, id[:at])
+				}
+			}
+		}
+		if err := w.Store.SetPassageSystems(ctx, job.OrgID, passage.ID, labels); err != nil {
+			return err
+		}
+		factSets[i] = storedFacts(passage.ID, readings)
+		var keys []string
+		unresolved := append([]string{}, result.Unresolved...)
+		for _, r := range readings {
+			keys = append(keys, r.QuestionID)
+			if r.Confidence == nil || *r.Confidence < 0.6 {
+				unresolved = append(unresolved, r.QuestionID)
+			}
+		}
+		return w.Store.MergeSourceEvidence(ctx, job.OrgID, passage.ID, keys, unresolved)
+	})
+	if err != nil {
+		return err
 	}
+	var facts []store.StoredFact
+	for _, set := range factSets {
+		facts = append(facts, set...)
+	}
+
 	if err := w.Store.ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"sys."}, profile.QuestionVersion, facts); err != nil {
 		return err
 	}
@@ -229,17 +318,27 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 	title := decisionValue(decisions, "title")
 	out := make([]storedPassage, len(rows))
 	section := ""
+	metadata, err := w.Store.SourceUnits(ctx, job.OrgID, job.DocumentID)
+	if err != nil {
+		return nil, err
+	}
 	for i, row := range rows {
 		// Passages carry the nearest heading above them; header routing reads it.
 		if h := sectionOf(row.Body); h != "" {
 			section = h
 		}
+		meta := metadata[row.ID]
+		if meta.Section != "" {
+			section = meta.Section
+		}
 		out[i] = storedPassage{
-			ID: row.ID,
+			ID:           row.ID,
+			SkipEvidence: meta.Category == "reference" || meta.Category == "background",
 			Passage: Passage{
-				Ordinal:    int(row.Ordinal),
-				Text:       row.Body,
-				Section:    section,
+				Ordinal: int(row.Ordinal),
+				Text:    row.Body,
+				Section: section,
+				Context: meta.Context, Page: meta.Page,
 				Kind:       kind,
 				Discipline: discipline,
 				Title:      title,
@@ -250,7 +349,8 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 }
 
 type storedPassage struct {
-	ID string
+	SkipEvidence bool
+	ID           string
 	Passage
 }
 
@@ -287,7 +387,7 @@ func SplitPassages(text string) []string {
 		if part == "" {
 			continue
 		}
-		for part != "" && len(out) < maxPassages {
+		for part != "" {
 			if utf8.RuneCountInString(part) <= maxPassageRunes {
 				out = append(out, part)
 				break
@@ -295,9 +395,6 @@ func SplitPassages(text string) []string {
 			cut := cutRunes(part, maxPassageRunes)
 			out = append(out, strings.TrimSpace(part[:cut]))
 			part = strings.TrimSpace(part[cut:])
-		}
-		if len(out) >= maxPassages {
-			break
 		}
 	}
 	return out
@@ -339,9 +436,8 @@ func BackgroundCalls(cat *knowledge.Catalog, passages []Passage) []jev.Call {
 	return out
 }
 
-// LabelCall puts every top-level system noul and every speculative leaf
-// choice into one request. Code decides which leaf answers to keep after the
-// response; the choices are not a second round trip.
+// LabelCall asks independent system membership and source classification in
+// one fan-out. Multiple leaves can describe the same passage.
 func LabelCall(cat *knowledge.Catalog, passage Passage) jev.Call {
 	call, _ := labelCall(cat, passage)
 	return call
@@ -361,31 +457,20 @@ func labelCall(cat *knowledge.Catalog, passage Passage) (jev.Call, map[string][]
 		}
 		questions[knowledge.LabelQuestionID(sys.ID)] = jev.Question{
 			Type:         jev.TypeNoul,
-			Instructions: "Using `text`, is this passage about " + name + "?",
+			Instructions: "Using `excerpt`, is any part of this clause about " + name + "? Several systems may be present together.",
 			Criteria: map[string]string{
 				"true":  knowledge.Describe(sys, sys.ID),
-				"false": knowledge.ExcludesText(sys),
+				"false": "None of this category is discussed. Exclusions alone: " + knowledge.ExcludesText(sys) + " Mention of another system alongside this category does not make the answer false.",
 			},
 		}
-		children := cat.Children(sys.ID)
-		if len(children) == 0 || len(children) > jev.MaxChoiceOptions-1 {
-			continue
-		}
-		criteria := map[string]string{
-			knowledge.NoneOption(): "The passage is not about a specific part of this system.",
-		}
-		for _, child := range children {
-			criteria[child.ID] = knowledge.Describe(child, child.ID)
-		}
-		questions[knowledge.LeafQuestionID(sys.ID)] = jev.Question{
-			Type:         jev.TypeChoice,
-			Instructions: "Using `text`, which part of " + name + " is this passage about?",
-			Criteria:     criteria,
-		}
+	}
+
+	for id, q := range sourceQuestions() {
+		questions[id] = q
 	}
 	// Profile questions read the same passage, so they join this request
 	// instead of adding a round trip (https://docs.typesafe.ai/patterns/fan-out).
-	extra, candidates := profile.LabelQuestions(passage.Info(), profile.Harvest(passage.Text, cat), cat)
+	extra, candidates := profile.LabelQuestions(passage.Info(), profile.Harvest(passageExcerpt(passage), cat), cat)
 	for id, q := range extra {
 		questions[id] = q
 	}
@@ -403,14 +488,24 @@ func labelCall(cat *knowledge.Catalog, passage Passage) (jev.Call, map[string][]
 
 // Info is what profile header routing reads about a passage.
 func (p Passage) Info() profile.PassageInfo {
-	return profile.PassageInfo{Kind: p.Kind, Section: p.Section, Ordinal: p.Ordinal}
+	return profile.PassageInfo{Kind: p.Kind, Section: p.Section, Ordinal: p.Ordinal, Text: p.Text}
 }
 
 // EvidenceCall is one fan-out of the knowledge nouls that match the passage
 // labels. It is a different state from labeling and is not asked in the
 // foreground filing request.
 func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
-	if cat == nil || len(passage.Labels) == 0 {
+	if cat == nil {
+		return jev.Call{}, false
+	}
+	// Literal service names route speculative questions; they do not decide
+	// inclusion. A low family score must not hide an explicit exclusion.
+	for _, route := range explicitEvidenceRoutes {
+		if route.re.MatchString(passageExcerpt(passage)) {
+			passage.Labels = append(passage.Labels, route.family)
+		}
+	}
+	if len(passage.Labels) == 0 {
 		return jev.Call{}, false
 	}
 	questions := map[string]jev.Question{}
@@ -424,7 +519,31 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 			Criteria:     noulCriteria(q.Criteria),
 		}
 	}
-	for id, q := range profile.EvidenceQuestions(passage.Labels, cat) {
+	// Ask all leaves of every relevant family together. A single-choice or
+	// narrow first-pass label must not hide a second service in the clause.
+	leafIDs := []string{}
+	seen := map[string]bool{}
+	for _, id := range passage.Labels {
+		sys, ok := cat.System(id)
+		if !ok {
+			continue
+		}
+		parent := sys.ID
+		if sys.Parent != "" {
+			parent = sys.Parent
+		}
+		for _, child := range cat.Children(parent) {
+			if !seen[child.ID] {
+				seen[child.ID] = true
+				leafIDs = append(leafIDs, child.ID)
+			}
+		}
+	}
+	for _, id := range leafIDs {
+		child, _ := cat.System(id)
+		questions[knowledge.LabelQuestionID(id)] = jev.Question{Type: jev.TypeNoul, Instructions: "Using `excerpt`, does this clause concern any of " + child.Label + "?", Criteria: map[string]string{"true": knowledge.Describe(child, id), "false": "None of this category is discussed. Other systems can be discussed alongside it without making the answer false."}}
+	}
+	for id, q := range profile.EvidenceQuestions(leafIDs, cat) {
 		questions[id] = q
 	}
 	if len(questions) == 0 {
@@ -436,6 +555,15 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 		Priority:        jev.PriorityBackground,
 		QuestionVersion: questionVersion,
 	}, true
+}
+
+var explicitEvidenceRoutes = []struct {
+	family string
+	re     *regexp.Regexp
+}{
+	{"hydraulic", regexp.MustCompile(`(?i)\brain\s?water\b|\bnon[ -]?potable\b|\bhot water\b|\bnatural gas\b`)},
+	{"site", regexp.MustCompile(`(?i)\b(?:recessed|loading|on-grade) docks?\b|\bloading bay\b`)},
+	{"mechanical", regexp.MustCompile(`(?i)\b(?:battery|MHE) charging\b`)},
 }
 
 const knowledgeNoul = "noul"
@@ -470,33 +598,47 @@ func passageState(p Passage) map[string]any {
 			"discipline": p.Discipline,
 			"title":      p.Title,
 		},
-		"section": p.Section,
-		"text":    p.Text,
+		"section":         p.Section,
+		"excerpt":         passageExcerpt(p),
+		"context":         p.Context,
+		"page":            p.Page,
+		"system_families": p.Labels,
+		"text":            p.Text,
 	}
 }
 
-// AcceptLabels keeps systems whose noul meets minNoul, plus a child choice
-// when that parent was accepted. minNoul of zero accepts nothing.
+func passageExcerpt(p Passage) string {
+	return strings.TrimSpace(p.Section + "\n" + p.Context + "\n" + p.Text)
+}
+
+// AcceptLabels keeps independently supported leaves and their parents.
+// A low parent answer cannot veto a specific leaf. Zero accepts nothing.
 func AcceptLabels(cat *knowledge.Catalog, result jev.Result, minNoul float64) []string {
 	if cat == nil || minNoul <= 0 {
 		return nil
 	}
 	var out []string
-	for _, sys := range cat.TopSystems() {
-		answer, ok := result.Answers[knowledge.LabelQuestionID(sys.ID)]
-		if !ok || answer.Type != jev.TypeNoul || answer.Noul < minNoul {
-			continue
-		}
-		out = append(out, sys.ID)
-		leaf, ok := result.Answers[knowledge.LeafQuestionID(sys.ID)]
-		if !ok || leaf.Type != jev.TypeChoice || leaf.Choice == "" || leaf.Choice == knowledge.NoneOption() {
-			continue
-		}
-		child, ok := cat.System(leaf.Choice)
-		if ok && child.Parent == sys.ID {
-			out = append(out, child.ID)
+	seen := map[string]bool{}
+	add := func(id string) {
+		if !seen[id] {
+			seen[id] = true
+			out = append(out, id)
 		}
 	}
+	for _, sys := range cat.TopSystems() {
+		a := result.Answers[knowledge.LabelQuestionID(sys.ID)]
+		if a.Type == jev.TypeNoul && a.Noul >= minNoul {
+			add(sys.ID)
+		}
+	}
+	for _, sys := range cat.Leaves() {
+		a := result.Answers[knowledge.LabelQuestionID(sys.ID)]
+		if a.Type == jev.TypeNoul && a.Noul >= minNoul {
+			add(sys.Parent)
+			add(sys.ID)
+		}
+	}
+
 	return out
 }
 
@@ -513,4 +655,44 @@ func evidenceStates(questions map[string]jev.Question, result jev.Result, minNou
 		}
 	}
 	return out
+}
+
+// Eight background requests leave the client's foreground reserve untouched.
+// Checkpoints make cancellation and process restarts cheap to resume.
+func eachPassage(ctx context.Context, n int, fn func(context.Context, int) error) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	queue := make(chan int)
+	var wg sync.WaitGroup
+	var once sync.Once
+	var first error
+	for j := 0; j < 8; j++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := range queue {
+				if ctx.Err() != nil {
+					return
+				}
+				if err := fn(ctx, i); err != nil {
+					once.Do(func() { first = err; cancel() })
+					return
+				}
+			}
+		}()
+	}
+dispatch:
+	for i := 0; i < n; i++ {
+		select {
+		case <-ctx.Done():
+			break dispatch
+		case queue <- i:
+		}
+	}
+	close(queue)
+	wg.Wait()
+	if first != nil {
+		return first
+	}
+	return ctx.Err()
 }

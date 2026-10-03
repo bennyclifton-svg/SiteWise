@@ -22,7 +22,11 @@ SELECT
     COALESCE(d.document_number, '') AS document_number,
     COALESCE(d.revision, '') AS revision,
     COALESCE(s.prior_document_id::text, '')::text AS supersedes_id,
-    d.created_at
+    d.created_at,
+    COALESCE((SELECT j.status FROM jobs j WHERE j.org_id = d.org_id AND j.document_id = d.id AND j.kind = 'full_text'), '')::text AS text_status,
+    COALESCE((SELECT ds.pages FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_pages,
+    COALESCE((SELECT cardinality(ds.empty_pages) FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_empty_pages,
+    COALESCE((SELECT ds.version FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),'')::text AS text_source_version
 FROM documents d
 LEFT JOIN supersessions s
     ON s.org_id = d.org_id
@@ -37,15 +41,19 @@ type GetDocumentViewParams struct {
 }
 
 type GetDocumentViewRow struct {
-	ID             string
-	ProjectID      string
-	Filename       string
-	Status         string
-	Reason         string
-	DocumentNumber string
-	Revision       string
-	SupersedesID   string
-	CreatedAt      time.Time
+	ID                string
+	ProjectID         string
+	Filename          string
+	Status            string
+	Reason            string
+	DocumentNumber    string
+	Revision          string
+	SupersedesID      string
+	CreatedAt         time.Time
+	TextStatus        string
+	TextPages         int32
+	TextEmptyPages    int32
+	TextSourceVersion string
 }
 
 func (q *Queries) GetDocumentView(ctx context.Context, arg GetDocumentViewParams) (GetDocumentViewRow, error) {
@@ -61,6 +69,10 @@ func (q *Queries) GetDocumentView(ctx context.Context, arg GetDocumentViewParams
 		&i.Revision,
 		&i.SupersedesID,
 		&i.CreatedAt,
+		&i.TextStatus,
+		&i.TextPages,
+		&i.TextEmptyPages,
+		&i.TextSourceVersion,
 	)
 	return i, err
 }
@@ -221,7 +233,11 @@ SELECT
     COALESCE(d.document_number, '') AS document_number,
     COALESCE(d.revision, '') AS revision,
     COALESCE(s.prior_document_id::text, '')::text AS supersedes_id,
-    d.created_at
+    d.created_at,
+    COALESCE((SELECT j.status FROM jobs j WHERE j.org_id = d.org_id AND j.document_id = d.id AND j.kind = 'full_text'), '')::text AS text_status,
+    COALESCE((SELECT ds.pages FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_pages,
+    COALESCE((SELECT cardinality(ds.empty_pages) FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),0)::integer AS text_empty_pages,
+    COALESCE((SELECT ds.version FROM document_sources ds WHERE ds.org_id=d.org_id AND ds.document_id=d.id),'')::text AS text_source_version
 FROM documents d
 LEFT JOIN supersessions s
     ON s.org_id = d.org_id
@@ -237,14 +253,18 @@ type ListProjectDocumentViewsParams struct {
 }
 
 type ListProjectDocumentViewsRow struct {
-	ID             string
-	Filename       string
-	Status         string
-	Reason         string
-	DocumentNumber string
-	Revision       string
-	SupersedesID   string
-	CreatedAt      time.Time
+	ID                string
+	Filename          string
+	Status            string
+	Reason            string
+	DocumentNumber    string
+	Revision          string
+	SupersedesID      string
+	CreatedAt         time.Time
+	TextStatus        string
+	TextPages         int32
+	TextEmptyPages    int32
+	TextSourceVersion string
 }
 
 func (q *Queries) ListProjectDocumentViews(ctx context.Context, arg ListProjectDocumentViewsParams) ([]ListProjectDocumentViewsRow, error) {
@@ -265,6 +285,10 @@ func (q *Queries) ListProjectDocumentViews(ctx context.Context, arg ListProjectD
 			&i.Revision,
 			&i.SupersedesID,
 			&i.CreatedAt,
+			&i.TextStatus,
+			&i.TextPages,
+			&i.TextEmptyPages,
+			&i.TextSourceVersion,
 		); err != nil {
 			return nil, err
 		}

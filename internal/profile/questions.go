@@ -11,18 +11,20 @@ import (
 
 // QuestionVersion versions every profile question below. Bump it when
 // wording or options change, so recorded answers are not mixed.
-const QuestionVersion = "profile-1"
+const QuestionVersion = "profile-3"
 
 // PassageInfo is what header routing reads about a passage.
 type PassageInfo struct {
 	Kind    string
 	Section string
 	Ordinal int
+	Text    string
 }
 
 var (
-	headerKinds   = map[string]bool{"design_brief": true, "specification": true, "report": true, "contract": true, "commercial": true}
-	headerSection = regexp.MustCompile(`(?i)description|outline|scope|introduction|project details|key development`)
+	headerKinds        = map[string]bool{"design_brief": true, "specification": true, "report": true, "contract": true, "commercial": true}
+	headerSection      = regexp.MustCompile(`(?i)description|outline|scope|introduction|project details|key development|the\s*development|contract|proposed use`)
+	projectDescription = regexp.MustCompile(`(?i)\b(?:development|project|extension|facility|building)\b[^.\n]{0,100}\b(?:comprises?|consists?|intended|used for)\b`)
 )
 
 const headerOrdinals = 12
@@ -32,7 +34,7 @@ const headerOrdinals = 12
 // or quote. Code routes; Jev answers only where the header is likely stated
 // (https://docs.typesafe.ai/patterns/intent-routing).
 func HeaderRouted(p PassageInfo) bool {
-	return headerKinds[p.Kind] && (p.Ordinal < headerOrdinals || headerSection.MatchString(p.Section))
+	return (headerKinds[p.Kind] || p.Kind == "") && (p.Ordinal <= headerOrdinals || headerSection.MatchString(p.Section) || projectDescription.MatchString(p.Text))
 }
 
 const notStatedCriterion = "The passage does not state it."
@@ -86,7 +88,7 @@ func LabelQuestions(p PassageInfo, h Harvested, cat *knowledge.Catalog) (map[str
 				}
 			}
 			qs[key] = jev.Question{Type: jev.TypeChoice,
-				Instructions: "Using `text` and `candidates`, which candidate does the passage state as this project's " +
+				Instructions: "Using `excerpt` and `candidates`, which candidate does the passage state as this project's " +
 					strings.ToLower(label) + "? Select none when absent or when it describes something other than this project.",
 				Criteria: candidateCriteria(label, h.Candidates[key])}
 			state[key] = h.Candidates[key]
@@ -94,11 +96,18 @@ func LabelQuestions(p PassageInfo, h Harvested, cat *knowledge.Catalog) (map[str
 	}
 	if HeaderRouted(p) {
 		for id, q := range headerQuestions(cat.Taxonomy()) {
+			// An individual use-list item cannot identify the principal building:
+			// an ancillary office would otherwise turn a warehouse into an office.
+			if (id == "hdr.building_class" || id == "hdr.subclass") && listFragment.MatchString(strings.TrimSpace(p.Text)) {
+				continue
+			}
 			qs[id] = q
 		}
 	}
 	return qs, state
 }
+
+var listFragment = regexp.MustCompile(`^(?:[•●-]|\([a-z0-9]+\)|[a-z][.)])\s`)
 
 // EvidenceQuestions ask presence and provider for each live leaf system the
 // passage was labelled with. They join the evidence fan-out.
@@ -112,29 +121,38 @@ func EvidenceQuestions(labels []string, cat *knowledge.Catalog) map[string]jev.Q
 		if !ok || sys.Parent == "" || sys.Status == "deprecated" {
 			continue
 		}
-		label := strings.TrimSpace(sys.Label)
+		label := strings.ReplaceAll(strings.TrimSpace(sys.Label), " and ", " or ")
 		qs["sys."+id+".presence"] = jev.Question{Type: jev.TypeChoice,
-			Instructions: "Using `text`, does the passage say whether the completed project will have " + label + "?",
+			Instructions: "Using `excerpt`, what does this clause say about " + label + "? Use `section` and `context` to identify what 'the system' or a short exclusion refers to. A requirement to design and install the system named in that heading establishes inclusion. This category includes any of its components or services; it does not require every type of equipment to be present. Category definition: " + sys.Describes + " Boundaries: " + sys.Excludes,
 			Criteria: map[string]string{
-				"included":     "It says the project will have it: it is specified, required, priced, allowed for, or supplied by any party.",
-				"not_included": "It says the project will not have it: not applicable, not required, or not part of the project.",
-				"not_stated":   "It mentions it without saying whether the project will have it, or only excludes it from one party's price.",
+				"included":           "The contractor must supply or install this system, or it is required without identifying the supplier. Required meters, valves and distribution count as inclusion of that service.",
+				"included_by_others": "The owner, principal or another party supplies this system. It is still included in the project even if excluded from the contractor's price.",
+				"not_included":       "The clause excludes " + label + " as a whole. A heading can name the excluded system. It must exclude this specific category, not merely a different service or one component. Broader parent categories are not excluded by an exclusion of one narrower service.",
+				"not_stated":         "No commitment to include or exclude this category. A heading alone, reference alone, or a conditional example is not a commitment. A clause solely about a different service listed in the category boundaries is also not_stated, not an exclusion of this category. For example, forklift charging or ordinary sockets say nothing about road-vehicle EV charging.",
 			}}
+
 		qs["sys."+id+".provider"] = jev.Question{Type: jev.TypeChoice,
-			Instructions: "Using `text`, who does the passage say provides " + label + "?",
+			Instructions: "Using `excerpt`, who does the passage say provides " + label + "?",
 			Criteria: map[string]string{
 				"contractor": "The builder, contractor or tenderer provides it as part of their works or price.",
 				"owner":      "The owner, client or principal supplies or arranges it.",
 				"others":     "An authority, developer, separate contractor or other named party provides it.",
 				"not_stated": "The passage does not say who provides it.",
 			}}
+		if id == "site.loading-docks" {
+			q := qs["sys."+id+".presence"]
+			criteria := q.Criteria.(map[string]string)
+			criteria["not_included"] = "The project explicitly has no loading facilities of any type. Excluding recessed docks alone does not exclude on-grade loading bays."
+			criteria["not_stated"] = "No loading facility is committed. An exclusion limited to recessed docks is retained in the source record but does not determine this broader category."
+			qs["sys."+id+".presence"] = q
+		}
 	}
 	return qs
 }
 
 func assertionQuestion(label string) jev.Question {
 	return jev.Question{Type: jev.TypeChoice,
-		Instructions: "Using `text`, how does the passage present the " + label + "?",
+		Instructions: "Using `excerpt`, how does the passage present the " + label + "?",
 		Criteria: map[string]string{
 			"stated":     "It states the value as a fact about this project or site, such as an assessment result, a certificate or a measured value.",
 			"required":   "It requires the value: a brief, consent, contract or specification says the building must have or achieve it.",
@@ -150,7 +168,7 @@ func valueQuestion(d knowledge.Determinant, cands []Candidate) (jev.Question, bo
 	if d.Question == nil || strings.TrimSpace(d.Question.Instructions) == "" {
 		return jev.Question{}, false
 	}
-	q := jev.Question{Type: jev.TypeChoice, Instructions: strings.TrimSpace(d.Question.Instructions)}
+	q := jev.Question{Type: jev.TypeChoice, Instructions: strings.ReplaceAll(strings.TrimSpace(d.Question.Instructions), "`text`", "`excerpt`") + " A heading alone does not establish a value; read its attached clause."}
 	switch {
 	case d.Extraction == "pre_parsed":
 		if len(cands) == 0 {
@@ -189,7 +207,7 @@ func candidateCriteria(label string, cands []Candidate) map[string]string {
 // set (SCHEMA.md, determinant evidence contract).
 func optionPresence(d knowledge.Determinant, opt string) jev.Question {
 	return jev.Question{Type: jev.TypeChoice,
-		Instructions: fmt.Sprintf("Using `text`, does the passage state that this project's building or part is Class %s?", opt),
+		Instructions: fmt.Sprintf("Using `excerpt`, does the passage state that this project's building or part is Class %s?", opt),
 		Criteria: map[string]string{
 			"stated_true":  fmt.Sprintf("It states that this project's building or part is Class %s.", opt),
 			"stated_false": fmt.Sprintf("It states that this project's building or part is not Class %s.", opt),
@@ -213,7 +231,7 @@ func headerQuestions(t knowledge.Taxonomy) map[string]jev.Question {
 	}
 	ask := func(id, label string, crit map[string]string) {
 		qs[id] = jev.Question{Type: jev.TypeChoice,
-			Instructions: "Using `text` and `document`, which " + label + " does the passage state for this project?",
+			Instructions: "Using `excerpt` and `document`, which " + label + " describes this project? Classify the principal building use from the project description. An ancillary office or amenity does not change the main building type. Choose not_stated for an isolated component specification or a heading alone.",
 			Criteria:     crit}
 	}
 	ask("hdr.building_class", "building class", classes)
@@ -227,6 +245,12 @@ func headerQuestions(t knowledge.Taxonomy) map[string]jev.Question {
 		crit := map[string]string{"not_stated": notStatedCriterion}
 		for _, o := range c.Options {
 			crit[o.ID] = o.Label
+		}
+		if c.Key == "operational_constraints" {
+			crit["live_environment"] = "Existing tenancies, businesses or operations must continue operating without disruption during the works, including other tenancies in the same facility."
+			crit["partial_occupation"] = "Part of the works area remains occupied, with staged possession or an explicitly partly occupied building."
+			crit["vacant"] = "The site or works area is expressly vacant or unoccupied."
+			crit["24_7_occupied"] = "The facility is explicitly occupied or operating 24 hours a day, seven days a week."
 		}
 		ask("hdr.cond."+c.Key, strings.ToLower(c.Label), crit)
 	}

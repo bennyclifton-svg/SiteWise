@@ -93,6 +93,7 @@ func Harvest(filename string, text identity.Text) []Candidate {
 	out = appendUncaptionedSheetCell(out, text)
 	out = appendSheetVersionGrid(out, text)
 	out = appendPagedDrawingBlock(out, text)
+	out = appendOCRIdentity(out, text)
 	// A separately positioned Project No cell is still a project reference,
 	// including repetitions in page headers. Explicit drawing labels survive.
 	for _, caption := range text.Runs {
@@ -165,6 +166,9 @@ var (
 	// is also the browser's duplicate-download suffix and cannot prove revision.
 	revParen        = regexp.MustCompile(`(?i)-\(([A-Z]?\d{1,3})\)$`)
 	cadLayoutSuffix = regexp.MustCompile(`(?i)(?:^|[-_ ])layout\d+$`)
+	// This complete export convention separates job, sheet, title and issue.
+	// A bare numeric prefix in an arbitrary filename remains ambiguous.
+	jobSheetFilename = regexp.MustCompile(`(?i)^([0-9]{5,6})_([A-Z]{1,3}[0-9]{3,5})_[A-Z][^\r\n]+-\([A-Z0-9]{1,4}\)$`)
 )
 
 type span struct{ start, end int }
@@ -220,6 +224,11 @@ func harvestFilename(name string) []Candidate {
 	}
 	for _, loc := range numberPattern.FindAllStringIndex(searchStem, -1) {
 		if overlaps(covered, loc[0], loc[1]) {
+			continue
+		}
+		if m := jobSheetFilename.FindStringSubmatchIndex(stem); m != nil && loc[0] == m[2] && loc[1] == m[3] {
+			// Still cover the job token so it cannot become the drawing title.
+			covered = append(covered, span{loc[0], loc[1]})
 			continue
 		}
 		display := stem[loc[0]:loc[1]]
@@ -345,7 +354,10 @@ func appendReportHeadings(out []Candidate, text identity.Text) []Candidate {
 		// Legal instruments often use body-size capitals for their cover
 		// title. Offer that literal early heading; do not settle it by rule.
 		legalHeading = legalHeading && i < 20 && len(words) >= 3 && s == strings.ToUpper(s)
-		if run.Source.Height+.01 < 1.4*bodyHeight && !manualHeading && !legalHeading {
+		// Requirements covers can use body-size capitals too. Keep the
+		// printed heading in Jev's choices instead of settling the filename.
+		requirementsHeading := i < 20 && len(words) >= 3 && len(words) <= 8 && s == strings.ToUpper(s) && strings.HasSuffix(s, " REQUIREMENTS")
+		if run.Source.Height+.01 < 1.4*bodyHeight && !manualHeading && !legalHeading && !requirementsHeading {
 			if c, ok := compactCenteredHeading(text, i); ok {
 				out = mergeCandidate(out, c)
 			}

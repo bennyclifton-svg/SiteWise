@@ -26,6 +26,9 @@ var ErrTooLarge = errors.New("document exceeds identity limit")
 // Zero numeric limits are replaced by DefaultLimits. An unspecified MaxPages
 // also enables the default control-page probe.
 type Limits struct {
+	// RequireComplete is for background source preservation. Unsupported or
+	// bounded extraction must fail rather than masquerade as a whole document.
+	RequireComplete bool
 	// MaxBytes caps PDF bytes loaded/read and the sum of decompressed zip members.
 	// Larger PDFs use bounded range reads instead of loading the whole file.
 	MaxBytes int64
@@ -110,7 +113,8 @@ type Run struct {
 // Text is the identity text of one file.
 // TextLayer is false for a readable PDF page that has no text (a scan or a blank).
 type Text struct {
-	PageCount int // physical PDF pages; zero for other formats
+	OCR       bool // recovered lettering; never a native PDF text layer
+	PageCount int  // physical PDF pages; zero for other formats
 	Format    string
 	TextLayer bool
 	Runs      []Run
@@ -139,6 +143,9 @@ func Extract(ctx context.Context, format string, r io.ReaderAt, size int64, limi
 	}
 	if err != nil {
 		return Text{}, err
+	}
+	if limits.RequireComplete && (len(got.Runs) >= limits.MaxRuns || got.PageCount > limits.MaxPages) {
+		return Text{}, ErrTooLarge
 	}
 	got.Format = strings.ToLower(format)
 	got.TextLayer = len(got.Runs) > 0

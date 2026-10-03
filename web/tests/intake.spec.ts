@@ -84,9 +84,12 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
 
   // Stored but not filed says so in words, not only colour.
   const scan = block(page, "scanned-empty.pdf");
+  await expect(scan.locator(".reg-title")).toContainText("Title not extracted");
+  await expect(scan.locator(".reg-title")).toContainText("File: scanned-empty.pdf");
+  await expect(scan.locator("tr.reg-line")).toContainText("Not filed · no readable text");
   await open(scan);
   await expect(scan.locator(".tb-state")).toHaveText("Stored · not filed");
-  await expect(scan).toContainText("no readable text layer");
+  await expect(scan).toContainText("no selectable text and has not been read with OCR");
 
   // Jev missed its deadline: the unanswered boxes read "Not checked" and
   // carry no value, so they cannot pass for a judgement.

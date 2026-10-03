@@ -113,16 +113,14 @@ determinants:
   extraction: choice
   question:
     type: choice
-    instructions: Using `text`, does the passage explicitly state that the described building or part
-      is protected throughout by sprinklers? A requirement, proposed option or future installation is
-      not proof of existing protection; choose not_stated for those cases.
+    instructions: Using `text`, does the passage state or require automatic sprinkler protection for
+      the identified building or part? Record an explicit installation requirement as stated_true;
+      the separate assertion question distinguishes required protection from an existing fact.
+      An optional example or a reference alone is not_stated.
     criteria:
-      stated_true: The passage explicitly affirms this condition for the identified building, part or
-        site.
-      stated_false: The passage explicitly denies this condition for the identified building, part or
-        site.
-      not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
-        itself.
+      stated_true: Automatic sprinklers protect, or must be installed to protect, the identified building or part.
+      stated_false: The identified building or part has no automatic sprinklers, or they are expressly not required.
+      not_stated: No sprinkler provision is specified, or it is only optional, an example or a reference.
     runs_on:
     - fire-active
     - fire-passive

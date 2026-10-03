@@ -12,7 +12,7 @@ import (
 )
 
 // maxCandidates bounds one key's options in one passage; the first are kept.
-const maxCandidates = 12
+const maxCandidates = 254
 
 // Candidate is one verbatim value code found in a passage. Norm is the
 // machine form (number without separators, ISO date); Value is never edited.
@@ -49,7 +49,7 @@ var (
 	metreRe    = regexp.MustCompile(`(?i)` + numberRe + `\s*m\b`)
 	monthsRe   = regexp.MustCompile(`(?i)(\d+)\s*\(?\w*\)?\s*months?`)
 	yearsRe    = regexp.MustCompile(`(?i)(\d+)\s*years?`)
-	storeyRe   = regexp.MustCompile(`(?i)\b(\d+|single|double|two|three|four|five|six)[ -]?stor(?:e)?y`)
+	storeyRe   = regexp.MustCompile(`(?i)\b(?:[a-z]+\s*\()?(\d+|single|double|two|three|four|five|six|seven|eight|nine|ten)\)?[ -]*stor(?:e)?y`)
 	consentRe  = regexp.MustCompile(`(?i)\b(?:DA|CDC|SSD)[- /]?\d[\w./-]*\d`)
 	dateRe     = regexp.MustCompile(`\b(\d{1,2})[./](\d{1,2})[./](\d{4})\b`)
 	longDateRe = regexp.MustCompile(`(?i)\b(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})\b`)
@@ -64,7 +64,7 @@ var (
 		{regexp.MustCompile(`(?i)\bGFA\b|gross floor area`), "GFA"},
 		{regexp.MustCompile(`(?i)site area`), "site area"},
 	}
-	storeyWords = map[string]string{"single": "1", "double": "2", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6"}
+	storeyWords = map[string]string{"single": "1", "double": "2", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9", "ten": "10"}
 	monthNums   = map[string]int{"january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6, "july": 7,
 		"august": 8, "september": 9, "october": 10, "november": 11, "december": 12}
 )
@@ -84,13 +84,13 @@ func Harvest(text string, cat *knowledge.Catalog) Harvested {
 		h.add("det."+d.ID, d.Extraction, candidatesFor(d.ID, d.Value, d.Extraction, text))
 	}
 	for _, f := range cat.ProjectFacts() {
-		if !f.TriggeredIn(t) {
+		if !f.TriggeredIn(t) && !(f.ID == "consent_date" && strings.Contains(strings.ToLower(text), "date of determination")) {
 			continue
 		}
 		h.add("fact."+f.ID, f.Extraction, candidatesFor(f.ID, f.Value, f.Extraction, text))
 	}
 	for _, f := range cat.ScaleFields() {
-		if !f.TriggeredIn(t) {
+		if !f.TriggeredIn(t) && !(f.Key == "units" && unitCountRe.MatchString(text)) {
 			continue
 		}
 		h.add("hdr.scale."+f.Key, "pre_parsed", scaleCandidates(f, text))
@@ -137,8 +137,24 @@ func candidatesFor(id, value, extraction, text string) []Candidate {
 	return nil
 }
 
+var unitCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+(?:sole\s+occupancy\s+)?(?:units|apartments|dwellings)\b`)
+var bedroomCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+bedrooms?\b`)
+var parkingCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+(?:car\s*(?:parking|park)?\s*spaces|parking\s+(?:spaces|bays)|car\s*parks)\b`)
+var dockCountRe = regexp.MustCompile(`(?i)(?:^|[^\d.])(\d+)\s+(?:no\.?\s+)?(?:(?:loading\s+)?dock|roller\s+shutter)\s+doors?\b`)
+var tenancyCountRe = regexp.MustCompile(`(?i)(?:^|[^\d.])(\d+)\s+(?:separate\s+)?tenancies\b`)
+
 func scaleCandidates(f knowledge.ScaleField, text string) []Candidate {
 	switch {
+	case f.Key == "dock_doors":
+		return verbatim(dockCountRe, text, func(m []string) string { return m[1] })
+	case f.Key == "tenancies":
+		return verbatim(tenancyCountRe, text, func(m []string) string { return m[1] })
+	case f.Key == "bedrooms":
+		return verbatim(bedroomCountRe, text, func(m []string) string { return m[1] })
+	case f.Key == "units" || f.Key == "residential_units":
+		return verbatim(unitCountRe, text, func(m []string) string { return m[1] })
+	case f.Key == "car_parks":
+		return verbatim(parkingCountRe, text, func(m []string) string { return m[1] })
 	case f.Key == "storeys" || f.Key == "total_storeys":
 		return verbatim(storeyRe, text, func(m []string) string {
 			if n, ok := storeyWords[strings.ToLower(m[1])]; ok {

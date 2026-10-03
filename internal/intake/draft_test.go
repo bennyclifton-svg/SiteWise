@@ -243,7 +243,7 @@ func TestNumberQuestionStatesTheRoleAndWhereEachOptionWasFound(t *testing.T) {
 	d := intake.NewDraft(draftCatalog(t), name, text, intake.Harvest(name, text), nil)
 	d.Plan(nil, "self")
 	call, ok := d.Call()
-	if !ok || call.QuestionVersion != "intake-75" {
+	if !ok || call.QuestionVersion != "intake-76" {
 		t.Fatalf("version %q", call.QuestionVersion)
 	}
 	raw, err := json.Marshal(call.Questions[intake.FieldNumber])

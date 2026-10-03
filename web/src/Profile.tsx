@@ -3,6 +3,7 @@
 // says how it was decided; the user's word is final.
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { ProfileSources } from "./ProfileSources";
 import { ApiError } from "./api";
 import { IconCheck, IconConfirmed, IconNotChecked, IconYou } from "./icons";
 import { profileApi, type Cell, type Profile as ProfileData, type ProfileField, type SystemRow } from "./profileApi";
@@ -39,9 +40,13 @@ const REASONS: Record<string, string> = {
 };
 
 export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
+  const [sourceSystem, setSourceSystem] = useState("");
+  const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [requesting, setRequesting] = useState(false);
+  const [requestNote, setRequestNote] = useState("");
 
   const fail = useCallback(
     (e: unknown) => {
@@ -59,6 +64,26 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
     };
   }, [projectId, tick, fail]);
 
+  // Completion can follow the profile event, or an SSE event can be missed.
+  // Poll only while work is outstanding so the last "updating" state clears.
+  const pending = (data?.pending_documents ?? 0) > 0;
+  useEffect(() => {
+    if (!pending) return;
+    let live = true;
+    let timer: ReturnType<typeof setTimeout>;
+    const refresh = async () => {
+      try {
+        const p = await profileApi.get(projectId);
+        if (live) setData(p);
+      } catch (e) {
+        if (live) fail(e);
+      }
+      if (live) timer = setTimeout(refresh, 2000);
+    };
+    timer = setTimeout(refresh, 2000);
+    return () => { live = false; clearTimeout(timer); };
+  }, [projectId, pending, fail]);
+
   const set = useCallback(
     async (key: string, body: { part_id?: string; value?: string | null; note?: string; reset?: boolean }) => {
       try {
@@ -71,6 +96,20 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
     [projectId, fail],
   );
 
+  const update = useCallback(async () => {
+    setRequesting(true);
+    try {
+      const p = await profileApi.read(projectId);
+      setData(p);
+      setError("");
+      setRequestNote(p.pending_documents > 0 || p.failed_documents > 0 ? "" : "No new reading queued. Check source coverage and unresolved passages below.");
+    } catch (e) {
+      fail(e);
+    } finally {
+      setRequesting(false);
+    }
+  }, [projectId, fail]);
+
   if (!data) {
     return <p className="muted">{error || "Reading the profile…"}</p>;
   }
@@ -78,9 +117,30 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
 
   return (
     <div className="profile">
+      <div className="profile-actions">
+        <button type="button" className="btn btn-primary btn-small" onClick={update} disabled={requesting}>
+          {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update project profile"}
+        </button>
+        <span className="profile-actions-note">
+          {data.failed_documents > 0
+            ? `${data.failed_documents} document${data.failed_documents === 1 ? "" : "s"} could not be processed${data.active_documents > 0 ? ` · ${data.active_documents} still processing` : ""}`
+            : data.unread_documents > 0
+            ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} not read yet`
+            : data.pending_documents > 0
+              ? data.active_documents > 0 ? "Documents are being processed; fields appear as reading finishes" : "Waiting for document processing to start or resume"
+              : requestNote || ((data.coverage ?? []).length === 0 ? "Upload documents to start" : data.coverage?.some(d => !d.current) ? "Update needed to check complete source coverage" : "Reading finished — review source coverage below")}
+        </span>
+      </div>
+      {data.failed_documents > 0 && (
+        <p className="banner" role="alert">
+          {data.payment_required
+            ? "Profile reading stopped: Jev returned Payment Required (402). Check your TypeSafe account’s billing or credits, then retry. Your documents and prepared text are saved."
+            : data.active_documents > 0 ? "Some document processing stopped; other documents are still being processed. Your files are saved. Retry the project profile to try the failed documents again." : "Document processing stopped. Your files are saved. Retry the project profile to try again."}
+        </p>
+      )}
       <p className="profile-status">
         {builtAt ? `Updated ${builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Not built yet"}
-        {data.pending_documents > 0 && ` · ${data.pending_documents} document${data.pending_documents === 1 ? "" : "s"} still being read`}
+        {data.pending_documents > 0 && ` · ${data.pending_documents} document${data.pending_documents === 1 ? "" : "s"} pending`}
         {!data.thresholds.applied
           ? " · Readings are stored but not shown until the thresholds are approved"
           : data.thresholds.provisional && " · Provisional thresholds"}
@@ -90,6 +150,8 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
           {error}
         </p>
       )}
+
+      <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} open={sourcesOpen} onOpen={setSourcesOpen} />
 
       <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
 
@@ -124,7 +186,7 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
             <div className="pf-sysgroup" key={g.id}>
               <h3>{g.label}</h3>
               {rows.map((r) => (
-                <SystemLine key={r.leaf} row={r} onSet={set} onJump={onJump} />
+                <SystemLine key={r.leaf} row={r} onSet={set} onJump={onJump} onSources={() => { setSourceSystem(r.leaf); setSourcesOpen(true); document.getElementById("profile-sources")?.scrollIntoView({ block: "start" }); }} />
               ))}
             </div>
           );
@@ -338,7 +400,7 @@ const PRESENCE: { value: string; label: string }[] = [
   { value: "", label: "Unknown" },
 ];
 
-function SystemLine({ row, onSet, onJump }: { row: SystemRow; onSet: Setter; onJump: (id: string) => void }) {
+function SystemLine({ row, onSet, onJump, onSources }: { row: SystemRow; onSet: Setter; onJump: (id: string) => void; onSources: () => void }) {
   const base = `sys.${row.leaf}`;
   const [note, setNote] = useState(row.note.value);
   useEffect(() => setNote(row.note.value), [row.note.value]);
@@ -382,6 +444,7 @@ function SystemLine({ row, onSet, onJump }: { row: SystemRow; onSet: Setter; onJ
         <Conflict cell={row.presence} onPick={(v) => onSet(`${base}.presence`, { part_id: row.part_id, value: v })} />
         <Conflict cell={row.provider} onPick={(v) => onSet(`${base}.provider`, { part_id: row.part_id, value: v })} />
         <Sources cell={row.presence} onJump={onJump} />
+          <button type="button" className="cell-link" onClick={onSources} aria-label={`View requirements for ${row.label}`}>Requirements</button>
         {row.presence.band === "user" && (
           <button type="button" className="cell-link" onClick={() => onSet(`${base}.presence`, { part_id: row.part_id, reset: true })}>
             Reset

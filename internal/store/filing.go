@@ -51,6 +51,7 @@ type DecisionWrite struct {
 
 // CommitFiling is the atomic result of one intake pass.
 type CommitFiling struct {
+	OCR       bool
 	Decisions []DecisionWrite
 	PDFPages  int
 	// PriorID is the document this filing supersedes. Empty stores no link.
@@ -146,7 +147,11 @@ func (s *Store) CorrectDecision(ctx context.Context, orgID, documentID, field, v
 	if err != nil {
 		return err
 	}
-	payload, err := documentEventPayload(documentID, doc.Status, "", rows)
+	current, err := q.GetDocument(ctx, db.GetDocumentParams{OrgID: orgID, ID: documentID})
+	if err != nil {
+		return err
+	}
+	payload, err := documentEventPayload(documentID, doc.Status, current.Reason, rows)
 	if err != nil {
 		return err
 	}
@@ -285,6 +290,12 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 		return FilingOutcome{}, err
 	}
 	payload, err := filingEventPayload(documentID, rows)
+	if in.OCR {
+		if _, err := tx.Exec(ctx, `UPDATE documents SET reason='ocr_review' WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, documentID); err != nil {
+			return FilingOutcome{}, err
+		}
+		payload, err = documentEventPayload(documentID, StatusFiled, "ocr_review", rows)
+	}
 	if err != nil {
 		return FilingOutcome{}, err
 	}
@@ -297,6 +308,11 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 		WHERE org_id=$1::uuid AND document_id=$2::uuid AND field='kind' AND value='drawing' AND band IN ('amber','green'))
 		ON CONFLICT DO NOTHING`, orgID, documentID, in.PDFPages); err != nil {
 			return FilingOutcome{}, err
+		}
+		if in.OCR {
+			if _, err := tx.Exec(ctx, `UPDATE drawing_expansions SET status='review',reason='OCR read first-page identity only. Separate scanned sheets have not been filed.' WHERE org_id=$1::uuid AND source_id=$2::uuid AND status='pending'`, orgID, documentID); err != nil {
+				return FilingOutcome{}, err
+			}
 		}
 	}
 	out, err := readOutcome(ctx, q, orgID, documentID)

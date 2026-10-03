@@ -38,6 +38,16 @@ type Document struct {
 	IdentityPage   int32
 }
 
+type DocumentSource struct {
+	OrgID      string
+	DocumentID string
+	Version    string
+	Pages      int32
+	EmptyPages []int32
+	Source     []byte
+	CreatedAt  time.Time
+}
+
 type DrawingExpansion struct {
 	OrgID     string
 	SourceID  string
@@ -126,11 +136,38 @@ type Passage struct {
 	BodyTsv    interface{}
 }
 
+type PassageCall struct {
+	OrgID       string
+	PassageID   string
+	Stage       string
+	Fingerprint string
+	Result      []byte
+	CreatedAt   time.Time
+}
+
 type PassageEvidence struct {
 	OrgID      string
 	PassageID  string
 	QuestionID string
 	State      string
+}
+
+type PassageSource struct {
+	OrgID       string
+	PassageID   string
+	Page        int32
+	Location    string
+	Section     string
+	Context     string
+	StartOffset int32
+	EndOffset   int32
+	Category    string
+	Provider    string
+	Scope       string
+	Outcome     string
+	Confidence  pgtype.Float8
+	MappedKeys  []string
+	Unresolved  []string
 }
 
 type PassageSystem struct {
