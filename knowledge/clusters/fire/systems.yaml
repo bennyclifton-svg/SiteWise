@@ -115,7 +115,8 @@ systems:
       General external wall combustibility under NCC Part C
       (external-walls), and planning-level bushfire mapping and vegetation
       management as land use (site).
-    status: draft
+    status: deprecated
+    replaced_by: envelope.bushfire-construction
     notes: Bushfire detail is envelope-heavy; the envelope cluster may also label these passages.
     sources:
       - {seed: as-standards-reference.md, anchor: "## AS 3959 — Construction of Buildings in Bushfire-Prone Areas"}

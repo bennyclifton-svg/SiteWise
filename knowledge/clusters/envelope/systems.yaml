@@ -60,13 +60,12 @@ systems:
       air infiltration) to AS 2047, window testing to AS 4420, compliance
       marking, and window openings for natural light and ventilation.
     excludes: >-
-      Head, sill and jamb flashings as the topic (flashings-seals); glazed
-      curtain walls (curtain-wall); shower screens and internal glazed
-      partitions (interiors.internal-glazing); glass balustrades
-      (access-egress); fire-rated windows (fire-passive); bushfire-specific
-      window requirements (bushfire-construction); thermal ratings when the
-      passage is a NatHERS, BASIX or Section J compliance statement
-      (thermal-performance).
+      Head, sill and jamb flashings as the topic (flashings-seals); glazed curtain walls
+      (curtain-wall); shower screens and internal glazed partitions (interiors.internal-glazing);
+      glass balustrades (access-egress); fire-rated windows (fire-passive); bushfire-specific
+      window requirements (bushfire-construction); thermal ratings when the passage is
+      a NatHERS, BASIX or Section J compliance statement (thermal-performance); garage, roller
+      and dock doors (vehicle-doors).
     status: draft
     sources:
       - {seed: finishes-residential.md, anchor: "### Window and door joinery (aluminium and timber)"}
@@ -441,3 +440,33 @@ systems:
     sources:
       - {seed: as-standards-reference.md, anchor: "## AS/NZS 2107 — Acoustics — Recommended Design Sound Levels and Reverberation Times for Building Interiors"}
       - {seed: commercial-construction-guide.md, anchor: "## Acoustics in Commercial Buildings"}
+  - id: envelope.vehicle-doors
+    parent: envelope
+    label: Vehicle, garage and roller doors
+    describes: >-
+      Doors for vehicles and goods in the external envelope: roller shutters, sectional and
+      tilt garage doors, high-speed and dock doors, their motors, manual overrides, wind
+      locks, wind rating and weather seals, and ember seals where bushfire rated.
+    excludes: >-
+      Pedestrian external doors and glazed sliding doors (windows-doors); fire shutters and
+      fire doors (fire-passive.openings); dock levellers and dock shelters (site.loading-docks).
+    status: draft
+    sources:
+      - {document: hale-brief, anchor: "Roller Shutter Doors"}
+      - {document: newham-spec, anchor: "16. GARAGE DOORS"}
+  - id: interiors.ffe
+    parent: interiors
+    label: Furniture, fittings, equipment and appliances
+    describes: >-
+      Loose and owner-selected items that complete a fit-out: kitchen and laundry appliances,
+      window furnishings such as blinds and curtains, loose furniture, mirrors and
+      accessories, and the furniture, fittings and equipment schedule that says who supplies
+      each item.
+    excludes: >-
+      Built-in joinery and benchtops (joinery); sanitary fixtures and tapware
+      (hydraulic.sanitary); light fittings (electrical.lighting); mechanical plant
+      (mechanical).
+    status: draft
+    sources:
+      - {seed: commercial-construction-guide.md, anchor: "## Base Building vs Fitout — Scope Delineation"}
+      - {document: newham-spec, anchor: "Turnkey Inclusions"}

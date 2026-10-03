@@ -1,0 +1,76 @@
+{
+  "root_env": "SITEWISE_PROFILE_CORPUS",
+  "root_default": "D:/AI Projects/Test Data",
+  "note": "Private corpus. Never copy these documents into the repo or record personal details from them.",
+  "projects": [
+    {
+      "id": "newham",
+      "documents": [
+        "newham-spec"
+      ]
+    },
+    {
+      "id": "hale",
+      "documents": [
+        "hale-brief"
+      ]
+    },
+    {
+      "id": "petersham",
+      "documents": [
+        "petersham-ppr"
+      ]
+    },
+    {
+      "id": "rutherford",
+      "documents": [
+        "rutherford-bpb"
+      ]
+    },
+    {
+      "id": "mornington",
+      "documents": [
+        "morn-coastal",
+        "morn-montique",
+        "morn-toussaint"
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "newham-spec",
+      "path": "Newham Kit/Specification.docx",
+      "sha256": "98d5a6eb83c1241cde0271aecae19ef579093134d03ffcedbca896d4b0ca903d"
+    },
+    {
+      "id": "hale-brief",
+      "path": "Hale/Design/Design Brief [P1].pdf",
+      "sha256": "f0f84cb55d0e9a9d2cf66c88707ef937d6ca941887c938eac6c045718a51b7b2"
+    },
+    {
+      "id": "petersham-ppr",
+      "path": "Petersham/03 ANX Q PPR/ANX Q PPR [E].pdf",
+      "sha256": "39c877b111e87a8c10117703fa4ab2194018bc56a20f31ec50ddc57b482c908d"
+    },
+    {
+      "id": "rutherford-bpb",
+      "path": "procurement-industrial-new/BUILDING PERFORMANCE BRIEF [B].pdf",
+      "sha256": "1a9bc6031e3c0181c3997c9e6b75cd6724a10b596cb1c4d39338a6ada9603d57"
+    },
+    {
+      "id": "morn-coastal",
+      "path": "Mornington/Coastal-Builders.pdf",
+      "sha256": "e3b694dec29a966029d870065fbbfa24ec5e7631f3f999d2f98678380d576455"
+    },
+    {
+      "id": "morn-montique",
+      "path": "Mornington/Montique.pdf",
+      "sha256": "541977e9625f6a98706a293979c5342f09d0cb0df895964165be2116376a18d2"
+    },
+    {
+      "id": "morn-toussaint",
+      "path": "Mornington/Toussaint.pdf",
+      "sha256": "ebd93aaff00927b706ca55ee8325a5ac94f65b901ac2dc9cddd6c6d18a02f143"
+    }
+  ]
+}

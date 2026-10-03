@@ -153,9 +153,10 @@ systems:
       driveway and ramp grades, and car park stall, aisle and headroom
       geometry.
     excludes: >-
-      The structure of suspended car park floors and ramps (structure), car
-      park ventilation (mechanical) and footpaths and accessible paths of
-      travel for people (access-egress).
+      The structure of suspended car park floors and ramps (structure), car park ventilation
+      (mechanical), footpaths and accessible paths of travel for people (access-egress), docks
+      and dock levellers (loading-docks), bollards and crash barriers (impact-protection) and
+      works on public land beyond the crossover (public-domain).
     notes: >-
       Car park geometry inside a building is placed here because no other
       top-level system owns vehicle geometry. Flagged for the lead in REPORT.
@@ -593,3 +594,72 @@ systems:
       - {seed: renovation-guide.md, anchor: "## Structural intervention"}
       - {seed: structural-commercial-industrial-guide.md, anchor: "### Inception, site and existing information [inception]"}
       - {seed: residential-construction-guide.md, anchor: "## Residential Renovation and Extension Considerations"}
+  - id: site.loading-docks
+    parent: site
+    label: Loading docks and dock equipment
+    describes: >-
+      Places where goods vehicles load and unload at a building: recessed and on-grade docks,
+      dock levellers, dock shelters and seals, dock bumpers, loading-bay awnings and clearance
+      zones around parked vehicles.
+    excludes: >-
+      Pavements, hardstands and swept paths (vehicle-access); dock and roller doors
+      (envelope.vehicle-doors); bollards and crash barriers (impact-protection).
+    status: draft
+    sources:
+      - {document: hale-brief, anchor: "Recessed Docks"}
+      - {document: rutherford-bpb, anchor: "Section 4 Dock, Access Doors & Roller Shutter Doors"}
+  - id: site.impact-protection
+    parent: site
+    label: Vehicle and forklift impact protection
+    describes: >-
+      Protection of people, building elements and services from vehicles and materials
+      handling equipment: bollards, post-and-rail crash barriers, forklift tine kerbs and
+      angles, column and corner guards, and guards around switchboards, tanks, hydrants and
+      doors.
+    excludes: >-
+      Balustrades and barriers against falls (access-egress.barriers); pool barriers (access-egress.pool-barriers);
+      site fencing (landscape).
+    status: draft
+    sources:
+      - {document: hale-brief, anchor: "Pedestrian and Asset Protection"}
+      - {document: rutherford-bpb, anchor: "4.1 Bollards"}
+  - id: site.waste-storage
+    parent: site
+    label: Waste storage and collection
+    describes: >-
+      Where and how waste is stored and collected: bin rooms and bin enclosures, garbage
+      chutes, compactors and bin lifters, bulky-waste rooms, waste management plans and
+      collection arrangements.
+    excludes: >-
+      Exhaust from refuse rooms (mechanical.local-exhaust); trade waste plumbing
+      (hydraulic.trade-waste); demolition and construction waste (demolition).
+    status: draft
+    sources:
+      - {document: petersham-ppr, anchor: "7.13. Garbage Systems and Rooms/Waste Management Plan"}
+  - id: site.public-domain
+    parent: site
+    label: Public domain and works in the road reserve
+    describes: >-
+      Works outside the lot on public land: council footpaths and verges, street trees and
+      verge planting, street lighting, road signage and line marking, and authority approvals
+      for works in the road reserve.
+    excludes: >-
+      Driveways, crossovers and pavements inside the lot (vehicle-access); accessible paths of
+      travel (access-egress); authority water and sewer mains (services-connections).
+    status: draft
+    sources:
+      - {document: petersham-ppr, anchor: "7.7. Concrete Footpaths and Paving - Public Domain"}
+      - {document: newham-spec, anchor: "34. LANDSCAPING - HARDSCAPE"}
+  - id: site.signage
+    parent: site
+    label: Building, tenancy and wayfinding signage
+    describes: >-
+      Non-statutory signs: building and tenancy identification, pylon and directory signs,
+      wayfinding, unit numbering and letterbox signs.
+    excludes: >-
+      Exit and emergency signs (fire-active.emergency-lighting); accessible signage and
+      braille (access-egress); safety signage required for plant (the plant's own system).
+    status: draft
+    sources:
+      - {document: petersham-ppr, anchor: "7.21. Signage"}
+      - {document: rutherford-bpb, anchor: "8.6 Kennards Hire Pylon Signage"}
