@@ -116,7 +116,9 @@ $env:SITEWISE_ENV = 'development'
 New-Item -ItemType Directory -Force $env:SITEWISE_FILE_DIR | Out-Null
 
 $Login = "http://$Addr/dev/login"
-$server = Start-Process -FilePath $Exe -ArgumentList @('serve', '-addr', $Addr, '-dev-login') -NoNewWindow -PassThru
+# Development reads only documents uploaded from now (the dev database holds a
+# large unread corpus backlog) and applies the provisional profile floors.
+$server = Start-Process -FilePath $Exe -ArgumentList @('serve', '-addr', $Addr, '-dev-login', '-background-backlog=false', '-profile-provisional') -NoNewWindow -PassThru
 try {
     $deadline = (Get-Date).AddSeconds(60)
     while (-not $server.HasExited -and (Get-Date) -lt $deadline) {
