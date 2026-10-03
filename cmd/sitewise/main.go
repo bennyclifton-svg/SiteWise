@@ -72,6 +72,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	devLogin := fs.Bool("dev-login", false, "serve GET /dev/login, which signs in as the local owner; loopback only, never in production")
 	knowledgeDir := fs.String("knowledge", "knowledge", "building knowledge directory")
 	profileThresholds := fs.String("profile-thresholds", "data/profile/thresholds.json", "project profile thresholds")
+	profileReading := fs.String("profile-reading", "data/profile/reading.json", "document kinds the project profile reads automatically")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
@@ -127,6 +128,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		return 1
 	}
 	profileTh, minNoul := loadProfileThresholds(*profileThresholds, *provisional, logger)
+	reading, err := profile.LoadReadPolicy(*profileReading)
+	if err != nil {
+		fmt.Fprintln(stderr, "profile reading policy: "+err.Error())
+		return 1
+	}
 	client, err := jev.New(jev.Options{APIKey: cfg.JevAPIKey, Model: cfg.JevModel, Logger: slog.New(slog.NewJSONHandler(stderr, nil))})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -176,6 +182,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 
 		Knowledge:         building,
 		ProfileThresholds: profileTh,
+		ProfileReading:    reading,
 	})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -184,7 +191,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	// Passages, labels, evidence and the project profile run in the
 	// background; filing keeps its slots and the interactive Jev reserve.
 	worker := &jobs.Worker{Store: st, Ask: client, Catalog: building, Source: jobs.FullSource(st, blobs),
-		MinNoul: minNoul, Profile: profileTh}
+		MinNoul: minNoul, Profile: profileTh, Reading: reading}
 	ocrService, err := intake.NewService(st, client, cat, thresholds)
 	if err != nil {
 		fmt.Fprintln(stderr, err)

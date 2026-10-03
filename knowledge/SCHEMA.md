@@ -289,6 +289,7 @@ recorded but cannot be checked, because the corpus is private.
   stated_in:                     # where it is usually stated; ids from data/intake
     - {kind: report, discipline: consultant.bushfire, label: Bushfire assessment report}
   profile_group: site            # classification | site | services | fire
+  systems: [envelope, site]      # optional: systems that make it relevant to a project's scope
 ```
 
 A determinant with `triggers` may omit `question.runs_on`. Triggers must be
@@ -310,12 +311,30 @@ The exact wording is in `docs/plans/2026-10-03-project-profile.md` §2.2.
 - `taxonomy.yaml`: `status`, `sources`, `building_classes` (with
   `subclasses`, each with `ncc_class` and `scale_fields`: `key`, `label`,
   `type`, optional `unit`, `basis_required`, `triggers`), `work_types`, and
-  `conditions` (`key`, `label`, `options`). Copied from Clerk's taxonomy as
+  `conditions` (`key`, `label`, `options`). A work type may add
+  `display_label`, shown to people; `label` stays the wording Jev reads, so a
+  screen rename never changes a recorded question. Copied from Clerk's taxonomy as
   data, without cost-uplift text. Site conditions that determinants already
   cover (bushfire, flood, heritage, contamination, water source) are left out.
 - `project_facts.yaml`: `facts:` list, with the same shape as determinants
   (consent number and dates, contract form and basis, defects period, design
   life). Ids must not collide with determinants.
-- `typical_systems.yaml`: `status`, `sources`, `typical:` list of
-  `{subclass, work_type, systems: [leaf ids]}`. These are suggestions for
-  the thin-brief workflow, never evidence.
+- `scope_defaults.yaml`: `status`, `sources`, `always_shown` (profile
+  determinants every scope shows), `empty_work_types` (work types that start
+  with nothing in scope), `presets` (`id`, `label`, `systems`), `classes`
+  (`{class, work_type, systems}`, where class is a taxonomy subclass id) and
+  `categories` (`{category, systems}`). New build and extension use the
+  class's list for the work type, else its new-build list, else its
+  category's list. Systems are live leaf ids. Defaults are suggestions,
+  never evidence.
+
+**Scope and relevance** (`docs/design/2026-10-03-profile-scope.md`). A
+project's scope is its defaults, plus systems a read document includes,
+plus the user's choices, which are final. Code then decides which profile
+determinants are relevant: those read by a rule (its `applies_when` and
+`derives`) whose `systems` touch the scope and whose `applies_when` is not
+false for the values the profile holds (an unknown value keeps the rule),
+those whose own `systems` touch the scope, and `always_shown`. The checker
+warns about a profile determinant that can never become relevant: read by
+no rule, no `systems`, not always shown. Fix a profile that shows too much
+or too little here, in the schema, not in code.

@@ -23,11 +23,14 @@ WHERE contype = 'f'
 -- name: CrossOrgRows :many
 -- Rows whose parent is not in the same org. Composite keys make most of
 -- these impossible while the constraints hold; the checks prove the restored
--- data, not the schema. events.document_id has no foreign key at all.
+-- data, not the schema. events.document_id has no foreign key at all. A
+-- document the org deleted keeps its event history; its "deleted" event says
+-- so, and any other missing document is still reported.
 SELECT 'events.document_id' AS reference, count(*)::bigint AS rows
 FROM events e
 WHERE e.document_id IS NOT NULL
   AND NOT EXISTS (SELECT 1 FROM documents d WHERE d.org_id = e.org_id AND d.id = e.document_id)
+  AND NOT EXISTS (SELECT 1 FROM events x WHERE x.org_id = e.org_id AND x.kind = 'deleted' AND x.document_id = e.document_id)
 UNION ALL
 SELECT 'documents.project_id', count(*)::bigint
 FROM documents d

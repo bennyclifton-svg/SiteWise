@@ -118,9 +118,14 @@ func run(addr, data string) error {
 	if err != nil {
 		return err
 	}
+	reading, err := profile.LoadReadPolicy("data/profile/reading.json")
+	if err != nil {
+		return err
+	}
 	srv, err := httpapi.New(httpapi.Options{
 		Knowledge:         building,
 		ProfileThresholds: profileTh,
+		ProfileReading:    reading,
 		Store:             st,
 		Blobs:             blobs,
 		Jev:               client,

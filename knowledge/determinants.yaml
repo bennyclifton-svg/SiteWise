@@ -95,6 +95,7 @@ determinants:
   stated_in:
   - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
   profile_group: classification
+  systems: [fire-active, fire-passive, access-egress]
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -262,6 +263,7 @@ determinants:
   stated_in:
   - {kind: drawing, discipline: consultant.structural, label: Structural drawings (general notes)}
   profile_group: site
+  systems: [structure, envelope]
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -303,6 +305,7 @@ determinants:
   stated_in:
   - {kind: report, discipline: consultant.geotechnical, label: Geotechnical report}
   profile_group: site
+  systems: [substructure]
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -377,6 +380,7 @@ determinants:
   - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
   - {kind: report, discipline: consultant.civil, label: Flood report}
   profile_group: site
+  systems: [site, substructure]
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -1050,6 +1054,7 @@ determinants:
   stated_in:
   - {kind: drawing, discipline: consultant.structural, label: Structural drawings (general notes)}
   profile_group: site
+  systems: [structure, envelope]
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -1328,6 +1333,7 @@ determinants:
   stated_in:
   - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
   profile_group: site
+  systems: [site, substructure]
   status: draft
   sources:
   - seed: remediation-due-diligence-guide.md
@@ -1355,6 +1361,7 @@ determinants:
   stated_in:
   - {kind: report, discipline: consultant.environmental, label: Preliminary site investigation}
   profile_group: site
+  systems: [site]
   status: draft
   sources:
   - seed: remediation-due-diligence-guide.md
@@ -1400,6 +1407,7 @@ determinants:
   stated_in:
   - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
   profile_group: site
+  systems: [substructure.termite-management, structure.timber]
   status: draft
   sources:
   - seed: residential-construction-guide.md
@@ -1535,6 +1543,7 @@ determinants:
   stated_in:
   - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
   profile_group: site
+  systems: [site, substructure]
   status: draft
   sources:
   - seed: new-dwelling-guide.md
@@ -1592,6 +1601,7 @@ determinants:
   - {kind: drawing, discipline: consultant.hydraulic, label: Hydraulic drawings}
   - {kind: specification, label: Specification or tender}
   profile_group: services
+  systems: [hydraulic.cold-water, hydraulic.non-potable-water, site.services-connections]
   status: draft
   sources:
   - {seed: civil-residential.md, anchor: '### Rainwater tank'}
@@ -1616,6 +1626,7 @@ determinants:
   - {kind: drawing, discipline: consultant.hydraulic, label: Hydraulic drawings}
   - {kind: specification, label: Specification or tender}
   profile_group: services
+  systems: [hydraulic.sanitary, hydraulic.trade-waste, site.services-connections]
   status: draft
   sources:
   - {seed: civil-residential.md, anchor: '### Septic and on-site wastewater'}
@@ -1639,6 +1650,7 @@ determinants:
   - {kind: drawing, discipline: consultant.hydraulic, label: Hydraulic drawings}
   - {kind: specification, label: Specification or tender}
   profile_group: services
+  systems: [hydraulic.gas, mechanical.heating-appliances]
   status: draft
   sources:
   - {document: morn-toussaint, anchor: '63. LPG GAS SERVICES'}
@@ -1655,6 +1667,7 @@ determinants:
   stated_in:
   - {kind: report, discipline: consultant.geotechnical, label: Geotechnical or salinity report}
   profile_group: site
+  systems: [substructure, site]
   status: draft
   sources:
   - {document: newham-spec, anchor: 'salinity & site exposure report'}
@@ -1675,6 +1688,7 @@ determinants:
   - {kind: design_brief, label: Design brief}
   - {kind: report, discipline: consultant.fire_engineer, label: Fire engineering report}
   profile_group: fire
+  systems: [fire-active.sprinklers]
   status: draft
   sources:
   - {document: hale-brief, anchor: 'Min. top of storage height'}
@@ -1702,6 +1716,7 @@ determinants:
   - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
   - {kind: report, discipline: consultant.heritage, label: Heritage report}
   profile_group: site
+  systems: [site, envelope, structure.alterations]
   status: draft
   sources:
   - {seed: renovation-guide.md, anchor: '# Archetype seed - Renovation'}

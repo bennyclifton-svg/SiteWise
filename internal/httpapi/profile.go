@@ -44,6 +44,9 @@ type fieldJSON struct {
 	Unit     string       `json:"unit,omitempty"`
 	Options  []optionJSON `json:"options,omitempty"`
 	StatedIn []string     `json:"stated_in,omitempty"`
+	// Relevant is set on compliance rows: the project's scope makes the
+	// determinant relevant, or its sources conflict.
+	Relevant *bool `json:"relevant,omitempty"`
 	cellJSON
 }
 
@@ -55,6 +58,18 @@ type systemRowJSON struct {
 	Provider cellJSON `json:"provider"`
 	Note     cellJSON `json:"note"`
 	Shown    bool     `json:"shown_by_default"`
+	// InScope says the works touch this system; ScopeOrigin is default,
+	// document or user; ScopeNote names a document that includes a system
+	// the user removed.
+	InScope     bool   `json:"in_scope"`
+	ScopeOrigin string `json:"scope_origin,omitempty"`
+	ScopeNote   string `json:"scope_note,omitempty"`
+}
+
+type presetJSON struct {
+	ID      string   `json:"id"`
+	Label   string   `json:"label"`
+	Systems []string `json:"systems"`
 }
 
 type systemGroupJSON struct {
@@ -82,6 +97,9 @@ type profileJSON struct {
 	PendingDocuments int                    `json:"pending_documents"`
 	ActiveDocuments  int                    `json:"active_documents"`
 	UnreadDocuments  int                    `json:"unread_documents"`
+	ReadDocuments    int                    `json:"read_documents"`
+	SkippedDocuments int                    `json:"skipped_documents"`
+	SkippedKind      string                 `json:"skipped_kind"`
 	FailedDocuments  int                    `json:"failed_documents"`
 	PaymentRequired  bool                   `json:"payment_required"`
 	// Queued answers a profile read request: documents it sent to Jev.
@@ -92,6 +110,7 @@ type profileJSON struct {
 	Facts      []fieldJSON           `json:"facts"`
 	Systems    []systemGroupJSON     `json:"systems"`
 	Compliance []complianceGroupJSON `json:"compliance"`
+	Presets    []presetJSON          `json:"presets"`
 }
 
 func getProfile(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -121,7 +140,7 @@ func requestProfileRead(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	// The read below 404s an unknown or foreign project; the queue is
 	// org-scoped, so a foreign id queues nothing first.
-	queued, err := deps.Store.RequestProfileRead(r.Context(), session.OrgID, projectID)
+	queued, err := deps.Store.RequestProfileRead(r.Context(), session.OrgID, projectID, deps.ProfileReading.Kinds())
 	if err != nil {
 		http.Error(w, "request failed", http.StatusInternalServerError)
 		return
@@ -145,7 +164,7 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
 	}
-	view, err := deps.Store.ReadProfile(r.Context(), orgID, projectID)
+	view, err := deps.Store.ReadProfile(r.Context(), orgID, projectID, deps.ProfileReading.Kinds())
 	if errors.Is(err, store.ErrNotFound) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -164,6 +183,7 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 	whole := ""
 	out := profileJSON{Coverage: view.Coverage, ProjectID: projectID, BuiltAt: view.BuiltAt, PendingDocuments: view.PendingDocuments, UnreadDocuments: view.UnreadDocuments,
 		ActiveDocuments: view.ActiveDocuments, FailedDocuments: view.FailedDocuments, PaymentRequired: view.PaymentRequired,
+		ReadDocuments: view.ReadDocuments, SkippedDocuments: view.SkippedDocuments, SkippedKind: view.SkippedKind,
 		Thresholds: map[string]any{"version": deps.ProfileThresholds.Version, "provisional": !deps.ProfileThresholds.Approved,
 			"applied": len(deps.ProfileThresholds.Amber) > 0}}
 	for _, p := range view.Parts {
@@ -208,13 +228,18 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		}
 	}
 	for _, wt := range tax.WorkTypes {
-		works = append(works, optionJSON{wt.ID, wt.Label})
+		label := wt.Label
+		if wt.DisplayLabel != "" {
+			label = wt.DisplayLabel
+		}
+		works = append(works, optionJSON{wt.ID, label})
 	}
 	field := func(key, label, kind string, opts []optionJSON) fieldJSON {
 		return fieldJSON{Key: key, Label: label, PartID: whole, Kind: kind, Options: opts, cellJSON: cell(whole, key)}
 	}
-	out.Header = append(out.Header, field("hdr.building_class", "Building class", "choice", classes),
-		field("hdr.subclass", "Building type", "choice", subclasses), field("hdr.work_type", "Work type", "choice", works))
+	// Labels only: stored keys keep the taxonomy's names (class, subclass).
+	out.Header = append(out.Header, field("hdr.building_class", "Building category", "choice", classes),
+		field("hdr.subclass", "Building class", "choice", subclasses), field("hdr.work_type", "Work type", "choice", works))
 	var scaleFields []knowledge.ScaleField
 	seenScale := map[string]bool{}
 	if sub, ok := tax.Subclass(subclass); ok {
@@ -256,6 +281,27 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		out.Facts = append(out.Facts, fj)
 	}
 
+	// The scope of works was decided at build time (scope.<leaf> rows);
+	// relevance follows from it and known values, in code.
+	var scope []string
+	values := map[string]string{}
+	for _, r := range view.Rows {
+		if r.PartID != whole {
+			continue
+		}
+		if leaf, ok := strings.CutPrefix(r.Key, "scope."); ok && r.Value == "in" {
+			scope = append(scope, leaf)
+		}
+		if id, ok := strings.CutPrefix(r.Key, "det."); ok && !strings.HasSuffix(id, ".assertion") && r.Value != "" &&
+			(r.Band == "user" || r.Band == "green" || r.Band == "amber") {
+			values[id] = r.Value
+		}
+	}
+	relevance := cat.Relevant(scope, values)
+	for _, p := range cat.Presets() {
+		out.Presets = append(out.Presets, presetJSON{ID: p.ID, Label: p.Label, Systems: p.Systems})
+	}
+
 	groups := map[string]*systemGroupJSON{}
 	var order []string
 	for _, top := range cat.TopSystems() {
@@ -270,7 +316,14 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		base := "sys." + leaf.ID
 		row := systemRowJSON{Leaf: leaf.ID, Label: leaf.Label, PartID: whole,
 			Presence: cell(whole, base+".presence"), Provider: cell(whole, base+".provider"), Note: cell(whole, base+".note")}
-		row.Shown = row.Presence.Band != "" || row.Provider.Band != "" || row.Note.Band != ""
+		sc := cell(whole, "scope."+leaf.ID)
+		row.InScope = sc.Value == "in"
+		row.ScopeOrigin = scopeOrigin(sc.Band)
+		row.ScopeNote = sc.Note
+		// The checklist shows what the works touch, plus conflicts and stated
+		// exclusions, which need the user's eye whatever the scope.
+		row.Shown = row.InScope || row.Presence.Band == "red" ||
+			(row.Presence.Value == "not_included" && row.Presence.Band != "blank" && row.Presence.Band != "")
 		g.Rows = append(g.Rows, row)
 	}
 	for _, id := range order {
@@ -285,8 +338,14 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 			if p.ID != whole && c.Band == "" {
 				continue // other parts show only what applies to them
 			}
-			fj := fieldJSON{Key: key, Label: d.Label, PartID: p.ID, Kind: valueKind(d), Unit: d.Unit,
-				Options: detOptions(d), cellJSON: c}
+			label := d.Label
+			if d.ID == "ncc_class" {
+				label = "NCC class" // never just "Class": the header has a building class
+			}
+			// With nothing in scope there is no basis to hide a row.
+			relevant := len(scope) == 0 || relevance.Determinants[d.ID] || c.Band == "red"
+			fj := fieldJSON{Key: key, Label: label, PartID: p.ID, Kind: valueKind(d), Unit: d.Unit,
+				Options: detOptions(d), cellJSON: c, Relevant: &relevant}
 			for _, s := range d.StatedIn {
 				fj.StatedIn = append(fj.StatedIn, s.Label)
 			}
@@ -300,6 +359,18 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		out.Compliance = append(out.Compliance, complianceGroupJSON{Group: g, Rows: byGroup[g]})
 	}
 	return out
+}
+
+func scopeOrigin(band string) string {
+	switch band {
+	case "":
+		return ""
+	case "suggested":
+		return "default"
+	case "user":
+		return "user"
+	}
+	return "document"
 }
 
 func valueKind(d knowledge.Determinant) string {
@@ -409,7 +480,7 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 func rebuildProfile(r *http.Request, deps Deps, orgID, projectID string) error {
 	return deps.Store.RebuildProfile(r.Context(), orgID, projectID, deps.ProfileThresholds.Version,
 		func(s store.ProfileSnapshot) []profile.Row {
-			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: deps.ProfileThresholds}, deps.Knowledge)
+			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: deps.ProfileThresholds, Read: deps.ProfileReading}, deps.Knowledge)
 		})
 }
 
@@ -642,4 +713,119 @@ func updatePart(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	_ = rebuildProfile(r, deps, session.OrgID, projectID)
 	writeJSON(w, http.StatusOK, partJSON{ID: p.ID, Label: p.Label, Kind: p.Kind, NCCClass: p.NCCClass})
+}
+
+const maxReadingIDs = 1000
+
+// setProfileReading records which documents the profile reads, for a
+// selection in the register. The rebuild is code only: a document turned
+// off leaves the profile at once and its readings stay stored.
+func setProfileReading(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	projectID := r.PathValue("id")
+	if !uuidPattern.MatchString(projectID) || deps.Knowledge == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		DocumentIDs []string `json:"document_ids"`
+		Setting     string   `json:"setting"`
+	}
+	if err := readJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	if !profile.ValidReadSetting(body.Setting) || len(body.DocumentIDs) == 0 || len(body.DocumentIDs) > maxReadingIDs {
+		http.Error(w, "setting must be auto, read or skip, for 1 to 1000 documents", http.StatusBadRequest)
+		return
+	}
+	for _, id := range body.DocumentIDs {
+		if !uuidPattern.MatchString(id) {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+	}
+	_, err := deps.Store.SetProfileReading(r.Context(), session.OrgID, projectID, body.DocumentIDs, body.Setting, deps.ProfileReading.Kinds())
+	if errors.Is(err, store.ErrNotFound) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, "update failed", http.StatusInternalServerError)
+		return
+	}
+	if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
+		http.Error(w, "rebuild failed", http.StatusInternalServerError)
+		return
+	}
+	writeProfile(w, r, deps, session.OrgID, projectID)
+}
+
+const maxScopeChoices = 200
+
+// setScope records the user's scope of works: for each leaf system "in",
+// "out", or null to hand it back to the defaults and documents. One
+// transaction, then a code-only rebuild. Body: {"systems": {"<leaf>": ...}}.
+func setScope(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	projectID := r.PathValue("id")
+	if !uuidPattern.MatchString(projectID) || deps.Knowledge == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		Systems map[string]*string `json:"systems"`
+	}
+	if err := readJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if len(body.Systems) == 0 || len(body.Systems) > maxScopeChoices {
+		http.Error(w, "choose 1 to 200 systems", http.StatusUnprocessableEntity)
+		return
+	}
+	choices := make(map[string]*string, len(body.Systems))
+	for leaf, value := range body.Systems {
+		sys, ok := deps.Knowledge.System(leaf)
+		if !ok || sys.Parent == "" || sys.Status == "deprecated" {
+			http.Error(w, "unknown system "+leaf, http.StatusUnprocessableEntity)
+			return
+		}
+		if value != nil && *value != "in" && *value != "out" {
+			http.Error(w, "scope must be in, out or null", http.StatusUnprocessableEntity)
+			return
+		}
+		choices["scope."+leaf] = value
+	}
+	whole, err := deps.Store.EnsureWholePart(r.Context(), session.OrgID, projectID)
+	if errors.Is(err, store.ErrNotFound) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	} else if err != nil {
+		http.Error(w, "write failed", http.StatusInternalServerError)
+		return
+	}
+	if err := deps.Store.SetScope(r.Context(), session.OrgID, projectID, whole.ID, session.UserID, choices); err != nil {
+		http.Error(w, "write failed", http.StatusInternalServerError)
+		return
+	}
+	if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
+		http.Error(w, "rebuild failed", http.StatusInternalServerError)
+		return
+	}
+	writeProfile(w, r, deps, session.OrgID, projectID)
 }

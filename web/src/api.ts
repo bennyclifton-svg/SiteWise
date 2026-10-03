@@ -4,6 +4,8 @@
 export type Band = "green" | "amber" | "blank" | "grey";
 export type DecidedBy = "rule" | "jev" | "user";
 export type Status = "pending" | "filed" | "not_filed" | "split";
+/** Whether the project profile reads a document: automatic follows its kind. */
+export type ReadSetting = "auto" | "read" | "skip";
 
 export interface Field {
   field: string;
@@ -22,6 +24,7 @@ export interface Doc {
   text_empty_pages?: number;
   text_source_version?: string;
   text_status?: "queued" | "leased" | "done" | "failed";
+  profile_read?: ReadSetting;
   reason?: string;
   number?: string;
   revision?: string;
@@ -55,6 +58,8 @@ export interface Catalog {
   kinds: Option[];
   disciplines: Option[];
   lifecycle: Option[];
+  /** Kinds the profile reads when a document's setting is automatic. */
+  profile_read_kinds?: string[];
 }
 
 /** Event payload for filing, correction and not_filed. */
@@ -105,6 +110,12 @@ export const api = {
     request<Doc>("PUT", `/documents/${docId}/fields/${field}`, { value }),
   retry: (docId: string, missingOnly = false) => request<Doc>("POST", `/documents/${docId}/${missingOnly ? "details/reprocess" : "filing"}`),
   document: (docId: string) => request<Doc>("GET", `/documents/${docId}`),
+  /** Returns the rebuilt profile; the server applies a set's setting to its sheets. */
+  setProfileReading: (projectId: string, ids: string[], setting: ReadSetting) =>
+    request<unknown>("PUT", `/projects/${projectId}/documents/profile-read`, { document_ids: ids, setting }),
+  /** Permanent. A drawing set takes its sheets; returns every id removed. */
+  deleteDocuments: (projectId: string, ids: string[]) =>
+    request<{ deleted: string[] }>("POST", `/projects/${projectId}/documents/delete`, { document_ids: ids }),
 };
 
 /** created is false when these bytes were already filed in the project. */
@@ -143,7 +154,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr"] as const;
+export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {

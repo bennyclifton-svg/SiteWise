@@ -88,7 +88,7 @@ func TestProfileStoreRoundTrip(t *testing.T) {
 	if err := st.RebuildProfile(ctx, orgA, projectA, "profile-1", compute); err != nil {
 		t.Fatal(err)
 	}
-	view, err := st.ReadProfile(ctx, orgA, projectA)
+	view, err := st.ReadProfile(ctx, orgA, projectA, nil)
 	if err != nil || view.BuiltAt == nil || len(view.Parts) != 1 || len(view.Rows) != 3 {
 		t.Fatalf("view %+v %v", view, err)
 	}
@@ -116,7 +116,7 @@ func TestProfileOrgIsolation(t *testing.T) {
 	if _, err := st.EnsureWholePart(ctx, orgA, projectB); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("cross-org whole part: %v", err)
 	}
-	if _, err := st.ReadProfile(ctx, orgB, projectA); !errors.Is(err, store.ErrNotFound) {
+	if _, err := st.ReadProfile(ctx, orgB, projectA, nil); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("cross-org read: %v", err)
 	}
 	if _, err := st.CreatePart(ctx, orgB, projectA, "X", "building", ""); !errors.Is(err, store.ErrNotFound) {

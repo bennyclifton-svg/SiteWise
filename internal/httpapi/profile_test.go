@@ -87,8 +87,13 @@ func withProfile(t *testing.T) func(*httpapi.Options) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	reading, err := profile.LoadReadPolicy(filepath.Join("..", "..", "data", "profile", "reading.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	return func(o *httpapi.Options) {
 		o.Knowledge = cat
+		o.ProfileReading = reading
 		o.ProfileThresholds = profile.Thresholds{Version: "profile-1",
 			Amber: map[string]float64{"presence": 0.6}, Green: map[string]*float64{}}
 	}
@@ -267,5 +272,62 @@ func TestProfileReadRequest(t *testing.T) {
 	other := a.member(t, newUUID(t))
 	if code := other.status(t, http.MethodPost, "/api/projects/"+project+"/profile/read", nil); code != http.StatusNotFound {
 		t.Fatalf("cross-org read request = %d", code)
+	}
+}
+
+func TestProfileReadingSetting(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Reading")
+	doc := m.upload(t, project, "identity-page.pdf", http.StatusCreated)
+	path := "/api/projects/" + project + "/documents/profile-read"
+	body := func(setting string, ids ...string) []byte {
+		raw, _ := json.Marshal(map[string]any{"document_ids": ids, "setting": setting})
+		return raw
+	}
+
+	var p struct {
+		ReadDocuments    *int `json:"read_documents"`
+		SkippedDocuments *int `json:"skipped_documents"`
+	}
+	m.call(t, http.MethodPut, path, body("skip", doc.ID), http.StatusOK, &p)
+	if p.SkippedDocuments == nil || *p.SkippedDocuments != 1 || *p.ReadDocuments != 0 {
+		t.Fatalf("counts %+v", p)
+	}
+	var list struct {
+		Documents []struct {
+			ID          string `json:"id"`
+			ProfileRead string `json:"profile_read"`
+		} `json:"documents"`
+	}
+	m.getJSON(t, "/api/projects/"+project+"/documents", &list)
+	if len(list.Documents) != 1 || list.Documents[0].ProfileRead != "skip" {
+		t.Fatalf("list %+v", list)
+	}
+	m.call(t, http.MethodPut, path, body("read", doc.ID), http.StatusOK, &p)
+	if *p.ReadDocuments != 1 {
+		t.Fatalf("read counts %+v", p)
+	}
+
+	m.call(t, http.MethodPut, path, body("maybe", doc.ID), http.StatusBadRequest, nil)
+	m.call(t, http.MethodPut, path, body("skip"), http.StatusBadRequest, nil)
+	m.call(t, http.MethodPut, path, body("skip", "not-a-uuid"), http.StatusNotFound, nil)
+	m.call(t, http.MethodPut, path, body("skip", newUUID(t)), http.StatusNotFound, nil)
+
+	other := a.member(t, newUUID(t))
+	if code := other.status(t, http.MethodPut, path, body("skip", doc.ID)); code != http.StatusNotFound {
+		t.Fatalf("cross-org setting = %d", code)
+	}
+	otherProject := other.createProject(t, "Theirs")
+	if code := m.status(t, http.MethodPut, "/api/projects/"+otherProject+"/documents/profile-read", body("skip", doc.ID)); code != http.StatusNotFound {
+		t.Fatalf("setting through another org's project = %d", code)
+	}
+
+	var cat struct {
+		Kinds []string `json:"profile_read_kinds"`
+	}
+	m.getJSON(t, "/api/catalog", &cat)
+	if len(cat.Kinds) == 0 {
+		t.Fatal("catalog lacks the automatically read kinds")
 	}
 }

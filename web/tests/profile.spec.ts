@@ -115,8 +115,8 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   // Nothing read yet: compliance says where a value is usually stated.
   await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
 
-  await page.getByLabel("Building class", { exact: true }).selectOption("residential");
-  await page.getByLabel("Building type", { exact: true }).selectOption("house");
+  await page.getByLabel("Building category", { exact: true }).selectOption("residential");
+  await page.getByLabel("Building class", { exact: true }).selectOption("house");
   await page.getByLabel("Work type", { exact: true }).selectOption("new");
 
   // Typical systems appear, marked as suggestions rather than evidence.
@@ -135,4 +135,132 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await page.getByRole("button", { name: "188 Balnarring Road" }).click();
   await page.getByRole("button", { name: "All projects and new project…" }).click();
   await expect(page.getByRole("heading", { name: "Projects" })).toBeVisible();
+});
+
+test("choose which documents the profile reads, in bulk", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Reading selection");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  const fixtures = resolve(import.meta.dirname, "../../testdata/identity");
+  const names = ["identity-page.pdf", "docx-table.docx", "merged-cells.xlsx"];
+  await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
+  const rows = page.locator("tbody.reg-doc");
+  await expect(rows).toHaveCount(3);
+  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"] .reg-sel input`)).toBeVisible();
+
+  // Click the first checkbox, Shift-click the last: a range of three.
+  const boxes = page.locator("tbody.reg-doc .reg-sel input");
+  await boxes.nth(0).click();
+  await boxes.nth(2).click({ modifiers: ["Shift"] });
+  const bulk = page.getByRole("toolbar", { name: "Selected documents" });
+  await expect(bulk).toContainText("3 selected");
+
+  await bulk.getByRole("button", { name: "Don't read" }).click();
+  for (let i = 0; i < 3; i++) {
+    const read = rows.nth(i).locator(".reg-read");
+    await expect(read).toHaveAttribute("aria-pressed", "false");
+    await expect(read).toHaveAttribute("data-override", "true");
+  }
+  await expect(page.locator(".profile-reading")).toContainText("Reading 0 of 3 documents");
+
+  // The profile line filters the register to what it does not read.
+  await page.locator(".profile-reading").getByRole("button", { name: "Show" }).click();
+  await expect(page.locator(".reg-filter")).toBeVisible();
+  await expect(rows).toHaveCount(3);
+  await page.locator(".reg-filter").getByRole("button", { name: "Show all" }).click();
+
+  // One row's own toggle reads it; Reset returns everything to automatic.
+  await rows.nth(0).locator(".reg-read").click();
+  await expect(rows.nth(0).locator(".reg-read")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".profile-reading")).toContainText("Reading 1 of 3 documents");
+  await bulk.getByRole("button", { name: "Reset to automatic" }).click();
+  for (let i = 0; i < 3; i++) await expect(rows.nth(i).locator(".reg-read")).not.toHaveAttribute("data-override", "true");
+
+  // Ctrl-click selects without opening; Clear empties the selection.
+  await bulk.getByRole("button", { name: "Clear" }).click();
+  await expect(bulk).toBeHidden();
+  await rows.nth(1).locator("tr.reg-line").click({ modifiers: ["Control"] });
+  await expect(page.getByRole("toolbar", { name: "Selected documents" })).toContainText("1 selected");
+  await expect(rows.nth(1)).not.toHaveAttribute("data-open", "true");
+});
+
+test("delete documents from the register after confirming", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Deletion");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  const fixtures = resolve(import.meta.dirname, "../../testdata/identity");
+  const names = ["identity-page.pdf", "docx-table.docx", "merged-cells.xlsx"];
+  await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
+  const rows = page.locator("tbody.reg-doc");
+  await expect(rows).toHaveCount(3);
+  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"] .reg-sel input`)).toBeVisible();
+
+  const headerBin = page.getByRole("button", { name: "Delete selected documents" });
+  await expect(headerBin).toBeDisabled();
+  const boxes = page.locator("tbody.reg-doc .reg-sel input");
+  await boxes.nth(0).click();
+  await boxes.nth(1).click({ modifiers: ["Shift"] });
+  await headerBin.click();
+
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toContainText("Delete 2 documents, including");
+  await expect(dialog).toContainText("can't be undone");
+  // Cancel has the focus, so Enter never deletes by accident.
+  await expect(dialog.getByRole("button", { name: "Cancel" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(rows).toHaveCount(3);
+
+  await page.getByRole("toolbar", { name: "Selected documents" }).getByRole("button", { name: "Delete" }).click();
+  await dialog.getByRole("button", { name: "Delete" }).click();
+  await expect(rows).toHaveCount(1);
+  await expect(page.getByRole("toolbar", { name: "Selected documents" })).toBeHidden();
+
+  // A row's own bin deletes just that row; the list stays empty after reload.
+  await rows.nth(0).getByRole("button", { name: /^Delete / }).click();
+  await expect(dialog).toContainText("Delete ");
+  await dialog.getByRole("button", { name: "Delete" }).click();
+  await expect(rows).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.locator("tbody.reg-doc")).toHaveCount(0);
+});
+
+test("scope of works: a sprinkler pump replacement sees only what it needs", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Sprinkler pump replacement");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("heading", { name: "Scope of works" })).toBeVisible();
+
+  await page.getByLabel("Building category", { exact: true }).selectOption("industrial");
+  await page.getByLabel("Building class", { exact: true }).selectOption("warehouse");
+  await page.getByLabel("Work type", { exact: true }).selectOption({ label: "Refurbishment / fit-out / upgrade" });
+  const scope = page.getByRole("region", { name: "Scope of works" });
+  await expect(scope).toContainText("0 systems");
+  // Nothing in scope yet: no basis to hide a compliance row.
+  await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
+
+  const fire = scope.locator(".pf-scope-group", { hasText: "Active fire protection" });
+  await fire.locator("summary").click();
+  await fire.getByLabel("Automatic fire sprinklers").check();
+  await expect(scope).toContainText("1 system");
+  await expect(fire.locator(".pf-scope-origin")).toHaveText("You");
+
+  // The checklist and compliance follow the scope.
+  await expect(page.locator(".pf-sys", { hasText: "Automatic fire sprinklers" })).toBeVisible();
+  await expect(page.locator(".pf-sys", { hasText: "Heated water" })).toHaveCount(0);
+  await expect(page.getByText(/Showing \d+ of \d+ compliance items for this scope/)).toBeVisible();
+  await expect(page.getByLabel("Top of storage height")).toBeVisible();
+  await expect(page.getByText("Usually in: Geotechnical report")).toBeHidden();
+  await page.getByLabel("Show everything").check();
+  await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
+  await page.getByLabel("Show everything").uncheck();
+
+  // A preset adds a set at once; Reset hands every choice back.
+  await scope.getByRole("button", { name: "Typical fit-out" }).click();
+  await expect(scope).not.toContainText("1 system");
+  await scope.getByRole("button", { name: "Reset to defaults" }).click();
+  await expect(scope).toContainText("0 systems");
 });

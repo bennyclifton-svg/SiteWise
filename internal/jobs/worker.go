@@ -67,6 +67,9 @@ type Worker struct {
 	// Profile holds the profile's per-shape floors. Empty floors apply
 	// nothing: readings are stored and rows stay blank.
 	Profile profile.Thresholds
+	// Reading decides which documents' facts the profile uses. The zero
+	// policy uses every document.
+	Reading profile.ReadPolicy
 }
 
 // Once leases and runs one full-text, label or evidence job.
@@ -291,7 +294,7 @@ func (w *Worker) rebuildProfile(ctx context.Context, orgID, documentID string) e
 		return err
 	}
 	return w.Store.RebuildProfile(ctx, orgID, doc.ProjectID, w.Profile.Version, func(s store.ProfileSnapshot) []profile.Row {
-		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: w.Profile}, w.Catalog)
+		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: w.Profile, Read: w.Reading}, w.Catalog)
 	})
 }
 

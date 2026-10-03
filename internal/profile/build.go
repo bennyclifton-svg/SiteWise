@@ -79,19 +79,124 @@ func pick(list []Candidate, id string) (Candidate, bool) {
 	return Candidate{}, false
 }
 
-// Build reconciles, then adds typical systems for the subclass and work type
-// the profile now holds (user, green or amber) and reconciles again.
+// Build reconciles, then works out the project's scope of works: the
+// defaults for its building category, class and work type, systems a read
+// document includes, and the user's choices, which are final. Defaults the
+// user has not removed are suggested in the checklist. Scope rows are
+// "scope.<leaf>" on the whole project: value in or out; band suggested for a
+// default, the evidence band for a document, user for the user.
 func Build(in Input, cat *knowledge.Catalog) []Row {
+	in.Facts = readFacts(in.Facts, in.Read)
 	rows := Reconcile(in, cat)
-	sub, work := headerValue(rows, "hdr.subclass"), headerValue(rows, "hdr.work_type")
-	if sub == "" || work == "" {
-		return rows
+	category, class, work := headerValue(rows, "hdr.building_class"), headerValue(rows, "hdr.subclass"), headerValue(rows, "hdr.work_type")
+	defaults := cat.ScopeDefaults(category, class, work)
+	removed := map[string]bool{}
+	for _, u := range in.User {
+		if leaf, ok := strings.CutPrefix(u.Key, scopePrefix); ok && u.Value != nil && *u.Value == scopeOut {
+			removed[leaf] = true
+		}
 	}
-	if suggested := cat.Typical(sub, work); len(suggested) > 0 {
+	var suggested []string
+	for _, leaf := range defaults {
+		if !removed[leaf] {
+			suggested = append(suggested, leaf)
+		}
+	}
+	if len(suggested) > 0 {
 		in.Suggested = suggested
 		rows = Reconcile(in, cat)
 	}
+	return withScope(rows, wholePart(in.Parts), suggested)
+}
+
+const (
+	scopePrefix = "scope."
+	scopeIn     = "in"
+	scopeOut    = "out"
+)
+
+// withScope adds scope rows for defaults and for systems included by
+// evidence or by the user's checklist answer. A user scope row (made by
+// Reconcile from the user's value) is never replaced; when the user removed
+// a system a document includes, its note says so.
+func withScope(rows []Row, whole string, defaults []string) []Row {
+	if whole == "" {
+		return rows
+	}
+	byKey := map[string]int{}
+	for i, r := range rows {
+		if r.PartID == whole {
+			byKey[r.Key] = i
+		}
+	}
+	add := func(leaf, band string) {
+		key := scopePrefix + leaf
+		if i, ok := byKey[key]; ok {
+			if rows[i].Band != bandUser && band != bandSuggest {
+				rows[i].Band = band
+			}
+			return
+		}
+		byKey[key] = len(rows)
+		rows = append(rows, Row{PartID: whole, Key: key, Value: scopeIn, Band: band})
+	}
+	for _, leaf := range defaults {
+		add(leaf, bandSuggest)
+	}
+	for _, r := range rows {
+		leaf, ok := strings.CutPrefix(r.Key, "sys.")
+		if !ok || r.PartID != whole || !strings.HasSuffix(leaf, ".presence") || r.Value != valIncluded {
+			continue
+		}
+		leaf = strings.TrimSuffix(leaf, ".presence")
+		switch r.Band {
+		case bandAmber, bandGreen, bandUser:
+		default:
+			continue
+		}
+		if i, ok := byKey[scopePrefix+leaf]; ok && rows[i].Band == bandUser && rows[i].Value == scopeOut {
+			if r.Band != bandUser {
+				rows[i].Note = cut("A document says it is included: "+firstExcerpt(r), maxNote)
+			}
+			continue
+		}
+		add(leaf, r.Band)
+	}
 	return rows
+}
+
+func firstExcerpt(r Row) string {
+	for _, s := range r.Sources {
+		if s.Excerpt != "" {
+			return s.Excerpt
+		}
+	}
+	return r.Note
+}
+
+func wholePart(parts []Part) string {
+	for _, p := range parts {
+		if p.Kind == partWhole {
+			return p.ID
+		}
+	}
+	return ""
+}
+
+// readFacts keeps the facts of documents the policy reads. A document turned
+// off leaves the profile at the next rebuild, which is code only; its stored
+// readings stay, so turning it back on costs no Jev call.
+func readFacts(facts []Fact, p ReadPolicy) []Fact {
+	if !p.Loaded() {
+		return facts
+	}
+	out := make([]Fact, 0, len(facts))
+	for _, f := range facts {
+		if p.Reads(f.DocumentKind, f.ReadSetting) {
+			out = append(out, f)
+		}
+	}
+	return out
 }
 
 func headerValue(rows []Row, key string) string {

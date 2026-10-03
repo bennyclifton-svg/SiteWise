@@ -55,6 +55,8 @@ type Options struct {
 	// knowledge disables the profile routes (404).
 	Knowledge         *knowledge.Catalog
 	ProfileThresholds profile.Thresholds
+	// ProfileReading decides which documents the profile reads.
+	ProfileReading profile.ReadPolicy
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -145,6 +147,7 @@ func New(opts Options) (*Server, error) {
 
 		Knowledge:         opts.Knowledge,
 		ProfileThresholds: opts.ProfileThresholds,
+		ProfileReading:    opts.ProfileReading,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})

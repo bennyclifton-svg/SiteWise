@@ -4,9 +4,10 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ProfileSources } from "./ProfileSources";
+import { ScopePicker } from "./ScopePicker";
 import { ApiError } from "./api";
 import { IconCheck, IconConfirmed, IconNotChecked, IconYou } from "./icons";
-import { profileApi, type Cell, type Profile as ProfileData, type ProfileField, type SystemRow } from "./profileApi";
+import { profileApi, type Cell, type Profile as ProfileData, type ProfileField, type ScopeChoice, type SystemRow } from "./profileApi";
 
 interface Props {
   projectId: string;
@@ -14,6 +15,8 @@ interface Props {
   tick: number;
   onJump: (documentId: string) => void;
   onSignedOut: () => void;
+  /** Filters the register to documents the profile does not read. */
+  onShowNotRead: () => void;
 }
 
 const GROUP_LABELS: Record<string, string> = {
@@ -39,12 +42,20 @@ const REASONS: Record<string, string> = {
   not_built: "Not built yet",
 };
 
-export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
+const KIND_LABELS: Record<string, string> = {
+  drawing: "drawings",
+  photo: "photos",
+  correspondence: "correspondence",
+  unknown: "unclassified documents",
+};
+
+export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [allCompliance, setAllCompliance] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [requestNote, setRequestNote] = useState("");
 
@@ -96,6 +107,18 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
     [projectId, fail],
   );
 
+  const setScope = useCallback(
+    async (systems: Record<string, ScopeChoice>) => {
+      try {
+        setData(await profileApi.setScope(projectId, systems));
+        setError("");
+      } catch (e) {
+        fail(e);
+      }
+    },
+    [projectId, fail],
+  );
+
   const update = useCallback(async () => {
     setRequesting(true);
     try {
@@ -114,6 +137,8 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
     return <p className="muted">{error || "Reading the profile…"}</p>;
   }
   const builtAt = data.built_at ? new Date(data.built_at) : null;
+  const complianceRows = data.compliance.flatMap((g) => g.rows);
+  const relevantCount = complianceRows.filter((f) => f.relevant !== false).length;
 
   return (
     <div className="profile">
@@ -136,6 +161,22 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
           {data.payment_required
             ? "Profile reading stopped: Jev returned Payment Required (402). Check your TypeSafe account’s billing or credits, then retry. Your documents and prepared text are saved."
             : data.active_documents > 0 ? "Some document processing stopped; other documents are still being processed. Your files are saved. Retry the project profile to try the failed documents again." : "Document processing stopped. Your files are saved. Retry the project profile to try again."}
+        </p>
+      )}
+      {data.read_documents + data.skipped_documents > 0 && (
+        <p className="profile-reading">
+          Reading {data.read_documents} of {data.read_documents + data.skipped_documents} document
+          {data.read_documents + data.skipped_documents === 1 ? "" : "s"}
+          {data.skipped_documents > 0 && (
+            <>
+              {" · "}
+              {data.skipped_documents} not read
+              {data.skipped_kind ? ` (mostly ${KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ")})` : ""}{" "}
+              <button type="button" className="cell-link" onClick={onShowNotRead}>
+                Show
+              </button>
+            </>
+          )}
         </p>
       )}
       <p className="profile-status">
@@ -172,6 +213,8 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
         </details>
       </section>
 
+      <ScopePicker data={data} onSet={setScope} />
+
       <section className="pf-section" aria-labelledby="pf-systems">
         <div className="pf-head">
           <h2 id="pf-systems">Systems</h2>
@@ -193,25 +236,38 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
         })}
         {!showAll && data.systems.every((g) => g.rows.every((r) => !r.shown_by_default)) && (
           <p className="muted">
-            Nothing read yet. Choose a building type and work type above for typical systems, or show all systems.
+            Nothing in scope yet. Choose a building class and work type, tick systems in Scope of works, or show all systems.
           </p>
         )}
       </section>
 
       <section className="pf-section" aria-labelledby="pf-compliance">
-        <h2 id="pf-compliance">Compliance</h2>
-        {data.compliance.map((g) =>
-          g.rows.length === 0 ? null : (
+        <div className="pf-head">
+          <h2 id="pf-compliance">Compliance</h2>
+          {relevantCount < complianceRows.length && (
+            <label className="pf-toggle">
+              <input type="checkbox" checked={allCompliance} onChange={(e) => setAllCompliance(e.target.checked)} /> Show everything
+            </label>
+          )}
+        </div>
+        {relevantCount < complianceRows.length && (
+          <p className="pf-scope-hint">
+            {allCompliance ? `Showing all ${complianceRows.length} compliance items.` : `Showing ${relevantCount} of ${complianceRows.length} compliance items for this scope.`}
+          </p>
+        )}
+        {data.compliance.map((g) => {
+          const rows = g.rows.filter((f) => allCompliance || f.relevant !== false);
+          return rows.length === 0 ? null : (
             <div key={g.group}>
               <h3>{GROUP_LABELS[g.group] ?? g.group}</h3>
               <div className="pf-grid">
-                {g.rows.map((f) => (
+                {rows.map((f) => (
                   <FieldRow key={f.key + f.part_id} field={f} onSet={set} onJump={onJump} parts={data.parts} />
                 ))}
               </div>
             </div>
-          ),
-        )}
+          );
+        })}
       </section>
     </div>
   );

@@ -223,7 +223,8 @@ fails on:
 - a referenced blob that is missing, or whose bytes do not hash to its name
 - an unvalidated foreign key
 - any row whose parent is not in the row's own org. This includes
-  `events.document_id`, which has no foreign key.
+  `events.document_id`, which has no foreign key. A document the org
+  deleted keeps its event history; its `deleted` event exempts it.
 - with `--expect`: any difference in per-org counts (users, memberships,
   projects, files, documents, decisions, passages, events), foreign key
   count, applied migrations, or the digest of all referenced blob hashes.

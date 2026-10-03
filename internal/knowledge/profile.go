@@ -41,9 +41,12 @@ type Determinant struct {
 	TriggerPatterns []string   `yaml:"triggers"`
 	StatedIn        []StatedIn `yaml:"stated_in"`
 	ProfileGroup    string     `yaml:"profile_group"`
-	Question        *Question  `yaml:"question"`
-	Status          string     `yaml:"status"`
-	ReplacedBy      string     `yaml:"replaced_by"`
+	// Systems makes the determinant relevant when one of them is in a
+	// project's scope, besides any rule that reads it.
+	Systems    []string  `yaml:"systems"`
+	Question   *Question `yaml:"question"`
+	Status     string    `yaml:"status"`
+	ReplacedBy string    `yaml:"replaced_by"`
 
 	triggers []trigger
 }
@@ -109,6 +112,9 @@ type BuildingClass struct {
 type Choice struct {
 	ID    string `yaml:"id"`
 	Label string `yaml:"label"`
+	// DisplayLabel is shown to people when set. Label stays the wording Jev
+	// reads, so a screen name change never changes a recorded question.
+	DisplayLabel string `yaml:"display_label"`
 }
 
 // Condition is one project condition from the Clerk header (planning,
@@ -162,8 +168,31 @@ type profileData struct {
 	facts        []Determinant
 	taxonomy     Taxonomy
 	scaleFields  []ScaleField
-	typical      map[string][]string
+	scope        scopeDefaults
 	live         []Determinant
+}
+
+// Preset is a named set of leaf systems the scope picker can apply at once.
+type Preset struct {
+	ID      string   `yaml:"id"`
+	Label   string   `yaml:"label"`
+	Systems []string `yaml:"systems"`
+}
+
+// scopeDefaults is knowledge/profile/scope_defaults.yaml.
+type scopeDefaults struct {
+	AlwaysShown    []string `yaml:"always_shown"`
+	EmptyWorkTypes []string `yaml:"empty_work_types"`
+	Presets        []Preset `yaml:"presets"`
+	Classes        []struct {
+		Class    string   `yaml:"class"`
+		WorkType string   `yaml:"work_type"`
+		Systems  []string `yaml:"systems"`
+	} `yaml:"classes"`
+	Categories []struct {
+		Category string   `yaml:"category"`
+		Systems  []string `yaml:"systems"`
+	} `yaml:"categories"`
 }
 
 func (c *Catalog) loadDeterminants(path string) error {
@@ -229,25 +258,34 @@ func (c *Catalog) loadProfile(dir string) error {
 	}
 	c.profile.facts = facts.Facts
 
-	var typical struct {
-		Typical []struct {
-			Subclass string   `yaml:"subclass"`
-			WorkType string   `yaml:"work_type"`
-			Systems  []string `yaml:"systems"`
-		} `yaml:"typical"`
-	}
-	if err := unmarshal(filepath.Join(dir, "typical_systems.yaml"), &typical); err != nil {
+	var scope scopeDefaults
+	if err := unmarshal(filepath.Join(dir, "scope_defaults.yaml"), &scope); err != nil {
 		return err
 	}
-	c.profile.typical = map[string][]string{}
-	for _, t := range typical.Typical {
-		for _, id := range t.Systems {
+	check := func(where string, ids []string) error {
+		for _, id := range ids {
 			if _, ok := c.systems[id]; !ok {
-				return fmt.Errorf("typical systems %s/%s: unknown system %s", t.Subclass, t.WorkType, id)
+				return fmt.Errorf("scope defaults %s: unknown system %s", where, id)
 			}
 		}
-		c.profile.typical[t.Subclass+"/"+t.WorkType] = t.Systems
+		return nil
 	}
+	for _, p := range scope.Presets {
+		if err := check("preset "+p.ID, p.Systems); err != nil {
+			return err
+		}
+	}
+	for _, e := range scope.Classes {
+		if err := check(e.Class+"/"+e.WorkType, e.Systems); err != nil {
+			return err
+		}
+	}
+	for _, e := range scope.Categories {
+		if err := check(e.Category, e.Systems); err != nil {
+			return err
+		}
+	}
+	c.profile.scope = scope
 	return nil
 }
 
@@ -348,11 +386,60 @@ func (c *Catalog) ProjectFact(id string) (Determinant, bool) {
 // Taxonomy returns the project header vocabulary.
 func (c *Catalog) Taxonomy() Taxonomy { return c.profile.taxonomy }
 
-// Typical returns suggested leaf systems for a subclass and work type, or
-// nil. Suggestions are never evidence.
-func (c *Catalog) Typical(subclass, workType string) []string {
-	return c.profile.typical[subclass+"/"+workType]
+// ScopeDefaults returns the leaf systems a project of this building category,
+// building class (taxonomy subclass) and work type starts with, or nil.
+// Refurbishment, remediation and advisory start empty. New build and
+// extension use the class's list for the work type, else its new-build list,
+// else its category's list; the category is taken from the class when not
+// given. Defaults are suggestions, never evidence.
+func (c *Catalog) ScopeDefaults(category, class, workType string) []string {
+	if workType == "" {
+		return nil
+	}
+	for _, w := range c.profile.scope.EmptyWorkTypes {
+		if w == workType {
+			return nil
+		}
+	}
+	for _, want := range []string{workType, "new"} {
+		for _, e := range c.profile.scope.Classes {
+			if class != "" && e.Class == class && e.WorkType == want {
+				return e.Systems
+			}
+		}
+	}
+	if class != "" {
+		for _, bc := range c.profile.taxonomy.BuildingClasses {
+			for _, s := range bc.Subclasses {
+				if s.ID == class {
+					category = bc.ID
+				}
+			}
+		}
+	}
+	for _, e := range c.profile.scope.Categories {
+		if category != "" && e.Category == category {
+			return e.Systems
+		}
+	}
+	return nil
 }
+
+// Presets are the scope picker's one-click system sets.
+func (c *Catalog) Presets() []Preset { return c.profile.scope.Presets }
+
+// Preset returns one preset by id.
+func (c *Catalog) Preset(id string) (Preset, bool) {
+	for _, p := range c.profile.scope.Presets {
+		if p.ID == id {
+			return p, true
+		}
+	}
+	return Preset{}, false
+}
+
+// AlwaysShown are the profile determinants every scope shows.
+func (c *Catalog) AlwaysShown() []string { return c.profile.scope.AlwaysShown }
 
 // Resolve maps a deprecated system or determinant id to its replacement, so
 // stored facts under an old id show under the new one.

@@ -18,6 +18,7 @@ const (
 	pathHealthSpeed     = "health_speed"
 	pathProfileRead     = "project_profile_read"
 	pathProfileEdit     = "profile_edit"
+	pathDocumentDelete  = "document_delete"
 )
 
 // speedWindow is how many recent observations each path keeps. The speed

@@ -67,7 +67,7 @@ func TestStagesStoreProfileFactsAndRebuild(t *testing.T) {
 	}
 	for i := 0; i < 3; i++ { // full text, label, evidence
 		if i == 1 { // the user asks for the profile update
-			if _, err := st.RequestProfileRead(ctx, org, project); err != nil {
+			if _, err := st.RequestProfileRead(ctx, org, project, nil); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -78,7 +78,7 @@ func TestStagesStoreProfileFactsAndRebuild(t *testing.T) {
 	if len(asker.calls) < 2 {
 		t.Fatalf("calls %d", len(asker.calls))
 	}
-	view, err := st.ReadProfile(ctx, org, project)
+	view, err := st.ReadProfile(ctx, org, project, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

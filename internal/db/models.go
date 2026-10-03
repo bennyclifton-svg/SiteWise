@@ -36,6 +36,7 @@ type Document struct {
 	CreatedAt      time.Time
 	Reason         string
 	IdentityPage   int32
+	ProfileRead    string
 }
 
 type DocumentSource struct {

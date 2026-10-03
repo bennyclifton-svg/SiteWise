@@ -53,6 +53,11 @@ type Rule struct {
 	Status   string    `yaml:"status"`
 	Derives  *Derives  `yaml:"derives"`
 	Evidence *Question `yaml:"evidence"`
+	// Systems the rule is about, and the predicate over determinants and
+	// present systems that limits it (SCHEMA.md, Predicates). The scoped
+	// profile reads both to decide which determinants are relevant.
+	Systems     []string `yaml:"systems"`
+	AppliesWhen any      `yaml:"applies_when"`
 }
 
 // Derives names a table lookup. Pending derivations stay unknown: the seed

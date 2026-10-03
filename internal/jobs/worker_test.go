@@ -140,7 +140,7 @@ func TestStagesLeaseAndPriority(t *testing.T) {
 	if err := worker.Once(ctx, org); !errors.Is(err, store.ErrIdle) {
 		t.Fatalf("reading ran unasked: %v", err)
 	}
-	if _, err := st.RequestProfileRead(ctx, org, project); err != nil {
+	if _, err := st.RequestProfileRead(ctx, org, project, nil); err != nil {
 		t.Fatal(err)
 	}
 	if err := worker.Once(ctx, org); err != nil {

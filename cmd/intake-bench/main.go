@@ -267,6 +267,10 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err != nil {
 		return 0, err
 	}
+	reading, err := profile.LoadReadPolicy(filepath.Join(repo, "data", "profile", "reading.json"))
+	if err != nil {
+		return 0, err
+	}
 	srv, err := httpapi.New(httpapi.Options{
 		Store:             st,
 		Blobs:             blobs,
@@ -280,6 +284,7 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		Observe:           samples.Add,
 		Knowledge:         building,
 		ProfileThresholds: profileTh,
+		ProfileReading:    reading,
 	})
 	if err != nil {
 		return 0, err
@@ -352,6 +357,11 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		return 0, err
 	}
 	outcomes["grey_filings"] = grey
+	// Deletion is timed last, after every outcome is counted, because it
+	// removes filings the other measurements read.
+	if err := api.deleteDocuments(ctx, st, documents, o.apiSamples); err != nil {
+		return 0, err
+	}
 
 	snapshot := samples.Snapshot()
 	if err := writeJSON(o.samplesOut, snapshot); err != nil {
@@ -899,6 +909,36 @@ func (a *apiClient) profileReadEdit(ctx context.Context, st *store.Store, cat *k
 		}
 		body, _ := json.Marshal(map[string]string{"value": subclasses[i%2]})
 		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/profile/hdr.subclass", body, http.StatusOK); err != nil {
+			return err
+		}
+		// Choosing which documents the profile reads is a profile edit too:
+		// it rebuilds the profile in code.
+		reading, _ := json.Marshal(map[string]any{"document_ids": []string{documents[0]}, "setting": []string{"skip", "auto"}[i%2]})
+		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/documents/profile-read", reading, http.StatusOK); err != nil {
+			return err
+		}
+		// So is a scope of works change: one write, then a code-only rebuild.
+		scope, _ := json.Marshal(map[string]any{"systems": map[string]any{"fire-active.sprinklers": []any{"in", nil}[i%2]}})
+		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/profile/scope", scope, http.StatusOK); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// deleteDocuments times n single-document deletions, newest filings first.
+func (a *apiClient) deleteDocuments(ctx context.Context, st *store.Store, documents []string, n int) error {
+	if len(documents) < n {
+		return fmt.Errorf("delete benchmark needs %d documents, have %d", n, len(documents))
+	}
+	for i := 0; i < n; i++ {
+		id := documents[len(documents)-1-i]
+		doc, err := st.GetDocument(ctx, benchOrg, id)
+		if err != nil {
+			return err
+		}
+		body, _ := json.Marshal(map[string][]string{"document_ids": {id}})
+		if _, err := a.timed(ctx, "document_delete", http.MethodPost, "/projects/"+doc.ProjectID+"/documents/delete", body, http.StatusOK); err != nil {
 			return err
 		}
 	}

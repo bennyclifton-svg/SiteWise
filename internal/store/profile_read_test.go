@@ -21,21 +21,21 @@ func TestProfileActiveWorkExcludesQueuedAndExpiredLeases(t *testing.T) {
 	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='failed',attempts=max_attempts WHERE org_id=$1 AND document_id=$2 AND kind='label'`, orgA, docA); err != nil {
 		t.Fatal(err)
 	}
-	v, err := st.ReadProfile(ctx, orgA, projectA)
+	v, err := st.ReadProfile(ctx, orgA, projectA, nil)
 	if err != nil || v.PendingDocuments != 1 || v.FailedDocuments != 1 || v.ActiveDocuments != 0 {
 		t.Fatalf("blocked work: %+v %v", v, err)
 	}
 	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='leased',locked_until=now()+interval '1 minute' WHERE org_id=$1 AND document_id=$2 AND kind='label'`, orgA, docA); err != nil {
 		t.Fatal(err)
 	}
-	v, err = st.ReadProfile(ctx, orgA, projectA)
+	v, err = st.ReadProfile(ctx, orgA, projectA, nil)
 	if err != nil || v.ActiveDocuments != 1 {
 		t.Fatalf("active lease: %+v %v", v, err)
 	}
 	if _, err := pool.Exec(ctx, `UPDATE jobs SET locked_until=now()-interval '1 second' WHERE org_id=$1 AND document_id=$2 AND kind='label'`, orgA, docA); err != nil {
 		t.Fatal(err)
 	}
-	v, err = st.ReadProfile(ctx, orgA, projectA)
+	v, err = st.ReadProfile(ctx, orgA, projectA, nil)
 	if err != nil || v.ActiveDocuments != 0 || v.PendingDocuments != 1 {
 		t.Fatalf("expired lease: %+v %v", v, err)
 	}
@@ -48,7 +48,7 @@ func TestProfileRequestDuringExtractionWaitsThenReads(t *testing.T) {
 		t.Fatal(err)
 	}
 	for i := 0; i < 2; i++ {
-		n, err := st.RequestProfileRead(ctx, orgA, projectA)
+		n, err := st.RequestProfileRead(ctx, orgA, projectA, nil)
 		if err != nil || n != int64(1-i) {
 			t.Fatalf("click %d queued=%d err=%v", i, n, err)
 		}
@@ -109,14 +109,14 @@ func TestProfileFailureIsVisibleAndRetryable(t *testing.T) {
 	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='failed', attempts=max_attempts, last_error='jev response rejected: status 402' WHERE org_id=$1 AND document_id=$2`, orgA, docA); err != nil {
 		t.Fatal(err)
 	}
-	v, err := st.ReadProfile(ctx, orgA, projectA)
+	v, err := st.ReadProfile(ctx, orgA, projectA, nil)
 	if err != nil || v.FailedDocuments != 1 || !v.PaymentRequired {
 		t.Fatalf("missing payment failure: %+v %v", v, err)
 	}
-	if _, err := st.RequestProfileRead(ctx, orgA, projectA); err != nil {
+	if _, err := st.RequestProfileRead(ctx, orgA, projectA, nil); err != nil {
 		t.Fatal(err)
 	}
-	v, err = st.ReadProfile(ctx, orgA, projectA)
+	v, err = st.ReadProfile(ctx, orgA, projectA, nil)
 	if err != nil || v.FailedDocuments != 0 || v.PaymentRequired || v.PendingDocuments != 1 {
 		t.Fatalf("retry state: %+v %v", v, err)
 	}
@@ -130,7 +130,7 @@ func TestRequestProfileReadQueuesUnreadDocuments(t *testing.T) {
 	st := profileStore(t)
 	pool := rawPool(t)
 
-	view, err := st.ReadProfile(ctx, orgA, projectA)
+	view, err := st.ReadProfile(ctx, orgA, projectA, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,12 +145,12 @@ func TestRequestProfileReadQueuesUnreadDocuments(t *testing.T) {
 	if _, err := pool.Exec(ctx, `UPDATE jobs SET status = 'done' WHERE org_id = $1`, orgA); err != nil {
 		t.Fatal(err)
 	}
-	if view, _ = st.ReadProfile(ctx, orgA, projectA); view.UnreadDocuments != 1 {
+	if view, _ = st.ReadProfile(ctx, orgA, projectA, nil); view.UnreadDocuments != 1 {
 		t.Fatalf("unread = %d, want 1", view.UnreadDocuments)
 	}
 
 	for i := 0; i < 2; i++ { // a second click queues nothing new
-		n, err := st.RequestProfileRead(ctx, orgA, projectA)
+		n, err := st.RequestProfileRead(ctx, orgA, projectA, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -165,12 +165,12 @@ func TestRequestProfileReadQueuesUnreadDocuments(t *testing.T) {
 	if labels != 1 {
 		t.Fatalf("label jobs = %d", labels)
 	}
-	if view, _ = st.ReadProfile(ctx, orgA, projectA); view.UnreadDocuments != 0 || view.PendingDocuments != 1 {
+	if view, _ = st.ReadProfile(ctx, orgA, projectA, nil); view.UnreadDocuments != 0 || view.PendingDocuments != 1 {
 		t.Fatalf("after click unread=%d pending=%d", view.UnreadDocuments, view.PendingDocuments)
 	}
 
 	// Another org's project is out of reach.
-	if n, err := st.RequestProfileRead(ctx, orgB, projectA); err == nil && n != 0 {
+	if n, err := st.RequestProfileRead(ctx, orgB, projectA, nil); err == nil && n != 0 {
 		t.Fatalf("cross-org click queued %d", n)
 	}
 }
@@ -188,7 +188,7 @@ func TestRequestProfileReadRestampsOldQueuedJobs(t *testing.T) {
 	if _, err := pool.Exec(ctx, `UPDATE jobs SET created_at = now() - interval '1 hour' WHERE org_id = $1`, orgA); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := st.RequestProfileRead(ctx, orgA, projectA); err != nil {
+	if _, err := st.RequestProfileRead(ctx, orgA, projectA, nil); err != nil {
 		t.Fatal(err)
 	}
 	var fresh bool

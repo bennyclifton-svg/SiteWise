@@ -1029,22 +1029,109 @@ button.cell[data-state="check"]:hover {
 }
 
 .reg-table col.reg-no {
-  width: 12%;
+  width: 13%;
 }
 .reg-table col.reg-rev {
   width: 6%;
 }
 .reg-table col.reg-date {
-  width: 13%;
+  width: 11%;
 }
 .reg-table col.reg-disc {
-  width: 16%;
+  width: 12%;
 }
 .reg-table col.reg-kind {
-  width: 13%;
+  width: 11%;
 }
 .reg-table col.reg-mark {
   width: 2.5rem;
+}
+/* Selection and profile-reading columns. */
+.reg-table col.reg-sel {
+  width: 1.5rem;
+}
+.reg-table col.reg-prof {
+  width: 2.25rem;
+}
+.reg-table th.reg-sel,
+.reg-line td.reg-sel {
+  padding: 6px 0 0 4px;
+}
+.reg-table th.reg-sel {
+  padding-top: 7px;
+}
+.reg-sel input {
+  margin: 0;
+  accent-color: var(--azure);
+  cursor: pointer;
+}
+.reg-th-text {
+  display: block;
+  padding: 6px 3px;
+  color: var(--ink-muted);
+}
+.reg-line td.reg-prof {
+  padding: 3px 3px 0;
+}
+.reg-read {
+  position: relative;
+  width: 100%;
+  min-height: 22px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.reg-read[data-reads] {
+  color: var(--ok);
+}
+.reg-read:hover {
+  border-color: var(--line-strong);
+  background: var(--paper);
+}
+.reg-read:focus-visible {
+  outline: 2px solid var(--azure);
+  outline-offset: -2px;
+}
+/* A dot marks the user's own choice, as the ember mark does for fields. */
+.reg-read[data-override]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ember);
+}
+.reg-doc[data-selected] .reg-line td {
+  background: var(--azure-soft);
+}
+.reg-bulk {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line-strong);
+  background: var(--azure-soft);
+  box-shadow: var(--shadow-sm);
+}
+.reg-bulk-count {
+  margin-right: 4px;
+  font-weight: 500;
+}
+.reg-filter {
+  margin: 0;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--warn-soft);
+  font-size: 12px;
 }
 
 .reg-table thead th {
@@ -1579,3 +1666,174 @@ button.cell[data-state="check"]:hover {
 .pf-source-pages { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
 .pf-coverage { padding-left: 20px; }
 .pf-coverage li { margin: 8px 0; overflow-wrap: anywhere; }
+
+.profile-reading {
+  margin: 4px 0 0;
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+/* Deletion: a quiet bin per row and in the header; the dialog confirms. */
+.reg-table col.reg-bin {
+  width: 1.75rem;
+}
+.reg-table th.reg-bin,
+.reg-line td.reg-bin {
+  padding: 3px 4px 0 0;
+}
+.reg-del {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.reg-del:hover:not(:disabled) {
+  border-color: var(--alert);
+  background: var(--alert-soft);
+  color: var(--alert);
+}
+.reg-del:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.reg-del:focus-visible {
+  outline: 2px solid var(--azure);
+  outline-offset: -2px;
+}
+.btn-danger {
+  border-color: var(--alert);
+  background: var(--alert);
+  color: var(--paper);
+}
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+.btn-danger-quiet {
+  color: var(--alert);
+}
+.confirm {
+  width: min(28rem, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink-body);
+  box-shadow: var(--shadow-sm);
+}
+.confirm::backdrop {
+  background: oklch(0.2 0.01 86 / 0.35);
+}
+.confirm h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.confirm p {
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Scope of works: a compact picker grouped by top-level system. */
+.pf-scope-head {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.pf-scope-head h2 {
+  margin-right: 2px;
+}
+.pf-scope-hint {
+  margin: 0 0 8px;
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+.pf-scope-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 4px 12px;
+}
+.pf-scope-group summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  cursor: pointer;
+  list-style: none;
+}
+.pf-scope-group summary::-webkit-details-marker {
+  display: none;
+}
+.pf-scope-group[data-active] summary {
+  border-color: var(--azure);
+  background: var(--azure-soft);
+}
+.pf-scope-group[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.pf-scope-label {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.pf-scope-group input {
+  margin: 0;
+  accent-color: var(--azure);
+}
+.pf-scope-group ul {
+  margin: 0;
+  padding: 4px 6px 6px;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  list-style: none;
+}
+.pf-scope-group li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 2px 0;
+  font-size: 12.5px;
+}
+.pf-scope-group li label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.pf-scope-origin {
+  padding: 0 6px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 11px;
+}
+.pf-scope-origin[data-origin="default"] {
+  border-color: var(--azure);
+  color: var(--azure);
+}
+.pf-scope-origin[data-origin="user"] {
+  border-style: solid;
+  border-color: var(--ember);
+  color: var(--ember-hot);
+}
+.pf-scope-note {
+  flex-basis: 100%;
+  color: var(--warn);
+  font-size: 11.5px;
+}
