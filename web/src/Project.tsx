@@ -11,6 +11,7 @@ import {
   type Catalog,
   type Doc,
   type DocumentList,
+  type ReadSetting,
   type StreamEvent,
 } from "./api";
 import { type RowModel } from "./DocumentRow";
@@ -63,7 +64,8 @@ type Action =
   | { type: "event"; ev: StreamEvent; at: number }
   | { type: "doc"; doc: Doc }
   | { type: "retrying"; id: string }
-  | { type: "unland"; id: string };
+  | { type: "unland"; id: string }
+  | { type: "reading"; ids: string[]; setting: ReadSetting };
 
 const initial: State = {
   phase: "loading",
@@ -184,6 +186,15 @@ function reducer(state: State, action: Action): State {
       };
     case "unland":
       return { ...state, landed: without(state.landed, action.id) };
+    case "reading": {
+      // The server applies a drawing set's setting to its sheets too.
+      const ids = new Set(action.ids);
+      const docs = { ...state.docs };
+      for (const d of Object.values(state.docs)) {
+        if (ids.has(d.id) || (d.source_id && ids.has(d.source_id))) docs[d.id] = { ...d, profile_read: action.setting };
+      }
+      return { ...state, docs };
+    }
   }
 }
 
@@ -203,6 +214,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   const [flash, setFlash] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [profileTick, setProfileTick] = useState(0);
+  const [notReadOnly, setNotReadOnly] = useState(false);
   const lastId = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const queue = useRef<{ key: string; file: File }[]>([]);
@@ -414,6 +426,22 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
     [onSignedOut],
   );
 
+  const setReading = useCallback(
+    async (ids: string[], setting: ReadSetting) => {
+      try {
+        await api.setProfileReading(projectId, ids, setting);
+        dispatch({ type: "reading", ids, setting });
+        setProfileTick((t) => t + 1);
+        const n = ids.length === 1 ? "1 document" : `${ids.length} documents`;
+        setAnnouncement(setting === "read" ? `${n} will be read for the profile.` : setting === "skip" ? `${n} will not be read for the profile.` : `${n} reset to automatic.`);
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 401) onSignedOut();
+        setAnnouncement("The reading setting wasn't saved. Check your connection and try again.");
+      }
+    },
+    [projectId, onSignedOut],
+  );
+
   const jump = useCallback((docId: string) => {
     const el = document.getElementById(`doc-${docId}`);
     if (!el) return;
@@ -498,7 +526,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
     <main className="workspace" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <section className="profile-col" aria-label="Project profile">
         <h1 className="project-title">{state.projectName}</h1>
-        <Profile projectId={projectId} tick={profileTick} onJump={jump} onSignedOut={onSignedOut} />
+        <Profile projectId={projectId} tick={profileTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} />
       </section>
       <aside className="register-col" aria-label="Document register">
         <Register
@@ -511,6 +539,9 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
           onJump={jump}
           onDismiss={(key) => dispatch({ type: "dismiss", key })}
           onAddFiles={() => fileInput.current?.click()}
+          onSetReading={setReading}
+          notReadOnly={notReadOnly}
+          onClearFilter={() => setNotReadOnly(false)}
         />
       </aside>
       {/* Drop overlay: invisible until files are dragged over the page. */}

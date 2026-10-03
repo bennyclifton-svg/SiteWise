@@ -86,6 +86,9 @@ type catalogBody struct {
 	Kinds       []option `json:"kinds"`
 	Disciplines []option `json:"disciplines"`
 	Lifecycle   []option `json:"lifecycle"`
+	// ProfileReadKinds are the kinds the profile reads when a document's
+	// setting is automatic, so the register can show the resolved state.
+	ProfileReadKinds []string `json:"profile_read_kinds"`
 }
 
 func checkSession(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -326,6 +329,7 @@ func getCatalog(w http.ResponseWriter, r *http.Request, deps Deps) {
 	for _, a := range deps.Catalog.Lifecycle {
 		out.Lifecycle = append(out.Lifecycle, option{ID: a.ID, Label: a.Label})
 	}
+	out.ProfileReadKinds = deps.ProfileReading.Kinds()
 	w.Header().Set("Cache-Control", "private, max-age=300")
 	writeJSON(w, http.StatusOK, out)
 }

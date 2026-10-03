@@ -42,7 +42,7 @@ interface Props {
 
 type CellState = "confirmed" | "check" | "unset" | "unchecked" | "user";
 
-export const FIELDS: { field: string; label: string; vocab?: keyof Catalog; editable: boolean }[] = [
+export const FIELDS: { field: string; label: string; vocab?: "kinds" | "disciplines" | "lifecycle"; editable: boolean }[] = [
   { field: "number", label: "Doc no.", editable: true },
   { field: "revision", label: "Rev", editable: true },
   { field: "title", label: "Title", editable: true },

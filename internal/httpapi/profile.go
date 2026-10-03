@@ -82,6 +82,9 @@ type profileJSON struct {
 	PendingDocuments int                    `json:"pending_documents"`
 	ActiveDocuments  int                    `json:"active_documents"`
 	UnreadDocuments  int                    `json:"unread_documents"`
+	ReadDocuments    int                    `json:"read_documents"`
+	SkippedDocuments int                    `json:"skipped_documents"`
+	SkippedKind      string                 `json:"skipped_kind"`
 	FailedDocuments  int                    `json:"failed_documents"`
 	PaymentRequired  bool                   `json:"payment_required"`
 	// Queued answers a profile read request: documents it sent to Jev.
@@ -121,7 +124,7 @@ func requestProfileRead(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	// The read below 404s an unknown or foreign project; the queue is
 	// org-scoped, so a foreign id queues nothing first.
-	queued, err := deps.Store.RequestProfileRead(r.Context(), session.OrgID, projectID)
+	queued, err := deps.Store.RequestProfileRead(r.Context(), session.OrgID, projectID, deps.ProfileReading.Kinds())
 	if err != nil {
 		http.Error(w, "request failed", http.StatusInternalServerError)
 		return
@@ -145,7 +148,7 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
 	}
-	view, err := deps.Store.ReadProfile(r.Context(), orgID, projectID)
+	view, err := deps.Store.ReadProfile(r.Context(), orgID, projectID, deps.ProfileReading.Kinds())
 	if errors.Is(err, store.ErrNotFound) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -164,6 +167,7 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 	whole := ""
 	out := profileJSON{Coverage: view.Coverage, ProjectID: projectID, BuiltAt: view.BuiltAt, PendingDocuments: view.PendingDocuments, UnreadDocuments: view.UnreadDocuments,
 		ActiveDocuments: view.ActiveDocuments, FailedDocuments: view.FailedDocuments, PaymentRequired: view.PaymentRequired,
+		ReadDocuments: view.ReadDocuments, SkippedDocuments: view.SkippedDocuments, SkippedKind: view.SkippedKind,
 		Thresholds: map[string]any{"version": deps.ProfileThresholds.Version, "provisional": !deps.ProfileThresholds.Approved,
 			"applied": len(deps.ProfileThresholds.Amber) > 0}}
 	for _, p := range view.Parts {
@@ -409,7 +413,7 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 func rebuildProfile(r *http.Request, deps Deps, orgID, projectID string) error {
 	return deps.Store.RebuildProfile(r.Context(), orgID, projectID, deps.ProfileThresholds.Version,
 		func(s store.ProfileSnapshot) []profile.Row {
-			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: deps.ProfileThresholds}, deps.Knowledge)
+			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: deps.ProfileThresholds, Read: deps.ProfileReading}, deps.Knowledge)
 		})
 }
 
@@ -642,4 +646,57 @@ func updatePart(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	_ = rebuildProfile(r, deps, session.OrgID, projectID)
 	writeJSON(w, http.StatusOK, partJSON{ID: p.ID, Label: p.Label, Kind: p.Kind, NCCClass: p.NCCClass})
+}
+
+const maxReadingIDs = 1000
+
+// setProfileReading records which documents the profile reads, for a
+// selection in the register. The rebuild is code only: a document turned
+// off leaves the profile at once and its readings stay stored.
+func setProfileReading(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	projectID := r.PathValue("id")
+	if !uuidPattern.MatchString(projectID) || deps.Knowledge == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		DocumentIDs []string `json:"document_ids"`
+		Setting     string   `json:"setting"`
+	}
+	if err := readJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	if !profile.ValidReadSetting(body.Setting) || len(body.DocumentIDs) == 0 || len(body.DocumentIDs) > maxReadingIDs {
+		http.Error(w, "setting must be auto, read or skip, for 1 to 1000 documents", http.StatusBadRequest)
+		return
+	}
+	for _, id := range body.DocumentIDs {
+		if !uuidPattern.MatchString(id) {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+	}
+	_, err := deps.Store.SetProfileReading(r.Context(), session.OrgID, projectID, body.DocumentIDs, body.Setting, deps.ProfileReading.Kinds())
+	if errors.Is(err, store.ErrNotFound) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, "update failed", http.StatusInternalServerError)
+		return
+	}
+	if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
+		http.Error(w, "rebuild failed", http.StatusInternalServerError)
+		return
+	}
+	writeProfile(w, r, deps, session.OrgID, projectID)
 }

@@ -45,6 +45,9 @@ type Deps struct {
 	// Knowledge and ProfileThresholds serve the project profile.
 	Knowledge         *knowledge.Catalog
 	ProfileThresholds profile.Thresholds
+	// ProfileReading decides which documents the profile reads. The zero
+	// policy applies no kind filter.
+	ProfileReading profile.ReadPolicy
 }
 
 // Filer starts a foreground filing that outlives the upload request.
@@ -65,28 +68,29 @@ func Handler(deps Deps) http.Handler {
 	}
 	mux := http.NewServeMux()
 	routes := map[string]func(http.ResponseWriter, *http.Request, Deps){
-		"POST /session":                          consumeSession,
-		"POST /projects":                         createProject,
-		"GET /projects/{id}":                     getProject,
-		"GET /session":                           checkSession,
-		"GET /projects":                          listProjects,
-		"GET /projects/{id}/documents":           listDocuments,
-		"POST /projects/{id}/files":              uploadFile,
-		"GET /documents/{id}":                    getDocument,
-		"GET /documents/{id}/file":               downloadDocument,
-		"POST /documents/{id}/filing":            retryFiling,
-		"POST /documents/{id}/details/reprocess": reprocessDetails,
-		"PUT /documents/{id}/fields/{field}":     correctField,
-		"GET /catalog":                           getCatalog,
-		"GET /events":                            streamEvents,
-		"GET /health":                            getHealth,
-		"GET /speed":                             getSpeed,
-		"GET /projects/{id}/profile":             getProfile,
-		"GET /projects/{id}/profile/sources":     getProfileSources,
-		"PUT /projects/{id}/profile/{key}":       putProfileValue,
-		"POST /projects/{id}/profile/read":       requestProfileRead,
-		"POST /projects/{id}/parts":              createPart,
-		"PATCH /projects/{id}/parts/{part}":      updatePart,
+		"POST /session":                             consumeSession,
+		"POST /projects":                            createProject,
+		"GET /projects/{id}":                        getProject,
+		"GET /session":                              checkSession,
+		"GET /projects":                             listProjects,
+		"GET /projects/{id}/documents":              listDocuments,
+		"POST /projects/{id}/files":                 uploadFile,
+		"GET /documents/{id}":                       getDocument,
+		"GET /documents/{id}/file":                  downloadDocument,
+		"POST /documents/{id}/filing":               retryFiling,
+		"POST /documents/{id}/details/reprocess":    reprocessDetails,
+		"PUT /documents/{id}/fields/{field}":        correctField,
+		"GET /catalog":                              getCatalog,
+		"GET /events":                               streamEvents,
+		"GET /health":                               getHealth,
+		"GET /speed":                                getSpeed,
+		"GET /projects/{id}/profile":                getProfile,
+		"GET /projects/{id}/profile/sources":        getProfileSources,
+		"PUT /projects/{id}/profile/{key}":          putProfileValue,
+		"POST /projects/{id}/profile/read":          requestProfileRead,
+		"PUT /projects/{id}/documents/profile-read": setProfileReading,
+		"POST /projects/{id}/parts":                 createPart,
+		"PATCH /projects/{id}/parts/{part}":         updatePart,
 	}
 	for pattern, h := range routes {
 		path, timed := routePaths[pattern]
@@ -107,19 +111,20 @@ func Handler(deps Deps) http.Handler {
 // view. Failed requests are timed too. Uploads are not: their duration is
 // the client's network.
 var routePaths = map[string]string{
-	"POST /session":                      pathInviteAuth,
-	"POST /projects":                     pathInviteAuth,
-	"GET /projects":                      pathDocumentList,
-	"GET /projects/{id}/documents":       pathDocumentList,
-	"PUT /documents/{id}/fields/{field}": pathFieldCorrection,
-	"GET /health":                        pathHealthSpeed,
-	"GET /speed":                         pathHealthSpeed,
-	"GET /projects/{id}/profile":         pathProfileRead,
-	"GET /projects/{id}/profile/sources": pathProfileRead,
-	"PUT /projects/{id}/profile/{key}":   pathProfileEdit,
-	"POST /projects/{id}/profile/read":   pathProfileEdit,
-	"POST /projects/{id}/parts":          pathProfileEdit,
-	"PATCH /projects/{id}/parts/{part}":  pathProfileEdit,
+	"POST /session":                             pathInviteAuth,
+	"POST /projects":                            pathInviteAuth,
+	"GET /projects":                             pathDocumentList,
+	"GET /projects/{id}/documents":              pathDocumentList,
+	"PUT /documents/{id}/fields/{field}":        pathFieldCorrection,
+	"GET /health":                               pathHealthSpeed,
+	"GET /speed":                                pathHealthSpeed,
+	"GET /projects/{id}/profile":                pathProfileRead,
+	"GET /projects/{id}/profile/sources":        pathProfileRead,
+	"PUT /projects/{id}/profile/{key}":          pathProfileEdit,
+	"POST /projects/{id}/profile/read":          pathProfileEdit,
+	"PUT /projects/{id}/documents/profile-read": pathProfileEdit,
+	"POST /projects/{id}/parts":                 pathProfileEdit,
+	"PATCH /projects/{id}/parts/{part}":         pathProfileEdit,
 }
 
 func consumeSession(w http.ResponseWriter, r *http.Request, deps Deps) {

@@ -79,6 +79,10 @@ export interface Profile {
   active_documents: number;
   /** Text split, not yet read by Jev; "Update project profile" reads them. */
   unread_documents: number;
+  /** Documents the profile reads and does not read; skipped_kind is the most common kind not read. */
+  read_documents: number;
+  skipped_documents: number;
+  skipped_kind: string;
   failed_documents: number;
   payment_required: boolean;
   /** Set only on an update request: documents it sent to Jev. */

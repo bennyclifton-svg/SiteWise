@@ -82,6 +82,7 @@ func pick(list []Candidate, id string) (Candidate, bool) {
 // Build reconciles, then adds typical systems for the subclass and work type
 // the profile now holds (user, green or amber) and reconciles again.
 func Build(in Input, cat *knowledge.Catalog) []Row {
+	in.Facts = readFacts(in.Facts, in.Read)
 	rows := Reconcile(in, cat)
 	sub, work := headerValue(rows, "hdr.subclass"), headerValue(rows, "hdr.work_type")
 	if sub == "" || work == "" {
@@ -92,6 +93,22 @@ func Build(in Input, cat *knowledge.Catalog) []Row {
 		rows = Reconcile(in, cat)
 	}
 	return rows
+}
+
+// readFacts keeps the facts of documents the policy reads. A document turned
+// off leaves the profile at the next rebuild, which is code only; its stored
+// readings stay, so turning it back on costs no Jev call.
+func readFacts(facts []Fact, p ReadPolicy) []Fact {
+	if !p.Loaded() {
+		return facts
+	}
+	out := make([]Fact, 0, len(facts))
+	for _, f := range facts {
+		if p.Reads(f.DocumentKind, f.ReadSetting) {
+			out = append(out, f)
+		}
+	}
+	return out
 }
 
 func headerValue(rows []Row, key string) string {

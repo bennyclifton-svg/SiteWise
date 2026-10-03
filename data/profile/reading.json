@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "note": "Document kinds the project profile reads when a document's setting is automatic. Drawings, photos, correspondence and unclassified documents are skipped: on the development corpus drawings were about 60% of profile Jev calls and the source of every wrong header value on Spec Home (docs/design/2026-10-03-profile-scope.md). The user can choose read or skip per document; that choice is final.",
+  "read_kinds": [
+    "design_brief",
+    "specification",
+    "report",
+    "contract",
+    "commercial",
+    "certificate",
+    "statutory_instrument",
+    "schedule"
+  ]
+}

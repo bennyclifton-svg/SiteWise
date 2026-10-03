@@ -136,3 +136,51 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await page.getByRole("button", { name: "All projects and new project…" }).click();
   await expect(page.getByRole("heading", { name: "Projects" })).toBeVisible();
 });
+
+test("choose which documents the profile reads, in bulk", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Reading selection");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  const fixtures = resolve(import.meta.dirname, "../../testdata/identity");
+  const names = ["identity-page.pdf", "docx-table.docx", "merged-cells.xlsx"];
+  await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
+  const rows = page.locator("tbody.reg-doc");
+  await expect(rows).toHaveCount(3);
+  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"] .reg-sel input`)).toBeVisible();
+
+  // Click the first checkbox, Shift-click the last: a range of three.
+  const boxes = page.locator("tbody.reg-doc .reg-sel input");
+  await boxes.nth(0).click();
+  await boxes.nth(2).click({ modifiers: ["Shift"] });
+  const bulk = page.getByRole("toolbar", { name: "Selected documents" });
+  await expect(bulk).toContainText("3 selected");
+
+  await bulk.getByRole("button", { name: "Don't read" }).click();
+  for (let i = 0; i < 3; i++) {
+    const read = rows.nth(i).locator(".reg-read");
+    await expect(read).toHaveAttribute("aria-pressed", "false");
+    await expect(read).toHaveAttribute("data-override", "true");
+  }
+  await expect(page.locator(".profile-reading")).toContainText("Reading 0 of 3 documents");
+
+  // The profile line filters the register to what it does not read.
+  await page.locator(".profile-reading").getByRole("button", { name: "Show" }).click();
+  await expect(page.locator(".reg-filter")).toBeVisible();
+  await expect(rows).toHaveCount(3);
+  await page.locator(".reg-filter").getByRole("button", { name: "Show all" }).click();
+
+  // One row's own toggle reads it; Reset returns everything to automatic.
+  await rows.nth(0).locator(".reg-read").click();
+  await expect(rows.nth(0).locator(".reg-read")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".profile-reading")).toContainText("Reading 1 of 3 documents");
+  await bulk.getByRole("button", { name: "Reset to automatic" }).click();
+  for (let i = 0; i < 3; i++) await expect(rows.nth(i).locator(".reg-read")).not.toHaveAttribute("data-override", "true");
+
+  // Ctrl-click selects without opening; Clear empties the selection.
+  await bulk.getByRole("button", { name: "Clear" }).click();
+  await expect(bulk).toBeHidden();
+  await rows.nth(1).locator("tr.reg-line").click({ modifiers: ["Control"] });
+  await expect(page.getByRole("toolbar", { name: "Selected documents" })).toContainText("1 selected");
+  await expect(rows.nth(1)).not.toHaveAttribute("data-open", "true");
+});

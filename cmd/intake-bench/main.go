@@ -267,6 +267,10 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err != nil {
 		return 0, err
 	}
+	reading, err := profile.LoadReadPolicy(filepath.Join(repo, "data", "profile", "reading.json"))
+	if err != nil {
+		return 0, err
+	}
 	srv, err := httpapi.New(httpapi.Options{
 		Store:             st,
 		Blobs:             blobs,
@@ -280,6 +284,7 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		Observe:           samples.Add,
 		Knowledge:         building,
 		ProfileThresholds: profileTh,
+		ProfileReading:    reading,
 	})
 	if err != nil {
 		return 0, err
@@ -899,6 +904,12 @@ func (a *apiClient) profileReadEdit(ctx context.Context, st *store.Store, cat *k
 		}
 		body, _ := json.Marshal(map[string]string{"value": subclasses[i%2]})
 		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/profile/hdr.subclass", body, http.StatusOK); err != nil {
+			return err
+		}
+		// Choosing which documents the profile reads is a profile edit too:
+		// it rebuilds the profile in code.
+		reading, _ := json.Marshal(map[string]any{"document_ids": []string{documents[0]}, "setting": []string{"skip", "auto"}[i%2]})
+		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/documents/profile-read", reading, http.StatusOK); err != nil {
 			return err
 		}
 	}

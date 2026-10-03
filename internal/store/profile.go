@@ -31,8 +31,14 @@ type ProfileView struct {
 	// UnreadDocuments have their text split but have not been asked for
 	// reading; the user's "Update project profile" queues them.
 	UnreadDocuments int
-	FailedDocuments int
-	PaymentRequired bool
+	// ReadDocuments and SkippedDocuments split the project's documents by
+	// whether the profile reads them; SkippedKind is the most common kind
+	// among the skipped ones.
+	ReadDocuments    int
+	SkippedDocuments int
+	SkippedKind      string
+	FailedDocuments  int
+	PaymentRequired  bool
 }
 
 // ProfileSnapshot is the input one rebuild reconciles, read under the
@@ -261,6 +267,7 @@ func readSnapshot(ctx context.Context, q rowQuerier, orgID, projectID string) (P
 SELECT f.question_id, f.value, f.unit, f.basis, f.part_label, f.excerpt, f.confidence, f.decided_by,
        f.document_id::text, COALESCE(f.passage_id::text, ''),
        COALESCE((SELECT d.value FROM decisions d WHERE d.org_id = f.org_id AND d.document_id = f.document_id AND d.field = 'kind'), ''),
+       COALESCE((SELECT doc.profile_read FROM documents doc WHERE doc.org_id = f.org_id AND doc.id = f.document_id), 'auto'),
        EXISTS (SELECT 1 FROM supersessions s WHERE s.org_id = f.org_id AND s.prior_document_id = f.document_id)
 FROM profile_facts f
 WHERE f.org_id = $1::uuid AND f.project_id = $2::uuid
@@ -271,7 +278,7 @@ ORDER BY f.document_id, f.passage_id, f.question_id`, orgID, projectID)
 	for rows.Next() {
 		var f profile.Fact
 		if err := rows.Scan(&f.QuestionID, &f.Value, &f.Unit, &f.Basis, &f.PartLabel, &f.Excerpt, &f.Confidence,
-			&f.DecidedBy, &f.DocumentID, &f.PassageID, &f.DocumentKind, &f.Superseded); err != nil {
+			&f.DecidedBy, &f.DocumentID, &f.PassageID, &f.DocumentKind, &f.ReadSetting, &f.Superseded); err != nil {
 			rows.Close()
 			return snap, err
 		}
@@ -323,7 +330,8 @@ func (s *Store) ProfileInput(ctx context.Context, orgID, projectID string) (Prof
 }
 
 // ReadProfile returns the precomputed profile. It never reconciles.
-func (s *Store) ReadProfile(ctx context.Context, orgID, projectID string) (ProfileView, error) {
+// readKinds are the automatically read kinds; nil applies no kind filter.
+func (s *Store) ReadProfile(ctx context.Context, orgID, projectID string, readKinds []string) (ProfileView, error) {
 	var v ProfileView
 	var exists bool
 	err := s.pool.QueryRow(ctx, `
@@ -336,19 +344,29 @@ SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)
        (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
         WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='leased' AND j.locked_until > now()
           AND j.kind IN ('full_text','label','evidence')),
-       (SELECT count(*) FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid
+       (SELECT count(*) FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid AND `+readableSQL("$3")+`
           AND EXISTS (SELECT 1 FROM jobs f WHERE f.org_id = d.org_id AND f.document_id = d.id AND f.kind = 'full_text' AND f.status = 'done')
           AND NOT EXISTS (SELECT 1 FROM jobs l WHERE l.org_id = d.org_id AND l.document_id = d.id AND l.kind = 'label')),
        (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
         WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='failed' AND j.kind IN ('full_text','label','evidence')),
        EXISTS (SELECT 1 FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
         WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='failed' AND j.kind IN ('label','evidence') AND j.last_error LIKE '%status 402%')`,
-		orgID, projectID).Scan(&exists, &v.BuiltAt, &v.ThresholdsVersion, &v.PendingDocuments, &v.ActiveDocuments, &v.UnreadDocuments, &v.FailedDocuments, &v.PaymentRequired)
+		orgID, projectID, nilIfEmpty(readKinds)).Scan(&exists, &v.BuiltAt, &v.ThresholdsVersion, &v.PendingDocuments, &v.ActiveDocuments, &v.UnreadDocuments, &v.FailedDocuments, &v.PaymentRequired)
 	if err != nil {
 		return v, err
 	}
 	if !exists {
 		return v, ErrNotFound
+	}
+	if err := s.pool.QueryRow(ctx, `
+SELECT count(*) FILTER (WHERE `+readableSQL("$3")+`),
+       count(*) FILTER (WHERE NOT `+readableSQL("$3")+`),
+       COALESCE((SELECT k.value FROM documents d JOIN decisions k ON k.org_id = d.org_id AND k.document_id = d.id AND k.field = 'kind'
+                 WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid AND NOT `+readableSQL("$3")+`
+                 GROUP BY k.value ORDER BY count(*) DESC, k.value LIMIT 1), '')
+FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid`,
+		orgID, projectID, nilIfEmpty(readKinds)).Scan(&v.ReadDocuments, &v.SkippedDocuments, &v.SkippedKind); err != nil {
+		return v, err
 	}
 	if v.Coverage, err = s.SourceCoverage(ctx, orgID, projectID); err != nil {
 		return v, err
@@ -417,7 +435,10 @@ func hasAnyPrefix(s string, prefixes []string) bool {
 // deliberate act and an upload costs no Jev calls beyond filing. Reading jobs
 // already queued are restamped so a worker started with -background-backlog
 // =false, which claims only jobs created after it started, picks them up.
-func (s *Store) RequestProfileRead(ctx context.Context, orgID, projectID string) (int64, error) {
+// Only documents the profile reads are queued (readKinds; nil applies no
+// kind filter); every document's text is still prepared.
+func (s *Store) RequestProfileRead(ctx context.Context, orgID, projectID string, readKinds []string) (int64, error) {
+	kinds := nilIfEmpty(readKinds)
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return 0, err
@@ -430,29 +451,31 @@ func (s *Store) RequestProfileRead(ctx context.Context, orgID, projectID string)
  AND EXISTS(SELECT 1 FROM passages p WHERE p.org_id=d.org_id AND p.document_id=d.id)
  AND NOT EXISTS(SELECT 1 FROM jobs j WHERE j.org_id=d.org_id AND j.document_id=d.id AND j.status IN ('queued','leased'))
  ) UPDATE jobs j SET status='queued',attempts=0,last_error='',run_after=now(),created_at=now()
- WHERE j.org_id=$1::uuid AND j.document_id IN (SELECT id FROM stale) AND j.kind IN ('full_text','label','evidence')`, orgID, projectID, SourceVersion); err != nil {
+ FROM documents d WHERE d.org_id=j.org_id AND d.id=j.document_id
+ AND j.org_id=$1::uuid AND j.document_id IN (SELECT id FROM stale)
+ AND (j.kind='full_text' OR (j.kind IN ('label','evidence') AND `+readableSQL("$4")+`))`, orgID, projectID, SourceVersion, kinds); err != nil {
 		return 0, err
 	}
 	// An explicit click retries failed work; completed readings are retained.
 	if _, err := tx.Exec(ctx, `UPDATE jobs j SET status='queued', attempts=0, last_error='', run_after=now(), created_at=now()
 FROM documents d WHERE j.org_id=$1::uuid AND d.org_id=j.org_id AND d.id=j.document_id AND d.project_id=$2::uuid
- AND j.status='failed' AND j.kind IN ('full_text','label','evidence')`, orgID, projectID); err != nil {
+ AND j.status='failed' AND (j.kind='full_text' OR (j.kind IN ('label','evidence') AND `+readableSQL("$3")+`))`, orgID, projectID, kinds); err != nil {
 		return 0, err
 	}
 	if _, err := tx.Exec(ctx, `
 UPDATE jobs j SET created_at = now()
 FROM documents d
 WHERE j.org_id = $1::uuid AND d.org_id = j.org_id AND d.id = j.document_id AND d.project_id = $2::uuid
-  AND j.status = 'queued' AND j.kind IN ('full_text', 'label', 'evidence')`, orgID, projectID); err != nil {
+  AND j.status = 'queued' AND (j.kind = 'full_text' OR (j.kind IN ('label', 'evidence') AND `+readableSQL("$3")+`))`, orgID, projectID, kinds); err != nil {
 		return 0, err
 	}
 	tag, err := tx.Exec(ctx, `
 INSERT INTO jobs (org_id, id, document_id, kind, status, priority)
 SELECT d.org_id, gen_random_uuid(), d.id, 'label', 'queued', 0
 FROM documents d
-WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid
+WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid AND `+readableSQL("$3")+`
   AND EXISTS (SELECT 1 FROM jobs f WHERE f.org_id = d.org_id AND f.document_id = d.id AND f.kind = 'full_text' AND f.status IN ('queued', 'leased', 'done'))
-ON CONFLICT (org_id, document_id, kind) DO NOTHING`, orgID, projectID)
+ON CONFLICT (org_id, document_id, kind) DO NOTHING`, orgID, projectID, kinds)
 	if err != nil {
 		return 0, err
 	}

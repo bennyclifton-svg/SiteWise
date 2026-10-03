@@ -19,7 +19,9 @@ type Fact struct {
 	DocumentID   string
 	PassageID    string
 	DocumentKind string
-	Superseded   bool
+	// ReadSetting is the document's profile reading setting (auto, read, skip).
+	ReadSetting string
+	Superseded  bool
 }
 
 // Part is a building, part, storey, compartment or tenancy facts belong to.
@@ -82,6 +84,9 @@ type Input struct {
 	User       []UserValue
 	Thresholds Thresholds
 	Suggested  []string // leaf ids typical for the chosen subclass and work type
+	// Read drops facts from documents the profile does not read. The zero
+	// policy keeps every fact.
+	Read ReadPolicy
 }
 
 const (

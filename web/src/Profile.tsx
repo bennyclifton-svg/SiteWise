@@ -14,6 +14,8 @@ interface Props {
   tick: number;
   onJump: (documentId: string) => void;
   onSignedOut: () => void;
+  /** Filters the register to documents the profile does not read. */
+  onShowNotRead: () => void;
 }
 
 const GROUP_LABELS: Record<string, string> = {
@@ -39,7 +41,14 @@ const REASONS: Record<string, string> = {
   not_built: "Not built yet",
 };
 
-export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
+const KIND_LABELS: Record<string, string> = {
+  drawing: "drawings",
+  photo: "photos",
+  correspondence: "correspondence",
+  unknown: "unclassified documents",
+};
+
+export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
@@ -136,6 +145,22 @@ export function Profile({ projectId, tick, onJump, onSignedOut }: Props) {
           {data.payment_required
             ? "Profile reading stopped: Jev returned Payment Required (402). Check your TypeSafe account’s billing or credits, then retry. Your documents and prepared text are saved."
             : data.active_documents > 0 ? "Some document processing stopped; other documents are still being processed. Your files are saved. Retry the project profile to try the failed documents again." : "Document processing stopped. Your files are saved. Retry the project profile to try again."}
+        </p>
+      )}
+      {data.read_documents + data.skipped_documents > 0 && (
+        <p className="profile-reading">
+          Reading {data.read_documents} of {data.read_documents + data.skipped_documents} document
+          {data.read_documents + data.skipped_documents === 1 ? "" : "s"}
+          {data.skipped_documents > 0 && (
+            <>
+              {" · "}
+              {data.skipped_documents} not read
+              {data.skipped_kind ? ` (mostly ${KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ")})` : ""}{" "}
+              <button type="button" className="cell-link" onClick={onShowNotRead}>
+                Show
+              </button>
+            </>
+          )}
         </p>
       )}
       <p className="profile-status">

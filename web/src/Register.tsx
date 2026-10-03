@@ -1,8 +1,8 @@
 // The document register: one compact line per filing, sortable, opening to
 // the full title block for correction. Modelled on the Clerk register.
 
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
-import type { Catalog, Doc } from "./api";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import type { Catalog, Doc, ReadSetting } from "./api";
 import { FIELDS, FieldCell, HeadState, REASONS, stateOf, type RowModel } from "./DocumentRow";
 import { IconCheck, IconNotChecked, IconRetry, IconStored, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
@@ -19,6 +19,11 @@ interface Props {
   onJump: (docId: string) => void;
   onDismiss: (key: string) => void;
   onAddFiles: () => void;
+  /** Sets the profile reading setting for documents; resolves when saved. */
+  onSetReading: (ids: string[], setting: ReadSetting) => Promise<void>;
+  /** Show only documents the profile does not read. */
+  notReadOnly: boolean;
+  onClearFilter: () => void;
 }
 
 const COLUMNS: { col: Col; label: string; className: string }[] = [
@@ -39,6 +44,13 @@ function fieldValue(doc: Doc | undefined, field: string): string {
   return "";
 }
 
+/** Whether the profile reads a document: the user's choice, else its kind. */
+export function profileReads(doc: Doc, readKinds: string[]): boolean {
+  if (doc.profile_read === "read") return true;
+  if (doc.profile_read === "skip") return false;
+  return readKinds.includes(fieldValue(doc, "kind"));
+}
+
 function shortDate(iso: string): string {
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
   return m ? `${m[3]}/${m[2]}/${m[1].slice(2)}` : iso;
@@ -49,9 +61,26 @@ function sortValue(row: RowModel, col: Col): string {
   return fieldValue(row.doc, col).toLowerCase();
 }
 
-export function Register({ rows, catalog, live, priorLabel, onCorrect, onRetry, onJump, onDismiss, onAddFiles }: Props) {
+export function Register({
+  rows,
+  catalog,
+  live,
+  priorLabel,
+  onCorrect,
+  onRetry,
+  onJump,
+  onDismiss,
+  onAddFiles,
+  onSetReading,
+  notReadOnly,
+  onClearFilter,
+}: Props) {
   const [sort, setSort] = useState<{ col: Col; dir: 1 | -1 } | null>(null);
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const anchor = useRef<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const readKinds = useMemo(() => catalog?.profile_read_kinds ?? [], [catalog]);
 
   const ordered = useMemo(() => {
     const uploads = rows.filter((r) => !r.doc);
@@ -65,8 +94,50 @@ export function Register({ rows, catalog, live, priorLabel, onCorrect, onRetry, 
       if (av && !bv) return -1;
       return av.localeCompare(bv, undefined, { numeric: true }) * dir;
     });
-    return [...uploads, ...docs];
-  }, [rows, sort]);
+    const shown = notReadOnly ? docs.filter((r) => !profileReads(r.doc!, readKinds)) : docs;
+    return [...(notReadOnly ? [] : uploads), ...shown];
+  }, [rows, sort, notReadOnly, readKinds]);
+
+  // Selection is by document id, in display order; rows that leave the list
+  // leave the selection.
+  const docIds = useMemo(() => ordered.flatMap((r) => (r.doc ? [r.doc.id] : [])), [ordered]);
+  useEffect(() => {
+    setSelected((sel) => {
+      const shown = new Set(docIds);
+      const next = new Set([...sel].filter((id) => shown.has(id)));
+      return next.size === sel.size ? sel : next;
+    });
+  }, [docIds]);
+
+  const select = (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => {
+    const from = anchor.current ? docIds.indexOf(anchor.current) : -1;
+    setSelected((sel) => {
+      const next = new Set(sel);
+      if (e.shiftKey && from >= 0) {
+        const to = docIds.indexOf(id);
+        const [a, b] = from < to ? [from, to] : [to, from];
+        for (const x of docIds.slice(a, b + 1)) next.add(x);
+      } else if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+    if (!e.shiftKey || from < 0) anchor.current = id;
+  };
+  const allSelected = docIds.length > 0 && docIds.every((id) => selected.has(id));
+  const someSelected = selected.size > 0 && !allSelected;
+  const selectAll = () => setSelected(allSelected ? new Set() : new Set(docIds));
+
+  const apply = async (ids: string[], setting: ReadSetting) => {
+    setBusy(true);
+    try {
+      await onSetReading(ids, setting);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const toggle = (key: string) => setOpen((o) => ({ ...o, [key]: !o[key] }));
   // A jump from the profile flashes a row; open it so its fields show.
@@ -92,18 +163,40 @@ export function Register({ rows, catalog, live, priorLabel, onCorrect, onRetry, 
           Add files
         </button>
       </div>
+      {notReadOnly && (
+        <p className="reg-filter">
+          Showing documents the profile does not read.{" "}
+          <button type="button" className="cell-link" onClick={onClearFilter}>
+            Show all
+          </button>
+        </p>
+      )}
       {rows.length === 0 ? (
         <p className="reg-empty">Drop drawings, reports and schedules anywhere on this page. Each is filed in about a second.</p>
       ) : (
         <table className="reg-table">
           <colgroup>
+            <col className="reg-sel" />
             {COLUMNS.map((c) => (
               <col key={c.col} className={c.className} />
             ))}
+            <col className="reg-prof" />
             <col className="reg-mark" />
           </colgroup>
           <thead>
             <tr>
+              <th scope="col" className="reg-sel">
+                <input
+                  type="checkbox"
+                  aria-label="Select all documents"
+                  checked={allSelected}
+                  ref={(el) => {
+                    if (el) el.indeterminate = someSelected;
+                  }}
+                  onChange={selectAll}
+                  disabled={docIds.length === 0}
+                />
+              </th>
               {COLUMNS.map((c) => {
                 const active = (sort?.col ?? "number") === c.col;
                 return (
@@ -117,6 +210,9 @@ export function Register({ rows, catalog, live, priorLabel, onCorrect, onRetry, 
                   </th>
                 );
               })}
+              <th scope="col" className="reg-prof" title="Read by the project profile">
+                <span className="reg-th-text">Profile</span>
+              </th>
               <th scope="col">
                 <span className="sr-only">State</span>
               </th>
@@ -135,9 +231,30 @@ export function Register({ rows, catalog, live, priorLabel, onCorrect, onRetry, 
               onRetry={onRetry}
               onJump={onJump}
               onDismiss={onDismiss}
+              selected={!!row.doc && selected.has(row.doc.id)}
+              onSelect={select}
+              reads={row.doc ? profileReads(row.doc, readKinds) : null}
+              onToggleRead={(doc, reads) => apply([doc.id], reads ? "skip" : "read")}
             />
           ))}
         </table>
+      )}
+      {selected.size > 0 && (
+        <div className="reg-bulk" role="toolbar" aria-label="Selected documents">
+          <span className="reg-bulk-count">{selected.size} selected</span>
+          <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "read")}>
+            Read for profile
+          </button>
+          <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "skip")}>
+            Don&apos;t read
+          </button>
+          <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "auto")}>
+            Reset to automatic
+          </button>
+          <button type="button" className="cell-link" onClick={() => setSelected(new Set())}>
+            Clear
+          </button>
+        </div>
       )}
     </div>
   );
@@ -209,6 +326,10 @@ function RegisterRow({
   onRetry,
   onJump,
   onDismiss,
+  selected,
+  onSelect,
+  reads,
+  onToggleRead,
 }: {
   row: RowModel;
   open: boolean;
@@ -220,6 +341,10 @@ function RegisterRow({
   onRetry: (docId: string, missingOnly?: boolean) => Promise<boolean>;
   onJump: (docId: string) => void;
   onDismiss: (key: string) => void;
+  selected: boolean;
+  onSelect: (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => void;
+  reads: boolean | null;
+  onToggleRead: (doc: Doc, reads: boolean) => void;
 }) {
   const doc = row.doc;
   const title = fieldValue(doc, "title");
@@ -237,6 +362,17 @@ function RegisterRow({
     if (e.key === "Escape" && open) onToggle();
   };
   const detailId = `reg-detail-${row.key}`;
+  // Ctrl/Cmd-click and Shift-click on a row select it instead of opening it.
+  const click = (e: MouseEvent) => {
+    if (doc && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+      e.preventDefault();
+      onSelect(doc.id, e);
+      return;
+    }
+    onToggle();
+  };
+  const override = doc?.profile_read === "read" || doc?.profile_read === "skip";
+  const readLabel = reads ? "Read by the project profile" : "Not read by the project profile";
   return (
     <tbody
       className="reg-doc"
@@ -245,6 +381,7 @@ function RegisterRow({
       data-open={open ? "true" : undefined}
       data-flash={row.flash ? "true" : undefined}
       data-landed={row.landed ? "true" : undefined}
+      data-selected={selected ? "true" : undefined}
       tabIndex={-1}
     >
       <tr
@@ -252,9 +389,20 @@ function RegisterRow({
         tabIndex={0}
         aria-expanded={open}
         aria-controls={open ? detailId : undefined}
-        onClick={onToggle}
+        onClick={click}
         onKeyDown={keys}
       >
+        <td className="reg-sel" onClick={(e) => e.stopPropagation()}>
+          {doc && (
+            <input
+              type="checkbox"
+              aria-label={`Select ${title || row.filename}`}
+              checked={selected}
+              onChange={() => undefined}
+              onClick={(e) => onSelect(doc.id, e)}
+            />
+          )}
+        </td>
         <td className="reg-no" title={fieldValue(doc, "number")} data-user={userSet("number") || undefined}>
           {fieldValue(doc, "number")}
         </td>
@@ -288,13 +436,32 @@ function RegisterRow({
         <td className="reg-kind" title={kindLabel || undefined} data-user={userSet("kind") || undefined}>
           {kindLabel}
         </td>
+        <td className="reg-prof">
+          {doc && reads !== null && (
+            <button
+              type="button"
+              className="reg-read"
+              data-reads={reads ? "true" : undefined}
+              data-override={override ? "true" : undefined}
+              aria-pressed={reads}
+              title={`${readLabel}${override ? " (your choice)" : " (automatic for this kind)"}. Click to ${reads ? "stop reading it" : "read it"}.`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleRead(doc, reads);
+              }}
+            >
+              <span aria-hidden>{reads ? "✓" : "–"}</span>
+              <span className="sr-only">{readLabel}</span>
+            </button>
+          )}
+        </td>
         <td className="reg-mark">
           <RowMark row={row} />
         </td>
       </tr>
       {open && (
         <tr className="reg-detail" id={detailId}>
-          <td colSpan={COLUMNS.length + 1}>
+          <td colSpan={COLUMNS.length + 3}>
             <div className="reg-detail-head">
               <span className="reg-file" title={row.filename}>
                 {row.filename}

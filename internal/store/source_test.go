@@ -59,7 +59,7 @@ func TestOldProfileUpgradeWaitsForExtractionAndLabels(t *testing.T) {
 	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='done' WHERE org_id=$1 AND document_id=$2`, orgA, docA); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := st.RequestProfileRead(ctx, orgA, projectA); err != nil {
+	if _, err := st.RequestProfileRead(ctx, orgA, projectA, nil); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := st.ClaimJob(ctx, orgA, time.Minute, []string{store.JobKindEvidence}); err != store.ErrIdle {
