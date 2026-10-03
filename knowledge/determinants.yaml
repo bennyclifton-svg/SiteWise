@@ -50,6 +50,13 @@ determinants:
     - fire-passive
     - access-egress
     - structure
+  triggers:
+  - '\bclass(ification)?\s*(1a|1b|7a|7b|9a|9b|9c|10a|10b|10c)\b'
+  - '\b(bca|ncc|building)\s+class(ification)?\b'
+  - '\bclass\s*[2-8]\s+(building|part|occupancy|portion|use)\b'
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: classification
   status: draft
   notes: Extract explicit class labels only; descriptions are draft aids, not a legal classification algorithm.
     Keep building-part scope. Compile one option-presence question per option in one fan-out.
@@ -69,6 +76,11 @@ determinants:
     runs_on:
     - fire-passive
     - structure
+  triggers:
+  - 'rise in storeys'
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: classification
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -78,6 +90,11 @@ determinants:
   value: number
   unit: m
   extraction: pre_parsed
+  triggers:
+  - 'effective height'
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: classification
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -109,6 +126,11 @@ determinants:
     runs_on:
     - fire-active
     - fire-passive
+  triggers:
+  - 'sprinkler'
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: fire
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -127,6 +149,9 @@ determinants:
     describes: Type C construction (least fire-resistant).
   derived: true
   by: rule.ncc.type-of-construction
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: fire
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -136,6 +161,13 @@ determinants:
   value: number
   unit: m2
   extraction: pre_parsed
+  triggers:
+  - '\bfloor area\b'
+  - '\bfire compartments?\b'
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  - {kind: drawing, discipline: consultant.architect, label: Architectural drawings}
+  profile_group: classification
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -155,6 +187,11 @@ determinants:
   label: State or territory
   value: choice
   extraction: choice
+  triggers:
+  - '\b(nsw|vic|qld|sa|wa|tas|act|nt)\s+\d{4}\b'
+  stated_in:
+  - {kind: design_brief, label: Brief or any document with the site address}
+  profile_group: site
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -200,6 +237,12 @@ determinants:
     describes: BAL-40.
   - id: BAL-FZ
     describes: BAL-FZ (flame zone).
+  triggers:
+  - '\bbal[- ]?(low|12\.5|19|29|40|fz)\b'
+  - 'bush ?fire attack level'
+  stated_in:
+  - {kind: report, discipline: consultant.bushfire, label: Bushfire assessment report}
+  profile_group: site
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -215,6 +258,12 @@ determinants:
   label: Wind classification (AS 4055)
   value: choice
   extraction: choice
+  triggers:
+  - 'wind class(ification)?'
+  - '\b(n[1-6]|c[1-4])\s+wind\b'
+  stated_in:
+  - {kind: drawing, discipline: consultant.structural, label: Structural drawings (general notes)}
+  profile_group: site
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -251,6 +300,11 @@ determinants:
   label: Site classification (AS 2870)
   value: choice
   extraction: choice
+  triggers:
+  - 'site class(ification)?'
+  stated_in:
+  - {kind: report, discipline: consultant.geotechnical, label: Geotechnical report}
+  profile_group: site
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -282,6 +336,11 @@ determinants:
   label: NCC climate zone
   value: choice
   extraction: choice
+  triggers:
+  - 'climate zone'
+  stated_in:
+  - {kind: report, discipline: consultant.esd, label: Energy or Section J report}
+  profile_group: site
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -314,6 +373,12 @@ determinants:
   label: Site in a flood hazard area
   value: boolean
   extraction: choice
+  triggers:
+  - '\bflood'
+  stated_in:
+  - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
+  - {kind: report, discipline: consultant.civil, label: Flood report}
+  profile_group: site
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -336,7 +401,8 @@ determinants:
   label: Heritage item or conservation area
   value: boolean
   extraction: choice
-  status: draft
+  status: deprecated
+  replaced_by: heritage_status
   sources:
   - seed: renovation-guide.md
     anchor: '# Archetype seed - Renovation'
@@ -381,6 +447,11 @@ determinants:
   label: NCC edition stated for this project
   value: choice
   extraction: pre_parsed
+  triggers:
+  - '\b(ncc|bca)\s*(19|20)\d\d\b'
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: classification
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -683,6 +754,12 @@ determinants:
     - site
   notes: '`bal` alone cannot distinguish "not assessed" from "BAL-LOW". Seeds warn that BAL-LOW must not
     be assumed on mapped land without an assessment.'
+  triggers:
+  - 'bush ?fire prone'
+  stated_in:
+  - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
+  - {kind: report, discipline: consultant.bushfire, label: Bushfire assessment report}
+  profile_group: site
   status: draft
   sources:
   - seed: ncc-reference-guide.md
@@ -740,6 +817,12 @@ determinants:
     runs_on:
     - envelope.facade-acoustics
     - site
+  triggers:
+  - '\b(road|rail|aircraft|traffic) noise\b'
+  - '\banef\b'
+  stated_in:
+  - {kind: report, discipline: consultant.acoustic, label: Acoustic report}
+  profile_group: site
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -963,6 +1046,12 @@ determinants:
     - structure.design-basis
   notes: Seeds conflict about wind-region subdivisions; use literal candidates until the primary standard
     is verified.
+  triggers:
+  - 'wind region'
+  - '\bregion\s+[a-d]\b'
+  stated_in:
+  - {kind: drawing, discipline: consultant.structural, label: Structural drawings (general notes)}
+  profile_group: site
   status: draft
   sources:
   - seed: as-standards-reference.md
@@ -1236,6 +1325,11 @@ determinants:
     runs_on:
     - site.acid-sulfate-soils
     - site.ground-conditions
+  triggers:
+  - 'acid sulf(ate|ide)'
+  stated_in:
+  - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
+  profile_group: site
   status: draft
   sources:
   - seed: remediation-due-diligence-guide.md
@@ -1258,6 +1352,11 @@ determinants:
         itself.
     runs_on:
     - site.contamination
+  triggers:
+  - 'contaminat'
+  stated_in:
+  - {kind: report, discipline: consultant.environmental, label: Preliminary site investigation}
+  profile_group: site
   status: draft
   sources:
   - seed: remediation-due-diligence-guide.md
@@ -1298,6 +1397,11 @@ determinants:
   derived: false
   notes: Extract the stated project value only. Future derivation by rule.ncc.termite-management remains
     pending a verified primary-instrument lookup and complete inputs; no runtime derivation is available.
+  triggers:
+  - 'termite'
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: site
   status: draft
   sources:
   - seed: residential-construction-guide.md
@@ -1427,6 +1531,12 @@ determinants:
     criteria: {}
     runs_on:
     - site.flooding
+  triggers:
+  - 'flood planning level'
+  - '\bfpl\b'
+  stated_in:
+  - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
+  profile_group: site
   status: draft
   sources:
   - seed: new-dwelling-guide.md
@@ -1466,3 +1576,163 @@ determinants:
   sources:
   - seed: ncc-reference-guide.md
     anchor: '### Facility Quantities by Building Classification'
+- id: water_supply_source
+  label: Drinking water supply source
+  value: choice
+  extraction: choice
+  options:
+  - id: reticulated
+    describes: Drinking water from an authority (town) water main.
+  - id: rainwater_tank
+    describes: Drinking water from rainwater tanks on the site.
+  - id: bore
+    describes: Drinking water from a bore or groundwater.
+  - id: mixed
+    describes: More than one drinking water source is stated.
+  triggers: ['rain ?water tanks?', '\btown water\b', '\bbore\b', '\bpotable water\b', '\bmains water\b', '\bwater main\b']
+  stated_in:
+  - {kind: drawing, discipline: consultant.hydraulic, label: Hydraulic drawings}
+  - {kind: specification, label: Specification or tender}
+  profile_group: services
+  status: draft
+  sources:
+  - {seed: civil-residential.md, anchor: '### Rainwater tank'}
+  - {document: morn-toussaint, anchor: '64. WATER FILTRATION'}
+  question:
+    type: choice
+    instructions: Using `text`, which source of drinking water does the passage state for this project?
+    criteria: {}
+- id: sewer_connection
+  label: Sewage disposal
+  value: choice
+  extraction: choice
+  options:
+  - id: reticulated
+    describes: Connection to an authority sewer main.
+  - id: onsite_treatment
+    describes: A septic tank or on-site wastewater treatment system with land application.
+  - id: pressure_sewer
+    describes: A pressure sewer pump unit connected to an authority pressure main.
+  triggers: ['\bseptic\b', 'wastewater treatment', '\bsewer', 'pressure sewer']
+  stated_in:
+  - {kind: drawing, discipline: consultant.hydraulic, label: Hydraulic drawings}
+  - {kind: specification, label: Specification or tender}
+  profile_group: services
+  status: draft
+  sources:
+  - {seed: civil-residential.md, anchor: '### Septic and on-site wastewater'}
+  question:
+    type: choice
+    instructions: Using `text`, how does the passage state this project's sewage will be disposed of?
+    criteria: {}
+- id: gas_supply
+  label: Fuel gas supply
+  value: choice
+  extraction: choice
+  options:
+  - id: natural_gas_main
+    describes: Natural gas from an authority gas main.
+  - id: lpg
+    describes: Liquefied petroleum gas in bottles or tanks on the site.
+  - id: none
+    describes: The project has no gas supply, or gas is stated as not applicable.
+  triggers: ['\blpg\b', 'natural gas', 'gas (main|supply|bottles?|cylinders?)']
+  stated_in:
+  - {kind: drawing, discipline: consultant.hydraulic, label: Hydraulic drawings}
+  - {kind: specification, label: Specification or tender}
+  profile_group: services
+  status: draft
+  sources:
+  - {document: morn-toussaint, anchor: '63. LPG GAS SERVICES'}
+  - {document: hale-brief, anchor: 'Natural Gas'}
+  question:
+    type: choice
+    instructions: Using `text`, which fuel gas supply does the passage state for this project?
+    criteria: {}
+- id: saline_soil
+  label: Saline soil on the site
+  value: boolean
+  extraction: choice
+  triggers: ['salin(e|ity)']
+  stated_in:
+  - {kind: report, discipline: consultant.geotechnical, label: Geotechnical or salinity report}
+  profile_group: site
+  status: draft
+  sources:
+  - {document: newham-spec, anchor: 'salinity & site exposure report'}
+  question:
+    type: choice
+    instructions: Using `text`, what does this passage explicitly state about whether the site has saline soil?
+    criteria:
+      stated_true: The passage explicitly states the site soil is saline or salinity affected.
+      stated_false: The passage explicitly states the site soil is not saline.
+      not_stated: No explicit conclusion is given, for example it only names a salinity report.
+- id: storage_height
+  label: Top of storage height
+  value: number
+  unit: m
+  extraction: pre_parsed
+  triggers: ['storage height', 'top of storage', 'racking height']
+  stated_in:
+  - {kind: design_brief, label: Design brief}
+  - {kind: report, discipline: consultant.fire_engineer, label: Fire engineering report}
+  profile_group: fire
+  status: draft
+  sources:
+  - {document: hale-brief, anchor: 'Min. top of storage height'}
+  notes: Scope is the compartment or storage area. Code parses the number and unit.
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage explicitly state as the top of storage
+      height? Select none when absent; do not calculate or infer it.
+    criteria: {}
+- id: heritage_status
+  label: Heritage status
+  value: choice
+  extraction: choice
+  options:
+  - id: none
+    describes: The site is stated as not a heritage item and not in a heritage conservation area.
+  - id: conservation_area
+    describes: The site is in a heritage conservation area.
+  - id: local_item
+    describes: The site or building is a local heritage item.
+  - id: state_register
+    describes: The site or building is on the State Heritage Register.
+  triggers: ['heritage']
+  stated_in:
+  - {kind: certificate, discipline: consultant.town_planner, label: Planning certificate}
+  - {kind: report, discipline: consultant.heritage, label: Heritage report}
+  profile_group: site
+  status: draft
+  sources:
+  - {seed: renovation-guide.md, anchor: '# Archetype seed - Renovation'}
+  - {document: petersham-ppr, anchor: 'heritage conservation area C5'}
+  question:
+    type: choice
+    instructions: Using `text`, which heritage status does the passage explicitly state for this site?
+    criteria: {}
+- id: max_floor_area_m2
+  label: Maximum fire compartment floor area
+  value: number
+  unit: m2
+  derived: true
+  by: rule.ncc.fire-compartment-limits
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: fire
+  status: draft
+  sources:
+  - {seed: ncc-reference-guide.md, anchor: '### Fire Compartment Sizes and Classification Separation'}
+- id: max_volume_m3
+  label: Maximum fire compartment volume
+  value: number
+  unit: m3
+  derived: true
+  by: rule.ncc.fire-compartment-volume-limit
+  stated_in:
+  - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  profile_group: fire
+  status: draft
+  sources:
+  - {seed: ncc-reference-guide.md, anchor: '### Fire Compartment Sizes and Classification Separation'}
