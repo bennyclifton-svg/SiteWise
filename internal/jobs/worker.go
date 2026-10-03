@@ -13,11 +13,12 @@ import (
 
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 )
 
 const (
-	questionVersion = "knowledge.v1"
+	questionVersion = "knowledge.v2+" + profile.QuestionVersion
 	maxPassageRunes = 2000
 	maxPassages     = 500
 )
@@ -327,12 +328,27 @@ func LabelCall(cat *knowledge.Catalog, passage Passage) jev.Call {
 			Criteria:     criteria,
 		}
 	}
+	// Profile questions read the same passage, so they join this request
+	// instead of adding a round trip (https://docs.typesafe.ai/patterns/fan-out).
+	extra, candidates := profile.LabelQuestions(passage.Info(), profile.Harvest(passage.Text, cat), cat)
+	for id, q := range extra {
+		questions[id] = q
+	}
+	state := passageState(passage)
+	if len(candidates) > 0 {
+		state["candidates"] = candidates
+	}
 	return jev.Call{
-		State:           passageState(passage),
+		State:           state,
 		Questions:       questions,
 		Priority:        jev.PriorityBackground,
 		QuestionVersion: questionVersion,
 	}
+}
+
+// Info is what profile header routing reads about a passage.
+func (p Passage) Info() profile.PassageInfo {
+	return profile.PassageInfo{Kind: p.Kind, Section: p.Section, Ordinal: p.Ordinal}
 }
 
 // EvidenceCall is one fan-out of the knowledge nouls that match the passage
@@ -352,6 +368,9 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 			Instructions: q.Instructions,
 			Criteria:     q.Criteria,
 		}
+	}
+	for id, q := range profile.EvidenceQuestions(passage.Labels, cat) {
+		questions[id] = q
 	}
 	if len(questions) == 0 {
 		return jev.Call{}, false

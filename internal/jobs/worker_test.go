@@ -44,7 +44,9 @@ func TestBackgroundFanOutIsOneCallPerState(t *testing.T) {
 			}
 		case jev.TypeChoice:
 			choices++
-			if !strings.HasPrefix(id, "leaf.") {
+			// Profile questions read the same passage and join this call.
+			if !strings.HasPrefix(id, "leaf.") && !strings.HasPrefix(id, "hdr.") &&
+				!strings.HasPrefix(id, "det.") && !strings.HasPrefix(id, "fact.") {
 				t.Fatalf("choice id %s", id)
 			}
 		default:
