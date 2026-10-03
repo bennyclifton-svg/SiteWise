@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"reflect"
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
 	"sitewise/internal/jobs"
@@ -40,6 +41,17 @@ func TestUploadOCRIsConditionalDurableAndReviewOnly(t *testing.T) {
 	if calls != 0 || view.Status != store.StatusPending || view.Reason != "ocr_queued" {
 		t.Fatalf("not queued: %+v calls=%d", view, calls)
 	}
+	var delivered []string
+	runner.Wake = func(orgID string) {
+		if orgID != org {
+			t.Fatalf("notified wrong org: %s", orgID)
+		}
+		committed, err := st.DocumentView(ctx, orgID, scanned.DocumentID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		delivered = append(delivered, committed.Reason)
+	}
 	if err := runner.RunOCR(ctx, testID(93), scanned.DocumentID); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("wrong org: %v", err)
 	}
@@ -66,6 +78,9 @@ func TestUploadOCRIsConditionalDurableAndReviewOnly(t *testing.T) {
 	view, _ = st.DocumentView(ctx, org, scanned.DocumentID)
 	if calls != 1 || view.Status != store.StatusFiled {
 		t.Fatalf("outcome %+v calls=%d", view, calls)
+	}
+	if !reflect.DeepEqual(delivered, []string{"ocr_reading", "ocr_classifying", "ocr_review"}) {
+		t.Fatalf("live OCR stages must be delivered after commit: %v", delivered)
 	}
 	for _, f := range view.Fields {
 		if f.DecidedBy != "user" && f.Band == "green" {
@@ -99,6 +114,17 @@ func TestOCRFailureAndExplicitRetry(t *testing.T) {
 			if err := runner.Run(ctx, runOrg, doc.DocumentID); err != nil {
 				t.Fatal(err)
 			}
+			var delivered []string
+			runner.Wake = func(orgID string) {
+				if orgID != runOrg {
+					t.Fatalf("notified wrong org: %s", orgID)
+				}
+				view, err := st.DocumentView(ctx, orgID, doc.DocumentID)
+				if err != nil {
+					t.Fatal(err)
+				}
+				delivered = append(delivered, view.Reason)
+			}
 			worker := &jobs.Worker{Store: st, OCR: runner.RunOCR, Kinds: []string{store.JobKindOCR}}
 			if err := worker.Once(ctx, runOrg); err != nil {
 				t.Fatal(err)
@@ -106,6 +132,9 @@ func TestOCRFailureAndExplicitRetry(t *testing.T) {
 			view, _ := st.DocumentView(ctx, runOrg, doc.DocumentID)
 			if view.Status != store.StatusNotFiled || view.Reason != tc.reason || calls != 1 || hits.Load() != 0 {
 				t.Fatalf("outcome %+v calls=%d", view, calls)
+			}
+			if !reflect.DeepEqual(delivered, []string{"ocr_reading", tc.reason}) {
+				t.Fatalf("live failure must be delivered after commit: %v", delivered)
 			}
 			if err := worker.Once(ctx, runOrg); !errors.Is(err, store.ErrIdle) {
 				t.Fatalf("automatic repeat: %v", err)

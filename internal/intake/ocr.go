@@ -21,11 +21,25 @@ func (r *Runner) RunOCR(ctx context.Context, orgID, documentID string) error {
 	if !missingOnly && (doc.Status != store.StatusPending || !strings.HasPrefix(doc.Reason, "ocr_")) {
 		return nil
 	}
-	progress := func(stage string) error {
-		if missingOnly {
-			return r.store.OCRDetailsProgress(ctx, orgID, documentID, stage)
+	wake := func() {
+		if r.Wake != nil {
+			r.Wake(orgID)
 		}
-		return r.store.OCRProgress(ctx, orgID, documentID, "ocr_"+stage)
+	}
+	// Completion and failure are durable store events too. Background OCR
+	// does not pass through the foreground filer's notification path.
+	defer wake()
+	progress := func(stage string) error {
+		var err error
+		if missingOnly {
+			err = r.store.OCRDetailsProgress(ctx, orgID, documentID, stage)
+		} else {
+			err = r.store.OCRProgress(ctx, orgID, documentID, "ocr_"+stage)
+		}
+		if err == nil {
+			wake()
+		}
+		return err
 	}
 	fail := func(reason string) error {
 		if missingOnly {

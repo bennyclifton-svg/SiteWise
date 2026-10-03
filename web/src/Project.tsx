@@ -305,9 +305,9 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
 
   const anyPending = Object.values(state.docs).some((d) => d.status === "pending");
 
-  // Recovery leaves documents filed. Poll its small document endpoint while
-  // active so a missed completion event cannot strand a progress indicator.
-  const recovering = Object.values(state.docs).filter(d => d.status === "filed" && ocrStage(d)).map(d => d.id).sort().join(",");
+  // Poll every active OCR pass, including initial filing and Retry OCR, so
+  // a missed completion event cannot strand a progress indicator.
+  const recovering = Object.values(state.docs).filter(d => ocrStage(d)).map(d => d.id).sort().join(",");
   useEffect(() => {
     if (!recovering) return;
     let live = true;

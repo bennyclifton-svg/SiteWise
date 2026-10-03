@@ -46,6 +46,8 @@ func formatOf(filename string) string {
 
 // Runner is the foreground path from stored bytes to a committed filing.
 type Runner struct {
+	// Wake delivers committed OCR progress to this org's live event streams.
+	Wake   func(string)
 	OCR    func(context.Context, string) (identity.Text, error)
 	blobs  *files.Store
 	store  *store.Store

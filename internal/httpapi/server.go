@@ -170,6 +170,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.handler.ServeHTTP(w, r)
 }
 
+// WakeEvents delivers background transactions already committed to the log.
+func (s *Server) WakeEvents(orgID string) {
+	s.filer.broker.Wake(orgID)
+}
+
 // Resume restarts filings that were stored but not filed when the process
 // last stopped. Each keeps its own org.
 func (s *Server) Resume(ctx context.Context) (int, error) {

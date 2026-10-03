@@ -1379,7 +1379,10 @@ func titleFromGaps(stem string, covered []span) (string, int, int, bool) {
 	bestStart, bestEnd := 0, 0
 	for _, p := range pieces {
 		trimmed, rel := trimSep(p.text)
-		if len(trimmed) < len(bestText) || !looksLikeTitle(trimmed) {
+		// In a complete job_sheet_title-(issue) filename, Notes occupies
+		// the title slot. Keep rejecting an unlabelled Notes page caption.
+		notesTitle := strings.EqualFold(trimmed, "notes") && jobSheetFilename.MatchString(stem)
+		if len(trimmed) < len(bestText) || (!looksLikeTitle(trimmed) && !notesTitle) {
 			continue
 		}
 		bestText = trimmed

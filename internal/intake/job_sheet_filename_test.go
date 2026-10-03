@@ -32,3 +32,23 @@ func TestJobSheetFilenameDoesNotHidePrintedConflict(t *testing.T) {
 		}
 	}
 }
+
+func TestJobSheetFilenameNotesTitle(t *testing.T) {
+	for _, name := range []string{"15123_S0001_Notes-(03).pdf", "998877_A0100_NOTES-(02).pdf"} {
+		got := fieldResult(t, intake.Decide(intake.Harvest(name, identity.Text{})), intake.FieldTitle)
+		if !got.Settled || !strings.EqualFold(got.Display, "notes") {
+			t.Errorf("%s: missing filename Notes title: %+v", name, got)
+		}
+	}
+	for _, name := range []string{"Notes.pdf", "15123_S0001_Drawing Title-(03).pdf"} {
+		got := fieldResult(t, intake.Decide(intake.Harvest(name, identity.Text{})), intake.FieldTitle)
+		if got.Settled {
+			t.Errorf("caption promoted to title: %s: %+v", name, got)
+		}
+	}
+	text := identity.Text{Runs: []identity.Run{{Text: "Notes", Source: identity.Source{Page: 1}}}}
+	got := fieldResult(t, intake.Decide(intake.Harvest("S0001.pdf", text)), intake.FieldTitle)
+	if got.Settled {
+		t.Fatalf("page caption promoted to title: %+v", got)
+	}
+}

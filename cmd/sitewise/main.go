@@ -192,6 +192,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	}
 	ocrRunner := intake.NewRunner(blobs, st, ocrService)
 	ocrRunner.OCR = ocrExtract
+	ocrRunner.Wake = srv.WakeEvents
 	worker.OCR = ocrRunner.RunOCR
 	if !*backlog {
 		worker.Since = time.Now()
