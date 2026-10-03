@@ -20,6 +20,58 @@ Python checker for `knowledge/`.
 **Design (read first):** `docs/design/2026-10-03-project-profile.md`. Also
 `AGENTS.md`, `docs/design/2026-09-29-foundation-design.md`, `knowledge/SCHEMA.md`.
 
+## Status (3 October 2026, branch `profile/impl`)
+
+**Done and committed on `profile/impl`** (worktree `D:\AI Projects\sitewise-profile`):
+P01 schema and checker, P06 systems, P07 determinants, P08 `knowledge/profile/`,
+P09 loader, P10 harvest, P11 questions, P12 reconcile, P04 store (migration 007),
+P03 worker in `serve`, P13 facts and rebuild, P14 API with budgets and bench samples,
+P05 and P15 UI (left nav, profile, register), and the P02 manifest
+(`data/eval/profile/manifest.json`). `go test ./...`, the strict knowledge check,
+the web build and both Playwright specs pass. A live smoke run on the Hale brief
+profiled it in 30 s with no Jev errors (`docs/evidence/2026-10-03-profile-smoke/`).
+
+**Not done (next agent):**
+- **P02 answer keys** for the five projects (manifest exists; keys do not).
+- **P16** `cmd/profile-eval` harness (record, replay, score, no-wrong-green gate).
+- **P17** live run over all five projects, then tuning. Known gaps: "Not
+  applicable" absences are not yet read as *not included*, and MHE battery
+  charging was read as EV charging.
+- **O1 (owner):** review the answer keys, approve the provisional floors
+  (`approved_by_owner`), and review the `type_of_construction` and
+  `compartment_limits` tables and their rules. Until then derived values read
+  "Awaiting owner review".
+- **Merge:** the branch is based on `main` at `3ad28d5` and does not include
+  the corpus-hardening session's uncommitted work. Merge that work first.
+  Expect conflicts in `web/src/DocumentRow.tsx`, `web/src/Project.tsx`,
+  `web/src/api.ts` (`EVENT_KINDS`), `internal/httpapi/projects.go` (route
+  map), `internal/httpapi/server.go` (Options), `cmd/intake-bench/main.go`
+  and migration numbering (this branch uses `007`; hardening adds `006`). The
+  drawing-sheet UI (sheet rows, "Sheet n of N") must be carried into
+  `Register.tsx`'s detail row. `DocumentRow` itself is now unused (its
+  `FieldCell`, `HeadState`, `FIELDS` and `REASONS` are reused); delete it after
+  the merge.
+- Tests for this branch ran against a private Postgres on port 5434, because
+  test files require a database named exactly `sitewise_test` and port 5433
+  is shared with the other session.
+
+**Deviations from the plan below, all deliberate:**
+- Layout: the owner asked for the register in the **right** third and a
+  **left nav** with a project switcher (after Clerk). The profile is in the
+  middle.
+- No separate debounced `profile` job: the `jobs` table needs a document id.
+  The profile rebuilds in code at the end of each document's label and
+  evidence stages, serialised per project by an advisory lock. A user edit
+  runs the same rebuild and returns the whole profile.
+- Profile store queries use pgx directly (JSONB and batches), not sqlc.
+- `profile_facts` has no assertion column. Assertions are stored as their own
+  facts (`det.<id>.assertion`) and paired by passage in `Reconcile`.
+- Register rows can be open several at once (simpler, and the e2e flow needs it).
+- `ncc_class` is asked per mentioned option (`det.ncc_class.<opt>`), because a
+  choice cannot return a set.
+- Scale fields are asked as `hdr.scale.<key>` on any passage where their
+  trigger matched.
+
 ---
 
 ## 0. Rules for every agent

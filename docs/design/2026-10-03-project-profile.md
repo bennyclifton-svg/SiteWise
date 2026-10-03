@@ -19,9 +19,11 @@ Two changes to the project page:
    It becomes one compact schedule row per document, about a third of the page
    wide, like the Clerk register.
 
-Page layout at 1100 px and wider: register in the left third, profile in the
-right two thirds. Narrower: register above profile. Dropping files anywhere on
-the page still files them.
+Page layout (owner decision, 3 October): a left nav with the wordmark and a
+project switcher (after the Clerk project nav), the profile in the middle, and
+the register in the right third. Below 1100 px the register stacks under the
+profile; below 760 px the nav becomes a top row. Dropping files anywhere on the
+page still files them.
 
 ## 2. Two workflows, one screen
 
