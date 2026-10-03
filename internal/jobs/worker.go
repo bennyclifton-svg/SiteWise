@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -147,6 +148,10 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		facts = append(facts, storedFacts(passage.ID, profile.Readings(result, call.Questions, cands, passage.Text))...)
 	}
 	if err := w.Store.ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr."}, profile.QuestionVersion, facts); err != nil {
+		return err
+	}
+	// Header and compliance readings show now; systems follow evidence.
+	if err := w.rebuildProfile(ctx, job.OrgID, job.DocumentID); err != nil {
 		return err
 	}
 	return w.Store.EnqueueStage(ctx, job.OrgID, job.DocumentID, store.JobKindEvidence)
@@ -413,7 +418,7 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 		questions[q.ID] = jev.Question{
 			Type:         jev.TypeNoul,
 			Instructions: q.Instructions,
-			Criteria:     q.Criteria,
+			Criteria:     noulCriteria(q.Criteria),
 		}
 	}
 	for id, q := range profile.EvidenceQuestions(passage.Labels, cat) {
@@ -431,6 +436,29 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 }
 
 const knowledgeNoul = "noul"
+
+// noulCriteria gives a noul's criteria string keys. YAML reads `true:` and
+// `false:` as boolean keys, which cannot be encoded as a JSON object, so the
+// client would reject the whole call (https://docs.typesafe.ai/api).
+func noulCriteria(c any) any {
+	switch m := c.(type) {
+	case map[string]any:
+		return m
+	case map[any]any:
+		out := make(map[string]string, len(m))
+		for k, v := range m {
+			out[fmt.Sprint(k)] = strings.TrimSpace(fmt.Sprint(v))
+		}
+		return out
+	case map[bool]any:
+		out := make(map[string]string, len(m))
+		for k, v := range m {
+			out[fmt.Sprint(k)] = strings.TrimSpace(fmt.Sprint(v))
+		}
+		return out
+	}
+	return c
+}
 
 func passageState(p Passage) map[string]any {
 	return map[string]any{

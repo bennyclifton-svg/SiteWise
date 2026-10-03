@@ -2,6 +2,7 @@ package jobs_test
 
 import (
 	"context"
+	"encoding/json"
 	"strings"
 	"sync"
 	"testing"
@@ -102,5 +103,28 @@ func TestBackgroundOrgsListsQueuedWork(t *testing.T) {
 	orgs, err := st.OrgsWithBackgroundJobs(ctx)
 	if err != nil || !contains(orgs, org) {
 		t.Fatalf("orgs %v %v", orgs, err)
+	}
+}
+
+// Every evidence question must encode as the API expects: a JSON object of
+// criteria. A boolean-keyed YAML map would make the client reject the call.
+func TestEvidenceQuestionsEncode(t *testing.T) {
+	cat := loadKnowledge(t)
+	var labels []string
+	for _, s := range cat.Leaves() {
+		labels = append(labels, s.ID)
+	}
+	for _, s := range cat.TopSystems() {
+		labels = append(labels, s.ID)
+	}
+	call, ok := jobs.EvidenceCall(cat, jobs.Passage{Text: "x", Labels: labels})
+	if !ok {
+		t.Fatal("no evidence call")
+	}
+	for id, q := range call.Questions {
+		raw, err := json.Marshal(q.Criteria)
+		if err != nil || len(raw) == 0 || raw[0] != '{' {
+			t.Fatalf("%s criteria do not encode: %v %s", id, err, raw)
+		}
 	}
 }
