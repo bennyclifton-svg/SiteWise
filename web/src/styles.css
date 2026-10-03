@@ -1672,3 +1672,74 @@ button.cell[data-state="check"]:hover {
   color: var(--ink-muted);
   font-size: 12px;
 }
+
+/* Deletion: a quiet bin per row and in the header; the dialog confirms. */
+.reg-table col.reg-bin {
+  width: 2rem;
+}
+.reg-table th.reg-bin,
+.reg-line td.reg-bin {
+  padding: 3px 4px 0 0;
+}
+.reg-del {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.reg-del:hover:not(:disabled) {
+  border-color: var(--alert);
+  background: var(--alert-soft);
+  color: var(--alert);
+}
+.reg-del:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.reg-del:focus-visible {
+  outline: 2px solid var(--azure);
+  outline-offset: -2px;
+}
+.btn-danger {
+  border-color: var(--alert);
+  background: var(--alert);
+  color: var(--paper);
+}
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+.btn-danger-quiet {
+  color: var(--alert);
+}
+.confirm {
+  width: min(28rem, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink-body);
+  box-shadow: var(--shadow-sm);
+}
+.confirm::backdrop {
+  background: oklch(0.2 0.01 86 / 0.35);
+}
+.confirm h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.confirm p {
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

@@ -20,14 +20,14 @@ const (
 func addDocument(t *testing.T, st *store.Store, org, project, id string, sum byte, kind string) {
 	t.Helper()
 	ctx := context.Background()
-	file := id[:len(id)-2] + "f1"
+	file := id[:24] + "ff" + id[26:]
 	if err := st.CreateFile(ctx, org, store.File{ID: file, ProjectID: project, SHA256: bytes32(sum), ByteSize: 8, MediaType: "application/pdf"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := st.CreateDocument(ctx, org, store.Document{ID: id, ProjectID: project, FileID: file, Filename: id + ".pdf", Status: "filed"}); err != nil {
 		t.Fatal(err)
 	}
-	if err := st.CreateDecision(ctx, org, store.Decision{ID: id[:len(id)-2] + "d1", DocumentID: id, Field: "kind", Value: kind, Band: "green", DecidedBy: "rule"}); err != nil {
+	if err := st.CreateDecision(ctx, org, store.Decision{ID: id[:24] + "dd" + id[26:], DocumentID: id, Field: "kind", Value: kind, Band: "green", DecidedBy: "rule"}); err != nil {
 		t.Fatal(err)
 	}
 }

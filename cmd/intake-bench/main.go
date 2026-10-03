@@ -357,6 +357,11 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		return 0, err
 	}
 	outcomes["grey_filings"] = grey
+	// Deletion is timed last, after every outcome is counted, because it
+	// removes filings the other measurements read.
+	if err := api.deleteDocuments(ctx, st, documents, o.apiSamples); err != nil {
+		return 0, err
+	}
 
 	snapshot := samples.Snapshot()
 	if err := writeJSON(o.samplesOut, snapshot); err != nil {
@@ -910,6 +915,25 @@ func (a *apiClient) profileReadEdit(ctx context.Context, st *store.Store, cat *k
 		// it rebuilds the profile in code.
 		reading, _ := json.Marshal(map[string]any{"document_ids": []string{documents[0]}, "setting": []string{"skip", "auto"}[i%2]})
 		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/documents/profile-read", reading, http.StatusOK); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// deleteDocuments times n single-document deletions, newest filings first.
+func (a *apiClient) deleteDocuments(ctx context.Context, st *store.Store, documents []string, n int) error {
+	if len(documents) < n {
+		return fmt.Errorf("delete benchmark needs %d documents, have %d", n, len(documents))
+	}
+	for i := 0; i < n; i++ {
+		id := documents[len(documents)-1-i]
+		doc, err := st.GetDocument(ctx, benchOrg, id)
+		if err != nil {
+			return err
+		}
+		body, _ := json.Marshal(map[string][]string{"document_ids": {id}})
+		if _, err := a.timed(ctx, "document_delete", http.MethodPost, "/projects/"+doc.ProjectID+"/documents/delete", body, http.StatusOK); err != nil {
 			return err
 		}
 	}

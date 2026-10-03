@@ -90,3 +90,11 @@ export const IconStored = () => (
     <path d="M2.5 4.5l1.5-2h8l1.5 2M6 8h4" />
   </Icon>
 );
+
+/** Delete: a bin with its lid. */
+export const IconBin = () => (
+  <Icon>
+    <path d="M2.5 4.5h11M6 4.5V2.5h4v2" />
+    <path d="M4 4.5l.7 9h6.6l.7-9M6.8 7v4M9.2 7v4" />
+  </Icon>
+);

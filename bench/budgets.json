@@ -65,6 +65,11 @@
       "name": "profile_edit",
       "p50_us": 50000,
       "p90_us": 150000
+    },
+    {
+      "name": "document_delete",
+      "p50_us": 500000,
+      "p90_us": 1000000
     }
   ]
 }

@@ -65,7 +65,8 @@ type Action =
   | { type: "doc"; doc: Doc }
   | { type: "retrying"; id: string }
   | { type: "unland"; id: string }
-  | { type: "reading"; ids: string[]; setting: ReadSetting };
+  | { type: "reading"; ids: string[]; setting: ReadSetting }
+  | { type: "removed"; ids: string[] };
 
 const initial: State = {
   phase: "loading",
@@ -186,6 +187,12 @@ function reducer(state: State, action: Action): State {
       };
     case "unland":
       return { ...state, landed: without(state.landed, action.id) };
+    case "removed": {
+      const gone = new Set(action.ids);
+      const docs = { ...state.docs };
+      for (const id of gone) delete docs[id];
+      return { ...state, docs, order: state.order.filter((k) => !gone.has(k)) };
+    }
     case "reading": {
       // The server applies a drawing set's setting to its sheets too.
       const ids = new Set(action.ids);
@@ -279,6 +286,11 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
             api.documents(projectId).then((list) => {
               if (!stopped) dispatch({ type: "loaded", list });
             }).catch(() => setAnnouncement("Could not refresh drawing sheets. Reload this project."));
+            return;
+          }
+          if (ev.kind === "deleted") {
+            // Another tab or person deleted it; this tab's own delete already removed it.
+            if (ev.document_id) dispatch({ type: "removed", ids: [ev.document_id] });
             return;
           }
           if (ev.kind === "profile" || ev.kind === "job") {
@@ -442,6 +454,24 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
     [projectId, onSignedOut],
   );
 
+  const remove = useCallback(
+    async (ids: string[]) => {
+      try {
+        const { deleted } = await api.deleteDocuments(projectId, ids);
+        dispatch({ type: "removed", ids: deleted });
+        setProfileTick((t) => t + 1);
+        setAnnouncement(deleted.length === 1 ? "1 document deleted." : `${deleted.length} documents deleted.`);
+        return true;
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 401) onSignedOut();
+        setAnnouncement(e instanceof ApiError && e.status === 404 ? "Nothing was deleted: a document was already gone. The list has been refreshed." : "Nothing was deleted. Check your connection and try again.");
+        if (e instanceof ApiError && e.status === 404) api.documents(projectId).then((list) => dispatch({ type: "loaded", list }), () => undefined);
+        return false;
+      }
+    },
+    [projectId, onSignedOut],
+  );
+
   const jump = useCallback((docId: string) => {
     const el = document.getElementById(`doc-${docId}`);
     if (!el) return;
@@ -542,6 +572,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
           onSetReading={setReading}
           notReadOnly={notReadOnly}
           onClearFilter={() => setNotReadOnly(false)}
+          onDelete={remove}
         />
       </aside>
       {/* Drop overlay: invisible until files are dragged over the page. */}

@@ -184,3 +184,46 @@ test("choose which documents the profile reads, in bulk", async ({ browser }) =>
   await expect(page.getByRole("toolbar", { name: "Selected documents" })).toContainText("1 selected");
   await expect(rows.nth(1)).not.toHaveAttribute("data-open", "true");
 });
+
+test("delete documents from the register after confirming", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Deletion");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  const fixtures = resolve(import.meta.dirname, "../../testdata/identity");
+  const names = ["identity-page.pdf", "docx-table.docx", "merged-cells.xlsx"];
+  await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
+  const rows = page.locator("tbody.reg-doc");
+  await expect(rows).toHaveCount(3);
+  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"] .reg-sel input`)).toBeVisible();
+
+  const headerBin = page.getByRole("button", { name: "Delete selected documents" });
+  await expect(headerBin).toBeDisabled();
+  const boxes = page.locator("tbody.reg-doc .reg-sel input");
+  await boxes.nth(0).click();
+  await boxes.nth(1).click({ modifiers: ["Shift"] });
+  await headerBin.click();
+
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toContainText("Delete 2 documents, including");
+  await expect(dialog).toContainText("can't be undone");
+  // Cancel has the focus, so Enter never deletes by accident.
+  await expect(dialog.getByRole("button", { name: "Cancel" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(rows).toHaveCount(3);
+
+  await page.getByRole("toolbar", { name: "Selected documents" }).getByRole("button", { name: "Delete" }).click();
+  await dialog.getByRole("button", { name: "Delete" }).click();
+  await expect(rows).toHaveCount(1);
+  await expect(page.getByRole("toolbar", { name: "Selected documents" })).toBeHidden();
+
+  // A row's own bin deletes just that row; the list stays empty after reload.
+  await rows.nth(0).getByRole("button", { name: /^Delete / }).click();
+  await expect(dialog).toContainText("Delete ");
+  await dialog.getByRole("button", { name: "Delete" }).click();
+  await expect(rows).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.locator("tbody.reg-doc")).toHaveCount(0);
+});

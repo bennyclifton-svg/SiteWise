@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"sitewise/internal/files"
 	"sitewise/internal/intake"
@@ -407,4 +408,70 @@ func writeJSON(w http.ResponseWriter, status int, body any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(body)
+}
+
+const (
+	maxDeleteIDs = 200
+	// blobMinAge keeps bytes an upload may be about to reference; a younger
+	// unreferenced blob stays as an orphan until a later sweep.
+	blobMinAge = 2 * time.Minute
+)
+
+// deleteDocuments permanently deletes a selection from the register, after
+// the user confirmed. The database deletion is one transaction; stored bytes
+// go afterwards, only when no org references them. A blob that cannot be
+// removed stays on disk unreferenced and the deletion still stands.
+func deleteDocuments(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	projectID := r.PathValue("id")
+	if !uuidPattern.MatchString(projectID) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		DocumentIDs []string `json:"document_ids"`
+	}
+	if err := readJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	if len(body.DocumentIDs) == 0 || len(body.DocumentIDs) > maxDeleteIDs {
+		http.Error(w, "delete 1 to 200 documents at a time", http.StatusBadRequest)
+		return
+	}
+	for _, id := range body.DocumentIDs {
+		if !uuidPattern.MatchString(id) {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+	}
+	res, err := deps.Store.DeleteDocuments(r.Context(), session.OrgID, projectID, body.DocumentIDs, session.UserID)
+	if errors.Is(err, store.ErrNotFound) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, "delete failed", http.StatusInternalServerError)
+		return
+	}
+	for _, sum := range res.Unreferenced {
+		if _, err := deps.Blobs.Remove(sum, blobMinAge, func() (bool, error) {
+			return deps.Store.BlobReferenced(r.Context(), sum)
+		}); err != nil {
+			deps.Log.Printf("delete: stored file kept: %v", err)
+		}
+	}
+	if deps.Knowledge != nil {
+		if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
+			deps.Log.Printf("delete: profile rebuild failed: %v", err)
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string][]string{"deleted": res.Deleted})
 }

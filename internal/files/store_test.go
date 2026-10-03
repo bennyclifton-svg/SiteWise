@@ -276,3 +276,65 @@ func (e *errAfter) Read(p []byte) (int, error) {
 	e.read += n
 	return n, nil
 }
+
+func TestRemoveDeletesOnlyOldUnreferencedBlobs(t *testing.T) {
+	ctx := context.Background()
+	dir := t.TempDir()
+	st := openFiles(t, dir, 1024)
+	put := func(body string) []byte {
+		t.Helper()
+		blob, err := st.Put(ctx, strings.NewReader(body))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return blob.SHA256
+	}
+	age := func(sum []byte, by time.Duration) {
+		t.Helper()
+		path, _ := st.Path(sum)
+		old := time.Now().Add(-by)
+		if err := os.Chtimes(path, old, old); err != nil {
+			t.Fatal(err)
+		}
+	}
+	exists := func(sum []byte) bool {
+		path, _ := st.Path(sum)
+		_, err := os.Stat(path)
+		return err == nil
+	}
+	free := func() (bool, error) { return false, nil }
+	used := func() (bool, error) { return true, nil }
+
+	gone := put("deleted document")
+	age(gone, time.Hour)
+	if removed, err := st.Remove(gone, time.Minute, free); err != nil || !removed || exists(gone) {
+		t.Fatalf("old unreferenced blob: removed=%v err=%v", removed, err)
+	}
+	if removed, err := st.Remove(gone, time.Minute, free); err != nil || removed {
+		t.Fatalf("a missing blob is not an error: removed=%v err=%v", removed, err)
+	}
+
+	shared := put("another org files the same bytes")
+	age(shared, time.Hour)
+	if removed, err := st.Remove(shared, time.Minute, used); err != nil || removed || !exists(shared) {
+		t.Fatalf("referenced blob: removed=%v err=%v", removed, err)
+	}
+
+	young := put("uploaded a moment ago")
+	if removed, err := st.Remove(young, time.Minute, free); err != nil || removed || !exists(young) {
+		t.Fatalf("young blob: removed=%v err=%v", removed, err)
+	}
+
+	// Re-storing existing bytes counts as recent use, so an upload in flight
+	// cannot lose its file to a deletion between Put and its commit.
+	age(young, time.Hour)
+	put("uploaded a moment ago")
+	if removed, err := st.Remove(young, time.Minute, free); err != nil || removed || !exists(young) {
+		t.Fatalf("re-put blob: removed=%v err=%v", removed, err)
+	}
+
+	failing := func() (bool, error) { return false, errors.New("database down") }
+	if removed, err := st.Remove(young, 0, failing); err == nil || removed || !exists(young) {
+		t.Fatalf("reference check failure must keep the blob: removed=%v err=%v", removed, err)
+	}
+}

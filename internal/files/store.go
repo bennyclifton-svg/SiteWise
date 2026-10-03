@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 )
 
 // ErrHashMismatch means bytes at a content-addressed path do not hash to that path.
@@ -37,6 +38,8 @@ type Store struct {
 	tmp     string
 	max     int64
 	publish [256]sync.Mutex
+	// reused records when Put last returned an existing blob, by hex hash.
+	reused sync.Map
 }
 
 // Open creates the blob directory. maxBytes is the maximum accepted upload.
@@ -120,6 +123,10 @@ func (s *Store) Put(ctx context.Context, r io.Reader) (Blob, error) {
 	defer lock.Unlock()
 	switch err := inspect(final, sum); {
 	case err == nil:
+		// Remember the re-use: Remove keeps a blob re-used recently, so a
+		// deletion cannot take bytes an upload is about to commit a reference
+		// to. The file itself is never touched.
+		s.reused.Store(hex.EncodeToString(sum), time.Now())
 		return Blob{SHA256: bytes.Clone(sum), Size: n}, nil
 	case errors.Is(err, os.ErrNotExist):
 	default:
@@ -220,6 +227,44 @@ func (s *Store) RemoveUnreferenced(live [][]byte) (int, error) {
 		removed++
 	}
 	return removed, nil
+}
+
+// Remove deletes the blob for sum when it is at least minAge old and
+// referenced reports no reference. Both checks run under the publish lock that
+// Put holds, and Put records when it re-uses an existing blob, so bytes an
+// upload is about to reference are kept. A missing blob is not an error. The blob directory is
+// shared by every org, so referenced must look across orgs.
+func (s *Store) Remove(sum []byte, minAge time.Duration, referenced func() (bool, error)) (bool, error) {
+	path, err := s.Path(sum)
+	if err != nil {
+		return false, err
+	}
+	lock := &s.publish[sum[0]]
+	lock.Lock()
+	defer lock.Unlock()
+	info, err := os.Lstat(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if time.Since(info.ModTime()) < minAge {
+		return false, nil
+	}
+	key := hex.EncodeToString(sum)
+	if at, ok := s.reused.Load(key); ok && time.Since(at.(time.Time)) < minAge {
+		return false, nil
+	}
+	used, err := referenced()
+	if err != nil || used {
+		return false, err
+	}
+	if err := os.Remove(path); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return false, err
+	}
+	s.reused.Delete(key)
+	return true, nil
 }
 
 // inspect reports whether path is the immutable blob for want.

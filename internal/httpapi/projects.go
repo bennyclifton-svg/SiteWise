@@ -89,6 +89,7 @@ func Handler(deps Deps) http.Handler {
 		"PUT /projects/{id}/profile/{key}":          putProfileValue,
 		"POST /projects/{id}/profile/read":          requestProfileRead,
 		"PUT /projects/{id}/documents/profile-read": setProfileReading,
+		"POST /projects/{id}/documents/delete":      deleteDocuments,
 		"POST /projects/{id}/parts":                 createPart,
 		"PATCH /projects/{id}/parts/{part}":         updatePart,
 	}
@@ -123,6 +124,7 @@ var routePaths = map[string]string{
 	"PUT /projects/{id}/profile/{key}":          pathProfileEdit,
 	"POST /projects/{id}/profile/read":          pathProfileEdit,
 	"PUT /projects/{id}/documents/profile-read": pathProfileEdit,
+	"POST /projects/{id}/documents/delete":      pathDocumentDelete,
 	"POST /projects/{id}/parts":                 pathProfileEdit,
 	"PATCH /projects/{id}/parts/{part}":         pathProfileEdit,
 }

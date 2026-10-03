@@ -4,7 +4,8 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import type { Catalog, Doc, ReadSetting } from "./api";
 import { FIELDS, FieldCell, HeadState, REASONS, stateOf, type RowModel } from "./DocumentRow";
-import { IconCheck, IconNotChecked, IconRetry, IconStored, IconUpload } from "./icons";
+import { ConfirmDialog } from "./ConfirmDialog";
+import { IconBin, IconCheck, IconNotChecked, IconRetry, IconStored, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
 
 type Col = "number" | "title" | "revision" | "date" | "discipline" | "kind";
@@ -24,6 +25,8 @@ interface Props {
   /** Show only documents the profile does not read. */
   notReadOnly: boolean;
   onClearFilter: () => void;
+  /** Permanently deletes documents after the user confirmed; resolves true when done. */
+  onDelete: (ids: string[]) => Promise<boolean>;
 }
 
 const COLUMNS: { col: Col; label: string; className: string }[] = [
@@ -74,12 +77,15 @@ export function Register({
   onSetReading,
   notReadOnly,
   onClearFilter,
+  onDelete,
 }: Props) {
   const [sort, setSort] = useState<{ col: Col; dir: 1 | -1 } | null>(null);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const anchor = useRef<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirm, setConfirm] = useState<string[] | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const readKinds = useMemo(() => catalog?.profile_read_kinds ?? [], [catalog]);
 
   const ordered = useMemo(() => {
@@ -129,6 +135,30 @@ export function Register({
   const allSelected = docIds.length > 0 && docIds.every((id) => selected.has(id));
   const someSelected = selected.size > 0 && !allSelected;
   const selectAll = () => setSelected(allSelected ? new Set() : new Set(docIds));
+
+  const titleOf = (id: string) => {
+    const doc = rows.find((r) => r.doc?.id === id)?.doc;
+    if (!doc) return "";
+    const number = fieldValue(doc, "number");
+    const title = fieldValue(doc, "title") || doc.filename;
+    return number ? `${number} ${title}` : title;
+  };
+  const confirmMessage = (ids: string[]) => {
+    const names = ids.slice(0, 3).map(titleOf).filter(Boolean);
+    const more = ids.length > names.length ? ", …" : "";
+    const what = ids.length === 1 ? `Delete ${names[0] ?? "this document"}?` : `Delete ${ids.length} documents, including ${names.join(", ")}${more}?`;
+    return `${what} The files, their filing and anything the profile read from them are removed. This can't be undone.`;
+  };
+  const remove = async () => {
+    if (!confirm) return;
+    setDeleting(true);
+    const done = await onDelete(confirm);
+    setDeleting(false);
+    if (done) {
+      setSelected(new Set());
+      setConfirm(null);
+    }
+  };
 
   const apply = async (ids: string[], setting: ReadSetting) => {
     setBusy(true);
@@ -182,6 +212,7 @@ export function Register({
             ))}
             <col className="reg-prof" />
             <col className="reg-mark" />
+            <col className="reg-bin" />
           </colgroup>
           <thead>
             <tr>
@@ -216,6 +247,18 @@ export function Register({
               <th scope="col">
                 <span className="sr-only">State</span>
               </th>
+              <th scope="col" className="reg-bin">
+                <button
+                  type="button"
+                  className="reg-del"
+                  disabled={selected.size === 0}
+                  title={selected.size === 0 ? "Select documents to delete them" : `Delete ${selected.size} selected`}
+                  onClick={() => setConfirm([...selected])}
+                >
+                  <IconBin />
+                  <span className="sr-only">Delete selected documents</span>
+                </button>
+              </th>
             </tr>
           </thead>
           {ordered.map((row) => (
@@ -235,6 +278,7 @@ export function Register({
               onSelect={select}
               reads={row.doc ? profileReads(row.doc, readKinds) : null}
               onToggleRead={(doc, reads) => apply([doc.id], reads ? "skip" : "read")}
+              onDelete={(doc) => setConfirm([doc.id])}
             />
           ))}
         </table>
@@ -251,10 +295,24 @@ export function Register({
           <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "auto")}>
             Reset to automatic
           </button>
+          <button type="button" className="btn btn-small btn-danger-quiet" disabled={busy} onClick={() => setConfirm([...selected])}>
+            <IconBin />
+            Delete
+          </button>
           <button type="button" className="cell-link" onClick={() => setSelected(new Set())}>
             Clear
           </button>
         </div>
+      )}
+      {confirm && (
+        <ConfirmDialog
+          title={confirm.length === 1 ? "Delete document" : `Delete ${confirm.length} documents`}
+          message={confirmMessage(confirm)}
+          confirmLabel="Delete"
+          busy={deleting}
+          onConfirm={remove}
+          onCancel={() => setConfirm(null)}
+        />
       )}
     </div>
   );
@@ -330,6 +388,7 @@ function RegisterRow({
   onSelect,
   reads,
   onToggleRead,
+  onDelete,
 }: {
   row: RowModel;
   open: boolean;
@@ -345,6 +404,7 @@ function RegisterRow({
   onSelect: (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => void;
   reads: boolean | null;
   onToggleRead: (doc: Doc, reads: boolean) => void;
+  onDelete: (doc: Doc) => void;
 }) {
   const doc = row.doc;
   const title = fieldValue(doc, "title");
@@ -458,10 +518,26 @@ function RegisterRow({
         <td className="reg-mark">
           <RowMark row={row} />
         </td>
+        <td className="reg-bin">
+          {doc && (
+            <button
+              type="button"
+              className="reg-del"
+              title="Delete this document"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(doc);
+              }}
+            >
+              <IconBin />
+              <span className="sr-only">Delete {title || row.filename}</span>
+            </button>
+          )}
+        </td>
       </tr>
       {open && (
         <tr className="reg-detail" id={detailId}>
-          <td colSpan={COLUMNS.length + 3}>
+          <td colSpan={COLUMNS.length + 4}>
             <div className="reg-detail-head">
               <span className="reg-file" title={row.filename}>
                 {row.filename}
