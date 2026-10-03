@@ -5,7 +5,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"regexp/syntax"
 	"sort"
+	"strings"
 )
 
 const statusDeprecated = "deprecated"
@@ -43,13 +45,14 @@ type Determinant struct {
 	Status          string     `yaml:"status"`
 	ReplacedBy      string     `yaml:"replaced_by"`
 
-	triggers []*regexp.Regexp
+	triggers []trigger
 }
 
 // Triggered reports whether any trigger matches text.
-func (d Determinant) Triggered(text string) bool {
-	return anyMatch(d.triggers, text)
-}
+func (d Determinant) Triggered(text string) bool { return d.TriggeredIn(NewText(text)) }
+
+// TriggeredIn is Triggered over text already lowercased once.
+func (d Determinant) TriggeredIn(t Text) bool { return anyMatch(d.triggers, t) }
 
 // Deprecated reports whether the record is kept only for its id.
 func (d Determinant) Deprecated() bool { return d.Status == statusDeprecated }
@@ -63,11 +66,28 @@ type ScaleField struct {
 	BasisRequired   bool     `yaml:"basis_required"`
 	TriggerPatterns []string `yaml:"triggers"`
 
-	triggers []*regexp.Regexp
+	triggers []trigger
 }
 
 // Triggered reports whether any trigger matches text.
-func (f ScaleField) Triggered(text string) bool { return anyMatch(f.triggers, text) }
+func (f ScaleField) Triggered(text string) bool { return f.TriggeredIn(NewText(text)) }
+
+// TriggeredIn is Triggered over text already lowercased once.
+func (f ScaleField) TriggeredIn(t Text) bool { return anyMatch(f.triggers, t) }
+
+// Text is a passage with its lowercase form, computed once per passage.
+type Text struct{ Raw, Lower string }
+
+// NewText lowercases text for trigger prefiltering.
+func NewText(s string) Text { return Text{Raw: s, Lower: strings.ToLower(s)} }
+
+// trigger is a compiled pattern plus a literal every match must contain.
+// Case-insensitive patterns lose Go's literal prefix scan, so a substring
+// check on the lowercase text rules most passages out before the regexp runs.
+type trigger struct {
+	re      *regexp.Regexp
+	literal string
+}
 
 // Subclass is one building type with its NCC class hint and scale fields.
 type Subclass struct {
@@ -141,7 +161,9 @@ type profileData struct {
 	determinants []Determinant
 	facts        []Determinant
 	taxonomy     Taxonomy
+	scaleFields  []ScaleField
 	typical      map[string][]string
+	live         []Determinant
 }
 
 func (c *Catalog) loadDeterminants(path string) error {
@@ -161,6 +183,11 @@ func (c *Catalog) loadDeterminants(path string) error {
 		}
 	}
 	c.profile.determinants = file.Determinants
+	for _, d := range file.Determinants {
+		if d.ProfileGroup != "" && !d.Deprecated() {
+			c.profile.live = append(c.profile.live, d)
+		}
+	}
 	return nil
 }
 
@@ -187,6 +214,7 @@ func (c *Catalog) loadProfile(dir string) error {
 		}
 	}
 	c.profile.taxonomy = tax.Taxonomy
+	c.profile.scaleFields = tax.Taxonomy.ScaleFields()
 
 	var facts struct {
 		Facts []Determinant `yaml:"facts"`
@@ -233,21 +261,52 @@ func compileTriggers(d *Determinant) error {
 }
 
 // compile uses Go's RE2 syntax, case-insensitive, as SCHEMA.md documents.
-func compile(patterns []string) ([]*regexp.Regexp, error) {
-	out := make([]*regexp.Regexp, 0, len(patterns))
+func compile(patterns []string) ([]trigger, error) {
+	out := make([]trigger, 0, len(patterns))
 	for _, p := range patterns {
 		re, err := regexp.Compile("(?i)" + p)
 		if err != nil {
 			return nil, fmt.Errorf("trigger %q: %w", p, err)
 		}
-		out = append(out, re)
+		out = append(out, trigger{re: re, literal: requiredLiteral(p)})
 	}
 	return out, nil
 }
 
-func anyMatch(res []*regexp.Regexp, text string) bool {
-	for _, re := range res {
-		if re.MatchString(text) {
+// requiredLiteral returns the longest literal of three or more runes that
+// every match of a top-level concatenation must contain, lowercased; "" when
+// there is none (for example a top-level alternation).
+func requiredLiteral(pattern string) string {
+	re, err := syntax.Parse(pattern, syntax.Perl|syntax.FoldCase)
+	if err != nil {
+		return ""
+	}
+	re = re.Simplify()
+	for re.Op == syntax.OpCapture {
+		re = re.Sub[0]
+	}
+	best := ""
+	consider := func(r *syntax.Regexp) {
+		if r.Op == syntax.OpLiteral && len(r.Rune) >= 3 && len(r.Rune) > len([]rune(best)) {
+			best = strings.ToLower(string(r.Rune))
+		}
+	}
+	if re.Op == syntax.OpConcat {
+		for _, sub := range re.Sub {
+			consider(sub)
+		}
+	} else {
+		consider(re)
+	}
+	return best
+}
+
+func anyMatch(ts []trigger, t Text) bool {
+	for _, tr := range ts {
+		if tr.literal != "" && !strings.Contains(t.Lower, tr.literal) {
+			continue
+		}
+		if tr.re.MatchString(t.Raw) {
 			return true
 		}
 	}
@@ -268,15 +327,10 @@ func (c *Catalog) Determinant(id string) (Determinant, bool) {
 }
 
 // ProfileDeterminants returns live determinants shown in the profile.
-func (c *Catalog) ProfileDeterminants() []Determinant {
-	var out []Determinant
-	for _, d := range c.profile.determinants {
-		if d.ProfileGroup != "" && !d.Deprecated() {
-			out = append(out, d)
-		}
-	}
-	return out
-}
+func (c *Catalog) ProfileDeterminants() []Determinant { return c.profile.live }
+
+// ScaleFields returns the distinct scale fields across subclasses, computed once at load.
+func (c *Catalog) ScaleFields() []ScaleField { return c.profile.scaleFields }
 
 // ProjectFacts returns the project facts (consent, contract and so on).
 func (c *Catalog) ProjectFacts() []Determinant { return c.profile.facts }
