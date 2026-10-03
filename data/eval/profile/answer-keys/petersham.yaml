@@ -1,0 +1,112 @@
+# Draft answer key from a full reading of the documents. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+project: petersham
+documents:
+- petersham-ppr
+header:
+  hdr.building_class:
+    accept:
+    - mixed
+    - residential
+    evidence: 3.2 residential flat building and mixed use building with a retail tenancy
+  hdr.subclass:
+    accept:
+    - residential_retail
+    - apartments
+    evidence: 3.2 Building A 6 dwellings; Building B 4 dwellings and 1 retail tenancy
+  hdr.work_type:
+    accept:
+    - new
+    evidence: 3.2 construction of a 5 storey development
+  hdr.scale.storeys:
+    accept:
+    - '5'
+    evidence: 3.2 5 storey development
+  hdr.cond.planning:
+    accept:
+    - da
+    evidence: 5. development consent DA201500704
+  hdr.cond.procurement_route:
+    accept:
+    - design_construct
+    evidence: 2. D&C Contractor
+facts:
+  fact.consent_number:
+    accept:
+    - DA201500704
+    - DA201500704.01
+    evidence: 5. Project status
+  fact.consent_date:
+    accept:
+    - '2016-10-18'
+    evidence: '5. Date of consent: 18.10.2016'
+    blank_ok: true
+  fact.consent_lapse_date:
+    accept:
+    - '2023-10-17'
+    evidence: '5. Consent will lapse: 17.10.2023'
+  fact.defects_liability_period:
+    accept:
+    - '12'
+    evidence: 4. Defects liability period 12 months
+    blank_ok: true
+  fact.design_life:
+    accept:
+    - '50'
+    evidence: 4. Design life 50 years
+    blank_ok: true
+determinants:
+  det.heritage_status:
+    accept:
+    - conservation_area
+    evidence: 3.1 heritage conservation area C5
+  det.ncc_edition:
+    accept: []
+    evidence: 6.1 reports to NCC 2016; 7.31 update to NCC 2019 Amdt 1 (two editions; do not pick one blindly)
+    blank_ok: true
+  det.rise_in_storeys:
+    accept: []
+    evidence: no "rise in storeys" statement
+    blank_ok: true
+systems:
+  vertical-transport.passenger-lifts:
+    presence: included
+    evidence: 7.12 lifts
+  site.waste-storage:
+    presence: included
+    evidence: 7.13 garbage systems and rooms
+  mechanical.carpark-ventilation:
+    presence: included
+    evidence: 3.2 car park exhaust systems
+  substructure.basement-retention:
+    presence: included
+    evidence: 3.2 excavation, shoring and protection of adjoining properties
+  site.demolition:
+    presence: included
+    evidence: 3.2 demolition of existing structures
+  site.public-domain:
+    presence: included
+    evidence: '7.7 concrete footpaths and paving: public domain'
+  access-egress.livable-housing:
+    presence: included
+    evidence: 7.30 two adaptable apartments to AS 4299 Class C
+  interiors.acoustic-separation:
+    presence: included
+    evidence: 7.27 noise and vibration, Rw 55
+  electrical.metering:
+    presence: included
+    evidence: 3.2 embedded network
+  comms-security.access-control:
+    presence: included
+    evidence: 7.19 door keying and access control
+  hydraulic.gas:
+    presence: included
+    evidence: 3.2 gas
+  envelope.external-waterproofing:
+    presence: included
+    evidence: 7.34 podium and balcony waterproofing
+  site.signage:
+    presence: included
+    evidence: 7.21 signage

@@ -1,0 +1,109 @@
+# Draft answer key from a full reading of the documents. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+project: rutherford
+documents:
+- rutherford-bpb
+header:
+  hdr.building_class:
+    accept:
+    - industrial
+    evidence: 2.1 two warehouse buildings
+  hdr.subclass:
+    accept:
+    - warehouse
+    evidence: 2.1 warehouse units
+  hdr.work_type:
+    accept:
+    - new
+    evidence: 2.1 two warehouse buildings and hardstand
+  hdr.cond.procurement_route:
+    accept:
+    - design_construct
+    evidence: 1.1 Design & Construct Contract AS 4902
+  hdr.cond.operational_constraints:
+    accept:
+    - live_environment
+    - partial_occupation
+    evidence: 1.8 shared driveway with an operating Kennards Hire
+    blank_ok: true
+facts:
+  fact.consent_number:
+    accept:
+    - DA/2023/408
+    evidence: 1.1 Development Approval DA/2023/408
+  fact.contract_form:
+    accept:
+    - as4902
+    evidence: 1.1 AS 4902-2000
+  fact.defects_liability_period:
+    accept:
+    - '12'
+    evidence: 1.7 12 months
+    blank_ok: true
+determinants:
+  det.floor_area:
+    accept:
+    - '2000'
+    evidence: 5.2 compartments must remain under 2,000 sqm
+    assertion: required
+  det.sprinklered:
+    accept:
+    - stated_false
+    evidence: 7.9 sprinklers anticipated not to be required
+    blank_ok: true
+  det.water_supply_source:
+    accept:
+    - reticulated
+    evidence: 7.8 town potable water mains
+    blank_ok: true
+  det.sewer_connection:
+    accept:
+    - reticulated
+    evidence: 7.8 connection to town sewer
+    blank_ok: true
+systems:
+  electrical.solar-pv:
+    presence: included
+    evidence: 7.5 solar PV system (ASV Solar under the contract)
+    provider: contractor
+  electrical.ev-charging:
+    presence: included
+    evidence: 7.6 EV charging system
+  fire-active.hydrants:
+    presence: included
+    evidence: 7.9 hydrant system and booster
+  fire-active.sprinklers:
+    presence: not_included
+    evidence: 7.9 sprinklers anticipated not required
+  fire-active.detection:
+    presence: not_included
+    evidence: 7.9 smoke detection and occupant warning not required (option price)
+  fire-active.portable-extinguishers:
+    presence: included
+    evidence: 7.9 portable extinguishers
+  site.impact-protection:
+    presence: included
+    evidence: 4.1 bollards
+  envelope.vehicle-doors:
+    presence: included
+    evidence: 4 roller shutter doors
+  site.signage:
+    presence: included
+    evidence: 8.4 signage; 8.6 pylon signage
+  site.landscape:
+    presence: included
+    evidence: 8.1 landscaping
+  site.vehicle-access:
+    presence: included
+    evidence: 8.7 external pavements, 8.9 carpark
+  site.retaining-walls:
+    presence: included
+    evidence: RFI 25 retaining wall on the northern boundary
+  structure.steel:
+    presence: included
+    evidence: 3.10 structural steel
+  fire-passive.compartments:
+    presence: included
+    evidence: 5.2 fire rated inter-tenancy wall between WH5 and WH6

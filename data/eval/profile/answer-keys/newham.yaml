@@ -1,0 +1,129 @@
+# Draft answer key from a full reading of the documents. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+project: newham
+documents:
+- newham-spec
+header:
+  hdr.building_class:
+    accept:
+    - residential
+    evidence: 'Title: Construction of 22 Double Storey Dwellings'
+  hdr.subclass:
+    accept:
+    - house
+    evidence: 22 dwellings on separate lots (Lots 4-25)
+  hdr.work_type:
+    accept:
+    - new
+    evidence: Construction of 22 Double Storey Dwellings
+  hdr.scale.storeys:
+    accept:
+    - '2'
+    evidence: Double Storey Dwellings; first floor ceiling heights in 8.0
+facts:
+  fact.contract_form:
+    accept: []
+    evidence: Only "design and construct program" is mentioned; no contract form
+    blank_ok: true
+determinants:
+  det.bal:
+    accept:
+    - BAL-LOW
+    evidence: '1.0 General: "allowed for Bush Fire Attack Level Low to all sites"'
+    assertion: allowance
+  det.gas_supply:
+    accept:
+    - natural_gas_main
+    evidence: '29 Hot water: "assumption that natural gas mains will be available"'
+    blank_ok: true
+    assertion: allowance
+  det.water_supply_source:
+    accept:
+    - reticulated
+    evidence: '2.0: potable and recycled water metering to each dwelling'
+    blank_ok: true
+  det.sewer_connection:
+    accept:
+    - reticulated
+    evidence: '2.0: BAS/BOS sewer; no pressure sewer allowed'
+    blank_ok: true
+  det.saline_soil:
+    accept: []
+    evidence: 6.0 only names a salinity report; no conclusion
+    blank_ok: true
+  det.site_class:
+    accept: []
+    evidence: 6.0 refers to the geotech report for site classification
+    blank_ok: true
+systems:
+  site.earthworks:
+    presence: included
+    evidence: 4.0 equal cut/fill
+    provider: contractor
+  substructure.piles:
+    presence: included
+    evidence: 5.0 steel screw piers
+    provider: contractor
+  substructure.slab-on-ground:
+    presence: included
+    evidence: 6.0 waffle slab
+  substructure.termite-management:
+    presence: included
+    evidence: 7.0 termite treatment AS3660.1
+  structure.timber:
+    presence: included
+    evidence: 8.0 H2 timber frames and trusses
+  envelope.external-walls:
+    presence: included
+    evidence: 9.0 brickwork, 11 cladding, 12 render
+  envelope.roof-coverings:
+    presence: included
+    evidence: 13 Colorbond and Monier tiles
+  envelope.vehicle-doors:
+    presence: included
+    evidence: 16 sectional garage doors
+  envelope.thermal-insulation:
+    presence: included
+    evidence: 17 insulation per NatHERS/BASIX
+  interiors.wet-area-waterproofing:
+    presence: included
+    evidence: 19 waterproofing
+  interiors.tiling:
+    presence: included
+    evidence: 20 tiling
+  interiors.joinery:
+    presence: included
+    evidence: 21 joinery
+  interiors.floor-finishes:
+    presence: included
+    evidence: 27 carpet and hybrid flooring
+  interiors.painting:
+    presence: included
+    evidence: 28 painting
+  hydraulic.hot-water:
+    presence: included
+    evidence: 29 gas continuous-flow hot water
+  hydraulic.gas:
+    presence: included
+    evidence: 2.0 gas metering; 29 gas hot water
+  hydraulic.non-potable-water:
+    presence: included
+    evidence: 2.0 recycled water metering; 30 rainwater tank not required (recycled supplied)
+  mechanical.air-conditioning:
+    presence: included
+    evidence: 32 ducted air conditioning
+  fire-active.smoke-alarms:
+    presence: included
+    evidence: 'Turnkey: hard-wired smoke alarms'
+  comms-security.carrier-lead-in:
+    presence: included
+    evidence: 2.0 NBN conduit to boundary
+  site.landscape:
+    presence: included
+    evidence: 33 softscape
+  site.public-domain:
+    presence: included
+    evidence: 34 council footpaths to lots 7, 9-17
+    provider: contractor

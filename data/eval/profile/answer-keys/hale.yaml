@@ -1,0 +1,122 @@
+# Draft answer key from a full reading of the documents. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+project: hale
+documents:
+- hale-brief
+header:
+  hdr.building_class:
+    accept:
+    - industrial
+    evidence: 3.01 single level warehouse tenancy
+  hdr.subclass:
+    accept:
+    - warehouse
+    - logistics_ecommerce
+    evidence: 3.03 storage, picking and distribution of ambient goods
+  hdr.work_type:
+    accept:
+    - extend
+    evidence: 1.01 proposed extension works (Unit 10)
+  hdr.scale.gla_sqm:
+    accept:
+    - '2135'
+    evidence: 3.02 area schedule total building area 2,135 m2 (GLA)
+    blank_ok: true
+  hdr.cond.operational_constraints:
+    accept:
+    - live_environment
+    - partial_occupation
+    evidence: 3.01 must not affect operation of the existing tenancies
+    blank_ok: true
+facts: {}
+determinants:
+  det.water_supply_source:
+    accept:
+    - reticulated
+    evidence: 10.01 potable water retail meters
+  det.sewer_connection:
+    accept:
+    - reticulated
+    evidence: 10.02 connection to mains sewer
+  det.gas_supply:
+    accept:
+    - none
+    evidence: '10.03 Natural Gas: Not applicable'
+  det.storage_height:
+    accept: []
+    evidence: '4.01 min. top of storage height: TBC'
+    blank_ok: true
+  det.sprinklered:
+    accept:
+    - stated_true
+    evidence: 9.01 ESFR sprinklers to AS2118.1
+    blank_ok: true
+systems:
+  fire-active.sprinklers:
+    presence: included
+    evidence: 9.01 ESFR, ordinary and light hazard sprinklers
+  fire-active.hydrants:
+    presence: included
+    evidence: 9.01 hydrant and hose reel coverage
+  fire-active.occupant-warning:
+    presence: included
+    evidence: 9.01 occupant warning system
+  fire-active.portable-extinguishers:
+    presence: included
+    evidence: 9.01 extinguishers
+  fire-active.smoke-control:
+    presence: included
+    evidence: 8.0 smoke clearance as required by the fire engineered solution
+  electrical.solar-pv:
+    presence: not_included
+    evidence: '7 Solar PV System: Not applicable'
+  hydraulic.gas:
+    presence: not_included
+    evidence: '10.03 Natural Gas: Not applicable'
+  hydraulic.non-potable-water:
+    presence: not_included
+    evidence: '10.01 Rainwater Re-use System: Not applicable'
+  site.loading-docks:
+    presence: not_included
+    evidence: '4 Recessed Docks: Not applicable'
+  envelope.vehicle-doors:
+    presence: included
+    evidence: 4 roller shutter doors
+  site.impact-protection:
+    presence: included
+    evidence: 4 pedestrian and asset protection, bollards
+  envelope.external-walls:
+    presence: included
+    evidence: 4 precast concrete external walls
+  envelope.roof-coverings:
+    presence: included
+    evidence: 4 Colorbond roof sheeting
+  substructure.slab-on-ground:
+    presence: included
+    evidence: 4.02 warehouse floor slab
+  electrical.metering:
+    presence: included
+    evidence: 7 energy monitoring system
+  electrical.lighting:
+    presence: included
+    evidence: 7 lighting
+  mechanical.air-conditioning:
+    presence: included
+    evidence: 8.0 office split system
+  mechanical.local-exhaust:
+    presence: included
+    evidence: 8.0 MHE charging area ventilation
+  hydraulic.specialist-process:
+    presence: included
+    evidence: 10.01 safety shower and eye wash at MHE charging
+  hydraulic.hot-water:
+    presence: included
+    evidence: 10.01 electric instantaneous hot water
+  site.vehicle-access:
+    presence: included
+    evidence: 6.01 heavy duty pavements
+  electrical.ev-charging:
+    presence: not_stated
+    evidence: MHE (forklift) charging only; no EV charging is stated

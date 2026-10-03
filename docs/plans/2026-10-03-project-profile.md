@@ -26,13 +26,14 @@ Python checker for `knowledge/`.
 P01 schema and checker, P06 systems, P07 determinants, P08 `knowledge/profile/`,
 P09 loader, P10 harvest, P11 questions, P12 reconcile, P04 store (migration 007),
 P03 worker in `serve`, P13 facts and rebuild, P14 API with budgets and bench samples,
-P05 and P15 UI (left nav, profile, register), and the P02 manifest
-(`data/eval/profile/manifest.json`). `go test ./...`, the strict knowledge check,
+P05 and P15 UI (left nav, profile, register), and P02 (manifest and draft
+answer keys). `go test ./...`, the strict knowledge check,
 the web build and both Playwright specs pass. A live smoke run on the Hale brief
 profiled it in 30 s with no Jev errors (`docs/evidence/2026-10-03-profile-smoke/`).
 
 **Not done (next agent):**
-- **P02 answer keys** for the five projects (manifest exists; keys do not).
+- **P02** is drafted: `data/eval/profile/answer-keys/*.yaml` (unreviewed agent
+  drafts; every id checked against knowledge). The owner reviews them (O1).
 - **P16** `cmd/profile-eval` harness (record, replay, score, no-wrong-green gate).
 - **P17** live run over all five projects, then tuning. Known gaps: "Not
   applicable" absences are not yet read as *not included*, and MHE battery

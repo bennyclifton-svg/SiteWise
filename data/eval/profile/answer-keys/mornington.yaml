@@ -1,0 +1,115 @@
+# Draft answer key from a full reading of the documents. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+project: mornington
+documents:
+- morn-coastal
+- morn-montique
+- morn-toussaint
+header:
+  hdr.building_class:
+    accept:
+    - residential
+    evidence: 'all three: new residence at 188 Balnarring Road'
+  hdr.subclass:
+    accept:
+    - house
+    evidence: single new dwelling
+  hdr.work_type:
+    accept:
+    - new
+    evidence: demolition of the existing dwelling and a new home
+  hdr.scale.storeys:
+    accept:
+    - '2'
+    evidence: Montique first-floor suspended slabs; Coastal 16-riser stair; Toussaint upper floor framing. Coastal cover says
+      "Single storey" (expect a conflict)
+    blank_ok: true
+facts:
+  fact.contract_basis:
+    accept: []
+    evidence: 'differs by tender: Toussaint cost plus; others priced lump sum quotes'
+    blank_ok: true
+determinants:
+  det.bal:
+    accept:
+    - BAL-40
+    evidence: 'Coastal: windows with BAL 40 compliance; garage door BAL 40 ember seal'
+    blank_ok: true
+  det.water_supply_source:
+    accept:
+    - rainwater_tank
+    evidence: 'all three: tank water with filtration'
+  det.sewer_connection:
+    accept:
+    - onsite_treatment
+    evidence: 'all three: septic system'
+  det.gas_supply:
+    accept:
+    - lpg
+    evidence: Toussaint 63 LPG gas bottles; Coastal re-use gas bottles
+  det.state:
+    accept:
+    - VIC
+    evidence: Merricks North VIC 3926
+    blank_ok: true
+systems:
+  site.demolition:
+    presence: included
+    evidence: 'all three: demolition of the existing dwelling'
+  substructure.piles:
+    presence: included
+    evidence: 'all three: screw piles'
+  site.services-connections:
+    presence: included
+    evidence: 'all three: septic / on-site wastewater'
+  hydraulic.cold-water:
+    presence: included
+    evidence: tank water, filtration and pump to house
+  fire-active.fire-water:
+    presence: included
+    evidence: CFA firefighting tank (Montique, Coastal, Toussaint)
+  mechanical.heating-appliances:
+    presence: included
+    evidence: 'all three: wood fireplace'
+  mechanical.central-plant:
+    presence: included
+    evidence: hydronic heating (Coastal, Toussaint; Montique PS)
+  mechanical.air-conditioning:
+    presence: included
+    evidence: 'all three: ducted reverse cycle'
+  hydraulic.hot-water:
+    presence: included
+    evidence: 'all three: heat pump hot water'
+  hydraulic.gas:
+    presence: included
+    evidence: LPG to cooktop and BBQ
+  electrical.solar-pv:
+    presence: included
+    evidence: Coastal and Toussaint include; Montique client supply
+    tenders: differ
+    provider_alternatives:
+    - contractor
+    - owner
+  site.pools:
+    presence: included
+    evidence: 'all three: plunge pool'
+  access-egress.pool-barriers:
+    presence: included
+    evidence: pool fencing
+  envelope.external-walls:
+    presence: included
+    evidence: Colorbond standing seam cladding
+  envelope.roof-coverings:
+    presence: included
+    evidence: Colorbond standing seam / deck roof
+  envelope.bushfire-construction:
+    presence: included
+    evidence: BAL rated windows, ember seals, BAL flyscreens
+  envelope.vehicle-doors:
+    presence: included
+    evidence: garage door
+  envelope.external-shading:
+    presence: included
+    evidence: window shrouds
