@@ -1,0 +1,1635 @@
+# taxonomy.yaml: see knowledge/SCHEMA.md 'Project profile additions'. Draft; owner review pending.
+version: 1
+status: draft
+sources:
+- clerk_file: data/taxonomy/building-classes.json
+- clerk_file: data/taxonomy/complexity-dimensions.json
+notes: Transcribed from Clerk data. Cost-uplift text removed from labels. Bushfire, flood, heritage, contamination
+  and water source are left to determinants.
+work_types:
+- id: new
+  label: New build
+- id: refurb
+  label: Refurbishment
+- id: extend
+  label: Extension / addition
+- id: remediation
+  label: Remediation / rectification
+- id: advisory
+  label: Advisory services
+building_classes:
+- id: residential
+  label: Residential
+  work_types:
+  - new
+  - refurb
+  - extend
+  - remediation
+  - advisory
+  subclasses:
+  - id: house
+    label: House (Class 1a)
+    ncc_class: 1a
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: &id001
+      - site area
+      - \blot size\b
+      typical: 200-2000 sqm
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: &id003
+      - \bgfa\b
+      - gross floor area
+      typical: 50-800 sqm
+    - key: storeys
+      label: Storeys
+      type: integer
+      triggers: &id002
+      - \b(\d+|single|double|two|three|four|five)[ -]?stor(e)?y
+      - \bstoreys?\b
+      typical: 1-3
+    - key: bedrooms
+      label: Bedrooms
+      type: integer
+      triggers:
+      - \bbed(room)?s?\b
+      typical: 2-6
+    - key: garage_spaces
+      label: Garage spaces
+      type: integer
+      triggers:
+      - \bgarage\b
+      - \bcar spaces?\b
+  - id: apartments
+    label: Apartments (Class 2)
+    ncc_class: '2'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: storeys
+      label: Storeys
+      type: integer
+      triggers: *id002
+      typical: Low-rise 1-3, mid-rise 4-12, high-rise 13-40, super-tall 40+
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: units
+      label: Units
+      type: integer
+      triggers: &id004
+      - \b\d+\s+(units|apartments|dwellings)\b
+      - apartment mix
+    - key: avg_unit_size_sqm
+      label: Average unit size sqm
+      type: number
+      unit: m2
+      typical: 50-150 sqm/unit
+  - id: townhouses
+    label: Townhouses (Class 1a)
+    ncc_class: 1a
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: dwellings
+      label: Dwellings
+      type: integer
+      triggers: &id006
+      - \b\d+\s+(dwellings|lots|homes)\b
+      typical: 3-50
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: avg_dwelling_size_sqm
+      label: Average dwelling size sqm
+      type: number
+      unit: m2
+      typical: 120-250 sqm each
+  - id: btr
+    label: BTR (Build-to-Rent)
+    ncc_class: '2'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: storeys
+      label: Storeys
+      type: integer
+      triggers: *id002
+    - key: units
+      label: Units
+      type: integer
+      triggers: *id004
+      typical: 100-500+
+    - key: amenity_gfa_sqm
+      label: Amenity GFA sqm
+      type: number
+      unit: m2
+      typical: 5-10% amenity
+    - key: unit_mix
+      label: Unit mix
+      type: text
+      typical: Studio/1B/2B/3B
+  - id: student_housing
+    label: Student Housing (PBSA)
+    ncc_class: '3'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: beds
+      label: Beds
+      type: integer
+      triggers: &id005
+      - \bbeds?\b
+      typical: 200-1000+
+    - key: cluster_apartments
+      label: Cluster apartments
+      type: integer
+      typical: 4-8 beds per cluster
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: common_area_sqm
+      label: Common area sqm
+      type: number
+      unit: m2
+  - id: retirement_living
+    label: Retirement Living / ILUs
+    ncc_class: 2/9c
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: ilus
+      label: ILUs
+      type: integer
+      typical: 20-300+
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: serviced_apartments
+      label: Serviced apartments
+      type: integer
+      typical: 40-80 sqm each
+    - key: community_facilities_sqm
+      label: Community facilities sqm
+      type: number
+      unit: m2
+    - key: avg_ilu_size_sqm
+      label: Average ILU size sqm
+      type: number
+      unit: m2
+      typical: 60-120 sqm per ILU
+  - id: residential_aged_care
+    label: Residential Aged Care (Class 9c)
+    ncc_class: 9c
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: beds
+      label: Beds
+      type: integer
+      triggers: *id005
+      typical: 60-150
+    - key: dementia_beds
+      label: Dementia beds
+      type: integer
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: gfa_per_bed_sqm
+      label: GFA per bed sqm
+      type: number
+      unit: m2
+      typical: 50-80 sqm/bed
+    - key: households_wings
+      label: Households / wings
+      type: integer
+    - key: beds_per_household
+      label: Beds per household
+      type: integer
+      typical: 10-16
+  - id: social_affordable_housing
+    label: Social/Affordable Housing
+    ncc_class: 1a/2/3
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: dwellings
+      label: Dwellings
+      type: integer
+      triggers: *id006
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: tenure_mix
+      label: Tenure mix
+      type: text
+    - key: accessible_units
+      label: Accessible units
+      type: integer
+  - id: other
+    label: Other
+    ncc_class: varies
+    scale_fields: []
+- id: commercial
+  label: Commercial
+  work_types:
+  - new
+  - refurb
+  - extend
+  - remediation
+  - advisory
+  subclasses:
+  - id: office
+    label: Office (Class 5)
+    ncc_class: '5'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: storeys
+      label: Storeys
+      type: integer
+      triggers: *id002
+    - key: nla_sqm
+      label: NLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: &id009
+      - \bnla\b
+      - net lettable
+      typical: 1,000-80,000+ sqm NLA
+    - key: floor_plate_sqm
+      label: Floor plate sqm
+      type: number
+      unit: m2
+      typical: 500-2,500 sqm
+    - key: tenancies
+      label: Tenancies
+      type: integer
+      triggers:
+      - \btenanc(y|ies)\b
+      - \bunits?\s+\d
+    - key: grade
+      label: Grade
+      type: text
+      typical: B/A/Premium/Trophy
+  - id: retail_shopping_centre
+    label: Retail - Shopping Centre (Class 6)
+    ncc_class: '6'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gla_sqm
+      label: GLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: &id007
+      - \bgla\b
+      - gross lettable
+      typical: Neighbourhood 5-15k, sub-regional 15-40k, regional 40-100k+ sqm
+    - key: major_anchors
+      label: Major anchors
+      type: integer
+    - key: specialties
+      label: Specialties
+      type: integer
+    - key: levels
+      label: Levels
+      type: integer
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: &id008
+      - \bcar (spaces?|parks?|parking)\b
+  - id: retail_standalone
+    label: Retail - Standalone (Class 6)
+    ncc_class: '6'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gla_sqm
+      label: GLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id007
+      typical: 200-5,000 sqm
+    - key: frontage_m
+      label: Frontage m
+      type: number
+      unit: m
+      typical: 10-50 m
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+  - id: hotel
+    label: Hotel (Class 3)
+    ncc_class: '3'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: rooms
+      label: Rooms
+      type: integer
+      typical: Budget 30-100, midscale 100-250, upscale 150-400, luxury 80-250
+    - key: storeys
+      label: Storeys
+      type: integer
+      triggers: *id002
+    - key: star_rating
+      label: Star rating
+      type: text
+      typical: 3-5 star
+    - key: fb_outlets
+      label: F&B outlets
+      type: integer
+    - key: meeting_conference_sqm
+      label: Meeting / conference sqm
+      type: number
+      unit: m2
+  - id: food_beverage
+    label: Food & Beverage (Class 6)
+    ncc_class: '6'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: seats
+      label: Seats
+      type: integer
+      typical: 20-400
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: kitchen_sqm
+      label: Kitchen sqm
+      type: number
+      unit: m2
+      typical: 15-25% of GFA
+    - key: liquor_license_type
+      label: Liquor licence type
+      type: text
+  - id: serviced_office_coworking
+    label: Serviced Office/Coworking
+    ncc_class: '5'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: desks
+      label: Desks
+      type: integer
+    - key: private_offices
+      label: Private offices
+      type: integer
+    - key: meeting_rooms
+      label: Meeting rooms
+      type: integer
+    - key: nla_sqm
+      label: NLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id009
+  - id: other
+    label: Other
+    ncc_class: varies
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+- id: industrial
+  label: Industrial
+  work_types:
+  - new
+  - refurb
+  - extend
+  - remediation
+  - advisory
+  subclasses:
+  - id: warehouse
+    label: Warehouse (Class 7b)
+    ncc_class: 7b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 2,000-75,000+ sqm
+    - key: clear_height_m
+      label: Clear height m
+      type: number
+      unit: m
+      triggers: &id010
+      - clear height
+      - top of storage
+      - ridge height
+      typical: 8-15m+
+    - key: dock_doors
+      label: Dock doors
+      type: integer
+      triggers: &id011
+      - \bdock
+      - roller shutter
+    - key: hardstand_sqm
+      label: Hardstand sqm
+      type: number
+      unit: m2
+    - key: office_percent
+      label: Office %
+      type: number
+      typical: 3-10% office
+  - id: logistics_ecommerce
+    label: Logistics/E-Commerce (Class 7b)
+    ncc_class: 7b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 10,000-100,000+ sqm
+    - key: clear_height_m
+      label: Clear height m
+      type: number
+      unit: m
+      triggers: *id010
+      typical: 12-18m
+    - key: dock_doors
+      label: Dock doors
+      type: integer
+      triggers: *id011
+    - key: cross_dock_bays
+      label: Cross-dock bays
+      type: integer
+    - key: automation_level
+      label: Automation level
+      type: text
+  - id: manufacturing
+    label: Manufacturing (Class 8)
+    ncc_class: '8'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 1,000-50,000 sqm
+    - key: process_area_sqm
+      label: Process area sqm
+      type: number
+      unit: m2
+    - key: cleanroom_class
+      label: Cleanroom class
+      type: text
+      typical: ISO 5-8
+    - key: crane_capacity_t
+      label: Crane capacity t
+      type: number
+      typical: 5-50t
+  - id: cold_storage
+    label: Cold Storage (Class 7b)
+    ncc_class: 7b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 2,000-30,000 sqm
+    - key: frozen_sqm
+      label: Frozen sqm (<-18C)
+      type: number
+      unit: m2
+    - key: chilled_sqm
+      label: Chilled sqm (0-4C)
+      type: number
+      unit: m2
+    - key: ambient_sqm
+      label: Ambient sqm
+      type: number
+      unit: m2
+    - key: blast_freezer_capacity_t_day
+      label: Blast freezer capacity t/day
+      type: number
+  - id: data_centre
+    label: Data Centre (Class 7b)
+    ncc_class: 7b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: it_load_mw
+      label: IT load MW
+      type: number
+      typical: 1-50+ MW
+    - key: total_gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: &id012
+      - \bgfa\b
+      - gross floor area
+    - key: white_space_sqm
+      label: White space sqm
+      type: number
+      unit: m2
+    - key: pue_target
+      label: PUE target
+      type: number
+      typical: 1.2-1.6
+    - key: redundancy_tier
+      label: Redundancy tier
+      type: integer
+      typical: 1-4
+  - id: dangerous_goods
+    label: Dangerous Goods (Class 7a)
+    ncc_class: 7a
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: dangerous_goods_class
+      label: Dangerous goods class
+      type: text
+    - key: storage_capacity_t
+      label: Storage capacity t
+      type: number
+    - key: bunded_area_sqm
+      label: Bunded area sqm
+      type: number
+      unit: m2
+    - key: separation_distance_m
+      label: Separation distance m
+      type: number
+      unit: m
+  - id: heavy_manufacturing
+    label: Heavy Manufacturing (Foundry/Smelter)
+    ncc_class: '8'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: process_area_sqm
+      label: Process area sqm
+      type: number
+      unit: m2
+    - key: crane_capacity_t
+      label: Crane capacity t
+      type: number
+    - key: power_mva
+      label: Power demand MVA
+      type: number
+  - id: food_processing
+    label: Food Processing / Cold Chain
+    ncc_class: '8'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: process_area_sqm
+      label: Process area sqm
+      type: number
+      unit: m2
+    - key: cold_room_sqm
+      label: Cold room sqm
+      type: number
+      unit: m2
+    - key: haccp_zones
+      label: HACCP zones
+      type: integer
+  - id: pharmaceutical_gmp
+    label: Pharmaceutical/GMP Manufacturing
+    ncc_class: '8'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gmp_area_sqm
+      label: GMP area sqm
+      type: number
+      unit: m2
+    - key: cleanroom_sqm
+      label: Cleanroom area sqm
+      type: number
+      unit: m2
+    - key: process_rooms
+      label: Process rooms
+      type: integer
+    - key: validation_packages
+      label: Validation packages
+      type: integer
+  - id: cleanroom
+    label: Clean Rooms (ISO Grade)
+    ncc_class: '8'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: cleanroom_sqm
+      label: Cleanroom Area sqm
+      type: number
+      unit: m2
+    - key: iso_class
+      label: ISO Class
+      type: integer
+    - key: gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: change_rooms
+      label: Gowning/Change Rooms
+      type: integer
+  - id: battery_manufacturing
+    label: Battery Manufacturing / Energy Storage
+    ncc_class: '8'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: production_capacity_mwh
+      label: Production capacity MWh
+      type: number
+    - key: dry_room_sqm
+      label: Dry room sqm
+      type: number
+      unit: m2
+    - key: hazardous_goods_zones
+      label: Hazardous goods zones
+      type: integer
+  - id: waste_to_energy
+    label: Waste-to-Energy Facility
+    ncc_class: '8'
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: throughput_tpa
+      label: Throughput tpa
+      type: number
+    - key: power_output_mw
+      label: Power output MW
+      type: number
+    - key: process_buildings
+      label: Process buildings
+      type: integer
+    - key: stack_height_m
+      label: Stack height m
+      type: number
+      unit: m
+  - id: other
+    label: Other
+    ncc_class: varies
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+- id: institution
+  label: Institution
+  work_types:
+  - new
+  - refurb
+  - extend
+  - remediation
+  - advisory
+  subclasses:
+  - id: education_early_childhood
+    label: Education - Early Childhood
+    ncc_class: 9b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: places
+      label: Places
+      type: integer
+      typical: 30-120
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: indoor_sqm_per_child
+      label: Indoor sqm/child
+      type: number
+      typical: 3.25 sqm indoor minimum
+    - key: outdoor_sqm_per_child
+      label: Outdoor sqm/child
+      type: number
+      typical: 7 sqm outdoor minimum
+  - id: education_primary_secondary
+    label: Education - Primary/Secondary (Class 9b)
+    ncc_class: 9b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: students
+      label: Students
+      type: integer
+      typical: 300-2,000
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 10-15 sqm/student
+    - key: classrooms
+      label: Classrooms
+      type: integer
+    - key: specialist_rooms
+      label: Specialist rooms
+      type: integer
+    - key: halls_gyms
+      label: Halls / gyms
+      type: integer
+    - key: playing_fields
+      label: Playing fields
+      type: integer
+  - id: education_tertiary
+    label: Education - Tertiary (Class 9b)
+    ncc_class: 9b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: students_fte
+      label: Students FTE
+      type: integer
+      typical: 1,000-50,000 FTE
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 15-25 sqm/student
+    - key: lecture_theatres
+      label: Lecture theatres
+      type: integer
+    - key: labs
+      label: Labs
+      type: integer
+    - key: library_sqm
+      label: Library sqm
+      type: number
+      unit: m2
+  - id: healthcare_hospital
+    label: Healthcare - Hospital (Class 9a)
+    ncc_class: 9a
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: beds
+      label: Beds
+      type: integer
+      triggers: *id005
+      typical: 50-800+
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 100-150 sqm/bed
+    - key: ed_bays
+      label: ED bays
+      type: integer
+    - key: operating_theatres
+      label: Operating theatres
+      type: integer
+    - key: icu_beds
+      label: ICU beds
+      type: integer
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+      typical: 2.5-4 parks/bed
+  - id: healthcare_medical_centre
+    label: Healthcare - Medical Centre
+    ncc_class: 5/9a
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: consulting_rooms
+      label: Consulting rooms
+      type: integer
+      typical: 5-50
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 25-40 sqm/room
+    - key: procedure_rooms
+      label: Procedure rooms
+      type: integer
+    - key: imaging_suites
+      label: Imaging suites
+      type: integer
+  - id: healthcare_clinic_allied
+    label: Healthcare - Clinic/Allied
+    ncc_class: 5/9a
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: practitioners
+      label: Practitioners
+      type: integer
+      typical: 2-20
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 60-100 sqm/practitioner
+    - key: treatment_rooms
+      label: Treatment rooms
+      type: integer
+  - id: government_civic
+    label: Government/Civic
+    ncc_class: 5/9b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 1,000-50,000 sqm
+    - key: public_areas_sqm
+      label: Public areas sqm
+      type: number
+      unit: m2
+    - key: secure_areas_sqm
+      label: Secure areas sqm
+      type: number
+      unit: m2
+    - key: staff_count
+      label: Staff count
+      type: integer
+  - id: religious
+    label: Religious (Class 9b)
+    ncc_class: 9b
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: seats
+      label: Seats
+      type: integer
+      typical: 100-2,000+
+    - key: gfa_sqm
+      label: GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+      typical: 0.8-1.2 sqm/seat
+    - key: ancillary_halls_sqm
+      label: Ancillary halls sqm
+      type: number
+      unit: m2
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+  - id: other
+    label: Other
+    ncc_class: varies
+    scale_fields: []
+- id: mixed
+  label: Mixed use
+  work_types:
+  - new
+  - refurb
+  - extend
+  - remediation
+  - advisory
+  subclasses:
+  - id: residential_retail
+    label: Residential + Retail
+    ncc_class: 2/6
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: total_storeys
+      label: Total storeys
+      type: integer
+      triggers: &id013
+      - \b\d+[ -]?stor(e)?y
+      - \bstoreys\b
+      typical: 5-80+
+    - key: total_gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id012
+    - key: podium_levels
+      label: Podium levels
+      type: integer
+    - key: tower_levels
+      label: Tower levels
+      type: integer
+    - key: residential_units
+      label: Residential units
+      type: integer
+      typical: 50-500
+    - key: retail_gla_sqm
+      label: Retail GLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      typical: 500-10,000 sqm
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+  - id: residential_commercial
+    label: Residential + Commercial
+    ncc_class: 2/5
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: total_storeys
+      label: Total storeys
+      type: integer
+      triggers: *id013
+      typical: 5-80+
+    - key: total_gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id012
+    - key: podium_levels
+      label: Podium levels
+      type: integer
+    - key: tower_levels
+      label: Tower levels
+      type: integer
+    - key: residential_units
+      label: Residential units
+      type: integer
+      typical: 50-500
+    - key: commercial_nla_sqm
+      label: Commercial NLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      typical: 1,000-20,000 sqm
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+  - id: hotel_residential
+    label: Hotel + Residential
+    ncc_class: 2/3
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: total_storeys
+      label: Total storeys
+      type: integer
+      triggers: *id013
+      typical: 5-80+
+    - key: total_gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id012
+    - key: podium_levels
+      label: Podium levels
+      type: integer
+    - key: tower_levels
+      label: Tower levels
+      type: integer
+    - key: residential_units
+      label: Residential units
+      type: integer
+    - key: hotel_rooms
+      label: Hotel rooms
+      type: integer
+      triggers:
+      - \b\d+\s+(rooms|keys)\b
+      typical: 100-300
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+  - id: retail_office
+    label: Retail + Office
+    ncc_class: 5/6
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: total_storeys
+      label: Total storeys
+      type: integer
+      triggers: *id013
+      typical: 5-80+
+    - key: total_gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id012
+    - key: podium_levels
+      label: Podium levels
+      type: integer
+    - key: tower_levels
+      label: Tower levels
+      type: integer
+    - key: commercial_nla_sqm
+      label: Commercial NLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+    - key: retail_gla_sqm
+      label: Retail GLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+  - id: btr_retail
+    label: Build-to-Rent + Retail
+    ncc_class: 2/6
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: total_storeys
+      label: Total storeys
+      type: integer
+      triggers: *id013
+      typical: 5-80+
+    - key: total_gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id012
+    - key: podium_levels
+      label: Podium levels
+      type: integer
+    - key: tower_levels
+      label: Tower levels
+      type: integer
+    - key: residential_units
+      label: Residential units
+      type: integer
+    - key: amenity_gfa_sqm
+      label: Amenity GFA sqm
+      type: number
+      unit: m2
+    - key: retail_gla_sqm
+      label: Retail GLA sqm
+      type: number
+      unit: m2
+      basis_required: true
+  - id: vertical_village
+    label: Vertical Village (ILU + Aged Care)
+    ncc_class: 2/9c
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: total_storeys
+      label: Total storeys
+      type: integer
+      triggers: *id013
+      typical: 5-80+
+    - key: total_gfa_sqm
+      label: Total GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id012
+    - key: ilus
+      label: ILUs
+      type: integer
+    - key: aged_care_beds
+      label: Aged care beds
+      type: integer
+    - key: community_facilities_sqm
+      label: Community facilities sqm
+      type: number
+      unit: m2
+    - key: car_parks
+      label: Car parks
+      type: integer
+      triggers: *id008
+  - id: other
+    label: Other
+    ncc_class: varies
+    scale_fields: []
+- id: infrastructure
+  label: Infrastructure
+  work_types:
+  - new
+  - refurb
+  - extend
+  - remediation
+  - advisory
+  subclasses:
+  - id: roads_highways
+    label: Roads/Highways
+    ncc_class: not_applicable
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: length_km
+      label: Length km
+      type: number
+      typical: 1-100+ km
+    - key: lanes
+      label: Lanes
+      type: integer
+      typical: 2-8
+    - key: interchanges
+      label: Interchanges
+      type: integer
+    - key: bridges_tunnels
+      label: Bridges / tunnels
+      type: integer
+    - key: pavement_type
+      label: Pavement type
+      type: text
+  - id: rail_metro
+    label: Rail/Metro
+    ncc_class: not_applicable
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: length_km
+      label: Length km
+      type: number
+      typical: 5-50+ km
+    - key: stations
+      label: Stations
+      type: integer
+      typical: 2-20+
+    - key: rolling_stock_bays
+      label: Rolling stock bays
+      type: integer
+    - key: stabling
+      label: Stabling
+      type: integer
+    - key: tunnel_km
+      label: Tunnel km
+      type: number
+  - id: water_utilities
+    label: Water/Utilities
+    ncc_class: not_applicable
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: capacity_ml_day
+      label: Capacity ML/day
+      type: number
+      typical: 10-1,000+ ML/day
+    - key: pipeline_km
+      label: Pipeline km
+      type: number
+    - key: pump_stations
+      label: Pump stations
+      type: integer
+    - key: reservoirs_ml
+      label: Reservoirs ML
+      type: number
+  - id: energy_renewables
+    label: Energy/Renewables
+    ncc_class: not_applicable
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: capacity_mw
+      label: Capacity MW
+      type: number
+      typical: Solar 1-500MW, wind 10-1,000MW
+    - key: panels_turbines
+      label: Panels / turbines
+      type: integer
+    - key: battery_storage_mwh
+      label: Battery storage MWh
+      type: number
+    - key: substation
+      label: Substation
+      type: boolean
+  - id: marine_ports
+    label: Marine/Ports
+    ncc_class: not_applicable
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: berths
+      label: Berths
+      type: integer
+      typical: 2-50
+    - key: quay_length_m
+      label: Quay length m
+      type: number
+      unit: m
+    - key: draft_m
+      label: Draft m
+      type: number
+      unit: m
+      typical: 8-18m
+    - key: container_teu
+      label: Container TEU
+      type: integer
+    - key: passenger_capacity
+      label: Passenger capacity
+      type: integer
+  - id: airports
+    label: Airports
+    ncc_class: not_applicable
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: runways
+      label: Runways
+      type: integer
+    - key: terminal_gfa_sqm
+      label: Terminal GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+    - key: gates
+      label: Gates
+      type: integer
+    - key: annual_passengers
+      label: Annual passengers
+      type: integer
+  - id: telecommunications
+    label: Telecommunications
+    ncc_class: not_applicable
+    scale_fields:
+    - key: site_sqm
+      label: Site sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id001
+    - key: sites
+      label: Sites
+      type: integer
+    - key: fibre_route_km
+      label: Fibre route km
+      type: number
+    - key: towers
+      label: Towers
+      type: integer
+    - key: data_capacity_tbps
+      label: Data capacity Tbps
+      type: number
+  - id: other
+    label: Other
+    ncc_class: not_applicable
+    scale_fields: []
+conditions:
+- key: planning
+  label: Planning
+  options:
+  - id: exempt
+    label: Exempt
+  - id: cdc
+    label: CDC
+  - id: da
+    label: DA
+  - id: ssd
+    label: State Significant Development (SSD)
+  - id: planning_permit
+    label: Planning permit (VIC and other states)
+- key: procurement_route
+  label: Procurement route
+  options:
+  - id: traditional
+    label: Traditional (Lump Sum)
+  - id: design_construct
+    label: Design & Construct
+  - id: eci
+    label: Early Contractor Involvement
+  - id: managing_contractor
+    label: Managing Contractor
+  - id: alliance
+    label: Alliance
+  - id: ppp
+    label: PPP
+- key: access_constraints
+  label: Access constraints
+  options:
+  - id: unrestricted
+    label: Unrestricted Access
+  - id: urban_constrained
+    label: Urban/Constrained
+  - id: restricted_hours
+    label: Restricted Hours
+  - id: remote
+    label: Remote Site
+- key: operational_constraints
+  label: Operational constraints
+  options:
+  - id: vacant
+    label: Vacant/Unoccupied
+  - id: partial_occupation
+    label: Partial Occupation
+  - id: live_environment
+    label: Live Environment
+  - id: 24_7_occupied
+    label: 24/7 Occupied
+- key: stakeholder_complexity
+  label: Stakeholder complexity
+  options:
+  - id: single_owner
+    label: Single Owner
+  - id: strata
+    label: Strata Ownership
+  - id: government
+    label: Government Client
+  - id: multiple_agencies
+    label: Multiple Agencies
+- key: environmental_sensitivity
+  label: Environmental sensitivity
+  options:
+  - id: standard
+    label: Standard
+  - id: sensitive
+    label: Environmentally Sensitive
+  - id: protected_habitat
+    label: Protected Habitat
+  - id: aboriginal_heritage
+    label: Aboriginal Heritage
+- key: power_source
+  label: Power source
+  applies_to:
+  - industrial
+  options:
+  - id: grid
+    label: Grid Connected
+  - id: off_grid_solar
+    label: Off-Grid Solar
+  - id: hybrid
+    label: Hybrid (Grid + Solar)
+  - id: diesel_backup
+    label: Diesel Backup Required
+- key: hazardous_process
+  label: Hazardous process interface
+  applies_to:
+  - industrial
+  options:
+  - id: none
+    label: None
+  - id: dangerous_goods
+    label: Dangerous goods
+  - id: gmp
+    label: GMP manufacturing
+  - id: biosafety
+    label: Biosafety / containment

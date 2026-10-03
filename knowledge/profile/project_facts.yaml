@@ -1,0 +1,148 @@
+# project_facts.yaml: see knowledge/SCHEMA.md 'Project profile additions'. Draft; owner review pending.
+version: 1
+facts:
+- id: consent_number
+  label: Development consent number
+  value: choice
+  extraction: pre_parsed
+  triggers:
+  - \b(da|cdc|ssd)[- /]?\d
+  - development (consent|approval)
+  - planning permit
+  status: draft
+  sources:
+  - &id001
+    document: petersham-ppr
+    anchor: 5. PROJECT STATUS
+  - &id003
+    document: rutherford-bpb
+    anchor: 1.1 General
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage state as this project's development
+      consent or planning permit number? Select none when absent.
+    criteria: {}
+- id: consent_date
+  label: Date of consent
+  value: choice
+  extraction: pre_parsed
+  triggers:
+  - date of consent
+  - consent (was )?(granted|issued|determined)
+  status: draft
+  sources: &id002
+  - *id001
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage state as the date the development
+      consent was granted? Select none when absent.
+    criteria: {}
+- id: consent_lapse_date
+  label: Consent lapse date
+  value: choice
+  extraction: pre_parsed
+  triggers:
+  - \blapse
+  status: draft
+  sources: *id002
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage state as the date the development
+      consent lapses? Select none when absent.
+    criteria: {}
+- id: contract_form
+  label: Contract form
+  value: choice
+  extraction: choice
+  options:
+  - id: as4902
+    describes: AS 4902 design and construct general conditions.
+  - id: as4000
+    describes: AS 4000 general conditions of contract.
+  - id: as2124
+    describes: AS 2124 general conditions of contract.
+  - id: abic
+    describes: An ABIC contract.
+  - id: domestic_hia
+    describes: An HIA domestic or residential building contract.
+  - id: domestic_mba
+    describes: A Master Builders domestic or residential building contract.
+  - id: other
+    describes: Another named contract form.
+  triggers:
+  - \bas\s?4902
+  - \bas\s?4000
+  - \bas\s?2124
+  - \babic\b
+  - building contract
+  - domestic building contract
+  status: draft
+  sources:
+  - *id003
+  - document: morn-montique
+    anchor: Master Builders Domestic Building Contract
+  question:
+    type: choice
+    instructions: Using `text`, which form of construction contract does the passage state for this project?
+    criteria: {}
+- id: contract_basis
+  label: Contract pricing basis
+  value: choice
+  extraction: choice
+  options:
+  - id: lump_sum
+    describes: A lump sum or fixed price.
+  - id: cost_plus
+    describes: Cost plus a margin or fee.
+  - id: gmp
+    describes: A guaranteed maximum price.
+  - id: schedule_of_rates
+    describes: A schedule of rates.
+  - id: other
+    describes: Another stated pricing basis.
+  triggers:
+  - cost plus
+  - lump sum
+  - fixed price
+  - guaranteed maximum
+  - schedule of rates
+  status: draft
+  sources:
+  - document: morn-toussaint
+    anchor: COST PLUS CONTRACT
+  question:
+    type: choice
+    instructions: Using `text`, which pricing basis does the passage state for this project's construction contract?
+    criteria: {}
+- id: defects_liability_period
+  label: Defects liability period
+  value: number
+  extraction: pre_parsed
+  unit: months
+  triggers:
+  - defects? liability
+  status: draft
+  sources:
+  - *id001
+  - *id003
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage state as the defects liability
+      period? Select none when absent.
+    criteria: {}
+- id: design_life
+  label: Design life
+  value: number
+  extraction: pre_parsed
+  unit: years
+  triggers:
+  - design life
+  status: draft
+  sources:
+  - document: petersham-ppr
+    anchor: 4. KEY DEVELOPMENT INFORMATION
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate does the passage state as the building's design
+      life? Select none when absent.
+    criteria: {}
