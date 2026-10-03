@@ -18,8 +18,14 @@ async function signIn(browser: Browser, org: "a" | "b"): Promise<Page> {
   return page;
 }
 
+// One register entry: its one-line row and, once opened, its title block.
 function block(page: Page, filename: string): Locator {
-  return page.locator("article.tb").filter({ has: page.getByRole("heading", { name: filename, exact: true }) });
+  return page.locator(`tbody.reg-doc[data-filename="${filename}"]`);
+}
+
+async function open(b: Locator) {
+  if ((await b.getAttribute("data-open")) !== "true") await b.locator("tr.reg-line").click();
+  await expect(b).toHaveAttribute("data-open", "true");
 }
 
 function cell(b: Locator, field: string): Locator {
@@ -54,11 +60,12 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   // A real drag and drop.
   await dropFile(page, "identity-page.pdf", fixture("identity-page.pdf"), "application/pdf");
   const pdf = block(page, "identity-page.pdf");
+  await open(pdf);
   await expect(pdf.locator(".tb-state")).toHaveText(/Filed in \d+\.\d\d s/);
 
-  // The keyboard path: the Choose files button opens the picker.
+  // The keyboard path: the Add files button opens the picker.
   const chooser = page.waitForEvent("filechooser");
-  await page.getByRole("button", { name: "Choose files" }).focus();
+  await page.getByRole("button", { name: "Add files" }).focus();
   await page.keyboard.press("Enter");
   await (
     await chooser
@@ -70,18 +77,21 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   ]);
 
   for (const name of ["docx-table.docx", "merged-cells.xlsx"]) {
+    await open(block(page, name));
     await expect(block(page, name).locator(".tb-state")).toHaveText(/Filed/);
     await expect(cell(block(page, name), "number")).toBeVisible();
   }
 
   // Stored but not filed says so in words, not only colour.
   const scan = block(page, "scanned-empty.pdf");
+  await open(scan);
   await expect(scan.locator(".tb-state")).toHaveText("Stored · not filed");
   await expect(scan).toContainText("no text layer");
 
   // Jev missed its deadline: the unanswered boxes read "Not checked" and
   // carry no value, so they cannot pass for a judgement.
   const slow = block(page, "slow-padded-document.docx");
+  await open(slow);
   await expect(slow.locator(".tb-state")).toHaveText(/Filed/, { timeout: 15_000 });
   const grey = slow.locator('.cell[data-state="unchecked"]');
   await expect(grey.first()).toContainText("Not checked");
@@ -105,10 +115,12 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   await expect(title).toContainText("Set by you");
   await expect(title).toHaveAttribute("data-state", "user");
   await expect(title).toBeFocused();
-  await expect(page.locator(".tally")).toContainText("filed");
+  // One line per document: the row shows the corrected title too.
+  await expect(pdf.locator("tr.reg-line td.reg-title")).toContainText("Ground Floor Plan");
 
   // Reload: the correction is durable.
   await page.reload();
+  await open(block(page, "identity-page.pdf"));
   await expect(cell(block(page, "identity-page.pdf"), "title")).toContainText("Ground Floor Plan");
   await expect(page.getByRole("status")).toHaveText("Live");
 

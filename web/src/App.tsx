@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, type Catalog, type Project as ProjectRow } from "./api";
+import { LeftNav } from "./LeftNav";
 import { Project } from "./Project";
 
 type Route = { name: "home" } | { name: "project"; id: string };
@@ -89,43 +90,9 @@ export function App() {
       <a className="sr-only" href="#main">
         Skip to content
       </a>
-      <header className="bar">
-        <a
-          className="bar-logo-link"
-          href="/"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("/");
-          }}
-        >
-          <img className="bar-logo" src="/sitewise-logo.png" alt="SiteWise, all projects" width="118" height="28" />
-        </a>
-        {route.name === "project" && projects && projects.length > 0 && (
-          <>
-            <span className="bar-divider" aria-hidden="true" />
-            <label className="sr-only" htmlFor="project-switch">
-              Project
-            </label>
-            <select
-              id="project-switch"
-              className="select"
-              value={route.id}
-              onChange={(e) => navigate(e.target.value ? `/projects/${e.target.value}` : "/")}
-            >
-              {!projects.some((p) => p.id === route.id) && <option value={route.id}>Unknown project</option>}
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-              <option value="">All projects…</option>
-            </select>
-          </>
-        )}
-        <span className="bar-spacer" />
-      </header>
-      <div id="main">
-        {route.name === "project" ? (
+      {route.name === "project" ? (
+        <div className="shell" id="main">
+          <LeftNav projects={projects} currentId={route.id} navigate={navigate} />
           <Project
             key={route.id}
             projectId={route.id}
@@ -133,18 +100,35 @@ export function App() {
             onSignedOut={signedOut}
             onHome={() => navigate("/")}
           />
-        ) : (
-          <Projects
-            projects={projects}
-            onOpen={(id) => navigate(`/projects/${id}`)}
-            onCreated={(id) => {
-              loadProjects();
-              navigate(`/projects/${id}`);
-            }}
-            onSignedOut={signedOut}
-          />
-        )}
-      </div>
+        </div>
+      ) : (
+        <>
+          <header className="bar">
+            <a
+              className="bar-logo-link"
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
+            >
+              <img className="bar-logo" src="/sitewise-logo.png" alt="SiteWise, all projects" width="118" height="28" />
+            </a>
+            <span className="bar-spacer" />
+          </header>
+          <div id="main">
+            <Projects
+              projects={projects}
+              onOpen={(id) => navigate(`/projects/${id}`)}
+              onCreated={(id) => {
+                loadProjects();
+                navigate(`/projects/${id}`);
+              }}
+              onSignedOut={signedOut}
+            />
+          </div>
+        </>
+      )}
     </>
   );
 }

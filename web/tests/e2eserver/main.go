@@ -31,6 +31,8 @@ import (
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
 	"sitewise/internal/jev"
+	"sitewise/internal/knowledge"
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 	"sitewise/web"
 )
@@ -107,16 +109,27 @@ func run(addr, data string) error {
 	if err != nil {
 		return err
 	}
+	// The profile panel reads the real knowledge with provisional floors.
+	building, err := knowledge.Load("knowledge")
+	if err != nil {
+		return err
+	}
+	profileTh, err := profile.LoadThresholds("data/profile/thresholds.json")
+	if err != nil {
+		return err
+	}
 	srv, err := httpapi.New(httpapi.Options{
-		Store:          st,
-		Blobs:          blobs,
-		Jev:            client,
-		Catalog:        cat,
-		Thresholds:     thresholds(cat),
-		Static:         web.Dist(),
-		PublicOrigin:   "http://" + addr,
-		MaxUploadBytes: 50 << 20,
-		Log:            log.New(os.Stderr, "e2e ", log.LstdFlags),
+		Knowledge:         building,
+		ProfileThresholds: profileTh,
+		Store:             st,
+		Blobs:             blobs,
+		Jev:               client,
+		Catalog:           cat,
+		Thresholds:        thresholds(cat),
+		Static:            web.Dist(),
+		PublicOrigin:      "http://" + addr,
+		MaxUploadBytes:    50 << 20,
+		Log:               log.New(os.Stderr, "e2e ", log.LstdFlags),
 	})
 	if err != nil {
 		return err

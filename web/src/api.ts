@@ -133,7 +133,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed"] as const;
+export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "profile"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {
