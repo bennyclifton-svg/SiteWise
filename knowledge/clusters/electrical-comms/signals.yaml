@@ -257,3 +257,365 @@ signals:
     row: B1-0613
   - seed: electrical-services-guide.md
     anchor: '## Generation, storage and EV infrastructure'
+- id: sig.existing-lift-shaft-survey-stated
+  type: noul
+  instructions: "Using `text`, does the passage state measured shaft dimensions, pit depth, headroom or plumb of an existing lift shaft?"
+  criteria:
+    "true": "It states measured dimensions of the existing lift shaft, pit or headroom."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - vertical-transport.lift-shafts-pits
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0440
+  - dataset: batch2
+    row: B2-0441
+  - dataset: batch2
+    row: B2-0442
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: sig.lift-well-fire-stopping-stated
+  type: noul
+  instructions: "Using `text`, does the passage state how the gap between a lift well and the floor slabs is fire-stopped?"
+  criteria:
+    "true": "It states the fire-stopping of the gap between the lift well and the floor slabs."
+    "false": "It does not state the stopping of the lift well gap."
+  runs_on:
+  - vertical-transport.lift-shafts-pits
+  - fire-passive.penetrations
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0455
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: sig.lift-delivery-method-stated
+  type: noul
+  instructions: "Using `text`, does the passage state how lift equipment will be delivered to or lifted into the building?"
+  criteria:
+    "true": "It states a delivery or lifting method, such as a crane position or hoist route, for lift equipment."
+    "false": "It does not state a delivery method for lift equipment."
+  runs_on:
+  - vertical-transport.passenger-lifts
+  - vertical-transport.lift-shafts-pits
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0462
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: sig.existing-structure-capacity-stated
+  type: noul
+  instructions: "Using `text`, does the passage state an assessed capacity, thickness or member size of the existing floor, slab or roof that new equipment will bear on?"
+  criteria:
+    "true": "It states an assessed capacity or the measured thickness or member size of the existing structure."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - structure.alterations
+  - structure.concrete
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0450
+  - dataset: batch2
+    row: B2-0329
+  - dataset: batch2
+    row: B2-0341
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+- id: sig.existing-board-schedule-and-rating-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the spare ways or rating of an existing switchboard or busbar?"
+  criteria:
+    "true": "It states the spare ways, spare tap-offs or rating of the existing board or busbar."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - electrical.switchboards
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0301
+  - dataset: batch2
+    row: B2-0322
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+- id: sig.existing-fault-level-and-phases-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the number of phases or the fault level of the existing supply or board?"
+  criteria:
+    "true": "It states the phases of the existing supply or the fault level or fault rating of the existing board."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - electrical.utility-supply
+  - electrical.switchboards
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0315
+  - dataset: batch2
+    row: B2-0347
+  - dataset: batch2
+    row: B2-0348
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: sig.in-ground-services-located-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the location of in-ground electrical or communications services from a utility plan or locating survey?"
+  criteria:
+    "true": "It states in-ground service locations taken from a plan or a locating survey."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - site.services-connections
+  - electrical.utility-supply
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0318
+  - dataset: batch2
+    row: B2-0333
+  - dataset: batch2
+    row: B2-0354
+  - dataset: batch2
+    row: B2-0370
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: sig.generator-room-and-flue-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the room dimensions, flue path or fuel fill position for a standby generator?"
+  criteria:
+    "true": "It states the generator room size, the flue route or the fuel fill position."
+    "false": "It does not state these."
+  runs_on:
+  - electrical.standby-power
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0311
+  - dataset: batch2
+    row: B2-0326
+  - seed: electrical-services-guide.md
+    anchor: "## Generation, storage and EV infrastructure"
+- id: sig.lightning-protection-design-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the lightning protection design, including down conductor routes, air terminal fixings or protected zones?"
+  criteria:
+    "true": "It states the lightning protection layout, route or fixing arrangement."
+    "false": "It does not state the lightning protection layout."
+  runs_on:
+  - electrical.earthing-lightning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0340
+  - dataset: batch2
+    row: B2-0341
+  - dataset: batch2
+    row: B2-0368
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+- id: sig.earthing-arrangement-stated
+  type: noul
+  instructions: "Using `text`, does the passage state how the installation is earthed, such as by an electrode or a metal water pipe, and the route of the main earthing conductor?"
+  criteria:
+    "true": "It states the earthing arrangement or the main earthing conductor route."
+    "false": "It does not state the earthing arrangement."
+  runs_on:
+  - electrical.earthing-lightning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0308
+  - dataset: batch2
+    row: B2-0338
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+- id: sig.high-voltage-easement-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a high-voltage cable or easement affecting the site?"
+  criteria:
+    "true": "It states a high-voltage cable or easement on or across the site."
+    "false": "It does not mention one."
+  runs_on:
+  - site.survey-boundaries
+  - electrical.utility-supply
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0356
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: sig.existing-ict-pathway-survey-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the route, spare capacity or space of existing communications pathways, risers, rooms or ceilings?"
+  criteria:
+    "true": "It states findings of a survey of existing communications pathways, rooms or ceiling spaces."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - comms-security.ict-rooms-pathways
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0207
+  - dataset: batch2
+    row: B2-0711
+  - dataset: batch2
+    row: B2-0712
+  - dataset: batch2
+    row: B2-0714
+  - dataset: batch2
+    row: B2-0721
+  - dataset: batch2
+    row: B2-0725
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+- id: sig.existing-life-safety-comms-capacity-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the spare capacity, device type or loading of an existing nurse-call, public-address or intercom system?"
+  criteria:
+    "true": "It states the spare capacity, device types or loading of the existing system."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - comms-security.networks-integration
+  - fire-active.occupant-warning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0745
+  - dataset: batch2
+    row: B2-0748
+  - dataset: batch2
+    row: B2-0893
+  - seed: ict-av-security-guide.md
+    anchor: "## Networks, integration and cybersecurity"
+- id: sig.penetration-seal-details-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the tested seal system, wall thickness or annular space for a cable penetration through a rated wall?"
+  criteria:
+    "true": "It states the seal system, the wall thickness or the annular space at the penetration."
+    "false": "It does not state these details."
+  runs_on:
+  - fire-passive.penetrations
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0316
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+- id: sig.metering-arrangement-agreed-stated
+  type: noul
+  instructions: "Using `text`, does the passage state that the distributor has accepted or agreed the sub-metering or embedded network arrangement?"
+  criteria:
+    "true": "It states the distributor has accepted or agreed the metering arrangement."
+    "false": "It does not state acceptance; a plan to seek it is not acceptance."
+  runs_on:
+  - electrical.metering
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0345
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: sig.hazardous-area-classification-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the hazardous area zone classification and the rating of the equipment installed in it?"
+  criteria:
+    "true": "It states the zone classification and the equipment rating."
+    "false": "It does not state both."
+  runs_on:
+  - electrical.process-hazardous
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0351
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+- id: sig.radio-coverage-survey-stated
+  type: noul
+  instructions: "Using `text`, does the passage state results of a radio coverage survey or the design areas for a distributed antenna system?"
+  criteria:
+    "true": "It states survey results or the areas a radio coverage design serves."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - comms-security.ict-rooms-pathways
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0724
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+- id: sig.bms-point-list-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the control points the plant controllers expose to a building management system?"
+  criteria:
+    "true": "It states a list of available or required BMS points for the plant controllers."
+    "false": "It does not state a point list."
+  runs_on:
+  - mechanical.controls-bms
+  - comms-security.networks-integration
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0719
+  - seed: ict-av-security-guide.md
+    anchor: "## Networks, integration and cybersecurity"
+- id: sig.existing-ceiling-zone-dimensions-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the measured depth of an existing ceiling zone?"
+  criteria:
+    "true": "It states the measured depth of the existing ceiling zone."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - interiors.ceilings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0306
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+- id: sig.escalator-support-details-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the pit dimensions, truss reactions or support seat details provided for an escalator or moving walk?"
+  criteria:
+    "true": "It states the pit dimensions, the truss reactions or the support seat details."
+    "false": "It does not state these details."
+  runs_on:
+  - vertical-transport.escalators-walks
+  - structure.concrete
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0457
+  - dataset: batch2
+    row: B2-0458
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: sig.pit-sump-discharge-stated
+  type: noul
+  instructions: "Using `text`, does the passage state where a lift-pit sump discharges to?"
+  criteria:
+    "true": "It states the discharge point or drain for the pit sump."
+    "false": "It does not state a discharge point."
+  runs_on:
+  - vertical-transport.lift-shafts-pits
+  - hydraulic
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0448
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: sig.existing-lock-types-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the type of the existing door locks, such as mechanical or electronic and whether they are zoned?"
+  criteria:
+    "true": "It states the existing lock types."
+    "false": "It does not state this; a requirement or intention to survey, test or confirm it is not a statement."
+  runs_on:
+  - comms-security.access-control
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0900
+  - seed: ict-av-security-guide.md
+    anchor: "## Electronic security"
