@@ -93,6 +93,8 @@ func Handler(deps Deps) http.Handler {
 		"POST /projects/{id}/documents/delete":      deleteDocuments,
 		"POST /projects/{id}/parts":                 createPart,
 		"PATCH /projects/{id}/parts/{part}":         updatePart,
+		"GET /projects/{id}/site":                   getProjectSite,
+		"PATCH /sites/{site}":                       patchSite,
 	}
 	for pattern, h := range routes {
 		path, timed := routePaths[pattern]
@@ -129,6 +131,8 @@ var routePaths = map[string]string{
 	"POST /projects/{id}/documents/delete":      pathDocumentDelete,
 	"POST /projects/{id}/parts":                 pathProfileEdit,
 	"PATCH /projects/{id}/parts/{part}":         pathProfileEdit,
+	"GET /projects/{id}/site":                   pathProfileRead,
+	"PATCH /sites/{site}":                       pathProfileEdit,
 }
 
 func consumeSession(w http.ResponseWriter, r *http.Request, deps Deps) {

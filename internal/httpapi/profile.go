@@ -624,7 +624,7 @@ type partBody struct {
 	NCCClass *string `json:"ncc_class"`
 }
 
-var partKinds = []string{"building", "part", "storey", "compartment", "tenancy", "outbuilding"}
+var partKinds = []string{"building", "part", "storey", "compartment", "tenancy", "outbuilding", "roof", "plant_area"}
 
 func (b partBody) invalid() string {
 	if b.Label != nil {

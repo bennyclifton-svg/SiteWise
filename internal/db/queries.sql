@@ -63,7 +63,7 @@ FROM sessions
 WHERE id = sqlc.arg(id)::uuid;
 
 -- name: GetProject :one
-SELECT id::text AS id, name
+SELECT id::text AS id, name, site_id::text AS site_id
 FROM projects
 WHERE org_id = sqlc.arg(org_id)::uuid
   AND id = sqlc.arg(id)::uuid;
@@ -85,8 +85,15 @@ WHERE org_id = sqlc.arg(org_id)::uuid
   AND id = sqlc.arg(id)::uuid;
 
 -- name: CreateProject :exec
-INSERT INTO projects (org_id, id, name)
-VALUES (sqlc.arg(org_id)::uuid, sqlc.arg(id)::uuid, sqlc.arg(name));
+-- Version 1 gives every project its own site, created in the same statement
+-- (migration 011). The site id is derived from the project id.
+WITH site AS (
+    INSERT INTO sites (org_id, id, label)
+    VALUES (sqlc.arg(org_id)::uuid, md5('site:' || sqlc.arg(id)::uuid::text)::uuid, COALESCE(NULLIF(left(sqlc.arg(name), 120), ''), 'Site'))
+    RETURNING org_id, id
+)
+INSERT INTO projects (org_id, id, name, site_id)
+SELECT site.org_id, sqlc.arg(id)::uuid, sqlc.arg(name), site.id FROM site;
 
 -- name: CreateFile :exec
 INSERT INTO files (org_id, id, project_id, sha256, byte_size, media_type)

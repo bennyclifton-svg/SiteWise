@@ -119,6 +119,8 @@ type Invite struct {
 type Project struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+	// SiteID is the project's site (migration 011); set by GetProject.
+	SiteID string `json:"site_id,omitempty"`
 }
 
 // Job is a durable unit of background work.
@@ -547,7 +549,7 @@ func (s *Store) GetProject(ctx context.Context, orgID, projectID string) (Projec
 	if err != nil {
 		return Project{}, err
 	}
-	return Project{ID: row.ID, Name: row.Name}, nil
+	return Project{ID: row.ID, Name: row.Name, SiteID: row.SiteID}, nil
 }
 
 // CommitIntake is one uploaded blob to file in a project.

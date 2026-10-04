@@ -49,7 +49,11 @@ type ProfileSnapshot struct {
 	User  []profile.UserValue
 }
 
-// EnsureWholePart creates the project's "Whole project" part once.
+// projectSiteSQL is the site of project $2 in org $1. Parts belong to the
+// site; a project reaches them through its site (migration 011).
+const projectSiteSQL = `(SELECT site_id FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)`
+
+// EnsureWholePart creates the "Whole project" part of the project's site once.
 func (s *Store) EnsureWholePart(ctx context.Context, orgID, projectID string) (profile.Part, error) {
 	return ensureWholePart(ctx, s.pool, orgID, projectID)
 }
@@ -60,15 +64,15 @@ func ensureWholePart(ctx context.Context, q interface {
 	var p profile.Part
 	err := q.QueryRow(ctx, `
 WITH ins AS (
-  INSERT INTO project_parts (org_id, id, project_id, label, kind)
-  SELECT $1::uuid, $3::uuid, $2::uuid, $4, 'whole'
-  WHERE EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)
-  ON CONFLICT (org_id, project_id, label) DO NOTHING
+  INSERT INTO project_parts (org_id, id, site_id, created_by_project_id, label, kind)
+  SELECT $1::uuid, $3::uuid, p.site_id, p.id, $4, 'whole'
+  FROM projects p WHERE p.org_id = $1::uuid AND p.id = $2::uuid
+  ON CONFLICT (org_id, site_id) WHERE kind = 'whole' DO NOTHING
   RETURNING id::text, label, kind, COALESCE(ncc_class, ''))
 SELECT * FROM ins
 UNION ALL
 SELECT id::text, label, kind, COALESCE(ncc_class, '') FROM project_parts
-WHERE org_id = $1::uuid AND project_id = $2::uuid AND kind = 'whole'
+WHERE org_id = $1::uuid AND site_id = `+projectSiteSQL+` AND kind = 'whole'
 LIMIT 1`, orgID, projectID, newID(), wholePartLabel).Scan(&p.ID, &p.Label, &p.Kind, &p.NCCClass)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return profile.Part{}, ErrNotFound
@@ -76,14 +80,14 @@ LIMIT 1`, orgID, projectID, newID(), wholePartLabel).Scan(&p.ID, &p.Label, &p.Ki
 	return p, err
 }
 
-// CreatePart adds a part to a project in the org.
+// CreatePart adds a part to the site of a project in the org.
 func (s *Store) CreatePart(ctx context.Context, orgID, projectID, label, kind, nccClass string) (profile.Part, error) {
 	p := profile.Part{ID: newID(), Label: label, Kind: kind, NCCClass: nccClass}
 	tag, err := s.pool.Exec(ctx, `
-INSERT INTO project_parts (org_id, id, project_id, label, kind, ncc_class)
-SELECT $1::uuid, $2::uuid, $3::uuid, $4, $5, NULLIF($6, '')
-WHERE EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $3::uuid)`,
-		orgID, p.ID, projectID, label, kind, nccClass)
+INSERT INTO project_parts (org_id, id, site_id, created_by_project_id, label, kind, ncc_class)
+SELECT $1::uuid, $3::uuid, p.site_id, p.id, $4, $5, NULLIF($6, '')
+FROM projects p WHERE p.org_id = $1::uuid AND p.id = $2::uuid`,
+		orgID, projectID, p.ID, label, kind, nccClass)
 	if err != nil {
 		return profile.Part{}, err
 	}
@@ -101,7 +105,7 @@ UPDATE project_parts SET
   label = COALESCE($4, label),
   kind = CASE WHEN kind = 'whole' THEN kind ELSE COALESCE($5, kind) END,
   ncc_class = CASE WHEN $6::text IS NULL THEN ncc_class ELSE NULLIF($6, '') END
-WHERE org_id = $1::uuid AND project_id = $2::uuid AND id = $3::uuid
+WHERE org_id = $1::uuid AND site_id = `+projectSiteSQL+` AND id = $3::uuid
 RETURNING id::text, label, kind, COALESCE(ncc_class, '')`,
 		orgID, projectID, partID, label, kind, nccClass).Scan(&p.ID, &p.Label, &p.Kind, &p.NCCClass)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -171,7 +175,7 @@ func (s *Store) SetUserValue(ctx context.Context, orgID, projectID, partID, user
 	tag, err := s.pool.Exec(ctx, `
 INSERT INTO profile_user_values (org_id, project_id, part_id, key, value, note, user_id)
 SELECT $1::uuid, $2::uuid, $3::uuid, $4, $5, $6, $7::uuid
-WHERE EXISTS (SELECT 1 FROM project_parts WHERE org_id = $1::uuid AND project_id = $2::uuid AND id = $3::uuid)
+WHERE EXISTS (SELECT 1 FROM project_parts WHERE org_id = $1::uuid AND site_id = `+projectSiteSQL+` AND id = $3::uuid)
 ON CONFLICT (org_id, project_id, part_id, key) DO UPDATE
 SET value = EXCLUDED.value, note = EXCLUDED.note, user_id = EXCLUDED.user_id,
     version = profile_user_values.version + 1, updated_at = now()`,
@@ -308,7 +312,7 @@ WHERE org_id = $1::uuid AND project_id = $2::uuid ORDER BY part_id, key`, orgID,
 func readParts(ctx context.Context, q rowQuerier, orgID, projectID string) ([]profile.Part, error) {
 	rows, err := q.Query(ctx, `
 SELECT id::text, label, kind, COALESCE(ncc_class, '') FROM project_parts
-WHERE org_id = $1::uuid AND project_id = $2::uuid ORDER BY kind <> 'whole', created_at, label`, orgID, projectID)
+WHERE org_id = $1::uuid AND site_id = `+projectSiteSQL+` ORDER BY kind <> 'whole', created_at, label`, orgID, projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -492,7 +496,7 @@ func (s *Store) SetScope(ctx context.Context, orgID, projectID, partID, userID s
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	var ok bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM project_parts WHERE org_id = $1::uuid AND project_id = $2::uuid AND id = $3::uuid)`,
+	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM project_parts WHERE org_id = $1::uuid AND site_id = `+projectSiteSQL+` AND id = $3::uuid)`,
 		orgID, projectID, partID).Scan(&ok); err != nil {
 		return err
 	}
