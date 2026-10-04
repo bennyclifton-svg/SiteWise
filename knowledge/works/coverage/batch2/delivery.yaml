@@ -1,0 +1,17 @@
+# K4 Pass B: delivery cluster dispositions for batch2.
+version: 1
+rows:
+  B2-0763: {"records": ["uc.crane-permit-or-airspace-approval-limits-crane"]}
+  B2-0764: {"records": ["uc.road-opening-permit-hours-too-short-for-service-tie-in"]}
+  B2-0765: {"records": ["uc.noisy-work-refused-outside-approved-hours-beside-neighbour"]}
+  B2-0771: {"records": ["uc.existing-building-or-addition-has-no-approval"]}
+  B2-0772: {"records": ["uc.occupation-certificate-withheld"]}
+  B2-0782: {"records": ["uc.crane-permit-or-airspace-approval-limits-crane"]}
+  B2-0791: {"records": ["uc.strata-consent-for-common-property-works-withheld"]}
+  B2-0792: {"records": ["uc.latent-condition-clause-does-not-cover-asbestos-tender-said-absent"]}
+  B2-0825: {"records": ["uc.occupied-building-works-restrict-hours-and-methods"]}
+  B2-0827: {"records": ["uc.agreed-shutdown-or-cutover-window-shorter-than-changeover"]}
+  B2-0855: {"records": ["uc.agreed-shutdown-or-cutover-window-shorter-than-changeover"]}
+  B2-0861: {"records": ["uc.existing-building-or-addition-has-no-approval"]}
+  B2-0882: {"records": ["uc.occupancy-window-constrains-programme"]}
+  B2-0884: {"records": ["uc.occupancy-window-constrains-programme"]}
