@@ -1,0 +1,1001 @@
+row_id,#,Theme,Unforeseen circumstance,Systems impacted,Foundational relationship,Building category,Project type
+B1-0001,1,"1. Ground, Earthworks & Foundations",Rock found at footing depth,Footings ↔ Ground,Footings must hand load to ground of known capacity.,All,New build/Extension
+B1-0002,2,"1. Ground, Earthworks & Foundations",Groundwater floods the excavation,Basement walls ↔ Hydrology,Below-grade structure must resist water pressure it was never sized for.,Res/Com,New build/Extension
+B1-0003,3,"1. Ground, Earthworks & Foundations",Contaminated soil discovered,Earthworks ↔ Site environment,Excavation depth is set by structure but disposal rules are set by the soil.,All,New build/Extension
+B1-0004,4,"1. Ground, Earthworks & Foundations",Unmapped utility in the footing line,Underground services ↔ Footings,Structure and buried services compete for the same ground.,All,All
+B1-0005,5,"1. Ground, Earthworks & Foundations",Reactive clay swells after rain,Slab ↔ Soil,A slab rides on soil moisture movement.,Res/Com,New build/Extension
+B1-0006,6,"1. Ground, Earthworks & Foundations",Neighbour's footing undermined,Excavation/shoring ↔ Adjoining structure,Removing lateral support transfers risk to the neighbour.,All,New build/Extension
+B1-0007,7,"1. Ground, Earthworks & Foundations",Soft spot under the slab,Slab ↔ Subgrade,A slab needs uniform support to span as designed.,All,New build/Extension
+B1-0008,8,"1. Ground, Earthworks & Foundations",Tree roots at footing line,Footings ↔ Landscape,Living roots change soil moisture and bearing.,Res,All
+B1-0009,9,"1. Ground, Earthworks & Foundations",Pile hits an old buried obstruction,Piles ↔ Ground,Piles assume a continuous known ground profile.,Com/Ind,New build
+B1-0010,10,"1. Ground, Earthworks & Foundations",Heavy rain saturates the subgrade,Temporary drainage ↔ Subgrade,Wet soil loses strength so drainage protects bearing.,All,New build/Extension
+B1-0011,11,"1. Ground, Earthworks & Foundations",Dewatering settles neighbouring buildings,Dewatering ↔ Adjacent foundations,Lowering the water table changes soil support nearby.,Com,New build
+B1-0012,12,"1. Ground, Earthworks & Foundations",Old tanks or slabs found underground,Demolition legacy ↔ New footings,New structure needs clean stable ground.,All,New build/Extension
+B1-0013,13,"1. Ground, Earthworks & Foundations",Geotech report did not match actual ground,Foundation design ↔ Site investigation,Footing design is only as good as the ground data behind it.,All,New build/Extension
+B1-0014,14,"1. Ground, Earthworks & Foundations",Fill material found under the building pad,Slab/footings ↔ Uncontrolled fill,Footings need natural or engineered ground not tipped waste.,Res/Ind,New build/Extension
+B1-0015,15,"1. Ground, Earthworks & Foundations",Acid sulfate soil exposed by excavation,Earthworks ↔ Environmental controls,Disturbed soil oxidises and attacks concrete and waterways.,All,New build
+B1-0016,16,"1. Ground, Earthworks & Foundations",Excavated spoil volume far above estimate,Earthworks ↔ Haulage logistics,Cut volume drives truck movements and program.,Com/Ind,New build
+B1-0017,17,"1. Ground, Earthworks & Foundations",Shoring wall deflects more than predicted,Temporary shoring ↔ Adjacent structures,Retention must hold movement within neighbour tolerances.,Com,New build
+B1-0018,18,"1. Ground, Earthworks & Foundations",Ground anchors clash with neighbour's basement,Anchors ↔ Adjoining property,Retention systems extend beyond the site boundary.,Com,New build
+B1-0019,19,"1. Ground, Earthworks & Foundations",Anchor fails proof load test,Ground anchors ↔ Soil strength,Anchor capacity depends on soil friction not assumption.,Com,New build
+B1-0020,20,"1. Ground, Earthworks & Foundations",Soldier pile misaligned at excavation,Retention ↔ Basement wall line,Retention position sets the usable basement footprint.,Com,New build
+B1-0021,21,"1. Ground, Earthworks & Foundations",Collapse of excavation sides,Temporary batters ↔ Soil stability,Slope stability depends on soil type and moisture.,All,New build/Extension
+B1-0022,22,"1. Ground, Earthworks & Foundations",Excavation hits a sewer main,Earthworks ↔ Sewer network,Buried mains constrain where excavation can go.,All,All
+B1-0023,23,"1. Ground, Earthworks & Foundations",Existing footing exposed is smaller than assumed,New extension ↔ Existing footings,Extensions rely on the capacity of foundations nobody drew.,Res/Com,Extension/Refurb
+B1-0024,24,"1. Ground, Earthworks & Foundations",Differential settlement between old and new,Existing structure ↔ New extension,Different foundations settle at different rates.,Res/Com,Extension
+B1-0025,25,"1. Ground, Earthworks & Foundations",Underpinning needed to deepen basement,Existing footings ↔ New excavation,Lowering the floor removes support from existing walls.,Res/Com,Refurb/Upgrade
+B1-0026,26,"1. Ground, Earthworks & Foundations",Piling rig cannot access the site,Piling plant ↔ Site access,Heavy plant needs ground and clearance to operate.,Com/Ind,New build
+B1-0027,27,"1. Ground, Earthworks & Foundations",Piles driven out of position,Piles ↔ Pile cap design,Caps assume piles land within tolerance.,Com/Ind,New build
+B1-0028,28,"1. Ground, Earthworks & Foundations",Pile concrete defect found by integrity test,Pile shaft ↔ Load path,A defective pile cannot carry its design load.,Com/Ind,New build
+B1-0029,29,"1. Ground, Earthworks & Foundations",Heave of basement slab from uplift,Basement slab ↔ Groundwater,Water pressure lifts a lightly loaded slab.,Com,New build
+B1-0030,30,"1. Ground, Earthworks & Foundations",Tanking membrane punctured by reinforcement,Waterproofing ↔ Rebar,Membranes are fragile where steel and formwork pass.,Res/Com,New build
+B1-0031,31,"1. Ground, Earthworks & Foundations",Blinding concrete too soft to place rebar on,Footing base ↔ Subgrade,A stable platform is needed to set reinforcement accurately.,All,New build
+B1-0032,32,"1. Ground, Earthworks & Foundations",Trench footing collapses before the pour,Footing trench ↔ Soil,Open trenches fail in sand or wet soil.,Res,New build/Extension
+B1-0033,33,"1. Ground, Earthworks & Foundations",Footing steel cover wrong after trench trimming,Reinforcement ↔ Excavation,Cover depends on a level and accurate trench base.,Res,New build/Extension
+B1-0034,34,"1. Ground, Earthworks & Foundations",Termite activity found in the soil,Termite barrier ↔ Slab edge,Barrier continuity depends on the foundation detail.,Res,New build/Extension
+B1-0035,35,"1. Ground, Earthworks & Foundations",Plumbing stub-ups misplaced before the slab pour,Under-slab plumbing ↔ Slab,Services set before the pour cannot be moved afterwards.,Res,New build
+B1-0036,36,"1. Ground, Earthworks & Foundations",Under-slab conduit crushed by the pour,Electrical conduit ↔ Concrete,Embedded services must survive wet concrete loads.,All,New build
+B1-0037,37,"1. Ground, Earthworks & Foundations",Vapour barrier torn before the slab pour,Vapour membrane ↔ Slab,The membrane protects flooring from ground moisture.,Res/Com,New build
+B1-0038,38,"1. Ground, Earthworks & Foundations",Slab thickened where a trench crosses,Slab ↔ Service trench,Services cutting through slabs change the structural section.,Ind,New build
+B1-0039,39,"1. Ground, Earthworks & Foundations",Bore water found with high salinity,Footings/slab ↔ Groundwater chemistry,Salts attack concrete and reinforcement.,All,New build
+B1-0040,40,"1. Ground, Earthworks & Foundations",Sulfate attack on buried concrete,Concrete ↔ Soil chemistry,Concrete grade must suit the aggressive ground.,All,New build
+B1-0041,41,"1. Ground, Earthworks & Foundations",Steep site slips after clearing,Hillside structure ↔ Slope stability,Removing vegetation reduces natural stability.,Res,New build
+B1-0042,42,"1. Ground, Earthworks & Foundations",Retaining wall tilts after backfill,Retaining wall ↔ Backfill pressure,Wall design assumes drained controlled backfill.,Res/Com,All
+B1-0043,43,"1. Ground, Earthworks & Foundations",Retaining wall drains blocked,Retaining wall ↔ Drainage,Blocked drains build water pressure behind walls.,Res/Com,All
+B1-0044,44,"1. Ground, Earthworks & Foundations",Surcharge from a neighbour's building not known,Retention ↔ Adjoining loads,Retention designs include the loads pushing on it.,Com,New build
+B1-0045,45,"1. Ground, Earthworks & Foundations",Excavation exposes asbestos fragments in fill,Earthworks ↔ Hazmat,Asbestos in soil stops work and changes disposal.,All,All
+B1-0046,46,"1. Ground, Earthworks & Foundations",Rock hammering vibration damages a neighbour,Excavation method ↔ Adjacent buildings,Breaking rock transmits vibration through the ground.,Com,New build
+B1-0047,47,"1. Ground, Earthworks & Foundations",Dust and noise complaints halt earthworks,Excavation ↔ Environmental approvals,Permits limit how and when earthworks occur.,All,New build
+B1-0048,48,"1. Ground, Earthworks & Foundations",Borehole data shows variable bedrock level,Footing levels ↔ Bedrock,Foundations step to the rock they bear on.,Com/Ind,New build
+B1-0049,49,"1. Ground, Earthworks & Foundations",Cavities in limestone found under footing,Footings ↔ Karst ground,Voids reduce bearing below the footing.,Com/Ind,New build
+B1-0050,50,"1. Ground, Earthworks & Foundations",Organic peat layer discovered,Slab/footings ↔ Compressible soil,Peat compresses under load and over time.,Res/Ind,New build
+B1-0051,51,"1. Ground, Earthworks & Foundations",Compaction test fails on building pad,Slab base ↔ Subgrade compaction,A slab needs a compacted base to avoid settlement.,Ind/Res,New build
+B1-0052,52,"1. Ground, Earthworks & Foundations",Heavy racking loads exceed the slab design,Industrial slab ↔ Storage racking,Slab thickness is designed for the stored load.,Ind,All
+B1-0053,53,"1. Ground, Earthworks & Foundations",Forklift traffic wears joints in the slab,Industrial slab ↔ Joint design,Joints must withstand wheel impacts.,Ind,New build/Refurb
+B1-0054,54,"1. Ground, Earthworks & Foundations",Slab curls at joints,Slab ↔ Curing/shrinkage,Drying shrinkage lifts slab edges.,Ind/Com,New build
+B1-0055,55,"1. Ground, Earthworks & Foundations",Floor flatness fails for narrow aisle racking,Industrial slab ↔ Racking system,High-bay racking needs very flat floors.,Ind,New build
+B1-0056,56,"1. Ground, Earthworks & Foundations",Crane runway beam supports settle,Footings ↔ Overhead crane,Crane rails need precise stable support.,Ind,New build
+B1-0057,57,"1. Ground, Earthworks & Foundations",Heavy machinery pit hits groundwater,Machine pits ↔ Water table,Deep pits below the water table need tanking.,Ind,New build
+B1-0058,58,"1. Ground, Earthworks & Foundations",Machinery vibration shakes nearby footings,Machine foundations ↔ Building structure,Vibrating equipment needs isolated foundations.,Ind,All
+B1-0059,59,"1. Ground, Earthworks & Foundations",Tank farm bund too small for volume,Bunding ↔ Containment rules,Bunds are sized to hold the full tank volume.,Ind,New build
+B1-0060,60,"1. Ground, Earthworks & Foundations",Flood level raised by the authority,Floor levels ↔ Flood planning,Floor heights are fixed by flood levels.,Res/Com,New build/Extension
+B1-0061,61,"1. Ground, Earthworks & Foundations",Site cut/fill balance fails,Earthworks ↔ Site levels,Cut and fill should balance or cost rises.,All,New build
+B1-0062,62,"1. Ground, Earthworks & Foundations",Fill platform settles after construction,Building pad ↔ Fill consolidation,Fill consolidates and drops after placement.,Res/Ind,New build
+B1-0063,63,"1. Ground, Earthworks & Foundations",Stormwater runoff scours the batter,Landscape batter ↔ Drainage,Uncontrolled flow erodes cut and fill slopes.,All,New build
+B1-0064,64,"1. Ground, Earthworks & Foundations",Termite shield missed at slab penetrations,Pest barrier ↔ Plumbing,Every pipe through the slab is a pest path.,Res,New build
+B1-0065,65,"1. Ground, Earthworks & Foundations",Pier holes collapse in loose sand,Pier footings ↔ Soil,Open bores fail in unstable ground.,Res,New build/Extension
+B1-0066,66,"1. Ground, Earthworks & Foundations",Pier concrete poured into groundwater,Pier ↔ Water inflow,Concrete placed in water loses strength.,Res,New build/Extension
+B1-0067,67,"1. Ground, Earthworks & Foundations",Screw piles hit refusal early,Screw piles ↔ Hard strata,Piles must reach required depth to carry load.,Res,New build/Extension
+B1-0068,68,"1. Ground, Earthworks & Foundations",Footing rebar cage floats in the pour,Reinforcement ↔ Concrete placement,Steel must be tied and chaired to stay in position.,All,New build
+B1-0069,69,"1. Ground, Earthworks & Foundations",Pump line blocks during the pour,Concrete pump ↔ Mix design,The mix has to flow through the pump line.,Com,New build
+B1-0070,70,"1. Ground, Earthworks & Foundations",Delayed concrete truck causes a cold joint,Concrete supply ↔ Structural continuity,Delayed supply causes an unplanned joint.,All,New build
+B1-0071,71,"1. Ground, Earthworks & Foundations",Excavation spoil contaminated by mixing,Spoil ↔ Waste classification,Mixing clean and dirty soil raises disposal cost.,All,New build
+B1-0072,72,"1. Ground, Earthworks & Foundations",Ground vibration monitor alarm halts works,Excavation ↔ Monitoring limits,Limits protect adjoining buildings.,Com,New build
+B1-0073,73,"1. Ground, Earthworks & Foundations",Survey set-out error at the boundary,Setout ↔ Property line,Errors make the building encroach.,All,New build
+B1-0074,74,"1. Ground, Earthworks & Foundations",Neighbour's fence on the wrong boundary,Survey ↔ Site boundary,True boundaries can differ from fences.,Res,New build/Extension
+B1-0075,75,"1. Ground, Earthworks & Foundations",Easement prevents building over services,Footprint ↔ Property easements,Legal easements limit structure location.,Res/Com,New build/Extension
+B1-0076,76,"1. Ground, Earthworks & Foundations",Shared party wall footing discovered,New work ↔ Neighbour footing,Shared walls affect excavation near them.,Res/Com,Extension
+B1-0077,77,"1. Ground, Earthworks & Foundations",Existing slab too thin for new loads,New load ↔ Existing slab,Slab capacity is fixed by the old design.,Com/Ind,Refurb/Upgrade
+B1-0078,78,"1. Ground, Earthworks & Foundations",Old footings cracked under settlement,Existing footings ↔ New load path,Damaged footings cannot take added load.,Res,Refurb/Upgrade
+B1-0079,79,"1. Ground, Earthworks & Foundations",Basement walls not waterproofed originally,Existing basement ↔ Moisture,Older basements lack membranes.,Res/Com,Refurb/Upgrade
+B1-0080,80,"1. Ground, Earthworks & Foundations",Rising damp in old masonry foundations,Footings ↔ Damp course,Missing damp courses let ground moisture rise.,Res,Refurb/Upgrade
+B1-0081,81,"1. Ground, Earthworks & Foundations",Soil gas (methane/radon) detected,Slab ↔ Gas barrier,Ground gas needs barriers and ventilation.,Res/Com,New build
+B1-0082,82,"1. Ground, Earthworks & Foundations",Vapour intrusion from contaminated groundwater,Slab ↔ Groundwater contamination,Vapour enters through slab cracks and joints.,Com/Ind,New build
+B1-0083,83,"1. Ground, Earthworks & Foundations",Site cleared of trees creates erosion,Earthworks ↔ Sediment control,Bare soil washes into drains in rain.,All,New build
+B1-0084,84,"1. Ground, Earthworks & Foundations",Sediment basin overflows in storm,Site drainage ↔ Rain event,Basins must be sized for storm flows.,All,New build
+B1-0085,85,"1. Ground, Earthworks & Foundations",Spoil tip site closed by authority,Haulage ↔ Tip site,Disposal depends on an available site.,Com/Ind,New build
+B1-0086,86,"1. Ground, Earthworks & Foundations",Quarry product delivery delay,Earthworks ↔ Material supply,Roadbase and fill must arrive on schedule.,Ind/Com,New build
+B1-0087,87,"1. Ground, Earthworks & Foundations",Wet weather stops compaction works,Compaction ↔ Moisture,Soil must be near optimum moisture to compact.,Ind/Res,New build
+B1-0088,88,"1. Ground, Earthworks & Foundations",Bearing capacity lower after a wet winter,Footings ↔ Seasonal soil,Bearing strength varies with soil moisture.,Res,New build
+B1-0089,89,"1. Ground, Earthworks & Foundations",Contaminated groundwater needs treatment,Dewatering ↔ Water quality,Pumped water may need treatment before discharge.,Com/Ind,New build
+B1-0090,90,"1. Ground, Earthworks & Foundations",Retention shotcrete surface fails,Shotcrete wall ↔ Soil,Poor bond lets the wall delaminate.,Com,New build
+B1-0091,91,"1. Ground, Earthworks & Foundations",Heave from tree removal,Slab ↔ Soil moisture rebound,Soil expands when a tree no longer draws water.,Res,New build/Extension
+B1-0092,92,"1. Ground, Earthworks & Foundations",Construction traffic damages the street,Haulage ↔ Public road,Roads are repaired at the builder's cost.,All,New build
+B1-0093,93,"1. Ground, Earthworks & Foundations",Underpinning movement cracks existing plaster,Underpinning ↔ Existing finishes,Support changes move rigid finishes.,Res,Refurb/Upgrade
+B1-0094,94,"1. Ground, Earthworks & Foundations",Jet grout column misses design position,Ground improvement ↔ Footings,Improvement must sit under the load.,Com,New build
+B1-0095,95,"1. Ground, Earthworks & Foundations",Stone columns fail to improve soft soil,Ground improvement ↔ Soft soil,Improvement depends on soil response.,Ind/Res,New build
+B1-0096,96,"1. Ground, Earthworks & Foundations",Preloading takes longer than planned,Ground consolidation ↔ Programme,Soil consolidates on its own timeline.,Ind,New build
+B1-0097,97,"1. Ground, Earthworks & Foundations",Site noise limits reduce piling hours,Piling ↔ Neighbour amenity,Operating hours restrict output.,Com,New build
+B1-0098,98,"1. Ground, Earthworks & Foundations",Expansive soil moisture changes near a leaking pipe,Footings ↔ Plumbing leak,Leaks wet the soil locally and lift or drop footings.,Res,All
+B1-0099,99,"1. Ground, Earthworks & Foundations",Frost heave under unheated slab edges,Slab edge ↔ Frost,Freezing soil expands and lifts edges.,Ind/Res,New build
+B1-0100,100,"1. Ground, Earthworks & Foundations",Sinkhole or void opens near the excavation,Excavation ↔ Ground stability,Voids reduce support and endanger plant.,Com/Ind,New build
+B1-0101,101,2. Structure & Structural Frame,Beam clashes with main duct,Structure ↔ HVAC,Structure needs continuity and ducts need a clear path.,Com,New build/Refurb
+B1-0102,102,2. Structure & Structural Frame,Core drilling hits a post-tension tendon,PT slab ↔ Electrical/plumbing,Stressed tendons carry the slab and services cannot cut them.,Com/Res,New build/Refurb
+B1-0103,103,2. Structure & Structural Frame,Slab drop leaves no fall for the drain,Structure ↔ Hydraulics,Gravity drainage needs height which structure consumes.,Com/Res,New build
+B1-0104,104,2. Structure & Structural Frame,Slab penetrations missed before the pour,Concrete ↔ All services,Services must be located before structure sets.,All,New build
+B1-0105,105,2. Structure & Structural Frame,Rebar too congested to pour,Reinforcement ↔ Concrete,Concrete can only work if it can flow around the steel.,Com/Ind,New build
+B1-0106,106,2. Structure & Structural Frame,Formwork deflects during the pour,Formwork ↔ Structure,Temporary works shape the permanent structure.,Com/Res,New build
+B1-0107,107,2. Structure & Structural Frame,Early shrinkage cracking,Concrete ↔ Waterproofing/finishes,Cracks propagate into anything bonded to the structure.,All,New build
+B1-0108,108,2. Structure & Structural Frame,Steel fabrication error,Steel frame ↔ Façade,The frame sets the geometry the façade attaches to.,Com/Ind,New build
+B1-0109,109,2. Structure & Structural Frame,Lift pit too shallow,Lift ↔ Structure,Lift travel depends on the pit and overrun the structure provides.,Com/Res,New build
+B1-0110,110,2. Structure & Structural Frame,Lift shaft out of plumb,Lift ↔ Core walls,Rails need tight tolerance but the core is built loose.,Com/Res,New build
+B1-0111,111,2. Structure & Structural Frame,Slab level tolerance exceeded,Slab ↔ Floor finishes,Finishes can only correct small variations.,All,New build
+B1-0112,112,2. Structure & Structural Frame,Transfer beam deflects more than expected,Structure ↔ Partitions,Non-structural walls cannot follow structural movement.,Com/Res,New build
+B1-0113,113,2. Structure & Structural Frame,Rooftop plant heavier than allowed,Roof structure ↔ Mechanical,Plant weight must match the capacity designed for it.,Com/Ind,All
+B1-0114,114,2. Structure & Structural Frame,Stair geometry fails the code,Structure ↔ Egress,Structural dimensions determine safe exit.,All,New build
+B1-0115,115,2. Structure & Structural Frame,Concrete cylinders fail strength test,Concrete supply ↔ Structural design,Design assumes the delivered concrete reaches its grade.,Com/Res,New build
+B1-0116,116,2. Structure & Structural Frame,Concrete placed in hot weather sets too fast,Concrete ↔ Weather,Heat shortens working time and promotes cracking.,All,New build
+B1-0117,117,2. Structure & Structural Frame,Concrete placed in cold weather freezes,Concrete ↔ Weather,Freezing disrupts hydration and strength gain.,All,New build
+B1-0118,118,2. Structure & Structural Frame,Props removed too early,Formwork/props ↔ Young concrete,Concrete must gain strength before taking its own weight.,Com/Res,New build
+B1-0119,119,2. Structure & Structural Frame,Slab edge forms burst,Edge formwork ↔ Concrete pressure,Wet concrete exerts hydrostatic pressure.,Com,New build
+B1-0120,120,2. Structure & Structural Frame,Cover to reinforcement too thin,Rebar ↔ Durability,Cover protects steel from corrosion.,All,New build
+B1-0121,121,2. Structure & Structural Frame,Reinforcement delivered to the wrong schedule,Rebar supply ↔ Pour programme,The pour waits on the right steel being in place.,Com,New build
+B1-0122,122,2. Structure & Structural Frame,Post-tensioning stressed late,PT system ↔ Programme,Stressing releases propping and unlocks the next level.,Com/Res,New build
+B1-0123,123,2. Structure & Structural Frame,Tendon sheath damaged,PT tendon ↔ Corrosion protection,Damaged ducts let moisture reach the tendon.,Com,New build
+B1-0124,124,2. Structure & Structural Frame,Column out of position at set-out,Columns ↔ Floor plan,Columns constrain layouts above and below.,Com,New build
+B1-0125,125,2. Structure & Structural Frame,Column too large for car park layout,Structure ↔ Parking,Columns reduce usable bays and aisles.,Com,New build
+B1-0126,126,2. Structure & Structural Frame,Column reduced late to widen a corridor,Structure ↔ Egress,Smaller columns reduce capacity and fire rating.,Com,New build
+B1-0127,127,2. Structure & Structural Frame,Shear wall opened for a new door,Shear walls ↔ Doors/services,Cutting a shear wall weakens lateral stability.,Com/Res,Refurb/Upgrade
+B1-0128,128,2. Structure & Structural Frame,Precast panel dimension error,Precast ↔ Adjoining structure,Precast arrives finished and cannot be trimmed.,Ind/Com,New build
+B1-0129,129,2. Structure & Structural Frame,Precast crane lift exceeds capacity,Precast panels ↔ Crane,Panel weight limits the crane reach.,Ind/Com,New build
+B1-0130,130,2. Structure & Structural Frame,Precast panel damaged on delivery,Precast ↔ Logistics,Panels chip in transport and need repair.,Ind/Com,New build
+B1-0131,131,2. Structure & Structural Frame,Tilt-up panel braces conflict with slab pours,Tilt-up panels ↔ Slab sequence,Bracing occupies the area the slab needs.,Ind,New build
+B1-0132,132,2. Structure & Structural Frame,Tilt-up panel lift reveals cracking,Tilt panels ↔ Lifting inserts,Lifting stresses can crack thin panels.,Ind,New build
+B1-0133,133,2. Structure & Structural Frame,Steel connection design changed after fabrication,Connections ↔ Fabricated steel,Revised loads change the connection details.,Com/Ind,New build
+B1-0134,134,2. Structure & Structural Frame,Bolt holes do not align on site,Steel members ↔ Erection,Fabrication tolerance must match site tolerance.,Com/Ind,New build
+B1-0135,135,2. Structure & Structural Frame,Weld inspection finds defects,Steel welds ↔ Structural capacity,Welds are the load path between members.,Com/Ind,New build
+B1-0136,136,2. Structure & Structural Frame,Steel corrosion before coating,Steel ↔ Weather exposure,Uncoated steel rusts quickly in humid sites.,Ind/Com,New build
+B1-0137,137,2. Structure & Structural Frame,Fireproofing damaged by following trades,Steel fire protection ↔ Services,Later trades knock off sprayed or board protection.,Com,New build
+B1-0138,138,2. Structure & Structural Frame,Beam deflection cracks plasterboard ceiling,Steel beam ↔ Ceiling lining,Ceilings crack where beams flex.,Com/Res,New build
+B1-0139,139,2. Structure & Structural Frame,Portal frame erected out of plumb,Portal frame ↔ Cladding,Cladding requires accurate frame lines.,Ind,New build
+B1-0140,140,2. Structure & Structural Frame,Roof purlins overloaded by added plant,Purlins ↔ Rooftop equipment,Purlins are sized for light roof loads.,Ind,Refurb/Upgrade
+B1-0141,141,2. Structure & Structural Frame,Mezzanine added without structural check,Mezzanine ↔ Existing frame,Added floors load columns and footings.,Ind/Com,Refurb/Upgrade
+B1-0142,142,2. Structure & Structural Frame,Timber frame shrinks across floors,Timber frame ↔ Finishes,Drying timber shortens and moves finishes.,Res,New build
+B1-0143,143,2. Structure & Structural Frame,Timber frame exposed to rain for weeks,Timber ↔ Weather,"Wet timber swells, stains and grows mould.",Res,New build
+B1-0144,144,2. Structure & Structural Frame,Engineered timber floor joist cut for a pipe,Floor joist ↔ Plumbing,Notching joists reduces their capacity.,Res,New build/Refurb
+B1-0145,145,2. Structure & Structural Frame,Floor truss clashes with duct route,Truss ↔ HVAC,Trusses have fixed web layouts which restrict ducts.,Res,New build
+B1-0146,146,2. Structure & Structural Frame,Floor deflection or bounce,Floor structure ↔ Occupant comfort,Span and stiffness affect perceived quality.,Res,New build
+B1-0147,147,2. Structure & Structural Frame,Wall framing out of straight,Frame ↔ Plasterboard,Plaster shows frame waviness.,Res,New build
+B1-0148,148,2. Structure & Structural Frame,Lintel undersized over a wide opening,Lintel ↔ Wall load,Openings concentrate load on the lintel.,Res,New build/Extension
+B1-0149,149,2. Structure & Structural Frame,Brickwork cracks above openings,Masonry ↔ Lintel deflection,Lintel deflection cracks the brick above.,Res,New build
+B1-0150,150,2. Structure & Structural Frame,Masonry movement joints omitted,Masonry ↔ Thermal movement,Masonry expands and contracts and needs joints.,Res/Com,New build
+B1-0151,151,2. Structure & Structural Frame,Cavity wall ties missing,Masonry leaves ↔ Wall stability,Ties hold the outer leaf to the structure.,Res/Com,New build
+B1-0152,152,2. Structure & Structural Frame,Block wall grout voids found,Reinforced masonry ↔ Load path,Voids reduce wall strength.,Com/Ind,New build
+B1-0153,153,2. Structure & Structural Frame,Brick delivery colour mismatch,Masonry ↔ Appearance,Batch variation shows in finished walls.,Res/Com,All
+B1-0154,154,2. Structure & Structural Frame,Existing wall removed is actually loadbearing,Existing walls ↔ Alterations,Old walls often carry unseen loads.,Res,Refurb/Upgrade
+B1-0155,155,2. Structure & Structural Frame,Existing slab holes cut in wrong place,Existing slab ↔ New services,Old slabs hide reinforcement unknown to the builder.,Com,Refurb/Upgrade
+B1-0156,156,2. Structure & Structural Frame,Concrete scanning misses rebar,Coring ↔ Existing reinforcement,Scans can fail to see every bar.,Com,Refurb/Upgrade
+B1-0157,157,2. Structure & Structural Frame,Concrete cancer (spalling) found,Existing concrete ↔ Reinforcement corrosion,Corrosion expands steel and breaks concrete cover.,Com/Res,Refurb/Upgrade
+B1-0158,158,2. Structure & Structural Frame,Existing steel corroded at connections,Old steel ↔ New loads,Section loss reduces capacity.,Ind/Com,Refurb/Upgrade
+B1-0159,159,2. Structure & Structural Frame,Existing structure not built to drawings,As-built records ↔ Reality,Structural drawings may not match what was built.,All,Refurb/Upgrade
+B1-0160,160,2. Structure & Structural Frame,Roof framing sagging,Old roof structure ↔ New roof cover,Heavier cover loads weak framing.,Res,Refurb/Upgrade
+B1-0161,161,2. Structure & Structural Frame,Termite damage in timber frame,Timber ↔ Termites,Hidden damage reduces structural capacity.,Res,Refurb/Upgrade
+B1-0162,162,2. Structure & Structural Frame,Rotted bearer found under the floor,Floor structure ↔ Moisture,Damp rot weakens support.,Res,Refurb/Upgrade
+B1-0163,163,2. Structure & Structural Frame,Second storey added to a house,New storey ↔ Existing walls/footings,Existing structure was not designed for extra floors.,Res,Extension
+B1-0164,164,2. Structure & Structural Frame,Extension tie-in misaligns floor levels,New slab ↔ Existing slab,Floor levels must meet at the junction.,Res,Extension
+B1-0165,165,2. Structure & Structural Frame,Roof of extension drains into the existing roof,New roof ↔ Existing roof,Roof valleys and flashings must carry the added flow.,Res,Extension
+B1-0166,166,2. Structure & Structural Frame,New structural opening in a heritage wall,Heritage fabric ↔ Structure,Alterations must preserve original material.,Res/Com,Refurb/Upgrade
+B1-0167,167,2. Structure & Structural Frame,Seismic upgrade requires added bracing,Existing frame ↔ Seismic code,Old buildings lack ductile detailing.,Com,Refurb/Upgrade
+B1-0168,168,2. Structure & Structural Frame,Façade ties corroded on old building,Old façade ↔ Backing structure,Corroded ties let façades detach.,Com,Refurb/Upgrade
+B1-0169,169,2. Structure & Structural Frame,Slab thickness varies across the floor,Slab ↔ Services/finishes,Thin slabs limit chasing and anchors.,Com,Refurb/Upgrade
+B1-0170,170,2. Structure & Structural Frame,Expansion joint cover missing,Structure joints ↔ Finishes,Joints must be bridged by movement covers.,Com/Ind,New build
+B1-0171,171,2. Structure & Structural Frame,Differential movement between building wings,Separate structures ↔ Joint,Wings move independently and need gap allowances.,Com,New build
+B1-0172,172,2. Structure & Structural Frame,Wind load on a high-bay shed underestimated,Wind loads ↔ Cladding fixings,Cladding must restrain suction forces.,Ind,New build
+B1-0173,173,2. Structure & Structural Frame,Hail damage to roof sheeting,Roof sheeting ↔ Weather,Sheeting is the first line of defence.,Ind,All
+B1-0174,174,2. Structure & Structural Frame,Roof drainage overflow blocked,Roof ↔ Eaves gutters,Blocked gutters overload roof structure with water.,Ind/Res,All
+B1-0175,175,2. Structure & Structural Frame,Mezzanine vibration annoys occupants,Structure ↔ Occupant use,Lightweight floors vibrate under walking.,Com,New build
+B1-0176,176,2. Structure & Structural Frame,Deck slab cracks above transfer girder,Slab ↔ Transfer structure,Transfer girders deflect and crack the slab.,Com,New build
+B1-0177,177,2. Structure & Structural Frame,Shotcrete lining thickness falls short,Shotcrete ↔ Structural section,Thin lining reduces wall capacity.,Com,New build
+B1-0178,178,2. Structure & Structural Frame,Fire-damaged structure needs assessment,Structure ↔ Fire exposure,Fire alters concrete and steel properties.,All,Refurb/Upgrade
+B1-0179,179,2. Structure & Structural Frame,Blast or vehicle impact barrier required,Structure ↔ Security design,Security requirements add loads to the frame.,Com,New build/Refurb
+B1-0180,180,2. Structure & Structural Frame,Crane hook height limits column heights,Overhead crane ↔ Building height,Crane lift envelope sets internal clearance.,Ind,New build
+B1-0181,181,2. Structure & Structural Frame,Solar panel ballast overloads a flat roof,Roof slab ↔ PV ballast,Ballast adds heavy dead load.,Com/Ind,Refurb/Upgrade
+B1-0182,182,2. Structure & Structural Frame,Rooftop terrace added to a flat roof,Roof slab ↔ New live load,Occupied roofs need higher capacity.,Res/Com,Refurb/Upgrade
+B1-0183,183,2. Structure & Structural Frame,Planter boxes overload balconies,Balcony ↔ Landscape,Soil is heavy when wet.,Res,New build
+B1-0184,184,2. Structure & Structural Frame,Balcony cantilever deflects,Balcony slab ↔ Door thresholds,Deflection affects drainage falls and doors.,Res,New build
+B1-0185,185,2. Structure & Structural Frame,Balcony balustrade fixings pull out,Balustrade ↔ Slab edge,Edge loads need robust anchors.,Res,New build
+B1-0186,186,2. Structure & Structural Frame,Glass balustrade requires slab edge upgrade,Glass barrier ↔ Edge structure,Barrier loads concentrate at the slab edge.,Res/Com,New build
+B1-0187,187,2. Structure & Structural Frame,Car park slab fails vehicle loads,Car park slab ↔ Vehicle load,Parking structures face heavy concentrated wheel loads.,Com/Res,New build
+B1-0188,188,2. Structure & Structural Frame,Ramp gradient steeper than allowed,Car park ramp ↔ Vehicle clearance,Ramp geometry controls car scraping.,Com/Res,New build
+B1-0189,189,2. Structure & Structural Frame,Headroom beneath a beam below minimum,Structure ↔ Vehicle clearance,Beams reduce usable height for vehicles.,Com/Res,New build
+B1-0190,190,2. Structure & Structural Frame,Construction loads exceed the slab's early-age capacity,Slab ↔ Construction loading,Young concrete cannot carry stacked materials.,Com/Res,New build
+B1-0191,191,2. Structure & Structural Frame,Reshoring sequence not followed,Props ↔ Upper slabs,Loads travel through temporary props to lower floors.,Com/Res,New build
+B1-0192,192,2. Structure & Structural Frame,Concrete pump line weight overloads the formwork,Formwork ↔ Pumping equipment,Pump lines add load to decks.,Com,New build
+B1-0193,193,2. Structure & Structural Frame,Hot work ignites combustible formwork or panels,Temporary works ↔ Fire,Welding sparks start fires in stored materials.,Com,New build
+B1-0194,194,2. Structure & Structural Frame,Precast stair units do not fit landings,Precast stairs ↔ Core walls,Precast needs accurate landings.,Com/Res,New build
+B1-0195,195,2. Structure & Structural Frame,Cast-in plates misplaced for steel connections,Concrete ↔ Steel,Steel connections rely on accurate embedded plates.,Com/Ind,New build
+B1-0196,196,2. Structure & Structural Frame,Post-installed anchors fail pull-out tests,Anchors ↔ Concrete,Anchors depend on concrete condition and edge distance.,All,All
+B1-0197,197,2. Structure & Structural Frame,Slab-on-ground cracks at re-entrant corners,Slab ↔ Reinforcement detailing,Corners concentrate stress.,Res/Ind,New build
+B1-0198,198,2. Structure & Structural Frame,Thermal expansion of long roof sheets,Roof structure ↔ Cladding,Long runs need allowance for movement.,Ind,New build
+B1-0199,199,2. Structure & Structural Frame,Wind uplift pulls the roof at the eave,Roof framing ↔ Tie-downs,Tie-downs complete the wind load path.,Res,New build
+B1-0200,200,2. Structure & Structural Frame,Wall bracing removed for a large window,Bracing ↔ Window openings,Bracing resists lateral loads.,Res,New build/Extension
+B1-0201,201,3. Building Envelope & Waterproofing,Windows delivered to the wrong size,Glazing ↔ Structural openings,Openings are built first and glazing must fit their tolerance.,All,New build/Extension
+B1-0202,202,3. Building Envelope & Waterproofing,Slab edge out of line,Structure ↔ Curtain wall brackets,Façade fixings assume the edge is accurate.,Com,New build
+B1-0203,203,3. Building Envelope & Waterproofing,Leak at window head,Glazing ↔ Waterproofing,Glazing is only as watertight as its flashing interface.,All,All
+B1-0204,204,3. Building Envelope & Waterproofing,Roof membrane punctured by later trades,Roofing ↔ Plant/services,Penetrations are weak points in the weatherproof layer.,Com/Ind,All
+B1-0205,205,3. Building Envelope & Waterproofing,Condensation inside the wall,Insulation ↔ HVAC,Indoor humidity and temperature drive where moisture condenses.,Res/Com,New build/Refurb
+B1-0206,206,3. Building Envelope & Waterproofing,Thermal bridge at balcony slabs,Structure ↔ Thermal envelope,Continuous structure conducts heat through the insulation.,Res,New build
+B1-0207,207,3. Building Envelope & Waterproofing,Cladding product discontinued,Façade ↔ Fire compliance,A substitute material changes fire performance.,Res/Com,New build
+B1-0208,208,3. Building Envelope & Waterproofing,Gale damages the unclad frame,Temporary protection ↔ Envelope,The envelope is not weather-ready until complete.,All,New build/Extension
+B1-0209,209,3. Building Envelope & Waterproofing,Movement joints omitted,Façade ↔ Structure,Structure moves and the façade needs room to follow.,Com,New build
+B1-0210,210,3. Building Envelope & Waterproofing,Efflorescence on brickwork,Masonry ↔ Moisture control,Water carries salts through porous material.,Res/Com,All
+B1-0211,211,3. Building Envelope & Waterproofing,Roof ponding,Roof ↔ Stormwater,Falls and outlets must carry water away.,Com/Ind,All
+B1-0212,212,3. Building Envelope & Waterproofing,Balcony leaks onto the apartment below,Waterproofing ↔ Tiling,Finishes hide the membrane that must stay intact.,Res,New build
+B1-0213,213,3. Building Envelope & Waterproofing,Party wall fails the acoustic test,Walls ↔ Acoustics/services,Sound flanks through services and joints.,Res,New build
+B1-0214,214,3. Building Envelope & Waterproofing,Air-tightness test fails,Envelope ↔ HVAC,HVAC sizing assumes an airtight shell.,Com/Res,New build
+B1-0215,215,3. Building Envelope & Waterproofing,Roof sheeting fixing pattern wrong,Roof sheeting ↔ Wind uplift,Fixings must resist wind suction at edges.,Ind/Res,New build
+B1-0216,216,3. Building Envelope & Waterproofing,Roof sheet laps leak at low pitch,Roof sheeting ↔ Roof pitch,Minimum pitch is needed to shed water over laps.,Ind,New build
+B1-0217,217,3. Building Envelope & Waterproofing,Skylight leak after installation,Skylight ↔ Roof membrane,Skylight kerbs must tie into the roof waterproofing.,Res/Com,All
+B1-0218,218,3. Building Envelope & Waterproofing,Skylight overheats the interior,Glazing ↔ HVAC load,Solar gains add cooling load.,Com/Ind,All
+B1-0219,219,3. Building Envelope & Waterproofing,Gutter fall incorrect and water overflows,Gutter ↔ Fascia/structure,Gutters rely on accurate fall and outlets.,Res,New build
+B1-0220,220,3. Building Envelope & Waterproofing,Box gutter overflows into the ceiling,Roof drainage ↔ Ceiling space,Hidden gutters leak into the building when blocked.,Res/Com,All
+B1-0221,221,3. Building Envelope & Waterproofing,Flashing missing at roof-wall junction,Roof ↔ Wall cladding,Junction flashings are the primary leak path.,Res/Com,New build
+B1-0222,222,3. Building Envelope & Waterproofing,Parapet cap flashing fails,Parapet ↔ Waterproofing,Parapets expose both faces to the weather.,Com,All
+B1-0223,223,3. Building Envelope & Waterproofing,Roof insulation compressed by foot traffic,Insulation ↔ Roof access,Crushed insulation loses R-value.,Com/Ind,All
+B1-0224,224,3. Building Envelope & Waterproofing,Spray foam insulation off-gasses,Insulation ↔ Indoor air,Chemical products require cure time before occupation.,Res,New build/Refurb
+B1-0225,225,3. Building Envelope & Waterproofing,Insulation installed over wiring creates a hazard,Insulation ↔ Electrical,Cable heat needs dissipation.,Res,Refurb/Upgrade
+B1-0226,226,3. Building Envelope & Waterproofing,Insulation batts left out behind services,Insulation ↔ Services,Services block continuous insulation.,Res,New build
+B1-0227,227,3. Building Envelope & Waterproofing,Wall wrap torn and not taped,Building wrap ↔ Framing,Wrap provides secondary weather protection.,Res,New build
+B1-0228,228,3. Building Envelope & Waterproofing,Cladding installed over wet framing,Cladding ↔ Timber frame,Trapped moisture rots framing.,Res,New build
+B1-0229,229,3. Building Envelope & Waterproofing,Rain screen cavity blocked with debris,Cladding ↔ Cavity ventilation,Cavities must drain and dry.,Res/Com,New build
+B1-0230,230,3. Building Envelope & Waterproofing,Cladding panels differ in colour batch,Cladding ↔ Appearance,Batch variation shows on large façades.,Com,New build
+B1-0231,231,3. Building Envelope & Waterproofing,Cladding fixings not corrosion-rated for coast,Cladding fixings ↔ Marine environment,Salt air corrodes standard fixings.,Res/Com,New build
+B1-0232,232,3. Building Envelope & Waterproofing,Façade bracket thermal break missing,Façade bracket ↔ Insulation,Brackets bridge the insulation layer.,Com,New build
+B1-0233,233,3. Building Envelope & Waterproofing,Curtain wall unitised panel delivery late,Façade ↔ Programme,Façade completion enables internal trades.,Com,New build
+B1-0234,234,3. Building Envelope & Waterproofing,Curtain wall water test fails,Curtain wall ↔ Sealants,Sealants and gaskets provide the water barrier.,Com,New build
+B1-0235,235,3. Building Envelope & Waterproofing,Glass panel breaks during installation,Glazing ↔ Handling,Large panels are fragile to place.,Com,New build
+B1-0236,236,3. Building Envelope & Waterproofing,Nickel sulfide glass breakage,Toughened glass ↔ Heat,Hidden inclusions can fail later.,Com,All
+B1-0237,237,3. Building Envelope & Waterproofing,Glass thermal stress cracks,Glazing ↔ Shading/heating,Uneven temperature stresses glass edges.,Com,New build
+B1-0238,238,3. Building Envelope & Waterproofing,Glass spec changed to improve acoustics,Glass ↔ Frame design,Thicker glass is heavier and needs stronger frames.,Com,New build
+B1-0239,239,3. Building Envelope & Waterproofing,Window frames thermally bridged,Window frame ↔ Energy rating,Aluminium conducts heat through the frame.,Res,New build
+B1-0240,240,3. Building Envelope & Waterproofing,Window installation out of square,Window ↔ Wall opening,Out-of-square openings cause binding and leaks.,Res,All
+B1-0241,241,3. Building Envelope & Waterproofing,Window sill flashing reversed,Window ↔ Wall cladding,Sill flashing must shed water outward.,Res,New build
+B1-0242,242,3. Building Envelope & Waterproofing,Sliding door track floods,Sliding door ↔ Threshold drainage,Tracks need drainage to the outside.,Res,New build
+B1-0243,243,3. Building Envelope & Waterproofing,Balcony door threshold too high,Door ↔ Waterproofing upturn,Waterproofing upturns raise thresholds.,Res,New build
+B1-0244,244,3. Building Envelope & Waterproofing,Door threshold fails accessibility,Door ↔ Floor level,Level thresholds need hidden drainage.,Res/Com,New build
+B1-0245,245,3. Building Envelope & Waterproofing,External door warps in sun,Door ↔ Climate,Dark doors on sun faces warp.,Res,All
+B1-0246,246,3. Building Envelope & Waterproofing,Shopfront glazing installed before slab complete,Shopfront ↔ Slab levels,Glazing needs final floor levels to set.,Com,New build
+B1-0247,247,3. Building Envelope & Waterproofing,Roller shutter fixings foul on structure,Shutter ↔ Structure,Shutters need clear mounting.,Ind,New build
+B1-0248,248,3. Building Envelope & Waterproofing,Loading dock door seals fail,Dock doors ↔ Dock leveller,Seals depend on dock height and truck geometry.,Ind,New build
+B1-0249,249,3. Building Envelope & Waterproofing,Dock leveller pit floods,Dock leveller ↔ Drainage,Pits collect water without drainage.,Ind,New build
+B1-0250,250,3. Building Envelope & Waterproofing,Industrial cladding dents from forklift,Cladding ↔ Operations,Low panels need protection.,Ind,All
+B1-0251,251,3. Building Envelope & Waterproofing,Translucent roof sheets crack,Roof sheeting ↔ UV,UV degrades plastic sheeting.,Ind,All
+B1-0252,252,3. Building Envelope & Waterproofing,Ridge vent leaks in wind-driven rain,Roof ventilation ↔ Weatherproofing,Vents trade airflow for weather exposure.,Ind/Res,New build
+B1-0253,253,3. Building Envelope & Waterproofing,Whirlybird vent noise,Roof vent ↔ Occupants,Spinning vents transmit noise.,Res,All
+B1-0254,254,3. Building Envelope & Waterproofing,Roof insulation blocks eaves ventilation,Insulation ↔ Roof ventilation,Insulation must leave air paths.,Res,Refurb/Upgrade
+B1-0255,255,3. Building Envelope & Waterproofing,Attic condensation,Roof space ↔ Moisture,Warm moist air meets cold roof surfaces.,Res,All
+B1-0256,256,3. Building Envelope & Waterproofing,Green roof overloads waterproofing,Green roof ↔ Waterproofing,Soil load and roots stress membranes.,Com/Res,New build
+B1-0257,257,3. Building Envelope & Waterproofing,Root penetration of roof membrane,Roof garden ↔ Waterproofing,Root barriers are needed.,Com/Res,New build
+B1-0258,258,3. Building Envelope & Waterproofing,Pavers on pedestals unstable on the roof,Roof paving ↔ Roof drainage,Support systems must allow drainage.,Com/Res,New build
+B1-0259,259,3. Building Envelope & Waterproofing,Membrane upstand too low at the door,Waterproofing ↔ Door thresholds,Upstand height is set by code.,Res/Com,New build
+B1-0260,260,3. Building Envelope & Waterproofing,Waterproofing test (flood test) fails,Waterproofing ↔ Concrete,Flood tests reveal leaks before tiling.,Res/Com,New build
+B1-0261,261,3. Building Envelope & Waterproofing,Wet area membrane cure time ignored,Membrane ↔ Tiling programme,Membranes must cure before tiling.,Res,New build
+B1-0262,262,3. Building Envelope & Waterproofing,Shower recess waterproofing detail wrong,Wet area ↔ Floor waste,Falls and membranes must meet at the drain.,Res,New build
+B1-0263,263,3. Building Envelope & Waterproofing,Bathroom exhaust vented into the roof space,Exhaust ↔ Roof space,Moist air must go outside.,Res,New build
+B1-0264,264,3. Building Envelope & Waterproofing,Mould behind wet walls,Wall lining ↔ Moisture,Moist cavities support mould growth.,Res,All
+B1-0265,265,3. Building Envelope & Waterproofing,Rising damp after render added,Old masonry ↔ Render,Impervious render traps moisture.,Res,Refurb/Upgrade
+B1-0266,266,3. Building Envelope & Waterproofing,Lime mortar replaced with cement mortar,Heritage masonry ↔ Mortar,Hard mortar damages soft brick.,Res/Com,Refurb/Upgrade
+B1-0267,267,3. Building Envelope & Waterproofing,Painted brick cannot breathe,Heritage masonry ↔ Coatings,Non-breathable paint traps moisture.,Res,Refurb/Upgrade
+B1-0268,268,3. Building Envelope & Waterproofing,Asbestos cladding disturbed,Old cladding ↔ Hazmat,Asbestos sheets release fibres when cut.,Res/Ind,Refurb/Upgrade
+B1-0269,269,3. Building Envelope & Waterproofing,Lead paint found on old windows,Old finishes ↔ Hazmat,Sanding releases toxic dust.,Res,Refurb/Upgrade
+B1-0270,270,3. Building Envelope & Waterproofing,Single glazing replaced with double and frames cannot carry it,Window frames ↔ Glass weight,Heavier glass needs new frames.,Res,Refurb/Upgrade
+B1-0271,271,3. Building Envelope & Waterproofing,Retrofit insulation causes dampness,Wall cavity ↔ Insulation,Cavity fill can bridge moisture.,Res,Refurb/Upgrade
+B1-0272,272,3. Building Envelope & Waterproofing,Overcladding hides defects,Overcladding ↔ Substrate,New cladding relies on the old substrate.,Com/Res,Refurb/Upgrade
+B1-0273,273,3. Building Envelope & Waterproofing,Overcladding load exceeds old fixings,Old wall ↔ New cladding,Wall fixings were not designed for added weight.,Com/Res,Refurb/Upgrade
+B1-0274,274,3. Building Envelope & Waterproofing,New extension roof lines do not match existing,New roof ↔ Existing roof,Matching pitches and materials require care.,Res,Extension
+B1-0275,275,3. Building Envelope & Waterproofing,Extension wall flashing cannot tie into old cladding,New wall ↔ Old cladding,Different systems make junctions hard to seal.,Res,Extension
+B1-0276,276,3. Building Envelope & Waterproofing,Extension window sizes differ from existing,New windows ↔ Existing facade,Old units have different dimensions.,Res,Extension
+B1-0277,277,3. Building Envelope & Waterproofing,Termite shield bridged by new render,Termite barrier ↔ Render,Render can hide the inspection gap.,Res,New build/Extension
+B1-0278,278,3. Building Envelope & Waterproofing,Slab edge exposed or covered incorrectly,Slab edge ↔ Cladding,Exposed edges allow moisture or termite entry.,Res,New build
+B1-0279,279,3. Building Envelope & Waterproofing,Wind-driven rain enters weep holes,Masonry weep holes ↔ Wind,Weeps drain water but admit wind.,Res,New build
+B1-0280,280,3. Building Envelope & Waterproofing,Garage door opening sag,Garage door ↔ Lintel,Lintel deflection binds the door.,Res,New build
+B1-0281,281,3. Building Envelope & Waterproofing,Vehicle impact damages a façade column,Façade ↔ Vehicle access,Protection is needed at car park interfaces.,Com,All
+B1-0282,282,3. Building Envelope & Waterproofing,Louvre blades block fire exit air,Louvre ↔ Ventilation,Louvre free area controls airflow.,Com,New build
+B1-0283,283,3. Building Envelope & Waterproofing,Louvre leaks in storms,Louvre ↔ Weatherproofing,Louvres admit water at high wind speeds.,Com/Ind,New build
+B1-0284,284,3. Building Envelope & Waterproofing,Operable window cannot open due to wind code,Windows ↔ Wind pressure,Tall buildings need restricted openings.,Com,New build
+B1-0285,285,3. Building Envelope & Waterproofing,External shading affects wind loads,Shading devices ↔ Façade,Shading adds area for wind pressure.,Com,New build
+B1-0286,286,3. Building Envelope & Waterproofing,Façade cleaning access not provided,Façade ↔ Maintenance,High façades need anchors and cradles.,Com,New build
+B1-0287,287,3. Building Envelope & Waterproofing,Window cleaning anchors fail the test,Roof anchors ↔ Structure,Anchors must connect to proper structure.,Com/Res,New build
+B1-0288,288,3. Building Envelope & Waterproofing,Sealant joint movement exceeds capacity,Sealants ↔ Façade movement,Sealants fail if joints move too far.,Com,New build
+B1-0289,289,3. Building Envelope & Waterproofing,Sealant incompatible with stone,Sealant ↔ Natural stone,Some sealants stain stone.,Com,New build
+B1-0290,290,3. Building Envelope & Waterproofing,Stone cladding fixing pull-out failure,Stone cladding ↔ Backing,Stone anchors depend on substrate strength.,Com,New build
+B1-0291,291,3. Building Envelope & Waterproofing,Stone slab delivered chipped,Stone supply ↔ Finishing programme,Delivery damage delays installation.,Com/Res,New build
+B1-0292,292,3. Building Envelope & Waterproofing,Cladding panels fail impact test,Cladding ↔ Compliance testing,Test results decide what products are allowed.,Com,New build
+B1-0293,293,3. Building Envelope & Waterproofing,Façade engineering not coordinated with structure deflection,Façade ↔ Structure movement,Façade must accommodate slab deflections.,Com,New build
+B1-0294,294,3. Building Envelope & Waterproofing,Wind-driven rain enters via window frame corners,Window frames ↔ Seals,Corner joints are weak points.,Res,All
+B1-0295,295,3. Building Envelope & Waterproofing,Gutter guard fails in bushfire,Gutter ↔ Bushfire,Combustible guards ignite.,Res,All
+B1-0296,296,3. Building Envelope & Waterproofing,Sarking omitted under metal roofing,Roof ↔ Condensation,Sarking controls condensation and dust.,Res,New build
+B1-0297,297,3. Building Envelope & Waterproofing,Roof tiles break from foot traffic,Roof tiles ↔ Access,Services trades walk on roofs.,Res,All
+B1-0298,298,3. Building Envelope & Waterproofing,Eaves gaps allow rodent entry,Eaves ↔ Pest control,Gaps let vermin into roof spaces.,Res,All
+B1-0299,299,3. Building Envelope & Waterproofing,Window film voids glass warranty,Glazing ↔ Heat build-up,Films increase thermal stress.,Res/Com,Refurb/Upgrade
+B1-0300,300,3. Building Envelope & Waterproofing,Retrofit double glazing in heritage frames,Heritage windows ↔ Energy upgrade,Heritage frames cannot carry heavy glass.,Res,Refurb/Upgrade
+B1-0301,301,"4. Fire, Life Safety & Compliance",Fire collar missing at a pipe penetration,Fire compartments ↔ Services,Every service hole must preserve compartment integrity.,All,All
+B1-0302,302,"4. Fire, Life Safety & Compliance",Sprinkler head blocked by a beam,Fire services ↔ Structure,Spray patterns need clear space.,Com/Ind,New build
+B1-0303,303,"4. Fire, Life Safety & Compliance",Ductwork shadows sprinkler coverage,Sprinklers ↔ HVAC,Ducts block water as well as air.,Com/Ind,All
+B1-0304,304,"4. Fire, Life Safety & Compliance",Hydrant pressure insufficient,Fire services ↔ Water supply,Fire systems depend on the supply capacity of the hydraulic main.,Com/Ind,New build
+B1-0305,305,"4. Fire, Life Safety & Compliance",Smoke control fails commissioning,Fire ↔ HVAC/BMS,Fans and dampers must behave as fire systems on cue.,Com,New build
+B1-0306,306,"4. Fire, Life Safety & Compliance",Fire door gaps out of tolerance,Doors ↔ Compartmentation,A rating only holds if the installation matches the tested one.,All,All
+B1-0307,307,"4. Fire, Life Safety & Compliance",Design change reduces structural fire rating,Structure ↔ Fire engineering,Structure must survive fire long enough for egress.,Com,New build
+B1-0308,308,"4. Fire, Life Safety & Compliance",Column narrows the exit path,Structure ↔ Egress,Structure occupies space the exit width needs.,Com,New build
+B1-0309,309,"4. Fire, Life Safety & Compliance",Fire alarm cable not fire-rated,Electrical ↔ Fire systems,Alarms must function during the event they detect.,Com/Ind,New build
+B1-0310,310,"4. Fire, Life Safety & Compliance",Cladding fails the fire test,Façade ↔ Fire safety,The exterior must not spread fire up the building.,Res/Com,New build/Refurb
+B1-0311,311,"4. Fire, Life Safety & Compliance",Fire-rated wall stops at the ceiling not the slab,Wall ↔ Roof/slab above,Compartment walls must run slab to slab.,Com/Res,All
+B1-0312,312,"4. Fire, Life Safety & Compliance",Fire rated shaft penetrated by cable tray,Fire shaft ↔ Electrical,Penetrations compromise shaft rating.,Com,All
+B1-0313,313,"4. Fire, Life Safety & Compliance",Fire damper missing in a rated duct,HVAC ↔ Fire compartment,Dampers close ducts at fire walls.,Com,New build
+B1-0314,314,"4. Fire, Life Safety & Compliance",Fire damper inaccessible for testing,Fire damper ↔ Ceilings,Dampers need access for annual testing.,Com,New build
+B1-0315,315,"4. Fire, Life Safety & Compliance",Intumescent paint thickness insufficient,Steel ↔ Fire protection,Thickness decides the fire resistance period.,Com/Ind,New build
+B1-0316,316,"4. Fire, Life Safety & Compliance",Fire stopping at the façade-slab gap missing,Façade ↔ Slab edge,Cavity fires spread through perimeter gaps.,Res/Com,New build
+B1-0317,317,"4. Fire, Life Safety & Compliance",Fire-rated glazing replaced with ordinary glass,Glazing ↔ Fire compartment,Glass loses integrity in fire.,Com,All
+B1-0318,318,"4. Fire, Life Safety & Compliance",Exit door swings against egress travel,Doors ↔ Egress,Egress doors swing in the exit direction.,Com,New build
+B1-0319,319,"4. Fire, Life Safety & Compliance",Exit sign hidden by services,Exit signage ↔ Ceiling services,Signs must be visible from travel paths.,Com,New build
+B1-0320,320,"4. Fire, Life Safety & Compliance",Emergency lighting illumination levels fail,Emergency lighting ↔ Layout,Lighting must meet minimum lux on exit paths.,Com,New build
+B1-0321,321,"4. Fire, Life Safety & Compliance",Egress corridor narrowed by a fit-out,Fit-out ↔ Egress width,Tenant works must not reduce exit width.,Com,Refurb/Upgrade
+B1-0322,322,"4. Fire, Life Safety & Compliance",Travel distance exceeds the limit,Floor layout ↔ Exit location,Maximum travel to an exit constrains layouts.,Com/Ind,New build/Refurb
+B1-0323,323,"4. Fire, Life Safety & Compliance",Stair pressurisation fan too weak,Stair ↔ Mechanical,Pressurisation keeps smoke out of exit stairs.,Com,New build
+B1-0324,324,"4. Fire, Life Safety & Compliance",Stair doors do not close because of pressure,Stair ↔ Door closers,Pressure can prevent doors closing.,Com,New build
+B1-0325,325,"4. Fire, Life Safety & Compliance",Lift lobby smoke seal fails,Lift ↔ Smoke control,Lift shafts spread smoke between floors.,Com,New build
+B1-0326,326,"4. Fire, Life Safety & Compliance",Fire lift power supply not segregated,Fire lift ↔ Electrical,Fire lifts need protected supplies.,Com,New build
+B1-0327,327,"4. Fire, Life Safety & Compliance",Fire pump room flooded,Fire pump ↔ Drainage,Pump rooms must stay operational in flooding.,Com,New build
+B1-0328,328,"4. Fire, Life Safety & Compliance",Fire pump fails flow test,Fire pump ↔ Hydraulic design,Pumps must deliver the designed flow.,Com,New build
+B1-0329,329,"4. Fire, Life Safety & Compliance",Sprinkler pipework not pressure tested before ceilings,Sprinklers ↔ Ceiling programme,Leaks must be found before concealment.,Com,New build
+B1-0330,330,"4. Fire, Life Safety & Compliance",Sprinkler head painted over,Sprinklers ↔ Painting,Paint on heads can prevent operation.,Com,All
+B1-0331,331,"4. Fire, Life Safety & Compliance",Sprinkler layout misses a coverage zone,Sprinklers ↔ Floor layout,Layout changes can leave gaps.,Com,Refurb/Upgrade
+B1-0332,332,"4. Fire, Life Safety & Compliance",Tenant partitions block sprinkler spray,Sprinklers ↔ Partitions,Walls change coverage areas.,Com,Refurb/Upgrade
+B1-0333,333,"4. Fire, Life Safety & Compliance",Sprinkler water supply upgraded by the authority,Sprinklers ↔ Mains,Fire flow demands exceed the existing mains.,Com/Ind,New build
+B1-0334,334,"4. Fire, Life Safety & Compliance",High-hazard storage requires upgraded sprinklers,Fire protection ↔ Warehouse use,Stored commodity decides sprinkler design.,Ind,Refurb/Upgrade
+B1-0335,335,"4. Fire, Life Safety & Compliance",Racking height above sprinkler rating,Storage racking ↔ Fire protection,Racks above design height defeat sprinklers.,Ind,Refurb/Upgrade
+B1-0336,336,"4. Fire, Life Safety & Compliance",Fire hose reel coverage gap,Hose reels ↔ Layout,Reels must reach all areas.,Com/Ind,New build
+B1-0337,337,"4. Fire, Life Safety & Compliance",Fire hydrant booster position clashes with landscape,Fire booster ↔ Site layout,Boosters need clear access for fire brigade.,Com,New build
+B1-0338,338,"4. Fire, Life Safety & Compliance",Fire brigade access road too narrow,Site layout ↔ Fire access,Appliances need turning and width.,Com/Ind,New build
+B1-0339,339,"4. Fire, Life Safety & Compliance",Fire alarm detectors obstructed by new ductwork,Detectors ↔ HVAC,Duct and air flow alter detector coverage.,Com,Refurb/Upgrade
+B1-0340,340,"4. Fire, Life Safety & Compliance",Detectors triggered by construction dust,Fire alarm ↔ Construction,Dust causes false alarms.,Com,Refurb/Upgrade
+B1-0341,341,"4. Fire, Life Safety & Compliance",Fire alarm panel cannot integrate with new systems,Fire alarm ↔ BMS,Interfaces must be compatible.,Com,Refurb/Upgrade
+B1-0342,342,"4. Fire, Life Safety & Compliance",Smoke alarms interconnection fails,Smoke alarms ↔ Electrical,Interconnected alarms need a reliable circuit.,Res,New build
+B1-0343,343,"4. Fire, Life Safety & Compliance",Smoke alarm location conflicts with ceiling fans,Smoke alarms ↔ Fans,Airflow can keep smoke from reaching alarms.,Res,New build
+B1-0344,344,"4. Fire, Life Safety & Compliance",Bushfire rating (BAL) increased late,Envelope ↔ Bushfire design,"BAL decides materials for glass, cladding and decks.",Res,New build/Extension
+B1-0345,345,"4. Fire, Life Safety & Compliance",Ember-protection mesh blocks ventilation,Bushfire mesh ↔ Ventilation,Fine mesh restricts airflow.,Res,New build
+B1-0346,346,"4. Fire, Life Safety & Compliance",Decking material not suitable for bushfire zone,Deck ↔ Bushfire rating,Combustible timber is restricted.,Res,New build/Extension
+B1-0347,347,"4. Fire, Life Safety & Compliance",Gas cylinder near an opening in a fire zone,Gas storage ↔ Fire safety,Cylinders need separation distances.,Res/Ind,All
+B1-0348,348,"4. Fire, Life Safety & Compliance",Flammable liquids store non-compliant,Hazardous goods ↔ Building layout,Storage rooms need ratings and bunding.,Ind,New build
+B1-0349,349,"4. Fire, Life Safety & Compliance",Kitchen exhaust duct not fire-rated,Kitchen ventilation ↔ Fire safety,Grease fires travel in ducts.,Com,New build/Refurb
+B1-0350,350,"4. Fire, Life Safety & Compliance",Commercial kitchen hood suppression missing,Kitchen ↔ Fire suppression,Hoods need suppression over cookers.,Com,New build/Refurb
+B1-0351,351,"4. Fire, Life Safety & Compliance",Waste chute fire rating not achieved,Waste chute ↔ Fire design,Chutes connect floors and spread fire.,Res,New build
+B1-0352,352,"4. Fire, Life Safety & Compliance",Garbage room fire sprinkler omitted,Waste room ↔ Fire suppression,Waste rooms are high fire load areas.,Res/Com,New build
+B1-0353,353,"4. Fire, Life Safety & Compliance",Car park ventilation fails smoke test,Car park ↔ Ventilation,Smoke clearance protects egress.,Res/Com,New build
+B1-0354,354,"4. Fire, Life Safety & Compliance",Fire engineering solution rejected by the authority,Performance solution ↔ Approval,Alternative solutions need regulator approval.,Com,New build/Refurb
+B1-0355,355,"4. Fire, Life Safety & Compliance",Fire-rating of existing floor unknown,Old slab ↔ Fire code,Old structures may not satisfy current codes.,Com,Refurb/Upgrade
+B1-0356,356,"4. Fire, Life Safety & Compliance",Change of use triggers full fire upgrade,Building use ↔ Fire code,New use classes bring stricter fire rules.,Res/Com,Refurb/Upgrade
+B1-0357,357,"4. Fire, Life Safety & Compliance",Heritage building cannot fit fire stairs,Heritage fabric ↔ Egress,Added stairs conflict with historic plan.,Com,Refurb/Upgrade
+B1-0358,358,"4. Fire, Life Safety & Compliance",Timber floors lack fire separation,Old floors ↔ Fire compartments,Timber floors burn through quickly.,Res/Com,Refurb/Upgrade
+B1-0359,359,"4. Fire, Life Safety & Compliance",Combustible insulation panels discovered,Insulation ↔ Fire safety,Foam panels can be a fire risk.,Ind/Com,Refurb/Upgrade
+B1-0360,360,"4. Fire, Life Safety & Compliance",Roof space lacks fire separation,Roof void ↔ Fire spread,Fire spreads along open roof spaces.,Res,Refurb/Upgrade
+B1-0361,361,"4. Fire, Life Safety & Compliance",Party wall in roof space missing,Townhouse roofs ↔ Fire separation,Fire walls must extend through the roof.,Res,New build
+B1-0362,362,"4. Fire, Life Safety & Compliance",Fire-rated wall penetrated by power outlets back-to-back,Wall ↔ Electrical,Opposed outlets compromise wall rating.,Res,New build
+B1-0363,363,"4. Fire, Life Safety & Compliance",Downlights penetrate rated ceilings,Lighting ↔ Fire-rated ceiling,Fittings need rated covers.,Res,New build
+B1-0364,364,"4. Fire, Life Safety & Compliance",Exhaust fan duct through a fire wall,Ventilation ↔ Fire wall,Ducts need rated enclosures.,Res,New build
+B1-0365,365,"4. Fire, Life Safety & Compliance",Fire hydrant test shows poor pressure,Hydrants ↔ Street mains,The street network may not provide the flow assumed.,Com/Ind,New build
+B1-0366,366,"4. Fire, Life Safety & Compliance",Building height triggers extra fire measures,Building height ↔ Fire code,Greater height needs more fire safety.,Com/Res,New build
+B1-0367,367,"4. Fire, Life Safety & Compliance",Occupant load exceeds the exit capacity,Occupancy ↔ Egress,Exit widths cap the people allowed.,Com,Refurb/Upgrade
+B1-0368,368,"4. Fire, Life Safety & Compliance",Mezzanine added triggers new egress,Mezzanine ↔ Egress,New floor area adds exits and distances.,Ind/Com,Refurb/Upgrade
+B1-0369,369,"4. Fire, Life Safety & Compliance",Accessible toilet cannot fit the structure,Accessibility ↔ Plan,Accessible rooms need clearances.,Com,New build/Refurb
+B1-0370,370,"4. Fire, Life Safety & Compliance",Lift too small for a stretcher,Lift ↔ Accessibility/emergency,Minimum lift sizes are mandated.,Com/Res,New build
+B1-0371,371,"4. Fire, Life Safety & Compliance",Ramp gradient exceeds accessible limit,Ramp ↔ Site levels,Site levels limit accessible slopes.,Com/Res,New build
+B1-0372,372,"4. Fire, Life Safety & Compliance",Handrail extensions missing,Stairs ↔ Accessibility,Handrails need clear extensions.,Com/Res,New build
+B1-0373,373,"4. Fire, Life Safety & Compliance",Tactile indicators clash with stair nosing,Tactiles ↔ Stairs,Tactile layout must match stair geometry.,Com,New build
+B1-0374,374,"4. Fire, Life Safety & Compliance",Door opening force too high,Doors ↔ Accessibility,Closers and pressure affect usability.,Com,New build
+B1-0375,375,"4. Fire, Life Safety & Compliance",Accessible parking location non-compliant,Parking ↔ Accessible path,Spaces must connect with accessible routes.,Com,New build
+B1-0376,376,"4. Fire, Life Safety & Compliance",Adaptable housing requirements missed,Apartment plan ↔ Accessibility,Plans must allow later adaptation.,Res,New build
+B1-0377,377,"4. Fire, Life Safety & Compliance",Energy efficiency rating fails,Envelope/HVAC ↔ Energy code,Combined systems decide energy rating.,Res/Com,New build
+B1-0378,378,"4. Fire, Life Safety & Compliance",Glazing area exceeds energy limit,Glazing ↔ Energy code,More glass increases heat gain/loss.,Com/Res,New build
+B1-0379,379,"4. Fire, Life Safety & Compliance",Lighting power density too high,Lighting ↔ Energy code,Lighting load is capped per area.,Com,New build
+B1-0380,380,"4. Fire, Life Safety & Compliance",HVAC efficiency below code,HVAC ↔ Energy code,Equipment must meet minimum efficiency.,Com,New build/Refurb
+B1-0381,381,"4. Fire, Life Safety & Compliance",Water efficiency fixtures rating not met,Plumbing fixtures ↔ Water code,Fixtures must meet WELS standards.,Res,New build
+B1-0382,382,"4. Fire, Life Safety & Compliance",Stormwater detention required late,Site drainage ↔ Council rules,Councils limit runoff.,Res/Com,New build
+B1-0383,383,"4. Fire, Life Safety & Compliance",Tree removal not permitted,Landscape ↔ Planning,Protected trees limit the building footprint.,Res/Com,New build
+B1-0384,384,"4. Fire, Life Safety & Compliance",Overlooking neighbours requires redesign,Windows ↔ Planning rules,Privacy rules limit window placement.,Res,New build/Extension
+B1-0385,385,"4. Fire, Life Safety & Compliance",Height limit exceeded by plant,Roof plant ↔ Height limit,Rooftop equipment counts against height.,Com,New build
+B1-0386,386,"4. Fire, Life Safety & Compliance",Setback breached by a built element,Building ↔ Planning setbacks,Small encroachments may need approval.,Res,New build/Extension
+B1-0387,387,"4. Fire, Life Safety & Compliance",DA condition requires design changes after approval,Design ↔ Consent conditions,Conditions modify approved design.,All,New build
+B1-0388,388,"4. Fire, Life Safety & Compliance",Occupation certificate withheld,Completed work ↔ Authority sign-off,Occupation depends on final certification.,All,All
+B1-0389,389,"4. Fire, Life Safety & Compliance",Missing certificates delay final inspection,Documentation ↔ Certifier,Evidence must accompany completed work.,All,All
+B1-0390,390,"4. Fire, Life Safety & Compliance",Product used has no test certificate,Materials ↔ Compliance evidence,Unrated products cannot be proven compliant.,All,All
+B1-0391,391,"4. Fire, Life Safety & Compliance",Noise from mechanical plant exceeds the limit,Plant ↔ Neighbour noise limits,External noise limits constrain plant selection.,Com/Ind,All
+B1-0392,392,"4. Fire, Life Safety & Compliance",Light spill complaints from neighbours,External lighting ↔ Planning conditions,Lighting must control spill.,Com/Ind,All
+B1-0393,393,"4. Fire, Life Safety & Compliance",Outdoor kitchen violates fire setbacks,Outdoor kitchen ↔ Fire rules,Appliances need clearance from structures.,Res,Extension
+B1-0394,394,"4. Fire, Life Safety & Compliance",Carport attached to the house requires fire separation,Carport ↔ Dwelling,Attached structures change fire ratings.,Res,Extension
+B1-0395,395,"4. Fire, Life Safety & Compliance",Unprotected openings within the boundary setback,Windows ↔ Fire separation,Openings near boundaries spread fire.,Res,New build/Extension
+B1-0396,396,"4. Fire, Life Safety & Compliance",Secondary dwelling fire separation,Secondary dwelling ↔ Main dwelling,Separation is needed between dwellings.,Res,Extension
+B1-0397,397,"4. Fire, Life Safety & Compliance",Open plan layout defeats smoke compartmentation,Open plan ↔ Smoke control,Large open spaces need extra smoke measures.,Res,Refurb/Upgrade
+B1-0398,398,"4. Fire, Life Safety & Compliance",Basement bedroom lacks egress window,Basement ↔ Egress,Habitable rooms need escape routes.,Res,Refurb/Upgrade
+B1-0399,399,"4. Fire, Life Safety & Compliance",Roof terrace needs a second exit,Roof terrace ↔ Egress,Occupied roofs need exits.,Res/Com,Refurb/Upgrade
+B1-0400,400,"4. Fire, Life Safety & Compliance",Warehouse exit signs obscured by racking,Racking ↔ Egress signage,Racks block sightlines.,Ind,All
+B1-0401,401,"5. Hydraulics, Drainage & Gas",Low water pressure on upper floors,Hydraulics ↔ Building height,Height consumes pressure so pumps must compensate.,Res/Com,New build
+B1-0402,402,"5. Hydraulics, Drainage & Gas",Sewer connection higher than the building drain,Drainage ↔ Civil levels,Gravity flow needs the site to fall to the sewer.,All,New build/Extension
+B1-0403,403,"5. Hydraulics, Drainage & Gas",Larger stormwater tank required,Drainage ↔ Basement/structure,Water storage needs volume that structure must give up.,Com/Res,New build
+B1-0404,404,"5. Hydraulics, Drainage & Gas",Gas supply short for the hot water load,Gas ↔ Hydraulics,Hot water output depends on fuel supply.,Res/Com,New build/Refurb
+B1-0405,405,"5. Hydraulics, Drainage & Gas",Condensate drain has no fall,HVAC ↔ Hydraulics,Cooling units produce water that the drainage must remove.,Com/Res,New build
+B1-0406,406,"5. Hydraulics, Drainage & Gas",Hot water system fails temperature requirements,Hydraulics ↔ Health safety,Water must stay hot enough to prevent bacterial growth.,Com/Res,New build
+B1-0407,407,"5. Hydraulics, Drainage & Gas",Dissimilar metals corrode pipework,Hydraulics ↔ Materials,Material pairing determines long-term integrity.,All,All
+B1-0408,408,"5. Hydraulics, Drainage & Gas",Floor waste not at the low point,Tiling ↔ Hydraulics,Falls in the finish must lead to the drain.,Res/Com,New build
+B1-0409,409,"5. Hydraulics, Drainage & Gas",Water main connection delayed by the authority,Water supply ↔ Programme,Building supply depends on authority works.,All,New build
+B1-0410,410,"5. Hydraulics, Drainage & Gas",Water meter size undersized for demand,Water supply ↔ Peak demand,Meters limit peak flow.,Com/Res,New build
+B1-0411,411,"5. Hydraulics, Drainage & Gas",Water hammer in pipes,Pipework ↔ Valves,Rapid valve closure shocks pipes.,Com/Ind,All
+B1-0412,412,"5. Hydraulics, Drainage & Gas",Pipe noise in bedroom walls,Pipework ↔ Acoustics,Pipes transmit flow noise through framing.,Res,New build
+B1-0413,413,"5. Hydraulics, Drainage & Gas",Pipe expansion not allowed for,Hot pipes ↔ Structure,Pipes expand when heated and need loops.,Com,New build
+B1-0414,414,"5. Hydraulics, Drainage & Gas",Pipe sleeves through slab misplaced,Pipework ↔ Structure,Sleeves must align with pipe runs.,Com/Res,New build
+B1-0415,415,"5. Hydraulics, Drainage & Gas",Pipe clash with beams in ceiling space,Pipework ↔ Structure,Services thread through limited gaps.,Com,New build
+B1-0416,416,"5. Hydraulics, Drainage & Gas",Stack penetration through the waterproof slab leaks,Plumbing stack ↔ Waterproofing,Penetrations need sealed flanges.,Res/Com,New build
+B1-0417,417,"5. Hydraulics, Drainage & Gas",Vent pipe terminates inside the roof space,Drain vent ↔ Roof,Vents must discharge outside.,Res,New build/Extension
+B1-0418,418,"5. Hydraulics, Drainage & Gas",Sewer odour in bathroom,Drainage ↔ Trap seals,Dry traps allow sewer gases.,Res,All
+B1-0419,419,"5. Hydraulics, Drainage & Gas",Siphoned trap in a high-rise stack,Drainage stack ↔ Venting,Pressure fluctuations empty traps.,Res/Com,New build
+B1-0420,420,"5. Hydraulics, Drainage & Gas",Drain blocked by construction debris,Drainage ↔ Construction,Debris enters open drain lines.,All,New build
+B1-0421,421,"5. Hydraulics, Drainage & Gas",Drain collapse under a slab,Underground drain ↔ Slab,Failed pipes cannot be reached later.,Res/Ind,New build/Refurb
+B1-0422,422,"5. Hydraulics, Drainage & Gas",Sewer pump station sizing change,Sewer pumps ↔ Basement layout,Pumps need wet wells and access.,Com,New build
+B1-0423,423,"5. Hydraulics, Drainage & Gas",Grease trap too small for kitchens,Drainage ↔ Kitchen tenancy,Grease must be intercepted before sewers.,Com,New build/Refurb
+B1-0424,424,"5. Hydraulics, Drainage & Gas",Trade waste approval delayed,Drainage ↔ Water authority,Industrial discharge needs approval.,Ind,New build
+B1-0425,425,"5. Hydraulics, Drainage & Gas",Stormwater pit at the wrong level,Stormwater ↔ Pavement,Pits must receive surface flow.,Ind/Com,New build
+B1-0426,426,"5. Hydraulics, Drainage & Gas",Roof downpipes overload the stormwater,Roof drainage ↔ Site drainage,Roof flow concentrates at few outlets.,All,New build
+B1-0427,427,"5. Hydraulics, Drainage & Gas",Siphonic roof drainage fails priming,Roof drainage ↔ Hydraulic design,Siphonic systems rely on correct sizing.,Com/Ind,New build
+B1-0428,428,"5. Hydraulics, Drainage & Gas",Overflow device missing for sealed roof,Roof ↔ Emergency overflow,Blocked outlets need a relief path.,Com,New build
+B1-0429,429,"5. Hydraulics, Drainage & Gas",Detention tank buoyant in groundwater,Tank ↔ Groundwater,Empty tanks float in a high water table.,Com,New build
+B1-0430,430,"5. Hydraulics, Drainage & Gas",Rainwater tank mandated late,Rainwater tank ↔ Site layout,Tanks need space and plumbing connections.,Res,New build/Extension
+B1-0431,431,"5. Hydraulics, Drainage & Gas",Rainwater pump noise,Pump ↔ Bedrooms,Pumps need isolation from sleeping areas.,Res,New build
+B1-0432,432,"5. Hydraulics, Drainage & Gas",Backflow prevention device missing,Plumbing ↔ Water authority rules,Backflow protects the mains from contamination.,Com/Ind,All
+B1-0433,433,"5. Hydraulics, Drainage & Gas",Backflow device installed in a flood-prone pit,Backflow ↔ Drainage,Pits must stay drained and accessible.,Com,New build
+B1-0434,434,"5. Hydraulics, Drainage & Gas",Water treatment fails to meet standard,Water supply ↔ Process use,Process use may need purified water.,Ind,New build
+B1-0435,435,"5. Hydraulics, Drainage & Gas",Legionella risk in cooling towers,Cooling tower ↔ Water quality,Warm stagnant water grows bacteria.,Com,All
+B1-0436,436,"5. Hydraulics, Drainage & Gas",Dead legs in hot water lines,Hot water ↔ Layout,Unused branches stagnate.,Com/Res,Refurb/Upgrade
+B1-0437,437,"5. Hydraulics, Drainage & Gas",Thermostatic mixing valve missing,Hot water ↔ Scald protection,Safe temperatures need mixing valves.,Res/Com,New build
+B1-0438,438,"5. Hydraulics, Drainage & Gas",Hot water unit location exceeds pipe length,Hot water ↔ Layout,Long runs waste heat and water.,Res,New build
+B1-0439,439,"5. Hydraulics, Drainage & Gas",Heat pump hot water installed with no power,Hot water ↔ Electrical,Heat pumps need dedicated circuits.,Res,New build/Refurb
+B1-0440,440,"5. Hydraulics, Drainage & Gas",Solar hot water roof collectors overshadowed,Solar hot water ↔ Roof design,Collectors need unobstructed sun.,Res,New build
+B1-0441,441,"5. Hydraulics, Drainage & Gas",Gas flue clearance to openings not met,Gas appliance ↔ Window/opening,Flues must discharge away from openings.,Res,New build/Extension
+B1-0442,442,"5. Hydraulics, Drainage & Gas",Gas meter location not permitted,Gas ↔ Site planning,Meters have clearance requirements.,Res,New build
+B1-0443,443,"5. Hydraulics, Drainage & Gas",Gas pipe through a fire-rated wall,Gas ↔ Fire compartment,Gas lines need sealed sleeves.,Com/Res,New build
+B1-0444,444,"5. Hydraulics, Drainage & Gas",Gas leak at test,Gas pipework ↔ Joints,Joints must pass pressure tests.,All,All
+B1-0445,445,"5. Hydraulics, Drainage & Gas",Gas supply ban triggers all-electric redesign,Gas ↔ Electrical,Removing gas increases electrical demand.,Res,New build
+B1-0446,446,"5. Hydraulics, Drainage & Gas",Medical gas pipework fails purity test,Medical gas ↔ Contaminants,Clean pipes are mandatory for medical gas.,Com,New build
+B1-0447,447,"5. Hydraulics, Drainage & Gas",Compressed air lines leak,Process services ↔ Plant,Leaks waste energy.,Ind,All
+B1-0448,448,"5. Hydraulics, Drainage & Gas",Process cooling water supply insufficient,Process services ↔ Water mains,Industrial loads exceed mains capacity.,Ind,New build
+B1-0449,449,"5. Hydraulics, Drainage & Gas",Wastewater pretreatment needed,Process waste ↔ Sewer,Discharge standards limit what can go to sewers.,Ind,New build
+B1-0450,450,"5. Hydraulics, Drainage & Gas",Spill containment not connected to drainage,Bunds ↔ Stormwater,Spills must not reach stormwater.,Ind,New build
+B1-0451,451,"5. Hydraulics, Drainage & Gas",Oil separator undersized,Stormwater ↔ Hardstand use,Separators must treat the runoff from vehicle areas.,Ind/Com,New build
+B1-0452,452,"5. Hydraulics, Drainage & Gas",Underfloor drainage conflicts with reinforcement,Drainage ↔ Slab,Drains placed in slabs weaken sections.,Ind,New build
+B1-0453,453,"5. Hydraulics, Drainage & Gas",Site stormwater connects to the wrong pit,Stormwater ↔ Council network,Connection points are set by authority.,All,New build
+B1-0454,454,"5. Hydraulics, Drainage & Gas",Easement drain discovered under the footprint,Private drain ↔ Neighbour,Shared drains cannot be built over.,Res,Extension
+B1-0455,455,"5. Hydraulics, Drainage & Gas",Existing sewer relocation required,Sewer ↔ New building footprint,Building over sewers needs approval.,Res/Com,Extension/New build
+B1-0456,456,"5. Hydraulics, Drainage & Gas",Old galvanised pipes restrict flow,Existing plumbing ↔ New fixtures,Old pipes clog and restrict flow.,Res,Refurb/Upgrade
+B1-0457,457,"5. Hydraulics, Drainage & Gas",Lead pipes discovered,Existing plumbing ↔ Health,Lead plumbing needs replacing.,Res,Refurb/Upgrade
+B1-0458,458,"5. Hydraulics, Drainage & Gas",Cast iron stack cracked,Old drainage ↔ Building structure,Old stacks leak inside walls.,Res/Com,Refurb/Upgrade
+B1-0459,459,"5. Hydraulics, Drainage & Gas",Hidden leaks found after lining removal,Existing plumbing ↔ Wall linings,Leaks hide until walls open.,Res,Refurb/Upgrade
+B1-0460,460,"5. Hydraulics, Drainage & Gas",New bathroom drains cannot fall on an old slab,Bathroom ↔ Existing floor,Slab level restricts drainage falls.,Res,Refurb/Upgrade
+B1-0461,461,"5. Hydraulics, Drainage & Gas",Fixture upgrade overloads old drainage,New fixtures ↔ Old drains,Greater flows exceed old pipe sizes.,Res/Com,Refurb/Upgrade
+B1-0462,462,"5. Hydraulics, Drainage & Gas",Plumbing relocation needs slab cutting,Plumbing ↔ Existing slab,Cutting slabs requires structural checks.,Com/Res,Refurb/Upgrade
+B1-0463,463,"5. Hydraulics, Drainage & Gas",Water supply isolation for tie-ins disrupts occupants,Existing supply ↔ Occupants,Tie-ins require shutdowns.,Com/Res,Refurb/Upgrade
+B1-0464,464,"5. Hydraulics, Drainage & Gas",Extension plumbing exceeds hot water capacity,New load ↔ Existing hot water unit,Systems were sized for the original house.,Res,Extension
+B1-0465,465,"5. Hydraulics, Drainage & Gas",Septic system undersized for the extension,Septic ↔ Added bedrooms,Septic capacity is based on bedrooms.,Res,Extension
+B1-0466,466,"5. Hydraulics, Drainage & Gas",Septic trench conflicts with the extension footprint,Septic ↔ Site layout,Septic systems need setbacks.,Res,Extension
+B1-0467,467,"5. Hydraulics, Drainage & Gas",Greywater reuse rejected,Greywater ↔ Health rules,Treatment rules restrict reuse.,Res,New build
+B1-0468,468,"5. Hydraulics, Drainage & Gas",Tapware flow rate causes complaint,Fixtures ↔ Pressure,Low-flow fixtures reduce performance.,Res,New build
+B1-0469,469,"5. Hydraulics, Drainage & Gas",Water pressure too high damages fixtures,Mains pressure ↔ Fixtures,Pressure-limiting valves are required.,Res,All
+B1-0470,470,"5. Hydraulics, Drainage & Gas",Fixtures delivered not matching rough-in,Fixtures ↔ Plumbing rough-in,Rough-in dimensions rely on specific products.,Res/Com,New build
+B1-0471,471,"5. Hydraulics, Drainage & Gas",Wall hung toilets need heavier framing,Fixtures ↔ Wall framing,Cisterns require structure to carry weight.,Res/Com,New build
+B1-0472,472,"5. Hydraulics, Drainage & Gas",Concealed cistern access missing,Plumbing ↔ Wall finishes,Equipment needs a maintenance route.,Res/Com,New build
+B1-0473,473,"5. Hydraulics, Drainage & Gas",Hydraulic riser too small for services,Riser ↔ Services,Riser space must hold all services.,Res/Com,New build
+B1-0474,474,"5. Hydraulics, Drainage & Gas",Hydraulic riser lacks fire stopping,Riser ↔ Fire rating,Risers connect floors and spread fire.,Res/Com,New build
+B1-0475,475,"5. Hydraulics, Drainage & Gas",Pipe insulation omitted,Hot pipes ↔ Energy code,Insulation reduces losses.,Com,New build
+B1-0476,476,"5. Hydraulics, Drainage & Gas",Condensation on cold pipes drips,Cold pipes ↔ Ceilings,Cold surfaces condense moisture.,Com,New build
+B1-0477,477,"5. Hydraulics, Drainage & Gas",Frozen pipes in unheated areas,Plumbing ↔ Climate,Frost splits exposed pipes.,Res/Ind,All
+B1-0478,478,"5. Hydraulics, Drainage & Gas",Pressure testing leaks flood the floor,Plumbing ↔ Finishes,Testing after finishes causes damage.,Com/Res,New build
+B1-0479,479,"5. Hydraulics, Drainage & Gas",Sprinkler pipe and hydraulic pipe clash,Fire services ↔ Hydraulics,Shared ceiling space is limited.,Com,New build
+B1-0480,480,"5. Hydraulics, Drainage & Gas",Pump room access too small for equipment,Pumps ↔ Plant room,Equipment must be installed and replaced.,Com,New build
+B1-0481,481,"5. Hydraulics, Drainage & Gas",Pump noise heard throughout the building,Pumps ↔ Structure,Vibration travels through slabs.,Com/Res,New build
+B1-0482,482,"5. Hydraulics, Drainage & Gas",Pressure vessel inspection delayed,Plumbing ↔ Authority,Vessels need certificates before use.,Com/Ind,New build
+B1-0483,483,"5. Hydraulics, Drainage & Gas",Water tank cleaning access missing,Tank ↔ Maintenance,Tanks need hatches and ladders.,Com/Ind,New build
+B1-0484,484,"5. Hydraulics, Drainage & Gas",Roof tank loads exceed the slab capacity,Water tank ↔ Roof structure,Full tanks are heavy.,Com,New build
+B1-0485,485,"5. Hydraulics, Drainage & Gas",Chlorine dosing room ventilation inadequate,Pool plant ↔ Ventilation,Chemicals require ventilation.,Com,New build
+B1-0486,486,"5. Hydraulics, Drainage & Gas",Pool plant room undersized,Pool plant ↔ Layout,Equipment needs clearances.,Res/Com,New build
+B1-0487,487,"5. Hydraulics, Drainage & Gas",Pool pump noise complaints,Pool pump ↔ Neighbours,Plant noise travels across boundaries.,Res,All
+B1-0488,488,"5. Hydraulics, Drainage & Gas",Pool barrier fails the test,Pool fence ↔ Safety rules,Barrier heights and gaps are mandated.,Res,All
+B1-0489,489,"5. Hydraulics, Drainage & Gas",Water meter location blocked by landscaping,Water meter ↔ Landscape,Authority needs meter access.,Res,New build
+B1-0490,490,"5. Hydraulics, Drainage & Gas",Overflow relief gully levels wrong,Drainage ↔ Slab levels,Relief gullies must sit below floor level.,Res,New build
+B1-0491,491,"5. Hydraulics, Drainage & Gas",Sewer back-flow floods the lowest level,Sewer ↔ Basement,Basement fixtures sit below sewer level.,Res/Com,All
+B1-0492,492,"5. Hydraulics, Drainage & Gas",Sump pump fails during a storm,Sump ↔ Electrical,Pumps depend on power during storms.,Res/Com,All
+B1-0493,493,"5. Hydraulics, Drainage & Gas",Cooling water make-up demand exceeds supply,Process cooling ↔ Mains,Evaporation needs makeup.,Com/Ind,New build
+B1-0494,494,"5. Hydraulics, Drainage & Gas",Fire sprinkler tank volume increases footprint,Fire tank ↔ Site,Tanks consume space.,Ind,New build
+B1-0495,495,"5. Hydraulics, Drainage & Gas",Fire tank refill rate inadequate,Fire tank ↔ Mains,Tanks must refill within set time.,Ind,New build
+B1-0496,496,"5. Hydraulics, Drainage & Gas",Septic effluent field fails in wet ground,Septic ↔ Soil,Soil absorption varies seasonally.,Res,New build/Extension
+B1-0497,497,"5. Hydraulics, Drainage & Gas",Rainwater downpipes connected to sewer,Roof drainage ↔ Sewer,Illegal connections overload sewers.,Res,All
+B1-0498,498,"5. Hydraulics, Drainage & Gas",Plumbing vents penetrate fire-rated roof spaces,Plumbing ↔ Fire,Penetrations must be sealed.,Res,New build
+B1-0499,499,"5. Hydraulics, Drainage & Gas",Pipework supports missing and pipes sag,Pipework ↔ Fixings,Sagging pipes lose fall.,Com,New build
+B1-0500,500,"5. Hydraulics, Drainage & Gas",Pressure reducing valve fails and bursts appliances,Plumbing ↔ Appliances,Valves protect equipment.,Res,All
+B1-0501,501,"6. Mechanical, Vertical Transport & Acoustics",Chiller too heavy for the planned crane,HVAC ↔ Lifting/structure,Plant must be lifted and supported within structural limits.,Com/Ind,New build
+B1-0502,502,"6. Mechanical, Vertical Transport & Acoustics",Plant vibration heard in apartments,Mechanical ↔ Structure/acoustics,Structure transmits vibration unless isolated.,Res/Com,New build
+B1-0503,503,"6. Mechanical, Vertical Transport & Acoustics",BMS cannot talk to the chillers,Controls ↔ HVAC,Controls only work if the equipment protocols match.,Com,New build/Refurb
+B1-0504,504,"6. Mechanical, Vertical Transport & Acoustics",Generator exhaust too close to an air intake,Electrical ↔ HVAC,Exhaust and fresh air must stay separate.,Com/Ind,New build
+B1-0505,505,"6. Mechanical, Vertical Transport & Acoustics",Services stack shortens ceiling height,Services ↔ Architecture,"Floor-to-floor height is shared by structure, services and finishes.",Com,New build
+B1-0506,506,"6. Mechanical, Vertical Transport & Acoustics",No access panels for valves,Services ↔ Ceilings,Maintainable equipment needs reachable locations.,Com,New build
+B1-0507,507,"6. Mechanical, Vertical Transport & Acoustics",Cable tray overheats with high load,Electrical ↔ Ventilation,Current load generates heat that must be dissipated.,Com/Ind,All
+B1-0508,508,"6. Mechanical, Vertical Transport & Acoustics",Ceiling plenum too shallow for ducts,HVAC ↔ Ceiling height,Duct sizes need depth the ceiling void lacks.,Com,New build/Refurb
+B1-0509,509,"6. Mechanical, Vertical Transport & Acoustics",Duct sizes reduced late and noise increases,Ductwork ↔ Acoustics,Smaller ducts raise air velocity and noise.,Com,New build
+B1-0510,510,"6. Mechanical, Vertical Transport & Acoustics",Duct leakage test fails,Ductwork ↔ Energy performance,Leaks waste conditioned air.,Com,New build
+B1-0511,511,"6. Mechanical, Vertical Transport & Acoustics",Duct insulation omitted,Ductwork ↔ Condensation,Cold ducts sweat without insulation.,Com,New build
+B1-0512,512,"6. Mechanical, Vertical Transport & Acoustics",Duct crosses a fire wall without a damper,Ductwork ↔ Fire compartment,Ducts breach compartmentation.,Com,New build
+B1-0513,513,"6. Mechanical, Vertical Transport & Acoustics",Duct clashes with a sprinkler main,Ductwork ↔ Fire services,Ceiling space is limited.,Com,New build
+B1-0514,514,"6. Mechanical, Vertical Transport & Acoustics",Fresh air intake too close to a car park exhaust,Ventilation ↔ Car park,Exhaust contaminates fresh air.,Com/Res,New build
+B1-0515,515,"6. Mechanical, Vertical Transport & Acoustics",Fresh air rate too low for occupancy,Ventilation ↔ Occupant load,Ventilation is based on people numbers.,Com,Refurb/Upgrade
+B1-0516,516,"6. Mechanical, Vertical Transport & Acoustics",Kitchen exhaust makeup air missing,Exhaust ↔ Supply air,Exhaust needs makeup air to work.,Com,New build/Refurb
+B1-0517,517,"6. Mechanical, Vertical Transport & Acoustics",Range hood exhaust sucks air through flues,Exhaust ↔ Gas appliances,Negative pressure backdrafts flues.,Res,New build
+B1-0518,518,"6. Mechanical, Vertical Transport & Acoustics",Bathroom fan too weak,Exhaust ↔ Moisture,Weak fans leave humidity.,Res,New build
+B1-0519,519,"6. Mechanical, Vertical Transport & Acoustics",Condenser unit location violates noise rules,HVAC ↔ Neighbour noise,Outdoor units must meet noise limits.,Res,New build/Extension
+B1-0520,520,"6. Mechanical, Vertical Transport & Acoustics",Split system line length exceeded,HVAC ↔ Layout,Pipe length affects capacity.,Res,Refurb/Upgrade
+B1-0521,521,"6. Mechanical, Vertical Transport & Acoustics",Refrigerant pipe not insulated,HVAC ↔ Efficiency,Pipes lose capacity.,Res,New build
+B1-0522,522,"6. Mechanical, Vertical Transport & Acoustics",Refrigerant leak detection missing,HVAC ↔ Safety,Refrigerant leaks need alarms in confined spaces.,Com,New build
+B1-0523,523,"6. Mechanical, Vertical Transport & Acoustics",VRF unit capacity insufficient in peak heat,HVAC ↔ Climate,Design conditions underestimate extreme days.,Com/Res,New build
+B1-0524,524,"6. Mechanical, Vertical Transport & Acoustics",Chilled water pipework flushing delayed,HVAC ↔ Programme,Systems must be clean before commissioning.,Com,New build
+B1-0525,525,"6. Mechanical, Vertical Transport & Acoustics",Cooling tower makes plume complaints,HVAC ↔ Neighbours,Plumes cause amenity issues.,Com,New build
+B1-0526,526,"6. Mechanical, Vertical Transport & Acoustics",Rooftop unit access ladder missing,Rooftop plant ↔ Maintenance,Plant needs safe access.,Com/Ind,New build
+B1-0527,527,"6. Mechanical, Vertical Transport & Acoustics",Rooftop plant screening blocks airflow,Plant ↔ Screens,Screens restrict air to condensers.,Com,New build
+B1-0528,528,"6. Mechanical, Vertical Transport & Acoustics",Plant platforms not coordinated with roof drains,Plant ↔ Roof drainage,Platforms obstruct drainage paths.,Com,New build
+B1-0529,529,"6. Mechanical, Vertical Transport & Acoustics",Plant room located under bedrooms,Plant ↔ Acoustics,Noise transmits through floors.,Res,New build
+B1-0530,530,"6. Mechanical, Vertical Transport & Acoustics",Plant room too hot due to no ventilation,Plant ↔ Ventilation,Equipment gives off heat that must be removed.,Com,New build
+B1-0531,531,"6. Mechanical, Vertical Transport & Acoustics",Ductwork support fixings overload slab,Services support ↔ Structure,Hangers add load at points.,Com,New build
+B1-0532,532,"6. Mechanical, Vertical Transport & Acoustics",Services hangers fixed into PT slab,Services ↔ PT tendons,Drilling anchors into PT slabs risks cutting tendons.,Com,New build
+B1-0533,533,"6. Mechanical, Vertical Transport & Acoustics",Tenant fit-out ductwork exceeds base building capacity,Fit-out HVAC ↔ Base building,Base systems have limited spare capacity.,Com,Refurb/Upgrade
+B1-0534,534,"6. Mechanical, Vertical Transport & Acoustics",Tenant requires 24 hour cooling and the base system cannot,Base HVAC ↔ Tenant,Systems are designed for standard hours.,Com,Refurb/Upgrade
+B1-0535,535,"6. Mechanical, Vertical Transport & Acoustics",Server room cooling overloads the building,Data room ↔ HVAC,IT loads are heat dense.,Com,Refurb/Upgrade
+B1-0536,536,"6. Mechanical, Vertical Transport & Acoustics",Heat from a server room not rejected,Data room ↔ Condensers,Heat must go somewhere.,Com,Refurb/Upgrade
+B1-0537,537,"6. Mechanical, Vertical Transport & Acoustics",Warehouse heating inadequate for ceiling height,HVAC ↔ Tall space,Hot air stratifies at height.,Ind,New build
+B1-0538,538,"6. Mechanical, Vertical Transport & Acoustics",Destratification fans omitted,HVAC ↔ Tall volume,Fans help mix air.,Ind,New build
+B1-0539,539,"6. Mechanical, Vertical Transport & Acoustics",Industrial extraction fan noise,Extraction ↔ Neighbours,Exhausts must meet noise limits.,Ind,New build
+B1-0540,540,"6. Mechanical, Vertical Transport & Acoustics",Process exhaust discharge height too low,Exhaust ↔ Environmental rules,Discharge height controls dispersion.,Ind,New build
+B1-0541,541,"6. Mechanical, Vertical Transport & Acoustics",Dust collection system overloads ducting,Process extraction ↔ Ducts,Dust collection needs specific velocities.,Ind,New build
+B1-0542,542,"6. Mechanical, Vertical Transport & Acoustics",Clean room air changes not achieved,HVAC ↔ Clean room,Rooms must meet cleanliness rates.,Ind,New build
+B1-0543,543,"6. Mechanical, Vertical Transport & Acoustics",HVAC commissioning discovers wrong fan rotation,HVAC ↔ Electrical,Phase sequence decides motor direction.,Com,New build
+B1-0544,544,"6. Mechanical, Vertical Transport & Acoustics",Controls sensors placed in poor locations,BMS ↔ Occupied spaces,Sensor location drives control accuracy.,Com,New build
+B1-0545,545,"6. Mechanical, Vertical Transport & Acoustics",Thermostat location unsuitable,Controls ↔ Space layout,Thermostats near heat sources misread.,Res,New build
+B1-0546,546,"6. Mechanical, Vertical Transport & Acoustics",VAV boxes inaccessible,HVAC ↔ Ceilings,Boxes need access for balancing.,Com,New build
+B1-0547,547,"6. Mechanical, Vertical Transport & Acoustics",Air balancing cannot be completed,HVAC ↔ Ductwork,Dampers must be accessible and set.,Com,New build
+B1-0548,548,"6. Mechanical, Vertical Transport & Acoustics",Energy metering missing,HVAC ↔ Energy rating,Rating schemes require sub-meters.,Com,New build
+B1-0549,549,"6. Mechanical, Vertical Transport & Acoustics",Economy cycle (free cooling) not working,HVAC ↔ Controls,Controls decide when to use outside air.,Com,New build
+B1-0550,550,"6. Mechanical, Vertical Transport & Acoustics",Heat recovery unit larger than planned,HVAC ↔ Plant space,Recovery equipment adds size.,Com,New build
+B1-0551,551,"6. Mechanical, Vertical Transport & Acoustics",Mechanical ventilation required for new airtight envelope,Envelope ↔ HVAC,Airtight shells need mechanical ventilation.,Res,New build
+B1-0552,552,"6. Mechanical, Vertical Transport & Acoustics",Mould due to poor ventilation in an extension,Extension ↔ Ventilation,New rooms may lack airflow.,Res,Extension
+B1-0553,553,"6. Mechanical, Vertical Transport & Acoustics",Existing HVAC cannot serve an extension,Existing HVAC ↔ New area,Capacity was set by the original.,Res,Extension
+B1-0554,554,"6. Mechanical, Vertical Transport & Acoustics",Existing ductwork contains asbestos,Old ducts ↔ Hazmat,Old insulation can contain asbestos.,Com,Refurb/Upgrade
+B1-0555,555,"6. Mechanical, Vertical Transport & Acoustics",Refrigerant phase-out forces plant replacement,Old chillers ↔ Regulation,Obsolete refrigerants limit repair.,Com,Refurb/Upgrade
+B1-0556,556,"6. Mechanical, Vertical Transport & Acoustics",Plant replaced and new unit does not fit old space,New plant ↔ Old plant room,Modern units have different dimensions.,Com,Refurb/Upgrade
+B1-0557,557,"6. Mechanical, Vertical Transport & Acoustics",Plant removal route blocked,Plant ↔ Building access,Equipment must go in and come out.,Com,Refurb/Upgrade
+B1-0558,558,"6. Mechanical, Vertical Transport & Acoustics",Lift motor room undersized,Lift ↔ Machine room,Lift suppliers specify room dimensions.,Com/Res,New build
+B1-0559,559,"6. Mechanical, Vertical Transport & Acoustics",Lift overrun exceeds the roof height,Lift ↔ Roof structure,Overruns decide roof levels.,Com/Res,New build
+B1-0560,560,"6. Mechanical, Vertical Transport & Acoustics",Lift installation delayed by builder's work,Lift ↔ Core readiness,Cores must be ready for lift install.,Com/Res,New build
+B1-0561,561,"6. Mechanical, Vertical Transport & Acoustics",Lift used as a construction hoist is damaged,Lift ↔ Site logistics,Using permanent lifts wears them.,Com/Res,New build
+B1-0562,562,"6. Mechanical, Vertical Transport & Acoustics",Lift commissioning fails fire mode,Lift ↔ Fire alarm,Lifts must recall on fire.,Com,New build
+B1-0563,563,"6. Mechanical, Vertical Transport & Acoustics",Lift lobby too small for gurney turn,Lift ↔ Layout,Emergency access needs space.,Com/Res,New build
+B1-0564,564,"6. Mechanical, Vertical Transport & Acoustics",Lift door fire rating missing,Lift ↔ Fire rating,Lift doors form part of the shaft rating.,Com,New build
+B1-0565,565,"6. Mechanical, Vertical Transport & Acoustics",Lift shaft ventilation vent blocked,Lift ↔ Ventilation,Vents relieve smoke and pressure.,Com,New build
+B1-0566,566,"6. Mechanical, Vertical Transport & Acoustics",Lift shaft water ingress,Lift ↔ Waterproofing,Water damages lift equipment.,Com,New build
+B1-0567,567,"6. Mechanical, Vertical Transport & Acoustics",Escalator support deflects,Escalator ↔ Structure,Escalators need stiff supports.,Com,New build
+B1-0568,568,"6. Mechanical, Vertical Transport & Acoustics",Escalator delivery cannot pass through openings,Escalator ↔ Building opening,Long units need temporary openings.,Com,New build
+B1-0569,569,"6. Mechanical, Vertical Transport & Acoustics",Travelator slope not achievable,Travelator ↔ Floor levels,Slope depends on floor-to-floor height.,Com,New build
+B1-0570,570,"6. Mechanical, Vertical Transport & Acoustics",Goods hoist capacity changes,Hoist ↔ Structure,Hoist loads transfer to supports.,Ind,New build
+B1-0571,571,"6. Mechanical, Vertical Transport & Acoustics",Dock leveller installation clash with slab reinforcement,Dock leveller ↔ Slab,Pits conflict with reinforcement.,Ind,New build
+B1-0572,572,"6. Mechanical, Vertical Transport & Acoustics",Overhead crane installation delayed,Crane ↔ Building completion,Crane install needs complete runway and power.,Ind,New build
+B1-0573,573,"6. Mechanical, Vertical Transport & Acoustics",Acoustic rating of floors not achieved,Floors ↔ Impact noise,Floor build-up affects noise transfer.,Res,New build
+B1-0574,574,"6. Mechanical, Vertical Transport & Acoustics",Acoustic rating compromised by recessed downlights,Ceilings ↔ Acoustics,Holes weaken ceiling performance.,Res,New build
+B1-0575,575,"6. Mechanical, Vertical Transport & Acoustics",Acoustic seals missing on doors,Doors ↔ Acoustics,Gaps pass sound.,Com/Res,New build
+B1-0576,576,"6. Mechanical, Vertical Transport & Acoustics",Reverberation too high in the large space,Interior finishes ↔ Acoustics,Hard surfaces reverberate.,Com,New build
+B1-0577,577,"6. Mechanical, Vertical Transport & Acoustics",Speech privacy fails in meeting rooms,Partitions ↔ Ceiling void,Sound flanks through the void.,Com,New build/Refurb
+B1-0578,578,"6. Mechanical, Vertical Transport & Acoustics",Partition does not extend to the slab,Partitions ↔ Acoustics,Partitions to ceiling only leak sound.,Com,New build/Refurb
+B1-0579,579,"6. Mechanical, Vertical Transport & Acoustics",Mechanical noise transmits via ducts,HVAC ↔ Acoustics,Ducts carry fan noise.,Com,New build
+B1-0580,580,"6. Mechanical, Vertical Transport & Acoustics",Footfall noise from timber floors,Floors ↔ Acoustics,Light floors transmit impact.,Res,New build/Refurb
+B1-0581,581,"6. Mechanical, Vertical Transport & Acoustics",Plumbing noise through a floor penetration,Plumbing ↔ Acoustics,Penetrations create acoustic gaps.,Res,New build
+B1-0582,582,"6. Mechanical, Vertical Transport & Acoustics",Lift noise heard in adjacent apartments,Lift ↔ Acoustics,Lift guide rails transmit vibration.,Res,New build
+B1-0583,583,"6. Mechanical, Vertical Transport & Acoustics",Traffic noise exceeds internal limits,Façade ↔ Acoustics,Glass and seals decide internal noise.,Res,New build
+B1-0584,584,"6. Mechanical, Vertical Transport & Acoustics",Acoustic glazing requires mechanical ventilation,Acoustics ↔ HVAC,Sealed windows need mechanical air.,Res,New build
+B1-0585,585,"6. Mechanical, Vertical Transport & Acoustics",Noise from an industrial neighbour affects a new house,Envelope ↔ Acoustics,Planning may require upgraded envelope.,Res,New build
+B1-0586,586,"6. Mechanical, Vertical Transport & Acoustics",Sound masking system interferes with a fire alarm,Audio ↔ Fire system,Audio systems must not mask alarms.,Com,New build
+B1-0587,587,"6. Mechanical, Vertical Transport & Acoustics",PA/voice evacuation intelligibility fails,Audio ↔ Fire system,Evacuation messages must be intelligible.,Com,New build
+B1-0588,588,"6. Mechanical, Vertical Transport & Acoustics",Vibration from a nearby railway affects equipment,Structure ↔ Sensitive equipment,Sensitive equipment needs isolated floors.,Com,New build
+B1-0589,589,"6. Mechanical, Vertical Transport & Acoustics",Floor vibration limits fail for a laboratory,Structure ↔ Lab equipment,Stiff floors are needed.,Com,New build
+B1-0590,590,"6. Mechanical, Vertical Transport & Acoustics",Cleanroom slab flatness,Slab ↔ Equipment,Precision equipment requires flat slabs.,Ind,New build
+B1-0591,591,"6. Mechanical, Vertical Transport & Acoustics",Hospital theatre HVAC pressure cascade fails,HVAC ↔ Clinical rooms,Pressure keeps contaminants out.,Com,New build
+B1-0592,592,"6. Mechanical, Vertical Transport & Acoustics",Isolation room pressure incorrect,HVAC ↔ Infection control,Negative pressure holds contagion.,Com,New build/Refurb
+B1-0593,593,"6. Mechanical, Vertical Transport & Acoustics",Kitchen extraction recirculation not permitted,Exhaust ↔ Regulations,Recirculation may be banned in some uses.,Com,New build
+B1-0594,594,"6. Mechanical, Vertical Transport & Acoustics",Swimming pool hall humidity damages structure,HVAC ↔ Envelope,Humid air attacks materials.,Com,New build
+B1-0595,595,"6. Mechanical, Vertical Transport & Acoustics",Hot roof makes upstairs rooms uncomfortably warm,Roof ↔ Insulation/HVAC,Heat gain drives cooling load.,Res,All
+B1-0596,596,"6. Mechanical, Vertical Transport & Acoustics",Solar gains cause overheating in apartments,Glazing ↔ HVAC,Large glass areas increase cooling load.,Res,New build
+B1-0597,597,"6. Mechanical, Vertical Transport & Acoustics",Ceiling fans interfere with sprinkler operation,Fans ↔ Fire sprinklers,Airflow can delay sprinkler activation.,Com,New build
+B1-0598,598,"6. Mechanical, Vertical Transport & Acoustics",Ceiling-mounted unit weight needs extra slab fixings,HVAC ↔ Slab,Unit weight must reach structure.,Com,New build
+B1-0599,599,"6. Mechanical, Vertical Transport & Acoustics",Roof penetrations for ducts leak,HVAC ↔ Roofing,Duct penetrations must be flashed.,Com/Ind,All
+B1-0600,600,"6. Mechanical, Vertical Transport & Acoustics",Heat pump outdoor units need acoustic enclosures,HVAC ↔ Neighbours,Noise limits drive enclosures.,Res,New build/Extension
+B1-0601,601,"7. Electrical, Communications & Controls",Switchboard room too small,Electrical ↔ Architecture,Equipment needs working clearances that planning must reserve.,Com/Res,New build
+B1-0602,602,"7. Electrical, Communications & Controls",Utility delays transformer connection,Electrical ↔ Utility network,The building's power depends on an external network.,Com/Ind,New build
+B1-0603,603,"7. Electrical, Communications & Controls",Lightning protection path blocked,Electrical ↔ Structure/façade,The earth path must be continuous through the building.,Com/Ind,New build
+B1-0604,604,"7. Electrical, Communications & Controls",Solar array exceeds roof capacity,PV ↔ Roof structure,Roof loads and penetrations must accommodate added equipment.,Com/Res,All
+B1-0605,605,"7. Electrical, Communications & Controls",Comms riser clashes with the hydraulic stack,Data ↔ Hydraulics,Vertical risers compete for the same shaft space.,Com/Res,New build
+B1-0606,606,"7. Electrical, Communications & Controls",Substation location not approved,Electrical supply ↔ Site layout,Utility requirements fix substation locations.,Com/Ind,New build
+B1-0607,607,"7. Electrical, Communications & Controls",Substation noise and EMF complaints,Substation ↔ Neighbours,Equipment must be set back from sensitive uses.,Com,New build
+B1-0608,608,"7. Electrical, Communications & Controls",Transformer room ventilation inadequate,Transformer ↔ HVAC,Transformers generate heat.,Com/Ind,New build
+B1-0609,609,"7. Electrical, Communications & Controls",Transformer delivery lead time 12 months,Electrical supply ↔ Programme,Long-lead equipment drives energisation date.,Com/Ind,New build
+B1-0610,610,"7. Electrical, Communications & Controls",Power supply capacity less than the load,Electrical ↔ Network capacity,Utility may require upgrades.,Ind/Com,New build/Refurb
+B1-0611,611,"7. Electrical, Communications & Controls",Generator fuel storage fails the fire code,Generator ↔ Fire safety,Fuel is a fire and spill risk.,Com,New build
+B1-0612,612,"7. Electrical, Communications & Controls",Generator load bank test fails,Generator ↔ Electrical,Real load reveals performance limits.,Com,New build
+B1-0613,613,"7. Electrical, Communications & Controls",Generator exhaust causes smoke complaints,Generator ↔ Neighbours,Exhaust discharge needs height.,Com,New build
+B1-0614,614,"7. Electrical, Communications & Controls",Automatic transfer switch fails,Standby power ↔ Controls,Transfer must happen on mains failure.,Com,New build
+B1-0615,615,"7. Electrical, Communications & Controls",UPS room battery ventilation missing,UPS ↔ Ventilation,Batteries release gases.,Com,New build
+B1-0616,616,"7. Electrical, Communications & Controls",Battery storage fire risk,Battery systems ↔ Fire safety,Lithium batteries need separation and detection.,Res/Com,New build/Refurb
+B1-0617,617,"7. Electrical, Communications & Controls",EV charging load exceeds the supply,EV charging ↔ Electrical capacity,Charging adds large demand.,Res/Com,New build/Refurb
+B1-0618,618,"7. Electrical, Communications & Controls",EV charger location needs conduits post-slab,EV charging ↔ Car park,Retrofitting conduits is expensive.,Res/Com,Refurb/Upgrade
+B1-0619,619,"7. Electrical, Communications & Controls",Main switchboard shop drawings not approved,Electrical ↔ Procurement,Boards have long lead times.,Com,New build
+B1-0620,620,"7. Electrical, Communications & Controls",Switchboard arrives damaged,Switchboard ↔ Logistics,Boards need protected transport.,Com,New build
+B1-0621,621,"7. Electrical, Communications & Controls",Cable route clashes with services,Cable trays ↔ Other services,Trays need clear routes.,Com,New build
+B1-0622,622,"7. Electrical, Communications & Controls",Cable pulled around tight bends damaged,Cables ↔ Containment,Bend radius protects cables.,Com/Ind,New build
+B1-0623,623,"7. Electrical, Communications & Controls",Cable sizing changed for voltage drop,Cables ↔ Containment,Larger cables need larger trays.,Com/Ind,New build
+B1-0624,624,"7. Electrical, Communications & Controls",Cable tray earthing discontinuous,Containment ↔ Earthing,Earth continuity ensures safety.,Com,New build
+B1-0625,625,"7. Electrical, Communications & Controls",Conduits not installed before slab pour,Electrical ↔ Slab,Slab conduits cannot be added later.,Res,New build
+B1-0626,626,"7. Electrical, Communications & Controls",Conduit clashes with rebar,Electrical ↔ Reinforcement,Conduits weaken or displace steel.,Com,New build
+B1-0627,627,"7. Electrical, Communications & Controls",Switchboard installed in a wet area,Electrical ↔ Waterproofing,Water ingress causes failures.,Res,New build
+B1-0628,628,"7. Electrical, Communications & Controls",Circuit breakers trip under start-up loads,Electrical ↔ HVAC,Motors have high inrush currents.,Com/Ind,New build
+B1-0629,629,"7. Electrical, Communications & Controls",Earth fault loop impedance too high,Electrical ↔ Protection,Earth path decides protection performance.,Com,New build
+B1-0630,630,"7. Electrical, Communications & Controls",Residual current device nuisance trips,Electrical ↔ Wet areas,Moisture creates leakage.,Res,All
+B1-0631,631,"7. Electrical, Communications & Controls",Phase imbalance in the building,Electrical ↔ Load layout,Unbalanced loads cause overheating.,Com,New build
+B1-0632,632,"7. Electrical, Communications & Controls",Harmonics from drives disturb systems,Electrical ↔ Variable speed drives,Drives distort supply.,Ind/Com,New build
+B1-0633,633,"7. Electrical, Communications & Controls",Lighting dimmers incompatible with LEDs,Lighting ↔ Controls,Controls must match fittings.,Res/Com,New build
+B1-0634,634,"7. Electrical, Communications & Controls",Light fittings delivered with the wrong colour temperature,Lighting ↔ Design intent,Colour shifts the character of space.,Res/Com,New build
+B1-0635,635,"7. Electrical, Communications & Controls",Light fittings cannot fit ceiling void,Lighting ↔ Ceiling depth,Fittings need depth for drivers.,Res/Com,New build
+B1-0636,636,"7. Electrical, Communications & Controls",Downlights clash with insulation,Lighting ↔ Insulation,Insulation near fittings overheats them.,Res,New build/Refurb
+B1-0637,637,"7. Electrical, Communications & Controls",Emergency lighting batteries fail,Emergency lighting ↔ Testing,Batteries must last the rated period.,Com,New build
+B1-0638,638,"7. Electrical, Communications & Controls",Daylight sensor controls misbehave,Lighting ↔ Controls,Sensors depend on calibration.,Com,New build
+B1-0639,639,"7. Electrical, Communications & Controls",Lighting control system integration fails,Lighting controls ↔ BMS,Systems must communicate.,Com,New build
+B1-0640,640,"7. Electrical, Communications & Controls",Lighting levels fail the code,Lighting ↔ Visual comfort,Spaces need minimum lux.,Com/Ind,New build
+B1-0641,641,"7. Electrical, Communications & Controls",High-bay lighting inaccessible for maintenance,Lighting ↔ Operations,Maintenance needs lifts or platforms.,Ind,New build
+B1-0642,642,"7. Electrical, Communications & Controls",Sports lighting spill complaints,Lighting ↔ Neighbours,Spill is limited by planning.,Com,New build
+B1-0643,643,"7. Electrical, Communications & Controls",Façade lighting power not provided,Lighting ↔ Façade,Feature lighting needs circuits at the façade.,Com,New build
+B1-0644,644,"7. Electrical, Communications & Controls",Smart home system incompatible with wiring,Smart controls ↔ Cabling,Systems need dedicated cabling.,Res,New build/Refurb
+B1-0645,645,"7. Electrical, Communications & Controls",Data cabling run exceeds the distance limit,Data ↔ Layout,Cable lengths are limited by standards.,Com,New build
+B1-0646,646,"7. Electrical, Communications & Controls",Data riser cable fire stopping missing,Data ↔ Fire rating,Cable risers breach compartment ratings.,Com,New build
+B1-0647,647,"7. Electrical, Communications & Controls",Wi-Fi coverage poor in steel buildings,Data ↔ Structure,Steel and concrete block signals.,Com/Ind,New build
+B1-0648,648,"7. Electrical, Communications & Controls",Mobile coverage poor inside a high-performance façade,Data ↔ Glazing,Coatings block signals.,Com,New build
+B1-0649,649,"7. Electrical, Communications & Controls",In-building coverage system required,Data ↔ Emergency services,Emergency radio coverage may be mandated.,Com,New build
+B1-0650,650,"7. Electrical, Communications & Controls",NBN or telecom pit position conflicts with the footprint,Telecom ↔ Site layout,Authority pits fix connection points.,Res,New build/Extension
+B1-0651,651,"7. Electrical, Communications & Controls",Fibre conduit not installed to the boundary,Telecom ↔ Site,Late conduits require trenching.,Res/Com,New build
+B1-0652,652,"7. Electrical, Communications & Controls",Telecom cabinet location rejected,Telecom ↔ Streetscape,Cabinets have planning limits.,Res,New build
+B1-0653,653,"7. Electrical, Communications & Controls",Security system cabling not coordinated,Security ↔ Electrical,Cabling must be planned early.,Com,New build
+B1-0654,654,"7. Electrical, Communications & Controls",Access control readers on glass doors,Security ↔ Glazing,Fixings in glass need design.,Com,New build
+B1-0655,655,"7. Electrical, Communications & Controls",Door hardware incompatible with access control,Security ↔ Doors,Locks must match readers.,Com,New build
+B1-0656,656,"7. Electrical, Communications & Controls",CCTV cameras cannot see due to columns,Security ↔ Structure,Layout must consider sightlines.,Com,New build
+B1-0657,657,"7. Electrical, Communications & Controls",Intercom system for apartments incompatible,Security ↔ Apartments,Systems need riser capacity.,Res,New build
+B1-0658,658,"7. Electrical, Communications & Controls",Fire alarm and security systems conflict on lock release,Security ↔ Fire,Doors must release on alarm.,Com,New build
+B1-0659,659,"7. Electrical, Communications & Controls",Automatic doors fail to unlock on power loss,Doors ↔ Electrical,Fail-safe design is required.,Com,New build
+B1-0660,660,"7. Electrical, Communications & Controls",Door controller power supplies in the wrong location,Doors ↔ Electrical,Controllers need power at doors.,Com,New build
+B1-0661,661,"7. Electrical, Communications & Controls",Automatic gate controls conflict with emergency access,Gates ↔ Fire access,Brigade requires access.,Res/Com,New build
+B1-0662,662,"7. Electrical, Communications & Controls",Boom gate loops cut by pavement saw,Parking ↔ Civil,Sensors in pavement must be located precisely.,Com,New build
+B1-0663,663,"7. Electrical, Communications & Controls",Car park lighting trips on a sensor fault,Lighting ↔ Controls,Controls determine safety lighting.,Com,New build
+B1-0664,664,"7. Electrical, Communications & Controls",BMS programming incomplete at handover,BMS ↔ Commissioning,Controls complete the system operation.,Com,New build
+B1-0665,665,"7. Electrical, Communications & Controls",BMS graphics do not match the installed system,BMS ↔ Documentation,Operators rely on accurate graphics.,Com,New build
+B1-0666,666,"7. Electrical, Communications & Controls",Cybersecurity requirement for BMS,BMS ↔ IT policy,Networked systems must be secured.,Com,New build
+B1-0667,667,"7. Electrical, Communications & Controls",Metering system misreports,Metering ↔ Billing,Meters decide tenant cost recovery.,Com,New build
+B1-0668,668,"7. Electrical, Communications & Controls",Solar inverter location overheats,PV ↔ Ventilation,"Inverters need cool, ventilated places.",Res/Com,New build
+B1-0669,669,"7. Electrical, Communications & Controls",Solar panels shaded by a neighbouring building,PV ↔ Site context,Shading cuts output.,Res,New build
+B1-0670,670,"7. Electrical, Communications & Controls",Solar panel fixings leak the roof,PV ↔ Roofing,Fixings penetrate the weatherproof layer.,Res,New build/Retrofit
+B1-0671,671,"7. Electrical, Communications & Controls",Solar panels not installed on roof frames,PV ↔ Roof structure,Panels need structural support.,Res/Com,Refurb/Upgrade
+B1-0672,672,"7. Electrical, Communications & Controls",Solar design not allowed for fire fighter access,PV ↔ Fire safety,Roof access paths are required.,Res/Com,New build
+B1-0673,673,"7. Electrical, Communications & Controls",Grid connection restricted export,PV ↔ Network,Utility limits solar export.,Com,New build
+B1-0674,674,"7. Electrical, Communications & Controls",Power factor correction needed,Electrical ↔ Utility,Utility penalises poor power factor.,Ind,New build
+B1-0675,675,"7. Electrical, Communications & Controls",Load shedding controls omitted,Electrical ↔ Peak demand,Controls reduce peak charges.,Com,New build
+B1-0676,676,"7. Electrical, Communications & Controls",Existing wiring unsafe on inspection,Existing electrical ↔ Compliance,Old wiring needs replacement.,Res,Refurb/Upgrade
+B1-0677,677,"7. Electrical, Communications & Controls",Aluminium wiring found,Old wiring ↔ Safety,Old aluminium wiring needs special handling.,Res,Refurb/Upgrade
+B1-0678,678,"7. Electrical, Communications & Controls",Old switchboard contains asbestos,Old switchboards ↔ Hazmat,Boards may contain asbestos.,Res/Ind,Refurb/Upgrade
+B1-0679,679,"7. Electrical, Communications & Controls",Single phase supply cannot support the extension,Existing supply ↔ New load,Larger loads need three phase.,Res,Extension
+B1-0680,680,"7. Electrical, Communications & Controls",Meter box relocation required,Meter ↔ Extension,Extensions can block meter access.,Res,Extension
+B1-0681,681,"7. Electrical, Communications & Controls",Overhead power lines clash with the second storey,Overhead lines ↔ Extension,Clearance to lines is mandatory.,Res,Extension
+B1-0682,682,"7. Electrical, Communications & Controls",Underground cable found during excavation,Cables ↔ Excavation,Live cables are a life safety risk.,All,All
+B1-0683,683,"7. Electrical, Communications & Controls",Electrical isolation for a refurb disrupts occupants,Existing electrical ↔ Occupants,Isolations require outages.,Com,Refurb/Upgrade
+B1-0684,684,"7. Electrical, Communications & Controls",Tenant fit-out exceeds the electrical rising main capacity,Rising main ↔ Tenant load,Mains were sized for typical loads.,Com,Refurb/Upgrade
+B1-0685,685,"7. Electrical, Communications & Controls",Lack of spare conduit capacity,Electrical ↔ Existing containment,Existing risers are full.,Com,Refurb/Upgrade
+B1-0686,686,"7. Electrical, Communications & Controls",Fire alarm replacement needs a building shutdown,Fire alarm ↔ Occupancy,Alarm systems must stay active during use.,Com,Refurb/Upgrade
+B1-0687,687,"7. Electrical, Communications & Controls",Old lighting controls cannot dim LED,Controls ↔ LED,Legacy dimmers are incompatible.,Com,Refurb/Upgrade
+B1-0688,688,"7. Electrical, Communications & Controls",Emergency lighting layout changes with new partitions,Emergency lighting ↔ Layout,Layout change alters coverage.,Com,Refurb/Upgrade
+B1-0689,689,"7. Electrical, Communications & Controls",Intrusion into ceilings reveals hidden hazards,Ceiling cavity ↔ Existing services,Old cavities have unrecorded cables and asbestos.,Com,Refurb/Upgrade
+B1-0690,690,"7. Electrical, Communications & Controls",Electrical testing finds insulation resistance low,Cables ↔ Moisture,Wet cables fail testing.,Com,New build
+B1-0691,691,"7. Electrical, Communications & Controls",Thermal imaging finds hot joints,Switchboard ↔ Terminations,Loose terminations overheat.,Com,New build
+B1-0692,692,"7. Electrical, Communications & Controls",Power quality problems on a sensitive process,Electrical ↔ Process equipment,Sensitive equipment needs clean power.,Ind,New build
+B1-0693,693,"7. Electrical, Communications & Controls",Electromagnetic interference in medical suite,Electrical ↔ Medical equipment,Equipment needs shielding.,Com,New build
+B1-0694,694,"7. Electrical, Communications & Controls",Smart meter installation delayed,Electrical ↔ Retailer,Energisation waits for metering.,Res,New build
+B1-0695,695,"7. Electrical, Communications & Controls",Main earth stake cannot be driven in rock,Earthing ↔ Ground,Earthing relies on soil.,Res/Com,New build
+B1-0696,696,"7. Electrical, Communications & Controls",Underground power conduit crushed by compaction,Electrical conduit ↔ Earthworks,Heavy compactors damage shallow conduits.,All,New build
+B1-0697,697,"7. Electrical, Communications & Controls",Temporary lighting causes a site fire,Temporary electrical ↔ Site safety,Temporary power is poorly protected.,All,All
+B1-0698,698,"7. Electrical, Communications & Controls",Lightning surge damages controls,Electrical ↔ Controls,Surge protection protects electronics.,Com/Ind,All
+B1-0699,699,"7. Electrical, Communications & Controls",Cable penetrations through the roof leak,Electrical ↔ Roofing,Penetrations must be sealed.,Res/Com,All
+B1-0700,700,"7. Electrical, Communications & Controls",Cabling inaccessible after plaster,Electrical ↔ Linings,Concealed cables cannot be repaired.,Res,New build
+B1-0701,701,"8. Finishes, Joinery & Fit-out",Timber floor cups,Flooring ↔ Slab moisture,Finishes react to moisture from the structure beneath.,Res/Com,New build/Refurb
+B1-0702,702,"8. Finishes, Joinery & Fit-out",Tiles crack over a slab joint,Tiling ↔ Structural movement,Rigid finishes cannot absorb substrate movement.,Res/Com,New build
+B1-0703,703,"8. Finishes, Joinery & Fit-out",Paint blisters,Paint ↔ Substrate humidity,Coatings need dry stable substrates.,All,All
+B1-0704,704,"8. Finishes, Joinery & Fit-out",Plasterboard cracks,Lining ↔ Frame movement,Linings follow the framing and the framing follows the structure.,Res/Com,New build
+B1-0705,705,"8. Finishes, Joinery & Fit-out",Joinery does not fit,Joinery ↔ Walls,Joinery is made to measure but walls are not built perfect.,Res/Com,New build/Refurb
+B1-0706,706,"8. Finishes, Joinery & Fit-out",Door swing clashes with the fit-out,Doors ↔ Layout/egress,Door clearances are set by use and exit.,Com,Refurb/Upgrade
+B1-0707,707,"8. Finishes, Joinery & Fit-out",Light fittings clash with the sprinkler layout,Lighting ↔ Fire services,Ceiling space is shared between competing devices.,Com,New build
+B1-0708,708,"8. Finishes, Joinery & Fit-out",Carpet adhesive fails,Floor finish ↔ Slab moisture,Adhesives depend on curing and moisture levels.,Com/Res,New build
+B1-0709,709,"8. Finishes, Joinery & Fit-out",Acoustic ceiling interrupted by services,Ceilings ↔ Acoustics/services,A continuous acoustic layer breaks wherever services pass through.,Com,New build
+B1-0710,710,"8. Finishes, Joinery & Fit-out",Floor screed cracks,Screed ↔ Slab,Screeds crack when bonded to moving slabs.,Res/Com,New build
+B1-0711,711,"8. Finishes, Joinery & Fit-out",Floor leveller too thick and cracks,Screed ↔ Substrate,Self-levelling compounds have thickness limits.,Res/Com,Refurb/Upgrade
+B1-0712,712,"8. Finishes, Joinery & Fit-out",Slab moisture reading too high to lay flooring,Slab ↔ Flooring programme,Floors cannot be laid until slabs dry.,Res/Com,New build
+B1-0713,713,"8. Finishes, Joinery & Fit-out",Underfloor heating not commissioned before flooring,Underfloor heating ↔ Flooring,Heating must stabilise before finishes.,Res,New build
+B1-0714,714,"8. Finishes, Joinery & Fit-out",Hydronic heating pipes damaged by tile fixings,Heating ↔ Tiling,Fixings strike embedded pipes.,Res,New build
+B1-0715,715,"8. Finishes, Joinery & Fit-out",Tile pattern needs more setting out than planned,Tiling ↔ Wall layout,Tile size drives layout.,Res/Com,New build
+B1-0716,716,"8. Finishes, Joinery & Fit-out",Large format tiles lippage,Tiling ↔ Substrate flatness,Large tiles need very flat bases.,Res/Com,New build
+B1-0717,717,"8. Finishes, Joinery & Fit-out",Tile colour batch mismatch,Tiles ↔ Appearance,Batch variation appears on large areas.,Res/Com,New build
+B1-0718,718,"8. Finishes, Joinery & Fit-out",Tile adhesive incompatible with the substrate,Tile adhesive ↔ Substrate,Adhesive must bond to the surface.,Res/Com,New build
+B1-0719,719,"8. Finishes, Joinery & Fit-out",Grout stains from cleaning,Grout ↔ Maintenance,Porous grout absorbs contaminants.,Res,All
+B1-0720,720,"8. Finishes, Joinery & Fit-out",Wet area tile trims clash with the waterproofing,Tiling ↔ Waterproofing,Trims fix over membranes.,Res,New build
+B1-0721,721,"8. Finishes, Joinery & Fit-out",Stone floor staining,Stone ↔ Sealers,Unsealed stone stains.,Res/Com,New build
+B1-0722,722,"8. Finishes, Joinery & Fit-out",Polished concrete floor shows cracks,Concrete floor ↔ Finish,Polished slabs reveal flaws.,Com/Ind,New build
+B1-0723,723,"8. Finishes, Joinery & Fit-out",Epoxy floor coating peels,Floor coating ↔ Slab moisture,Moisture breaks the bond.,Ind,New build
+B1-0724,724,"8. Finishes, Joinery & Fit-out",Epoxy floor coating cannot cure in cold,Coating ↔ Temperature,Coatings need specific temperatures.,Ind,New build
+B1-0725,725,"8. Finishes, Joinery & Fit-out",Vinyl flooring telegraphs slab defects,Vinyl ↔ Substrate,Thin finishes show every imperfection.,Com,New build
+B1-0726,726,"8. Finishes, Joinery & Fit-out",Raised access floor height conflicts with doors,Raised floor ↔ Door thresholds,Raised floors change transitions.,Com,Refurb/Upgrade
+B1-0727,727,"8. Finishes, Joinery & Fit-out",Carpet tile colour dye lots vary,Carpet ↔ Appearance,Dye lots vary.,Com,New build
+B1-0728,728,"8. Finishes, Joinery & Fit-out",Carpet joins visible at doorways,Carpet ↔ Layout,Joins show where rolls end.,Com,New build
+B1-0729,729,"8. Finishes, Joinery & Fit-out",Skirting heights differ across rooms,Skirtings ↔ Floor levels,Level changes alter skirting.,Res,New build
+B1-0730,730,"8. Finishes, Joinery & Fit-out",Floor levels differ between rooms,Floor structure ↔ Finishes,Different thicknesses create steps.,Res,New build/Refurb
+B1-0731,731,"8. Finishes, Joinery & Fit-out",Threshold transitions create trip hazards,Floor finishes ↔ Safety,Differing materials need flush transitions.,Com,New build
+B1-0732,732,"8. Finishes, Joinery & Fit-out",Plasterboard sheet joints show in raking light,Plaster ↔ Lighting,Light reveals imperfections.,Com/Res,New build
+B1-0733,733,"8. Finishes, Joinery & Fit-out",Plaster set coat cracks from heat,Plaster ↔ Weather,Rapid drying cracks plaster.,Res,New build
+B1-0734,734,"8. Finishes, Joinery & Fit-out",Plaster dust enters the HVAC,Plastering ↔ Ductwork,Dust contaminates air systems.,Com,New build
+B1-0735,735,"8. Finishes, Joinery & Fit-out",Wet plaster damages installed flooring,Plastering ↔ Flooring,Trade sequence must protect finishes.,Res,New build
+B1-0736,736,"8. Finishes, Joinery & Fit-out",Cornice joints open as the building dries,Cornice ↔ Framing,Drying shrinkage opens joints.,Res,New build
+B1-0737,737,"8. Finishes, Joinery & Fit-out",Paint finish quality fails inspection,Paint ↔ Preparation,Preparation decides finish quality.,Res/Com,New build
+B1-0738,738,"8. Finishes, Joinery & Fit-out",Paint applied before the building is dry,Paint ↔ Moisture,Damp walls cause peeling.,Res,New build
+B1-0739,739,"8. Finishes, Joinery & Fit-out",Paint spec changed to low-VOC causing poor coverage,Paint ↔ Appearance,Different formulations perform differently.,Com,New build
+B1-0740,740,"8. Finishes, Joinery & Fit-out",Wallpaper fails on damp walls,Wallpaper ↔ Moisture,Humid walls lift paper.,Res,Refurb/Upgrade
+B1-0741,741,"8. Finishes, Joinery & Fit-out",Colour selection changed late,Finishes ↔ Procurement,Late changes delay ordering.,Res,New build
+B1-0742,742,"8. Finishes, Joinery & Fit-out",Joinery shop drawings do not match site dimensions,Joinery ↔ Site measure,Joinery fits only if measured accurately.,Res/Com,New build/Refurb
+B1-0743,743,"8. Finishes, Joinery & Fit-out",Joinery delivered before the building is dry,Joinery ↔ Moisture,Moisture swells timber and board.,Res,New build
+B1-0744,744,"8. Finishes, Joinery & Fit-out",Kitchen appliances do not fit cavity,Joinery ↔ Appliances,Appliance dimensions must match.,Res,New build
+B1-0745,745,"8. Finishes, Joinery & Fit-out",Kitchen benchtop sink cut-out wrong,Joinery ↔ Plumbing,Sink dimensions determine the cutout.,Res,New build
+B1-0746,746,"8. Finishes, Joinery & Fit-out",Stone benchtop cracks during installation,Joinery ↔ Stone,Stone is fragile at cutouts.,Res,New build
+B1-0747,747,"8. Finishes, Joinery & Fit-out",Benchtop joins visible,Stone ↔ Layout,Slab sizes force joins.,Res,New build
+B1-0748,748,"8. Finishes, Joinery & Fit-out",Splashback does not align with outlets,Tiling ↔ Electrical,Outlets must align with tile layout.,Res,New build
+B1-0749,749,"8. Finishes, Joinery & Fit-out",Power outlets in the wrong location for joinery,Electrical ↔ Joinery,Outlet positions are coordinated with joinery.,Res,New build
+B1-0750,750,"8. Finishes, Joinery & Fit-out",Cabinet hinge clashes with a wall light,Joinery ↔ Lighting,Layout must consider swing.,Res,New build
+B1-0751,751,"8. Finishes, Joinery & Fit-out",Wardrobe doors hit window architraves,Joinery ↔ Windows,Clearance is needed.,Res,New build
+B1-0752,752,"8. Finishes, Joinery & Fit-out",Stair balustrade out of tolerance,Stairs ↔ Balustrades,Handrails need exact heights.,Res,New build
+B1-0753,753,"8. Finishes, Joinery & Fit-out",Stair tread nosing slippery,Stairs ↔ Finishes,Finish selection affects slip resistance.,Com,New build
+B1-0754,754,"8. Finishes, Joinery & Fit-out",Glass balustrade shatters at install,Glass ↔ Handling,Toughened glass can fail on edges.,Res/Com,New build
+B1-0755,755,"8. Finishes, Joinery & Fit-out",Metalwork fabrication differs from the drawing,Metalwork ↔ Site,Hand fabricated items vary.,Res/Com,New build
+B1-0756,756,"8. Finishes, Joinery & Fit-out",Door hardware delivered the wrong handing,Doors ↔ Hardware,Handing errors need replacement.,Com/Res,New build
+B1-0757,757,"8. Finishes, Joinery & Fit-out",Door frames not square,Door frames ↔ Wall framing,Out-of-square frames cause binding.,Res/Com,New build
+B1-0758,758,"8. Finishes, Joinery & Fit-out",Doors swell and stick,Doors ↔ Humidity,Timber doors absorb moisture.,Res,All
+B1-0759,759,"8. Finishes, Joinery & Fit-out",Door leaf height exceeds opening after floor finish added,Doors ↔ Floor finish,Floor build-up reduces clearance.,Res/Com,New build
+B1-0760,760,"8. Finishes, Joinery & Fit-out",Fire door hardware not compliant,Doors ↔ Fire compliance,Hardware must be rated for the door.,Com,New build
+B1-0761,761,"8. Finishes, Joinery & Fit-out",Door closers too strong for accessibility,Doors ↔ Accessibility,Closers must meet opening force limits.,Com,New build
+B1-0762,762,"8. Finishes, Joinery & Fit-out",Glazed screens deflect,Glass screens ↔ Structure,Framing must be stiff.,Com,New build
+B1-0763,763,"8. Finishes, Joinery & Fit-out",Ceiling tile grid sags,Ceiling ↔ Hangers,Weight and fixings decide sag.,Com,New build
+B1-0764,764,"8. Finishes, Joinery & Fit-out",Ceiling access panels visible,Ceilings ↔ Services,Panels need to blend in.,Com,New build
+B1-0765,765,"8. Finishes, Joinery & Fit-out",Bulkheads hide services but reduce headroom,Bulkheads ↔ Services,Boxing services reduces ceiling height.,Res,New build/Refurb
+B1-0766,766,"8. Finishes, Joinery & Fit-out",Ceiling height below code at a bulkhead,Bulkheads ↔ Regulation,Minimum heights are mandated.,Res,New build/Refurb
+B1-0767,767,"8. Finishes, Joinery & Fit-out",Walls out of plumb disrupt cabinets,Walls ↔ Joinery,Tolerance affects fit.,Res,New build
+B1-0768,768,"8. Finishes, Joinery & Fit-out",Wall chasing for services weakens masonry,Walls ↔ Services,Chases reduce wall capacity.,Res,Refurb/Upgrade
+B1-0769,769,"8. Finishes, Joinery & Fit-out",Wall linings installed before inspection of services,Linings ↔ Inspection,Concealment prevents checks.,All,New build
+B1-0770,770,"8. Finishes, Joinery & Fit-out",Services inspected after linings requiring removal,Inspections ↔ Programme,Missed inspections cause rework.,All,New build
+B1-0771,771,"8. Finishes, Joinery & Fit-out",Fit-out starts before the base building is completed,Fit-out ↔ Base building,Trades clash and damage work.,Com,New build
+B1-0772,772,"8. Finishes, Joinery & Fit-out",Tenant fit-out changes after approval,Fit-out ↔ Base services,Changes affect services and fire.,Com,Refurb/Upgrade
+B1-0773,773,"8. Finishes, Joinery & Fit-out",Retail fit-out signage lacks structure,Signage ↔ Façade,Heavy signs need fixings.,Com,Refurb/Upgrade
+B1-0774,774,"8. Finishes, Joinery & Fit-out",Retail shopfront needs fire separation,Shopfront ↔ Fire,Tenancies must be separated.,Com,Refurb/Upgrade
+B1-0775,775,"8. Finishes, Joinery & Fit-out",Food premises finish requirements not met,Finishes ↔ Health rules,Surfaces must be cleanable.,Com,New build/Refurb
+B1-0776,776,"8. Finishes, Joinery & Fit-out",Commercial kitchen floor falls to drains missing,Kitchen floor ↔ Drainage,Floors must drain.,Com,New build/Refurb
+B1-0777,777,"8. Finishes, Joinery & Fit-out",Cool room floor insulation omitted,Cool room ↔ Slab,Insulation prevents frost heave.,Com/Ind,New build
+B1-0778,778,"8. Finishes, Joinery & Fit-out",Cool room panels do not fit,Cool room ↔ Building dimensions,Panels have standard sizes.,Com/Ind,New build
+B1-0779,779,"8. Finishes, Joinery & Fit-out",Laboratory benches heavier than the floor allows,Lab fit-out ↔ Floor,Loads exceed original design.,Com,Refurb/Upgrade
+B1-0780,780,"8. Finishes, Joinery & Fit-out",Medical equipment shielding omitted,Medical fit-out ↔ Walls,X-ray rooms need lead lining.,Com,New build/Refurb
+B1-0781,781,"8. Finishes, Joinery & Fit-out",Operating theatre ceiling cannot support booms,Medical ↔ Structure,Boom loads need structure.,Com,New build/Refurb
+B1-0782,782,"8. Finishes, Joinery & Fit-out",Loading dock canopy conflicts with fire access,Canopy ↔ Fire,Canopies obstruct access paths.,Ind,New build
+B1-0783,783,"8. Finishes, Joinery & Fit-out",Industrial office mezzanine acoustics poor,Offices ↔ Factory noise,Offices need acoustic separation.,Ind,New build
+B1-0784,784,"8. Finishes, Joinery & Fit-out",Cold storage vapour barrier damaged,Cold store ↔ Envelope,Moisture ingress causes ice.,Ind,New build
+B1-0785,785,"8. Finishes, Joinery & Fit-out",Floor drains in food plants clog,Floor drainage ↔ Hygiene,Drains need cleaning access.,Ind,New build
+B1-0786,786,"8. Finishes, Joinery & Fit-out",Hygienic wall panels do not seal at floors,Wall panels ↔ Floors,Junctions must be coved.,Ind,New build
+B1-0787,787,"8. Finishes, Joinery & Fit-out",Wall corner protection omitted,Walls ↔ Operations,Traffic damages walls.,Ind/Com,All
+B1-0788,788,"8. Finishes, Joinery & Fit-out",Bollards not installed at plant corners,Equipment ↔ Vehicle impacts,Plant needs protection.,Ind,All
+B1-0789,789,"8. Finishes, Joinery & Fit-out",Furniture delivered before cleaning,FF&E ↔ Builder's clean,Dust damages furniture.,Com,New build
+B1-0790,790,"8. Finishes, Joinery & Fit-out",Signage lacks accessible contrast,Signage ↔ Accessibility,Signs must meet contrast and braille rules.,Com,New build
+B1-0791,791,"8. Finishes, Joinery & Fit-out",Artwork or feature wall lacks structural support,Feature items ↔ Structure,Heavy features need backing.,Com,New build
+B1-0792,792,"8. Finishes, Joinery & Fit-out",Window furnishings clash with sprinkler heads,Curtains ↔ Fire,Curtains block coverage.,Com,New build
+B1-0793,793,"8. Finishes, Joinery & Fit-out",Blinds cannot fit due to window design,Window furnishings ↔ Windows,Reveals must allow fit.,Res,New build
+B1-0794,794,"8. Finishes, Joinery & Fit-out",Built-in wardrobes obstruct vents,Joinery ↔ HVAC,Joinery blocks air.,Res,New build
+B1-0795,795,"8. Finishes, Joinery & Fit-out",Mirror or glass wall cracks from heat,Glass ↔ Heat,Heating sources crack glass.,Res,New build
+B1-0796,796,"8. Finishes, Joinery & Fit-out",Final clean reveals scratches,Finishes ↔ Trades,Protection is needed for finishes.,All,New build
+B1-0797,797,"8. Finishes, Joinery & Fit-out",Defect list longer than expected at practical completion,Quality ↔ Programme,Defects delay handover.,All,All
+B1-0798,798,"8. Finishes, Joinery & Fit-out",Skirting gap at uneven floors,Skirtings ↔ Floors,Uneven floors leave gaps.,Res,New build/Refurb
+B1-0799,799,"8. Finishes, Joinery & Fit-out",Mirror glue fails on damp walls,Mirrors ↔ Moisture,Adhesive needs dry backing.,Res,New build
+B1-0800,800,"8. Finishes, Joinery & Fit-out",Laminate floor buckles with no expansion gap,Flooring ↔ Movement,Floating floors need perimeter gaps.,Res,New build
+B1-0801,801,"9. Site, Logistics & Temporary Works",Crane position conflicts with the permanent structure,Temporary works ↔ Structure,The temporary crane sets the build sequence of the permanent building.,Com,New build
+B1-0802,802,"9. Site, Logistics & Temporary Works",Wind shuts the crane down,Crane ↔ Programme,Lifting capacity governs structural pace.,Com,New build
+B1-0803,803,"9. Site, Logistics & Temporary Works",Scaffold overloaded with materials,Scaffold ↔ Structure,Temporary access structures have limited capacity.,All,All
+B1-0804,804,"9. Site, Logistics & Temporary Works",Road closure blocks deliveries,Site logistics ↔ Construction sequence,Materials must arrive when the sequence needs them.,Com,New build
+B1-0805,805,"9. Site, Logistics & Temporary Works",Council changes driveway levels,Civil ↔ Basement ramp,The ramp slope depends on the street level.,Res/Com,New build
+B1-0806,806,"9. Site, Logistics & Temporary Works",Stormwater easement discovered,Property/civil ↔ Building footprint,Legal and underground constraints limit where structure can go.,All,New build/Extension
+B1-0807,807,"9. Site, Logistics & Temporary Works",Archaeological find,Heritage ↔ Excavation,Heritage law pauses ground disturbance.,Com,New build
+B1-0808,808,"9. Site, Logistics & Temporary Works",Overhead power lines near the crane,Electrical network ↔ Lifting,Crane reach and live conductors must stay apart.,All,All
+B1-0809,809,"9. Site, Logistics & Temporary Works",Flood event during construction,Site drainage ↔ Works in progress,Unfinished drainage cannot protect partial work.,All,New build
+B1-0810,810,"9. Site, Logistics & Temporary Works",Retaining wall drainage fails,Retaining wall ↔ Drainage,Walls are designed on the assumption that water is relieved.,Res/Com,All
+B1-0811,811,"9. Site, Logistics & Temporary Works",Heavy trucks break the pavement subgrade,Civil pavement ↔ Construction traffic,Pavements are designed for service loads not site loads.,Ind/Com,New build
+B1-0812,812,"9. Site, Logistics & Temporary Works",Tower crane swings over a neighbour's property,Crane ↔ Adjoining owner,Overswing needs neighbour permission.,Com,New build
+B1-0813,813,"9. Site, Logistics & Temporary Works",Crane foundation designed for the wrong ground,Crane base ↔ Ground,Crane base loads are high.,Com,New build
+B1-0814,814,"9. Site, Logistics & Temporary Works",Crane erected in a gap between buildings fails the lift study,Crane ↔ Site constraints,Tight sites restrict plant.,Com,New build
+B1-0815,815,"9. Site, Logistics & Temporary Works",Hoist location forces a floor opening,Hoist ↔ Slab edge,Hoists need slab openings and ties.,Com,New build
+B1-0816,816,"9. Site, Logistics & Temporary Works",Hoist ties damage the façade,Hoist ↔ Façade,Tie positions affect the finish.,Com,New build
+B1-0817,817,"9. Site, Logistics & Temporary Works",Material storage overloads a slab,Site storage ↔ Slab,Stacked materials exceed live load.,Com/Res,New build
+B1-0818,818,"9. Site, Logistics & Temporary Works",Edge protection blown off by wind,Edge protection ↔ Wind,Barriers need design for wind.,Com,New build
+B1-0819,819,"9. Site, Logistics & Temporary Works",Falling object hits a neighbouring property,Site safety ↔ Neighbours,Catch fans and hoardings protect others.,Com,New build
+B1-0820,820,"9. Site, Logistics & Temporary Works",Hoarding permit delays start,Hoarding ↔ Council,Street works need approval.,Com,New build
+B1-0821,821,"9. Site, Logistics & Temporary Works",Site access via a narrow street limits truck sizes,Logistics ↔ Streets,Truck sizes affect delivery and cost.,Res/Com,New build/Extension
+B1-0822,822,"9. Site, Logistics & Temporary Works",Concrete pump setup blocks the street,Concrete pour ↔ Traffic,Pumping needs road closures.,Com,New build
+B1-0823,823,"9. Site, Logistics & Temporary Works",Work hours restrictions limit pours,Pours ↔ Noise rules,Large pours require extended hours.,Com,New build
+B1-0824,824,"9. Site, Logistics & Temporary Works",Neighbour complaints cause a stop-work order,Site ↔ Neighbours,Regulators respond to complaints.,Res/Com,All
+B1-0825,825,"9. Site, Logistics & Temporary Works",Dust from demolition blows onto adjoining buildings,Demolition ↔ Neighbours,Dust control is mandatory.,All,Refurb/Upgrade
+B1-0826,826,"9. Site, Logistics & Temporary Works",Noise from jackhammering disturbs hospital,Demolition ↔ Sensitive neighbours,Limits apply near sensitive uses.,Com,Refurb/Upgrade
+B1-0827,827,"9. Site, Logistics & Temporary Works",Vibration from demolition cracks an adjoining wall,Demolition ↔ Adjoining buildings,Vibration travels through ground.,Res/Com,New build
+B1-0828,828,"9. Site, Logistics & Temporary Works",Temporary power supply insufficient,Site power ↔ Plant,Cranes and hoists need three phase.,Com,New build
+B1-0829,829,"9. Site, Logistics & Temporary Works",Temporary water supply cut,Site water ↔ Concrete works,Water is needed for concrete and dust control.,Com,New build
+B1-0830,830,"9. Site, Logistics & Temporary Works",Site toilets blocked by authorities,Site amenity ↔ Sewer,Site amenities need sewer or pump out.,All,New build
+B1-0831,831,"9. Site, Logistics & Temporary Works",Site office located on future excavation,Site establishment ↔ Staging,Offices must move as works progress.,Com,New build
+B1-0832,832,"9. Site, Logistics & Temporary Works",Delivery vehicle damages underground services,Site traffic ↔ Buried services,Traffic loads crush shallow services.,All,All
+B1-0833,833,"9. Site, Logistics & Temporary Works",Heavy rainfall delays the roof completion,Weather ↔ Programme,Roof must be weather-tight before internal trades.,All,New build
+B1-0834,834,"9. Site, Logistics & Temporary Works",Heatwave stops outdoor work,Weather ↔ Labour,Heat limits are mandatory.,All,All
+B1-0835,835,"9. Site, Logistics & Temporary Works",Strong winds stop façade install,Weather ↔ Façade,Wind limits glazing install.,Com,New build
+B1-0836,836,"9. Site, Logistics & Temporary Works",Frost delays brickwork,Weather ↔ Masonry,Frost damages fresh mortar.,Res,New build
+B1-0837,837,"9. Site, Logistics & Temporary Works",Snow load causes roof damage during construction,Weather ↔ Roof structure,Unfinished roofs lack design capacity.,Ind,New build
+B1-0838,838,"9. Site, Logistics & Temporary Works",Cyclone preparation halts site,Weather ↔ Site security,Sites must be secured before storms.,All,All
+B1-0839,839,"9. Site, Logistics & Temporary Works",Bushfire smoke stops works,Environment ↔ Workers,Air quality limits outdoor work.,All,All
+B1-0840,840,"9. Site, Logistics & Temporary Works",Lightning stops crane operations,Weather ↔ Cranes,Lightning forces shutdowns.,Com,New build
+B1-0841,841,"9. Site, Logistics & Temporary Works",Flooded basement from a storm drains into a lift pit,Site water ↔ Building,Unfinished buildings are vulnerable.,Com/Res,New build
+B1-0842,842,"9. Site, Logistics & Temporary Works",Stormwater pit not complete before heavy rain,Stormwater ↔ Site,Unconnected pits flood.,All,New build
+B1-0843,843,"9. Site, Logistics & Temporary Works",Sediment control fails and the council fines,Site erosion ↔ Regulation,Fines apply for polluted water.,All,New build
+B1-0844,844,"9. Site, Logistics & Temporary Works",Native vegetation found on site,Ecology ↔ Development,Protected species affect the footprint.,All,New build
+B1-0845,845,"9. Site, Logistics & Temporary Works",Endangered species halts clearing,Ecology ↔ Programme,Surveys may be required.,Res/Ind,New build
+B1-0846,846,"9. Site, Logistics & Temporary Works",Tree protection zones restrict machine access,Trees ↔ Plant,Roots limit excavation near trees.,Res/Com,New build/Extension
+B1-0847,847,"9. Site, Logistics & Temporary Works",Neighbour's tree overhangs the crane path,Trees ↔ Cranes,Trees limit crane swing.,Res,New build
+B1-0848,848,"9. Site, Logistics & Temporary Works",Contaminated groundwater plume from a neighbour,Neighbour ↔ Site environment,Off-site contamination affects site works.,Com/Ind,New build
+B1-0849,849,"9. Site, Logistics & Temporary Works",Unexploded ordnance suspected on site,Ground ↔ Safety,Surveys needed before digging.,Com/Ind,New build
+B1-0850,850,"9. Site, Logistics & Temporary Works",Heritage overlay discovered late,Planning ↔ Design,Overlays restrict demolition and alterations.,Res/Com,New build/Refurb
+B1-0851,851,"9. Site, Logistics & Temporary Works",Aboriginal cultural heritage found,Cultural heritage ↔ Excavation,Works must stop and be assessed.,All,New build
+B1-0852,852,"9. Site, Logistics & Temporary Works",Easement for a power line prevents building,Utilities ↔ Footprint,Easements restrict building.,Res/Com,New build
+B1-0853,853,"9. Site, Logistics & Temporary Works",Road widening requires land dedication,Planning ↔ Site boundary,Council may take frontage.,Com,New build
+B1-0854,854,"9. Site, Logistics & Temporary Works",Footpath levels dictate entry level,Civil ↔ Entry design,Entry must meet footpath.,Com/Res,New build
+B1-0855,855,"9. Site, Logistics & Temporary Works",Driveway crossing approval delayed,Civil ↔ Council,Crossings need approval.,Res/Com,New build
+B1-0856,856,"9. Site, Logistics & Temporary Works",Street trees conflict with driveway,Landscape ↔ Access,Trees may not be removed.,Res/Com,New build
+B1-0857,857,"9. Site, Logistics & Temporary Works",Services authority requires relocating a pole,Utilities ↔ Frontage,Pole moves are costly and slow.,Res/Com,New build
+B1-0858,858,"9. Site, Logistics & Temporary Works",Telecom pit in the driveway,Utilities ↔ Access,Pits restrict crossings.,Res,New build
+B1-0859,859,"9. Site, Logistics & Temporary Works",Stormwater discharge point inaccessible,Drainage ↔ Council network,Connection must reach the authority's drain.,Res/Com,New build
+B1-0860,860,"9. Site, Logistics & Temporary Works",Fence line dispute,Boundary ↔ Neighbour,Boundaries must be agreed.,Res,New build/Extension
+B1-0861,861,"9. Site, Logistics & Temporary Works",Retaining wall at the boundary needs a neighbour's consent,Retaining wall ↔ Neighbour,Walls near boundaries need agreement.,Res,New build
+B1-0862,862,"9. Site, Logistics & Temporary Works",Excavation near boundaries needs dilapidation survey,Excavation ↔ Neighbours,Pre-existing conditions need to be recorded.,Com,New build
+B1-0863,863,"9. Site, Logistics & Temporary Works",Dilapidation survey disputed,Neighbour ↔ Building condition,Claims depend on the baseline record.,Com,New build
+B1-0864,864,"9. Site, Logistics & Temporary Works",Property damage claim from vibration,Works ↔ Neighbour,Vibration claims need monitoring data.,Com,New build
+B1-0865,865,"9. Site, Logistics & Temporary Works",Landscape irrigation damaged by services trenching,Landscape ↔ Services,Trenching cuts irrigation lines.,Res/Com,New build
+B1-0866,866,"9. Site, Logistics & Temporary Works",Landscape soil depth insufficient over slabs,Landscape ↔ Structure,Podium planting needs soil depth.,Com/Res,New build
+B1-0867,867,"9. Site, Logistics & Temporary Works",Podium slab drainage blocked by soil,Landscape ↔ Drainage,Drainage layers prevent waterlogging.,Com/Res,New build
+B1-0868,868,"9. Site, Logistics & Temporary Works",Tree planted over services,Landscape ↔ Services,Roots damage services.,Com,New build
+B1-0869,869,"9. Site, Logistics & Temporary Works",Trees fail due to poor soil,Landscape ↔ Soil,Soil quality affects survival.,Res/Com,New build
+B1-0870,870,"9. Site, Logistics & Temporary Works",Fence installed on the wrong line,Fencing ↔ Survey,Survey errors cause disputes.,Res,New build
+B1-0871,871,"9. Site, Logistics & Temporary Works",Paving falls toward the building,Paving ↔ Drainage,Falls must go away from walls.,Res/Com,New build
+B1-0872,872,"9. Site, Logistics & Temporary Works",Concrete paving cracks due to roots,Paving ↔ Trees,Roots lift paving.,Res/Com,All
+B1-0873,873,"9. Site, Logistics & Temporary Works",Pavement kerb levels mismatch with the building,Pavement ↔ Building,Levels must meet at entries.,Com,New build
+B1-0874,874,"9. Site, Logistics & Temporary Works",Bollards cannot be installed over services,Bollards ↔ Services,Services limit footings.,Com,New build
+B1-0875,875,"9. Site, Logistics & Temporary Works",Car park line marking misaligned with the structure,Car park ↔ Columns,Bays must avoid columns.,Com,New build
+B1-0876,876,"9. Site, Logistics & Temporary Works",Car park surface water ponding,Pavement ↔ Falls,Poor falls cause ponding.,Com,New build
+B1-0877,877,"9. Site, Logistics & Temporary Works",Truck turning path fails,Site layout ↔ Vehicle movements,Swept paths decide layout.,Ind,New build
+B1-0878,878,"9. Site, Logistics & Temporary Works",Heavy vehicle loads crack pavements,Pavement ↔ Traffic,Industrial pavements need thick design.,Ind,New build
+B1-0879,879,"9. Site, Logistics & Temporary Works",Hardstand falls inadequate,Hardstand ↔ Drainage,Drainage needs consistent falls.,Ind,New build
+B1-0880,880,"9. Site, Logistics & Temporary Works",Rail siding level conflicts with building floor,Rail ↔ Industrial building,Floor level must match rail.,Ind,New build
+B1-0881,881,"9. Site, Logistics & Temporary Works",Weighbridge pit floods,Weighbridge ↔ Drainage,Pits need drainage.,Ind,New build
+B1-0882,882,"9. Site, Logistics & Temporary Works",Stockpile settles the slab,Stockpiles ↔ Slab,Heavy stockpiles load slabs.,Ind,All
+B1-0883,883,"9. Site, Logistics & Temporary Works",Temporary fencing blown over,Site fencing ↔ Wind,Panels need ballast.,All,New build
+B1-0884,884,"9. Site, Logistics & Temporary Works",Site security theft of copper,Security ↔ Services,Theft delays electrical work.,All,New build
+B1-0885,885,"9. Site, Logistics & Temporary Works",Vandalism of the unfinished building,Security ↔ Finishes,Unfinished sites are vulnerable.,Res/Com,New build
+B1-0886,886,"9. Site, Logistics & Temporary Works",Fire in a site shed,Site safety ↔ Fire,Site fire safety is mandatory.,All,All
+B1-0887,887,"9. Site, Logistics & Temporary Works",Workers' safety incident halts the project,Safety ↔ Programme,Regulators can shut sites.,All,All
+B1-0888,888,"9. Site, Logistics & Temporary Works",Silica dust rules restrict cutting,Cutting ↔ Health rules,Engineered stone and concrete need controls.,All,All
+B1-0889,889,"9. Site, Logistics & Temporary Works",Asbestos in an adjoining wall,Neighbour ↔ Hazmat,Neighbour works expose hazards.,Res,Extension
+B1-0890,890,"9. Site, Logistics & Temporary Works",Labour shortage delays framing,Labour ↔ Programme,Trade availability drives programme.,Res,New build
+B1-0891,891,"9. Site, Logistics & Temporary Works",Trade no-shows cause sequence breaks,Trades ↔ Programme,Missing trades delay the next trade.,All,All
+B1-0892,892,"9. Site, Logistics & Temporary Works",Key trade goes insolvent,Contract ↔ Programme,Replacement trades take time.,All,All
+B1-0893,893,"9. Site, Logistics & Temporary Works",Subcontractor defects emerge after payment,Quality ↔ Contract,Retention manages risk.,All,All
+B1-0894,894,"9. Site, Logistics & Temporary Works",Material price spike,Procurement ↔ Budget,Escalation threatens cost.,All,All
+B1-0895,895,"9. Site, Logistics & Temporary Works",Shipping delay of imported cladding,Procurement ↔ Façade,International supply is slow.,Com,New build
+B1-0896,896,"9. Site, Logistics & Temporary Works",Customs rejection of a product,Imports ↔ Compliance,Non-conforming products can be held.,Com,New build
+B1-0897,897,"9. Site, Logistics & Temporary Works",Excavator strikes a gas main,Excavation ↔ Gas network,Gas mains are a life safety risk.,All,All
+B1-0898,898,"9. Site, Logistics & Temporary Works",Temporary works design not provided for propping,Temporary works ↔ Structure,Temporary design must be independent.,Com,New build
+B1-0899,899,"9. Site, Logistics & Temporary Works",Delivery crane cannot reach due to overhead lines,Delivery ↔ Overhead lines,Lines restrict crane reach.,Res,New build
+B1-0900,900,"9. Site, Logistics & Temporary Works",Council inspection delays slab pour,Council ↔ Concrete programme,Pour waits on inspection.,Res,New build
+B1-0901,901,"10. Regulation, Procurement, Existing Buildings & Handover",Authority requires an NCC design change,Architecture ↔ Regulation,Design must comply and compliance changes design.,All,All
+B1-0902,902,"10. Regulation, Procurement, Existing Buildings & Handover",Certifier rejects an inspection,Quality ↔ Programme,The next trade cannot start until the previous work is approved.,All,All
+B1-0903,903,"10. Regulation, Procurement, Existing Buildings & Handover",Material shortage,Procurement ↔ Programme,Supply drives the construction sequence.,All,All
+B1-0904,904,"10. Regulation, Procurement, Existing Buildings & Handover",Substituted sealant will not bond,Sealants ↔ Façade substrates,Compatibility decides whether joints seal.,Com,New build
+B1-0905,905,"10. Regulation, Procurement, Existing Buildings & Handover",Latent site condition triggers a claim,Contract ↔ Ground/structure,Risk allocation determines who pays for unknowns.,All,All
+B1-0906,906,"10. Regulation, Procurement, Existing Buildings & Handover",Trades stacking in the same area,Multiple trades ↔ Sequence,Work must be ordered so each trade's output is not damaged.,All,All
+B1-0907,907,"10. Regulation, Procurement, Existing Buildings & Handover",Asbestos found in the existing building,Demolition ↔ Hazmat,Removal must be safe before any new work begins.,All,Refurb/Upgrade
+B1-0908,908,"10. Regulation, Procurement, Existing Buildings & Handover",Commissioning reveals unintegrated systems,All services ↔ Controls,Systems designed separately have to work as one.,Com,New build
+B1-0909,909,"10. Regulation, Procurement, Existing Buildings & Handover",As-built differs from the drawings,Documentation ↔ Operation,Maintenance depends on records matching reality.,All,All
+B1-0910,910,"10. Regulation, Procurement, Existing Buildings & Handover",Defects emerge in the defects period,Completed work ↔ Occupancy,Real use stresses systems in ways testing does not.,All,All
+B1-0911,911,"10. Regulation, Procurement, Existing Buildings & Handover",Design not coordinated before tender,Design disciplines ↔ Pricing,Clashes found late cost more.,Com,New build
+B1-0912,912,"10. Regulation, Procurement, Existing Buildings & Handover",Drawings issued with unresolved clashes,Design ↔ Construction,Contractors build what is drawn.,All,All
+B1-0913,913,"10. Regulation, Procurement, Existing Buildings & Handover",Late consultant design changes,Design ↔ Procurement,Changes ripple to ordered items.,Com,New build
+B1-0914,914,"10. Regulation, Procurement, Existing Buildings & Handover",Design team does not coordinate on a 3D model,Design ↔ Coordination,Model clashes appear on site otherwise.,Com,New build
+B1-0915,915,"10. Regulation, Procurement, Existing Buildings & Handover",Architect specifies a discontinued product,Spec ↔ Supply,Product availability affects design.,All,All
+B1-0916,916,"10. Regulation, Procurement, Existing Buildings & Handover",Specification conflicts with drawings,Spec ↔ Drawings,Order of precedence decides.,All,All
+B1-0917,917,"10. Regulation, Procurement, Existing Buildings & Handover",RFI response takes weeks,Design ↔ Site,Delayed answers stop work.,All,All
+B1-0918,918,"10. Regulation, Procurement, Existing Buildings & Handover",Shop drawing approval delays,Procurement ↔ Fabrication,Fabrication waits on approval.,Com,New build
+B1-0919,919,"10. Regulation, Procurement, Existing Buildings & Handover",Sample approval rejected,Finishes ↔ Procurement,Samples confirm the quality.,Com,New build
+B1-0920,920,"10. Regulation, Procurement, Existing Buildings & Handover",Client changes the brief mid-construction,Brief ↔ Design,Changes affect all trades.,All,All
+B1-0921,921,"10. Regulation, Procurement, Existing Buildings & Handover",Client-supplied items arrive late,Client supply ↔ Programme,Items outside contract risk delay.,Res/Com,All
+B1-0922,922,"10. Regulation, Procurement, Existing Buildings & Handover",Client variation approvals slow,Contract ↔ Cash flow,Delays impact progress.,All,All
+B1-0923,923,"10. Regulation, Procurement, Existing Buildings & Handover",Provisional sum allowances too low,Budget ↔ Scope,Allowances underpriced.,Res/Com,All
+B1-0924,924,"10. Regulation, Procurement, Existing Buildings & Handover",Cost plan does not allow for services complexity,Budget ↔ Services,Services costs grow with detail.,Com,New build
+B1-0925,925,"10. Regulation, Procurement, Existing Buildings & Handover",Tender price exceeds budget,Procurement ↔ Design,Value engineering is needed.,All,New build
+B1-0926,926,"10. Regulation, Procurement, Existing Buildings & Handover",Value engineering removes a critical item,VE ↔ Performance,Savings can affect function.,All,All
+B1-0927,927,"10. Regulation, Procurement, Existing Buildings & Handover",Value engineering changes a material and fails compliance,VE ↔ Regulation,Changes must be reassessed.,All,All
+B1-0928,928,"10. Regulation, Procurement, Existing Buildings & Handover",Procurement strategy mismatched to risk,Procurement ↔ Risk,Contract form allocates risk.,All,All
+B1-0929,929,"10. Regulation, Procurement, Existing Buildings & Handover",Novation of consultants causes design gaps,Contract ↔ Design,Design responsibility shifts.,Com,New build
+B1-0930,930,"10. Regulation, Procurement, Existing Buildings & Handover",Design and construct contractor changes design intent,Contract ↔ Design,D&C allows changes.,Com,New build
+B1-0931,931,"10. Regulation, Procurement, Existing Buildings & Handover",Builder does not read the contract special conditions,Contract ↔ Execution,Special conditions allocate risk.,All,All
+B1-0932,932,"10. Regulation, Procurement, Existing Buildings & Handover",Time bar notice missed,Contract ↔ Claims,Notices must be timely.,All,All
+B1-0933,933,"10. Regulation, Procurement, Existing Buildings & Handover",Extension of time disputed,Contract ↔ Programme,Delay events need evidence.,All,All
+B1-0934,934,"10. Regulation, Procurement, Existing Buildings & Handover",Liquidated damages applied,Contract ↔ Delay,Delay carries cost.,All,All
+B1-0935,935,"10. Regulation, Procurement, Existing Buildings & Handover",Security of payment claim lodged,Contract ↔ Payments,Rapid adjudication affects cash.,All,All
+B1-0936,936,"10. Regulation, Procurement, Existing Buildings & Handover",Retention release dispute,Contract ↔ Defects,Retention covers defects.,All,All
+B1-0937,937,"10. Regulation, Procurement, Existing Buildings & Handover",Contractor insolvency during build,Contract ↔ Completion,Replacement contractor needed.,Res/Com,All
+B1-0938,938,"10. Regulation, Procurement, Existing Buildings & Handover",Developer finance withdrawn,Funding ↔ Programme,Funding is the lifeblood of the project.,Res/Com,New build
+B1-0939,939,"10. Regulation, Procurement, Existing Buildings & Handover",Presales not met and finance falls over,Finance ↔ Residential,Lenders require presales.,Res,New build
+B1-0940,940,"10. Regulation, Procurement, Existing Buildings & Handover",Interest rate rises affect feasibility,Finance ↔ Project viability,Costs of funds change viability.,Res/Com,New build
+B1-0941,941,"10. Regulation, Procurement, Existing Buildings & Handover",Strata plan registration delayed,Legal ↔ Settlement,Settlements depend on titles.,Res,New build
+B1-0942,942,"10. Regulation, Procurement, Existing Buildings & Handover",Sale settlement delayed by an occupancy certificate,Approvals ↔ Sales,Settlement requires OC.,Res,New build
+B1-0943,943,"10. Regulation, Procurement, Existing Buildings & Handover",Owners corporation defect claims,Quality ↔ Strata,Strata claims follow completion.,Res,New build
+B1-0944,944,"10. Regulation, Procurement, Existing Buildings & Handover",Building defects insurance triggered,Quality ↔ Insurance,Insurers require documentation.,Res,New build
+B1-0945,945,"10. Regulation, Procurement, Existing Buildings & Handover",Warranty claims on waterproofing,Waterproofing ↔ Warranty,Warranties depend on correct installation.,Res,New build
+B1-0946,946,"10. Regulation, Procurement, Existing Buildings & Handover",Product recall,Materials ↔ Safety,Recalled products must be replaced.,All,All
+B1-0947,947,"10. Regulation, Procurement, Existing Buildings & Handover",Non-conforming building product found,Materials ↔ Compliance,Product bans require removal.,All,All
+B1-0948,948,"10. Regulation, Procurement, Existing Buildings & Handover",Imported product lacks certification,Procurement ↔ Compliance,Certificates decide acceptance.,All,All
+B1-0949,949,"10. Regulation, Procurement, Existing Buildings & Handover",Cladding audit requires rectification,Cladding ↔ Regulation,Audits can force remediation.,Res,Refurb/Upgrade
+B1-0950,950,"10. Regulation, Procurement, Existing Buildings & Handover",Combustible cladding remediation,Cladding ↔ Fire safety,Replacement needs access and approvals.,Res/Com,Refurb/Upgrade
+B1-0951,951,"10. Regulation, Procurement, Existing Buildings & Handover",Remediation reveals structural damage,Cladding remediation ↔ Structure,Removing cladding exposes defects.,Res,Refurb/Upgrade
+B1-0952,952,"10. Regulation, Procurement, Existing Buildings & Handover",Building services upgrade triggers whole-of-building compliance,Upgrade ↔ Regulation,Alterations can trigger upgrades.,Com,Refurb/Upgrade
+B1-0953,953,"10. Regulation, Procurement, Existing Buildings & Handover","Change of use requires upgrades to fire, access and energy",Use change ↔ Regulation,Use class sets requirements.,Com/Res,Refurb/Upgrade
+B1-0954,954,"10. Regulation, Procurement, Existing Buildings & Handover",Heritage listing blocks alterations,Heritage ↔ Alterations,Significant fabric must stay.,Res/Com,Refurb/Upgrade
+B1-0955,955,"10. Regulation, Procurement, Existing Buildings & Handover",Heritage consultant requires original materials,Heritage ↔ Procurement,Authentic materials are hard to source.,Res/Com,Refurb/Upgrade
+B1-0956,956,"10. Regulation, Procurement, Existing Buildings & Handover",Specialist trade shortage for heritage works,Heritage ↔ Labour,Heritage trades are scarce.,Res/Com,Refurb/Upgrade
+B1-0957,957,"10. Regulation, Procurement, Existing Buildings & Handover",Occupied building refurb limits working hours,Refurb ↔ Occupants,Occupants restrict noisy works.,Com,Refurb/Upgrade
+B1-0958,958,"10. Regulation, Procurement, Existing Buildings & Handover",Tenant complaints about noise or dust,Refurb ↔ Occupants,Operating buildings tolerate little disruption.,Com,Refurb/Upgrade
+B1-0959,959,"10. Regulation, Procurement, Existing Buildings & Handover",Hospital refurb requires infection control barriers,Refurb ↔ Clinical,Dust control protects patients.,Com,Refurb/Upgrade
+B1-0960,960,"10. Regulation, Procurement, Existing Buildings & Handover",School works restricted to holidays,Refurb ↔ Operations,Occupancy windows limit works.,Com,Refurb/Upgrade
+B1-0961,961,"10. Regulation, Procurement, Existing Buildings & Handover",Retail refurb must finish before trading peak,Refurb ↔ Retail calendar,Fixed deadlines drive programme.,Com,Refurb/Upgrade
+B1-0962,962,"10. Regulation, Procurement, Existing Buildings & Handover",Staged handover needs separate services isolation,Staging ↔ Services,Partial occupation needs safe services.,Com,Refurb/Upgrade
+B1-0963,963,"10. Regulation, Procurement, Existing Buildings & Handover",Existing building services not as documented,Documentation ↔ Reality,Unknown conditions drive variations.,All,Refurb/Upgrade
+B1-0964,964,"10. Regulation, Procurement, Existing Buildings & Handover",Hidden conditions behind linings,Existing building ↔ Unknown,Opening up reveals defects.,Res,Refurb/Upgrade
+B1-0965,965,"10. Regulation, Procurement, Existing Buildings & Handover",Termite damage found after stripping,Timber ↔ Termites,Hidden damage requires repair.,Res,Refurb/Upgrade
+B1-0966,966,"10. Regulation, Procurement, Existing Buildings & Handover",Old building has no fire compartments,Existing building ↔ Fire code,Upgrade is required for use.,Com/Res,Refurb/Upgrade
+B1-0967,967,"10. Regulation, Procurement, Existing Buildings & Handover",Existing slab levels vary requiring bigger screed,Existing slab ↔ New floors,Old slabs are rarely flat.,Com,Refurb/Upgrade
+B1-0968,968,"10. Regulation, Procurement, Existing Buildings & Handover",New work cannot match existing profile,New ↔ Existing,Old profiles differ from current products.,Res,Extension/Refurb
+B1-0969,969,"10. Regulation, Procurement, Existing Buildings & Handover",Existing ceiling heights restrict new services,Existing ↔ New services,Old buildings have low voids.,Com,Refurb/Upgrade
+B1-0970,970,"10. Regulation, Procurement, Existing Buildings & Handover",Floor-to-floor height inadequate for new HVAC,Existing structure ↔ New HVAC,Old height limits modern systems.,Com,Refurb/Upgrade
+B1-0971,971,"10. Regulation, Procurement, Existing Buildings & Handover",Extension approvals take longer than expected,Planning ↔ Extension,Councils are slow.,Res,Extension
+B1-0972,972,"10. Regulation, Procurement, Existing Buildings & Handover",Neighbour objections to an extension,Planning ↔ Neighbours,Objections delay approvals.,Res,Extension
+B1-0973,973,"10. Regulation, Procurement, Existing Buildings & Handover",Overshadowing rules limit an extension height,Planning ↔ Extension,Shadow diagrams are required.,Res,Extension
+B1-0974,974,"10. Regulation, Procurement, Existing Buildings & Handover",Floor area ratio limit reached,Planning ↔ Extension,Planning controls cap area.,Res,Extension
+B1-0975,975,"10. Regulation, Procurement, Existing Buildings & Handover",Extension requires upgrading of the existing house,Existing ↔ New compliance,Alterations trigger upgrades.,Res,Extension
+B1-0976,976,"10. Regulation, Procurement, Existing Buildings & Handover",Extension finishes do not match existing colours,New ↔ Old finishes,Old finishes weather and age.,Res,Extension
+B1-0977,977,"10. Regulation, Procurement, Existing Buildings & Handover",Existing roof drainage cannot handle extension flows,Drainage ↔ Extension,Capacity may be limited.,Res,Extension
+B1-0978,978,"10. Regulation, Procurement, Existing Buildings & Handover",Services relocation for an extension,Existing services ↔ New footprint,Services run where the new building wants to go.,Res,Extension
+B1-0979,979,"10. Regulation, Procurement, Existing Buildings & Handover",Commissioning programme squeezed,Commissioning ↔ Handover,Testing needs time.,Com,New build
+B1-0980,980,"10. Regulation, Procurement, Existing Buildings & Handover",Commissioning begins before systems complete,Commissioning ↔ Installation,Incomplete systems cannot be tested.,Com,New build
+B1-0981,981,"10. Regulation, Procurement, Existing Buildings & Handover",Seasonal testing of HVAC not possible before handover,Commissioning ↔ Weather,Systems need hot and cold tests.,Com,New build
+B1-0982,982,"10. Regulation, Procurement, Existing Buildings & Handover",Training of building operators skipped,Handover ↔ Operations,Operators need to understand systems.,Com,New build
+B1-0983,983,"10. Regulation, Procurement, Existing Buildings & Handover",O&M manuals incomplete,Handover ↔ Maintenance,Manuals decide life-cycle performance.,Com,New build
+B1-0984,984,"10. Regulation, Procurement, Existing Buildings & Handover",Warranty documents missing,Handover ↔ Owner,Warranties require registration.,All,All
+B1-0985,985,"10. Regulation, Procurement, Existing Buildings & Handover",Spare parts and keys not handed over,Handover ↔ Operation,Handover items are contract requirements.,Com,New build
+B1-0986,986,"10. Regulation, Procurement, Existing Buildings & Handover",Practical completion disputed,Contract ↔ Completion,PC definitions vary.,All,All
+B1-0987,987,"10. Regulation, Procurement, Existing Buildings & Handover",Defects liability period work is disruptive,Defects ↔ Occupants,Defect fixes impact occupants.,Com,All
+B1-0988,988,"10. Regulation, Procurement, Existing Buildings & Handover",Latent defects appear after the defects period,Quality ↔ Long-term performance,Latent defects emerge after years.,All,All
+B1-0989,989,"10. Regulation, Procurement, Existing Buildings & Handover",Building performance below the NABERS or Green Star target,Design ↔ Operation,Performance depends on operation.,Com,New build
+B1-0990,990,"10. Regulation, Procurement, Existing Buildings & Handover",Post-occupancy complaints about comfort,Design ↔ Occupants,Occupant feedback reveals gaps.,Com,New build
+B1-0991,991,"10. Regulation, Procurement, Existing Buildings & Handover",Development consent lapses before start,Planning ↔ Programme,Consents expire.,Res/Com,New build
+B1-0992,992,"10. Regulation, Procurement, Existing Buildings & Handover",Modification application needed for minor changes,Approvals ↔ Design,Changes to approved plans need approval.,Res/Com,New build
+B1-0993,993,"10. Regulation, Procurement, Existing Buildings & Handover",Conditions of consent require third party works,Consent ↔ Off-site works,Off-site works rely on others.,Com,New build
+B1-0994,994,"10. Regulation, Procurement, Existing Buildings & Handover",Developer contributions are re-assessed,Planning ↔ Budget,Contribution levies change.,Res/Com,New build
+B1-0995,995,"10. Regulation, Procurement, Existing Buildings & Handover",Subdivision certificate delayed,Approvals ↔ Settlement,Titles require approvals.,Res,New build
+B1-0996,996,"10. Regulation, Procurement, Existing Buildings & Handover",Utility headworks charges increase,Utilities ↔ Budget,Charges vary by authority.,Res/Com,New build
+B1-0997,997,"10. Regulation, Procurement, Existing Buildings & Handover",Fixed-price contract on unresolved design,Contract ↔ Design,Incomplete design drives variations.,All,All
+B1-0998,998,"10. Regulation, Procurement, Existing Buildings & Handover",Dispute escalates to adjudication,Contract ↔ Programme,Disputes slow work.,All,All
+B1-0999,999,"10. Regulation, Procurement, Existing Buildings & Handover",Insurance does not cover a weather event,Insurance ↔ Risk,Policy exclusions create exposure.,All,All
+B1-1000,1000,"10. Regulation, Procurement, Existing Buildings & Handover",Site possession delayed by tenant holdover,Tenancy ↔ Programme,Refurbs rely on vacant possession.,Com,Refurb/Upgrade

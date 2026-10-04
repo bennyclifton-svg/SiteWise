@@ -1,0 +1,20 @@
+version: 1
+consequences:
+  - id: cq.pre-2004-fabric-hazardous-materials-survey
+    when:
+      all:
+        - works: {action: [alter, replace, upgrade, repair, remove]}
+        - {det: construction_year, lt: 2004}
+    propose:
+      - {kind: investigation, label: Hazardous materials survey of areas affected by the works}
+    signals: [sig.hazardous-materials-survey-stated]   # a stated survey already answers the proposal
+    governed_by: []          # rule written and verified in K3
+    clause_verified: false
+    severity: life-safety
+    status: draft
+    sources:
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Asbestos Assessment and Management in Construction"}
+    notes: >-
+      Illustrative record fixing the shape (K0). The year threshold comes from
+      the seed and the plan's example, not the instrument; it stays unverified
+      until K3 reads the source.

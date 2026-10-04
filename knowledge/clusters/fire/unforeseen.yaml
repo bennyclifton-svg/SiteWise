@@ -1,0 +1,23 @@
+version: 1
+unforeseen:
+  - id: uc.existing-fire-water-fails-flow-test
+    kind: unforeseen_condition
+    category: existing_systems_on_test
+    attaches_to: {system: fire-active.fire-water}
+    when:
+      all:
+        - works: {action: [new, upgrade, alter], system: [fire-active.sprinklers, fire-active.hydrants]}
+        - {det: existing_building, is: true}
+    signals: [sig.existing-fire-water-test-results-stated]
+    de_risk: {kind: investigation, label: Flow and pressure test of the existing fire water supply before design}
+    contract: Provisional sum or separable portion for any supply upgrade.
+    effect: [cost, programme, compliance]
+    severity: life-safety
+    discovered_at: [design, testing_commissioning]
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Active systems and water supply"}
+    notes: >-
+      Illustrative record fixing the shape (K0). A stated test result is the
+      signal that the condition is already known, so the proposal can be
+      dropped. No frequency or cost is recorded because no source states one.

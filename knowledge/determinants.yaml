@@ -1525,6 +1525,28 @@ determinants:
     anchor: '## Asbestos Assessment and Management in Construction'
   - seed: as-standards-reference.md
     anchor: '## AS 2601 — The Demolition of Structures'
+- id: construction_year
+  label: Year the building or part was constructed
+  value: integer
+  unit: year
+  extraction: pre_parsed
+  question:
+    type: choice
+    instructions: Using `text` and `candidates`, which candidate is the year the building or part was
+      constructed, as the passage states it?
+    criteria: {}
+    runs_on:
+    - structure
+  triggers:
+  - '\byear (?:built|of construction|constructed)\b'
+  - '\b(?:built|constructed) in (?:19|20)\d\d\b'
+  notes: Read by works consequences (cq.*) and unforeseen conditions (uc.*), which compare it in code.
+    Overlaps existing_building_year, which the demolition rules read; the owner decides whether to merge
+    them.
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Asbestos Assessment and Management in Construction'
 - id: flood_planning_level
   label: Flood planning level
   value: number

@@ -1,0 +1,73 @@
+# What the works do to a system. Jev reads `describes` and `excludes`, so they
+# are literal, with the boundary cases. Draft wording for owner review.
+# Plan: docs/plans/2026-10-04-next-wave-architecture-schema.md, "Works model".
+version: 1
+status: draft
+sources:
+  - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "### Actions"}
+actions:
+  - id: new
+    describes: The works install it where none exists now, or in a new building or extension.
+    excludes: Adding capacity to an existing system is upgrade.
+  - id: replace
+    describes: The works remove an existing one and install an equivalent of similar capacity or performance.
+    excludes: A stated increase in capacity or performance is upgrade.
+  - id: upgrade
+    describes: >-
+      The works increase the capacity or performance of an existing one, or
+      bring it to a newer standard, including by adding components.
+    excludes: Like-for-like renewal is replace.
+  - id: alter
+    describes: >-
+      The works relocate, extend or modify an existing one to suit a new
+      layout, without a stated change in capacity or performance.
+    excludes: Restoring a defect is repair.
+  - id: repair
+    describes: >-
+      The works repair, remediate or rectify a defective or deteriorated
+      existing one so it performs as intended.
+    excludes: Renewing the whole of it is replace.
+  - id: remove
+    describes: The works remove or decommission an existing one without replacing it.
+    excludes: Removal followed by an equivalent is replace.
+  - id: retain
+    describes: >-
+      An existing one stays in place unchanged, or must stay in operation or
+      be protected during the works.
+    excludes: Any physical change is another action.
+  - id: investigate
+    describes: >-
+      The works inspect, test, survey or audit an existing one to establish
+      condition or compliance, without stated physical work.
+    excludes: Testing and commissioning new or replaced work belongs to that work.
+
+# Extra answers of the Jev question `sys.<leaf>.action` (one choice: the eight
+# actions plus these two). Code, not Jev, decides what each does.
+answers:
+  several: >-
+    The passage states more than one action on the system. Goes to Needs
+    mapping for the user to split or choose.
+  not_stated: >-
+    The passage does not say what the works do to the system. Code falls back
+    to the work-type default below.
+
+# Default action for a coarse work item, by work type (taxonomy.yaml ids).
+# The user's choice is final.
+work_type_defaults:
+  new: new
+  extend: new
+  refurb: alter
+  remediation: repair
+  advisory: investigate
+
+# Existing condition of a work item's system. Copied as data from Clerk.
+existing_conditions:
+  source: {clerk_file: data/taxonomy/asset-register.json}
+  values:
+    - {id: serviceable, label: Serviceable}
+    - {id: nearing_end_of_life, label: Nearing end of life}
+    - {id: end_of_life, label: End of life}
+    - {id: beyond_economical_repair, label: Beyond economical repair}
+    - {id: failed, label: Failed / out of service}
+    - {id: defective, label: Defective / non-compliant}
+    - {id: unknown, label: Not yet assessed}
