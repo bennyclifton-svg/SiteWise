@@ -39,6 +39,10 @@ unforeseen:
     row: B1-0048
   - dataset: batch1
     row: B1-0067
+  - dataset: batch2
+    row: B2-0925
+  - dataset: batch2
+    row: B2-0969
 - id: uc.buried-obstruction-or-void-at-founding-or-pile-line
   kind: unforeseen_condition
   category: ground_and_site
@@ -158,6 +162,8 @@ unforeseen:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0014
+  - dataset: batch2
+    row: B2-0929
 - id: uc.geotechnical-model-differs-from-ground-found
   kind: unforeseen_condition
   category: ground_and_site
@@ -232,6 +238,8 @@ unforeseen:
     row: B1-0008
   - dataset: batch1
     row: B1-0091
+  - dataset: batch2
+    row: B2-0928
 - id: uc.loose-or-wet-ground-collapses-open-bores
   kind: unforeseen_condition
   category: ground_and_site
@@ -440,6 +448,8 @@ unforeseen:
     row: B1-0089
   - dataset: batch1
     row: B1-0848
+  - dataset: batch2
+    row: B2-0477
 - id: uc.contaminated-soil-found-during-excavation
   kind: unforeseen_condition
   category: ground_and_site
@@ -545,6 +555,8 @@ unforeseen:
     anchor: '## Acid Sulfate Soils'
   - dataset: batch1
     row: B1-0015
+  - dataset: batch2
+    row: B2-0927
 - id: uc.excavated-volume-exceeds-estimate
   kind: unforeseen_condition
   category: supply_and_site_operations
@@ -650,6 +662,18 @@ unforeseen:
     row: B1-0004
   - dataset: batch1
     row: B1-0022
+  - dataset: batch2
+    row: B2-0593
+  - dataset: batch2
+    row: B2-0624
+  - dataset: batch2
+    row: B2-0629
+  - dataset: batch2
+    row: B2-0758
+  - dataset: batch2
+    row: B2-0802
+  - dataset: batch2
+    row: B2-0859
 - id: uc.existing-sewer-within-building-footprint-needs-relocation
   kind: unforeseen_condition
   category: authorities_and_utilities
@@ -684,6 +708,8 @@ unforeseen:
     anchor: '## Sewer connection'
   - dataset: batch1
     row: B1-0455
+  - dataset: batch2
+    row: B2-0777
 - id: uc.neighbour-surcharge-load-on-retention-not-known
   kind: unforeseen_condition
   category: third_parties_and_occupation
@@ -746,6 +772,8 @@ unforeseen:
     row: B1-0074
   - dataset: batch1
     row: B1-0860
+  - dataset: batch2
+    row: B2-0838
 - id: uc.protected-or-neighbouring-tree-restricts-works
   kind: unforeseen_condition
   category: third_parties_and_occupation
@@ -783,6 +811,8 @@ unforeseen:
     row: B1-0847
   - dataset: batch1
     row: B1-0383
+  - dataset: batch2
+    row: B2-0628
 - id: uc.unexploded-ordnance-suspected-on-site
   kind: unforeseen_condition
   category: ground_and_site
@@ -878,6 +908,10 @@ unforeseen:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0806
+  - dataset: batch2
+    row: B2-0586
+  - dataset: batch2
+    row: B2-0759
 - id: uc.termite-activity-found-in-soil-before-slab
   kind: unforeseen_condition
   category: ground_and_site
@@ -955,6 +989,8 @@ unforeseen:
     row: B1-0023
   - dataset: batch1
     row: B1-0078
+  - dataset: batch2
+    row: B2-0009
 - id: uc.shared-party-wall-footing-found
   kind: unforeseen_condition
   category: third_parties_and_occupation
@@ -990,6 +1026,8 @@ unforeseen:
     anchor: '## Dilapidation and neighbour management'
   - dataset: batch1
     row: B1-0076
+  - dataset: batch2
+    row: B2-0034
 - id: uc.existing-slab-or-floor-too-thin-for-new-loads
   kind: unforeseen_condition
   category: existing_structure
@@ -1024,6 +1062,14 @@ unforeseen:
     anchor: '## Structural intervention'
   - dataset: batch1
     row: B1-0077
+  - dataset: batch2
+    row: B2-0551
+  - dataset: batch2
+    row: B2-0889
+  - dataset: batch2
+    row: B2-0891
+  - dataset: batch2
+    row: B2-0033
 - id: uc.existing-structure-differs-from-drawings
   kind: unforeseen_condition
   category: existing_structure
@@ -1064,6 +1110,8 @@ unforeseen:
     anchor: '## Structural intervention'
   - dataset: batch1
     row: B1-0159
+  - dataset: batch2
+    row: B2-0830
 - id: uc.existing-wall-removed-is-loadbearing
   kind: unforeseen_condition
   category: existing_structure
@@ -1102,6 +1150,14 @@ unforeseen:
     anchor: '## Structural intervention'
   - dataset: batch1
     row: B1-0154
+  - dataset: batch2
+    row: B2-0003
+  - dataset: batch2
+    row: B2-0834
+  - dataset: batch2
+    row: B2-0845
+  - dataset: batch2
+    row: B2-0057
 - id: uc.spalling-and-corroded-reinforcement-in-existing-concrete
   kind: unforeseen_condition
   category: existing_structure
@@ -1140,6 +1196,10 @@ unforeseen:
     anchor: '## Structural intervention'
   - dataset: batch1
     row: B1-0157
+  - dataset: batch2
+    row: B2-0010
+  - dataset: batch2
+    row: B2-0879
 - id: uc.existing-steel-section-loss-at-connections
   kind: unforeseen_condition
   category: existing_structure
@@ -1178,6 +1238,12 @@ unforeseen:
     anchor: '## Structural intervention'
   - dataset: batch1
     row: B1-0158
+  - dataset: batch2
+    row: B2-0006
+  - dataset: batch2
+    row: B2-0254
+  - dataset: batch2
+    row: B2-0049
 - id: uc.existing-roof-framing-sags-under-new-cover
   kind: unforeseen_condition
   category: existing_structure
@@ -1249,6 +1315,8 @@ unforeseen:
     anchor: '## Structural intervention'
   - dataset: batch1
     row: B1-0273
+  - dataset: batch2
+    row: B2-0863
 - id: uc.termite-or-rot-damage-in-existing-timber
   kind: unforeseen_condition
   category: existing_structure
@@ -1290,6 +1358,10 @@ unforeseen:
     row: B1-0161
   - dataset: batch1
     row: B1-0162
+  - dataset: batch2
+    row: B2-0054
+  - dataset: batch2
+    row: B2-0842
 - id: uc.fire-damaged-structure-needs-assessment
   kind: unforeseen_condition
   category: existing_structure
@@ -1410,6 +1482,8 @@ unforeseen:
     row: B1-0967
   - dataset: batch1
     row: B1-0169
+  - dataset: batch2
+    row: B2-0878
 - id: uc.existing-heights-too-low-for-new-services
   kind: unforeseen_condition
   category: existing_structure
@@ -1753,6 +1827,8 @@ unforeseen:
     row: B1-0825
   - dataset: batch1
     row: B1-0826
+  - dataset: batch2
+    row: B2-0784
 - id: uc.vibration-monitor-limit-halts-works
   kind: process_authority_supply_weather
   category: third_parties_and_occupation
@@ -1785,6 +1861,10 @@ unforeseen:
     anchor: '## Dilapidation and neighbour management'
   - dataset: batch1
     row: B1-0072
+  - dataset: batch2
+    row: B2-0608
+  - dataset: batch2
+    row: B2-0901
 - id: uc.dilapidation-survey-required-or-disputed
   kind: process_authority_supply_weather
   category: third_parties_and_occupation
@@ -1848,6 +1928,8 @@ unforeseen:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0060
+  - dataset: batch2
+    row: B2-0597
 - id: uc.concrete-delivery-delay-causes-cold-joint
   kind: process_authority_supply_weather
   category: supply_and_site_operations
@@ -2131,6 +2213,10 @@ unforeseen:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0712
+  - dataset: batch2
+    row: B2-0026
+  - dataset: batch2
+    row: B2-0122
 - id: uc.crane-installation-delayed-by-runway-or-power
   kind: process_authority_supply_weather
   category: supply_and_site_operations
@@ -2366,6 +2452,8 @@ unforeseen:
     anchor: '## Driveway crossover'
   - dataset: batch1
     row: B1-0805
+  - dataset: batch2
+    row: B2-0614
 - id: uc.driveway-crossing-approval-or-utility-pit-constrains-access
   kind: process_authority_supply_weather
   category: authorities_and_utilities
@@ -2481,6 +2569,8 @@ unforeseen:
     anchor: '## Dilapidation and neighbour management'
   - dataset: batch1
     row: B1-0861
+  - dataset: batch2
+    row: B2-0762
 - id: uc.silica-dust-controls-restrict-cutting
   kind: process_authority_supply_weather
   category: authorities_and_utilities
@@ -2512,6 +2602,8 @@ unforeseen:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0888
+  - dataset: batch2
+    row: B2-0486
 - id: uc.consent-requires-off-site-works-by-third-party
   kind: process_authority_supply_weather
   category: authorities_and_utilities
@@ -2539,3 +2631,2536 @@ unforeseen:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0993
+- id: uc.post-tension-anchorage-or-prestress-zone-clashes-with-new-fixing
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.concrete
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.slab-reinforcement-or-tendon-scan-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Set the frame out clear of anchorages before fabrication'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0022
+  - dataset: batch2
+    row: B2-0041
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: uc.reinforcement-in-existing-slab-not-where-the-opening-assumes
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.concrete
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.slab-reinforcement-or-tendon-scan-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Scan representative bays and reconcile them with the opening design before tender'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0002
+  - dataset: batch2
+    row: B2-0880
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: uc.concealed-beam-drop-panel-or-rib-differs-from-survey
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.concrete
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  - sig.slab-reinforcement-or-tendon-scan-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey the soffit tightly enough to catch capitals and drop panels before services are tendered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0004
+  - dataset: batch2
+    row: B2-0011
+  - dataset: batch2
+    row: B2-0029
+  - dataset: batch2
+    row: B2-0831
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: uc.prestressed-precast-strand-position-differs-from-assumption
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.precast
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.precast
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.slab-reinforcement-or-tendon-scan-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Confirm span direction and strand zones before the void is tendered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0008
+  - dataset: batch2
+    row: B2-0032
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: uc.existing-floor-span-or-joist-direction-differs-from-assumption
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.alterations
+        - structure.precast
+        - structure.timber
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Confirm span direction on site before penetrations are tendered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0019
+  - dataset: batch2
+    row: B2-0837
+  notes: 'Owner list cites AS 3600, AS 1684; not verified.'
+- id: uc.existing-lintel-carries-more-than-the-drawing-treats
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        - repair
+        system:
+        - structure.alterations
+        - structure.masonry
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Confirm wall thickness and lintel type before the opening is tendered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0013
+  - dataset: batch2
+    row: B2-0864
+  notes: 'Owner list cites AS 3700, AS 1684; not verified.'
+- id: uc.earlier-work-has-cut-or-notched-existing-timber-framing
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.timber
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.timber
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Inspect the roof space before any ceiling or load is added'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0014
+  - dataset: batch2
+    row: B2-0038
+  notes: 'Owner list cites AS 1684; not verified.'
+- id: uc.existing-steel-geometry-or-fixings-differ-from-strengthening-detail
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.steel
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.steel
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-member-size-measured-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey the column line before the strengthening plates are fabricated'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - quality
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0018
+  - dataset: batch2
+    row: B2-0028
+  - dataset: batch2
+    row: B2-0036
+  - dataset: batch2
+    row: B2-0060
+  notes: 'Owner list cites AS 4100; not verified.'
+- id: uc.existing-roof-or-platform-has-no-spare-capacity-for-added-plant
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.alterations
+        - structure.steel
+        - structure.timber
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-capacity-check-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Weigh the existing roof build-up before the array is specified'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0047
+  - dataset: batch2
+    row: B2-0284
+  notes: 'Owner list cites AS 1170; not verified.'
+- id: uc.existing-structure-already-deflected-or-cracked-beyond-reuse-tolerance
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        - new
+        system:
+        - structure.alterations
+        - structure.concrete
+        - structure.masonry
+    - det: existing_building
+      is: true
+  signals:
+  - sig.crack-or-movement-monitoring-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey cracks and decide which walls can be retained before tender'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - compliance
+  - safety
+  - quality
+  severity: life-safety
+  discovered_at:
+  - design
+  - construction
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0017
+  - dataset: batch2
+    row: B2-0021
+  - dataset: batch2
+    row: B2-0048
+  - dataset: batch2
+    row: B2-0056
+  notes: 'Owner list cites AS 3700, AS 3600; not verified.'
+- id: uc.existing-masonry-leaf-or-parapet-not-tied-as-assumed
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.masonry
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - structure.masonry
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Inspect ties before a retention scheme is tendered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0024
+  - dataset: batch2
+    row: B2-0053
+  notes: 'Owner list cites AS 3700; not verified.'
+- id: uc.existing-beam-edge-too-close-for-post-installed-anchors
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - structure.alterations
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.slab-reinforcement-or-tendon-scan-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Scan the beam edge and check anchor edge distance before the mezzanine is tendered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0012
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: uc.existing-pier-or-infill-not-connected-to-the-structure
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.alterations
+        - structure.masonry
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Prove the connection before the pier is used as a support'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0023
+  - dataset: batch2
+    row: B2-0039
+  notes: 'Owner list cites AS 3700, AS 3600; not verified.'
+- id: uc.existing-slab-penetration-or-tunnel-already-on-the-new-route
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.concrete
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.slab-reinforcement-or-tendon-scan-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Scan the wall line before the wall is documented'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0046
+  - dataset: batch2
+    row: B2-0052
+- id: uc.existing-footing-or-ground-beam-clashes-with-new-drain-or-tank
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.footings
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - substructure.footings
+        - site.stormwater-detention
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-footing-exposed-stated
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey footing depths before the drainage design is frozen'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - excavation
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0051
+  - dataset: batch2
+    row: B2-0589
+  notes: 'Owner list cites AS 3500; not verified.'
+- id: uc.existing-concrete-cover-too-low-for-repair-coating-build
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - structure.concrete
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey cover and agree a repair system that suits it before tender'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0043
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: uc.existing-slab-has-no-set-down-for-new-wet-area-falls
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.concrete
+        - substructure.slab-on-ground
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-levels-surveyed-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey the slab before the waterproofing system is chosen'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0118
+  notes: 'Owner list cites AS 3740; not verified.'
+- id: uc.existing-pavement-or-deck-lacks-falls-for-new-coating-or-drainage
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.vehicle-access
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - site.vehicle-access
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-levels-surveyed-stated
+  de_risk:
+    kind: investigation
+    label: 'Form falls the slab can accept or design the coating for the ponds'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - quality
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0581
+  - dataset: batch2
+    row: B2-0587
+- id: uc.existing-building-levels-or-squareness-differ-from-survey
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.alterations
+        - site.survey-boundaries
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-levels-surveyed-stated
+  - sig.boundary-survey-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey both buildings to the same datum before the link is designed'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - compliance
+  - quality
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0062
+  - dataset: batch2
+    row: B2-0832
+  - dataset: batch2
+    row: B2-0862
+  notes: 'Owner list cites AS 1428; not verified.'
+- id: uc.existing-movement-joint-closed-seized-or-filled-solid
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        - repair
+        system:
+        - structure.alterations
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.crack-or-movement-monitoring-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey the joint and detail the finish to suit the movement that is left'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0027
+  - dataset: batch2
+    row: B2-0857
+  - dataset: batch2
+    row: B2-0872
+- id: uc.existing-slab-joints-or-pits-conflict-with-new-forklift-layout
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.concrete
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-levels-surveyed-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Set aisles off the joints or detail the joints for the wheels'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - quality
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0856
+  - dataset: batch2
+    row: B2-0858
+- id: uc.slab-on-grade-picks-up-street-vibration
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.slab-on-ground
+      - structure.concrete
+  signals:
+  - sig.vibration-limit-stated
+  de_risk:
+    kind: investigation
+    label: 'Isolate the slab if the use needs it'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - quality
+  - cost
+  severity: durability
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0703
+- id: uc.existing-boundary-wall-already-moving
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.retaining-walls
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.retaining-walls
+        - site.adjoining-structures
+    - det: existing_building
+      is: true
+  signals:
+  - sig.crack-or-movement-monitoring-stated
+  - sig.adjoining-structure-details-stated
+  de_risk:
+    kind: investigation
+    label: 'Do not add load to a wall that is already moving'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0609
+- id: uc.existing-basement-water-head-or-earlier-treatment-worse-than-assumed
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: substructure.damp-waterproofing
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - substructure.damp-waterproofing
+        - substructure.basement-retention
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-basement-leak-investigation-stated
+  - sig.groundwater-level-stated
+  de_risk:
+    kind: investigation
+    label: 'Measure the head before the product is chosen'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - construction
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0138
+  - dataset: batch2
+    row: B2-0868
+- id: uc.neighbour-access-for-positive-side-waterproofing-refused
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: substructure.damp-waterproofing
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - substructure.damp-waterproofing
+        - substructure.basement-retention
+    - det: existing_building
+      is: true
+  signals:
+  - sig.neighbour-consent-stated
+  de_risk:
+    kind: investigation
+    label: 'Design a negative-side system if the soil face cannot be reached'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0137
+- id: uc.slab-step-too-sharp-for-membrane-to-turn
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.concrete
+        - substructure.slab-on-ground
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Form a fillet the sheet can turn'
+  contract: 'Design allowance for the condition found; variation mechanism for scope change.'
+  effect:
+  - quality
+  - cost
+  severity: durability
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0160
+  notes: 'Owner list cites AS 4654; not verified.'
+- id: uc.existing-timber-floor-cannot-take-added-rated-lining
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.timber
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.timber
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-member-size-measured-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Select a system the joists can accept'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0189
+  - dataset: batch2
+    row: B2-0699
+  notes: 'Owner list cites NCC; not verified.'
+- id: uc.existing-steel-needs-more-fire-protection-than-specified
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.steel
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - structure.steel
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-steel-section-and-coating-stated
+  de_risk:
+    kind: investigation
+    label: 'Measure the section and specify preparation and thickness for it'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0203
+  notes: 'Owner list cites NCC; not verified.'
+- id: uc.lead-paint-on-existing-steel-cut-or-blasted
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: structure.steel
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - structure.steel
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: 'Test coatings before cutting or blasting'
+  contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0470
+- id: uc.excavated-or-removed-material-classified-as-restricted-waste
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.contamination
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - repair
+        - alter
+        system:
+        - site.contamination
+        - site.earthworks
+        - site.ground-conditions
+    - det: existing_building
+      is: true
+  signals:
+  - sig.soil-waste-classification-stated
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: 'Classify the soil before the disposal path is assumed'
+  contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - excavation
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0476
+  - dataset: batch2
+    row: B2-0492
+  - dataset: batch2
+    row: B2-0493
+  notes: 'Owner list cites National Environment Protection (Assessment of Site Contamination) Measure; not verified.'
+- id: uc.dewatering-volume-exceeds-discharge-permit
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: substructure.basement-retention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.basement-retention
+      - site.ground-conditions
+  signals:
+  - sig.dewatering-discharge-approval-stated
+  de_risk:
+    kind: investigation
+    label: 'Keep the discharge inside the permit or amend it'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0820
+- id: uc.underground-fuel-tank-found-under-building-footprint
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.contamination
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - repair
+        - alter
+        system:
+        - site.contamination
+        - substructure.footings
+        - substructure.slab-on-ground
+    - det: existing_building
+      is: true
+  signals:
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: 'Remove or validate the tank before the slab locks it in'
+  contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0478
+  notes: 'Owner list cites National Environment Protection (Assessment of Site Contamination) Measure; not verified.'
+- id: uc.buried-drums-or-waste-in-footing-excavation
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.contamination
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.contamination
+        - substructure.footings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: 'Clear and classify the waste before the footing is poured'
+  contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
+  effect:
+  - safety
+  - cost
+  - programme
+  severity: life-safety
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0499
+  notes: 'Owner list cites National Environment Protection (Assessment of Site Contamination) Measure; not verified.'
+- id: uc.contaminated-fill-or-slab-from-former-use-blocks-new-use
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.contamination
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - site.contamination
+        - substructure.slab-on-ground
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: 'Assess the fill for the new use'
+  contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
+  effect:
+  - cost
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - excavation
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0479
+  - dataset: batch2
+    row: B2-0494
+  notes: 'Owner list cites National Environment Protection (Assessment of Site Contamination) Measure; not verified.'
+- id: uc.footing-design-cuts-continuous-contamination-cap
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.contamination
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - repair
+        - alter
+        system:
+        - site.contamination
+        - substructure.footings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: 'Detail the footing so the cap remains continuous'
+  contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0785
+  notes: 'Owner list cites National Environment Protection (Assessment of Site Contamination) Measure; not verified.'
+- id: uc.contaminated-sediment-in-existing-stormwater-pit
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.contamination
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.contamination
+        - site.stormwater-detention
+        - site.erosion-sediment-control
+    - det: existing_building
+      is: true
+  signals:
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: 'Test the sediment before the pit is opened'
+  contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0498
+- id: uc.stormwater-connection-point-or-pit-differs-from-design
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.stormwater-detention
+      - site.services-connections
+  signals:
+  - sig.stormwater-discharge-point-confirmed-stated
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: investigation
+    label: 'Confirm the point of discharge before the drains are designed'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - cost
+  - compliance
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0572
+  - dataset: batch2
+    row: B2-0573
+  - dataset: batch2
+    row: B2-0611
+  - dataset: batch2
+    row: B2-0619
+  notes: 'Owner list cites AS 3500, Before You Dig Australia; not verified.'
+- id: uc.stormwater-outlet-grade-or-tailwater-prevents-gravity-drainage
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.stormwater-detention
+    - det: existing_building
+      is: true
+  signals:
+  - sig.stormwater-discharge-point-confirmed-stated
+  de_risk:
+    kind: investigation
+    label: 'Prove the grade to the main before the pipe is ordered'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: durability
+  discovered_at:
+  - excavation
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0588
+  - dataset: batch2
+    row: B2-0618
+  - dataset: batch2
+    row: B2-0626
+  notes: 'Owner list cites AS 3500; not verified.'
+- id: uc.verge-services-leave-no-corridor-for-new-drain
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.stormwater-detention
+      - site.services-connections
+  signals:
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: investigation
+    label: 'Prove a corridor before the drain is designed'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0580
+  notes: 'Owner list cites Before You Dig Australia; not verified.'
+- id: uc.old-buried-drain-or-trench-collapses-under-new-slab
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.stormwater-detention
+        - substructure.slab-on-ground
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-stormwater-drain-capacity-stated
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: investigation
+    label: 'Replace pipes before the slab covers them'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: durability
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0577
+  - dataset: batch2
+    row: B2-0630
+  notes: 'Owner list cites AS 3500, AS 2870; not verified.'
+- id: uc.trench-or-batter-collapses-in-saturated-or-loose-ground
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.earthworks
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.earthworks
+      - site.stormwater-detention
+      - substructure.basement-retention
+  signals:
+  - sig.groundwater-level-stated
+  de_risk:
+    kind: investigation
+    label: 'Shore the trench'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - safety
+  - programme
+  severity: life-safety
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0603
+  - dataset: batch2
+    row: B2-0968
+- id: uc.pipe-cover-below-wheel-load-minimum-under-existing-driveway
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.stormwater-detention
+        - site.vehicle-access
+    - det: existing_building
+      is: true
+  signals:
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: investigation
+    label: 'Lower the pipe or protect it'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0604
+  notes: 'Owner list cites AS 3500; not verified.'
+- id: uc.existing-drain-or-interceptor-undersized-for-added-catchment
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.stormwater-detention
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-stormwater-drain-capacity-stated
+  de_risk:
+    kind: investigation
+    label: 'Upgrade the pipe or reduce the catchment'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0598
+  - dataset: batch2
+    row: B2-0613
+  notes: 'Owner list cites AS 3500; not verified.'
+- id: uc.soil-permeability-fails-for-on-site-disposal
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.stormwater-detention
+      - site.ground-conditions
+  signals:
+  - sig.soil-permeability-test-stated
+  de_risk:
+    kind: investigation
+    label: 'Redesign disposal for the soil and the new area'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0627
+  - dataset: batch2
+    row: B2-0632
+  - dataset: batch2
+    row: B2-0932
+  notes: 'Owner list cites AS 3500; not verified.'
+- id: uc.stormwater-treatment-does-not-fit-the-land-available
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.stormwater-detention
+  signals:
+  - sig.stormwater-discharge-point-confirmed-stated
+  de_risk:
+    kind: investigation
+    label: 'Fit the treatment to the land available or change the strategy'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0602
+  - dataset: batch2
+    row: B2-0775
+- id: uc.detention-outlet-limit-tighter-than-design
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.stormwater-detention
+  signals:
+  - sig.stormwater-discharge-point-confirmed-stated
+  de_risk:
+    kind: investigation
+    label: 'Resize the storage to the outlet that will be accepted'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0776
+- id: uc.overland-flow-deeper-than-extension-floor-level
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.flooding
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.flooding
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.overland-flow-levels-stated
+  - sig.flood-planning-level-advice-stated
+  de_risk:
+    kind: investigation
+    label: 'Set the floor above the flow or redirect the flow on land the project controls'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - compliance
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0575
+- id: uc.construction-controls-block-overland-flow-path
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.flooding
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - replace
+        system:
+        - site.flooding
+        - site.erosion-sediment-control
+    - det: existing_building
+      is: true
+  signals:
+  - sig.erosion-sediment-control-plan-stated
+  de_risk:
+    kind: investigation
+    label: 'Keep the flow path open'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0617
+- id: uc.neighbour-open-channel-cannot-be-piped
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.flooding
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.flooding
+  signals:
+  - sig.boundary-survey-stated
+  de_risk:
+    kind: investigation
+    label: 'Keep the flow area'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0620
+- id: uc.neighbour-water-arrives-at-boundary-and-must-be-passed
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.stormwater-detention
+        - site.earthworks
+        - site.ground-conditions
+    - det: existing_building
+      is: true
+  signals:
+  - sig.boundary-survey-stated
+  - sig.groundwater-level-stated
+  de_risk:
+    kind: investigation
+    label: 'Keep a path for water that already arrives'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0576
+  - dataset: batch2
+    row: B2-0595
+- id: uc.existing-crossover-or-footpath-grade-prevents-compliant-entry
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.vehicle-access
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - replace
+        system:
+        - site.vehicle-access
+        - site.public-domain
+    - det: existing_building
+      is: true
+  signals:
+  - sig.kerb-and-footpath-levels-surveyed-stated
+  de_risk:
+    kind: investigation
+    label: 'Redesign the ramp from the crossover that exists'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - cost
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0591
+  - dataset: batch2
+    row: B2-0592
+  - dataset: batch2
+    row: B2-0616
+  notes: 'Owner list cites AS 2890, AS 1428; not verified.'
+- id: uc.subgrade-proof-roll-fails-before-slab-pour
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.slab-on-ground
+      - structure.concrete
+  signals:
+  - sig.pavement-subgrade-test-stated
+  de_risk:
+    kind: investigation
+    label: 'Do not pour on a subgrade that fails'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - quality
+  - programme
+  severity: durability
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0930
+  notes: 'Owner list cites AS 3798; not verified.'
+- id: uc.existing-column-blocks-vehicle-swept-path
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.loading-docks
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - site.loading-docks
+        - site.vehicle-access
+    - det: existing_building
+      is: true
+  signals:
+  - sig.vehicle-swept-path-stated
+  de_risk:
+    kind: investigation
+    label: 'Clear the path of the columns that exist'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0600
+  notes: 'Owner list cites AS 2890; not verified.'
+- id: uc.site-ramp-too-steep-for-delivery-vehicles
+  kind: unforeseen_condition
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.vehicle-access
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.vehicle-access
+  signals:
+  - sig.delivery-logistics-plan-stated
+  de_risk:
+    kind: investigation
+    label: 'Form a ramp the vehicles can use'
+  contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
+  effect:
+  - programme
+  - cost
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0810
+- id: uc.loading-bay-too-small-for-delivery-vehicle
+  kind: unforeseen_condition
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.loading-docks
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - site.loading-docks
+    - det: existing_building
+      is: true
+  signals:
+  - sig.vehicle-swept-path-stated
+  - sig.delivery-logistics-plan-stated
+  de_risk:
+    kind: investigation
+    label: 'Size the bay to the delivery'
+  contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
+  effect:
+  - programme
+  - cost
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0805
+- id: uc.dock-yard-level-outside-leveller-range
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.loading-docks
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - site.loading-docks
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-levels-surveyed-stated
+  de_risk:
+    kind: investigation
+    label: 'Match the yard to the leveller or replace the leveller'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0606
+- id: uc.permitted-crane-cannot-reach-far-corner
+  kind: unforeseen_condition
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.vehicle-access
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - structure.temporary-works
+        - site.vehicle-access
+    - det: existing_building
+      is: true
+  signals:
+  - sig.delivery-logistics-plan-stated
+  de_risk:
+    kind: investigation
+    label: 'Plan a method that reaches the corner'
+  contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
+  effect:
+  - programme
+  - cost
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0804
+- id: uc.scaffold-ties-cannot-land-on-structure
+  kind: unforeseen_condition
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.temporary-works
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - structure.temporary-works
+        - structure.precast
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Land ties on structure'
+  contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
+  effect:
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0816
+- id: uc.live-flue-in-wall-on-line-of-needles-or-opening
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.masonry
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.masonry
+        - structure.alterations
+        - substructure.underpinning
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  - sig.adjoining-structure-details-stated
+  de_risk:
+    kind: investigation
+    label: 'Locate flues before needles are set out'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - construction
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0817
+  - dataset: batch2
+    row: B2-0846
+- id: uc.required-pond-or-water-body-cannot-be-filled
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.ground-conditions
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - site.ground-conditions
+        - site.earthworks
+    - det: existing_building
+      is: true
+  signals:
+  - sig.boundary-survey-stated
+  de_risk:
+    kind: investigation
+    label: 'Redesign the levels around it'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0622
+- id: uc.existing-building-encroaches-over-boundary
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.survey-boundaries
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.survey-boundaries
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.boundary-survey-stated
+  de_risk:
+    kind: investigation
+    label: 'Resolve the encroachment before the extension builds on it'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - compliance
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0633
+  - dataset: batch2
+    row: B2-0790
+- id: uc.sewer-protection-slab-does-not-fit-cover
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.slab-on-ground
+      - substructure.footings
+  signals:
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: investigation
+    label: 'Redesign the levels or the protection'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0778
+- id: uc.rail-corridor-owner-restricts-excavation-and-retention
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: substructure.basement-retention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.basement-retention
+  signals:
+  - sig.authority-excavation-conditions-stated
+  de_risk:
+    kind: investigation
+    label: 'Design the retention to that limit'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0783
+- id: uc.neighbour-dispute-withdraws-access-to-party-wall
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: structure.masonry
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - repair
+        system:
+        - structure.masonry
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.neighbour-consent-stated
+  de_risk:
+    kind: investigation
+    label: 'Do not programme the wall work until access is agreed'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - programme
+  - cost
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0789
+- id: uc.back-propping-through-occupied-floor-refused
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: structure.temporary-works
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - structure.temporary-works
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: 'Plan a pour sequence the floor below can accept'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - programme
+  - cost
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0808
+- id: uc.differential-founding-from-rock-to-deep-soil-under-one-slab
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.slab-on-ground
+      - substructure.footings
+  signals:
+  - sig.founding-level-ground-data-stated
+  - sig.site-classification-stated
+  de_risk:
+    kind: investigation
+    label: 'Articulate the slab for the difference'
+  contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
+  effect:
+  - quality
+  - cost
+  severity: durability
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0931
+  notes: 'Owner list cites AS 2870; not verified.'
+- id: uc.existing-facade-member-role-differs-from-assumption
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - structure.alterations
+        - structure.steel
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Confirm the member''s role before the awning load is attached'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0031
+  notes: 'Owner list cites AS 4100; not verified.'
+- id: uc.balcony-posts-embedded-in-slab-edge-block-membrane-repair
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.concrete
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - structure.concrete
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Agree which posts stay before the membrane repair is tendered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: durability
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0040
+  notes: 'Owner list cites AS 4654; not verified.'
+- id: uc.existing-crane-runway-outside-replacement-crane-tolerance
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.steel
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.steel
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-levels-surveyed-stated
+  - sig.existing-member-size-measured-stated
+  de_risk:
+    kind: investigation
+    label: 'Survey the runway before the crane is ordered'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: durability
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0042
+- id: uc.existing-precast-bearing-seat-spalled
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.precast
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - structure.precast
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Inspect seats before panels are nominated for retention'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0063
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: uc.provisional-sum-for-concealed-structure-too-small
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    package_kind: works
+  when:
+    works:
+      action:
+      - alter
+      - upgrade
+      - repair
+      system:
+      - structure.alterations
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Open enough ceiling before the sum is set'
+  contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
+  effect:
+  - cost
+  severity: cost
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0800
+- id: uc.change-of-use-without-structural-adequacy-evidence
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-capacity-check-stated
+  de_risk:
+    kind: investigation
+    label: 'Assess the structure for the new use'
+  contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
+  effect:
+  - compliance
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0564
+  notes: 'Owner list cites AS 1170; not verified.'
+- id: uc.no-safe-walkway-in-existing-roof-space
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.timber
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - structure.timber
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: 'Provide a path that is not the ceiling'
+  contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
+  effect:
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0843

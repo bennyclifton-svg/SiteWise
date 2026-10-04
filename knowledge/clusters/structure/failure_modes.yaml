@@ -62,6 +62,8 @@ failure_modes:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0029
+  - dataset: batch2
+    row: B2-0926
 - id: fm.retaining-drainage-protects-wall
   attaches_to:
     interface: if.retaining-drainage-protects-wall
@@ -445,6 +447,8 @@ failure_modes:
   sources:
   - seed: surveying-guide.md
     anchor: '## Common failures and low-confidence flags'
+  - dataset: batch2
+    row: B2-0584
 - id: fm.service-trenching-affects-tree-roots
   attaches_to:
     interface: if.service-trenching-affects-tree-roots
@@ -626,6 +630,8 @@ failure_modes:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0011
+  - dataset: batch2
+    row: B2-0035
 - id: fm.shoring-movement-exceeds-neighbour-tolerance
   attaches_to:
     system: substructure.basement-retention
@@ -669,6 +675,8 @@ failure_modes:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0018
+  - dataset: batch2
+    row: B2-0924
 - id: fm.ground-anchor-proof-load-test-fails
   attaches_to:
     system: substructure.basement-retention
@@ -690,6 +698,8 @@ failure_modes:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0019
+  - dataset: batch2
+    row: B2-0970
 - id: fm.soldier-pile-position-outside-basement-line
   attaches_to:
     system: substructure.basement-retention
@@ -2038,6 +2048,8 @@ failure_modes:
     anchor: '## Operational brief and basis of design'
   - dataset: batch1
     row: B1-0571
+  - dataset: batch2
+    row: B2-0736
 - id: fm.below-grade-equipment-pit-drainage-not-provided
   attaches_to:
     system: site.loading-docks
@@ -2179,6 +2191,8 @@ failure_modes:
     anchor: '### Construction and completion [construction_completion]'
   - dataset: batch1
     row: B1-0315
+  - dataset: batch2
+    row: B2-0989
 - id: fm.design-change-reduces-structural-fire-resistance
   attaches_to:
     system: structure
@@ -2381,6 +2395,8 @@ failure_modes:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0429
+  - dataset: batch2
+    row: B2-0612
 - id: fm.stormwater-connection-to-wrong-authority-point
   attaches_to:
     system: site.stormwater-detention
@@ -2784,6 +2800,8 @@ failure_modes:
     row: B1-0854
   - dataset: batch1
     row: B1-0880
+  - dataset: batch2
+    row: B2-0574
 - id: fm.pavement-not-designed-for-heavy-vehicle-loads
   attaches_to:
     system: site.vehicle-access
@@ -2804,6 +2822,10 @@ failure_modes:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0878
+  - dataset: batch2
+    row: B2-0599
+  - dataset: batch2
+    row: B2-0615
 - id: fm.cleared-site-without-sediment-control
   attaches_to:
     system: site.erosion-sediment-control
@@ -3052,6 +3074,10 @@ failure_modes:
     row: B1-0163
   - dataset: batch1
     row: B1-0182
+  - dataset: batch2
+    row: B2-0020
+  - dataset: batch2
+    row: B2-0037
 - id: fm.coring-or-slab-opening-cuts-reinforcement-or-tendon
   attaches_to:
     system: structure.alterations
@@ -3078,6 +3104,10 @@ failure_modes:
     row: B1-0155
   - dataset: batch1
     row: B1-0156
+  - dataset: batch2
+    row: B2-0001
+  - dataset: batch2
+    row: B2-0016
 - id: fm.slab-penetrations-not-located-before-pour
   attaches_to:
     system: structure.concrete
@@ -3121,3 +3151,842 @@ failure_modes:
     anchor: '## Common failures and low-confidence flags'
   - dataset: batch1
     row: B1-0856
+  - dataset: batch2
+    row: B2-0578
+- id: fm.strengthening-adhesive-specified-onto-unprepared-coating
+  attaches_to:
+    system: structure.concrete
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the existing coating on the soffit was not identified or prepared before bonded strengthening was specified?'
+    criteria:
+      'true': 'It explicitly states the existing coating on the soffit was not identified or prepared before bonded strengthening was specified.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0005
+- id: fm.strengthening-sequence-closes-structural-movement-joint
+  attaches_to:
+    system: structure.alterations
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state jacking or strengthening works cross a movement joint that must stay free?'
+    criteria:
+      'true': 'It explicitly states jacking or strengthening works cross a movement joint that must stay free.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0007
+- id: fm.new-opening-cuts-existing-roof-or-frame-member-still-needed
+  attaches_to:
+    system: structure.alterations
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a new opening or overrun cuts a truss chord, hip rafter or tie that the existing frame still needs?'
+    criteria:
+      'true': 'It explicitly states a new opening or overrun cuts a truss chord, hip rafter or tie that the existing frame still needs.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.steel
+    - structure.timber
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0015
+  - dataset: batch2
+    row: B2-0064
+  notes: 'Owner list cites AS 4100, AS 1684; not verified.'
+- id: fm.shear-wall-opening-leaves-pier-below-temporary-works-assumption
+  attaches_to:
+    system: structure.alterations
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the pier left beside a new opening in a shear wall is narrower than the temporary-works design allowed?'
+    criteria:
+      'true': 'It explicitly states the pier left beside a new opening in a shear wall is narrower than the temporary-works design allowed.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0025
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.welding-to-fire-protected-steel-destroys-coating-rating
+  attaches_to:
+    system: structure.steel
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a weld or cleat on existing fire-protected steel damages a coating that cannot be reinstated to the same rating?'
+    criteria:
+      'true': 'It explicitly states a weld or cleat on existing fire-protected steel damages a coating that cannot be reinstated to the same rating.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+    - fire-passive.structural-fire-protection
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0030
+  notes: 'Owner list cites NCC; not verified.'
+- id: fm.hanger-fixed-into-precast-flange-beyond-manufacturer-chart
+  attaches_to:
+    system: structure.precast
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a services hanger is fixed into a precast flange where the manufacturer load chart does not allow it?'
+    criteria:
+      'true': 'It explicitly states a services hanger is fixed into a precast flange where the manufacturer load chart does not allow it.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0044
+- id: fm.post-installed-anchor-edge-distance-short-in-existing-slab
+  attaches_to:
+    system: structure.concrete
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state anchors for plant restraint are set closer to an existing slab edge than the anchor data sheet allows?'
+    criteria:
+      'true': 'It explicitly states anchors for plant restraint are set closer to an existing slab edge than the anchor data sheet allows.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0058
+  notes: 'Owner list cites AS 1170; not verified.'
+- id: fm.wall-built-across-structural-movement-joint
+  attaches_to:
+    system: structure.concrete
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a wall detail crosses a structural movement joint without a break?'
+    criteria:
+      'true': 'It explicitly states a wall detail crosses a structural movement joint without a break.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0045
+  notes: 'Owner list cites NCC; not verified.'
+- id: fm.opening-beside-shaft-leaves-nib-too-narrow-for-rated-wall
+  attaches_to:
+    system: structure.alterations
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a new opening leaves a nib narrower than the rated wall build-up needs?'
+    criteria:
+      'true': 'It explicitly states a new opening leaves a nib narrower than the rated wall build-up needs.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0050
+  notes: 'Owner list cites NCC; not verified.'
+- id: fm.equipment-loads-land-between-ribs-of-existing-slab
+  attaches_to:
+    system: structure.concrete
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state equipment feet land between the ribs of an existing ribbed slab?'
+    criteria:
+      'true': 'It explicitly states equipment feet land between the ribs of an existing ribbed slab.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0055
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.cupboard-or-opening-cut-into-existing-bracing-wall
+  attaches_to:
+    system: structure.masonry
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a cupboard or opening is placed in a wall the structural set shows as bracing?'
+    criteria:
+      'true': 'It explicitly states a cupboard or opening is placed in a wall the structural set shows as bracing.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0061
+  notes: 'Owner list cites NCC; not verified.'
+- id: fm.atrium-bridge-intrudes-into-smoke-reservoir-depth
+  attaches_to:
+    system: structure.alterations
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a bridge or structure added in an atrium lies within the smoke reservoir depth assumed by the fire engineering report?'
+    criteria:
+      'true': 'It explicitly states a bridge or structure added in an atrium lies within the smoke reservoir depth assumed by the fire engineering report.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - fire-passive.compartments
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0193
+  notes: 'Owner list cites NCC; not verified.'
+- id: fm.builders-work-opening-does-not-match-damper-frame
+  attaches_to:
+    system: structure.alterations
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a formed builder work opening does not match the frame it receives?'
+    criteria:
+      'true': 'It explicitly states a formed builder work opening does not match the frame it receives.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0536
+- id: fm.precast-penetrations-cast-for-superseded-services-layout
+  attaches_to:
+    system: structure.precast
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state penetrations cast into precast panels were set for a services layout that has since changed?'
+    criteria:
+      'true': 'It explicitly states penetrations cast into precast panels were set for a services layout that has since changed.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0546
+- id: fm.paving-levels-trap-water-against-existing-wall
+  attaches_to:
+    system: site.vehicle-access
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state new paving levels fall toward or sit above the damp course of an existing wall?'
+    criteria:
+      'true': 'It explicitly states new paving levels fall toward or sit above the damp course of an existing wall.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+    - envelope.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0579
+- id: fm.retaining-wall-subsoil-drain-without-lawful-low-point
+  attaches_to:
+    system: site.retaining-walls
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a subsoil drain behind a retaining wall has no lawful lower outlet?'
+    criteria:
+      'true': 'It explicitly states a subsoil drain behind a retaining wall has no lawful lower outlet.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.retaining-walls
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0585
+  notes: 'Owner list cites AS 4678; not verified.'
+- id: fm.footing-bears-on-or-surcharges-council-pipe
+  attaches_to:
+    system: site.retaining-walls
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a footing bears on the crown of an existing council pipe?'
+    criteria:
+      'true': 'It explicitly states a footing bears on the crown of an existing council pipe.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.retaining-walls
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0594
+- id: fm.overland-flow-path-drawn-on-neighbour-land
+  attaches_to:
+    system: site.flooding
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a swale or overland path is drawn outside the title of the project site?'
+    criteria:
+      'true': 'It explicitly states a swale or overland path is drawn outside the title of the project site.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.flooding
+    - site.survey-boundaries
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0596
+- id: fm.rainwater-reuse-volume-counted-as-detention
+  attaches_to:
+    system: site.stormwater-detention
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the same tank volume is counted for both rainwater reuse and detention?'
+    criteria:
+      'true': 'It explicitly states the same tank volume is counted for both rainwater reuse and detention.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0605
+- id: fm.new-fill-behind-old-boundary-wall-exceeds-wall-capacity
+  attaches_to:
+    system: site.retaining-walls
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state new fill is placed behind an existing boundary wall without a check of the wall for the load?'
+    criteria:
+      'true': 'It explicitly states new fill is placed behind an existing boundary wall without a check of the wall for the load.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.retaining-walls
+    - site.adjoining-structures
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0610
+  notes: 'Owner list cites AS 4678; not verified.'
+- id: fm.wash-bay-drains-to-clean-stormwater
+  attaches_to:
+    system: site.stormwater-detention
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state wash water falls to a stormwater pit that is treated as clean?'
+    criteria:
+      'true': 'It explicitly states wash water falls to a stormwater pit that is treated as clean.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0623
+- id: fm.raingarden-underdrain-set-above-base-of-media
+  attaches_to:
+    system: site.stormwater-detention
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the underdrain of a raingarden is set above the base of the media?'
+    criteria:
+      'true': 'It explicitly states the underdrain of a raingarden is set above the base of the media.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.stormwater-detention
+    - site.landscape
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0625
+- id: fm.vehicle-gate-blocks-design-vehicle-swept-path
+  attaches_to:
+    system: site.vehicle-access
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a gate position blocks the swept path of the longest design vehicle?'
+    criteria:
+      'true': 'It explicitly states a gate position blocks the swept path of the longest design vehicle.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0621
+  notes: 'Owner list cites AS 2890; not verified.'
+- id: fm.shop-drawings-use-a-structural-grid-different-from-the-one-built
+  attaches_to:
+    system: structure.alterations
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state supplier shop drawings use a structural grid different from the current design grid?'
+    criteria:
+      'true': 'It explicitly states supplier shop drawings use a structural grid different from the current design grid.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.steel
+    - structure.precast
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0796
+- id: fm.scaffold-loaded-onto-slab-that-is-still-propped
+  attaches_to:
+    system: structure.temporary-works
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state scaffold is founded on a slab that is still propped or has not reached the strength to carry it?'
+    criteria:
+      'true': 'It explicitly states scaffold is founded on a slab that is still propped or has not reached the strength to carry it.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0801
+- id: fm.crane-base-clashes-with-permanent-pile
+  attaches_to:
+    system: structure.temporary-works
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a crane base is sited on a permanent pile?'
+    criteria:
+      'true': 'It explicitly states a crane base is sited on a permanent pile.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - substructure.piles
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0803
+- id: fm.formwork-system-cannot-form-the-drawn-slab-profile
+  attaches_to:
+    system: structure.temporary-works
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the drawn slab profile is beyond what the selected formwork system can form?'
+    criteria:
+      'true': 'It explicitly states the drawn slab profile is beyond what the selected formwork system can form.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0807
+- id: fm.crane-tie-lands-in-zone-the-facade-detail-needs
+  attaches_to:
+    system: structure.temporary-works
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a crane tie lands on a slab edge that the permanent facade detail needs?'
+    criteria:
+      'true': 'It explicitly states a crane tie lands on a slab edge that the permanent facade detail needs.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - envelope.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0811
+- id: fm.excavation-ramp-occupies-first-footing-position
+  attaches_to:
+    system: site.earthworks
+  severity: programme
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the excavation ramp is placed where the first footing must be built?'
+    criteria:
+      'true': 'It explicitly states the excavation ramp is placed where the first footing must be built.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - substructure.footings
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0814
+- id: fm.crash-deck-not-designed-for-facade-piece-being-fixed
+  attaches_to:
+    system: site.impact-protection
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a crash deck over a footpath is lighter than the facade piece lifted above it?'
+    criteria:
+      'true': 'It explicitly states a crash deck over a footpath is lighter than the facade piece lifted above it.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.impact-protection
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0818
+- id: fm.termite-barrier-discontinuous-at-slab-joint
+  attaches_to:
+    system: substructure.termite-management
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the termite barrier stops at the joint where a new slab meets an existing slab?'
+    criteria:
+      'true': 'It explicitly states the termite barrier stops at the joint where a new slab meets an existing slab.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.termite-management
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0903
+  notes: 'Owner list cites AS 3660; not verified.'
+- id: fm.cast-in-sleeve-or-set-down-clashes-with-post-tension-tendon-zone
+  attaches_to:
+    system: structure.concrete
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a sleeve or set-down added to a post-tensioned slab falls within the tendon profile?'
+    criteria:
+      'true': 'It explicitly states a sleeve or set-down added to a post-tensioned slab falls within the tendon profile.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0906
+  - dataset: batch2
+    row: B2-0517
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.post-tension-stressing-before-concrete-strength-confirmed
+  attaches_to:
+    system: structure.concrete
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state stressing proceeds or is planned before cylinder strength meets what the stressing procedure assumes?'
+    criteria:
+      'true': 'It explicitly states stressing proceeds or is planned before cylinder strength meets what the stressing procedure assumes.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0907
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.holding-down-bolts-cast-outside-base-plate-tolerance
+  attaches_to:
+    system: structure.steel
+  severity: cost
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state holding-down bolts were cast outside the tolerance of the base plates?'
+    criteria:
+      'true': 'It explicitly states holding-down bolts were cast outside the tolerance of the base plates.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+    - substructure.footings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0909
+  notes: 'Owner list cites AS 4100; not verified.'
+- id: fm.slab-edge-cast-short-of-precast-panel-seat
+  attaches_to:
+    system: structure.precast
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a slab edge was cast in the wrong place so a precast panel seat is short?'
+    criteria:
+      'true': 'It explicitly states a slab edge was cast in the wrong place so a precast panel seat is short.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0910
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.column-placed-inside-accessible-turning-space
+  attaches_to:
+    system: structure.concrete
+  severity: compliance
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a column lies inside an accessible turning circle?'
+    criteria:
+      'true': 'It explicitly states a column lies inside an accessible turning circle.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - access-egress.accessible-access
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0922
+  notes: 'Owner list cites AS 1428; not verified.'
+- id: fm.basement-backfill-placed-before-membrane-protection-inspected
+  attaches_to:
+    system: substructure.damp-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state backfill was placed against basement tanking before the protection board was inspected?'
+    criteria:
+      'true': 'It explicitly states backfill was placed against basement tanking before the protection board was inspected.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.damp-waterproofing
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0125
+- id: fm.basement-waterstop-displaced-during-pour
+  attaches_to:
+    system: substructure.basement-retention
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a basement construction-joint waterstop was displaced and not inspected before the closing pour?'
+    criteria:
+      'true': 'It explicitly states a basement construction-joint waterstop was displaced and not inspected before the closing pour.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0126
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.basement-kicker-joint-without-waterstop
+  attaches_to:
+    system: substructure.basement-retention
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a basement wall kicker joint has no waterstop?'
+    criteria:
+      'true': 'It explicitly states a basement wall kicker joint has no waterstop.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0155
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.pile-head-penetrates-basement-membrane-without-collar
+  attaches_to:
+    system: substructure.damp-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a pile head passes through the basement membrane without a collar?'
+    criteria:
+      'true': 'It explicitly states a pile head passes through the basement membrane without a collar.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.damp-waterproofing
+    - substructure.piles
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0154
+- id: fm.slab-vapour-barrier-discontinuous-or-punctured-before-pour
+  attaches_to:
+    system: substructure.slab-on-ground
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the vapour barrier stops short of the edge beam or is punctured and untaped at the pre-pour inspection?'
+    criteria:
+      'true': 'It explicitly states the vapour barrier stops short of the edge beam or is punctured and untaped at the pre-pour inspection.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.slab-on-ground
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0156
+  - dataset: batch2
+    row: B2-0157
+  notes: 'Owner list cites AS 2870; not verified.'
+- id: fm.concrete-cover-and-surface-not-suited-to-membrane-bond
+  attaches_to:
+    system: structure.concrete
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state cover is low or the surface is weak where a membrane must bond?'
+    criteria:
+      'true': 'It explicitly states cover is low or the surface is weak where a membrane must bond.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0971
+  notes: 'Owner list cites AS 3600; not verified.'
+- id: fm.movement-joint-between-new-and-existing-frame-built-solid
+  attaches_to:
+    system: structure.alterations
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the joint between a new frame and an existing frame was filled rigid?'
+    criteria:
+      'true': 'It explicitly states the joint between a new frame and an existing frame was filled rigid.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0972
+- id: fm.basement-drainage-cell-without-outlet
+  attaches_to:
+    system: substructure.damp-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state the drainage cell behind a basement wall has no outlet to a pump or daylight point?'
+    criteria:
+      'true': 'It explicitly states the drainage cell behind a basement wall has no outlet to a pump or daylight point.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.damp-waterproofing
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0135
+- id: fm.basement-lining-specified-over-active-leak
+  attaches_to:
+    system: structure.concrete
+  severity: durability
+  detector:
+    type: noul
+    instructions: 'Using `text`, does this passage explicitly state a lining is specified over a basement crack that is still leaking?'
+    criteria:
+      'true': 'It explicitly states a lining is specified over a basement crack that is still leaking.'
+      'false': It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - substructure.damp-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0134
