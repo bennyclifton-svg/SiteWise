@@ -272,3 +272,56 @@ signals:
     status: draft
     sources:
       - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+  - id: sig.crane-permit-or-airspace-height-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a permit period or an approved height limit for a crane?"
+    criteria:
+      "true": "It states a crane permit period, an airspace approval or an approved crane height."
+      "false": "It does not state one, or only says a crane will be used."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0763"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: sig.road-opening-permit-hours-stated
+    type: noul
+    instructions: "Using `text`, does the passage state the permitted hours or days for work in a road or footpath?"
+    criteria:
+      "true": "It states permitted hours or days for road-opening or road occupation work."
+      "false": "It does not state them, or only says a permit is required."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0764"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: sig.existing-building-approval-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a development consent, construction certificate or occupation certificate for the existing building or an earlier addition?"
+    criteria:
+      "true": "It names an approval, certificate or consent held for the existing building or addition."
+      "false": "It does not name one, or says the approval is missing or unknown."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0771"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: sig.strata-consent-stated
+    type: noul
+    instructions: "Using `text`, does the passage state that the owners corporation or strata committee has consented to the work?"
+    criteria:
+      "true": "It states that owners corporation or strata consent has been given for the work."
+      "false": "It does not state consent, or only says consent is required."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0791"}
+  - id: sig.hazardous-materials-clearance-extent-stated
+    type: noul
+    instructions: "Using `text`, does the passage state which areas a hazardous materials or asbestos survey or clearance covers?"
+    criteria:
+      "true": "It names the areas, floors or elements the survey or clearance covers."
+      "false": "It does not name them, or only says the building is clear."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0792"}

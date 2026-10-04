@@ -165,6 +165,7 @@ unforeseen:
       - {"dataset": "batch1", "row": "B1-0388"}
       - {"dataset": "batch1", "row": "B1-0389"}
       - {"dataset": "batch1", "row": "B1-0942"}
+      - {"dataset": "batch2", "row": "B2-0772"}
       - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
   - id: uc.authority-requires-design-change-after-approval
     kind: process_authority_supply_weather
@@ -864,6 +865,7 @@ unforeseen:
     sources:
       - {"dataset": "batch1", "row": "B1-0957"}
       - {"dataset": "batch1", "row": "B1-0958"}
+      - {"dataset": "batch2", "row": "B2-0825"}
       - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
   - id: uc.hospital-refurbishment-needs-infection-control-barriers
     kind: design_or_coordination_error
@@ -895,6 +897,8 @@ unforeseen:
     sources:
       - {"dataset": "batch1", "row": "B1-0960"}
       - {"dataset": "batch1", "row": "B1-0961"}
+      - {"dataset": "batch2", "row": "B2-0882"}
+      - {"dataset": "batch2", "row": "B2-0884"}
       - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
   - id: uc.vacant-possession-delayed-by-tenant-holdover
     kind: process_authority_supply_weather
@@ -927,3 +931,114 @@ unforeseen:
       - {"dataset": "batch1", "row": "B1-0941"}
       - {"dataset": "batch1", "row": "B1-0995"}
       - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: uc.crane-permit-or-airspace-approval-limits-crane
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "approvals"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.crane-permit-or-airspace-height-stated"]
+    de_risk: {"kind": "approval", "label": "Confirm the road occupation permit period and the airspace height limit for the crane before the programme and crane selection are fixed"}
+    contract: "Builder carries crane permits and selection unless the contract says otherwise."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0763"}
+      - {"dataset": "batch2", "row": "B2-0782"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+    notes: "B2-0763 is a permit period longer than the programme allowed; B2-0782 is an airspace approval lower than the height the structure needs."
+  - id: uc.road-opening-permit-hours-too-short-for-service-tie-in
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend"]}
+    signals: ["sig.road-opening-permit-hours-stated"]
+    de_risk: {"kind": "approval", "label": "Plan the service tie-in to fit the permitted road-opening hours, or seek extended hours before the work is programmed"}
+    contract: "Builder carries permit conditions unless the contract says the owner or utility does."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0764"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: uc.noisy-work-refused-outside-approved-hours-beside-neighbour
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "construction"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.work-hours-restriction-stated"]
+    de_risk: {"kind": "obligation", "label": "Programme noisy work inside the hours the approval allows"}
+    contract: "Builder carries working hours unless the approval restricts them beyond tender information."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0765"}
+      - {"seed": "renovation-guide.md", "anchor": "## Dilapidation and neighbour management"}
+  - id: uc.existing-building-or-addition-has-no-approval
+    kind: unforeseen_condition
+    category: authorities_and_utilities
+    attaches_to: {"stage": "investigation"}
+    when: {"all": [{"det": "work_type", "any_of": ["extend"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.existing-building-approval-stated"]
+    de_risk: {"kind": "investigation", "label": "Search council and certifier records for the approval of the existing building or earlier addition before the new work depends on it"}
+    contract: "Owner carries the status of the existing building; regularising it may be a condition of the new approval."
+    effect: ["compliance", "programme", "cost"]
+    severity: compliance
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0771"}
+      - {"dataset": "batch2", "row": "B2-0861"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+    notes: "B2-0771 is an existing building with no approval found; B2-0861 is an earlier addition with none. Regularising an unapproved building is a pathway question for the certifier or authority; not verified."
+  - id: uc.strata-consent-for-common-property-works-withheld
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "approvals"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.strata-consent-stated"]
+    de_risk: {"kind": "approval", "label": "Identify common property affected by the work and obtain the owners corporation consent before tender"}
+    contract: "Lot owner carries consent from the owners corporation; the contract should make it a condition of starting."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0791"}
+    notes: "Owner list row; strata consent rules differ by state and scheme and are not verified here."
+  - id: uc.latent-condition-clause-does-not-cover-asbestos-tender-said-absent
+    kind: unforeseen_condition
+    category: hazardous_materials
+    attaches_to: {"stage": "procurement"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.hazardous-materials-clearance-extent-stated"]
+    de_risk: {"kind": "obligation", "label": "Treat a clearance as limited to the areas sampled and state in the contract who carries asbestos found outside them"}
+    contract: "Latent-condition wording decides whether asbestos found where the report said none is a variation; read it against the tender report."
+    effect: ["cost", "programme", "safety"]
+    severity: programme
+    discovered_at: ["demolition_strip_out"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0792"}
+    notes: "The physical asbestos find belongs to the hazardous materials records; this record is the contract allocation. Owner list row; no clause is cited."
+  - id: uc.agreed-shutdown-or-cutover-window-shorter-than-changeover
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "design"}
+    when: {"all": [{"det": "work_type", "any_of": ["extend", "refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.works-window-stated"]
+    de_risk: {"kind": "obligation", "label": "Agree a shutdown or cutover window the changeover can finish in, or design the tie-in in stages that fit it"}
+    contract: "Window and consequences of overrun stated in the contract."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch2", "row": "B2-0827"}
+      - {"dataset": "batch2", "row": "B2-0855"}
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+    notes: "B2-0827 is a services cutover agreed with an occupant; B2-0855 is a process shutdown in an industrial extension."
