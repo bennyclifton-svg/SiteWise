@@ -1,0 +1,440 @@
+# Signal questions for the structure cluster (K4 Pass B). A true answer means the passage states the thing,
+# never that a condition exists. Same authoring rules as SCHEMA.md Questions.
+version: 1
+signals:
+- id: sig.founding-level-ground-data-stated
+  type: noul
+  instructions: Using `text`, does the passage state ground conditions recorded at the proposed founding
+    depth from a borehole or test pit?
+  criteria:
+    'true': It states ground conditions recorded at the proposed founding depth from a borehole or test
+      pit.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - substructure.footings
+  - substructure.piles
+  - site.ground-conditions
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.groundwater-level-stated
+  type: noul
+  instructions: Using `text`, does the passage state a measured groundwater level from a bore, piezometer
+    or test pit?
+  criteria:
+    'true': It states a measured groundwater level from a bore, piezometer or test pit.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.ground-conditions
+  - substructure.basement-retention
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.site-classification-stated
+  type: noul
+  instructions: Using `text`, does the passage state a site classification given in a geotechnical report?
+  criteria:
+    'true': It states a site classification given in a geotechnical report.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.ground-conditions
+  - substructure.slab-on-ground
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Site classification'
+- id: sig.soil-aggressivity-results-stated
+  type: noul
+  instructions: Using `text`, does the passage state sulfate, chloride or pH results for the soil or groundwater,
+    or an exposure classification based on them?
+  criteria:
+    'true': It states sulfate, chloride or pH results for the soil or groundwater, or an exposure classification
+      based on them.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.ground-conditions
+  - site.contamination
+  - structure.concrete
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.contamination-investigation-results-stated
+  type: noul
+  instructions: Using `text`, does the passage state results of a contamination investigation of the soil
+    or groundwater?
+  criteria:
+    'true': It states results of a contamination investigation of the soil or groundwater.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.contamination
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+- id: sig.buried-services-location-stated
+  type: noul
+  instructions: Using `text`, does the passage state that buried services were located by a search or
+    a locating survey?
+  criteria:
+    'true': It states that buried services were located by a search or a locating survey.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.services-connections
+  - site.earthworks
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.ground-gas-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state results of a ground gas or vapour assessment?
+  criteria:
+    'true': It states results of a ground gas or vapour assessment.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.contamination
+  - substructure.slab-on-ground
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+- id: sig.acid-sulfate-soil-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state that an acid sulfate soil assessment was carried
+    out for the site?
+  criteria:
+    'true': It states that an acid sulfate soil assessment was carried out for the site.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.acid-sulfate-soils
+  - site.earthworks
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Acid Sulfate Soils'
+- id: sig.existing-structural-drawings-stated
+  type: noul
+  instructions: Using `text`, does the passage state that structural drawings of the existing building
+    are held?
+  criteria:
+    'true': It states that structural drawings of the existing building are held.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - structure.alterations
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+- id: sig.existing-structure-condition-testing-stated
+  type: noul
+  instructions: Using `text`, does the passage state results of testing, scanning or opening up of the
+    existing structure?
+  criteria:
+    'true': It states results of testing, scanning or opening up of the existing structure.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - structure.alterations
+  - structure.concrete
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+- id: sig.existing-footing-exposed-stated
+  type: noul
+  instructions: Using `text`, does the passage state that existing footings were exposed or inspected
+    in a test pit?
+  criteria:
+    'true': It states that existing footings were exposed or inspected in a test pit.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - substructure.underpinning
+  - substructure.footings
+  - structure.alterations
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+- id: sig.adjoining-structure-details-stated
+  type: noul
+  instructions: Using `text`, does the passage state the footing depth, basement or loads of an adjoining
+    structure?
+  criteria:
+    'true': It states the footing depth, basement or loads of an adjoining structure.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.adjoining-structures
+  - substructure.basement-retention
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+- id: sig.dilapidation-survey-stated
+  type: noul
+  instructions: Using `text`, does the passage state that a dilapidation survey of adjoining properties
+    was carried out?
+  criteria:
+    'true': It states that a dilapidation survey of adjoining properties was carried out.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.adjoining-structures
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+- id: sig.timber-pest-inspection-results-stated
+  type: noul
+  instructions: Using `text`, does the passage state results of a timber pest inspection of the existing
+    building?
+  criteria:
+    'true': It states results of a timber pest inspection of the existing building.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - substructure.termite-management
+  - structure.timber
+  - structure.alterations
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+- id: sig.termite-management-system-stated
+  type: noul
+  instructions: Using `text`, does the passage state which termite management system the building uses?
+  criteria:
+    'true': It states which termite management system the building uses.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - substructure.termite-management
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+- id: sig.heritage-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state that an archaeological or Aboriginal cultural heritage
+    assessment was carried out?
+  criteria:
+    'true': It states that an archaeological or Aboriginal cultural heritage assessment was carried out.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.earthworks
+  - site.demolition
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+- id: sig.unexploded-ordnance-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state that an unexploded ordnance assessment was carried
+    out?
+  criteria:
+    'true': It states that an unexploded ordnance assessment was carried out.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.ground-conditions
+  - site.earthworks
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+- id: sig.site-easements-stated
+  type: noul
+  instructions: Using `text`, does the passage state the easements that affect the site?
+  criteria:
+    'true': It states the easements that affect the site.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.survey-boundaries
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.boundary-survey-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the site boundaries were identified by a survey?
+  criteria:
+    'true': It states that the site boundaries were identified by a survey.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.survey-boundaries
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.tree-protection-requirements-stated
+  type: noul
+  instructions: Using `text`, does the passage state tree protection zones or tree retention requirements?
+  criteria:
+    'true': It states tree protection zones or tree retention requirements.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.trees
+  status: draft
+  sources:
+  - seed: arborist-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.erosion-sediment-control-plan-stated
+  type: noul
+  instructions: Using `text`, does the passage state an erosion and sediment control plan for the construction
+    period?
+  criteria:
+    'true': It states an erosion and sediment control plan for the construction period.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.erosion-sediment-control
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.construction-noise-dust-plan-stated
+  type: noul
+  instructions: Using `text`, does the passage state a construction noise, vibration or dust management
+    plan?
+  criteria:
+    'true': It states a construction noise, vibration or dust management plan.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.earthworks
+  - site.demolition
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.existing-fire-resistance-evidence-stated
+  type: noul
+  instructions: Using `text`, does the passage state a fire resistance level for the existing floors or
+    walls taken from a drawing, test or assessment?
+  criteria:
+    'true': It states a fire resistance level for the existing floors or walls taken from a drawing, test
+      or assessment.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - structure.alterations
+  - fire-passive.rated-elements
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.weather-concreting-procedure-stated
+  type: noul
+  instructions: Using `text`, does the passage state a hot weather or cold weather procedure for concrete
+    or mortar?
+  criteria:
+    'true': It states a hot weather or cold weather procedure for concrete or mortar.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - structure.concrete
+  - structure.masonry
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.delivery-logistics-plan-stated
+  type: noul
+  instructions: Using `text`, does the passage state a traffic or delivery logistics plan for the site?
+  criteria:
+    'true': It states a traffic or delivery logistics plan for the site.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.public-domain
+  - site.vehicle-access
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.existing-building-upgrade-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state an assessment of which parts of the existing building
+    must be upgraded?
+  criteria:
+    'true': It states an assessment of which parts of the existing building must be upgraded.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - structure.alterations
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Renovation and Extension Considerations'
+- id: sig.neighbour-consent-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the adjoining owner has consented in writing?
+  criteria:
+    'true': It states that the adjoining owner has consented in writing.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.adjoining-structures
+  - substructure.retaining-walls
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+- id: sig.slope-stability-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state an assessment of the stability of the slope?
+  criteria:
+    'true': It states an assessment of the stability of the slope.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.ground-conditions
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.flood-planning-level-advice-stated
+  type: noul
+  instructions: Using `text`, does the passage state a flood planning level advised by the authority?
+  criteria:
+    'true': It states a flood planning level advised by the authority.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - site.flooding
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+- id: sig.existing-damp-proofing-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the existing basement wall or footing has a
+    membrane or damp course?
+  criteria:
+    'true': It states that the existing basement wall or footing has a membrane or damp course.
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of
+      fact.
+  runs_on:
+  - substructure.damp-waterproofing
+  - substructure.basement-retention
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Rising Damp Protection and External Weatherproofing'

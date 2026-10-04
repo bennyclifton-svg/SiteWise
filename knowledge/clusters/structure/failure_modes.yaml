@@ -39,6 +39,8 @@ failure_modes:
   sources:
   - seed: structural-commercial-industrial-guide.md
     anchor: '### Pre-DA consultation and development application [development_application]'
+  - dataset: batch1
+    row: B1-0006
 - id: fm.groundwater-loads-basement
   attaches_to:
     interface: if.groundwater-loads-basement
@@ -58,6 +60,8 @@ failure_modes:
   sources:
   - seed: geotechnical-guide.md
     anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0029
 - id: fm.retaining-drainage-protects-wall
   attaches_to:
     interface: if.retaining-drainage-protects-wall
@@ -78,6 +82,8 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 4678 — Earth-Retaining Structures'
+  - dataset: batch1
+    row: B1-0043
 - id: fm.surcharge-loads-retaining-wall
   attaches_to:
     interface: if.surcharge-loads-retaining-wall
@@ -158,6 +164,8 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 2870 — Residential Slabs and Footings'
+  - dataset: batch1
+    row: B1-0098
 - id: fm.pile-downdrag-from-settling-ground
   attaches_to:
     interface: if.pile-downdrag-from-settling-ground
@@ -237,6 +245,8 @@ failure_modes:
   sources:
   - seed: structural-residential.md
     anchor: '### Notching, drilling, and modification rules'
+  - dataset: batch1
+    row: B1-0144
 - id: fm.services-openings-in-concrete
   attaches_to:
     interface: if.services-openings-in-concrete
@@ -296,6 +306,10 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 3610 Series — Formwork for Concrete'
+  - dataset: batch1
+    row: B1-0118
+  - dataset: batch1
+    row: B1-0191
 - id: fm.precast-erection-temporary-stability
   attaches_to:
     interface: if.precast-erection-temporary-stability
@@ -354,6 +368,8 @@ failure_modes:
   sources:
   - seed: residential-construction-guide.md
     anchor: '## Termite Management'
+  - dataset: batch1
+    row: B1-0064
 - id: fm.demolition-maintains-retained-structure
   attaches_to:
     interface: if.demolition-maintains-retained-structure
@@ -467,6 +483,8 @@ failure_modes:
   sources:
   - seed: landscape-architecture-guide.md
     anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0183
 - id: fm.podium-landscape-waterproofing
   attaches_to:
     interface: if.podium-landscape-waterproofing
@@ -486,6 +504,8 @@ failure_modes:
   sources:
   - seed: landscape-architecture-guide.md
     anchor: '## Purpose and professional boundary'
+  - dataset: batch1
+    row: B1-0867
 - id: fm.earthworks-disturbs-acid-sulfate-soils
   attaches_to:
     interface: if.earthworks-disturbs-acid-sulfate-soils
@@ -582,3 +602,2522 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 1418 and AS 2550 Series — Cranes, Hoists and Winches'
+  - dataset: batch1
+    row: B1-0813
+- id: fm.dewatering-settles-adjoining-buildings
+  attaches_to:
+    system: site.ground-conditions
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state dewatering lowers the water table without
+      assessing settlement of neighbouring buildings?
+    criteria:
+      true: It explicitly states dewatering lowers the water table without assessing settlement of neighbouring
+        buildings.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.ground-conditions
+    - site.adjoining-structures
+  flag_when: true
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0011
+- id: fm.shoring-movement-exceeds-neighbour-tolerance
+  attaches_to:
+    system: substructure.basement-retention
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state shoring wall movement exceeded the
+      limit set for adjoining structures?
+    criteria:
+      true: It explicitly states shoring wall movement exceeded the limit set for adjoining structures.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+    - site.adjoining-structures
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0017
+- id: fm.ground-anchors-extend-beyond-site-boundary
+  attaches_to:
+    system: substructure.basement-retention
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state ground anchors extend beyond the site
+      boundary without the adjoining owner's agreement?
+    criteria:
+      true: It explicitly states ground anchors extend beyond the site boundary without the adjoining
+        owner's agreement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+    - site.adjoining-structures
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0018
+- id: fm.ground-anchor-proof-load-test-fails
+  attaches_to:
+    system: substructure.basement-retention
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a ground anchor failed its proof load
+      test before excavation continued below it?
+    criteria:
+      true: It explicitly states a ground anchor failed its proof load test before excavation continued
+        below it.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0019
+- id: fm.soldier-pile-position-outside-basement-line
+  attaches_to:
+    system: substructure.basement-retention
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state soldier piles were installed outside
+      the position set out for the basement wall line?
+    criteria:
+      true: It explicitly states soldier piles were installed outside the position set out for the basement
+        wall line.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0020
+- id: fm.shotcrete-retention-bond-or-thickness-short
+  attaches_to:
+    system: substructure.basement-retention
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state shotcrete retention lining is delaminating
+      or measured thinner than the specified thickness?
+    criteria:
+      true: It explicitly states shotcrete retention lining is delaminating or measured thinner than the
+        specified thickness.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0090
+  - dataset: batch1
+    row: B1-0177
+- id: fm.open-excavation-sides-unsupported
+  attaches_to:
+    system: site.earthworks
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the sides of an open excavation or
+      footing trench collapsed because no temporary support was provided?
+    criteria:
+      true: It explicitly states the sides of an open excavation or footing trench collapsed because no
+        temporary support was provided.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - substructure.footings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0021
+  - dataset: batch1
+    row: B1-0032
+- id: fm.pile-position-outside-cap-tolerance
+  attaches_to:
+    system: substructure.piles
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state piles or jet grout columns were installed
+      outside the position assumed in the cap or footing design?
+    criteria:
+      true: It explicitly states piles or jet grout columns were installed outside the position assumed
+        in the cap or footing design.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.piles
+    - site.ground-conditions
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0027
+  - dataset: batch1
+    row: B1-0094
+- id: fm.pile-integrity-test-finds-defect
+  attaches_to:
+    system: substructure.piles
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a pile integrity test found a defect
+      in the pile shaft?
+    criteria:
+      true: It explicitly states a pile integrity test found a defect in the pile shaft.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.piles
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0028
+- id: fm.membrane-damaged-before-concrete-placed
+  attaches_to:
+    system: substructure.damp-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a tanking or vapour membrane was punctured
+      or torn and was not inspected before concrete was placed over it?
+    criteria:
+      true: It explicitly states a tanking or vapour membrane was punctured or torn and was not inspected
+        before concrete was placed over it.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.damp-waterproofing
+    - substructure.slab-on-ground
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Waterproofing in Commercial Buildings'
+  - dataset: batch1
+    row: B1-0030
+  - dataset: batch1
+    row: B1-0037
+- id: fm.footing-base-not-prepared-before-reinforcement
+  attaches_to:
+    system: substructure.footings
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state reinforcement was placed on a footing
+      base that was soft, uneven or over-trimmed without a base inspection?
+    criteria:
+      true: It explicitly states reinforcement was placed on a footing base that was soft, uneven or over-trimmed
+        without a base inspection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Foundations and Footing Systems'
+  - dataset: batch1
+    row: B1-0031
+  - dataset: batch1
+    row: B1-0033
+- id: fm.reinforcement-chairing-and-cover-not-checked
+  attaches_to:
+    system: structure.concrete
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state reinforcement cover was found wrong
+      or the cage moved during the pour because chairs and ties were not checked at the inspection?
+    criteria:
+      true: It explicitly states reinforcement cover was found wrong or the cage moved during the pour
+        because chairs and ties were not checked at the inspection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  - dataset: batch1
+    row: B1-0068
+  - dataset: batch1
+    row: B1-0120
+- id: fm.service-trench-crosses-slab-without-structural-detail
+  attaches_to:
+    system: substructure.slab-on-ground
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a service trench crosses the slab without
+      a stated structural detail for the slab section?
+    criteria:
+      true: It explicitly states a service trench crosses the slab without a stated structural detail
+        for the slab section.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.slab-on-ground
+    - site.services-connections
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0038
+- id: fm.retaining-wall-backfill-not-controlled
+  attaches_to:
+    system: substructure.retaining-walls
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a retaining wall moved because backfill
+      was placed without the drainage and compaction the design assumed?
+    criteria:
+      true: It explicitly states a retaining wall moved because backfill was placed without the drainage
+        and compaction the design assumed.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.retaining-walls
+    - site.earthworks
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0042
+- id: fm.vibration-from-breaking-or-demolition-damages-adjoining
+  attaches_to:
+    system: site.adjoining-structures
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state vibration from rock breaking or demolition
+      cracked an adjoining building?
+    criteria:
+      true: It explicitly states vibration from rock breaking or demolition cracked an adjoining building.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.adjoining-structures
+    - site.earthworks
+    - site.demolition
+  flag_when: true
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+  - dataset: batch1
+    row: B1-0046
+- id: fm.subgrade-compaction-not-verified-before-slab
+  attaches_to:
+    system: substructure.slab-on-ground
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a compaction test failed or fill settled
+      under the building pad after the slab was placed?
+    criteria:
+      true: It explicitly states a compaction test failed or fill settled under the building pad after
+        the slab was placed.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.slab-on-ground
+    - site.earthworks
+  flag_when: true
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0051
+  - dataset: batch1
+    row: B1-0062
+- id: fm.industrial-slab-not-designed-for-operating-loads
+  attaches_to:
+    system: substructure.slab-on-ground
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the slab design omits racking, forklift
+      or vehicle loads stated in the operational brief?
+    criteria:
+      true: It explicitly states the slab design omits racking, forklift or vehicle loads stated in the
+        operational brief.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.slab-on-ground
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0052
+  - dataset: batch1
+    row: B1-0053
+  - dataset: batch1
+    row: B1-0187
+- id: fm.slab-flatness-and-level-not-specified-for-use
+  attaches_to:
+    system: structure.concrete
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the slab flatness or level tolerance
+      is not suited to the racking, equipment or finish placed on it?
+    criteria:
+      true: It explicitly states the slab flatness or level tolerance is not suited to the racking, equipment
+        or finish placed on it.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - substructure.slab-on-ground
+    - interiors.floor-finishes
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0055
+  - dataset: batch1
+    row: B1-0590
+  - dataset: batch1
+    row: B1-0111
+  - dataset: batch1
+    row: B1-0730
+- id: fm.slab-curling-and-crack-control-not-detailed
+  attaches_to:
+    system: structure.concrete
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the slab has curled edges or cracks
+      at re-entrant corners or exposed polished surfaces because joints and curing were not detailed?
+    criteria:
+      true: It explicitly states the slab has curled edges or cracks at re-entrant corners or exposed
+        polished surfaces because joints and curing were not detailed.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - substructure.slab-on-ground
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0054
+  - dataset: batch1
+    row: B1-0197
+  - dataset: batch1
+    row: B1-0722
+- id: fm.crane-runway-supports-settle
+  attaches_to:
+    system: substructure.footings
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state crane runway supports settled beyond
+      the tolerance for the crane rails?
+    criteria:
+      true: It explicitly states crane runway supports settled beyond the tolerance for the crane rails.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0056
+- id: fm.overhead-crane-envelope-sets-building-clearance
+  attaches_to:
+    system: structure.steel
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the crane hook height or lift envelope
+      was not reconciled with the column heights?
+    criteria:
+      true: It explicitly states the crane hook height or lift envelope was not reconciled with the column
+        heights.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0180
+- id: fm.vibrating-or-sensitive-equipment-on-unisolated-floor
+  attaches_to:
+    system: structure
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state vibrating or vibration-sensitive equipment
+      is placed on a floor or footing without a stated isolation or vibration criterion?
+    criteria:
+      true: It explicitly states vibrating or vibration-sensitive equipment is placed on a floor or footing
+        without a stated isolation or vibration criterion.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - substructure.footings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0058
+  - dataset: batch1
+    row: B1-0588
+  - dataset: batch1
+    row: B1-0589
+- id: fm.floor-deflection-or-bounce-annoys-occupants
+  attaches_to:
+    system: structure.concrete
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state floor deflection or vibration under
+      walking is reported as noticeable to occupants?
+    criteria:
+      true: It explicitly states floor deflection or vibration under walking is reported as noticeable
+        to occupants.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Structural Systems for Commercial Buildings'
+  - dataset: batch1
+    row: B1-0146
+  - dataset: batch1
+    row: B1-0175
+- id: fm.structural-deflection-damages-linings-and-partitions
+  attaches_to:
+    system: structure
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state structural deflection cracked ceilings,
+      partitions or slabs because the non-structural elements were not detailed to follow movement?
+    criteria:
+      true: It explicitly states structural deflection cracked ceilings, partitions or slabs because the
+        non-structural elements were not detailed to follow movement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - interiors.ceilings
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Structural Systems for Commercial Buildings'
+  - dataset: batch1
+    row: B1-0112
+  - dataset: batch1
+    row: B1-0138
+  - dataset: batch1
+    row: B1-0176
+- id: fm.balcony-cantilever-deflection-reverses-falls
+  attaches_to:
+    system: structure.concrete
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state balcony cantilever deflection reduced
+      the drainage fall or the door threshold clearance?
+    criteria:
+      true: It explicitly states balcony cantilever deflection reduced the drainage fall or the door threshold
+        clearance.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Structural Systems for Commercial Buildings'
+  - dataset: batch1
+    row: B1-0184
+- id: fm.lintel-undersized-or-deflecting-cracks-masonry
+  attaches_to:
+    system: structure.masonry
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a lintel is undersized for the opening
+      or its deflection has cracked the masonry above?
+    criteria:
+      true: It explicitly states a lintel is undersized for the opening or its deflection has cracked
+        the masonry above.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Timber, Masonry, and Fire Resistance of Structural Materials'
+  - dataset: batch1
+    row: B1-0148
+  - dataset: batch1
+    row: B1-0149
+- id: fm.cut-fill-balance-not-checked-against-levels
+  attaches_to:
+    system: site.earthworks
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the cut and fill volumes do not balance
+      for the designed site levels?
+    criteria:
+      true: It explicitly states the cut and fill volumes do not balance for the designed site levels.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.earthworks
+    - site.survey-boundaries
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Low-confidence flags'
+  - dataset: batch1
+    row: B1-0061
+- id: fm.stormwater-scours-cut-and-fill-batter
+  attaches_to:
+    system: site.landscape
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state uncontrolled stormwater flow has eroded
+      a cut or fill batter?
+    criteria:
+      true: It explicitly states uncontrolled stormwater flow has eroded a cut or fill batter.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0063
+- id: fm.structure-leaves-no-fall-for-gravity-drainage
+  attaches_to:
+    system: structure
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the structural depth leaves no height
+      for the fall of gravity drainage?
+    criteria:
+      true: It explicitly states the structural depth leaves no height for the fall of gravity drainage.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0103
+- id: fm.reinforcement-too-congested-to-place-concrete
+  attaches_to:
+    system: structure.concrete
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state reinforcement is too congested for
+      concrete to be placed and compacted?
+    criteria:
+      true: It explicitly states reinforcement is too congested for concrete to be placed and compacted.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0105
+- id: fm.formwork-not-designed-for-concrete-pressure
+  attaches_to:
+    system: structure.temporary-works
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state formwork deflected or burst because
+      it was not designed for the concrete pressure?
+    criteria:
+      true: It explicitly states formwork deflected or burst because it was not designed for the concrete
+        pressure.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0106
+  - dataset: batch1
+    row: B1-0119
+- id: fm.temporary-works-design-not-independent
+  attaches_to:
+    system: structure.temporary-works
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state no independent temporary works design
+      is provided for propping?
+    criteria:
+      true: It explicitly states no independent temporary works design is provided for propping.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0898
+- id: fm.stair-geometry-fails-code-after-structural-sizing
+  attaches_to:
+    system: structure
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state stair dimensions fail the code because
+      of structural sizing or landing positions?
+    criteria:
+      true: It explicitly states stair dimensions fail the code because of structural sizing or landing
+        positions.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - access-egress.stairs-and-ramps
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0114
+- id: fm.column-position-set-out-error
+  attaches_to:
+    system: structure
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a column was set out in the wrong position
+      against the floor plan?
+    criteria:
+      true: It explicitly states a column was set out in the wrong position against the floor plan.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0124
+- id: fm.structure-reduces-car-park-geometry
+  attaches_to:
+    system: structure
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state columns, beams or line marking reduce
+      bay widths, aisle widths or headroom below the stated car park geometry?
+    criteria:
+      true: It explicitly states columns, beams or line marking reduce bay widths, aisle widths or headroom
+        below the stated car park geometry.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Carpark Design for Commercial Buildings'
+  - dataset: batch1
+    row: B1-0125
+  - dataset: batch1
+    row: B1-0189
+  - dataset: batch1
+    row: B1-0875
+- id: fm.car-park-ramp-gradient-exceeds-limit
+  attaches_to:
+    system: structure.concrete
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a ramp gradient exceeds the limit stated
+      for vehicles or for accessible routes?
+    criteria:
+      true: It explicitly states a ramp gradient exceeds the limit stated for vehicles or for accessible
+        routes.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Carpark Design for Commercial Buildings'
+  - dataset: batch1
+    row: B1-0188
+  - dataset: batch1
+    row: B1-0371
+- id: fm.column-encroaches-egress-width
+  attaches_to:
+    system: structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a column or its late reduction narrows
+      an exit path or corridor?
+    criteria:
+      true: It explicitly states a column or its late reduction narrows an exit path or corridor.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - access-egress.exits
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0126
+  - dataset: batch1
+    row: B1-0308
+- id: fm.lateral-bracing-element-opened-without-engineer
+  attaches_to:
+    system: structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a shear wall or bracing wall was opened
+      for a door or window without engineering review?
+    criteria:
+      true: It explicitly states a shear wall or bracing wall was opened for a door or window without
+        engineering review.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - interiors.internal-doors
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Renovation and Extension Considerations'
+  - dataset: batch1
+    row: B1-0127
+  - dataset: batch1
+    row: B1-0200
+- id: fm.precast-element-dimension-not-verified-before-casting
+  attaches_to:
+    system: structure.precast
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a precast panel or stair unit was cast
+      to dimensions not verified against the adjoining structure?
+    criteria:
+      true: It explicitly states a precast panel or stair unit was cast to dimensions not verified against
+        the adjoining structure.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0128
+  - dataset: batch1
+    row: B1-0194
+- id: fm.precast-panel-cracks-at-lifting-inserts
+  attaches_to:
+    system: structure.precast
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a thin precast or tilt panel cracked
+      when lifted at its lifting inserts?
+    criteria:
+      true: It explicitly states a thin precast or tilt panel cracked when lifted at its lifting inserts.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0132
+- id: fm.precast-lift-exceeds-crane-capacity
+  attaches_to:
+    system: structure.precast
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a precast panel lift exceeds the crane
+      capacity at its radius?
+    criteria:
+      true: It explicitly states a precast panel lift exceeds the crane capacity at its radius.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0129
+- id: fm.tilt-panel-bracing-conflicts-with-slab-sequence
+  attaches_to:
+    system: structure.precast
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state tilt panel bracing occupies the area
+      needed for the slab pour?
+    criteria:
+      true: It explicitly states tilt panel bracing occupies the area needed for the slab pour.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.precast
+    - substructure.slab-on-ground
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0131
+- id: fm.steel-connection-changed-after-fabrication
+  attaches_to:
+    system: structure.steel
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a steel connection design was changed
+      after the member was fabricated?
+    criteria:
+      true: It explicitly states a steel connection design was changed after the member was fabricated.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0133
+- id: fm.steel-fabrication-tolerance-mismatch-on-site
+  attaches_to:
+    system: structure.steel
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state steel members or metalwork do not fit
+      on site because fabrication and site tolerances differ?
+    criteria:
+      true: It explicitly states steel members or metalwork do not fit on site because fabrication and
+        site tolerances differ.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0134
+  - dataset: batch1
+    row: B1-0755
+- id: fm.structural-weld-defects-found-by-inspection
+  attaches_to:
+    system: structure.steel
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state weld inspection found defects in structural
+      welds?
+    criteria:
+      true: It explicitly states weld inspection found defects in structural welds.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0135
+- id: fm.steel-coating-not-applied-before-exposure
+  attaches_to:
+    system: structure.steel
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state steel corroded before its protective
+      coating was applied?
+    criteria:
+      true: It explicitly states steel corroded before its protective coating was applied.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0136
+- id: fm.cast-in-plate-position-not-checked-before-pour
+  attaches_to:
+    system: structure.concrete
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state cast-in plates were found misplaced
+      after the concrete was poured?
+    criteria:
+      true: It explicitly states cast-in plates were found misplaced after the concrete was poured.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  - dataset: batch1
+    row: B1-0195
+- id: fm.frame-line-tolerance-not-verified-for-cladding
+  attaches_to:
+    system: structure
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the frame or slab edge is out of plumb
+      or out of line against the tolerance for the cladding or curtain wall fixings?
+    criteria:
+      true: It explicitly states the frame or slab edge is out of plumb or out of line against the tolerance
+        for the cladding or curtain wall fixings.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - envelope.curtain-wall
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0139
+  - dataset: batch1
+    row: B1-0202
+- id: fm.timber-shrinkage-not-allowed-for-in-finishes
+  attaches_to:
+    system: structure.timber
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state timber frame shrinkage moved finishes
+      and the details did not allow for it?
+    criteria:
+      true: It explicitly states timber frame shrinkage moved finishes and the details did not allow for
+        it.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Structural Framing Systems'
+  - dataset: batch1
+    row: B1-0142
+- id: fm.structure-clashes-with-service-routes
+  attaches_to:
+    system: structure
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a beam or truss web clashes with the
+      planned duct route?
+    criteria:
+      true: It explicitly states a beam or truss web clashes with the planned duct route.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0101
+  - dataset: batch1
+    row: B1-0145
+- id: fm.wall-framing-straightness-not-checked-before-lining
+  attaches_to:
+    system: structure.timber
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state wall framing was lined before its straightness
+      was checked?
+    criteria:
+      true: It explicitly states wall framing was lined before its straightness was checked.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Structural Framing Systems'
+  - dataset: batch1
+    row: B1-0147
+- id: fm.masonry-movement-joints-omitted
+  attaches_to:
+    system: structure.masonry
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state movement joints were omitted from a
+      masonry wall?
+    criteria:
+      true: It explicitly states movement joints were omitted from a masonry wall.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Timber, Masonry, and Fire Resistance of Structural Materials'
+  - dataset: batch1
+    row: B1-0150
+- id: fm.cavity-wall-ties-missing
+  attaches_to:
+    system: structure.masonry
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state cavity wall ties are missing or were
+      not inspected before the wall was closed?
+    criteria:
+      true: It explicitly states cavity wall ties are missing or were not inspected before the wall was
+        closed.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Timber, Masonry, and Fire Resistance of Structural Materials'
+  - dataset: batch1
+    row: B1-0151
+- id: fm.reinforced-masonry-grout-voids
+  attaches_to:
+    system: structure.masonry
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state grout voids were found in reinforced
+      block walls after filling?
+    criteria:
+      true: It explicitly states grout voids were found in reinforced block walls after filling.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0152
+- id: fm.structural-movement-joint-not-bridged-by-finishes
+  attaches_to:
+    system: structure
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a structural movement joint is not
+      bridged by a cover or seal in the finishes or envelope?
+    criteria:
+      true: It explicitly states a structural movement joint is not bridged by a cover or seal in the
+        finishes or envelope.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - envelope.flashings-seals
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Structural Systems for Commercial Buildings'
+  - dataset: batch1
+    row: B1-0170
+  - dataset: batch1
+    row: B1-0171
+- id: fm.cladding-wind-suction-underestimated
+  attaches_to:
+    system: structure.design-basis
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the wind load used for cladding fixings
+      is lower than for the building height and exposure?
+    criteria:
+      true: It explicitly states the wind load used for cladding fixings is lower than for the building
+        height and exposure.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.design-basis
+    - envelope.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Wind Actions'
+  - dataset: batch1
+    row: B1-0172
+- id: fm.roof-sheet-thermal-movement-not-allowed-for
+  attaches_to:
+    system: structure
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the fixing of long roof sheets does
+      not allow for thermal expansion?
+    criteria:
+      true: It explicitly states the fixing of long roof sheets does not allow for thermal expansion.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0198
+- id: fm.roof-tie-down-load-path-incomplete
+  attaches_to:
+    system: structure.timber
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state roof tie-down connections do not complete
+      the load path from the roof to the footings?
+    criteria:
+      true: It explicitly states roof tie-down connections do not complete the load path from the roof
+        to the footings.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Structural Framing Systems'
+  - dataset: batch1
+    row: B1-0199
+- id: fm.vehicle-impact-protection-not-designed
+  attaches_to:
+    system: structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a vehicle impact or blast barrier requirement
+      was not carried into the structural design or the installation of protection?
+    criteria:
+      true: It explicitly states a vehicle impact or blast barrier requirement was not carried into the
+        structural design or the installation of protection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - site.impact-protection
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0179
+  - dataset: batch1
+    row: B1-0788
+- id: fm.bollard-footing-clashes-with-services
+  attaches_to:
+    system: site.impact-protection
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state bollard footings clash with buried
+      services?
+    criteria:
+      true: It explicitly states bollard footings clash with buried services.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.impact-protection
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0874
+- id: fm.post-tensioned-tendon-duct-damaged-before-pour
+  attaches_to:
+    system: structure.concrete
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a post-tensioning duct was found damaged
+      before the concrete was poured?
+    criteria:
+      true: It explicitly states a post-tensioning duct was found damaged before the concrete was poured.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  - dataset: batch1
+    row: B1-0123
+- id: fm.post-installed-anchor-not-proof-tested
+  attaches_to:
+    system: structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state post-installed anchors failed pull-out
+      tests?
+    criteria:
+      true: It explicitly states post-installed anchors failed pull-out tests.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0196
+- id: fm.hot-work-near-combustible-formwork-or-panels
+  attaches_to:
+    system: structure.temporary-works
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state hot work was carried out near combustible
+      formwork, panels or stored materials without a stated control?
+    criteria:
+      true: It explicitly states hot work was carried out near combustible formwork, panels or stored
+        materials without a stated control.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0193
+- id: fm.dock-leveller-pit-clashes-with-slab-reinforcement
+  attaches_to:
+    system: site.loading-docks
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the dock leveller pit clashes with
+      slab reinforcement?
+    criteria:
+      true: It explicitly states the dock leveller pit clashes with slab reinforcement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.loading-docks
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0571
+- id: fm.below-grade-equipment-pit-drainage-not-provided
+  attaches_to:
+    system: site.loading-docks
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a below-grade pit for a dock leveller
+      or weighbridge floods because no drainage is provided?
+    criteria:
+      true: It explicitly states a below-grade pit for a dock leveller or weighbridge floods because no
+        drainage is provided.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.loading-docks
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0249
+  - dataset: batch1
+    row: B1-0881
+- id: fm.heritage-masonry-incompatible-materials
+  attaches_to:
+    system: structure.masonry
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state render, cement mortar or non-breathable
+      paint was applied to old masonry?
+    criteria:
+      true: It explicitly states render, cement mortar or non-breathable paint was applied to old masonry.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Heritage and Adaptive Reuse in Commercial Construction'
+  - dataset: batch1
+    row: B1-0265
+  - dataset: batch1
+    row: B1-0266
+  - dataset: batch1
+    row: B1-0267
+- id: fm.termite-inspection-edge-concealed-by-render
+  attaches_to:
+    system: substructure.termite-management
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state render or cladding conceals the slab
+      edge or termite shield inspection gap?
+    criteria:
+      true: It explicitly states render or cladding conceals the slab edge or termite shield inspection
+        gap.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.termite-management
+    - structure.concrete
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+  - dataset: batch1
+    row: B1-0277
+  - dataset: batch1
+    row: B1-0278
+- id: fm.waste-room-or-chute-fire-provisions-omitted
+  attaches_to:
+    system: site.waste-storage
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a waste chute or waste room lacks the
+      fire rating or sprinkler coverage the design required?
+    criteria:
+      true: It explicitly states a waste chute or waste room lacks the fire rating or sprinkler coverage
+        the design required.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.waste-storage
+    - fire-active.sprinklers
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0351
+  - dataset: batch1
+    row: B1-0352
+- id: fm.deck-material-unsuitable-for-bushfire-zone
+  attaches_to:
+    system: structure.timber
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state decking material is combustible in
+      a stated bushfire attack level?
+    criteria:
+      true: It explicitly states decking material is combustible in a stated bushfire attack level.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.timber
+    - envelope.bushfire-construction
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Structural Framing Systems'
+  - dataset: batch1
+    row: B1-0346
+- id: fm.structural-steel-fire-protection-thickness-short
+  attaches_to:
+    system: structure.steel
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state intumescent coating thickness was measured
+      below the required dry film thickness at the inspection before cladding?
+    criteria:
+      true: It explicitly states intumescent coating thickness was measured below the required dry film
+        thickness at the inspection before cladding.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.steel
+    - fire-passive.structural-fire-protection
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  - dataset: batch1
+    row: B1-0315
+- id: fm.design-change-reduces-structural-fire-resistance
+  attaches_to:
+    system: structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a design change reduced the fire resistance
+      of a structural member without fire engineering review?
+    criteria:
+      true: It explicitly states a design change reduced the fire resistance of a structural member without
+        fire engineering review.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - fire-passive.rated-elements
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0307
+- id: fm.fire-appliance-access-width-or-obstruction
+  attaches_to:
+    system: site.vehicle-access
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the access road width, turning area
+      or a canopy obstructs fire appliance access?
+    criteria:
+      true: It explicitly states the access road width, turning area or a canopy obstructs fire appliance
+        access.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+    - fire-active.fire-control
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0338
+  - dataset: batch1
+    row: B1-0782
+- id: fm.mezzanine-addition-egress-not-reviewed
+  attaches_to:
+    system: structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a mezzanine was added without a stated
+      review of exits and travel distance?
+    criteria:
+      true: It explicitly states a mezzanine was added without a stated review of exits and travel distance.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - access-egress.exits
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0368
+- id: fm.accessible-parking-not-linked-to-accessible-route
+  attaches_to:
+    system: site.vehicle-access
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state accessible parking is not linked to
+      an accessible route?
+    criteria:
+      true: It explicitly states accessible parking is not linked to an accessible route.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+    - access-egress.accessible-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: commercial-construction-guide.md
+    anchor: '## Carpark Design for Commercial Buildings'
+  - dataset: batch1
+    row: B1-0375
+- id: fm.attached-carport-fire-separation-not-addressed
+  attaches_to:
+    system: structure
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an attached carport has no stated fire
+      separation from the dwelling?
+    criteria:
+      true: It explicitly states an attached carport has no stated fire separation from the dwelling.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - fire-passive
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Renovation and Extension Considerations'
+  - dataset: batch1
+    row: B1-0394
+- id: fm.habitable-basement-room-lacks-escape
+  attaches_to:
+    system: substructure.basement-retention
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a habitable basement room has no escape
+      route or egress window?
+    criteria:
+      true: It explicitly states a habitable basement room has no escape route or egress window.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.basement-retention
+    - access-egress.exits
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Renovation and Extension Considerations'
+  - dataset: batch1
+    row: B1-0398
+- id: fm.under-slab-drain-not-tested-before-pour
+  attaches_to:
+    system: substructure.damp-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an under-slab drain was concreted over
+      without a stated test or inspection?
+    criteria:
+      true: It explicitly states an under-slab drain was concreted over without a stated test or inspection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.damp-waterproofing
+    - structure.concrete
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0421
+- id: fm.stormwater-pit-level-misses-pavement-falls
+  attaches_to:
+    system: site.stormwater-detention
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pits or pavement falls were built at
+      levels that do not drain surface water to the pit?
+    criteria:
+      true: It explicitly states pits or pavement falls were built at levels that do not drain surface
+        water to the pit.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.stormwater-detention
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0425
+  - dataset: batch1
+    row: B1-0871
+  - dataset: batch1
+    row: B1-0876
+  - dataset: batch1
+    row: B1-0879
+- id: fm.buried-tank-buoyancy-not-checked
+  attaches_to:
+    system: site.stormwater-detention
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a detention tank is buried below the
+      groundwater level without a buoyancy check?
+    criteria:
+      true: It explicitly states a detention tank is buried below the groundwater level without a buoyancy
+        check.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.stormwater-detention
+    - site.ground-conditions
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0429
+- id: fm.stormwater-connection-to-wrong-authority-point
+  attaches_to:
+    system: site.stormwater-detention
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state site stormwater connects to a point
+      other than the one set by the authority?
+    criteria:
+      true: It explicitly states site stormwater connects to a point other than the one set by the authority.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Stormwater drainage'
+  - dataset: batch1
+    row: B1-0453
+- id: fm.septic-system-not-sized-or-sited-for-extension
+  attaches_to:
+    system: site.services-connections
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a septic system is undersized for the
+      added bedrooms or sits within the extension footprint or setbacks?
+    criteria:
+      true: It explicitly states a septic system is undersized for the added bedrooms or sits within the
+        extension footprint or setbacks.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Low-confidence flags'
+  - dataset: batch1
+    row: B1-0465
+  - dataset: batch1
+    row: B1-0466
+- id: fm.septic-effluent-field-soil-absorption
+  attaches_to:
+    system: site.services-connections
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the effluent field was designed without
+      a stated soil absorption assessment for wet conditions?
+    criteria:
+      true: It explicitly states the effluent field was designed without a stated soil absorption assessment
+        for wet conditions.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+    - site.ground-conditions
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Low-confidence flags'
+  - dataset: batch1
+    row: B1-0496
+- id: fm.basement-fixtures-below-sewer-level
+  attaches_to:
+    system: site.services-connections
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state basement fixtures sit below the sewer
+      level without a stated backflow protection?
+    criteria:
+      true: It explicitly states basement fixtures sit below the sewer level without a stated backflow
+        protection.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+    - substructure.basement-retention
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Sewer connection'
+  - dataset: batch1
+    row: B1-0491
+- id: fm.embedded-sensor-loops-cut-by-pavement-saw
+  attaches_to:
+    system: site.vehicle-access
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pavement loops were cut by saw cutting
+      that was not coordinated with their location?
+    criteria:
+      true: It explicitly states pavement loops were cut by saw cutting that was not coordinated with
+        their location.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0662
+- id: fm.chasing-weakens-masonry-wall
+  attaches_to:
+    system: structure.masonry
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state chasing for services weakened a masonry
+      wall without engineering approval?
+    criteria:
+      true: It explicitly states chasing for services weakened a masonry wall without engineering approval.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.masonry
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Notching, drilling, and modification rules'
+  - dataset: batch1
+    row: B1-0768
+- id: fm.signage-lacks-accessible-contrast-or-braille
+  attaches_to:
+    system: site.signage
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state signage does not meet the stated contrast
+      or tactile requirements?
+    criteria:
+      true: It explicitly states signage does not meet the stated contrast or tactile requirements.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.signage
+    - access-egress.accessible-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0790
+- id: fm.equipment-or-fixture-load-lacks-structural-support
+  attaches_to:
+    system: structure
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state heavy equipment, booms, signage or
+      features are fixed to a structure without a stated structural check?
+    criteria:
+      true: It explicitly states heavy equipment, booms, signage or features are fixed to a structure
+        without a stated structural check.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0570
+  - dataset: batch1
+    row: B1-0773
+  - dataset: batch1
+    row: B1-0781
+  - dataset: batch1
+    row: B1-0791
+- id: fm.site-crane-or-hoist-conflicts-with-permanent-structure
+  attaches_to:
+    system: structure.temporary-works
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the site crane or hoist position conflicts
+      with the permanent structure or forces an opening in the slab?
+    criteria:
+      true: It explicitly states the site crane or hoist position conflicts with the permanent structure
+        or forces an opening in the slab.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0801
+  - dataset: batch1
+    row: B1-0815
+- id: fm.temporary-structure-overloaded-by-site-loads
+  attaches_to:
+    system: structure.temporary-works
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a scaffold or formwork deck is loaded
+      with pump lines or materials beyond its stated capacity?
+    criteria:
+      true: It explicitly states a scaffold or formwork deck is loaded with pump lines or materials beyond
+        its stated capacity.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0192
+  - dataset: batch1
+    row: B1-0803
+- id: fm.construction-loads-exceed-slab-early-age-capacity
+  attaches_to:
+    system: structure.concrete
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state materials or stockpiles are stacked
+      on a slab beyond its early-age or live load capacity?
+    criteria:
+      true: It explicitly states materials or stockpiles are stacked on a slab beyond its early-age or
+        live load capacity.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - structure.temporary-works
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0190
+  - dataset: batch1
+    row: B1-0817
+  - dataset: batch1
+    row: B1-0882
+- id: fm.trenching-cuts-irrigation-lines
+  attaches_to:
+    system: site.landscape
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state services trenching cut irrigation lines?
+    criteria:
+      true: It explicitly states services trenching cut irrigation lines.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0865
+- id: fm.podium-planting-soil-depth-not-structurally-supported
+  attaches_to:
+    system: site.landscape
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the planting soil depth over slabs
+      is less than the planting design needs?
+    criteria:
+      true: It explicitly states the planting soil depth over slabs is less than the planting design needs.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0866
+- id: fm.tree-planted-over-services
+  attaches_to:
+    system: site.landscape
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a tree is planted over or beside buried
+      services?
+    criteria:
+      true: It explicitly states a tree is planted over or beside buried services.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - seed: arborist-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0868
+- id: fm.landscape-soil-quality-not-suited-to-planting
+  attaches_to:
+    system: site.landscape
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state trees failed because the soil quality
+      was not suited to them?
+    criteria:
+      true: It explicitly states trees failed because the soil quality was not suited to them.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - site.ground-conditions
+  flag_when: true
+  status: draft
+  sources:
+  - seed: landscape-architecture-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0869
+- id: fm.boundary-set-out-error-encroaches
+  attaches_to:
+    system: site.survey-boundaries
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the building or fence was set out on
+      the wrong line against the surveyed boundary?
+    criteria:
+      true: It explicitly states the building or fence was set out on the wrong line against the surveyed
+        boundary.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.survey-boundaries
+  flag_when: true
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0073
+  - dataset: batch1
+    row: B1-0870
+- id: fm.tree-roots-lift-paving
+  attaches_to:
+    system: site.vehicle-access
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state tree roots have lifted or cracked paving?
+    criteria:
+      true: It explicitly states tree roots have lifted or cracked paving.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+    - site.trees
+  flag_when: true
+  status: draft
+  sources:
+  - seed: arborist-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0872
+- id: fm.external-levels-do-not-meet-entry-or-rail
+  attaches_to:
+    system: site.vehicle-access
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state kerb, footpath or rail levels do not
+      match the building entry or floor level?
+    criteria:
+      true: It explicitly states kerb, footpath or rail levels do not match the building entry or floor
+        level.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+    - site.public-domain
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0873
+  - dataset: batch1
+    row: B1-0854
+  - dataset: batch1
+    row: B1-0880
+- id: fm.pavement-not-designed-for-heavy-vehicle-loads
+  attaches_to:
+    system: site.vehicle-access
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the pavement design omits heavy vehicle
+      loads stated in the brief?
+    criteria:
+      true: It explicitly states the pavement design omits heavy vehicle loads stated in the brief.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0878
+- id: fm.cleared-site-without-sediment-control
+  attaches_to:
+    system: site.erosion-sediment-control
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a site was cleared before erosion and
+      sediment controls were installed?
+    criteria:
+      true: It explicitly states a site was cleared before erosion and sediment controls were installed.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.erosion-sediment-control
+    - site.earthworks
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0083
+  - dataset: batch1
+    row: B1-0843
+- id: fm.excavation-or-traffic-damages-buried-services
+  attaches_to:
+    system: site.services-connections
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state excavation or vehicles struck buried
+      services that were not located beforehand?
+    criteria:
+      true: It explicitly states excavation or vehicles struck buried services that were not located beforehand.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.services-connections
+    - hydraulic.gas
+    - site.earthworks
+  flag_when: true
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0897
+  - dataset: batch1
+    row: B1-0832
+- id: fm.easement-over-services-not-checked-before-footprint
+  attaches_to:
+    system: site.survey-boundaries
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the building footprint extends over
+      an easement or service without a stated approval?
+    criteria:
+      true: It explicitly states the building footprint extends over an easement or service without a
+        stated approval.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.survey-boundaries
+    - site.services-connections
+  flag_when: true
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0075
+- id: fm.differential-settlement-between-old-and-new-footings
+  attaches_to:
+    system: structure.alterations
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state new and existing footings of different
+      type are joined without a stated allowance for differential settlement?
+    criteria:
+      true: It explicitly states new and existing footings of different type are joined without a stated
+        allowance for differential settlement.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - substructure.footings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Renovation and Extension Considerations'
+  - dataset: batch1
+    row: B1-0024
+- id: fm.floor-lowering-removes-support-to-existing-walls
+  attaches_to:
+    system: substructure.underpinning
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the basement floor is lowered without
+      underpinning or a stated support design for the existing walls?
+    criteria:
+      true: It explicitly states the basement floor is lowered without underpinning or a stated support
+        design for the existing walls.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.underpinning
+    - site.earthworks
+  flag_when: true
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0025
+- id: fm.underpinning-movement-cracks-existing-finishes
+  attaches_to:
+    system: substructure.underpinning
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state underpinning movement cracked existing
+      finishes that were not recorded beforehand?
+    criteria:
+      true: It explicitly states underpinning movement cracked existing finishes that were not recorded
+        beforehand.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.underpinning
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+  - dataset: batch1
+    row: B1-0093
+- id: fm.spoil-mixing-defeats-waste-classification
+  attaches_to:
+    system: site.contamination
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state clean and contaminated spoil were mixed
+      so the whole volume needs the higher waste classification?
+    criteria:
+      true: It explicitly states clean and contaminated spoil were mixed so the whole volume needs the
+        higher waste classification.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.contamination
+    - site.earthworks
+  flag_when: true
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+  - dataset: batch1
+    row: B1-0071
+- id: fm.concrete-mix-not-suited-to-pumping
+  attaches_to:
+    system: structure.concrete
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state the pump line blocked because the mix
+      was not suited to pumping?
+    criteria:
+      true: It explicitly states the pump line blocked because the mix was not suited to pumping.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0069
+- id: fm.concrete-placed-into-groundwater-inflow
+  attaches_to:
+    system: substructure.footings
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pier or footing concrete was placed
+      into groundwater inflow?
+    criteria:
+      true: It explicitly states pier or footing concrete was placed into groundwater inflow.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - substructure.footings
+    - site.ground-conditions
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Foundations and Footing Systems'
+  - dataset: batch1
+    row: B1-0066
+- id: fm.new-work-fit-to-existing-not-surveyed
+  attaches_to:
+    system: structure.alterations
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state new slab or fabric does not meet the
+      existing levels or profile because the existing was not surveyed?
+    criteria:
+      true: It explicitly states new slab or fabric does not meet the existing levels or profile because
+        the existing was not surveyed.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Renovation and Extension Considerations'
+  - dataset: batch1
+    row: B1-0164
+  - dataset: batch1
+    row: B1-0968
+- id: fm.added-floor-or-roof-load-without-structural-check
+  attaches_to:
+    system: structure.alterations
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a mezzanine, extra storey or occupied
+      roof was added without a stated check of the existing structure?
+    criteria:
+      true: It explicitly states a mezzanine, extra storey or occupied roof was added without a stated
+        check of the existing structure.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0141
+  - dataset: batch1
+    row: B1-0163
+  - dataset: batch1
+    row: B1-0182
+- id: fm.coring-or-slab-opening-cuts-reinforcement-or-tendon
+  attaches_to:
+    system: structure.alterations
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a core or opening cut reinforcement
+      or a post-tensioned tendon because the scan was not checked at the hold point?
+    criteria:
+      true: It explicitly states a core or opening cut reinforcement or a post-tensioned tendon because
+        the scan was not checked at the hold point.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.alterations
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0102
+  - dataset: batch1
+    row: B1-0155
+  - dataset: batch1
+    row: B1-0156
+- id: fm.slab-penetrations-not-located-before-pour
+  attaches_to:
+    system: structure.concrete
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state slab penetrations were not located
+      and checked before the pour?
+    criteria:
+      true: It explicitly states slab penetrations were not located and checked before the pour.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - structure.concrete
+    - hydraulic
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '### Construction and completion [construction_completion]'
+  - dataset: batch1
+    row: B1-0104
+- id: fm.street-tree-conflicts-with-driveway
+  attaches_to:
+    system: site.landscape
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a street tree to be retained conflicts
+      with the driveway crossing position?
+    criteria:
+      true: It explicitly states a street tree to be retained conflicts with the driveway crossing position.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - site.landscape
+    - site.vehicle-access
+  flag_when: true
+  status: draft
+  sources:
+  - seed: arborist-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0856

@@ -1,0 +1,2541 @@
+# Unforeseen conditions for the structure cluster (K4 Pass B, batch 1). All draft; dataset rows are leads, not facts.
+version: 1
+unforeseen:
+- id: uc.rock-or-variable-bedrock-at-founding-level
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.footings
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.footings
+      - substructure.piles
+  signals:
+  - sig.founding-level-ground-data-stated
+  de_risk:
+    kind: investigation
+    label: Geotechnical investigation to the founding depth with rock levels across the footprint
+  contract: Provisional quantity for rock excavation, rock breaking and founding changes, with rates for
+    variation in founding depth.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0001
+  - dataset: batch1
+    row: B1-0048
+  - dataset: batch1
+    row: B1-0067
+- id: uc.buried-obstruction-or-void-at-founding-or-pile-line
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.piles
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.footings
+      - substructure.piles
+  signals:
+  - sig.founding-level-ground-data-stated
+  de_risk:
+    kind: investigation
+    label: Targeted investigation for old structures, voids and buried obstructions on the footing and
+      pile lines
+  contract: Provisional sum for removal of obstructions and for ground treatment or redesign of founding.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: cost
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0009
+  - dataset: batch1
+    row: B1-0012
+  - dataset: batch1
+    row: B1-0049
+  - dataset: batch1
+    row: B1-0100
+- id: uc.compressible-or-soft-ground-under-slab-or-footing
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.footings
+      - substructure.piles
+      - substructure.slab-on-ground
+  signals:
+  - sig.founding-level-ground-data-stated
+  - sig.site-classification-stated
+  de_risk:
+    kind: investigation
+    label: Geotechnical assessment of compressible or soft layers and the ground improvement option before
+      design
+  contract: Provisional sum for ground improvement or deepened founding; stated rates for undercut and
+    replace.
+  effect:
+  - cost
+  - programme
+  severity: durability
+  discovered_at:
+  - design
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0050
+  - dataset: batch1
+    row: B1-0007
+  - dataset: batch1
+    row: B1-0095
+  - dataset: batch1
+    row: B1-0088
+- id: uc.uncontrolled-fill-found-under-building-pad
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.footings
+      - substructure.piles
+      - substructure.slab-on-ground
+  signals:
+  - sig.founding-level-ground-data-stated
+  de_risk:
+    kind: investigation
+    label: Test pits to establish fill depth and whether it was placed and compacted under control
+  contract: Provisional quantity for removal and replacement of uncontrolled fill under footings and slab.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0014
+- id: uc.geotechnical-model-differs-from-ground-found
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.footings
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.footings
+      - substructure.piles
+  signals:
+  - sig.founding-level-ground-data-stated
+  de_risk:
+    kind: investigation
+    label: Check that the investigation reaches the founding depth and covers the footprint before design
+      is fixed
+  contract: Allowance for founding redesign; the geotechnical report is information only and the risk
+    allocation should be stated.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0013
+- id: uc.reactive-clay-or-tree-moisture-movement
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.slab-on-ground
+      - substructure.footings
+  signals:
+  - sig.site-classification-stated
+  de_risk:
+    kind: investigation
+    label: Site classification and tree influence assessment before footing design
+  contract: Footing design to the stated site classification; variation if moisture conditions found differ
+    from the classification.
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - seed: structural-residential.md
+    anchor: '### Site classification'
+  - dataset: batch1
+    row: B1-0005
+  - dataset: batch1
+    row: B1-0008
+  - dataset: batch1
+    row: B1-0091
+- id: uc.loose-or-wet-ground-collapses-open-bores
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.footings
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - substructure.footings
+  signals:
+  - sig.founding-level-ground-data-stated
+  de_risk:
+    kind: obligation
+    label: Footing package to include temporary support or casing of pier bores and trenches
+  contract: Temporary support of open bores and trenches priced in the footing package.
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0065
+- id: uc.steep-site-slope-instability-after-clearing
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.ground-conditions
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - site.earthworks
+      - substructure.footings
+  signals:
+  - sig.slope-stability-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Slope stability assessment before vegetation is cleared
+  contract: Staged clearing and stabilisation priced as separable work.
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0041
+- id: uc.frost-heave-under-slab-edges
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.slab-on-ground
+  signals:
+  - sig.site-classification-stated
+  de_risk:
+    kind: investigation
+    label: Confirm frost depth and slab edge detail with the geotechnical engineer
+  contract: Edge insulation or deepened edge detail as a stated allowance where frost is possible.
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0099
+- id: uc.groundwater-inflow-into-excavation-or-pits
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.ground-conditions
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.basement-retention
+      - substructure.slab-on-ground
+      - site.earthworks
+  signals:
+  - sig.groundwater-level-stated
+  de_risk:
+    kind: investigation
+    label: Groundwater monitoring over wet and dry periods before design of basements and pits
+  contract: Provisional sum for dewatering and tanking changes; dewatering method and discharge approval
+    stated in scope.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: cost
+  discovered_at:
+  - design
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0002
+  - dataset: batch1
+    row: B1-0057
+- id: uc.aggressive-ground-or-groundwater-chemistry
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - structure.concrete
+      - substructure.footings
+      - substructure.slab-on-ground
+  signals:
+  - sig.soil-aggressivity-results-stated
+  de_risk:
+    kind: investigation
+    label: Soil and groundwater chemistry tests for the buried concrete exposure classification
+  contract: Concrete grade and cover changes priced against the stated exposure classification.
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - design
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0039
+  - dataset: batch1
+    row: B1-0040
+- id: uc.contaminated-groundwater-needs-treatment-before-discharge
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.contamination
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - site.contamination
+      - site.earthworks
+  signals:
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: Groundwater sampling and a discharge pathway before dewatering is designed
+  contract: Provisional sum for treatment and disposal of pumped groundwater, including water arriving
+    from off site.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: cost
+  discovered_at:
+  - design
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+  - dataset: batch1
+    row: B1-0089
+  - dataset: batch1
+    row: B1-0848
+- id: uc.contaminated-soil-found-during-excavation
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.contamination
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - site.contamination
+      - site.earthworks
+  signals:
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: Contamination investigation of the excavation footprint and spoil classification before excavation
+  contract: Provisional quantity for classified disposal; unexpected finds protocol agreed in advance.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: cost
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+  - dataset: batch1
+    row: B1-0003
+- id: uc.asbestos-fragments-in-fill-exposed-by-excavation
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.contamination
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      - repair
+      - replace
+      system:
+      - site.contamination
+      - site.earthworks
+  signals:
+  - sig.hazardous-materials-survey-stated
+  - sig.contamination-investigation-results-stated
+  de_risk:
+    kind: investigation
+    label: Hazardous materials assessment of fill and soil before excavation
+  contract: Provisional sum for licensed removal and disposal; stop-work and unexpected finds protocol
+    stated.
+  effect:
+  - cost
+  - programme
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Asbestos Assessment and Management in Construction'
+  - dataset: batch1
+    row: B1-0045
+- id: uc.acid-sulfate-soil-exposed-by-excavation
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.acid-sulfate-soils
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.acid-sulfate-soils
+      - site.earthworks
+  signals:
+  - sig.acid-sulfate-soil-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Acid sulfate soil assessment and management plan before excavation
+  contract: Provisional sum for treatment and for management of disturbed soil.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: durability
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Acid Sulfate Soils'
+  - dataset: batch1
+    row: B1-0015
+- id: uc.excavated-volume-exceeds-estimate
+  kind: unforeseen_condition
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.earthworks
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.earthworks
+  signals: []
+  de_risk:
+    kind: investigation
+    label: Check the cut volume estimate against survey and ground model before tender
+  contract: Remeasurable quantities for cut and haulage.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0016
+- id: uc.ground-gas-or-vapour-found-in-ground
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.slab-on-ground
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.slab-on-ground
+      - substructure.damp-waterproofing
+      - site.contamination
+  signals:
+  - sig.ground-gas-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Ground gas and vapour assessment before the slab and membrane design
+  contract: Provisional sum for a gas barrier and ventilation layer.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+  - dataset: batch1
+    row: B1-0081
+  - dataset: batch1
+    row: B1-0082
+- id: uc.unmapped-service-or-main-in-footing-line-or-excavation
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: site.services-connections
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      - repair
+      - replace
+      system:
+      - site.services-connections
+      - site.earthworks
+      - substructure.footings
+  signals:
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: investigation
+    label: Locate buried services by search and survey before footings and excavation are set out
+  contract: Provisional sum for diversion; services located before work starts is the baseline.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: cost
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0004
+  - dataset: batch1
+    row: B1-0022
+- id: uc.existing-sewer-within-building-footprint-needs-relocation
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.services-connections
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - site.services-connections
+    - det: existing_building
+      is: true
+  signals:
+  - sig.buried-services-location-stated
+  de_risk:
+    kind: approval
+    label: Sewer authority approval for building over or relocating the sewer
+  contract: Authority fees and relocation works as a provisional sum.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Sewer connection'
+  - dataset: batch1
+    row: B1-0455
+- id: uc.neighbour-surcharge-load-on-retention-not-known
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: substructure.basement-retention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.basement-retention
+  signals:
+  - sig.adjoining-structure-details-stated
+  de_risk:
+    kind: investigation
+    label: Establish adjoining footing depths and loads before retention design
+  contract: Retention redesign allowance if the adjoining loads exceed those assumed.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+  - dataset: batch1
+    row: B1-0044
+- id: uc.boundary-line-differs-from-fence-or-agreement
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.survey-boundaries
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.survey-boundaries
+  signals:
+  - sig.boundary-survey-stated
+  de_risk:
+    kind: investigation
+    label: Identification survey of the boundary before design and set-out
+  contract: Survey cost as a provisional sum; boundary agreements settled before work starts.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0074
+  - dataset: batch1
+    row: B1-0860
+- id: uc.protected-or-neighbouring-tree-restricts-works
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.trees
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.trees
+      - site.earthworks
+  signals:
+  - sig.tree-protection-requirements-stated
+  de_risk:
+    kind: investigation
+    label: Arborist report for tree protection zones and consent for tree removal before design
+  contract: Restricted plant access and root-sensitive methods priced; removal needs the stated consent.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: cost
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - seed: arborist-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0846
+  - dataset: batch1
+    row: B1-0847
+  - dataset: batch1
+    row: B1-0383
+- id: uc.unexploded-ordnance-suspected-on-site
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.ground-conditions
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.ground-conditions
+      - site.earthworks
+  signals:
+  - sig.unexploded-ordnance-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Desktop and site ordnance assessment before ground disturbance
+  contract: Provisional sum for survey and clearance; works stop on a find.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+  - dataset: batch1
+    row: B1-0849
+- id: uc.archaeological-or-aboriginal-heritage-find-halts-excavation
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.earthworks
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.earthworks
+  signals:
+  - sig.heritage-assessment-stated
+  de_risk:
+    kind: approval
+    label: Heritage assessment and an unexpected finds procedure before ground disturbance
+  contract: Time and cost of a stop-work and assessment; the finds procedure is agreed before work starts.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Due Diligence Process Overview'
+  - dataset: batch1
+    row: B1-0807
+  - dataset: batch1
+    row: B1-0851
+- id: uc.easement-over-building-footprint-found
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.survey-boundaries
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.survey-boundaries
+  signals:
+  - sig.site-easements-stated
+  de_risk:
+    kind: investigation
+    label: Title and service search for easements before the footprint is fixed
+  contract: Redesign allowance; the footprint is fixed only after easements are known.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0806
+- id: uc.termite-activity-found-in-soil-before-slab
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: substructure.termite-management
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - substructure.termite-management
+      - substructure.slab-on-ground
+  signals:
+  - sig.termite-management-system-stated
+  de_risk:
+    kind: investigation
+    label: Termite inspection of the site before the barrier system is chosen
+  contract: Treatment of the site as a stated allowance.
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+  - dataset: batch1
+    row: B1-0034
+- id: uc.existing-footing-smaller-or-weaker-than-assumed
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: substructure.underpinning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+        - substructure.underpinning
+        - substructure.footings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-footing-exposed-stated
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: Expose and assess the existing footings before the extension or added load is designed
+  contract: Provisional sum for underpinning or footing strengthening.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0023
+  - dataset: batch1
+    row: B1-0078
+- id: uc.shared-party-wall-footing-found
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.adjoining-structures
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.adjoining-structures
+        - substructure.footings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.adjoining-structure-details-stated
+  de_risk:
+    kind: investigation
+    label: Establish footing ownership and depth beside party walls before excavation
+  contract: Neighbour agreement and protection works as a stated sum.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+  - dataset: batch1
+    row: B1-0076
+- id: uc.existing-slab-or-floor-too-thin-for-new-loads
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - new
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Structural assessment of the existing slab for the new load
+  contract: Provisional sum for strengthening or load spreading.
+  effect:
+  - cost
+  - programme
+  severity: life-safety
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0077
+- id: uc.existing-structure-differs-from-drawings
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Verify the existing structure against drawings by survey and opening up
+  contract: Design allowance for as-found conditions; drawings are information only.
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: cost
+  discovered_at:
+  - design
+  - demolition_strip_out
+  - construction
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0159
+- id: uc.existing-wall-removed-is-loadbearing
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - remove
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Engineer to confirm which walls carry load before any wall is removed
+  contract: Needle and beam support as a provisional sum.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0154
+- id: uc.spalling-and-corroded-reinforcement-in-existing-concrete
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Concrete condition survey (cover, chloride, half-cell) before design
+  contract: Provisional quantity for concrete repair priced per area.
+  effect:
+  - cost
+  - programme
+  severity: durability
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0157
+- id: uc.existing-steel-section-loss-at-connections
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+        - structure.steel
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Condition survey of existing steel and connections before reliance on them
+  contract: Provisional sum for strengthening or replacement of members.
+  effect:
+  - cost
+  - programme
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0158
+- id: uc.existing-roof-framing-sags-under-new-cover
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        - repair
+        system:
+        - structure.alterations
+        - structure.timber
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Inspection of existing roof framing before a heavier cover is specified
+  contract: Provisional sum for framing repair or strengthening.
+  effect:
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0160
+- id: uc.existing-wall-fixings-cannot-take-overcladding
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Pull-out testing of existing wall fixings before overcladding is designed
+  contract: Allowance for new fixing substrate or sub-frame.
+  effect:
+  - cost
+  - quality
+  severity: life-safety
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0273
+- id: uc.termite-or-rot-damage-in-existing-timber
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.timber
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+        - structure.timber
+    - det: existing_building
+      is: true
+  signals:
+  - sig.timber-pest-inspection-results-stated
+  de_risk:
+    kind: investigation
+    label: Timber pest and moisture inspection of the existing frame and floor before design
+  contract: Provisional quantity for replacement of damaged timber, priced per member.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: compliance
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Termite Management'
+  - dataset: batch1
+    row: B1-0161
+  - dataset: batch1
+    row: B1-0162
+- id: uc.fire-damaged-structure-needs-assessment
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Structural assessment of the fire-affected concrete and steel
+  contract: Provisional sum for investigation and repair.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0178
+- id: uc.existing-floors-lack-evidence-of-fire-resistance
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-fire-resistance-evidence-stated
+  de_risk:
+    kind: investigation
+    label: Fire engineer assessment of the existing floors and compartments
+  contract: Provisional sum for upgrade of fire separation if the assessment requires it.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0355
+  - dataset: batch1
+    row: B1-0358
+  - dataset: batch1
+    row: B1-0966
+- id: uc.existing-slab-levels-and-thickness-vary
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+        - structure.concrete
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Level and thickness survey of the existing slab before floor build-ups are designed
+  contract: Remeasurable screed or levelling quantity.
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0967
+  - dataset: batch1
+    row: B1-0169
+- id: uc.existing-heights-too-low-for-new-services
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structural-drawings-stated
+  de_risk:
+    kind: investigation
+    label: Measured survey of voids and floor-to-floor heights before services are designed
+  contract: Design allowance; services coordination before tender.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0969
+  - dataset: batch1
+    row: B1-0970
+- id: uc.original-damp-proofing-absent-in-old-footings-and-basements
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: substructure.basement-retention
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - substructure.basement-retention
+        - substructure.footings
+        - substructure.damp-waterproofing
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-damp-proofing-stated
+  de_risk:
+    kind: investigation
+    label: Inspection of the existing basement and footing damp-proofing before design
+  contract: Provisional sum for tanking or damp-course remediation.
+  effect:
+  - cost
+  - quality
+  severity: durability
+  discovered_at:
+  - design
+  - demolition_strip_out
+  - construction
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Rising Damp Protection and External Weatherproofing'
+  - dataset: batch1
+    row: B1-0079
+  - dataset: batch1
+    row: B1-0080
+- id: uc.asbestos-found-in-existing-building
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+        - site.demolition
+    - det: existing_building
+      is: true
+  signals:
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: Hazardous materials survey of the affected areas before the works
+  contract: Provisional sum for licensed removal; works stop on an unexpected find.
+  effect:
+  - cost
+  - programme
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Asbestos Assessment and Management in Construction'
+  - dataset: batch1
+    row: B1-0907
+- id: uc.asbestos-in-adjoining-wall-exposed-by-works
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: site.adjoining-structures
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - site.adjoining-structures
+    - det: existing_building
+      is: true
+  signals:
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: Hazardous materials inspection of shared or adjoining walls before the works
+  contract: Neighbour notification and removal as a provisional sum.
+  effect:
+  - cost
+  - programme
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: remediation-due-diligence-guide.md
+    anchor: '## Asbestos Assessment and Management in Construction'
+  - dataset: batch1
+    row: B1-0889
+- id: uc.concealed-defects-behind-existing-linings
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-structure-condition-testing-stated
+  de_risk:
+    kind: investigation
+    label: Opening-up inspection of concealed areas before the scope is fixed
+  contract: Provisional sum for concealed defects, with the pricing basis stated.
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: cost
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Structural intervention'
+  - dataset: batch1
+    row: B1-0964
+- id: uc.alteration-triggers-upgrade-of-existing-building
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: structure.alterations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - new
+        system:
+        - structure.alterations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-building-upgrade-assessment-stated
+  de_risk:
+    kind: approval
+    label: Consent authority advice on which parts of the existing building must be upgraded
+  contract: Upgrade work separable from the main works and priced as a provisional sum.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Residential Renovation and Extension Considerations'
+  - dataset: batch1
+    row: B1-0167
+  - dataset: batch1
+    row: B1-0975
+- id: uc.heavy-rain-saturates-subgrade-and-stops-earthworks
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.earthworks
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - site.earthworks
+      - site.erosion-sediment-control
+  signals:
+  - sig.erosion-sediment-control-plan-stated
+  de_risk:
+    kind: obligation
+    label: Earthworks package to state wet-weather allowance and subgrade protection
+  contract: Weather delay allowance as a stated number of days in the contract.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0010
+  - dataset: batch1
+    row: B1-0087
+- id: uc.storm-floods-site-before-drainage-is-complete
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - upgrade
+      system:
+      - site.stormwater-detention
+      - site.erosion-sediment-control
+  signals:
+  - sig.erosion-sediment-control-plan-stated
+  de_risk:
+    kind: obligation
+    label: Sequence temporary and permanent drainage ahead of openings and lift pits
+  contract: Care of the works with temporary drainage in the builder's scope.
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: programme
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0809
+  - dataset: batch1
+    row: B1-0841
+  - dataset: batch1
+    row: B1-0842
+  - dataset: batch1
+    row: B1-0084
+- id: uc.noise-and-dust-limits-restrict-ground-works
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.earthworks
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - remove
+      - replace
+      system:
+      - site.earthworks
+      - site.demolition
+      - substructure.piles
+  signals:
+  - sig.construction-noise-dust-plan-stated
+  de_risk:
+    kind: obligation
+    label: Noise, vibration and dust management plan agreed with the authority before works
+  contract: Allowance for restricted hours and for dust controls in the preliminaries.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0047
+  - dataset: batch1
+    row: B1-0097
+  - dataset: batch1
+    row: B1-0825
+  - dataset: batch1
+    row: B1-0826
+- id: uc.vibration-monitor-limit-halts-works
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.adjoining-structures
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.adjoining-structures
+      - site.earthworks
+  signals:
+  - sig.dilapidation-survey-stated
+  de_risk:
+    kind: obligation
+    label: Vibration limits and response plan stated in the earthworks package
+  contract: Method change and delay allowance if monitoring limits are reached.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+  - dataset: batch1
+    row: B1-0072
+- id: uc.dilapidation-survey-required-or-disputed
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: site.adjoining-structures
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.adjoining-structures
+      - site.earthworks
+  signals:
+  - sig.dilapidation-survey-stated
+  de_risk:
+    kind: investigation
+    label: Dilapidation survey of adjoining properties before excavation
+  contract: Survey cost in the preliminaries; the baseline record is a condition of starting excavation.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: excavation
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+  - dataset: batch1
+    row: B1-0862
+  - dataset: batch1
+    row: B1-0863
+- id: uc.flood-planning-level-raised-after-design
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.flooding
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.flooding
+      - substructure.slab-on-ground
+  signals:
+  - sig.flood-planning-level-advice-stated
+  de_risk:
+    kind: approval
+    label: Obtain current flood advice from the authority before floor levels are fixed
+  contract: Design change risk before approval; allowance for level changes.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0060
+- id: uc.concrete-delivery-delay-causes-cold-joint
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.concrete
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Pour plan with supply backup and a stated joint location
+  contract: Supply risk allocated to the concrete supplier; pour plan agreed beforehand.
+  effect:
+  - programme
+  - quality
+  severity: durability
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0070
+- id: uc.delivered-concrete-fails-strength-test
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.concrete
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Testing regime with a stated action on a failed cylinder before loads are applied
+  contract: Rectification at the supplier's cost where the delivered concrete is non-conforming.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - construction
+  - testing_commissioning
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0115
+- id: uc.hot-weather-shortens-concrete-working-time
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.concrete
+  signals:
+  - sig.weather-concreting-procedure-stated
+  de_risk:
+    kind: obligation
+    label: Hot weather concreting procedure in the concrete package
+  contract: Weather procedures in the concrete package scope.
+  effect:
+  - programme
+  - quality
+  severity: durability
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0116
+- id: uc.cold-weather-affects-fresh-concrete-or-mortar
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.concrete
+      - structure.masonry
+  signals:
+  - sig.weather-concreting-procedure-stated
+  de_risk:
+    kind: obligation
+    label: Cold weather procedure for concrete and mortar in the package scope
+  contract: Weather procedures in the package scope; delay days stated.
+  effect:
+  - programme
+  - quality
+  severity: durability
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0117
+  - dataset: batch1
+    row: B1-0836
+- id: uc.post-tensioning-stressing-late
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.concrete
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Stressing hold point linked to stripping and the next level in the programme
+  contract: Stressing sequence and its duration stated in the programme.
+  effect:
+  - programme
+  severity: programme
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0122
+- id: uc.precast-damaged-in-transport
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.precast
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.precast
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Delivery inspection and repair procedure for precast units
+  contract: Transport risk and repair at the supplier's cost.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0130
+- id: uc.brick-batch-colour-mismatch
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.masonry
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - repair
+      system:
+      - structure.masonry
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Order the full brick quantity in one batch, or approve a sample panel
+  contract: Batch supply and a sample panel approval stated in the package.
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0153
+- id: uc.timber-frame-exposed-to-rain-for-weeks
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.timber
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.timber
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Frame moisture check before lining and a roof-on programme
+  contract: Weather exposure risk allocated; drying time before lining stated.
+  effect:
+  - programme
+  - quality
+  severity: durability
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: residential-construction-guide.md
+    anchor: '## Structural Framing Systems'
+  - dataset: batch1
+    row: B1-0143
+- id: uc.unfinished-roof-structure-loaded-by-snow
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Temporary stability and load check of the incomplete roof structure
+  contract: Care of the works for the incomplete structure.
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0837
+- id: uc.slab-moisture-too-high-to-lay-flooring
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.concrete
+      - interiors.floor-finishes
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Slab moisture test result as a hold point before floor finishes are laid
+  contract: Slab drying time in the programme before floor finishes.
+  effect:
+  - programme
+  severity: programme
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - seed: structural-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0712
+- id: uc.crane-installation-delayed-by-runway-or-power
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: structure.steel
+  when:
+    works:
+      action:
+      - new
+      system:
+      - structure.steel
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Runway completion and power supply sequenced ahead of crane installation
+  contract: Crane installation dates linked to runway and power completion.
+  effect:
+  - programme
+  severity: programme
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: industrial-construction-guide.md
+    anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0572
+- id: uc.quarry-or-fill-delivery-delay
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.earthworks
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.earthworks
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Confirm quarry product supply and haulage before earthworks start
+  contract: Material supply risk allocated to the earthworks package.
+  effect:
+  - programme
+  severity: programme
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0086
+- id: uc.preloading-takes-longer-than-planned
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.ground-conditions
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.ground-conditions
+      - site.earthworks
+  signals: []
+  de_risk:
+    kind: investigation
+    label: Settlement monitoring and a stated criterion for release of the preload
+  contract: Preload duration is stated as an estimate with a monitoring basis.
+  effect:
+  - programme
+  severity: programme
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - seed: geotechnical-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0096
+- id: uc.narrow-street-or-road-closure-limits-delivery-and-pumping
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: site.public-domain
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.public-domain
+      - site.vehicle-access
+  signals:
+  - sig.delivery-logistics-plan-stated
+  de_risk:
+    kind: approval
+    label: Traffic and delivery plan, with road occupancy permits, before the concrete and delivery packages
+      are let
+  contract: Road occupancy and traffic control in the preliminaries.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0821
+  - dataset: batch1
+    row: B1-0822
+- id: uc.construction-traffic-damages-street-or-pavement
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.public-domain
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.public-domain
+      - site.vehicle-access
+  signals:
+  - sig.delivery-logistics-plan-stated
+  de_risk:
+    kind: investigation
+    label: Condition record of the street and pavement before construction traffic starts
+  contract: Make-good of the street and pavement at the builder's cost against a condition record.
+  effect:
+  - cost
+  severity: cost
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0092
+  - dataset: batch1
+    row: B1-0811
+- id: uc.temporary-site-water-or-sewer-not-available
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.services-connections
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.services-connections
+  signals: []
+  de_risk:
+    kind: approval
+    label: Temporary water and sewer connections arranged early
+  contract: Temporary services in the preliminaries with the arrangements stated.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0829
+  - dataset: batch1
+    row: B1-0830
+- id: uc.stormwater-detention-requirement-raised-late
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.stormwater-detention
+      - substructure.basement-retention
+  signals: []
+  de_risk:
+    kind: approval
+    label: Council stormwater advice before the structure and basement are fixed
+  contract: Design change risk; allowance for the added volume.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: cost
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0382
+  - dataset: batch1
+    row: B1-0403
+- id: uc.council-changes-driveway-or-footpath-levels
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.public-domain
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.public-domain
+      - site.vehicle-access
+  signals: []
+  de_risk:
+    kind: approval
+    label: Obtain council levels for the driveway and footpath before the basement ramp is fixed
+  contract: Level change risk before approval.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Driveway crossover'
+  - dataset: batch1
+    row: B1-0805
+- id: uc.driveway-crossing-approval-or-utility-pit-constrains-access
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.public-domain
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - site.public-domain
+      - site.vehicle-access
+  signals: []
+  de_risk:
+    kind: approval
+    label: Crossing approval and utility pit locations checked before the driveway is designed
+  contract: Approval lead time stated in the programme.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Driveway crossover'
+  - dataset: batch1
+    row: B1-0855
+  - dataset: batch1
+    row: B1-0858
+- id: uc.road-widening-land-dedication
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.survey-boundaries
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.survey-boundaries
+  signals:
+  - sig.site-easements-stated
+  de_risk:
+    kind: approval
+    label: Planning advice on road widening or frontage dedication before the footprint is fixed
+  contract: Redesign risk before approval.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: cost
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: surveying-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0853
+- id: uc.stormwater-discharge-point-inaccessible
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.stormwater-detention
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.stormwater-detention
+  signals: []
+  de_risk:
+    kind: investigation
+    label: Confirm the authority drain location and access before the drainage design
+  contract: Off-site connection works as a provisional sum.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: civil-residential.md
+    anchor: '## Stormwater drainage'
+  - dataset: batch1
+    row: B1-0859
+- id: uc.boundary-retaining-wall-needs-neighbour-consent
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: substructure.retaining-walls
+  when:
+    works:
+      action:
+      - new
+      system:
+      - substructure.retaining-walls
+  signals:
+  - sig.neighbour-consent-stated
+  de_risk:
+    kind: approval
+    label: Neighbour consent for a retaining wall near the boundary before design is finalised
+  contract: Consent obtained before the wall is let.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: renovation-guide.md
+    anchor: '## Dilapidation and neighbour management'
+  - dataset: batch1
+    row: B1-0861
+- id: uc.silica-dust-controls-restrict-cutting
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: structure.concrete
+  when:
+    works:
+      action:
+      - new
+      - alter
+      - remove
+      system:
+      - structure.concrete
+      - structure.masonry
+  signals:
+  - sig.construction-noise-dust-plan-stated
+  de_risk:
+    kind: obligation
+    label: Dust control and cutting method stated in the package scope
+  contract: Dust controls in the package scope.
+  effect:
+  - cost
+  - programme
+  severity: compliance
+  discovered_at: construction
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0888
+- id: uc.consent-requires-off-site-works-by-third-party
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: site.public-domain
+  when:
+    works:
+      action:
+      - new
+      system:
+      - site.public-domain
+  signals: []
+  de_risk:
+    kind: approval
+    label: Consent conditions reviewed for off-site works that rely on others
+  contract: Third party works dependencies stated in the programme and handover conditions.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at: design
+  status: draft
+  sources:
+  - seed: civil-commercial-industrial-guide.md
+    anchor: '## Common failures and low-confidence flags'
+  - dataset: batch1
+    row: B1-0993
