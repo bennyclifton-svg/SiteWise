@@ -53,7 +53,7 @@ PREDICATE_OPS = {"any_of", "eq", "is", "gt", "gte", "lt", "lte"}
 # Works layer (SCHEMA.md "Works layer"). Vocabularies are fixed here and in the
 # schema together; ACTIONS is read from knowledge/works/actions.yaml.
 WORKS_DIR = "works"
-CLUSTER_WORKS_FILES = {"consequences.yaml": "consequences", "unforeseen.yaml": "unforeseen"}
+CLUSTER_WORKS_FILES = {"consequences.yaml": "consequences", "unforeseen.yaml": "unforeseen", "signals.yaml": "signals"}
 ACTIONS: set = set()
 DATASETS: dict = {}          # dataset id -> set of row ids, from data/unforeseen/manifest.json
 UNFORESEEN_DIR = ROOT / "data" / "unforeseen"
@@ -862,9 +862,36 @@ def check_ledger(path: Path, records: set, report: Report) -> int:
         report.error(rel, f"... {len(missing)} dataset rows missing in all")
     for rid in sorted(rows.keys() - expected)[:5]:
         report.error(rel, f"ledger row is not in the dataset: {rid}")
+    # Per-author overlays (coverage/<dataset>/<name>.yaml) decide rows that are
+    # pending in the base ledger, so parallel authors never edit one file.
+    overlay_dir = path.parent / dataset
+    decided_in: dict = {}
+    for overlay in sorted(overlay_dir.glob("*.yaml")) if overlay_dir.is_dir() else []:
+        orel = overlay.relative_to(ROOT).as_posix()
+        try:
+            odoc = yaml.load(overlay.read_text(encoding="utf-8"), Loader=_UniqueKeyLoader)
+        except yaml.YAMLError as exc:
+            report.error(orel, f"invalid YAML: {exc}")
+            continue
+        if not isinstance(odoc, dict) or odoc.get("version") != 1 or not isinstance(odoc.get("rows"), dict):
+            report.error(orel, "overlay must be a mapping with version: 1 and a rows mapping")
+            continue
+        for rid, disp in odoc["rows"].items():
+            if rid not in expected:
+                report.error(orel, f"overlay row is not in the dataset: {rid}")
+            elif rows.get(rid) != "pending":
+                report.error(orel, f"overlay row is already decided in the base ledger: {rid}")
+            elif rid in decided_in:
+                report.error(orel, f"overlay row also decided in {decided_in[rid]}: {rid}")
+            elif disp == "pending":
+                report.error(orel, f"overlay rows must be decided, not pending: {rid}")
+            else:
+                decided_in[rid] = orel
+                rows = dict(rows)
+                rows[rid] = disp
     pending = 0
     for rid, disp in rows.items():
-        where = f"{rel} [{rid}]"
+        where = f"{decided_in.get(rid, rel)} [{rid}]"
         if disp == "pending":
             pending += 1
         elif isinstance(disp, dict) and set(disp) == {"records"} and isinstance(disp["records"], list) and disp["records"]:
@@ -889,8 +916,10 @@ def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions
     files. Returns the number of pending ledger rows."""
     folder = KNOWLEDGE / WORKS_DIR
     signals: dict = {}
-    path = folder / "signals.yaml"
-    if path.is_file():
+    signal_files = [folder / "signals.yaml"] + sorted((KNOWLEDGE / "clusters").glob("*/signals.yaml"))
+    for path in signal_files:
+        if not path.is_file():
+            continue
         rel, doc = load_works_doc(path, "signals", report)
         for sig in (doc or {}).get("signals") or []:
             where = f"{rel} [{sig.get('id', '?') if isinstance(sig, dict) else '?'}]"
@@ -903,7 +932,7 @@ def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions
             if sig.get("type") != "noul":
                 report.error(where, "a signal must be a noul")
             if sig.get("id") in signals:
-                report.error(where, "duplicate signal id")
+                report.error(where, f"duplicate signal id (also in {signals[sig.get('id')]})")
             signals[sig.get("id")] = rel
     known["signal"] = signals
     if actions_doc is not None:
@@ -919,6 +948,8 @@ def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions
                 known["interface_consequence"][item["id"]] = rel
     for cluster in sorted((KNOWLEDGE / "clusters").iterdir()):
         for name, key in CLUSTER_WORKS_FILES.items():
+            if key == "signals":
+                continue
             path = cluster / name
             if not path.is_file():
                 continue
@@ -934,7 +965,9 @@ def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions
                     if item["id"] in bucket:
                         report.error(rel, f"duplicate id {item['id']} (also in {bucket[item['id']]})")
                     bucket[item["id"]] = rel
-    records = set(known["consequence"]) | set(known["unforeseen"])
+    # A ledger row may be covered by any record kind it was folded into.
+    records = (set(known["consequence"]) | set(known["unforeseen"])
+               | set(known["failure_mode"]) | set(known["interface"]))
     pending = 0
     ledger_dir = folder / "coverage"
     ledger_files = sorted(ledger_dir.glob("*.yaml")) if ledger_dir.is_dir() else []
