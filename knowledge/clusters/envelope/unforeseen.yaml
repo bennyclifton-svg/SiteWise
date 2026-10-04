@@ -1,0 +1,969 @@
+version: 1
+unforeseen:
+- id: uc.heritage-wall-opening-conflicts-with-fabric
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        system:
+        - envelope.external-walls
+    - &id001
+      det: existing_building
+      is: true
+    - det: heritage_status
+      any_of:
+      - conservation_area
+      - local_item
+      - state_register
+  signals:
+  - sig.envelope-heritage-fabric-significance-stated
+  de_risk:
+    kind: investigation
+    label: Heritage fabric assessment before the opening is designed
+  contract: Provisional sum for heritage-approved opening works; separable portion for conservation repairs.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0166
+- id: uc.existing-facade-ties-corroded
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - retain
+        system:
+        - envelope.external-walls
+        - envelope.curtain-wall
+    - *id001
+  signals:
+  - sig.envelope-facade-tie-condition-stated
+  de_risk:
+    kind: investigation
+    label: Sample opening-up and inspection of facade ties before the repair scope is fixed
+  contract: Provisional sum for tie replacement; remeasure on opening-up.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0168
+- id: uc.asbestos-cladding-disturbed
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - remove
+        system:
+        - envelope.external-walls
+    - *id001
+    - det: existing_building_year
+      lt: 2004
+  signals:
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: Hazardous materials survey of cladding before any cutting or removal
+  contract: Provisional sum for licensed removal and disposal; the survey is the principal's risk before
+    the contract.
+  effect:
+  - cost
+  - programme
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0268
+- id: uc.lead-paint-on-old-windows
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: interiors.painting
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        - remove
+        system:
+        - envelope.windows-doors
+        - interiors.painting
+    - *id001
+    - det: existing_building_year
+      lt: 1990
+  signals:
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: Lead paint testing of old window and trim finishes before sanding or removal
+  contract: Provisional sum for lead-safe preparation and disposal.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0269
+- id: uc.combustible-insulation-panels-discovered
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.thermal-insulation
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - remove
+        system:
+        - envelope.external-walls
+        - envelope.thermal-insulation
+    - *id001
+  signals:
+  - sig.envelope-insulation-panel-material-stated
+  de_risk:
+    kind: investigation
+    label: Identify the core material of existing insulated panels before the scope is fixed
+  contract: Provisional sum for panel removal or replacement and fire-safety measures.
+  effect:
+  - cost
+  - programme
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0359
+- id: uc.existing-roof-space-lacks-fire-separation
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        system:
+        - envelope.roof-coverings
+    - *id001
+  signals:
+  - sig.envelope-roof-space-fire-separation-stated
+  de_risk:
+    kind: investigation
+    label: Roof space inspection for fire separation before the refurbishment scope is fixed
+  contract: Provisional sum for roof space fire separation.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0360
+- id: uc.ceiling-cavity-hidden-services-and-asbestos
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        - remove
+        system:
+        - interiors.ceilings
+    - *id001
+  signals:
+  - sig.envelope-ceiling-cavity-survey-stated
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: Ceiling cavity inspection and hazardous materials survey before intrusive work
+  contract: Provisional sum for removal of hazardous materials and redundant services; remeasure on opening-up.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0689
+- id: uc.combustible-cladding-on-existing-facade
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        - remove
+        - investigate
+        system:
+        - envelope.external-walls
+    - *id001
+  signals:
+  - sig.envelope-cladding-material-stated
+  de_risk:
+    kind: investigation
+    label: Cladding material identification and fire assessment before the rectification scope is fixed
+  contract: Separable portion for cladding replacement; provisional sum for access and temporary protection.
+  effect:
+  - cost
+  - programme
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0949
+  - dataset: batch1
+    row: B1-0950
+- id: uc.cladding-removal-reveals-concealed-damage
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        - remove
+        system:
+        - envelope.external-walls
+    - *id001
+  signals:
+  - sig.envelope-concealed-damage-inspection-stated
+  de_risk:
+    kind: investigation
+    label: Sample opening-up behind cladding before the remediation scope is fixed
+  contract: Provisional sum for structural repair behind cladding; remeasure on stripping.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0951
+- id: uc.weather-damages-or-halts-incomplete-envelope
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    stage: construction
+  when:
+    works:
+      action:
+      - new
+      system:
+      - envelope.external-walls
+      - envelope.curtain-wall
+      - envelope.roof-coverings
+  signals:
+  - sig.envelope-temporary-weather-protection-stated
+  de_risk:
+    kind: obligation
+    label: Temporary weather protection of the frame and wind limits for facade installation in the construction
+      plan
+  contract: Contractor carries weather risk to the extent of the works insurance; weather delay claims
+    follow the contract.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0208
+  - dataset: batch1
+    row: B1-0835
+- id: uc.hail-damages-installed-roof-sheeting
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.roof-coverings
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Inspection of roof sheeting after a hail event and notice under the works insurance
+  contract: Works insurance responds until practical completion; notice conditions apply.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0173
+- id: uc.wrong-size-or-handing-delivered
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: supply
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.windows-doors
+      - interiors.internal-doors
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Check measure of openings and hardware handing schedule before the order is released
+  contract: Supplier carries the cost of replacement where supply departs from the approved order.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0201
+  - dataset: batch1
+    row: B1-0756
+- id: uc.facade-product-late-or-unavailable
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: supply
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.curtain-wall
+      - envelope.external-walls
+  signals:
+  - sig.envelope-product-test-evidence-stated
+  de_risk:
+    kind: obligation
+    label: Lead times and order dates in the programme with an agreed fallback product
+  contract: Programme float for long-lead facade supply; substitution only by approval.
+  effect:
+  - programme
+  - cost
+  severity: programme
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0233
+  - dataset: batch1
+    row: B1-0895
+- id: uc.cladding-product-discontinued-and-substituted
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.external-walls
+  signals:
+  - sig.envelope-product-test-evidence-stated
+  de_risk:
+    kind: approval
+    label: Substitute cladding assessed for fire performance and compliance before approval
+  contract: Substitution by approved variation only.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0207
+- id: uc.nickel-sulfide-glass-breakage
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.windows-doors
+      - envelope.curtain-wall
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Specify heat-soaked toughened glass for large or high-risk panes
+  contract: Supplier warranty against spontaneous breakage; replacement cost allocation.
+  effect:
+  - cost
+  - safety
+  severity: cost
+  discovered_at:
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0236
+- id: uc.colour-or-dye-batch-variation
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: supply
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.external-walls
+      - interiors.tiling
+      - interiors.floor-finishes
+  signals:
+  - sig.envelope-single-batch-supply-stated
+  de_risk:
+    kind: obligation
+    label: Order each continuous area from a single batch or dye lot
+  contract: Supplier to supply each area from a single batch.
+  effect:
+  - quality
+  - cost
+  severity: cost
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0230
+  - dataset: batch1
+    row: B1-0717
+  - dataset: batch1
+    row: B1-0727
+- id: uc.finish-selection-or-sample-approval-late
+  kind: process_authority_supply_weather
+  category: design_and_scope
+  attaches_to:
+    stage: procurement
+  when:
+    works:
+      action:
+      - new
+      system:
+      - interiors.painting
+      - interiors.floor-finishes
+      - interiors.tiling
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Finish schedule and sample approvals confirmed before ordering
+  contract: Selections by a stated date; late changes by variation.
+  effect:
+  - programme
+  - cost
+  severity: programme
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0741
+  - dataset: batch1
+    row: B1-0919
+- id: uc.cladding-product-fails-compliance-test
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.external-walls
+  signals:
+  - sig.envelope-product-test-evidence-stated
+  de_risk:
+    kind: investigation
+    label: Current test evidence for the product obtained before procurement
+  contract: Product evidence is a condition of approval of the cladding.
+  effect:
+  - compliance
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0292
+  - dataset: batch1
+    row: B1-0310
+- id: uc.window-film-voids-glass-warranty
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        system:
+        - envelope.windows-doors
+    - *id001
+  signals:
+  - sig.envelope-window-film-warranty-stated
+  de_risk:
+    kind: investigation
+    label: Glass manufacturer warranty conditions checked before film is applied
+  contract: Owner accepts any loss of glass warranty in writing before film is applied.
+  effect:
+  - cost
+  severity: cost
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0299
+- id: uc.bal-increased-after-design
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: envelope.bushfire-construction
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - envelope.bushfire-construction
+        - envelope.windows-doors
+        - envelope.external-walls
+    - det: bushfire_prone_land
+      is: true
+  signals:
+  - sig.envelope-bal-rating-stated
+  de_risk:
+    kind: investigation
+    label: Bushfire attack level assessment before glazing, cladding and decks are designed
+  contract: Design risk with the designer until the level is confirmed; later increases by variation.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0344
+- id: uc.energy-assessment-fails-at-certification
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: envelope.thermal-performance
+  when:
+    works:
+      action:
+      - new
+      - upgrade
+      - alter
+      system:
+      - envelope.thermal-performance
+      - envelope.windows-doors
+      - envelope.thermal-insulation
+  signals:
+  - sig.envelope-energy-assessment-result-stated
+  de_risk:
+    kind: investigation
+    label: Energy assessment at schematic design and again on the construction drawings
+  contract: Assessment result is a condition of the design documents.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0377
+  - dataset: batch1
+    row: B1-0378
+- id: uc.overlooking-rules-force-window-redesign
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - envelope.windows-doors
+  signals:
+  - sig.envelope-overlooking-controls-stated
+  de_risk:
+    kind: approval
+    label: Planning privacy controls checked before the window layout is fixed
+  contract: Design risk with the designer; planning conditions apply.
+  effect:
+  - programme
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0384
+- id: uc.neighbouring-noise-source-requires-upgraded-facade
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: envelope.facade-acoustics
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - envelope.facade-acoustics
+        - envelope.windows-doors
+    - det: noise_affected_site
+      is: true
+  signals:
+  - sig.envelope-neighbouring-noise-source-stated
+  de_risk:
+    kind: investigation
+    label: Acoustic assessment of the neighbouring noise source before facade design
+  contract: Facade upgrade follows the assessment; design risk with the designer.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0585
+- id: uc.stone-floor-stains-from-unsealed-stone
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: interiors.tiling
+  when:
+    works:
+      action:
+      - new
+      system:
+      - interiors.tiling
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Stone sealed before grouting and before use
+  contract: Sealing is part of the stone installation scope.
+  effect:
+  - quality
+  - cost
+  severity: cost
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0721
+- id: uc.finish-curing-affected-by-site-temperature
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    stage: construction
+  when:
+    works:
+      action:
+      - new
+      system:
+      - interiors.floor-finishes
+      - interiors.walls-linings
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Minimum curing conditions for coatings and wet finishes stated in the programme
+  contract: Contractor to maintain the product's curing conditions.
+  effect:
+  - quality
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0724
+  - dataset: batch1
+    row: B1-0733
+- id: uc.food-premises-finish-requirements-not-met
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    works:
+      action:
+      - new
+      - alter
+      system:
+      - interiors.walls-linings
+      - interiors.floor-finishes
+      - interiors.painting
+  signals:
+  - sig.envelope-food-premises-finish-requirement-stated
+  de_risk:
+    kind: approval
+    label: Food premises finish requirements confirmed with the authority before finishes are selected
+  contract: Finishes to be approved against the authority's requirements before ordering.
+  effect:
+  - compliance
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0775
+- id: uc.furniture-delivered-before-final-clean
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    stage: completion
+  when:
+    works:
+      action:
+      - new
+      system:
+      - interiors.ffe
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Builder's clean complete before furniture delivery is released
+  contract: Delivery dates follow the builder's clean; damage to finishes by others is theirs.
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0789
+- id: uc.vandalism-of-unfinished-building
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    stage: construction
+  when:
+    works:
+      action:
+      - new
+      system:
+      - envelope.external-walls
+      - interiors.painting
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Site security plan for the unfinished building
+  contract: Works insurance and site security are the contractor's responsibility until practical completion.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0885
+- id: uc.substituted-sealant-does-not-bond
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.flashings-seals
+  when:
+    works:
+      action:
+      - new
+      - replace
+      system:
+      - envelope.flashings-seals
+  signals:
+  - sig.envelope-sealant-adhesion-testing-stated
+  de_risk:
+    kind: investigation
+    label: Sealant adhesion and compatibility test on project substrates before a substitution is approved
+  contract: Substitution only by approval after testing.
+  effect:
+  - cost
+  - compliance
+  severity: durability
+  discovered_at:
+  - construction
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0904
+- id: uc.waterproofing-warranty-void-by-installation
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.external-waterproofing
+  when:
+    works:
+      action:
+      - new
+      - repair
+      system:
+      - envelope.external-waterproofing
+      - interiors.wet-area-waterproofing
+  signals:
+  - sig.envelope-waterproofing-warranty-stated
+  de_risk:
+    kind: obligation
+    label: Warranty conditions and installer accreditation required in the subcontract
+  contract: Installer provides the manufacturer warranty on the stated conditions.
+  effect:
+  - cost
+  severity: durability
+  discovered_at:
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0945

@@ -1,0 +1,244 @@
+# Jev signal questions for envelope unforeseen conditions (K4 Pass B).
+version: 1
+signals:
+- id: sig.envelope-heritage-fabric-significance-stated
+  type: noul
+  instructions: Using `text`, does the passage state which parts of a heritage wall are original or significant
+    fabric?
+  criteria:
+    'true': It identifies original or significant fabric of the wall, or says it is protected.
+    'false': It does not identify the significant fabric; saying the building is heritage listed is not
+      enough.
+  runs_on:
+  - envelope.external-walls
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0166
+- id: sig.envelope-facade-tie-condition-stated
+  type: noul
+  instructions: Using `text`, does the passage state the condition or inspection result of existing facade
+    ties or fixings?
+  criteria:
+    'true': It states an inspection finding or condition for the existing ties or fixings.
+    'false': It does not state a finding; a requirement or intention to inspect is not a finding.
+  runs_on:
+  - envelope.external-walls
+  - envelope.curtain-wall
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0168
+- id: sig.envelope-insulation-panel-material-stated
+  type: noul
+  instructions: Using `text`, does the passage state the core material of existing insulated panels or
+    insulation in the external wall?
+  criteria:
+    'true': It names the core or insulation material.
+    'false': It does not name the material; a general mention of insulation is not enough.
+  runs_on:
+  - envelope.thermal-insulation
+  - envelope.external-walls
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0359
+- id: sig.envelope-roof-space-fire-separation-stated
+  type: noul
+  instructions: Using `text`, does the passage state whether an existing roof space has fire separation
+    between dwellings or tenancies?
+  criteria:
+    'true': It states that fire separation exists in the roof space, or that it is absent.
+    'false': It does not say anything about fire separation in the roof space.
+  runs_on:
+  - envelope.roof-coverings
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0360
+- id: sig.envelope-ceiling-cavity-survey-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the cavity above an existing ceiling has been
+    inspected or surveyed for services or materials?
+  criteria:
+    'true': It states that the cavity has been inspected or surveyed, or gives the findings.
+    'false': It does not mention an inspection of the cavity; a requirement to inspect is not a statement
+      that it was done.
+  runs_on:
+  - interiors.ceilings
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0689
+- id: sig.envelope-cladding-material-stated
+  type: noul
+  instructions: Using `text`, does the passage state the material of the existing external cladding?
+  criteria:
+    'true': It names the cladding material or product.
+    'false': It does not name the material.
+  runs_on:
+  - envelope.external-walls
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0950
+- id: sig.envelope-concealed-damage-inspection-stated
+  type: noul
+  instructions: Using `text`, does the passage state the result of an inspection of the structure behind
+    existing cladding?
+  criteria:
+    'true': It states what was found behind the cladding.
+    'false': It does not state a finding; a requirement or intention to inspect is not a finding.
+  runs_on:
+  - envelope.external-walls
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0951
+- id: sig.envelope-temporary-weather-protection-stated
+  type: noul
+  instructions: Using `text`, does the passage state temporary weather protection for an incomplete frame,
+    roof or facade during construction?
+  criteria:
+    'true': It states a temporary protection measure, such as covers, bracing or wrapping.
+    'false': It does not state any temporary protection.
+  runs_on:
+  - envelope.external-walls
+  - envelope.roof-coverings
+  - envelope.curtain-wall
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0208
+- id: sig.envelope-product-test-evidence-stated
+  type: noul
+  instructions: Using `text`, does the passage state that a test report or certificate exists for the
+    cladding product?
+  criteria:
+    'true': It states a test report or certificate for the product, or cites one.
+    'false': It does not mention test evidence; a requirement to provide it is not a statement that it
+      exists.
+  runs_on:
+  - envelope.external-walls
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0292
+- id: sig.envelope-single-batch-supply-stated
+  type: noul
+  instructions: Using `text`, does the passage state that a finish is supplied from a single production
+    batch or dye lot?
+  criteria:
+    'true': It states a single batch or dye lot for the finish.
+    'false': It does not mention batch or dye lot control.
+  runs_on:
+  - envelope.external-walls
+  - interiors.tiling
+  - interiors.floor-finishes
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0230
+- id: sig.envelope-window-film-warranty-stated
+  type: noul
+  instructions: Using `text`, does the passage state the glass manufacturer's warranty conditions on applied
+    window film?
+  criteria:
+    'true': It states warranty conditions or limits relating to film on glass.
+    'false': It does not mention warranty conditions for film.
+  runs_on:
+  - envelope.windows-doors
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0299
+- id: sig.envelope-bal-rating-stated
+  type: noul
+  instructions: Using `text`, does the passage state a bushfire attack level for the site?
+  criteria:
+    'true': It states a bushfire attack level or an assessment that gives one.
+    'false': It does not state a level; saying the site is bushfire-prone is not enough.
+  runs_on:
+  - envelope.bushfire-construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0344
+- id: sig.envelope-energy-assessment-result-stated
+  type: noul
+  instructions: Using `text`, does the passage state the result of an energy efficiency assessment for
+    the design?
+  criteria:
+    'true': It states an assessment result or certificate for the design.
+    'false': It does not state a result; a requirement to assess is not a result.
+  runs_on:
+  - envelope.thermal-performance
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0377
+- id: sig.envelope-overlooking-controls-stated
+  type: noul
+  instructions: Using `text`, does the passage state privacy screening or window placement controls to
+    limit overlooking?
+  criteria:
+    'true': It states screening, window placement or sill-height controls for privacy.
+    'false': It does not mention overlooking or privacy controls.
+  runs_on:
+  - envelope.windows-doors
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0384
+- id: sig.envelope-neighbouring-noise-source-stated
+  type: noul
+  instructions: Using `text`, does the passage identify a neighbouring noise source that affects the site?
+  criteria:
+    'true': It identifies a neighbouring noise source, such as an industrial use.
+    'false': It does not identify one; a general mention of noise is not enough.
+  runs_on:
+  - envelope.facade-acoustics
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0585
+- id: sig.envelope-food-premises-finish-requirement-stated
+  type: noul
+  instructions: Using `text`, does the passage state finish requirements for a food premises?
+  criteria:
+    'true': It states finish requirements for food premises surfaces.
+    'false': It does not mention food premises finish requirements.
+  runs_on:
+  - interiors.walls-linings
+  - interiors.floor-finishes
+  - interiors.painting
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0775
+- id: sig.envelope-sealant-adhesion-testing-stated
+  type: noul
+  instructions: Using `text`, does the passage state adhesion or compatibility testing of a sealant on
+    the project substrates?
+  criteria:
+    'true': It states adhesion or compatibility test results, or that testing was done.
+    'false': It does not mention testing; a requirement to test is not a statement that it was done.
+  runs_on:
+  - envelope.flashings-seals
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0904
+- id: sig.envelope-waterproofing-warranty-stated
+  type: noul
+  instructions: Using `text`, does the passage state warranty conditions for the waterproofing?
+  criteria:
+    'true': It states warranty terms or conditions for the waterproofing.
+    'false': It does not mention a waterproofing warranty.
+  runs_on:
+  - envelope.external-waterproofing
+  - interiors.wet-area-waterproofing
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0945
