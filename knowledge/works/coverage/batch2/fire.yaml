@@ -1,0 +1,117 @@
+version: 1
+dataset: batch2
+status: draft
+rows:
+  B2-0169: {records: [uc.existing-exit-stair-not-fire-isolated-for-new-use]}
+  B2-0170: {records: [uc.fire-stopping-product-untested-for-gap-width]}
+  B2-0171: {records: [fm.envelope-fire-rated-wall-stops-at-ceiling]}
+  B2-0172: {records: [uc.smoke-door-binds-on-out-of-level-floor]}
+  B2-0173: {records: [fm.sprinkler-heads-set-out-against-ceiling-grid]}
+  B2-0174: {records: [fm.booster-not-visible-from-attendance-point]}
+  B2-0175: {records: [uc.hydrant-main-has-no-rated-route-through-existing-building]}
+  B2-0176: {records: [uc.reused-smoke-lobby-too-small-for-door-swings]}
+  B2-0177: {records: [fm.detection-zone-crosses-compartments]}
+  B2-0178: {records: [fm.hood-suppression-does-not-cover-appliance-layout]}
+  B2-0179: {records: [fm.exit-sign-sightline-obstructed]}
+  B2-0180: {records: [fm.hose-reel-coverage-gap]}
+  B2-0181: {records: [fm.sprinkler-spray-blocked-by-fixed-construction]}
+  B2-0182: {records: [fm.suppression-hazard-changed]}
+  B2-0183: {records: [uc.fire-pump-room-not-reachable-from-outside]}
+  B2-0184: {records: [fm.fire-water-shared-draw-off-without-reserve]}
+  B2-0185: {records: [uc.street-main-below-fire-flow-demand]}
+  B2-0186: {records: [fm.fire-pump-duty-from-assumed-pipe-route]}
+  B2-0188: {records: [fm.rated-wall-built-differently-from-tested-system]}
+  B2-0194: {records: [fm.fire-door-rating-below-wall-rating]}
+  B2-0195: {records: [uc.fire-door-frame-or-leaf-distorted-so-door-will-not-close-or-seal]}
+  B2-0196: {records: [fm.fire-door-vision-panel-larger-than-tested]}
+  B2-0197: {records: [uc.fire-door-frame-or-leaf-distorted-so-door-will-not-close-or-seal]}
+  B2-0198: {records: [fm.dry-sprinkler-pipe-not-graded-to-drain]}
+  B2-0199: {records: [uc.sprinkler-valve-set-does-not-fit-allocated-room]}
+  B2-0200: {records: [fm.suppression-hazard-changed]}
+  B2-0206: {records: [fm.occupant-warning-zones-not-matching-evacuation-strategy]}
+  B2-0208: {records: [fm.hydrant-landing-valve-clashes-with-handrail]}
+  B2-0209: {records: [uc.hydrant-riser-cannot-be-supported-from-lightweight-stair]}
+  B2-0210: {records: [uc.external-hydrant-removed-by-road-authority]}
+  B2-0211: {records: [uc.fire-isolated-passageway-used-as-store]}
+  B2-0212: {records: [fm.smoke-seal-painted-over]}
+  B2-0213: {records: [uc.tenancy-exit-controlled-by-neighbour]}
+  B2-0214: {records: [fm.rated-wall-fixed-hard-to-moving-beam-without-deflection-head]}
+  B2-0215: {records: [uc.fire-shutter-leaves-gap-on-sloping-floor]}
+  B2-0216: {records: [fm.smoke-curtain-recoiler-does-not-fit-bulkhead]}
+  B2-0217: {records: [uc.gaseous-suppression-room-too-leaky-for-design-concentration]}
+  B2-0218: {records: [uc.existing-ceiling-is-not-the-rated-ceiling]}
+  B2-0222: {records: [uc.sprinkler-hangers-do-not-fit-existing-purlins]}
+  B2-0223: {records: [fm.fire-water-shared-draw-off-without-reserve]}
+  B2-0224: {records: [uc.fire-panel-has-no-spare-loop-capacity]}
+  B2-0225: {records: [fm.brace-covers-required-vision-panel]}
+  B2-0226: {records: [uc.retained-fire-door-hardware-obsolete]}
+  B2-0227: {records: [uc.installed-fire-stopping-not-on-maintenance-schedule]}
+  B2-0228: {records: [fm.envelope-fire-rated-wall-stops-at-ceiling]}
+  B2-0229: {records: [fm.extension-built-across-exit-discharge]}
+  B2-0430: {records: [fm.sprinkler-test-drain-discharges-to-undersized-sanitary]}
+  B2-0482: {records: [uc.removed-smoke-detectors-contain-radioactive-source]}
+  B2-0487: {records: [uc.fire-door-core-contains-asbestos]}
+  B2-0510: {records: [fm.core-hole-too-small-for-collar-and-insulation]}
+  B2-0530: {records: [fm.sprinkler-pipe-crosses-glazing]}
+  B2-0537: {records: [fm.shaft-lined-before-service-size-fixed]}
+  B2-0543: {records: [fm.overhead-door-tracks-clash-with-high-level-duct]}
+  B2-0552: {records: [uc.changed-use-needs-more-exits-than-building-has]}
+  B2-0554: {records: [uc.changed-use-corridor-widths-below-new-use]}
+  B2-0556: {records: [fm.mezzanine-addition-egress-not-reviewed]}
+  B2-0558: {records: [fm.travel-distance-to-exit-reported-exceeded]}
+  B2-0559: {records: [uc.performance-solution-assumptions-do-not-match-new-tenancy]}
+  B2-0561: {records: [uc.existing-stair-geometry-does-not-meet-new-use]}
+  B2-0562: {records: [uc.no-accessible-path-to-new-public-use]}
+  B2-0563: {records: [uc.changed-use-needs-more-exits-than-building-has]}
+  B2-0565: {records: [uc.hydrant-coverage-does-not-reach-extended-occupancy]}
+  B2-0568: {records: [uc.existing-detection-unsuited-to-new-sleeping-use]}
+  B2-0569: {records: [uc.existing-dock-entry-grade-too-steep-for-accessible-path]}
+  B2-0571: {records: [uc.existing-exit-stair-not-fire-isolated-for-new-use]}
+  B2-0658: {records: [fm.handrail-bracket-fixed-to-lining-only]}
+  B2-0668: {records: [uc.tactile-indicators-do-not-bond-to-existing-floor]}
+  B2-0675: {records: [fm.accessible-room-plan-cannot-achieve-clearances]}
+  B2-0676: {records: [fm.tactile-indicators-clash-with-stair-geometry]}
+  B2-0677: {records: [fm.handrail-extension-projects-into-egress-width]}
+  B2-0678: {records: [fm.door-clear-width-lost-to-added-lining]}
+  B2-0679: {records: [uc.existing-threshold-step-cannot-be-ramped]}
+  B2-0680: {records: [fm.extension-built-across-exit-discharge]}
+  B2-0683: {records: [fm.fit-out-narrows-egress-path]}
+  B2-0684: {records: [fm.brigade-access-obstructed]}
+  B2-0698: {rejected: out_of_scope}
+  B2-0752: {records: [uc.design-occupancy-differs-from-tenant-use]}
+  B2-0769: {records: [uc.authority-requires-larger-accessible-room-than-drawn]}
+  B2-0770: {records: [uc.performance-solution-assumptions-do-not-match-new-tenancy]}
+  B2-0788: {records: [uc.dangerous-goods-quantity-exceeds-fire-strategy-assumption]}
+  B2-0797: {records: [uc.partial-occupation-while-shared-stair-is-work-area]}
+  B2-0806: {records: [fm.edge-protection-conflicts-with-facade-bracket]}
+  B2-0819: {records: [fm.temporary-stair-lands-in-fire-door-clearance]}
+  B2-0824: {records: [fm.only-exit-route-closed-or-shared-by-works-while-occupied]}
+  B2-0850: {records: [uc.retained-balustrade-below-current-height]}
+  B2-0871: {records: [uc.new-plant-does-not-fit-old-plant-room-or-route]}
+  B2-0885: {records: [fm.only-exit-route-closed-or-shared-by-works-while-occupied]}
+  B2-0890: {records: [uc.services-route-crosses-secure-path]}
+  B2-0892: {records: [uc.fire-alarm-replacement-needs-occupant-shutdown]}
+  B2-0897: {records: [fm.only-exit-route-closed-or-shared-by-works-while-occupied]}
+  B2-0902: {records: [fm.livable-housing-path-steeper-than-site-fall]}
+  B2-0911: {records: [fm.stair-headroom-lost-under-deepened-beam]}
+  B2-0912: {records: [fm.external-accessible-path-grade-exceeds-limit]}
+  B2-0916: {records: [fm.vehicle-clearance-lost-under-structural-beam]}
+  B2-0917: {records: [fm.vehicle-clearance-lost-under-structural-beam]}
+  B2-0919: {records: [fm.refuge-undersized-for-final-occupant-load]}
+  B2-0934: {records: [uc.street-main-below-fire-flow-demand]}
+  B2-0935: {records: [fm.sprinkler-spray-blocked-by-fixed-construction]}
+  B2-0948: {rejected: duplicate_of, ref: B2-0194}
+  B2-0954: {rejected: duplicate_of, ref: B2-0174}
+  B2-0984: {rejected: duplicate_of, ref: B2-0171}
+  B2-0985: {rejected: duplicate_of, ref: B2-0170}
+  B2-0987: {rejected: duplicate_of, ref: B2-0200}
+  B2-0990: {rejected: duplicate_of, ref: B2-0172}
+  B2-0991: {rejected: duplicate_of, ref: B2-0180}
+  B2-0992: {rejected: duplicate_of, ref: B2-0177}
+  B2-0993: {rejected: duplicate_of, ref: B2-0179}
+  B2-0994: {rejected: duplicate_of, ref: B2-0173}
+  B2-0995: {rejected: duplicate_of, ref: B2-0178}
+  B2-0996: {rejected: duplicate_of, ref: B2-0196}
+  B2-0997: {rejected: duplicate_of, ref: B2-0217}
+  B2-0999: {rejected: duplicate_of, ref: B2-0212}
+  B2-1000: {rejected: duplicate_of, ref: B2-0215}

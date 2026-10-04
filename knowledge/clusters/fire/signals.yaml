@@ -58,3 +58,487 @@ signals:
   sources:
   - seed: fire-life-safety-guide.md
     anchor: '## Existing buildings, refurbishment and remediation'
+- id: sig.existing-exit-stair-isolation-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the existing exit stair is enclosed in fire-rated
+    construction separating it from the storeys it serves?
+  criteria:
+    'true': It states the stair is enclosed or fire-isolated from the floors.
+    'false': It does not say; an intention to confirm isolation is not a statement.
+  runs_on:
+  - access-egress.stairs-and-ramps
+  - fire-passive.compartments
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: sig.floor-level-at-smoke-door-stated
+  type: noul
+  instructions: Using `text`, does the passage state a level survey or measured floor fall at a smoke
+    door?
+  criteria:
+    'true': It states a measured floor level or fall at the door.
+    'false': It does not state a measurement; a note that the floor is uneven is not a measurement.
+  runs_on:
+  - fire-passive.openings
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+- id: sig.existing-fire-door-frame-condition-stated
+  type: noul
+  instructions: Using `text`, does the passage state the condition of existing fire door frames, such
+    as out of square or a dropped leaf?
+  criteria:
+    'true': It states the condition of the existing frames or leaves.
+    'false': It does not state their condition.
+  runs_on:
+  - fire-passive.openings
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+- id: sig.rated-ceiling-build-up-stated
+  type: noul
+  instructions: Using `text`, does the passage state the build-up of an existing ceiling that the fire
+    strategy relies on for a fire rating?
+  criteria:
+    'true': It states the construction of the existing ceiling and ties it to the rating relied on.
+    'false': It does not describe the ceiling build-up.
+  runs_on:
+  - fire-passive.rated-elements
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+- id: sig.installed-penetration-system-recorded-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the fire-stopping systems actually installed
+    are recorded on the essential safety measures or maintenance schedule?
+  criteria:
+    'true': It states installed systems are recorded on the schedule.
+    'false': It does not say; a requirement to record them is not a statement that they are recorded.
+  runs_on:
+  - fire-passive.penetrations
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+- id: sig.gap-width-measured-for-fire-stopping-stated
+  type: noul
+  instructions: Using `text`, does the passage state the measured width of existing gaps or joints that
+    will be fire-stopped?
+  criteria:
+    'true': It states measured gap or joint widths.
+    'false': It does not state measurements.
+  runs_on:
+  - fire-passive.penetrations
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+- id: sig.hydrant-main-route-stated
+  type: noul
+  instructions: Using `text`, does the passage state a route for the hydrant main through the existing
+    building and the rated shaft or space it uses?
+  criteria:
+    'true': It states the route and the shaft or space used.
+    'false': It does not state a route.
+  runs_on:
+  - fire-active.hydrants
+  - fire-passive.compartments
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: sig.lobby-door-swings-drawn-stated
+  type: noul
+  instructions: Using `text`, does the passage state that door swings have been drawn on the existing
+    plan of the smoke lobby?
+  criteria:
+    'true': It states door swings have been drawn or checked in the lobby.
+    'false': It does not say so.
+  runs_on:
+  - fire-passive.openings
+  - access-egress.egress-doors
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+- id: sig.pump-room-access-route-stated
+  type: noul
+  instructions: Using `text`, does the passage state how the fire pump room is reached, including whether
+    it opens from outside the building?
+  criteria:
+    'true': It states the access route to the pump room.
+    'false': It does not state the access route.
+  runs_on:
+  - fire-active.fire-water
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: sig.valve-set-room-dimensions-stated
+  type: noul
+  instructions: Using `text`, does the passage state the dimensions of the sprinkler valve set and of
+    the room allocated to it?
+  criteria:
+    'true': It states both the valve set and the room dimensions.
+    'false': It does not state both.
+  runs_on:
+  - fire-active.sprinklers
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+- id: sig.hydrant-riser-support-stated
+  type: noul
+  instructions: Using `text`, does the passage state what structure supports the hydrant riser in the
+    stair?
+  criteria:
+    'true': It states the member or structure that carries the riser.
+    'false': It does not state the support.
+  runs_on:
+  - fire-active.hydrants
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+- id: sig.external-hydrant-confirmed-on-site-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the external hydrants relied on for coverage
+    have been confirmed on site or by the authority?
+  criteria:
+    'true': It states external hydrants were confirmed on site or by the authority.
+    'false': It does not say so; a coverage plan alone is not confirmation.
+  runs_on:
+  - fire-active.hydrants
+  - site.services-connections
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+- id: sig.passage-management-rules-stated
+  type: noul
+  instructions: Using `text`, does the passage state management rules that keep the fire-isolated passageway
+    clear of stored goods?
+  criteria:
+    'true': It states a management rule keeping the passage clear.
+    'false': It does not state such a rule.
+  runs_on:
+  - access-egress.exits
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+- id: sig.tenancy-exit-control-stated
+  type: noul
+  instructions: Using `text`, does the passage state which tenancy controls each exit door the evacuation
+    plan relies on?
+  criteria:
+    'true': It states which tenancy controls the exit door.
+    'false': It does not state who controls it.
+  runs_on:
+  - access-egress.exits
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+- id: sig.floor-level-at-fire-shutter-stated
+  type: noul
+  instructions: Using `text`, does the passage state a level survey along the line of a fire shutter?
+  criteria:
+    'true': It states measured floor levels along the shutter line.
+    'false': It does not state levels.
+  runs_on:
+  - fire-passive.openings
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+- id: sig.room-integrity-test-result-stated
+  type: noul
+  instructions: Using `text`, does the passage state a result from an enclosure integrity or door-fan
+    test of the protected room?
+  criteria:
+    'true': It states a room integrity test result.
+    'false': It does not state a result; a requirement to test is not a result.
+  runs_on:
+  - fire-active.special-suppression
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: sig.purlin-section-for-hangers-stated
+  type: noul
+  instructions: Using `text`, does the passage state the section of the existing purlins that sprinkler
+    hangers will fix to?
+  criteria:
+    'true': It states the purlin section or profile.
+    'false': It does not state it.
+  runs_on:
+  - fire-active.sprinklers
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+- id: sig.fire-panel-spare-loop-capacity-stated
+  type: noul
+  instructions: Using `text`, does the passage state the spare loop or device capacity of the existing
+    fire panel?
+  criteria:
+    'true': It states spare capacity or that the loops are full.
+    'false': It does not state capacity.
+  runs_on:
+  - fire-active.detection
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom'
+- id: sig.retained-door-hardware-model-stated
+  type: noul
+  instructions: Using `text`, does the passage state the make and model of existing fire door hardware
+    scheduled for retention?
+  criteria:
+    'true': It states hardware make or model.
+    'false': It does not state it.
+  runs_on:
+  - fire-passive.openings
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+- id: sig.detector-type-radioactive-source-stated
+  type: noul
+  instructions: Using `text`, does the passage state the type of the existing smoke detectors, including
+    whether they contain a radioactive source?
+  criteria:
+    'true': It states the detector type or that they contain a radioactive source.
+    'false': It does not state the type.
+  runs_on:
+  - fire-active.detection
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: sig.fire-door-core-construction-stated
+  type: noul
+  instructions: Using `text`, does the passage state the core construction of existing fire doors, including
+    whether it contains asbestos?
+  criteria:
+    'true': It states the door core construction or an asbestos finding.
+    'false': It does not state the core.
+  runs_on:
+  - fire-passive.openings
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: sig.new-use-occupant-load-and-exit-count-stated
+  type: noul
+  instructions: Using `text`, does the passage state the occupant load of the new use and the number of
+    exits serving it?
+  criteria:
+    'true': It states both occupant load and exit count.
+    'false': It does not state both.
+  runs_on:
+  - access-egress.exits
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+- id: sig.existing-corridor-widths-stated
+  type: noul
+  instructions: Using `text`, does the passage state the measured widths of the existing corridors on
+    the exit paths?
+  criteria:
+    'true': It states measured corridor widths.
+    'false': It does not state widths.
+  runs_on:
+  - access-egress.exits
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+- id: sig.performance-solution-assumptions-stated
+  type: noul
+  instructions: Using `text`, does the passage state the assumptions or management rules that the fire
+    engineering performance solution relies on?
+  criteria:
+    'true': It states the assumptions or management rules relied on.
+    'false': It does not state them.
+  runs_on:
+  - fire-passive
+  - fire-active
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+- id: sig.existing-stair-geometry-stated
+  type: noul
+  instructions: Using `text`, does the passage state measured rise and going of the existing stair?
+  criteria:
+    'true': It states measured rise and going.
+    'false': It does not state measurements.
+  runs_on:
+  - access-egress.stairs-and-ramps
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+- id: sig.accessible-path-to-entry-stated
+  type: noul
+  instructions: Using `text`, does the passage state an accessible path from the boundary to the entry
+    of the building?
+  criteria:
+    'true': It states an accessible path.
+    'false': It does not state one.
+  runs_on:
+  - access-egress.accessible-access
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+- id: sig.dock-entry-grade-stated
+  type: noul
+  instructions: Using `text`, does the passage state the surveyed grade of the existing loading dock approach?
+  criteria:
+    'true': It states a surveyed grade.
+    'false': It does not state one.
+  runs_on:
+  - access-egress.accessible-access
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+- id: sig.floor-level-difference-at-join-stated
+  type: noul
+  instructions: Using `text`, does the passage state the measured level difference where two existing
+    floors join?
+  criteria:
+    'true': It states a measured level difference.
+    'false': It does not state one.
+  runs_on:
+  - access-egress.accessible-access
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+- id: sig.hydrant-coverage-of-occupied-area-stated
+  type: noul
+  instructions: Using `text`, does the passage state the extent of hydrant coverage over the occupied
+    area including the rear of the building?
+  criteria:
+    'true': It states the area covered by hydrants.
+    'false': It does not state coverage.
+  runs_on:
+  - fire-active.hydrants
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+- id: sig.existing-detector-types-in-sleeping-areas-stated
+  type: noul
+  instructions: Using `text`, does the passage state the type and location of existing detectors in areas
+    that will become sleeping accommodation?
+  criteria:
+    'true': It states detector types and locations in those areas.
+    'false': It does not state them.
+  runs_on:
+  - fire-active.detection
+  - fire-active.smoke-alarms
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom'
+- id: sig.tactile-bond-test-stated
+  type: noul
+  instructions: Using `text`, does the passage state a bond or adhesion test of tactile indicators on
+    the existing floor surface?
+  criteria:
+    'true': It states a bond test or result.
+    'false': It does not state one.
+  runs_on:
+  - access-egress.accessible-access
+  - access-egress.stairs-and-ramps
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+- id: sig.tenant-use-and-design-occupancy-stated
+  type: noul
+  instructions: Using `text`, does the passage state both the use the tenant will occupy and the occupancy
+    classification used for design?
+  criteria:
+    'true': It states both the tenant use and the design classification.
+    'false': It does not state both.
+  runs_on:
+  - fire-passive
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+- id: sig.authority-reading-of-access-standard-stated
+  type: noul
+  instructions: Using `text`, does the passage state the authority or certifier reading of the access
+    standard for the accessible room size?
+  criteria:
+    'true': It states the authority or certifier position on the size.
+    'false': It does not state one.
+  runs_on:
+  - access-egress.accessible-facilities
+  status: draft
+  sources:
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+- id: sig.dangerous-goods-quantity-and-strategy-assumption-stated
+  type: noul
+  instructions: Using `text`, does the passage state the quantity of dangerous goods to be stored and
+    the quantity the fire strategy assumed?
+  criteria:
+    'true': It states both quantities.
+    'false': It does not state both.
+  runs_on:
+  - fire-active.special-suppression
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: sig.shared-stair-separation-from-works-stated
+  type: noul
+  instructions: Using `text`, does the passage state how an occupied part is separated from works in a
+    shared stair?
+  criteria:
+    'true': It states how the stair is separated from the works.
+    'false': It does not state the separation.
+  runs_on:
+  - access-egress.stairs-and-ramps
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: sig.existing-balustrade-height-stated
+  type: noul
+  instructions: Using `text`, does the passage state the measured height of the existing balustrade?
+  criteria:
+    'true': It states a measured height.
+    'false': It does not state one.
+  runs_on:
+  - access-egress.barriers
+  status: draft
+  sources:
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+- id: sig.services-route-and-secure-zones-stated
+  type: noul
+  instructions: Using `text`, does the passage state the services route and the secure zones it passes
+    through?
+  criteria:
+    'true': It states the route and secure zones.
+    'false': It does not state both.
+  runs_on:
+  - access-egress
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
