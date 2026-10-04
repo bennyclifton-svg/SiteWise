@@ -525,6 +525,18 @@ The old `scope.*` user values are then deleted in the same transaction, so there
 - Rollback is by restore, not down-migrations; the repo has none.
 - Storage replication is a separate prerequisite and is not bundled (L417).
 
+## 4.13 Decisions resolved during implementation
+
+| Decision | Resolved | By | Outcome | Evidence |
+| - | - | - | - | - |
+| D-17 | 5 October 2026 | implementing agent under A9 | **(a) re-record.** Enlarged evidence calls stay well within jev-1.13's 64k-token request limit (largest real case about 22k); one call per passage is kept. Recordings were re-recorded live: source 15/15, Hale 12/12, 0 forbidden. | `docs/evidence/2026-10-05-evidence-workload.md` |
+
+Findings added during WP-00:
+
+- **F25.** The all-systems worst-case evidence call exceeds 64k tokens: about 144k at `02094db`, about 210k now. No real passage measured comes close, but WP-22 and WP-27 must measure their worst real passage against the limit.
+- **F26.** `TestRuleBudget` (`internal/intake`, 1,000 µs p90) failed once at 1,021 µs during a full parallel `go test ./...`, then passed 3 out of 3 in isolation. Treat it as a timing flake on this host, not a regression.
+- **F27.** `tools/check.ps1` run with `pwsh -File` from this agent shell fails at `npm --prefix web ci` (`Unknown command: "pm"`). The PowerShell npm shim mangles the arguments here. The same steps pass when run from bash. The gate script was left unchanged.
+
 ## 5. Decisions
 
 The status values mean:
