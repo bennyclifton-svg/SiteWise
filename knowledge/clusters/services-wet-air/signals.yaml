@@ -1,0 +1,388 @@
+version: 1
+signals:
+- id: sig.water-authority-connection-application-stated
+  type: noul
+  instructions: Using `text`, does the passage state that an application to the water authority for the
+    building's water connection has been lodged or approved?
+  criteria:
+    'true': It says an application for the water connection has been lodged or approved.
+    'false': It does not mention the application, or only says one will be needed.
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: sig.trade-waste-approval-stated
+  type: noul
+  instructions: Using `text`, does the passage state that a trade waste approval or agreement with the
+    water authority has been obtained or applied for?
+  criteria:
+    'true': It says a trade waste approval or agreement exists or has been applied for.
+    'false': It does not mention it, or only says approval will be needed.
+  runs_on:
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: sig.non-potable-water-source-approval-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the authority has approved the use of rainwater
+    or greywater for the building?
+  criteria:
+    'true': It says use of rainwater or greywater has been approved or accepted by an authority.
+    'false': It does not say so, or only says approval is required.
+  runs_on:
+  - hydraulic.non-potable-water
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: sig.gas-meter-location-agreed-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the gas meter location or gas connection has
+    been agreed with the gas supplier?
+  criteria:
+    'true': It says the meter location or gas connection is agreed with the supplier.
+    'false': It does not say so, or only says it must be agreed.
+  runs_on:
+  - hydraulic.gas
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: sig.pressure-vessel-registration-stated
+  type: noul
+  instructions: Using `text`, does the passage state that pressure vessels are registered or that a pressure
+    vessel inspection certificate is held?
+  criteria:
+    'true': It says pressure vessels are registered or a certificate is held.
+    'false': It does not say so, or only says registration or inspection is required.
+  runs_on:
+  - hydraulic.hot-water
+  - hydraulic.cold-water
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: sig.plant-noise-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state that an acoustic assessment of external mechanical
+    plant noise at the neighbouring boundary has been carried out?
+  criteria:
+    'true': It says a plant noise assessment at the boundary has been carried out.
+    'false': It does not mention one, or only says plant must meet noise limits.
+  runs_on:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  - mechanical.local-exhaust
+  - hydraulic.specialist-process
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: sig.cooling-tower-plume-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the cooling tower plume or drift effect on neighbours
+    or air intakes has been assessed?
+  criteria:
+    'true': It says the plume or drift effect has been assessed.
+    'false': It does not mention an assessment, or only mentions the cooling tower.
+  runs_on:
+  - mechanical.cooling-towers
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: sig.rooftop-plant-in-approved-height-stated
+  type: noul
+  instructions: Using `text`, does the passage state that rooftop plant or its screening is included in
+    the approved building height?
+  criteria:
+    'true': It says rooftop plant or screening is within the approved height or shown in the approved
+      plans.
+    'false': It does not say so, or only mentions that a height limit applies.
+  runs_on:
+  - mechanical.central-plant
+  - mechanical.air-conditioning
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: sig.hvac-energy-compliance-evidence-stated
+  type: noul
+  instructions: Using `text`, does the passage state the energy efficiency compliance pathway or efficiency
+    rating of the HVAC equipment?
+  criteria:
+    'true': It names the compliance pathway or states an efficiency rating for the equipment.
+    'false': It does not state either.
+  runs_on:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: sig.fixture-water-rating-stated
+  type: noul
+  instructions: Using `text`, does the passage state the water efficiency rating of the plumbing fixtures?
+  criteria:
+    'true': It states a water efficiency rating for the fixtures.
+    'false': It does not state a rating, or only says fixtures must be water efficient.
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: sig.exhaust-discharge-approval-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the discharge point or height of a process exhaust
+    has been agreed with or approved by an authority?
+  criteria:
+    'true': It says the discharge arrangement has been agreed or approved by an authority.
+    'false': It does not say so, or only says it must comply.
+  runs_on:
+  - mechanical.local-exhaust
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: sig.kitchen-exhaust-discharged-outside-stated
+  type: noul
+  instructions: Using `text`, does the passage state that kitchen exhaust is discharged to outdoors rather
+    than recirculated?
+  criteria:
+    'true': It says kitchen exhaust is discharged outdoors, or says it is recirculated.
+    'false': It does not say where the kitchen exhaust goes.
+  runs_on:
+  - mechanical.local-exhaust
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: sig.existing-refrigerant-type-stated
+  type: noul
+  instructions: Using `text`, does the passage state the refrigerant type used in existing plant?
+  criteria:
+    'true': It names the refrigerant of the existing plant.
+    'false': It does not name the refrigerant.
+  runs_on:
+  - mechanical.central-plant
+  - mechanical.air-conditioning
+  - mechanical.refrigerant-condensate
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: sig.bms-network-security-requirement-stated
+  type: noul
+  instructions: Using `text`, does the passage state a cybersecurity or network security requirement for
+    the building management system?
+  criteria:
+    'true': It states a network or cybersecurity requirement for the BMS.
+    'false': It does not state one.
+  runs_on:
+  - mechanical.controls-bms
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: sig.pipework-flushing-programme-stated
+  type: noul
+  instructions: Using `text`, does the passage state that chilled or heating water pipework is flushed
+    and cleaned before commissioning?
+  criteria:
+    'true': It says flushing or cleaning of the pipework is required before commissioning or has been
+      done.
+    'false': It does not mention flushing or cleaning.
+  runs_on:
+  - mechanical.central-plant
+  - mechanical.air-conditioning
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: sig.heating-commissioned-before-flooring-stated
+  type: noul
+  instructions: Using `text`, does the passage state that underfloor or hydronic heating is commissioned
+    or run before the floor finish is laid?
+  criteria:
+    'true': It says the heating is commissioned or run before flooring is laid.
+    'false': It does not say so.
+  runs_on:
+  - mechanical.heating-appliances
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: sig.fixture-rough-in-dimensions-confirmed-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the rough-in dimensions of specified plumbing
+    fixtures have been confirmed against the products supplied?
+  criteria:
+    'true': It says rough-in dimensions are confirmed against the fixture product.
+    'false': It does not say so.
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: sig.tenant-fitout-mechanical-load-stated
+  type: noul
+  instructions: Using `text`, does the passage state the mechanical load, operating hours or outdoor air
+    demand that a tenant fit-out places on the base building services?
+  criteria:
+    'true': It states a tenant's mechanical load, operating hours or outdoor air demand.
+    'false': It does not state any of these for the tenancy.
+  runs_on:
+  - mechanical.air-conditioning
+  - mechanical.air-distribution
+  - mechanical.central-plant
+  - mechanical.ventilation
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: sig.landlord-approval-of-tenant-services-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the landlord or base building services consultant
+    has approved the tenant's mechanical or hydraulic fit-out design?
+  criteria:
+    'true': It says the landlord or base building consultant approved the tenant services design.
+    'false': It does not say so, or only says approval is required.
+  runs_on:
+  - mechanical.air-conditioning
+  - mechanical.air-distribution
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: sig.existing-pipework-material-stated
+  type: noul
+  instructions: Using `text`, does the passage state the material or age of the existing water or drainage
+    pipework?
+  criteria:
+    'true': It states the material or age of existing pipework.
+    'false': It does not state either.
+  runs_on:
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: sig.existing-plumbing-lead-testing-stated
+  type: noul
+  instructions: Using `text`, does the passage state that existing plumbing has been tested or checked
+    for lead?
+  criteria:
+    'true': It says existing plumbing was tested or checked for lead.
+    'false': It does not mention testing, or only says it may be needed.
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: sig.existing-drainage-size-stated
+  type: noul
+  instructions: Using `text`, does the passage state the pipe sizes or capacity of the existing building
+    drainage?
+  criteria:
+    'true': It states pipe sizes or capacity for the existing drainage.
+    'false': It does not state them.
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: sig.existing-roof-drainage-capacity-stated
+  type: noul
+  instructions: Using `text`, does the passage state the gutter, downpipe or outlet sizes or capacity
+    of the existing roof drainage?
+  criteria:
+    'true': It states sizes or capacity for the existing roof drainage.
+    'false': It does not state them.
+  runs_on:
+  - hydraulic.roof-drainage
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: sig.existing-hvac-spare-capacity-stated
+  type: noul
+  instructions: Using `text`, does the passage state the spare capacity or rated capacity of the existing
+    HVAC system?
+  criteria:
+    'true': It states a rated or spare capacity for the existing HVAC.
+    'false': It does not state a capacity.
+  runs_on:
+  - mechanical.air-conditioning
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: sig.plant-room-size-and-route-stated
+  type: noul
+  instructions: Using `text`, does the passage state the dimensions of the existing plant room or the
+    route by which plant enters and leaves it?
+  criteria:
+    'true': It states plant room dimensions or the plant access route.
+    'false': It states neither.
+  runs_on:
+  - mechanical.central-plant
+  - mechanical.air-conditioning
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: sig.existing-ductwork-asbestos-survey-stated
+  type: noul
+  instructions: Using `text`, does the passage state that existing ductwork or its insulation has been
+    surveyed or tested for asbestos?
+  criteria:
+    'true': It says ductwork or insulation was surveyed or tested for asbestos.
+    'false': It does not mention a survey or test, or only says one is required.
+  runs_on:
+  - mechanical.air-distribution
+  - mechanical.air-conditioning
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: sig.existing-services-investigation-stated
+  type: noul
+  instructions: Using `text`, does the passage state that existing concealed services have been investigated
+    or surveyed on site?
+  criteria:
+    'true': It says concealed services were investigated, scanned or surveyed.
+    'false': It does not say so, or only relies on existing drawings.
+  runs_on:
+  - hydraulic.sanitary
+  - hydraulic.cold-water
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: sig.existing-drain-location-survey-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the location of existing drains and easements
+    has been surveyed?
+  criteria:
+    'true': It says existing drain or easement locations were surveyed or confirmed.
+    'false': It does not say so.
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'

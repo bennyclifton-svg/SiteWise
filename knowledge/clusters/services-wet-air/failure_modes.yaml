@@ -39,6 +39,8 @@ failure_modes:
   sources:
   - seed: mechanical-services-guide.md
     anchor: '### Outdoor air and indoor air quality'
+  - dataset: batch1
+    row: B1-0514
 - id: fm.exhaust-penetrates-envelope
   attaches_to:
     interface: if.exhaust-penetrates-envelope
@@ -58,6 +60,8 @@ failure_modes:
   sources:
   - seed: mep-residential.md
     anchor: '### Wet area exhaust'
+  - dataset: batch1
+    row: B1-0263
 - id: fm.plant-loads-structure
   attaches_to:
     interface: if.plant-loads-structure
@@ -78,6 +82,12 @@ failure_modes:
   sources:
   - seed: mechanical-services-guide.md
     anchor: '## Mechanical evidence sweep'
+  - dataset: batch1
+    row: B1-0484
+  - dataset: batch1
+    row: B1-0531
+  - dataset: batch1
+    row: B1-0598
 - id: fm.mechanical-power-supply
   attaches_to:
     interface: if.mechanical-power-supply
@@ -120,6 +130,14 @@ failure_modes:
   sources:
   - seed: mechanical-services-guide.md
     anchor: '## Mechanical evidence sweep'
+  - dataset: batch1
+    row: B1-0431
+  - dataset: batch1
+    row: B1-0481
+  - dataset: batch1
+    row: B1-0502
+  - dataset: batch1
+    row: B1-0529
 - id: fm.roof-drainage-waterproofing
   attaches_to:
     interface: if.roof-drainage-waterproofing
@@ -139,6 +157,8 @@ failure_modes:
   sources:
   - seed: hydraulic-services-guide.md
     anchor: '### Stormwater and roof drainage'
+  - dataset: batch1
+    row: B1-0220
 - id: fm.building-drainage-to-site
   attaches_to:
     interface: if.building-drainage-to-site
@@ -179,6 +199,8 @@ failure_modes:
   sources:
   - seed: trade-interfaces-coordination-guide.md
     anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
+  - dataset: batch1
+    row: B1-0478
 - id: fm.waste-setout-before-membrane
   attaches_to:
     interface: if.envelope-wet-waste-before-membrane
@@ -258,6 +280,8 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 1668 Series — Ventilation and Air-Conditioning'
+  - dataset: batch1
+    row: B1-0516
 - id: fm.bms-fire-mode-priority
   attaches_to:
     interface: if.bms-fire-mode-priority
@@ -298,6 +322,10 @@ failure_modes:
   sources:
   - seed: ncc-reference-guide.md
     anchor: '### Ventilation Requirements and Ceiling Heights'
+  - dataset: batch1
+    row: B1-0505
+  - dataset: batch1
+    row: B1-0508
 - id: fm.services-plant-maintenance-access
   attaches_to:
     interface: if.services-plant-maintenance-access
@@ -319,6 +347,18 @@ failure_modes:
   sources:
   - seed: mechanical-services-guide.md
     anchor: '### Heating and cooling'
+  - dataset: batch1
+    row: B1-0480
+  - dataset: batch1
+    row: B1-0483
+  - dataset: batch1
+    row: B1-0506
+  - dataset: batch1
+    row: B1-0526
+  - dataset: batch1
+    row: B1-0472
+  - dataset: batch1
+    row: B1-0486
 - id: fm.cooling-tower-stagnant-dead-leg
   attaches_to:
     interface: if.cooling-tower-water-treatment-drainage
@@ -342,6 +382,8 @@ failure_modes:
     anchor: '### Potable and non-potable water'
   - seed: hydraulic-services-guide.md
     anchor: '### Trade waste'
+  - dataset: batch1
+    row: B1-0435
 - id: fm.process-vendor-utility-mismatch
   attaches_to:
     interface: if.process-equipment-services-demarcation
@@ -364,6 +406,10 @@ failure_modes:
   sources:
   - seed: industrial-construction-guide.md
     anchor: '## Building, process and services coordination'
+  - dataset: batch1
+    row: B1-0448
+  - dataset: batch1
+    row: B1-0493
 - id: fm.medical-gas-used-before-verification
   attaches_to:
     rule: rule.project.specialist-services-acceptance
@@ -429,6 +475,10 @@ failure_modes:
     anchor: '## Stratification, cores and separate services'
   - seed: mixed-use-construction-guide.md
     anchor: '## Staged handover by use'
+  - dataset: batch1
+    row: B1-0463
+  - dataset: batch1
+    row: B1-0962
 - id: fm.services-startup-substitutes-functional-test
   attaches_to:
     rule: rule.project.services-functional-commissioning
@@ -472,3 +522,2044 @@ failure_modes:
   sources:
   - seed: mechanical-services-guide.md
     anchor: '## Common failure modes'
+- id: fm.hydraulic-cast-in-setout-found-wrong-after-pour
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state hydraulic stub-ups, sleeves or relief
+      gully levels found misplaced after a slab pour, instead of checked at a hold point before the pour?
+    criteria:
+      'true': It explicitly states hydraulic stub-ups, sleeves or relief gully levels found misplaced
+        after a slab pour, instead of checked at a hold point before the pour.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0035
+  - dataset: batch1
+    row: B1-0414
+  - dataset: batch1
+    row: B1-0490
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.drainage-in-slab-conflicts-reinforcement
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state drainage or pipework placed within
+      a slab where it conflicts with the reinforcement?
+    criteria:
+      'true': It explicitly states drainage or pipework placed within a slab where it conflicts with the
+        reinforcement.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0452
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.drainage-fall-not-achievable
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a drain that cannot achieve its fall
+      because the sewer connection is higher than the building drain or the existing slab level restricts
+      it?
+    criteria:
+      'true': It explicitly states a drain that cannot achieve its fall because the sewer connection is
+        higher than the building drain or the existing slab level restricts it.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - site.services-connections
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0402
+  - dataset: batch1
+    row: B1-0460
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.plumbing-relocation-cuts-existing-slab
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state relocated or new pipework that requires
+      cutting or coring an existing slab?
+    criteria:
+      'true': It explicitly states relocated or new pipework that requires cutting or coring an existing
+        slab.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+    - structure.alterations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0462
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: fm.stormwater-connected-to-sewer
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state roof or stormwater downpipes connected
+      to the sanitary sewer?
+    criteria:
+      'true': It explicitly states roof or stormwater downpipes connected to the sanitary sewer.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0497
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.roof-outlets-overload-site-stormwater
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state roof downpipes concentrating flow onto
+      a site stormwater system that is reported overloaded?
+    criteria:
+      'true': It explicitly states roof downpipes concentrating flow onto a site stormwater system that
+        is reported overloaded.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0426
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.siphonic-roof-drainage-fails-priming
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a siphonic roof drainage system that
+      fails to prime?
+    criteria:
+      'true': It explicitly states a siphonic roof drainage system that fails to prime.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0427
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.gutter-fall-or-outlets-wrong
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a gutter overflowing because its fall
+      or outlets were set incorrectly?
+    criteria:
+      'true': It explicitly states a gutter overflowing because its fall or outlets were set incorrectly.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0219
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.combustible-gutter-guard-in-bushfire-area
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a combustible gutter guard installed
+      on a building in a bushfire-prone area?
+    criteria:
+      'true': It explicitly states a combustible gutter guard installed on a building in a bushfire-prone
+        area.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - envelope.bushfire-construction
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0295
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.plant-platform-obstructs-roof-drainage
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a rooftop plant platform or support
+      that obstructs a roof drainage path?
+    criteria:
+      'true': It explicitly states a rooftop plant platform or support that obstructs a roof drainage
+        path.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.roof-drainage
+    - mechanical.central-plant
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0528
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.drain-vent-terminates-in-roof-space
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a drain vent pipe that terminates inside
+      the roof space?
+    criteria:
+      'true': It explicitly states a drain vent pipe that terminates inside the roof space.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0417
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.sanitary-trap-seal-lost
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state sewer odour or a lost trap seal from
+      a dry trap or a trap emptied by stack pressure fluctuation?
+    criteria:
+      'true': It explicitly states sewer odour or a lost trap seal from a dry trap or a trap emptied by
+        stack pressure fluctuation.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0418
+  - dataset: batch1
+    row: B1-0419
+  - seed: hydraulic-services-guide.md
+    anchor: '## Common failure modes'
+- id: fm.open-drain-lines-blocked-by-construction-debris
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state drain lines left open during construction
+      and blocked by debris?
+    criteria:
+      'true': It explicitly states drain lines left open during construction and blocked by debris.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0420
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.sewer-pump-station-wet-well-space-unresolved
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a sewer pump station whose wet well
+      and access space is changed or unresolved in the basement layout?
+    criteria:
+      'true': It explicitly states a sewer pump station whose wet well and access space is changed or
+        unresolved in the basement layout.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0422
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.trade-waste-interceptor-undersized
+  attaches_to:
+    system: hydraulic.trade-waste
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an undersized grease trap or oil separator
+      for the connected kitchens or vehicle areas?
+    criteria:
+      'true': It explicitly states an undersized grease trap or oil separator for the connected kitchens
+        or vehicle areas.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.trade-waste
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0423
+  - dataset: batch1
+    row: B1-0451
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.process-wastewater-pretreatment-not-provided
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state process wastewater that needs pretreatment
+      before discharge to the sewer where none is provided?
+    criteria:
+      'true': It explicitly states process wastewater that needs pretreatment before discharge to the
+        sewer where none is provided.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.specialist-process
+    - hydraulic.trade-waste
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0449
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.bund-volume-below-stored-volume
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a bund reported undersized for the
+      volume of liquid it must contain?
+    criteria:
+      'true': It explicitly states a bund reported undersized for the volume of liquid it must contain.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.specialist-process
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0059
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.spill-containment-drains-to-stormwater
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state spill containment that is not connected
+      to process drainage or that discharges to stormwater?
+    criteria:
+      'true': It explicitly states spill containment that is not connected to process drainage or that
+        discharges to stormwater.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.specialist-process
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0450
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.cold-water-supply-below-peak-demand
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state low pressure or flow at upper-floor
+      fixtures, or an undersized water meter, against the stated demand?
+    criteria:
+      'true': It explicitly states low pressure or flow at upper-floor fixtures, or an undersized water
+        meter, against the stated demand.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0401
+  - dataset: batch1
+    row: B1-0410
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.pressure-limiting-valve-absent-or-failed
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state excess water pressure damaging fixtures
+      or appliances because a pressure-limiting valve is absent or has failed?
+    criteria:
+      'true': It explicitly states excess water pressure damaging fixtures or appliances because a pressure-limiting
+        valve is absent or has failed.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0469
+  - dataset: batch1
+    row: B1-0500
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.low-flow-fixtures-mismatched-to-pressure
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state complaints about low-flow tapware performing
+      poorly at the available supply pressure?
+    criteria:
+      'true': It explicitly states complaints about low-flow tapware performing poorly at the available
+        supply pressure.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0468
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.water-hammer-in-pipework
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state water hammer in pipework from rapid
+      valve closure?
+    criteria:
+      'true': It explicitly states water hammer in pipework from rapid valve closure.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0411
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.dissimilar-metals-in-pipework
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pipework corroding where dissimilar
+      metals are joined?
+    criteria:
+      'true': It explicitly states pipework corroding where dissimilar metals are joined.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0407
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.process-water-quality-not-met
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state water treatment that does not deliver
+      the water quality required for a process use?
+    criteria:
+      'true': It explicitly states water treatment that does not deliver the water quality required for
+        a process use.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.specialist-process
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0434
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.thermostatic-mixing-valve-missing
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a thermostatic mixing valve missing
+      from a hot water outlet that needs scald protection?
+    criteria:
+      'true': It explicitly states a thermostatic mixing valve missing from a hot water outlet that needs
+        scald protection.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0437
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.hot-water-temperature-not-achieved
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a hot water system storing or delivering
+      water below the temperature needed to control bacterial growth?
+    criteria:
+      'true': It explicitly states a hot water system storing or delivering water below the temperature
+        needed to control bacterial growth.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0406
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.hot-water-dead-legs-in-existing-lines
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state unused hot water branches left in service
+      as dead legs?
+    criteria:
+      'true': It explicitly states unused hot water branches left in service as dead legs.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0436
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: fm.hot-water-unit-too-far-from-outlets
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a hot water unit located so far from
+      its outlets that long pipe runs waste heat and water?
+    criteria:
+      'true': It explicitly states a hot water unit located so far from its outlets that long pipe runs
+        waste heat and water.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0438
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.hot-pipe-expansion-not-allowed-for
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state hot pipework without provision for
+      thermal expansion?
+    criteria:
+      'true': It explicitly states hot pipework without provision for thermal expansion.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0413
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.solar-hot-water-collectors-overshadowed
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state solar hot water collectors overshadowed
+      by roof elements or neighbouring structures?
+    criteria:
+      'true': It explicitly states solar hot water collectors overshadowed by roof elements or neighbouring
+        structures.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0440
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.heat-pump-hot-water-without-dedicated-circuit
+  attaches_to:
+    interface: if.hot-water-energy-source
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a heat pump hot water unit installed
+      with no dedicated electrical circuit provided?
+    criteria:
+      'true': It explicitly states a heat pump hot water unit installed with no dedicated electrical circuit
+        provided.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0439
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.hot-water-capacity-short-for-added-load
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an existing hot water unit sized for
+      the original building serving fixtures added by an extension?
+    criteria:
+      'true': It explicitly states an existing hot water unit sized for the original building serving
+        fixtures added by an extension.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0464
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: fm.gas-supply-short-for-hot-water-load
+  attaches_to:
+    system: hydraulic.gas
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a gas supply stated as short of the
+      hot water load?
+    criteria:
+      'true': It explicitly states a gas supply stated as short of the hot water load.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.gas
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0404
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.gas-storage-or-flue-too-close-to-openings
+  attaches_to:
+    system: hydraulic.gas
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a gas cylinder or appliance flue located
+      too close to a window, door or other opening?
+    criteria:
+      'true': It explicitly states a gas cylinder or appliance flue located too close to a window, door
+        or other opening.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.gas
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0347
+  - dataset: batch1
+    row: B1-0441
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.range-hood-backdrafts-flued-gas-appliance
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a range hood or kitchen exhaust drawing
+      combustion products back down the flue of a gas appliance?
+    criteria:
+      'true': It explicitly states a range hood or kitchen exhaust drawing combustion products back down
+        the flue of a gas appliance.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - hydraulic.gas
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0517
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.gas-pipework-leaks-at-pressure-test
+  attaches_to:
+    system: hydraulic.gas
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state gas pipework joints that leak at the
+      pressure test?
+    criteria:
+      'true': It explicitly states gas pipework joints that leak at the pressure test.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.gas
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0444
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.hydraulic-penetration-of-fire-rated-construction-unsealed
+  attaches_to:
+    system: hydraulic.gas
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a gas pipe, drain vent or hydraulic
+      riser passing through fire-rated construction without a sealed sleeve or fire stopping?
+    criteria:
+      'true': It explicitly states a gas pipe, drain vent or hydraulic riser passing through fire-rated
+        construction without a sealed sleeve or fire stopping.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.gas
+    - hydraulic.sanitary
+    - fire-passive.penetrations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0443
+  - dataset: batch1
+    row: B1-0474
+  - dataset: batch1
+    row: B1-0498
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.medical-gas-pipework-fails-purity-test
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state medical gas pipework that fails its
+      purity or cleanliness test?
+    criteria:
+      'true': It explicitly states medical gas pipework that fails its purity or cleanliness test.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.specialist-process
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0446
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.compressed-air-lines-leak
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state compressed air lines that leak?
+    criteria:
+      'true': It explicitly states compressed air lines that leak.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.process-specialist
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0447
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.backflow-prevention-device-missing
+  attaches_to:
+    system: hydraulic.backflow-prevention
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a required backflow prevention device
+      missing?
+    criteria:
+      'true': It explicitly states a required backflow prevention device missing.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.backflow-prevention
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0432
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.backflow-device-in-flood-prone-pit
+  attaches_to:
+    system: hydraulic.backflow-prevention
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a backflow prevention device installed
+      in a pit that floods or is not drained and accessible?
+    criteria:
+      'true': It explicitly states a backflow prevention device installed in a pit that floods or is not
+        drained and accessible.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.backflow-prevention
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0433
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.hydraulic-riser-space-undersized
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a hydraulic riser reported too small
+      for the services that must run in it?
+    criteria:
+      'true': It explicitly states a hydraulic riser reported too small for the services that must run
+        in it.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0473
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.pipework-clashes-with-structure-in-ceiling
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pipework clashing with beams or other
+      structure in the ceiling space?
+    criteria:
+      'true': It explicitly states pipework clashing with beams or other structure in the ceiling space.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0415
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.pipe-supports-missing-pipes-sag
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pipework with missing supports that
+      sags and loses its fall?
+    criteria:
+      'true': It explicitly states pipework with missing supports that sags and loses its fall.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0499
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.hydraulic-pipe-insulation-omitted
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state insulation omitted from hot or cold
+      water pipework, causing heat loss or condensation drip?
+    criteria:
+      'true': It explicitly states insulation omitted from hot or cold water pipework, causing heat loss
+        or condensation drip.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.hot-water
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0475
+  - dataset: batch1
+    row: B1-0476
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.pipework-exposed-to-frost
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state pipework in an unheated or exposed
+      location split by frost?
+    criteria:
+      'true': It explicitly states pipework in an unheated or exposed location split by frost.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0477
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.pipework-noise-in-lightweight-walls
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state flow noise from pipework transmitted
+      through wall framing into bedrooms?
+    criteria:
+      'true': It explicitly states flow noise from pipework transmitted through wall framing into bedrooms.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.cold-water
+    - interiors.acoustic-separation
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0412
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.wall-hung-fixture-framing-not-provided
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state wall-hung fixtures or concealed cisterns
+      fixed to wall framing not designed to carry them?
+    criteria:
+      'true': It explicitly states wall-hung fixtures or concealed cisterns fixed to wall framing not
+        designed to carry them.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0471
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.stack-penetration-through-membrane-leaks
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a plumbing stack penetration through
+      a waterproof slab or membrane that leaks for want of a sealed flange?
+    criteria:
+      'true': It explicitly states a plumbing stack penetration through a waterproof slab or membrane
+        that leaks for want of a sealed flange.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0416
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: fm.water-meter-access-blocked
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a water meter location blocked by landscaping
+      or otherwise inaccessible to the authority?
+    criteria:
+      'true': It explicitly states a water meter location blocked by landscaping or otherwise inaccessible
+        to the authority.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.cold-water
+    - site.landscape
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0489
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.floor-drain-without-cleaning-access
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state floor drains in a food or hygiene area
+      that clog because cleaning access was not provided?
+    criteria:
+      'true': It explicitly states floor drains in a food or hygiene area that clog because cleaning access
+        was not provided.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.trade-waste
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0785
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.chemical-dosing-room-ventilation-omitted
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a chemical dosing room for pool or
+      treatment plant without ventilation?
+    criteria:
+      'true': It explicitly states a chemical dosing room for pool or treatment plant without ventilation.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.specialist-process
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0485
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.sump-pump-stops-when-power-lost-in-storm
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a sump or drainage pump that stops
+      during a storm because its power supply is lost?
+    criteria:
+      'true': It explicitly states a sump or drainage pump that stops during a storm because its power
+        supply is lost.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - hydraulic.sanitary
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0492
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: fm.duct-through-fire-wall-without-damper
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a duct passing through a fire-rated
+      wall or floor without a fire damper or rated enclosure?
+    criteria:
+      'true': It explicitly states a duct passing through a fire-rated wall or floor without a fire damper
+        or rated enclosure.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - mechanical.local-exhaust
+    - fire-passive.penetrations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0313
+  - dataset: batch1
+    row: B1-0364
+  - dataset: batch1
+    row: B1-0512
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.kitchen-exhaust-duct-not-fire-rated
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a kitchen exhaust duct that is not
+      fire-rated?
+    criteria:
+      'true': It explicitly states a kitchen exhaust duct that is not fire-rated.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - fire-passive.penetrations
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0349
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.kitchen-hood-suppression-missing
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a commercial kitchen hood with no fire
+      suppression over the cooking appliances?
+    criteria:
+      'true': It explicitly states a commercial kitchen hood with no fire suppression over the cooking
+        appliances.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - fire-active.sprinklers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0350
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.carpark-ventilation-fails-smoke-test
+  attaches_to:
+    system: mechanical.carpark-ventilation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state car park ventilation that fails its
+      smoke clearance test?
+    criteria:
+      'true': It explicitly states car park ventilation that fails its smoke clearance test.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.carpark-ventilation
+    - fire-active.smoke-control
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0353
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.ceiling-fan-airflow-delays-sprinkler-activation
+  attaches_to:
+    system: mechanical.ventilation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state ceiling fan airflow interfering with
+      or delaying sprinkler activation?
+    criteria:
+      'true': It explicitly states ceiling fan airflow interfering with or delaying sprinkler activation.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.ventilation
+    - fire-active.sprinklers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0597
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.duct-clashes-with-fire-services-pipework
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a duct clashing with a sprinkler main
+      or other fire services pipework?
+    criteria:
+      'true': It explicitly states a duct clashing with a sprinkler main or other fire services pipework.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - fire-active.sprinklers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0513
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.outdoor-air-based-on-lower-occupancy-than-intended
+  attaches_to:
+    system: mechanical.ventilation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state outdoor air provision based on a lower
+      occupancy than the occupancy now intended?
+    criteria:
+      'true': It explicitly states outdoor air provision based on a lower occupancy than the occupancy
+        now intended.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.ventilation
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0515
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: fm.moisture-room-ventilation-ineffective
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a bathroom or extension room left with
+      humidity or mould because its exhaust or ventilation is weak or absent?
+    criteria:
+      'true': It explicitly states a bathroom or extension room left with humidity or mould because its
+        exhaust or ventilation is weak or absent.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - mechanical.ventilation
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0518
+  - dataset: batch1
+    row: B1-0552
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.split-system-line-length-exceeded
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a split system refrigerant line run
+      longer than the equipment allows?
+    criteria:
+      'true': It explicitly states a split system refrigerant line run longer than the equipment allows.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0520
+  - seed: mechanical-services-guide.md
+    anchor: '### Refrigerant, condensate and water interfaces'
+- id: fm.refrigerant-leak-detection-missing
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state refrigerant leak detection missing
+      from a confined space?
+    criteria:
+      'true': It explicitly states refrigerant leak detection missing from a confined space.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0522
+  - seed: mechanical-services-guide.md
+    anchor: '### Refrigerant, condensate and water interfaces'
+- id: fm.hvac-design-conditions-below-extreme-days
+  attaches_to:
+    system: mechanical.air-conditioning
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state HVAC or VRF capacity found insufficient
+      on extreme-temperature days?
+    criteria:
+      'true': It explicitly states HVAC or VRF capacity found insufficient on extreme-temperature days.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0523
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.plant-screening-restricts-condenser-airflow
+  attaches_to:
+    system: mechanical.air-conditioning
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state screening around rooftop plant restricting
+      airflow to condensers?
+    criteria:
+      'true': It explicitly states screening around rooftop plant restricting airflow to condensers.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-conditioning
+    - envelope.external-shading
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0527
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.plant-room-heat-not-removed
+  attaches_to:
+    system: mechanical.central-plant
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a plant room with no ventilation to
+      remove the heat from its equipment?
+    criteria:
+      'true': It explicitly states a plant room with no ventilation to remove the heat from its equipment.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.central-plant
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0530
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.plant-larger-than-allocated-space
+  attaches_to:
+    system: mechanical.central-plant
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state selected plant, such as a heat recovery
+      unit, larger than the space allocated for it?
+    criteria:
+      'true': It explicitly states selected plant, such as a heat recovery unit, larger than the space
+        allocated for it.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.central-plant
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0550
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.fixings-drilled-into-post-tensioned-slab
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state services hangers or anchors fixed into
+      a post-tensioned slab without locating the tendons?
+    criteria:
+      'true': It explicitly states services hangers or anchors fixed into a post-tensioned slab without
+        locating the tendons.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - hydraulic.sanitary
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0532
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.plant-lift-exceeds-crane-or-route
+  attaches_to:
+    system: mechanical.central-plant
+  severity: programme
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state plant such as a chiller too heavy for
+      the planned crane or lifting route?
+    criteria:
+      'true': It explicitly states plant such as a chiller too heavy for the planned crane or lifting
+        route.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0501
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.duct-borne-fan-noise-to-occupied-rooms
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state fan noise carried by ducts into occupied
+      rooms, including after duct sizes were reduced?
+    criteria:
+      'true': It explicitly states fan noise carried by ducts into occupied rooms, including after duct
+        sizes were reduced.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - interiors.acoustic-separation
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0509
+  - dataset: batch1
+    row: B1-0579
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.duct-leakage-test-fails
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state ductwork that fails its leakage test?
+    criteria:
+      'true': It explicitly states ductwork that fails its leakage test.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0510
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.mechanical-insulation-omitted
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state insulation omitted from ductwork or
+      refrigerant pipework, leaving condensation or lost capacity?
+    criteria:
+      'true': It explicitly states insulation omitted from ductwork or refrigerant pipework, leaving condensation
+        or lost capacity.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - mechanical.refrigerant-condensate
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0511
+  - dataset: batch1
+    row: B1-0521
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.air-balancing-dampers-or-boxes-inaccessible
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state VAV boxes or balancing dampers inaccessible
+      so that air balancing cannot be completed?
+    criteria:
+      'true': It explicitly states VAV boxes or balancing dampers inaccessible so that air balancing cannot
+        be completed.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0546
+  - dataset: batch1
+    row: B1-0547
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.fan-rotation-wrong-at-commissioning
+  attaches_to:
+    interface: if.mechanical-power-supply
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a fan found running in the wrong direction
+      at commissioning because of the electrical phase sequence?
+    criteria:
+      'true': It explicitly states a fan found running in the wrong direction at commissioning because
+        of the electrical phase sequence.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0543
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.control-sensors-in-poor-locations
+  attaches_to:
+    system: mechanical.controls-bms
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state controls sensors or thermostats located
+      near heat sources or where they misread the space?
+    criteria:
+      'true': It explicitly states controls sensors or thermostats located near heat sources or where
+        they misread the space.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.controls-bms
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0544
+  - dataset: batch1
+    row: B1-0545
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.energy-metering-missing
+  attaches_to:
+    system: mechanical.controls-bms
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state sub-metering missing from HVAC plant
+      that a rating scheme requires?
+    criteria:
+      'true': It explicitly states sub-metering missing from HVAC plant that a rating scheme requires.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.controls-bms
+    - electrical.metering
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0548
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.economy-cycle-not-working
+  attaches_to:
+    system: mechanical.controls-bms
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state an economy cycle or free-cooling function
+      that does not operate?
+    criteria:
+      'true': It explicitly states an economy cycle or free-cooling function that does not operate.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.controls-bms
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0549
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.bms-protocol-incompatible-with-plant
+  attaches_to:
+    system: mechanical.controls-bms
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a BMS that cannot communicate with
+      chillers or other plant because their protocols do not match?
+    criteria:
+      'true': It explicitly states a BMS that cannot communicate with chillers or other plant because
+        their protocols do not match.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.controls-bms
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0503
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.bms-programming-or-graphics-incomplete-at-handover
+  attaches_to:
+    system: mechanical.controls-bms
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state BMS programming incomplete, or BMS
+      graphics not matching the installed system, at handover?
+    criteria:
+      'true': It explicitly states BMS programming incomplete, or BMS graphics not matching the installed
+        system, at handover.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.controls-bms
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0664
+  - dataset: batch1
+    row: B1-0665
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.control-system-cabling-not-provided
+  attaches_to:
+    system: mechanical.controls-bms
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a smart or networked control system
+      for which dedicated cabling was not provided?
+    criteria:
+      'true': It explicitly states a smart or networked control system for which dedicated cabling was
+        not provided.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.controls-bms
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0644
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.services-found-unintegrated-at-commissioning
+  attaches_to:
+    system: mechanical.controls-bms
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state systems designed separately found at
+      commissioning not to work together as one?
+    criteria:
+      'true': It explicitly states systems designed separately found at commissioning not to work together
+        as one.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.controls-bms
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0908
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.clinical-room-pressure-regime-not-achieved
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a theatre or isolation room that does
+      not achieve its required pressure relationship?
+    criteria:
+      'true': It explicitly states a theatre or isolation room that does not achieve its required pressure
+        relationship.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.process-specialist
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0591
+  - dataset: batch1
+    row: B1-0592
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.pool-hall-humidity-damages-envelope
+  attaches_to:
+    system: mechanical.air-conditioning
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state humid air from a swimming pool hall
+      damaging the structure or envelope?
+    criteria:
+      'true': It explicitly states humid air from a swimming pool hall damaging the structure or envelope.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-conditioning
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0594
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.cleanroom-air-changes-not-achieved
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a clean room that does not achieve
+      its required air change rate at commissioning?
+    criteria:
+      'true': It explicitly states a clean room that does not achieve its required air change rate at
+        commissioning.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.process-specialist
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0542
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: fm.tall-space-heating-stratifies
+  attaches_to:
+    system: mechanical.ventilation
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state heating inadequate in a tall space
+      because hot air stratifies, or destratification fans omitted?
+    criteria:
+      'true': It explicitly states heating inadequate in a tall space because hot air stratifies, or destratification
+        fans omitted.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.ventilation
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0537
+  - dataset: batch1
+    row: B1-0538
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.dust-collection-exceeds-duct-capability
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a dust collection system that overloads
+      the ducting it is connected to?
+    criteria:
+      'true': It explicitly states a dust collection system that overloads the ducting it is connected
+        to.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.local-exhaust
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0541
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.hydronic-heating-pipes-struck-by-tile-fixings
+  attaches_to:
+    system: mechanical.heating-appliances
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state embedded hydronic heating pipes struck
+      by tile or floor fixings?
+    criteria:
+      'true': It explicitly states embedded hydronic heating pipes struck by tile or floor fixings.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.heating-appliances
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0714
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.cool-room-floor-insulation-omitted
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state cool room floor insulation omitted,
+      risking frost heave of the slab?
+    criteria:
+      'true': It explicitly states cool room floor insulation omitted, risking frost heave of the slab.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.process-specialist
+    - substructure.slab-on-ground
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0777
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.cool-room-panels-do-not-fit-building
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state cool room panels that do not fit the
+      building dimensions?
+    criteria:
+      'true': It explicitly states cool room panels that do not fit the building dimensions.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.process-specialist
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0778
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: fm.cold-store-vapour-barrier-damaged
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a cold store vapour barrier damaged,
+      allowing moisture ingress and ice?
+    criteria:
+      'true': It explicitly states a cold store vapour barrier damaged, allowing moisture ingress and
+        ice.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.process-specialist
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0784
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: fm.tenant-fitout-hvac-exceeds-base-capacity
+  attaches_to:
+    interface: if.tenant-fitout-base-building-hvac
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state tenant fit-out ductwork or air-conditioning
+      load that exceeds the spare capacity of the base building system?
+    criteria:
+      'true': It explicitly states tenant fit-out ductwork or air-conditioning load that exceeds the spare
+        capacity of the base building system.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-distribution
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0533
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: fm.tenant-extended-hours-cooling-not-provided
+  attaches_to:
+    interface: if.tenant-fitout-base-building-hvac
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a tenant requiring 24-hour cooling
+      that the base building system, designed for standard hours, cannot provide?
+    criteria:
+      'true': It explicitly states a tenant requiring 24-hour cooling that the base building system, designed
+        for standard hours, cannot provide.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.central-plant
+    - mechanical.controls-bms
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0534
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: fm.condensate-drain-without-fall
+  attaches_to:
+    interface: if.condensate-to-hydraulic-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly state a condensate drain run with no fall
+      to its discharge point?
+    criteria:
+      'true': It explicitly states a condensate drain run with no fall to its discharge point.
+      'false': It does not state this; a general mention of the system is insufficient.
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0405
+  - seed: mechanical-services-guide.md
+    anchor: '### Refrigerant, condensate and water interfaces'

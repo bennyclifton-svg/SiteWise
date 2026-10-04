@@ -452,3 +452,45 @@ interfaces:
   sources:
   - seed: civil-residential.md
     anchor: '### Pump-out systems'
+- id: if.tenant-fitout-base-building-hvac
+  type: loads
+  from:
+  - mechanical.air-distribution
+  - mechanical.air-conditioning
+  to:
+  - mechanical.central-plant
+  - mechanical.ventilation
+  applies_when:
+    det: existing_building
+    is: true
+  summary: A tenant fit-out adds ducting, supplementary cooling, outdoor air demand, equipment heat load
+    or extended operating hours that draw on the spare capacity, outdoor air and thermal performance
+    of the base building plant. Establish the base building capacity and operating hours before the
+    tenant design is approved, and keep landlord approval of changes.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state the mechanical load, operating hours or outdoor
+      air demand that a tenant fit-out places on the base building services?
+    criteria:
+      true: It states a tenant's mechanical load, operating hours or outdoor air demand.
+      false: It does not state any of these for the tenancy.
+    runs_on:
+    - mechanical.air-conditioning
+    - mechanical.air-distribution
+    - mechanical.central-plant
+    - mechanical.ventilation
+  failure_modes:
+  - fm.tenant-fitout-hvac-exceeds-base-capacity
+  - fm.tenant-extended-hours-cooling-not-provided
+  cross_cluster: false
+  status: draft
+  sources:
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+  - dataset: batch1
+    row: B1-0533
+  - dataset: batch1
+    row: B1-0534
+  - dataset: batch1
+    row: B1-0772
