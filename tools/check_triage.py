@@ -111,7 +111,12 @@ def check_triage(dataset, errors):
     for rid, r in seen.items():
         if r['kind'] not in KINDS:
             errors.append(f"{rid}: invalid kind {r['kind']!r}")
-        if r['category'] not in CATEGORIES:
+        # Categories belong to rows that become unforeseen-condition records;
+        # design and workmanship rows become failure modes and carry none.
+        if r['kind'] in ('design_or_coordination_error', 'workmanship_defect'):
+            if r['category']:
+                errors.append(f"{rid}: {r['kind']} rows carry no category")
+        elif r['category'] not in CATEGORIES:
             errors.append(f"{rid}: invalid category {r['category']!r}")
         for side in ('side_a', 'side_b'):
             v = r[side]

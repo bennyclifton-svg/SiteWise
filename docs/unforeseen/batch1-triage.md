@@ -21,18 +21,18 @@ The sorted rows are in `data/unforeseen/batch1_triage.csv`. The mapping of the 9
 | Process, authority, supply or weather | 250 |
 | Unforeseen condition (a state of the site or existing building found during works) | 101 |
 
-**By category**
+**By category** (unforeseen conditions and process rows only; the 649 design and workmanship rows become failure modes and carry no category)
 
 | Category | Rows |
 | - | - |
-| Supply and site operations | 347 |
-| Design and scope | 320 |
-| Authorities and utilities | 115 |
-| Third parties and occupation | 50 |
-| Ground and site | 49 |
-| Existing systems on test | 46 |
-| Existing structure | 38 |
-| Concealed services and earlier work | 27 |
+| Supply and site operations | 116 |
+| Authorities and utilities | 94 |
+| Third parties and occupation | 40 |
+| Ground and site | 33 |
+| Existing structure | 22 |
+| Concealed services and earlier work | 18 |
+| Existing systems on test | 11 |
+| Design and scope | 9 |
 | Hazardous materials | 8 |
 
 **By cluster**
