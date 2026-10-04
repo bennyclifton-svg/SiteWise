@@ -94,7 +94,7 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
     loaded = []
     for path in sorted(KNOWLEDGE.rglob("*.yaml")):
         rel = path.relative_to(ROOT).as_posix()
-        if path.parent.name in ("tables", PROFILE_DIR, WORKS_DIR) or path.parent.parent.name == WORKS_DIR:
+        if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in path.relative_to(KNOWLEDGE).parts[:-1]:
             continue
         if path.name in CLUSTER_WORKS_FILES and path.parent.parent.name == "clusters":
             continue
