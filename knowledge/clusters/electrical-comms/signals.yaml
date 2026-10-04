@@ -1,0 +1,259 @@
+version: 1
+signals:
+- id: sig.lift-shaft-readiness-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the lift shaft or core has been handed over
+    ready for the lift installer?
+  criteria:
+    'true': It states the shaft or core is ready or handed over for lift installation.
+    'false': It does not say so; a planned date or intention to hand over is not a handover.
+  runs_on:
+  - vertical-transport.lift-shafts-pits
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0560
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: sig.long-lead-delivery-stated
+  type: noul
+  instructions: Using `text`, does the passage state a supplier lead time or confirmed delivery for the
+    transformer or main switchboard?
+  criteria:
+    'true': It states a supplier lead time or confirmed delivery for the transformer or main switchboard.
+    'false': It does not state one for this equipment.
+  runs_on:
+  - electrical.utility-supply
+  - electrical.switchboards
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0609
+  - dataset: batch1
+    row: B1-0619
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: sig.utility-connection-offer-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the electricity network provider has issued
+    a connection offer or approval?
+  criteria:
+    'true': It states a connection offer or approval has been issued by the network provider.
+    'false': It does not state one; an application made or intended is not an offer.
+  runs_on:
+  - electrical.utility-supply
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0602
+  - dataset: batch1
+    row: B1-0606
+  - dataset: batch1
+    row: B1-0610
+  - dataset: batch1
+    row: B1-0617
+  - dataset: batch1
+    row: B1-0673
+  - dataset: batch1
+    row: B1-0674
+  - dataset: batch1
+    row: B1-0694
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: sig.existing-supply-capacity-confirmed
+  type: noul
+  instructions: Using `text`, does the passage state the capacity of the existing electrical supply or
+    main as confirmed by the network provider or a measurement?
+  criteria:
+    'true': It states a confirmed or measured capacity for the existing supply or main.
+    'false': It does not state a confirmed capacity, or only assumes one.
+  runs_on:
+  - electrical.utility-supply
+  - electrical.switchboards
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0679
+  - dataset: batch1
+    row: B1-0684
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: sig.existing-electrical-survey-stated
+  type: noul
+  instructions: Using `text`, does the passage state results of an inspection or survey of the existing
+    wiring, switchboards or risers?
+  criteria:
+    'true': It states results of an inspection or survey of the existing electrical installation.
+    'false': It does not state results; a requirement or intention to inspect is not a result.
+  runs_on:
+  - electrical.cabling-wiring
+  - electrical.switchboards
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0676
+  - dataset: batch1
+    row: B1-0677
+  - dataset: batch1
+    row: B1-0685
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: sig.existing-lighting-control-type-stated
+  type: noul
+  instructions: Using `text`, does the passage state the type of the existing lighting controls or dimmers?
+  criteria:
+    'true': It names the type or make of the existing lighting controls or dimmers.
+    'false': It does not name the existing controls or dimmers.
+  runs_on:
+  - electrical.lighting
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0687
+  - seed: electrical-services-guide.md
+    anchor: '## Lighting and controls'
+- id: sig.overhead-power-lines-identified
+  type: noul
+  instructions: Using `text`, does the passage state that overhead power lines near the site or building
+    have been identified?
+  criteria:
+    'true': It states overhead power lines are present or have been located near the site or building.
+    'false': It does not mention overhead power lines.
+  runs_on:
+  - electrical.utility-supply
+  - site
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0681
+  - dataset: batch1
+    row: B1-0808
+  - dataset: batch1
+    row: B1-0899
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: sig.earth-electrode-testing-stated
+  type: noul
+  instructions: Using `text`, does the passage state soil resistivity or earth electrode test results?
+  criteria:
+    'true': It states soil resistivity or earth electrode test results.
+    'false': It does not state results; a requirement or intention to test is not a result.
+  runs_on:
+  - electrical.earthing-lightning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0695
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'
+- id: sig.carrier-pit-position-confirmed
+  type: noul
+  instructions: Using `text`, does the passage state that the authority has confirmed the position of
+    the telecommunications pit or cabinet?
+  criteria:
+    'true': It states the authority has confirmed the position of the pit or cabinet.
+    'false': It does not state confirmation; a proposed position is not a confirmation.
+  runs_on:
+  - comms-security.carrier-lead-in
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0650
+  - dataset: batch1
+    row: B1-0652
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: sig.occupant-shutdown-notice-stated
+  type: noul
+  instructions: Using `text`, does the passage state a shutdown plan or notice to occupants for the electrical
+    isolation?
+  criteria:
+    'true': It states a shutdown plan or notice to occupants for the isolation.
+    'false': It does not state a plan or notice to occupants.
+  runs_on:
+  - electrical
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0683
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: sig.emergency-radio-coverage-requirement-stated
+  type: noul
+  instructions: Using `text`, does the passage state a requirement for in-building emergency responder
+    radio coverage?
+  criteria:
+    'true': It states in-building emergency radio coverage is required or has been requested by an authority.
+    'false': It does not mention emergency radio coverage.
+  runs_on:
+  - comms-security.ict-rooms-pathways
+  - fire-active
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0649
+- id: sig.solar-shading-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state that shading of the solar array by neighbouring buildings
+    has been assessed?
+  criteria:
+    'true': It states a shading assessment of the solar array has been made.
+    'false': It does not state a shading assessment.
+  runs_on:
+  - electrical.solar-pv
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0669
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
+- id: sig.lighting-spill-assessment-stated
+  type: noul
+  instructions: Using `text`, does the passage state that light spill to neighbouring properties has been
+    assessed?
+  criteria:
+    'true': It states a light spill assessment has been made.
+    'false': It does not state a light spill assessment.
+  runs_on:
+  - electrical.lighting
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0392
+  - dataset: batch1
+    row: B1-0642
+  - seed: electrical-services-guide.md
+    anchor: '## Lighting and controls'
+- id: sig.lighting-power-calculation-stated
+  type: noul
+  instructions: Using `text`, does the passage state a lighting power calculation or compliance statement
+    for the lighting design?
+  criteria:
+    'true': It states a lighting power calculation or compliance statement exists.
+    'false': It does not state one.
+  runs_on:
+  - electrical.lighting
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0379
+  - seed: electrical-services-guide.md
+    anchor: '## Lighting and controls'
+- id: sig.electrical-plant-neighbour-impact-assessed
+  type: noul
+  instructions: Using `text`, does the passage state that noise or emissions from the substation or generator
+    at neighbouring properties have been assessed?
+  criteria:
+    'true': It states noise or emission effects on neighbours have been assessed.
+    'false': It does not state such an assessment.
+  runs_on:
+  - electrical.utility-supply
+  - electrical.standby-power
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0607
+  - dataset: batch1
+    row: B1-0613
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
