@@ -1134,8 +1134,8 @@ The integration lead keeps this table current.
 
 | WP | Stage | Lane | Blocked by | State |
 | - | - | - | - | - |
-| WP-00 | gate | A | D-01, D-17 | Not started |
-| WP-11 | 1 | A | D-01, WP-00 | Not started |
+| WP-00 | gate | A | none (D-17 resolved under A9) | **Implemented**, merged `a123dec`, `c0cb356`; profile replays green; intake and bench gates still red for pre-existing reasons (F28, F29) |
+| WP-11 | 1 | A | none | **Implemented**, merged `0a13afd`; reviewed; site-edit lock, revision and event deferred to WP-14 |
 | WP-12 | 1 | A | WP-11, WP-K0, D-04, D-06 | Not started |
 | WP-13 | 1 | A | WP-12, WP-K0, D-06 | Not started |
 | WP-14 | 1 | A | WP-12, WP-13, D-18 (bench) | Not started |
@@ -1145,7 +1145,7 @@ The integration lead keeps this table current.
 | WP-22 | 2 | A | D-17 | Not started |
 | WP-23 | 2 | A | WP-22 | Not started |
 | WP-24 | 2 | A | WP-20 | Not started |
-| WP-25 | 2 | A | WP-K0 (D-07 for work_type) | Not started |
+| WP-25 | 2 | A | D-07 for the work_type operator | **Implemented**, merged `b3a1048`; reviewed; findings fixed |
 | WP-26 | 2 | A | WP-20, WP-25, WP-14 (D-03 for some accept kinds; D-29 for AT-15) | Not started |
 | WP-27 | 2 | A | D-12, D-17 | Not started |
 | WP-28 | 2 | A | D-23 | Not started |
