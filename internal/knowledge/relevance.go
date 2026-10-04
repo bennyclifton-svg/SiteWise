@@ -59,7 +59,7 @@ func (c *Catalog) Relevant(scope []string, values map[string]string) Relevance {
 				break
 			}
 		}
-		if !touches || evalPredicate(rule.AppliesWhen, values, in) == triFalse {
+		if !touches || evalPredicate(rule.AppliesWhen, predEnv{values: values, present: in}) == triFalse {
 			continue
 		}
 		out.Rules = append(out.Rules, id)
@@ -83,9 +83,19 @@ func (c *Catalog) Relevant(scope []string, values map[string]string) Relevance {
 	return out
 }
 
+// predEnv is what a predicate can read. A nil works or existing function
+// means that input is not available here (for example scope relevance before
+// work items exist), so those operators are unknown, never false.
+type predEnv struct {
+	values   map[string]string
+	present  func(string) bool
+	works    func(cond map[string]any) tri
+	existing func(system string) tri
+}
+
 // evalPredicate evaluates an applies_when mapping. Missing values and
 // malformed conditions are unknown, so they keep a rule rather than hide it.
-func evalPredicate(p any, values map[string]string, present func(string) bool) tri {
+func evalPredicate(p any, env predEnv) tri {
 	if p == nil {
 		return triTrue
 	}
@@ -94,7 +104,7 @@ func evalPredicate(p any, values map[string]string, present func(string) bool) t
 		return triUnknown
 	}
 	if det, ok := m["det"]; ok {
-		return evalCondition(fmt.Sprint(det), m, values)
+		return evalCondition(fmt.Sprint(det), m, env.values)
 	}
 	result := triTrue
 	for key, val := range m {
@@ -103,19 +113,33 @@ func evalPredicate(p any, values map[string]string, present func(string) bool) t
 		case "all":
 			t = triTrue
 			for _, sub := range asList(val) {
-				t = and(t, evalPredicate(sub, values, present))
+				t = and(t, evalPredicate(sub, env))
 			}
 		case "any":
 			t = triFalse
 			for _, sub := range asList(val) {
-				t = or(t, evalPredicate(sub, values, present))
+				t = or(t, evalPredicate(sub, env))
 			}
 		case "not":
-			t = not(evalPredicate(val, values, present))
+			t = not(evalPredicate(val, env))
 		case "system_present":
-			t = triFalse
-			if present(fmt.Sprint(val)) {
+			switch {
+			case env.present == nil:
+				t = triUnknown
+			case env.present(fmt.Sprint(val)):
 				t = triTrue
+			default:
+				t = triFalse
+			}
+		case "works":
+			t = triUnknown
+			if cond, ok := asMap(val); ok && env.works != nil {
+				t = env.works(cond)
+			}
+		case "system_existing":
+			t = triUnknown
+			if env.existing != nil {
+				t = env.existing(fmt.Sprint(val))
 			}
 		default:
 			t = triUnknown
