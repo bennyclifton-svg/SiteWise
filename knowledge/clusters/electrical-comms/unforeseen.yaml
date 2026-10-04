@@ -1,0 +1,882 @@
+version: 1
+unforeseen:
+- id: uc.lift-installation-waits-for-core-readiness
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: services
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        - upgrade
+        system:
+        - vertical-transport.passenger-lifts
+        - vertical-transport.goods-lifts
+  signals:
+  - sig.lift-shaft-readiness-stated
+  de_risk:
+    kind: hold_point
+    label: Shaft readiness handover to the lift installer
+  contract: Lift package states the access date and shaft conditions the builder must meet, with delay
+    remedies for each party.
+  effect:
+  - programme
+  - cost
+  severity: programme
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0560
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: uc.permanent-lift-used-as-construction-hoist
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    stage: construction
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        system:
+        - vertical-transport.passenger-lifts
+        - vertical-transport.goods-lifts
+  signals: []
+  de_risk:
+    kind: obligation
+    label: 'Construction use of permanent lifts: protection, an agreed use regime or a separate hoist'
+  contract: Lift contract states whether builder use is allowed, who protects and refurbishes the lift,
+    and how warranty starts.
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0561
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: uc.long-lead-electrical-equipment-delays-energisation
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: supply
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        - upgrade
+        system:
+        - electrical.utility-supply
+        - electrical.switchboards
+  signals:
+  - sig.long-lead-delivery-stated
+  de_risk:
+    kind: investigation
+    label: Confirm transformer and main switchboard lead times and the shop drawing approval path at design
+  contract: Early procurement or a separable portion for transformer and main switchboard supply, with
+    approval turnaround stated.
+  effect:
+  - programme
+  severity: programme
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0609
+  - dataset: batch1
+    row: B1-0619
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.electrical-equipment-delivered-damaged-or-wrong
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: supply
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        system:
+        - electrical.switchboards
+        - electrical.lighting
+  signals: []
+  de_risk:
+    kind: hold_point
+    label: Inspection of delivered switchboards and light fittings against the approved submittal before
+      acceptance
+  contract: Supply terms state delivery protection, inspection on arrival and who bears replacement of
+    damaged or wrong items.
+  effect:
+  - cost
+  - programme
+  - quality
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0620
+  - dataset: batch1
+    row: B1-0634
+  - seed: electrical-services-guide.md
+    anchor: '## Construction, commissioning and handover'
+- id: uc.utility-connection-or-meter-delays-energisation
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - electrical.utility-supply
+        - electrical.metering
+  signals:
+  - sig.utility-connection-offer-stated
+  de_risk:
+    kind: approval
+    label: Network provider connection and metering application with its programme
+  contract: Programme states the authority dependency; energisation date is not guaranteed by the builder.
+  effect:
+  - programme
+  severity: programme
+  discovered_at:
+  - construction
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0602
+  - dataset: batch1
+    row: B1-0694
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.substation-location-not-approved
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system: &id001
+        - electrical.utility-supply
+  signals:
+  - sig.utility-connection-offer-stated
+  de_risk:
+    kind: approval
+    label: Network provider agreement of substation or kiosk position before design is fixed
+  contract: Design brief reserves the substation position as provisional until the network provider agrees.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0606
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.utility-supply-capacity-below-new-load
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - electrical.utility-supply
+        - electrical.ev-charging
+  signals:
+  - sig.utility-connection-offer-stated
+  - sig.existing-supply-capacity-confirmed
+  de_risk:
+    kind: investigation
+    label: Network provider capacity advice against the maximum demand, including electric vehicle charging,
+      at design
+  contract: Provisional sum or separable portion for network upgrade works and a contribution the owner
+    may be asked to fund.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0610
+  - dataset: batch1
+    row: B1-0617
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.utility-limits-solar-export
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - electrical.solar-pv
+  signals:
+  - sig.utility-connection-offer-stated
+  de_risk:
+    kind: approval
+    label: Network provider embedded generation application stating any export limit
+  contract: Design allows for export limiting or storage if the network provider restricts export.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0673
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
+- id: uc.utility-requires-power-factor-correction
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - electrical.utility-supply
+        - electrical.switchboards
+  signals:
+  - sig.utility-connection-offer-stated
+  de_risk:
+    kind: investigation
+    label: Network provider power factor requirement for the connection at design
+  contract: Provisional sum for power factor correction equipment if the network provider requires it.
+  effect:
+  - cost
+  severity: cost
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0674
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.substation-neighbour-complaints
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system: *id001
+  signals:
+  - sig.electrical-plant-neighbour-impact-assessed
+  de_risk:
+    kind: investigation
+    label: Noise and electromagnetic field setback review for the substation position
+  contract: Design brief states setbacks from sensitive neighbours; relocation after construction is a
+    variation.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0607
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.generator-exhaust-neighbour-complaints
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - electrical.standby-power
+  signals:
+  - sig.electrical-plant-neighbour-impact-assessed
+  de_risk:
+    kind: investigation
+    label: Exhaust discharge height and neighbour impact review for the generator
+  contract: Generator package states the discharge arrangement and any operating-hour limits.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0613
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
+- id: uc.lighting-spill-neighbour-complaints
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        - repair
+        system:
+        - electrical.lighting
+  signals:
+  - sig.lighting-spill-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Light spill assessment at the neighbouring boundary for external and sports lighting
+  contract: Lighting package states the spill limits and the right to adjust aiming and controls after
+    commissioning.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0392
+  - dataset: batch1
+    row: B1-0642
+  - seed: electrical-services-guide.md
+    anchor: '## Lighting and controls'
+- id: uc.lighting-power-allowance-exceeded
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: design
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - electrical.lighting
+  signals:
+  - sig.lighting-power-calculation-stated
+  de_risk:
+    kind: investigation
+    label: Lighting power calculation against the energy rule while fittings can still change
+  contract: Lighting design is not accepted until the calculation is submitted and passes.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0379
+  - seed: electrical-services-guide.md
+    anchor: '## Lighting and controls'
+- id: uc.emergency-radio-coverage-required
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - comms-security.ict-rooms-pathways
+        - fire-active.fire-control
+  signals:
+  - sig.emergency-radio-coverage-requirement-stated
+  de_risk:
+    kind: investigation
+    label: Emergency services requirement for in-building radio coverage confirmed with the authority
+  contract: Provisional sum for an in-building coverage system until the authority confirms the requirement.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0649
+- id: uc.carrier-pit-or-cabinet-position-rejected
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - comms-security.carrier-lead-in
+  signals:
+  - sig.carrier-pit-position-confirmed
+  de_risk:
+    kind: approval
+    label: Carrier or authority confirmation of pit and cabinet positions before the footprint is fixed
+  contract: Design reserves the pit and cabinet positions as provisional until the authority confirms
+    them.
+  effect:
+  - cost
+  - programme
+  severity: programme
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0650
+  - dataset: batch1
+    row: B1-0652
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
+- id: uc.neighbour-development-shades-solar-array
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    stage: design
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - electrical.solar-pv
+  signals:
+  - sig.solar-shading-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Shading assessment of the solar array against approved and likely neighbouring development
+  contract: Owner accepts output risk; the design does not warrant yield.
+  effect:
+  - cost
+  severity: cost
+  discovered_at:
+  - design
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0669
+  - seed: electrical-services-guide.md
+    anchor: '## Generation, storage and EV infrastructure'
+- id: uc.existing-wiring-unsafe-on-inspection
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.cabling-wiring
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - retain
+        system:
+        - electrical.cabling-wiring
+        - electrical.switchboards
+    - &id002
+      det: existing_building
+      is: true
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: Inspection and testing of existing wiring and boards before design and pricing
+  contract: Provisional sum or separable portion for rewiring found unsafe; scope excludes defects not
+    inspected.
+  effect:
+  - cost
+  - safety
+  - programme
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0676
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: uc.aluminium-wiring-found
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: electrical.cabling-wiring
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - retain
+        system: &id003
+        - electrical.cabling-wiring
+    - *id002
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: Survey of existing wiring conductor material before design
+  contract: Provisional sum for replacement or approved termination of aluminium wiring found.
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0677
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: uc.asbestos-in-existing-switchboard
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        - remove
+        - repair
+        system:
+        - electrical.switchboards
+    - *id002
+  signals:
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: Hazardous materials survey of existing switchboards before isolation or removal
+  contract: Licensed removal and clearance are separate from the electrical scope; works stop on suspect
+    material.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0678
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: uc.existing-supply-or-main-capacity-below-added-load
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - electrical.switchboards
+        - electrical.utility-supply
+    - *id002
+  signals:
+  - sig.existing-supply-capacity-confirmed
+  de_risk:
+    kind: investigation
+    label: Capacity check of the existing supply, rising main and boards against the added load before
+      design
+  contract: Provisional sum or separable portion for supply upgrade; tenant or extension load limits stated
+    in the brief.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0679
+  - dataset: batch1
+    row: B1-0684
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: uc.overhead-power-lines-clash-with-extension
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: electrical.utility-supply
+  when:
+    all:
+    - det: work_type
+      any_of:
+      - extend
+    - *id002
+  signals:
+  - sig.overhead-power-lines-identified
+  de_risk:
+    kind: investigation
+    label: Identify overhead power lines and obtain network provider clearance advice before design
+  contract: Design is held until network provider advice is received; relocation or undergrounding is
+    a separable portion.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0681
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.overhead-power-lines-restrict-crane-and-delivery
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    stage: construction
+  when:
+    all:
+    - det: work_type
+      any_of:
+      - new
+      - extend
+      - refurb
+      - remediation
+    - system_existing: electrical.utility-supply
+  signals:
+  - sig.overhead-power-lines-identified
+  de_risk:
+    kind: investigation
+    label: Identify overhead power lines and plan crane and delivery access before site establishment
+  contract: Builder prices crane and delivery arrangements; line isolation or relocation requires network
+    provider notice.
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0808
+  - dataset: batch1
+    row: B1-0899
+  - seed: electrical-services-guide.md
+    anchor: '## Supply, demand and resilience'
+- id: uc.electrical-isolation-disrupts-occupants
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    stage: construction
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        - repair
+        system:
+        - electrical.switchboards
+        - electrical.cabling-wiring
+    - *id002
+  signals:
+  - sig.occupant-shutdown-notice-stated
+  de_risk:
+    kind: hold_point
+    label: Agreed isolation windows and notice to occupants before each shutdown
+  contract: Contract states permitted outage windows, notice and who bears out-of-hours work.
+  effect:
+  - programme
+  - cost
+  severity: programme
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0683
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: uc.existing-risers-and-conduits-full
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.cabling-wiring
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system: *id003
+    - *id002
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: Survey of spare capacity in existing risers and conduits before design
+  contract: Provisional sum for new risers or containment where existing routes are found full.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0685
+  - seed: electrical-services-guide.md
+    anchor: '## Refurbishment and live work'
+- id: uc.legacy-lighting-controls-cannot-dim-led
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.lighting
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        system:
+        - electrical.lighting
+    - *id002
+  signals:
+  - sig.existing-lighting-control-type-stated
+  de_risk:
+    kind: investigation
+    label: Identify the existing dimmers and controls before fittings are selected
+  contract: Allowance for replacing legacy controls where the new fittings need compatible ones.
+  effect:
+  - cost
+  severity: cost
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0687
+  - seed: electrical-services-guide.md
+    anchor: '## Lighting and controls'
+- id: uc.earth-electrode-cannot-be-driven-in-rock
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: electrical.earthing-lightning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - electrical.earthing-lightning
+  signals:
+  - sig.earth-electrode-testing-stated
+  de_risk:
+    kind: investigation
+    label: Soil resistivity and ground conditions at the proposed electrode position
+  contract: Allowance for an alternative earth electrode arrangement where rock prevents driving a stake.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - excavation
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0695
+  - seed: electrical-services-guide.md
+    anchor: '## Distribution, protection and access'

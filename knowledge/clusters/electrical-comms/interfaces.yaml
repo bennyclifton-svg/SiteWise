@@ -777,3 +777,62 @@ interfaces:
   sources:
   - seed: multi-dwelling-guide.md
     anchor: '## Separate metering and services'
+- id: if.lift-pit-waterproofing
+  type: depends_on
+  from:
+  - vertical-transport.lift-shafts-pits
+  to:
+  - substructure.damp-waterproofing
+  summary: The lift pit and shaft need a waterproofed, drained base and walls so water does not reach
+    lift equipment.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the lift pit is waterproofed or drained?
+    criteria:
+      true: It explicitly states the lift pit is waterproofed or has drainage.
+      false: It does not state this, only discusses the lift pit generally, or states the opposite.
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - substructure
+  failure_modes:
+  - fm.lift-pit-water-ingress
+  cross_cluster: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0566
+  - seed: as-standards-reference.md
+    anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
+- id: if.cable-routes-share-services-space
+  type: shares_space
+  from:
+  - electrical.cabling-wiring
+  - comms-security.ict-rooms-pathways
+  to:
+  - hydraulic
+  summary: Cable trays and comms risers compete with hydraulic stacks and other services for the same
+    shafts, ceilings and ducts.
+  governed_by: []
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage explicitly state the cable tray or riser routes are
+      coordinated with the other services?
+    criteria:
+      true: It explicitly states the cable tray or riser routes are coordinated with the other services.
+      false: It does not state this, only discusses the topic generally, or states the opposite.
+    runs_on:
+    - electrical.cabling-wiring
+    - comms-security.ict-rooms-pathways
+    - hydraulic
+  failure_modes:
+  - fm.cable-and-riser-routes-clash-with-services
+  cross_cluster: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0605
+  - dataset: batch1
+    row: B1-0621
+  - seed: ict-av-security-guide.md
+    anchor: '## ICT rooms, pathways and cabling'
