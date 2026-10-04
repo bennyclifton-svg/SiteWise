@@ -1,0 +1,970 @@
+version: 1
+unforeseen:
+- id: uc.water-main-connection-delayed
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: &id001
+        - new
+        - upgrade
+        - alter
+        system:
+        - hydraulic.cold-water
+  signals:
+  - sig.water-authority-connection-application-stated
+  de_risk:
+    kind: approval
+    label: Early application to the water authority for the connection and a programme allowance for its
+      works
+  contract: Extension of time for authority delay; do not make building supply a precondition of an early
+    milestone.
+  effect:
+  - programme
+  severity: programme
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0409
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: uc.trade-waste-approval-delayed
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.trade-waste
+  when:
+    all:
+    - works:
+        action: *id001
+        system:
+        - hydraulic.trade-waste
+  signals:
+  - sig.trade-waste-approval-stated
+  de_risk:
+    kind: approval
+    label: Trade waste approval application lodged during design
+  contract: Approval is an authority risk; name it in the programme and hold commissioning of discharging
+    equipment until it is granted.
+  effect:
+  - programme
+  - compliance
+  severity: programme
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0424
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: uc.rainwater-or-greywater-source-mandated-or-rejected
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.non-potable-water
+  when:
+    all:
+    - works:
+        action: *id001
+        system:
+        - hydraulic.non-potable-water
+  signals:
+  - sig.non-potable-water-source-approval-stated
+  de_risk:
+    kind: approval
+    label: Confirm the authority requirement or acceptance for rainwater or greywater use before layout
+      is fixed
+  contract: Allow for tank space, pumps and connections if reuse is mandated late; treat a rejected reuse
+    scheme as a design change.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0430
+  - dataset: batch1
+    row: B1-0467
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: uc.gas-meter-location-or-supply-restriction-changes-design
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.gas
+  when:
+    all:
+    - works:
+        action: *id001
+        system:
+        - hydraulic.gas
+  signals:
+  - sig.gas-meter-location-agreed-stated
+  de_risk:
+    kind: approval
+    label: Agree meter location and gas availability with the supplier and planning controls during design
+  contract: A gas ban or meter relocation is a design change for the electrical and hydraulic scopes;
+    name who carries it.
+  effect:
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0442
+  - dataset: batch1
+    row: B1-0445
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: uc.pressure-vessel-inspection-delays-use
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic
+  when:
+    all:
+    - works:
+        action: *id001
+        system:
+        - hydraulic.hot-water
+        - hydraulic.cold-water
+        - mechanical.central-plant
+  signals:
+  - sig.pressure-vessel-registration-stated
+  de_risk:
+    kind: approval
+    label: Register and book inspection of pressure vessels ahead of commissioning
+  contract: Make the vessel certificate a precondition of commissioning and of practical completion.
+  effect:
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0482
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: uc.plant-noise-to-neighbours-over-limit
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.air-conditioning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - replace
+        - alter
+        system:
+        - mechanical.air-conditioning
+        - mechanical.central-plant
+        - mechanical.local-exhaust
+        - hydraulic.specialist-process
+  signals:
+  - sig.plant-noise-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Plant noise assessment at the neighbouring boundary before plant is selected
+  contract: Require noise-limit compliance of selected plant in the supply contract; provide for acoustic
+    enclosures as a provisional sum.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0391
+  - dataset: batch1
+    row: B1-0487
+  - dataset: batch1
+    row: B1-0539
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: uc.cooling-tower-plume-complaint
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.cooling-towers
+  when:
+    all:
+    - works:
+        action: &id002
+        - new
+        system:
+        - mechanical.cooling-towers
+  signals:
+  - sig.cooling-tower-plume-assessment-stated
+  de_risk:
+    kind: investigation
+    label: Plume and drift assessment against neighbours and intakes during siting
+  contract: Name the party responsible for relocating or modifying the tower after complaint.
+  effect:
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0525
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: uc.rooftop-plant-breaches-height-limit
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        - upgrade
+        system:
+        - mechanical.central-plant
+        - mechanical.air-conditioning
+  signals:
+  - sig.rooftop-plant-in-approved-height-stated
+  de_risk:
+    kind: investigation
+    label: Check rooftop plant and screening against the approved building height before plant selection
+  contract: Treat a change to plant height as a design change needing a modification of consent.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0385
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: uc.hvac-efficiency-below-code
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: mechanical.air-conditioning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        - upgrade
+        system:
+        - mechanical.air-conditioning
+        - mechanical.central-plant
+  signals:
+  - sig.hvac-energy-compliance-evidence-stated
+  de_risk:
+    kind: investigation
+    label: Check selected HVAC equipment efficiency against the energy provisions at submittal
+  contract: Require efficiency evidence with equipment submittals before ordering.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0380
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: uc.fixture-water-rating-not-met
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: *id002
+        system:
+        - hydraulic.sanitary
+  signals:
+  - sig.fixture-water-rating-stated
+  de_risk:
+    kind: investigation
+    label: Check fixture water efficiency ratings at selection against the project requirement
+  contract: Require the rating in the fixture schedule and substitution approval.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0381
+  - seed: hydraulic-services-guide.md
+    anchor: '## Design review and coordination controls'
+- id: uc.process-exhaust-discharge-height-rejected
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action: *id002
+        system:
+        - mechanical.local-exhaust
+  signals:
+  - sig.exhaust-discharge-approval-stated
+  de_risk:
+    kind: approval
+    label: Agree process exhaust discharge point and height with the environmental authority during design
+  contract: Provide for a raised stack or treatment as a provisional sum where the authority requirement
+    is not yet known.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0540
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: uc.kitchen-exhaust-recirculation-not-permitted
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - mechanical.local-exhaust
+  signals:
+  - sig.kitchen-exhaust-discharged-outside-stated
+  de_risk:
+    kind: investigation
+    label: Confirm for the use class whether recirculating kitchen extraction is permitted before selecting
+      the system
+  contract: A required external discharge is a design change; name who carries ducting and make-up air
+    changes.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0593
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: uc.refrigerant-phase-out-forces-plant-replacement
+  kind: process_authority_supply_weather
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        - upgrade
+        - replace
+        system:
+        - mechanical.central-plant
+        - mechanical.air-conditioning
+    - &id003
+      det: existing_building
+      is: true
+  signals:
+  - sig.existing-refrigerant-type-stated
+  de_risk:
+    kind: investigation
+    label: Record refrigerant type and serviceability of existing plant before scoping repair
+  contract: Treat replacement of obsolete-refrigerant plant as a separable portion or provisional sum
+    where repair was scoped.
+  effect:
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0555
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: uc.bms-cybersecurity-requirement-raised-late
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: mechanical.controls-bms
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - mechanical.controls-bms
+  signals:
+  - sig.bms-network-security-requirement-stated
+  de_risk:
+    kind: investigation
+    label: Obtain the client IT and network security policy before BMS design
+  contract: State who supplies network security measures for the BMS in the contract scope.
+  effect:
+  - cost
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0666
+  - seed: mechanical-services-guide.md
+    anchor: '### Coordination'
+- id: uc.chilled-water-flushing-delays-commissioning
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: *id002
+        system:
+        - mechanical.central-plant
+        - mechanical.air-conditioning
+  signals:
+  - sig.pipework-flushing-programme-stated
+  de_risk:
+    kind: hold_point
+    label: Pipework flushing and cleaning complete before plant commissioning
+  contract: Programme flushing as a predecessor to commissioning, and make the cleaning record a precondition
+    of commissioning.
+  effect:
+  - programme
+  - quality
+  severity: programme
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0524
+  - seed: mechanical-services-guide.md
+    anchor: '## Commissioning and handover'
+- id: uc.underfloor-heating-not-commissioned-before-flooring
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: mechanical.heating-appliances
+  when:
+    all:
+    - works:
+        action: *id002
+        system:
+        - mechanical.heating-appliances
+  signals:
+  - sig.heating-commissioned-before-flooring-stated
+  de_risk:
+    kind: hold_point
+    label: Heating commissioned and run before floor finish is laid
+  contract: Sequence flooring after the heating hold point in the programme.
+  effect:
+  - quality
+  - programme
+  severity: durability
+  discovered_at:
+  - construction
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0713
+  - seed: mechanical-services-guide.md
+    anchor: '## Construction and delivery controls'
+- id: uc.fixtures-delivered-do-not-match-rough-in
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: *id002
+        system:
+        - hydraulic.sanitary
+  signals:
+  - sig.fixture-rough-in-dimensions-confirmed-stated
+  de_risk:
+    kind: hold_point
+    label: Confirm rough-in dimensions against the supplied fixtures before closing walls
+  contract: Make the fixture schedule and substitutions approval a precondition of rough-in.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0470
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: uc.copper-pipe-theft-from-site
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: services
+  when:
+    all:
+    - works:
+        action: *id002
+        system:
+        - hydraulic.cold-water
+        - hydraulic.hot-water
+  signals: []
+  de_risk:
+    kind: obligation
+    label: Secure storage and site security for copper and installed pipework
+  contract: State who carries loss of materials before practical completion.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0884
+  - seed: hydraulic-services-guide.md
+    anchor: '## Construction, testing and handover'
+- id: uc.tenant-fitout-changes-after-approval-affect-base-services
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    interface: if.tenant-fitout-base-building-hvac
+  when:
+    all:
+    - *id003
+    - works:
+        action:
+        - alter
+        - upgrade
+        - new
+        system:
+        - mechanical.air-distribution
+        - mechanical.air-conditioning
+        - mechanical.ventilation
+  signals:
+  - sig.tenant-fitout-mechanical-load-stated
+  - sig.landlord-approval-of-tenant-services-stated
+  de_risk:
+    kind: approval
+    label: Landlord and base building services consultant review of tenant fit-out changes after approval
+  contract: Tenant changes after approval need landlord re-approval and a variation process; keep make-good
+    and capacity responsibilities with the tenant.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - construction
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0772
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: uc.existing-pipework-deteriorated-or-leaking-when-opened
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - hydraulic.cold-water
+        - hydraulic.hot-water
+        - hydraulic.sanitary
+    - *id003
+  signals:
+  - sig.existing-pipework-material-stated
+  - sig.existing-services-investigation-stated
+  de_risk:
+    kind: investigation
+    label: Inspect and, where possible, camera or pressure test existing pipework and open selected linings
+      before design
+  contract: Provisional sum for replacement of deteriorated pipework; do not price on existing drawings.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0456
+  - dataset: batch1
+    row: B1-0458
+  - dataset: batch1
+    row: B1-0459
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: uc.lead-found-in-existing-plumbing
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        system:
+        - hydraulic.cold-water
+        - hydraulic.hot-water
+    - *id003
+  signals:
+  - sig.existing-plumbing-lead-testing-stated
+  de_risk:
+    kind: investigation
+    label: Test existing plumbing for lead before scoping reuse
+  contract: Provisional sum for lead pipework removal and safe handling.
+  effect:
+  - cost
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0457
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: uc.existing-drainage-undersized-for-new-fixtures
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - hydraulic.sanitary
+    - *id003
+  signals:
+  - sig.existing-drainage-size-stated
+  de_risk:
+    kind: investigation
+    label: Establish size, fall and condition of existing drains against the added fixture load
+  contract: Provisional sum for drainage upgrade or separable portion.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0461
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: uc.existing-roof-drainage-short-for-extension
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.roof-drainage
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - hydraulic.roof-drainage
+    - *id003
+  signals:
+  - sig.existing-roof-drainage-capacity-stated
+  de_risk:
+    kind: investigation
+    label: Check existing gutters, downpipes and the stormwater connection against the added roof area
+  contract: Provisional sum for roof drainage upgrade.
+  effect:
+  - cost
+  - compliance
+  severity: durability
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0977
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
+- id: uc.existing-hvac-cannot-serve-extension
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.air-conditioning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - mechanical.air-conditioning
+        - mechanical.central-plant
+    - *id003
+  signals:
+  - sig.existing-hvac-spare-capacity-stated
+  de_risk:
+    kind: investigation
+    label: Establish capacity, condition and remaining life of existing HVAC before assuming it serves
+      new area
+  contract: Provisional sum for additional or separate plant.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0553
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: uc.new-plant-does-not-fit-old-plant-room-or-route
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        - remove
+        system:
+        - mechanical.central-plant
+        - mechanical.air-conditioning
+    - *id003
+  signals:
+  - sig.plant-room-size-and-route-stated
+  de_risk:
+    kind: investigation
+    label: Survey plant room dimensions and the entry and removal route before selecting replacement plant
+  contract: Provisional sum for building works to the plant room or route, such as opening up or crane
+    hire.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0556
+  - dataset: batch1
+    row: B1-0557
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: uc.asbestos-in-existing-ductwork
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        - remove
+        system:
+        - mechanical.air-distribution
+        - mechanical.air-conditioning
+    - *id003
+  signals:
+  - sig.existing-ductwork-asbestos-survey-stated
+  de_risk:
+    kind: investigation
+    label: Survey and sample ductwork insulation for asbestos before strip-out
+  contract: Provisional sum for licensed removal; stop-work protocol on suspect material.
+  effect:
+  - cost
+  - programme
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0554
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: uc.existing-services-not-as-documented
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    stage: investigation
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        - replace
+        - remove
+        system:
+        - hydraulic.cold-water
+        - hydraulic.sanitary
+        - mechanical.air-distribution
+    - *id003
+  signals:
+  - sig.existing-services-investigation-stated
+  de_risk:
+    kind: investigation
+    label: Investigate existing services on site rather than relying on record drawings
+  contract: Treat existing documentation as indicative; allocate unforeseen-condition risk and a provisional
+    sum explicitly.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0963
+  - seed: mechanical-services-guide.md
+    anchor: '### Existing buildings and live environments'
+- id: uc.existing-drains-and-services-under-new-footprint
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - new
+        system:
+        - hydraulic.sanitary
+        - hydraulic.cold-water
+        - mechanical.air-distribution
+    - *id003
+  signals:
+  - sig.existing-drain-location-survey-stated
+  de_risk:
+    kind: investigation
+    label: Locate existing drains, easements and services before fixing the extension footprint
+  contract: Provisional sum for diversion; neighbour and authority consent for shared or easement drains.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: cost
+  discovered_at:
+  - design
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0454
+  - dataset: batch1
+    row: B1-0978
+  - seed: hydraulic-services-guide.md
+    anchor: '## Refurbishment and commercial fit-out overlay'
