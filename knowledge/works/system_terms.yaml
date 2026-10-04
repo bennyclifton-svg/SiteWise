@@ -1,0 +1,2846 @@
+# Free-text system names from owner-supplied unforeseen-circumstance lists, mapped to
+# SiteWise system ids or delivery anchors (programme, contract, procurement, design,
+# authority, utility, weather, neighbour, occupant, commissioning, handover, budget,
+# insurance, site_operations). Default mapping per term; a row may override it when its
+# context clearly needs another id (see data/unforeseen/<dataset>_triage.csv).
+# Terms with "/" list one id per part. Drafted by K4 pass A; owner has not reviewed.
+version: 1
+terms:
+- term: Access
+  ids: [access-egress.accessible-access]
+  status: draft
+- term: Accessibility
+  ids: [access-egress.accessible-access]
+  status: draft
+- term: Accessibility/emergency
+  ids: [access-egress.accessible-access]
+  status: draft
+- term: Accessible path
+  ids: [access-egress.accessible-access]
+  status: draft
+- term: Acoustics
+  ids: [interiors.acoustic-separation]
+  status: draft
+- term: Acoustics/services
+  ids: [interiors.acoustic-separation]
+  status: draft
+- term: Added bedrooms
+  ids: [design]
+  status: draft
+- term: Adjacent buildings
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Adjacent foundations
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Adjacent structures
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Adjoining buildings
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Adjoining loads
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Adjoining owner
+  ids: [neighbour]
+  status: draft
+- term: Adjoining property
+  ids: [neighbour]
+  status: draft
+- term: Adjoining structure
+  ids: [site.adjoining-structures]
+  status: draft
+- term: All services
+  ids: [hydraulic]
+  status: draft
+- term: Alterations
+  ids: [design]
+  status: draft
+- term: Anchors
+  ids: [structure]
+  status: draft
+- term: Apartment plan
+  ids: [design]
+  status: draft
+- term: Apartments
+  ids: [design]
+  status: draft
+- term: Appearance
+  ids: [design]
+  status: draft
+- term: Appliances
+  ids: [interiors.ffe]
+  status: draft
+- term: Approval
+  ids: [authority]
+  status: draft
+- term: Approvals
+  ids: [authority]
+  status: draft
+- term: Architecture
+  ids: [design]
+  status: draft
+- term: As-built records
+  ids: [handover]
+  status: draft
+- term: Audio
+  ids: [comms-security.audiovisual]
+  status: draft
+- term: Authority
+  ids: [authority]
+  status: draft
+- term: Authority sign-off
+  ids: [authority]
+  status: draft
+- term: BMS
+  ids: [mechanical.controls-bms]
+  status: draft
+- term: Backfill pressure
+  ids: [site.earthworks]
+  status: draft
+- term: Backflow
+  ids: [hydraulic.backflow-prevention]
+  status: draft
+- term: Backing
+  ids: [structure]
+  status: draft
+- term: Backing structure
+  ids: [structure]
+  status: draft
+- term: Balcony
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Balcony slab
+  ids: [structure.concrete]
+  status: draft
+- term: Balustrade
+  ids: [access-egress.barriers]
+  status: draft
+- term: Balustrades
+  ids: [access-egress.barriers]
+  status: draft
+- term: Base HVAC
+  ids: [mechanical]
+  status: draft
+- term: Base building
+  ids: [mechanical]
+  status: draft
+- term: Base services
+  ids: [mechanical]
+  status: draft
+- term: Basement
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Basement layout
+  ids: [design]
+  status: draft
+- term: Basement ramp
+  ids: [structure.concrete]
+  status: draft
+- term: Basement slab
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Basement wall line
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Basement walls
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Basement/structure
+  ids: [substructure.basement-retention, structure]
+  status: draft
+- term: Bathroom
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Battery systems
+  ids: [electrical.battery-storage]
+  status: draft
+- term: Bedrock
+  ids: [site.ground-conditions]
+  status: draft
+- term: Bedrooms
+  ids: [design]
+  status: draft
+- term: Billing
+  ids: [electrical.metering]
+  status: draft
+- term: Bollards
+  ids: [site.impact-protection]
+  status: draft
+- term: Boundary
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Bracing
+  ids: [structure]
+  status: draft
+- term: Brief
+  ids: [design]
+  status: draft
+- term: Budget
+  ids: [budget]
+  status: draft
+- term: Builder's clean
+  ids: [handover]
+  status: draft
+- term: Building
+  ids: [design]
+  status: draft
+- term: Building access
+  ids: [design]
+  status: draft
+- term: Building completion
+  ids: [handover]
+  status: draft
+- term: Building condition
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Building dimensions
+  ids: [design]
+  status: draft
+- term: Building footprint
+  ids: [design]
+  status: draft
+- term: Building height
+  ids: [authority]
+  status: draft
+- term: Building layout
+  ids: [design]
+  status: draft
+- term: Building opening
+  ids: [structure]
+  status: draft
+- term: Building pad
+  ids: [site.earthworks]
+  status: draft
+- term: Building structure
+  ids: [structure]
+  status: draft
+- term: Building use
+  ids: [design]
+  status: draft
+- term: Building wrap
+  ids: [envelope]
+  status: draft
+- term: Bulkheads
+  ids: [interiors.ceilings]
+  status: draft
+- term: Bunding
+  ids: [hydraulic.specialist-process]
+  status: draft
+- term: Bunds
+  ids: [hydraulic.specialist-process]
+  status: draft
+- term: Buried services
+  ids: [site.services-connections]
+  status: draft
+- term: Bushfire
+  ids: [envelope.bushfire-construction]
+  status: draft
+- term: Bushfire design
+  ids: [envelope.bushfire-construction]
+  status: draft
+- term: Bushfire mesh
+  ids: [envelope.bushfire-construction]
+  status: draft
+- term: Bushfire rating
+  ids: [envelope.bushfire-construction]
+  status: draft
+- term: Cable trays
+  ids: [electrical.cabling-wiring]
+  status: draft
+- term: Cables
+  ids: [electrical.cabling-wiring]
+  status: draft
+- term: Cabling
+  ids: [electrical.cabling-wiring]
+  status: draft
+- term: Canopy
+  ids: [structure]
+  status: draft
+- term: Car park
+  ids: [site.vehicle-access]
+  status: draft
+- term: Car park ramp
+  ids: [structure.concrete]
+  status: draft
+- term: Car park slab
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Carpet
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Carport
+  ids: [structure]
+  status: draft
+- term: Cash flow
+  ids: [budget]
+  status: draft
+- term: Cavity ventilation
+  ids: [envelope.pliable-membranes]
+  status: draft
+- term: Ceiling
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceiling cavity
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceiling depth
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceiling height
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceiling lining
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceiling programme
+  ids: [programme]
+  status: draft
+- term: Ceiling services
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceiling space
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceiling void
+  ids: [interiors.ceilings]
+  status: draft
+- term: Ceilings
+  ids: [interiors.ceilings]
+  status: draft
+- term: Certifier
+  ids: [authority]
+  status: draft
+- term: Civil
+  ids: [site.earthworks]
+  status: draft
+- term: Civil levels
+  ids: [site.earthworks]
+  status: draft
+- term: Civil pavement
+  ids: [site.vehicle-access]
+  status: draft
+- term: Cladding
+  ids: [envelope]
+  status: draft
+- term: Cladding fixings
+  ids: [envelope.external-walls]
+  status: draft
+- term: Cladding remediation
+  ids: [envelope]
+  status: draft
+- term: Claims
+  ids: [contract]
+  status: draft
+- term: Clean room
+  ids: [mechanical.process-specialist]
+  status: draft
+- term: Client supply
+  ids: [procurement]
+  status: draft
+- term: Climate
+  ids: [weather]
+  status: draft
+- term: Clinical
+  ids: [design]
+  status: draft
+- term: Clinical rooms
+  ids: [design]
+  status: draft
+- term: Coating
+  ids: [interiors.painting]
+  status: draft
+- term: Coatings
+  ids: [interiors.painting]
+  status: draft
+- term: Cold pipes
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Cold store
+  ids: [mechanical.process-specialist]
+  status: draft
+- term: Columns
+  ids: [structure]
+  status: draft
+- term: Commissioning
+  ids: [commissioning]
+  status: draft
+- term: Compaction
+  ids: [site.earthworks]
+  status: draft
+- term: Compartmentation
+  ids: [fire-passive]
+  status: draft
+- term: Completed work
+  ids: [handover]
+  status: draft
+- term: Completion
+  ids: [handover]
+  status: draft
+- term: Compliance
+  ids: [authority]
+  status: draft
+- term: Compliance evidence
+  ids: [authority]
+  status: draft
+- term: Compliance testing
+  ids: [authority]
+  status: draft
+- term: Compressible soil
+  ids: [site.ground-conditions]
+  status: draft
+- term: Concrete
+  ids: [structure.concrete]
+  status: draft
+- term: Concrete floor
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Concrete placement
+  ids: [structure.concrete]
+  status: draft
+- term: Concrete pour
+  ids: [structure.concrete]
+  status: draft
+- term: Concrete pressure
+  ids: [structure.temporary-works]
+  status: draft
+- term: Concrete programme
+  ids: [programme]
+  status: draft
+- term: Concrete pump
+  ids: [site_operations]
+  status: draft
+- term: Concrete supply
+  ids: [procurement]
+  status: draft
+- term: Concrete works
+  ids: [structure.concrete]
+  status: draft
+- term: Condensation
+  ids: [envelope.pliable-membranes]
+  status: draft
+- term: Condensers
+  ids: [mechanical.air-conditioning]
+  status: draft
+- term: Connections
+  ids: [structure]
+  status: draft
+- term: Consent
+  ids: [authority]
+  status: draft
+- term: Consent conditions
+  ids: [authority]
+  status: draft
+- term: Construction
+  ids: [design]
+  status: draft
+- term: Construction loading
+  ids: [site_operations]
+  status: draft
+- term: Construction sequence
+  ids: [programme]
+  status: draft
+- term: Construction traffic
+  ids: [site_operations]
+  status: draft
+- term: Containment
+  ids: [electrical.cabling-wiring]
+  status: draft
+- term: Containment rules
+  ids: [authority]
+  status: draft
+- term: Contaminants
+  ids: [site.contamination]
+  status: draft
+- term: Contract
+  ids: [contract]
+  status: draft
+- term: Controls
+  ids: [mechanical.controls-bms]
+  status: draft
+- term: Cool room
+  ids: [mechanical.process-specialist]
+  status: draft
+- term: Cooling tower
+  ids: [mechanical.cooling-towers]
+  status: draft
+- term: Coordination
+  ids: [design]
+  status: draft
+- term: Core readiness
+  ids: [structure]
+  status: draft
+- term: Core walls
+  ids: [structure]
+  status: draft
+- term: Coring
+  ids: [structure.concrete]
+  status: draft
+- term: Cornice
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Corrosion protection
+  ids: [structure.steel]
+  status: draft
+- term: Council
+  ids: [authority]
+  status: draft
+- term: Council network
+  ids: [site.stormwater-detention]
+  status: draft
+- term: Council rules
+  ids: [authority]
+  status: draft
+- term: Crane
+  ids: [site_operations]
+  status: draft
+- term: Crane base
+  ids: [structure.temporary-works]
+  status: draft
+- term: Cranes
+  ids: [site_operations]
+  status: draft
+- term: Cultural heritage
+  ids: [authority]
+  status: draft
+- term: Curing/shrinkage
+  ids: [structure.concrete]
+  status: draft
+- term: Curtain wall
+  ids: [envelope.curtain-wall]
+  status: draft
+- term: Curtain wall brackets
+  ids: [envelope.curtain-wall]
+  status: draft
+- term: Curtains
+  ids: [interiors.ffe]
+  status: draft
+- term: Cutting
+  ids: [structure.concrete]
+  status: draft
+- term: Damp course
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Data
+  ids: [comms-security.ict-rooms-pathways]
+  status: draft
+- term: Data room
+  ids: [comms-security.ict-rooms-pathways]
+  status: draft
+- term: Deck
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Defects
+  ids: [handover]
+  status: draft
+- term: Delay
+  ids: [programme]
+  status: draft
+- term: Delivery
+  ids: [procurement]
+  status: draft
+- term: Demolition
+  ids: [site.demolition]
+  status: draft
+- term: Demolition legacy
+  ids: [site.demolition]
+  status: draft
+- term: Design
+  ids: [design]
+  status: draft
+- term: Design disciplines
+  ids: [design]
+  status: draft
+- term: Design intent
+  ids: [design]
+  status: draft
+- term: Detectors
+  ids: [fire-active.detection]
+  status: draft
+- term: Development
+  ids: [design]
+  status: draft
+- term: Dewatering
+  ids: [site.ground-conditions]
+  status: draft
+- term: Dock doors
+  ids: [envelope.vehicle-doors]
+  status: draft
+- term: Dock leveller
+  ids: [site.loading-docks]
+  status: draft
+- term: Documentation
+  ids: [design]
+  status: draft
+- term: Door
+  ids: [interiors.internal-doors]
+  status: draft
+- term: Door closers
+  ids: [interiors.internal-doors]
+  status: draft
+- term: Door frames
+  ids: [interiors.internal-doors]
+  status: draft
+- term: Door thresholds
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Doors
+  ids: [interiors.internal-doors]
+  status: draft
+- term: Doors/services
+  ids: [hydraulic]
+  status: draft
+- term: Drain vent
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Drainage
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Drainage stack
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Drawings
+  ids: [design]
+  status: draft
+- term: Ducts
+  ids: [mechanical.air-distribution]
+  status: draft
+- term: Ductwork
+  ids: [mechanical.air-distribution]
+  status: draft
+- term: Durability
+  ids: [structure.concrete]
+  status: draft
+- term: Dwelling
+  ids: [design]
+  status: draft
+- term: EV charging
+  ids: [electrical.ev-charging]
+  status: draft
+- term: Earthing
+  ids: [electrical.earthing-lightning]
+  status: draft
+- term: Earthworks
+  ids: [site.earthworks]
+  status: draft
+- term: Eaves
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Eaves gutters
+  ids: [hydraulic.roof-drainage]
+  status: draft
+- term: Ecology
+  ids: [authority]
+  status: draft
+- term: Edge formwork
+  ids: [structure.temporary-works]
+  status: draft
+- term: Edge protection
+  ids: [site_operations]
+  status: draft
+- term: Edge structure
+  ids: [structure]
+  status: draft
+- term: Efficiency
+  ids: [envelope.thermal-performance]
+  status: draft
+- term: Egress
+  ids: [access-egress.exits]
+  status: draft
+- term: Egress signage
+  ids: [fire-active.emergency-lighting]
+  status: draft
+- term: Egress width
+  ids: [access-egress.exits]
+  status: draft
+- term: Electrical
+  ids: [electrical]
+  status: draft
+- term: Electrical capacity
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Electrical conduit
+  ids: [electrical.cabling-wiring]
+  status: draft
+- term: Electrical network
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Electrical supply
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Electrical/plumbing
+  ids: [hydraulic]
+  status: draft
+- term: Emergency lighting
+  ids: [fire-active.emergency-lighting]
+  status: draft
+- term: Emergency overflow
+  ids: [hydraulic.roof-drainage]
+  status: draft
+- term: Emergency services
+  ids: [fire-active]
+  status: draft
+- term: Energy code
+  ids: [authority]
+  status: draft
+- term: Energy performance
+  ids: [envelope.thermal-performance]
+  status: draft
+- term: Energy rating
+  ids: [envelope.thermal-performance]
+  status: draft
+- term: Energy upgrade
+  ids: [envelope.thermal-performance]
+  status: draft
+- term: Entry design
+  ids: [design]
+  status: draft
+- term: Envelope
+  ids: [envelope]
+  status: draft
+- term: Envelope/HVAC
+  ids: [envelope.thermal-performance]
+  status: draft
+- term: Environment
+  ids: [site.contamination]
+  status: draft
+- term: Environmental approvals
+  ids: [authority]
+  status: draft
+- term: Environmental controls
+  ids: [authority]
+  status: draft
+- term: Environmental rules
+  ids: [authority]
+  status: draft
+- term: Equipment
+  ids: [design]
+  status: draft
+- term: Erection
+  ids: [programme]
+  status: draft
+- term: Escalator
+  ids: [vertical-transport.escalators-walks]
+  status: draft
+- term: Excavation
+  ids: [site.earthworks]
+  status: draft
+- term: Excavation method
+  ids: [site.earthworks]
+  status: draft
+- term: Excavation/shoring
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Execution
+  ids: [programme]
+  status: draft
+- term: Exhaust
+  ids: [mechanical.local-exhaust]
+  status: draft
+- term: Existing
+  ids: [structure.alterations]
+  status: draft
+- term: Existing HVAC
+  ids: [mechanical]
+  status: draft
+- term: Existing basement
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Existing building
+  ids: [structure.alterations]
+  status: draft
+- term: Existing concrete
+  ids: [structure.alterations]
+  status: draft
+- term: Existing containment
+  ids: [electrical.cabling-wiring]
+  status: draft
+- term: Existing electrical
+  ids: [electrical]
+  status: draft
+- term: Existing facade
+  ids: [envelope.external-walls]
+  status: draft
+- term: Existing finishes
+  ids: [interiors]
+  status: draft
+- term: Existing floor
+  ids: [structure.alterations]
+  status: draft
+- term: Existing footings
+  ids: [substructure.underpinning]
+  status: draft
+- term: Existing frame
+  ids: [structure.alterations]
+  status: draft
+- term: Existing hot water unit
+  ids: [hydraulic.hot-water]
+  status: draft
+- term: Existing plumbing
+  ids: [hydraulic]
+  status: draft
+- term: Existing reinforcement
+  ids: [structure.alterations]
+  status: draft
+- term: Existing roof
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Existing services
+  ids: [mechanical]
+  status: draft
+- term: Existing slab
+  ids: [structure.alterations]
+  status: draft
+- term: Existing structure
+  ids: [structure.alterations]
+  status: draft
+- term: Existing supply
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Existing walls
+  ids: [structure.alterations]
+  status: draft
+- term: Existing walls/footings
+  ids: [substructure.underpinning]
+  status: draft
+- term: Exit location
+  ids: [access-egress.exits]
+  status: draft
+- term: Exit signage
+  ids: [access-egress.exits]
+  status: draft
+- term: Extension
+  ids: [design]
+  status: draft
+- term: External lighting
+  ids: [electrical.lighting]
+  status: draft
+- term: Extraction
+  ids: [mechanical.local-exhaust]
+  status: draft
+- term: FF&E
+  ids: [interiors.ffe]
+  status: draft
+- term: Fabricated steel
+  ids: [procurement]
+  status: draft
+- term: Fabrication
+  ids: [procurement]
+  status: draft
+- term: Factory noise
+  ids: [neighbour]
+  status: draft
+- term: Falls
+  ids: [site.stormwater-detention]
+  status: draft
+- term: Fans
+  ids: [mechanical.ventilation]
+  status: draft
+- term: Fascia/structure
+  ids: [structure]
+  status: draft
+- term: Façade
+  ids: [envelope]
+  status: draft
+- term: Façade bracket
+  ids: [envelope.curtain-wall]
+  status: draft
+- term: Façade movement
+  ids: [envelope]
+  status: draft
+- term: Façade substrates
+  ids: [envelope]
+  status: draft
+- term: Feature items
+  ids: [design]
+  status: draft
+- term: Fencing
+  ids: [site.landscape]
+  status: draft
+- term: Fill consolidation
+  ids: [site.earthworks]
+  status: draft
+- term: Finance
+  ids: [budget]
+  status: draft
+- term: Finish
+  ids: [interiors.painting]
+  status: draft
+- term: Finishes
+  ids: [interiors.painting]
+  status: draft
+- term: Finishing programme
+  ids: [programme]
+  status: draft
+- term: Fire
+  ids: [fire-active]
+  status: draft
+- term: Fire access
+  ids: [fire-active]
+  status: draft
+- term: Fire alarm
+  ids: [fire-active.detection]
+  status: draft
+- term: Fire booster
+  ids: [fire-active.hydrants]
+  status: draft
+- term: Fire code
+  ids: [authority]
+  status: draft
+- term: Fire compartment
+  ids: [fire-passive]
+  status: draft
+- term: Fire compartments
+  ids: [fire-passive]
+  status: draft
+- term: Fire compliance
+  ids: [fire-active]
+  status: draft
+- term: Fire damper
+  ids: [fire-passive.openings]
+  status: draft
+- term: Fire design
+  ids: [design]
+  status: draft
+- term: Fire engineering
+  ids: [fire-passive]
+  status: draft
+- term: Fire exposure
+  ids: [fire-passive]
+  status: draft
+- term: Fire lift
+  ids: [vertical-transport.lift-fire-service]
+  status: draft
+- term: Fire protection
+  ids: [fire-active]
+  status: draft
+- term: Fire pump
+  ids: [fire-active.fire-water]
+  status: draft
+- term: Fire rating
+  ids: [fire-passive]
+  status: draft
+- term: Fire rules
+  ids: [authority]
+  status: draft
+- term: Fire safety
+  ids: [fire-passive]
+  status: draft
+- term: Fire separation
+  ids: [fire-passive]
+  status: draft
+- term: Fire services
+  ids: [fire-active]
+  status: draft
+- term: Fire shaft
+  ids: [fire-passive]
+  status: draft
+- term: Fire spread
+  ids: [fire-passive]
+  status: draft
+- term: Fire sprinklers
+  ids: [fire-active.sprinklers]
+  status: draft
+- term: Fire suppression
+  ids: [fire-active.sprinklers]
+  status: draft
+- term: Fire system
+  ids: [fire-active]
+  status: draft
+- term: Fire systems
+  ids: [fire-active]
+  status: draft
+- term: Fire tank
+  ids: [fire-active.fire-water]
+  status: draft
+- term: Fire wall
+  ids: [fire-passive]
+  status: draft
+- term: Fire-rated ceiling
+  ids: [fire-passive]
+  status: draft
+- term: Fit-out
+  ids: [design]
+  status: draft
+- term: Fit-out HVAC
+  ids: [mechanical]
+  status: draft
+- term: Fixings
+  ids: [structure]
+  status: draft
+- term: Fixtures
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Flood planning
+  ids: [site.flooding]
+  status: draft
+- term: Floor
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Floor coating
+  ids: [interiors.painting]
+  status: draft
+- term: Floor drainage
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Floor finish
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Floor finishes
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Floor joist
+  ids: [structure]
+  status: draft
+- term: Floor layout
+  ids: [design]
+  status: draft
+- term: Floor level
+  ids: [design]
+  status: draft
+- term: Floor levels
+  ids: [design]
+  status: draft
+- term: Floor plan
+  ids: [design]
+  status: draft
+- term: Floor structure
+  ids: [structure.concrete]
+  status: draft
+- term: Floor waste
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Flooring
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Flooring programme
+  ids: [programme]
+  status: draft
+- term: Floors
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Footing base
+  ids: [substructure.footings]
+  status: draft
+- term: Footing levels
+  ids: [substructure.footings]
+  status: draft
+- term: Footing trench
+  ids: [substructure.footings]
+  status: draft
+- term: Footings
+  ids: [substructure.footings]
+  status: draft
+- term: Footings/slab
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Footprint
+  ids: [design]
+  status: draft
+- term: Formwork
+  ids: [structure.temporary-works]
+  status: draft
+- term: Formwork/props
+  ids: [structure.temporary-works]
+  status: draft
+- term: Foundation design
+  ids: [substructure.footings]
+  status: draft
+- term: Frame
+  ids: [structure]
+  status: draft
+- term: Frame design
+  ids: [structure]
+  status: draft
+- term: Frame movement
+  ids: [structure]
+  status: draft
+- term: Framing
+  ids: [structure]
+  status: draft
+- term: Frontage
+  ids: [design]
+  status: draft
+- term: Frost
+  ids: [weather]
+  status: draft
+- term: Funding
+  ids: [budget]
+  status: draft
+- term: Garage door
+  ids: [envelope.vehicle-doors]
+  status: draft
+- term: Gas
+  ids: [hydraulic.gas]
+  status: draft
+- term: Gas appliance
+  ids: [hydraulic.gas]
+  status: draft
+- term: Gas appliances
+  ids: [hydraulic.gas]
+  status: draft
+- term: Gas barrier
+  ids: [substructure.damp-waterproofing]
+  status: draft
+- term: Gas network
+  ids: [hydraulic.gas]
+  status: draft
+- term: Gas pipework
+  ids: [hydraulic.gas]
+  status: draft
+- term: Gas storage
+  ids: [hydraulic.gas]
+  status: draft
+- term: Gates
+  ids: [site.vehicle-access]
+  status: draft
+- term: Generator
+  ids: [electrical.standby-power]
+  status: draft
+- term: Glass
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Glass barrier
+  ids: [access-egress.barriers]
+  status: draft
+- term: Glass screens
+  ids: [interiors.internal-glazing]
+  status: draft
+- term: Glass weight
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Glazing
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Green roof
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Greywater
+  ids: [hydraulic.non-potable-water]
+  status: draft
+- term: Ground
+  ids: [site.ground-conditions]
+  status: draft
+- term: Ground anchors
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Ground consolidation
+  ids: [site.ground-conditions]
+  status: draft
+- term: Ground improvement
+  ids: [site.ground-conditions]
+  status: draft
+- term: Ground stability
+  ids: [site.ground-conditions]
+  status: draft
+- term: Ground/structure
+  ids: [site.ground-conditions]
+  status: draft
+- term: Groundwater
+  ids: [site.ground-conditions]
+  status: draft
+- term: Groundwater chemistry
+  ids: [site.contamination]
+  status: draft
+- term: Groundwater contamination
+  ids: [site.contamination]
+  status: draft
+- term: Grout
+  ids: [interiors.tiling]
+  status: draft
+- term: Gutter
+  ids: [hydraulic.roof-drainage]
+  status: draft
+- term: HVAC
+  ids: [mechanical]
+  status: draft
+- term: HVAC load
+  ids: [mechanical]
+  status: draft
+- term: HVAC/BMS
+  ids: [mechanical.controls-bms]
+  status: draft
+- term: Handling
+  ids: [procurement]
+  status: draft
+- term: Handover
+  ids: [handover]
+  status: draft
+- term: Hangers
+  ids: [structure]
+  status: draft
+- term: Hard strata
+  ids: [site.ground-conditions]
+  status: draft
+- term: Hardstand
+  ids: [site.vehicle-access]
+  status: draft
+- term: Hardstand use
+  ids: [site.vehicle-access]
+  status: draft
+- term: Hardware
+  ids: [interiors.internal-doors]
+  status: draft
+- term: Haulage
+  ids: [procurement]
+  status: draft
+- term: Haulage logistics
+  ids: [procurement]
+  status: draft
+- term: Hazardous goods
+  ids: [design]
+  status: draft
+- term: Hazmat
+  ids: [site.demolition]
+  status: draft
+- term: Health
+  ids: [authority]
+  status: draft
+- term: Health rules
+  ids: [authority]
+  status: draft
+- term: Health safety
+  ids: [authority]
+  status: draft
+- term: Heat
+  ids: [weather]
+  status: draft
+- term: Heat build-up
+  ids: [weather]
+  status: draft
+- term: Heating
+  ids: [mechanical]
+  status: draft
+- term: Height limit
+  ids: [authority]
+  status: draft
+- term: Heritage
+  ids: [authority]
+  status: draft
+- term: Heritage fabric
+  ids: [envelope.external-walls]
+  status: draft
+- term: Heritage masonry
+  ids: [structure.masonry]
+  status: draft
+- term: Heritage windows
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Hillside structure
+  ids: [structure]
+  status: draft
+- term: Hoarding
+  ids: [site_operations]
+  status: draft
+- term: Hoist
+  ids: [site_operations]
+  status: draft
+- term: Hose reels
+  ids: [fire-active.hydrants]
+  status: draft
+- term: Hot pipes
+  ids: [hydraulic.hot-water]
+  status: draft
+- term: Hot water
+  ids: [hydraulic.hot-water]
+  status: draft
+- term: Humidity
+  ids: [weather]
+  status: draft
+- term: Hydrants
+  ids: [fire-active.hydrants]
+  status: draft
+- term: Hydraulic design
+  ids: [hydraulic]
+  status: draft
+- term: Hydraulics
+  ids: [hydraulic]
+  status: draft
+- term: Hydrology
+  ids: [site.ground-conditions]
+  status: draft
+- term: Hygiene
+  ids: [design]
+  status: draft
+- term: IT policy
+  ids: [authority]
+  status: draft
+- term: Impact noise
+  ids: [interiors.acoustic-separation]
+  status: draft
+- term: Imports
+  ids: [procurement]
+  status: draft
+- term: Indoor air
+  ids: [mechanical.ventilation]
+  status: draft
+- term: Industrial building
+  ids: [design]
+  status: draft
+- term: Industrial slab
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Infection control
+  ids: [design]
+  status: draft
+- term: Inspection
+  ids: [authority]
+  status: draft
+- term: Inspections
+  ids: [authority]
+  status: draft
+- term: Installation
+  ids: [design]
+  status: draft
+- term: Insulation
+  ids: [envelope.thermal-insulation]
+  status: draft
+- term: Insulation/HVAC
+  ids: [envelope.thermal-insulation]
+  status: draft
+- term: Insurance
+  ids: [insurance]
+  status: draft
+- term: Interior finishes
+  ids: [interiors.painting]
+  status: draft
+- term: Joinery
+  ids: [interiors.joinery]
+  status: draft
+- term: Joint
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Joint design
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Joints
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Karst ground
+  ids: [site.ground-conditions]
+  status: draft
+- term: Kitchen
+  ids: [interiors.joinery]
+  status: draft
+- term: Kitchen floor
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Kitchen tenancy
+  ids: [occupant]
+  status: draft
+- term: Kitchen ventilation
+  ids: [mechanical.local-exhaust]
+  status: draft
+- term: LED
+  ids: [electrical.lighting]
+  status: draft
+- term: Lab equipment
+  ids: [design]
+  status: draft
+- term: Lab fit-out
+  ids: [design]
+  status: draft
+- term: Labour
+  ids: [procurement]
+  status: draft
+- term: Landscape
+  ids: [site.landscape]
+  status: draft
+- term: Landscape batter
+  ids: [site.landscape]
+  status: draft
+- term: Layout
+  ids: [design]
+  status: draft
+- term: Layout/egress
+  ids: [access-egress.exits]
+  status: draft
+- term: Legal
+  ids: [contract]
+  status: draft
+- term: Lift
+  ids: [vertical-transport]
+  status: draft
+- term: Lifting
+  ids: [structure.precast]
+  status: draft
+- term: Lifting inserts
+  ids: [structure.precast]
+  status: draft
+- term: Lifting/structure
+  ids: [structure.precast]
+  status: draft
+- term: Lighting
+  ids: [electrical.lighting]
+  status: draft
+- term: Lighting controls
+  ids: [electrical.lighting]
+  status: draft
+- term: Lining
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Linings
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Lintel
+  ids: [structure]
+  status: draft
+- term: Lintel deflection
+  ids: [structure]
+  status: draft
+- term: Load layout
+  ids: [design]
+  status: draft
+- term: Load path
+  ids: [structure]
+  status: draft
+- term: Logistics
+  ids: [site_operations]
+  status: draft
+- term: Long-term performance
+  ids: [handover]
+  status: draft
+- term: Louvre
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Machine foundations
+  ids: [substructure.footings]
+  status: draft
+- term: Machine pits
+  ids: [vertical-transport]
+  status: draft
+- term: Machine room
+  ids: [vertical-transport]
+  status: draft
+- term: Main dwelling
+  ids: [design]
+  status: draft
+- term: Mains
+  ids: [site.services-connections]
+  status: draft
+- term: Mains pressure
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Maintenance
+  ids: [handover]
+  status: draft
+- term: Marine environment
+  ids: [weather]
+  status: draft
+- term: Masonry
+  ids: [structure.masonry]
+  status: draft
+- term: Masonry leaves
+  ids: [structure.masonry]
+  status: draft
+- term: Masonry weep holes
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Material supply
+  ids: [procurement]
+  status: draft
+- term: Materials
+  ids: [procurement]
+  status: draft
+- term: Mechanical
+  ids: [mechanical]
+  status: draft
+- term: Medical
+  ids: [design]
+  status: draft
+- term: Medical equipment
+  ids: [design]
+  status: draft
+- term: Medical fit-out
+  ids: [design]
+  status: draft
+- term: Medical gas
+  ids: [hydraulic.specialist-process]
+  status: draft
+- term: Membrane
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Metalwork
+  ids: [structure]
+  status: draft
+- term: Meter
+  ids: [electrical.metering]
+  status: draft
+- term: Metering
+  ids: [electrical.metering]
+  status: draft
+- term: Mezzanine
+  ids: [structure]
+  status: draft
+- term: Mirrors
+  ids: [interiors.ffe]
+  status: draft
+- term: Mix design
+  ids: [structure.concrete]
+  status: draft
+- term: Moisture
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Moisture control
+  ids: [envelope.pliable-membranes]
+  status: draft
+- term: Monitoring limits
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Mortar
+  ids: [structure.masonry]
+  status: draft
+- term: Movement
+  ids: [structure]
+  status: draft
+- term: Multiple trades
+  ids: [procurement]
+  status: draft
+- term: Natural stone
+  ids: [envelope]
+  status: draft
+- term: Neighbour
+  ids: [neighbour]
+  status: draft
+- term: Neighbour amenity
+  ids: [neighbour]
+  status: draft
+- term: Neighbour footing
+  ids: [site.adjoining-structures]
+  status: draft
+- term: Neighbour noise
+  ids: [neighbour]
+  status: draft
+- term: Neighbour noise limits
+  ids: [neighbour]
+  status: draft
+- term: Neighbours
+  ids: [neighbour]
+  status: draft
+- term: Network
+  ids: [utility]
+  status: draft
+- term: Network capacity
+  ids: [utility]
+  status: draft
+- term: New
+  ids: [design]
+  status: draft
+- term: New HVAC
+  ids: [mechanical]
+  status: draft
+- term: New area
+  ids: [design]
+  status: draft
+- term: New building footprint
+  ids: [design]
+  status: draft
+- term: New cladding
+  ids: [envelope]
+  status: draft
+- term: New compliance
+  ids: [design]
+  status: draft
+- term: New excavation
+  ids: [site.earthworks]
+  status: draft
+- term: New extension
+  ids: [design]
+  status: draft
+- term: New fixtures
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: New floors
+  ids: [structure]
+  status: draft
+- term: New footings
+  ids: [substructure.footings]
+  status: draft
+- term: New footprint
+  ids: [design]
+  status: draft
+- term: New live load
+  ids: [structure]
+  status: draft
+- term: New load
+  ids: [structure]
+  status: draft
+- term: New load path
+  ids: [structure]
+  status: draft
+- term: New loads
+  ids: [structure]
+  status: draft
+- term: New plant
+  ids: [mechanical]
+  status: draft
+- term: New roof
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: New roof cover
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: New services
+  ids: [hydraulic]
+  status: draft
+- term: New slab
+  ids: [structure.concrete]
+  status: draft
+- term: New storey
+  ids: [design]
+  status: draft
+- term: New wall
+  ids: [envelope]
+  status: draft
+- term: New windows
+  ids: [envelope.windows-doors]
+  status: draft
+- term: New work
+  ids: [design]
+  status: draft
+- term: Noise rules
+  ids: [authority]
+  status: draft
+- term: Occupancy
+  ids: [occupant]
+  status: draft
+- term: Occupant comfort
+  ids: [occupant]
+  status: draft
+- term: Occupant load
+  ids: [occupant]
+  status: draft
+- term: Occupant use
+  ids: [occupant]
+  status: draft
+- term: Occupants
+  ids: [occupant]
+  status: draft
+- term: Occupied spaces
+  ids: [occupant]
+  status: draft
+- term: Off-site works
+  ids: [site_operations]
+  status: draft
+- term: Offices
+  ids: [occupant]
+  status: draft
+- term: Old chillers
+  ids: [mechanical.central-plant]
+  status: draft
+- term: Old cladding
+  ids: [envelope.external-walls]
+  status: draft
+- term: Old drainage
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Old drains
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Old ducts
+  ids: [mechanical.air-distribution]
+  status: draft
+- term: Old façade
+  ids: [envelope.external-walls]
+  status: draft
+- term: Old finishes
+  ids: [interiors]
+  status: draft
+- term: Old floors
+  ids: [structure.alterations]
+  status: draft
+- term: Old masonry
+  ids: [structure.alterations]
+  status: draft
+- term: Old plant room
+  ids: [mechanical]
+  status: draft
+- term: Old roof structure
+  ids: [structure.alterations]
+  status: draft
+- term: Old slab
+  ids: [structure.alterations]
+  status: draft
+- term: Old steel
+  ids: [structure.alterations]
+  status: draft
+- term: Old switchboards
+  ids: [electrical.switchboards]
+  status: draft
+- term: Old wall
+  ids: [structure.alterations]
+  status: draft
+- term: Old wiring
+  ids: [electrical.cabling-wiring]
+  status: draft
+- term: Open plan
+  ids: [design]
+  status: draft
+- term: Operation
+  ids: [handover]
+  status: draft
+- term: Operations
+  ids: [handover]
+  status: draft
+- term: Other services
+  ids: [hydraulic]
+  status: draft
+- term: Outdoor kitchen
+  ids: [design]
+  status: draft
+- term: Overcladding
+  ids: [envelope]
+  status: draft
+- term: Overhead crane
+  ids: [structure.steel]
+  status: draft
+- term: Overhead lines
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Owner
+  ids: [contract]
+  status: draft
+- term: PT slab
+  ids: [structure.concrete]
+  status: draft
+- term: PT system
+  ids: [structure.concrete]
+  status: draft
+- term: PT tendon
+  ids: [structure.concrete]
+  status: draft
+- term: PT tendons
+  ids: [structure.concrete]
+  status: draft
+- term: PV
+  ids: [electrical.solar-pv]
+  status: draft
+- term: PV ballast
+  ids: [electrical.solar-pv]
+  status: draft
+- term: Paint
+  ids: [interiors.painting]
+  status: draft
+- term: Painting
+  ids: [interiors.painting]
+  status: draft
+- term: Parapet
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Parking
+  ids: [site.vehicle-access]
+  status: draft
+- term: Partitions
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Pavement
+  ids: [site.vehicle-access]
+  status: draft
+- term: Paving
+  ids: [site.vehicle-access]
+  status: draft
+- term: Payments
+  ids: [contract]
+  status: draft
+- term: Peak demand
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Performance
+  ids: [design]
+  status: draft
+- term: Performance solution
+  ids: [authority]
+  status: draft
+- term: Pest barrier
+  ids: [substructure.termite-management]
+  status: draft
+- term: Pest control
+  ids: [substructure.termite-management]
+  status: draft
+- term: Pier
+  ids: [substructure.footings]
+  status: draft
+- term: Pier footings
+  ids: [substructure.footings]
+  status: draft
+- term: Pile cap design
+  ids: [substructure.piles]
+  status: draft
+- term: Pile shaft
+  ids: [substructure.piles]
+  status: draft
+- term: Piles
+  ids: [substructure.piles]
+  status: draft
+- term: Piling
+  ids: [substructure.piles]
+  status: draft
+- term: Piling plant
+  ids: [site_operations]
+  status: draft
+- term: Pipework
+  ids: [hydraulic]
+  status: draft
+- term: Plan
+  ids: [design]
+  status: draft
+- term: Planning
+  ids: [authority]
+  status: draft
+- term: Planning conditions
+  ids: [authority]
+  status: draft
+- term: Planning rules
+  ids: [authority]
+  status: draft
+- term: Planning setbacks
+  ids: [authority]
+  status: draft
+- term: Plant
+  ids: [mechanical]
+  status: draft
+- term: Plant room
+  ids: [mechanical]
+  status: draft
+- term: Plant space
+  ids: [mechanical]
+  status: draft
+- term: Plant/services
+  ids: [mechanical]
+  status: draft
+- term: Plaster
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Plasterboard
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Plastering
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Plumbing
+  ids: [hydraulic]
+  status: draft
+- term: Plumbing fixtures
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Plumbing leak
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Plumbing rough-in
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Plumbing stack
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Pool fence
+  ids: [access-egress.pool-barriers]
+  status: draft
+- term: Pool plant
+  ids: [hydraulic.specialist-process]
+  status: draft
+- term: Pool pump
+  ids: [hydraulic.specialist-process]
+  status: draft
+- term: Portal frame
+  ids: [structure]
+  status: draft
+- term: Pour programme
+  ids: [programme]
+  status: draft
+- term: Pours
+  ids: [programme]
+  status: draft
+- term: Precast
+  ids: [structure.precast]
+  status: draft
+- term: Precast panels
+  ids: [structure.precast]
+  status: draft
+- term: Precast stairs
+  ids: [structure.precast]
+  status: draft
+- term: Preparation
+  ids: [design]
+  status: draft
+- term: Pressure
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Pricing
+  ids: [budget]
+  status: draft
+- term: Private drain
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Process cooling
+  ids: [mechanical.process-specialist]
+  status: draft
+- term: Process equipment
+  ids: [mechanical.process-specialist]
+  status: draft
+- term: Process extraction
+  ids: [mechanical.local-exhaust]
+  status: draft
+- term: Process services
+  ids: [mechanical.process-specialist]
+  status: draft
+- term: Process use
+  ids: [design]
+  status: draft
+- term: Process waste
+  ids: [hydraulic.specialist-process]
+  status: draft
+- term: Procurement
+  ids: [procurement]
+  status: draft
+- term: Programme
+  ids: [programme]
+  status: draft
+- term: Project viability
+  ids: [budget]
+  status: draft
+- term: Property easements
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Property line
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Property/civil
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Props
+  ids: [structure.temporary-works]
+  status: draft
+- term: Protection
+  ids: [electrical.switchboards]
+  status: draft
+- term: Public road
+  ids: [site.public-domain]
+  status: draft
+- term: Pump
+  ids: [hydraulic]
+  status: draft
+- term: Pumping equipment
+  ids: [hydraulic]
+  status: draft
+- term: Pumps
+  ids: [hydraulic]
+  status: draft
+- term: Purlins
+  ids: [structure]
+  status: draft
+- term: Quality
+  ids: [site_operations]
+  status: draft
+- term: Racking
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Racking system
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Rail
+  ids: [site.impact-protection]
+  status: draft
+- term: Rain event
+  ids: [weather]
+  status: draft
+- term: Rainwater tank
+  ids: [hydraulic.non-potable-water]
+  status: draft
+- term: Raised floor
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Ramp
+  ids: [structure.concrete]
+  status: draft
+- term: Reality
+  ids: [handover]
+  status: draft
+- term: Rebar
+  ids: [structure.concrete]
+  status: draft
+- term: Rebar supply
+  ids: [procurement]
+  status: draft
+- term: Refurb
+  ids: [design]
+  status: draft
+- term: Regulation
+  ids: [authority]
+  status: draft
+- term: Regulations
+  ids: [authority]
+  status: draft
+- term: Reinforced masonry
+  ids: [structure.masonry]
+  status: draft
+- term: Reinforcement
+  ids: [structure.concrete]
+  status: draft
+- term: Reinforcement corrosion
+  ids: [structure.concrete]
+  status: draft
+- term: Reinforcement detailing
+  ids: [structure.concrete]
+  status: draft
+- term: Render
+  ids: [envelope]
+  status: draft
+- term: Residential
+  ids: [design]
+  status: draft
+- term: Retail calendar
+  ids: [programme]
+  status: draft
+- term: Retailer
+  ids: [contract]
+  status: draft
+- term: Retaining wall
+  ids: [substructure.retaining-walls]
+  status: draft
+- term: Retention
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Riser
+  ids: [hydraulic]
+  status: draft
+- term: Rising main
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Risk
+  ids: [design]
+  status: draft
+- term: Roof
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Roof access
+  ids: [access-egress.maintenance-access]
+  status: draft
+- term: Roof anchors
+  ids: [access-egress.maintenance-access]
+  status: draft
+- term: Roof design
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Roof drainage
+  ids: [hydraulic.roof-drainage]
+  status: draft
+- term: Roof framing
+  ids: [structure]
+  status: draft
+- term: Roof garden
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Roof membrane
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Roof paving
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Roof pitch
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Roof plant
+  ids: [mechanical]
+  status: draft
+- term: Roof sheeting
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Roof slab
+  ids: [structure.concrete]
+  status: draft
+- term: Roof space
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Roof structure
+  ids: [structure]
+  status: draft
+- term: Roof terrace
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Roof tiles
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Roof vent
+  ids: [envelope.pliable-membranes]
+  status: draft
+- term: Roof ventilation
+  ids: [envelope.pliable-membranes]
+  status: draft
+- term: Roof void
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Roof/slab above
+  ids: [structure.concrete]
+  status: draft
+- term: Roofing
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Rooftop equipment
+  ids: [mechanical]
+  status: draft
+- term: Rooftop plant
+  ids: [mechanical]
+  status: draft
+- term: Safety
+  ids: [authority]
+  status: draft
+- term: Safety rules
+  ids: [authority]
+  status: draft
+- term: Sales
+  ids: [programme]
+  status: draft
+- term: Scaffold
+  ids: [site_operations]
+  status: draft
+- term: Scald protection
+  ids: [hydraulic.hot-water]
+  status: draft
+- term: Scope
+  ids: [design]
+  status: draft
+- term: Screed
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Screens
+  ids: [interiors.internal-glazing]
+  status: draft
+- term: Screw piles
+  ids: [substructure.piles]
+  status: draft
+- term: Sealant
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Sealants
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Sealers
+  ids: [interiors.painting]
+  status: draft
+- term: Seals
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Seasonal soil
+  ids: [site.ground-conditions]
+  status: draft
+- term: Secondary dwelling
+  ids: [design]
+  status: draft
+- term: Security
+  ids: [comms-security]
+  status: draft
+- term: Security design
+  ids: [design]
+  status: draft
+- term: Sediment control
+  ids: [site.erosion-sediment-control]
+  status: draft
+- term: Seismic code
+  ids: [authority]
+  status: draft
+- term: Sensitive equipment
+  ids: [design]
+  status: draft
+- term: Sensitive neighbours
+  ids: [neighbour]
+  status: draft
+- term: Separate structures
+  ids: [structure]
+  status: draft
+- term: Septic
+  ids: [site.services-connections]
+  status: draft
+- term: Sequence
+  ids: [programme]
+  status: draft
+- term: Service trench
+  ids: [site.services-connections]
+  status: draft
+- term: Services
+  ids: [hydraulic]
+  status: draft
+- term: Services support
+  ids: [hydraulic]
+  status: draft
+- term: Services/finishes
+  ids: [hydraulic]
+  status: draft
+- term: Setout
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Settlement
+  ids: [site.ground-conditions]
+  status: draft
+- term: Sewer
+  ids: [site.services-connections]
+  status: draft
+- term: Sewer network
+  ids: [site.services-connections]
+  status: draft
+- term: Sewer pumps
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Shading devices
+  ids: [envelope.external-shading]
+  status: draft
+- term: Shading/heating
+  ids: [envelope.external-shading]
+  status: draft
+- term: Shear walls
+  ids: [structure]
+  status: draft
+- term: Shopfront
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Shotcrete
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Shotcrete wall
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Shutter
+  ids: [envelope.vehicle-doors]
+  status: draft
+- term: Signage
+  ids: [site.signage]
+  status: draft
+- term: Site
+  ids: [site_operations]
+  status: draft
+- term: Site access
+  ids: [site_operations]
+  status: draft
+- term: Site amenity
+  ids: [site_operations]
+  status: draft
+- term: Site boundary
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Site constraints
+  ids: [site_operations]
+  status: draft
+- term: Site context
+  ids: [site_operations]
+  status: draft
+- term: Site drainage
+  ids: [site.stormwater-detention]
+  status: draft
+- term: Site environment
+  ids: [site.contamination]
+  status: draft
+- term: Site erosion
+  ids: [site.erosion-sediment-control]
+  status: draft
+- term: Site establishment
+  ids: [site_operations]
+  status: draft
+- term: Site fencing
+  ids: [site_operations]
+  status: draft
+- term: Site investigation
+  ids: [site.ground-conditions]
+  status: draft
+- term: Site layout
+  ids: [site_operations]
+  status: draft
+- term: Site levels
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Site logistics
+  ids: [site_operations]
+  status: draft
+- term: Site measure
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Site planning
+  ids: [site_operations]
+  status: draft
+- term: Site power
+  ids: [electrical.temporary-power]
+  status: draft
+- term: Site safety
+  ids: [site_operations]
+  status: draft
+- term: Site security
+  ids: [site_operations]
+  status: draft
+- term: Site storage
+  ids: [site_operations]
+  status: draft
+- term: Site traffic
+  ids: [site_operations]
+  status: draft
+- term: Site water
+  ids: [site_operations]
+  status: draft
+- term: Skirtings
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Skylight
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Slab
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Slab base
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Slab edge
+  ids: [structure.concrete]
+  status: draft
+- term: Slab levels
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Slab moisture
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Slab sequence
+  ids: [programme]
+  status: draft
+- term: Slab/footings
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Sliding door
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Slope stability
+  ids: [site.ground-conditions]
+  status: draft
+- term: Smart controls
+  ids: [mechanical.controls-bms]
+  status: draft
+- term: Smoke alarms
+  ids: [fire-active.smoke-alarms]
+  status: draft
+- term: Smoke control
+  ids: [fire-active.smoke-control]
+  status: draft
+- term: Soft soil
+  ids: [site.ground-conditions]
+  status: draft
+- term: Soil
+  ids: [site.ground-conditions]
+  status: draft
+- term: Soil chemistry
+  ids: [site.contamination]
+  status: draft
+- term: Soil moisture rebound
+  ids: [site.ground-conditions]
+  status: draft
+- term: Soil stability
+  ids: [site.ground-conditions]
+  status: draft
+- term: Soil strength
+  ids: [site.ground-conditions]
+  status: draft
+- term: Solar hot water
+  ids: [hydraulic.hot-water]
+  status: draft
+- term: Space layout
+  ids: [design]
+  status: draft
+- term: Spec
+  ids: [design]
+  status: draft
+- term: Spoil
+  ids: [site.earthworks]
+  status: draft
+- term: Sprinklers
+  ids: [fire-active.sprinklers]
+  status: draft
+- term: Staging
+  ids: [programme]
+  status: draft
+- term: Stair
+  ids: [access-egress.stairs-and-ramps]
+  status: draft
+- term: Stairs
+  ids: [access-egress.stairs-and-ramps]
+  status: draft
+- term: Standby power
+  ids: [electrical.standby-power]
+  status: draft
+- term: Steel
+  ids: [structure]
+  status: draft
+- term: Steel beam
+  ids: [structure]
+  status: draft
+- term: Steel fire protection
+  ids: [fire-passive.structural-fire-protection]
+  status: draft
+- term: Steel frame
+  ids: [structure]
+  status: draft
+- term: Steel members
+  ids: [structure]
+  status: draft
+- term: Steel welds
+  ids: [structure]
+  status: draft
+- term: Stockpiles
+  ids: [site.earthworks]
+  status: draft
+- term: Stone
+  ids: [procurement]
+  status: draft
+- term: Stone cladding
+  ids: [envelope]
+  status: draft
+- term: Stone supply
+  ids: [procurement]
+  status: draft
+- term: Storage racking
+  ids: [substructure.slab-on-ground]
+  status: draft
+- term: Stormwater
+  ids: [site.stormwater-detention]
+  status: draft
+- term: Strata
+  ids: [contract]
+  status: draft
+- term: Street mains
+  ids: [site.services-connections]
+  status: draft
+- term: Streets
+  ids: [site.public-domain]
+  status: draft
+- term: Streetscape
+  ids: [site.landscape]
+  status: draft
+- term: Structural capacity
+  ids: [structure]
+  status: draft
+- term: Structural continuity
+  ids: [structure]
+  status: draft
+- term: Structural design
+  ids: [structure]
+  status: draft
+- term: Structural movement
+  ids: [structure]
+  status: draft
+- term: Structural openings
+  ids: [structure]
+  status: draft
+- term: Structural section
+  ids: [structure]
+  status: draft
+- term: Structure
+  ids: [structure]
+  status: draft
+- term: Structure joints
+  ids: [structure]
+  status: draft
+- term: Structure movement
+  ids: [structure]
+  status: draft
+- term: Structure/acoustics
+  ids: [interiors.acoustic-separation]
+  status: draft
+- term: Structure/façade
+  ids: [envelope]
+  status: draft
+- term: Subgrade
+  ids: [site.earthworks]
+  status: draft
+- term: Subgrade compaction
+  ids: [site.earthworks]
+  status: draft
+- term: Substation
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Substrate
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Substrate flatness
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Substrate humidity
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Sump
+  ids: [site.stormwater-detention]
+  status: draft
+- term: Supply
+  ids: [procurement]
+  status: draft
+- term: Supply air
+  ids: [mechanical.ventilation]
+  status: draft
+- term: Survey
+  ids: [site.survey-boundaries]
+  status: draft
+- term: Switchboard
+  ids: [electrical.switchboards]
+  status: draft
+- term: Tactiles
+  ids: [access-egress.accessible-access]
+  status: draft
+- term: Tall space
+  ids: [design]
+  status: draft
+- term: Tall volume
+  ids: [design]
+  status: draft
+- term: Tank
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Telecom
+  ids: [comms-security.carrier-lead-in]
+  status: draft
+- term: Temperature
+  ids: [weather]
+  status: draft
+- term: Temporary batters
+  ids: [site.earthworks]
+  status: draft
+- term: Temporary drainage
+  ids: [site.erosion-sediment-control]
+  status: draft
+- term: Temporary electrical
+  ids: [electrical.temporary-power]
+  status: draft
+- term: Temporary protection
+  ids: [site_operations]
+  status: draft
+- term: Temporary shoring
+  ids: [substructure.basement-retention]
+  status: draft
+- term: Temporary works
+  ids: [structure.temporary-works]
+  status: draft
+- term: Tenancy
+  ids: [occupant]
+  status: draft
+- term: Tenant
+  ids: [occupant]
+  status: draft
+- term: Tenant load
+  ids: [occupant]
+  status: draft
+- term: Terminations
+  ids: [envelope.flashings-seals]
+  status: draft
+- term: Termite barrier
+  ids: [substructure.termite-management]
+  status: draft
+- term: Termites
+  ids: [substructure.termite-management]
+  status: draft
+- term: Testing
+  ids: [commissioning]
+  status: draft
+- term: Thermal envelope
+  ids: [envelope]
+  status: draft
+- term: Thermal movement
+  ids: [envelope]
+  status: draft
+- term: Threshold drainage
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Tie-downs
+  ids: [structure]
+  status: draft
+- term: Tile adhesive
+  ids: [interiors.tiling]
+  status: draft
+- term: Tiles
+  ids: [interiors.tiling]
+  status: draft
+- term: Tiling
+  ids: [interiors.tiling]
+  status: draft
+- term: Tiling programme
+  ids: [programme]
+  status: draft
+- term: Tilt panels
+  ids: [structure.precast]
+  status: draft
+- term: Tilt-up panels
+  ids: [structure.precast]
+  status: draft
+- term: Timber
+  ids: [structure]
+  status: draft
+- term: Timber frame
+  ids: [structure]
+  status: draft
+- term: Tip site
+  ids: [authority]
+  status: draft
+- term: Toughened glass
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Townhouse roofs
+  ids: [envelope.roof-coverings]
+  status: draft
+- term: Trades
+  ids: [procurement]
+  status: draft
+- term: Traffic
+  ids: [site_operations]
+  status: draft
+- term: Transfer structure
+  ids: [structure]
+  status: draft
+- term: Transformer
+  ids: [electrical.utility-supply]
+  status: draft
+- term: Trap seals
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Travelator
+  ids: [vertical-transport.escalators-walks]
+  status: draft
+- term: Trees
+  ids: [site.trees]
+  status: draft
+- term: Truss
+  ids: [structure]
+  status: draft
+- term: UPS
+  ids: [electrical.standby-power]
+  status: draft
+- term: UV
+  ids: [weather]
+  status: draft
+- term: Uncontrolled fill
+  ids: [site.ground-conditions]
+  status: draft
+- term: Under-slab plumbing
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Underfloor heating
+  ids: [mechanical]
+  status: draft
+- term: Underground drain
+  ids: [substructure.damp-waterproofing]
+  status: draft
+- term: Underground services
+  ids: [site.services-connections]
+  status: draft
+- term: Underpinning
+  ids: [substructure.underpinning]
+  status: draft
+- term: Unknown
+  ids: [design]
+  status: draft
+- term: Upgrade
+  ids: [design]
+  status: draft
+- term: Upper slabs
+  ids: [structure.concrete]
+  status: draft
+- term: Use change
+  ids: [authority]
+  status: draft
+- term: Utilities
+  ids: [utility]
+  status: draft
+- term: Utility
+  ids: [utility]
+  status: draft
+- term: Utility network
+  ids: [utility]
+  status: draft
+- term: VE
+  ids: [budget]
+  status: draft
+- term: Valves
+  ids: [hydraulic]
+  status: draft
+- term: Vapour membrane
+  ids: [substructure.damp-waterproofing]
+  status: draft
+- term: Variable speed drives
+  ids: [mechanical.controls-bms]
+  status: draft
+- term: Vehicle access
+  ids: [site.vehicle-access]
+  status: draft
+- term: Vehicle clearance
+  ids: [site.vehicle-access]
+  status: draft
+- term: Vehicle impacts
+  ids: [site.vehicle-access]
+  status: draft
+- term: Vehicle load
+  ids: [site.vehicle-access]
+  status: draft
+- term: Vehicle movements
+  ids: [site_operations]
+  status: draft
+- term: Ventilation
+  ids: [mechanical.ventilation]
+  status: draft
+- term: Venting
+  ids: [mechanical.ventilation]
+  status: draft
+- term: Vinyl
+  ids: [interiors.floor-finishes]
+  status: draft
+- term: Visual comfort
+  ids: [design]
+  status: draft
+- term: Wall
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Wall cavity
+  ids: [envelope.pliable-membranes]
+  status: draft
+- term: Wall cladding
+  ids: [envelope]
+  status: draft
+- term: Wall finishes
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Wall framing
+  ids: [structure]
+  status: draft
+- term: Wall layout
+  ids: [design]
+  status: draft
+- term: Wall lining
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Wall linings
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Wall load
+  ids: [structure]
+  status: draft
+- term: Wall opening
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Wall panels
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Wall stability
+  ids: [structure]
+  status: draft
+- term: Wallpaper
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Walls
+  ids: [interiors.walls-linings]
+  status: draft
+- term: Warehouse use
+  ids: [design]
+  status: draft
+- term: Warranty
+  ids: [contract]
+  status: draft
+- term: Waste chute
+  ids: [site.waste-storage]
+  status: draft
+- term: Waste classification
+  ids: [site.contamination]
+  status: draft
+- term: Waste room
+  ids: [site.waste-storage]
+  status: draft
+- term: Water authority
+  ids: [authority]
+  status: draft
+- term: Water authority rules
+  ids: [authority]
+  status: draft
+- term: Water code
+  ids: [authority]
+  status: draft
+- term: Water inflow
+  ids: [site.ground-conditions]
+  status: draft
+- term: Water mains
+  ids: [site.services-connections]
+  status: draft
+- term: Water meter
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Water quality
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Water supply
+  ids: [hydraulic.cold-water]
+  status: draft
+- term: Water table
+  ids: [site.ground-conditions]
+  status: draft
+- term: Water tank
+  ids: [hydraulic.non-potable-water]
+  status: draft
+- term: Waterproofing
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Waterproofing upturn
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Waterproofing/finishes
+  ids: [envelope.external-waterproofing]
+  status: draft
+- term: Weather
+  ids: [weather]
+  status: draft
+- term: Weather exposure
+  ids: [weather]
+  status: draft
+- term: Weatherproofing
+  ids: [envelope]
+  status: draft
+- term: Weighbridge
+  ids: [site.vehicle-access]
+  status: draft
+- term: Wet area
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Wet areas
+  ids: [hydraulic.sanitary]
+  status: draft
+- term: Wind
+  ids: [weather]
+  status: draft
+- term: Wind loads
+  ids: [structure]
+  status: draft
+- term: Wind pressure
+  ids: [structure]
+  status: draft
+- term: Wind uplift
+  ids: [structure]
+  status: draft
+- term: Window
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Window frame
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Window frames
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Window furnishings
+  ids: [interiors.ffe]
+  status: draft
+- term: Window openings
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Window/opening
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Windows
+  ids: [envelope.windows-doors]
+  status: draft
+- term: Workers
+  ids: [occupant]
+  status: draft
+- term: Works
+  ids: [design]
+  status: draft
+- term: Works in progress
+  ids: [programme]
+  status: draft
+- term: Young concrete
+  ids: [structure.concrete]
+  status: draft
