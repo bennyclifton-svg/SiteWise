@@ -431,7 +431,7 @@ buildings. List key `consequences`.
   when:                       # a predicate, may use `works`
     all:
       - works: {action: [alter, replace, upgrade, repair, remove]}
-      - {det: construction_year, lt: 2004}
+      - {det: existing_building_year, lt: 2004}
   propose:                    # one or more proposals
     - {kind: investigation, label: Hazardous materials survey of areas affected by the works}
   signals: [sig.hazardous-materials-survey-stated]   # optional: evidence it is already addressed
@@ -514,12 +514,13 @@ signals by id in `signals`.
 
 Valid in `applies_when`, consequence `when` and unforeseen `when`.
 
-### Determinant `construction_year`
+### Building age: `existing_building_year`
 
-Integer, `pre_parsed`, narrow triggers (`year built`, `built in 1985`). Read
-by consequences and unforeseen conditions, which compare it in code. The older
-`existing_building_year` is read by the demolition rules; the owner decides
-whether to merge the two.
+Consequences and unforeseen conditions read the existing
+`existing_building_year` determinant (integer, `pre_parsed`, narrow triggers
+such as `year built` and `built in 1985`) and compare it in code. A separate
+`construction_year` was drafted in K0 and merged into it on 4 October 2026, so
+one fact has one determinant.
 
 ### Dataset sources and the coverage ledger
 

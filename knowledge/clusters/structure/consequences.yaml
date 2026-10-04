@@ -4,7 +4,7 @@ consequences:
     when:
       all:
         - works: {action: [alter, replace, upgrade, repair, remove]}
-        - {det: construction_year, lt: 2004}
+        - {det: existing_building_year, lt: 2004}
     propose:
       - {kind: investigation, label: Hazardous materials survey of areas affected by the works}
     signals: [sig.hazardous-materials-survey-stated]   # a stated survey already answers the proposal

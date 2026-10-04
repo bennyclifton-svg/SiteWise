@@ -206,7 +206,7 @@ For what interfaces cannot express, chiefly regulatory triggers on existing buil
 - id: cq.pre-2004-fabric-hazardous-materials-survey
   when:
     works: {action: [alter, replace, upgrade, repair, remove]}
-    all: [{det: construction_year, lt: 2004}]
+    all: [{det: existing_building_year, lt: 2004}]
   propose:
     - {kind: investigation, label: Hazardous materials survey of areas affected by the works}
   governed_by: []          # rule written and verified in K3
@@ -215,7 +215,7 @@ For what interfaces cannot express, chiefly regulatory triggers on existing buil
   sources: [...]
 ```
 
-Proposal kinds: investigation (a work item), discipline (a package suggestion), approval or hold point (a delivery item), obligation (package scope). Drafts to research, all `clause_verified: false` until read in the instrument: whether an alteration in NSW lets the consent authority require the existing building's fire safety to be upgraded; hazardous materials surveys before disturbing fabric of older buildings (needs a new determinant, `construction_year`); the NSW Class 2 registered practitioner and regulated design regime for waterproofing, fire safety, structure, enclosure and services work; impairment management and certification when a fire safety system changes.
+Proposal kinds: investigation (a work item), discipline (a package suggestion), approval or hold point (a delivery item), obligation (package scope). Drafts to research, all `clause_verified: false` until read in the instrument: whether an alteration in NSW lets the consent authority require the existing building's fire safety to be upgraded; hazardous materials surveys before disturbing fabric of older buildings (reads the existing determinant `existing_building_year`); the NSW Class 2 registered practitioner and regulated design regime for waterproofing, fire safety, structure, enclosure and services work; impairment management and certification when a fire safety system changes.
 
 ### Unforeseen conditions (`uc.*`)
 
@@ -342,7 +342,7 @@ Names are provisional for peer review, not migration-ready DDL. All project-owne
 
 Gap check (a read): every accepted physical work item has exactly one works package with install (or supply and install), and, where its action needs design, one services package with design. A missing or duplicated role shows as a gap or overlap.
 
-Knowledge additions: `knowledge/works/actions.yaml`, `knowledge/works/interface_consequences.yaml`, `consequences.yaml` and `unforeseen.yaml` per cluster, the `works` and `system_existing` predicate operators, determinant `construction_year`, and checker support for all of them. `knowledge/SCHEMA.md` documents each before any is written.
+Knowledge additions: `knowledge/works/actions.yaml`, `knowledge/works/interface_consequences.yaml`, `consequences.yaml` and `unforeseen.yaml` per cluster, the `works` and `system_existing` predicate operators, and checker support for all of them. `knowledge/SCHEMA.md` documents each before any is written.
 
 Keep reviewed clauses and benchmarks as versioned catalogues loaded at startup, following existing knowledge conventions. Extend validation for references, supported predicates and required provenance. Only reviewed content may establish standard obligations; draft content remains visibly provisional.
 
@@ -384,7 +384,7 @@ The physical graph largely exists as drafts from the 29 September parallel clust
 
 | Step | Work | Who | Gate |
 | - | - | - | - |
-| K0 | Record shapes: actions, interface consequences, `cq.*`, `uc.*`, predicate operators, `construction_year`; `SCHEMA.md` and checker. | Lead session | Checker passes; owner approves shapes |
+| K0 | Record shapes: actions, interface consequences, `cq.*`, `uc.*`, predicate operators; `SCHEMA.md` and checker. | Lead session | Checker passes; owner approves shapes |
 | K1 | Interface audit for existing buildings and fit-outs, per cluster: confirm direction and endpoints when one side exists; add missing edges (base-building plant to tenancy air conditioning; fit-out heat loads and partitions to air distribution, zoning, smoke control and thermal performance; new-to-existing tie-ins). | Parallel agents, mid-tier model, seeds first | Checker; merge note |
 | K2 | Consequences from seeds: renovation, remediation and rectification, remediation due diligence, fire and life safety (existing buildings), setup and commissioning, services guides. | Parallel agents; a smaller model suffices because every record carries a checked seed anchor | Checker; anchors resolve |
 | K3 | Existing-building law, NSW first: alterations and fire safety upgrade, essential fire safety measures, Class 2 practitioner regime, hazardous materials in older buildings, home building thresholds, heritage. | Strongest model; primary sources only | `clause_verified: false` until the instrument is read; Australian Standards stay unverified without licensed access; owner review |
