@@ -20,6 +20,8 @@ failure_modes:
   sources:
   - seed: ncc-reference-guide.md
     anchor: '### SOU Separation and Service Penetrations'
+  - dataset: batch1
+    row: B1-0301
 - id: fm.fire-water-supply-assessed-late
   attaches_to:
     interface: if.fire-water-supplies-sprinklers
@@ -199,6 +201,8 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  - dataset: batch1
+    row: B1-0303
 - id: fm.fire-stopping-before-concealment
   attaches_to:
     interface: if.fire-stopping-before-concealment
@@ -312,6 +316,8 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 4254 Series — Ductwork for Air-Handling Systems in Buildings'
+  - dataset: batch1
+    row: B1-0314
 - id: fm.lining-frl-substituted-for-fire-hazard
   attaches_to:
     interface: if.lining-selection-fire-classification
@@ -399,6 +405,8 @@ failure_modes:
   sources:
   - seed: fire-life-safety-guide.md
     anchor: '### Pre-DA consultation and development application [development_application]'
+  - dataset: batch1
+    row: B1-0337
 - id: fm.fire-impairment-without-temporary-protection
   attaches_to:
     rule: rule.project.fire-system-impairment
@@ -438,11 +446,16 @@ failure_modes:
         insufficient.
     runs_on:
     - fire-active.fire-control
+    - fire-active.smoke-control
   flag_when: true
   status: draft
   sources:
   - seed: fire-life-safety-guide.md
     anchor: '## Construction verification and integrated testing'
+  - dataset: batch1
+    row: B1-0305
+  notes: 'B1-0305: a smoke control system failing its commissioning test is the same defect; smoke-control
+    passages are included.'
 - id: fm.suppression-hazard-changed
   attaches_to:
     rule: rule.project.special-fire-hazard-basis
@@ -466,3 +479,957 @@ failure_modes:
     anchor: '## Active systems and water supply'
   - seed: industrial-construction-guide.md
     anchor: '## Operational brief and basis of design'
+  - dataset: batch1
+    row: B1-0334
+  - dataset: batch1
+    row: B1-0335
+- id: fm.fire-protection-damaged-by-following-trades
+  attaches_to:
+    system: fire-passive.structural-fire-protection
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report sprayed or board structural fire protection
+      knocked off or damaged by later trades?
+    criteria:
+      true: It explicitly reports sprayed or board structural fire protection knocked off or damaged by
+        later trades.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-passive.structural-fire-protection
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0137
+  - seed: ncc-reference-guide.md
+    anchor: '### Timber, Masonry, and Fire Resistance of Structural Materials'
+  notes: 'Workmanship. Hold point: inspect and repair the applied protection after services and fit-out
+    trades and before concealment or handover.'
+- id: fm.electrical-penetration-of-rated-element-unprotected
+  attaches_to:
+    interface: if.services-penetrate-fire-rated-construction
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a cable tray, cable or power outlet
+      passing through or recessed into a fire-resisting shaft or wall without tested penetration protection?
+    criteria:
+      true: It explicitly reports a cable tray, cable or power outlet through or into a fire-resisting
+        shaft or wall and states or shows no tested protection at that penetration.
+      false: It does not describe such a penetration, or the penetration it describes is protected.
+    runs_on:
+    - fire-passive.rated-elements
+    - fire-passive.penetrations
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0312
+  - dataset: batch1
+    row: B1-0362
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+  notes: 'Workmanship. Hold point: inspection of the penetration before the lining closes (see fm.fire-stopping-before-concealment).
+    Back-to-back outlets in a rated wall are the residential case.'
+- id: fm.sprinkler-pipe-clashes-with-other-services
+  attaches_to:
+    system: fire-active.sprinklers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report sprinkler pipework clashing with hydraulic
+      pipework or other services in the ceiling space?
+    criteria:
+      true: It explicitly reports sprinkler pipework clashing with hydraulic or other services in the
+        ceiling space.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.sprinklers
+    - hydraulic
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0479
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+- id: fm.sprinkler-spray-blocked-by-fixed-construction
+  attaches_to:
+    system: fire-active.sprinklers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a sprinkler head whose spray is blocked
+      by a beam, partition or other fixed construction?
+    criteria:
+      true: It explicitly reports a sprinkler head whose spray is blocked by a beam, partition or other
+        fixed construction.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.sprinklers
+    - structure
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0302
+  - dataset: batch1
+    row: B1-0332
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+- id: fm.sprinkler-coverage-gap-after-layout-change
+  attaches_to:
+    system: fire-active.sprinklers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an area left without sprinkler coverage
+      after a floor layout change?
+    criteria:
+      true: It explicitly reports an area left without sprinkler coverage after a floor layout change.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.sprinklers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0331
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: fm.fire-water-supply-reported-insufficient
+  attaches_to:
+    interface: if.fire-water-supplies-sprinklers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report hydrant pressure or fire tank refill
+      capacity stated as insufficient for the fire system design?
+    criteria:
+      true: It explicitly reports hydrant pressure, mains flow or fire tank refill capacity stated as
+        insufficient for the fire system design.
+      false: It does not report an insufficient supply; a supply still to be assessed, or a stated value
+        with no statement that it is insufficient, is not enough.
+    runs_on:
+    - fire-active.fire-water
+    - fire-active.hydrants
+    - fire-active.sprinklers
+    - site.services-connections
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0304
+  - dataset: batch1
+    row: B1-0495
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+  notes: Differs from fm.fire-water-supply-assessed-late, which flags reliance on an unverified supply.
+    This one flags a reported shortfall.
+- id: fm.stair-pressurisation-fan-underperforms
+  attaches_to:
+    system: fire-active.smoke-control
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a stair pressurisation fan reported
+      unable to keep smoke out of the exit stair?
+    criteria:
+      true: It explicitly reports a stair pressurisation fan reported unable to keep smoke out of the
+        exit stair.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.smoke-control
+    - mechanical.fire-mode-air-systems
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0323
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+- id: fm.pressurised-stair-door-fails-to-close
+  attaches_to:
+    system: fire-active.smoke-control
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a stair door that does not close because
+      of stair pressurisation?
+    criteria:
+      true: It explicitly reports a stair door that does not close because of stair pressurisation.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.smoke-control
+    - fire-passive.openings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0324
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+- id: fm.open-plan-without-additional-smoke-measures
+  attaches_to:
+    system: fire-active.smoke-control
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a large open-plan space created without
+      additional smoke management or smoke compartmentation measures?
+    criteria:
+      true: It explicitly reports a large open-plan space created without additional smoke management
+        or smoke compartmentation measures.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.smoke-control
+    - fire-passive.compartments
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0397
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: fm.fire-door-gap-outside-tested-installation
+  attaches_to:
+    system: fire-passive.openings
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report fire door gaps outside the tolerance
+      of the tested installation?
+    criteria:
+      true: It explicitly reports fire door gaps outside the tolerance of the tested installation.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-passive.openings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0306
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  notes: 'Workmanship. Hold point: inspection of installed fire doorsets against the tested assembly before
+    handover and certification.'
+- id: fm.fire-door-hardware-not-rated-for-door
+  attaches_to:
+    system: fire-passive.openings
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report fire door hardware that is not rated
+      or tested for the door?
+    criteria:
+      true: It explicitly reports fire door hardware that is not rated or tested for the door.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-passive.openings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0760
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  notes: 'Workmanship or supply. Hold point: check the hardware schedule against the door certificate
+    before installation and at the pre-handover inspection.'
+- id: fm.egress-door-swings-against-travel
+  attaches_to:
+    system: access-egress.egress-doors
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an exit door swinging against the
+      direction of egress travel?
+    criteria:
+      true: It explicitly reports an exit door swinging against the direction of egress travel.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.egress-doors
+    - access-egress.exits
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0318
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  - seed: ncc-reference-guide.md
+    anchor: '### Travel Distances and Number of Exits'
+- id: fm.exit-sign-sightline-obstructed
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an exit sign hidden from the travel
+      path by services, racking or other items?
+    criteria:
+      true: It explicitly reports an exit sign hidden from the travel path by services, racking or other
+        items.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.emergency-lighting
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0319
+  - dataset: batch1
+    row: B1-0400
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+  notes: B1-0400 (warehouse racking) was triaged as a supply and site operations row; it is a sightline
+    defect, so it is recorded here.
+- id: fm.emergency-lighting-level-reported-short
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report emergency lighting on an exit path
+      reported below the required illumination?
+    criteria:
+      true: It explicitly reports emergency lighting on an exit path reported below the required illumination.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.emergency-lighting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0320
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+- id: fm.emergency-lighting-not-revised-for-new-layout
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report emergency lighting left unchanged
+      after new partitions altered the layout?
+    criteria:
+      true: It explicitly reports emergency lighting left unchanged after new partitions altered the layout.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.emergency-lighting
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0688
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: fm.emergency-lighting-battery-fails-duration-test
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report emergency lighting batteries failing
+      the rated-duration test?
+    criteria:
+      true: It explicitly reports emergency lighting batteries failing the rated-duration test.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.emergency-lighting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0637
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+  notes: 'Workmanship or supply. Hold point: witnessed discharge test at commissioning before the certificate
+    of occupation.'
+- id: fm.fit-out-narrows-egress-path
+  attaches_to:
+    system: access-egress.exits
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a tenant fit-out narrowing an egress
+      corridor or exit path?
+    criteria:
+      true: It explicitly reports a tenant fit-out narrowing an egress corridor or exit path.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.exits
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0321
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: fm.travel-distance-to-exit-reported-exceeded
+  attaches_to:
+    system: access-egress.exits
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report the travel distance to an exit stated
+      as exceeding the permitted limit?
+    criteria:
+      true: It explicitly reports the travel distance to an exit stated as exceeding the permitted limit.
+      false: It does not report an exceedance; a stated distance with no statement that it exceeds the
+        limit is not enough.
+    runs_on:
+    - access-egress.exits
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0322
+  - seed: ncc-reference-guide.md
+    anchor: '### Travel Distances and Number of Exits'
+- id: fm.occupant-load-exceeds-exit-capacity
+  attaches_to:
+    system: access-egress.exits
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an occupant load stated as exceeding
+      the capacity of the exits?
+    criteria:
+      true: It explicitly reports an occupant load stated as exceeding the capacity of the exits.
+      false: It does not report an exceedance; a stated occupant load or exit width alone is not enough.
+    runs_on:
+    - access-egress.exits
+    - fire-passive.compartments
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0367
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: fm.automatic-door-fails-closed-on-power-loss
+  attaches_to:
+    system: access-egress.egress-doors
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an automatic door that does not unlock
+      or open on power loss on an egress path?
+    criteria:
+      true: It explicitly reports an automatic door that does not unlock or open on power loss on an egress
+        path.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.egress-doors
+    - electrical.standby-power
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0659
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+- id: fm.fire-pump-room-flood-exposure
+  attaches_to:
+    system: fire-active.fire-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a fire pump room that can flood or
+      has no drainage for water entering it?
+    criteria:
+      true: It explicitly reports a fire pump room that can flood or has no drainage for water entering
+        it.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.fire-water
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0327
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: fm.fire-pump-fails-flow-test
+  attaches_to:
+    system: fire-active.fire-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a fire pump delivering less than the
+      designed flow at its commissioning test?
+    criteria:
+      true: It explicitly reports a fire pump delivering less than the designed flow at its commissioning
+        test.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.fire-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0328
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+  notes: 'Workmanship or design. Hold point: witnessed pump flow test before handover.'
+- id: fm.fire-tank-footprint-not-in-site-layout
+  attaches_to:
+    system: fire-active.fire-water
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a fire sprinkler tank volume that
+      increases the footprint beyond the allowance in the site layout?
+    criteria:
+      true: It explicitly reports a fire sprinkler tank volume that increases the footprint beyond the
+        allowance in the site layout.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.fire-water
+    - site
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0494
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: fm.sprinkler-pipework-concealed-before-pressure-test
+  attaches_to:
+    interface: if.sprinkler-pressure-test-before-ceilings
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report sprinkler pipework concealed by ceilings
+      before its pressure test?
+    criteria:
+      true: It explicitly reports sprinkler pipework concealed by ceilings before its pressure test record.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.sprinklers
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0329
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+  notes: Process row triaged as supply and site operations; recorded as a hold point.
+- id: fm.sprinkler-head-painted-over
+  attaches_to:
+    system: fire-active.sprinklers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a sprinkler head painted over or coated
+      by a finishing trade?
+    criteria:
+      true: It explicitly reports a sprinkler head painted over or coated by a finishing trade.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.sprinklers
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0330
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  notes: 'Workmanship. Hold point: inspection of heads after painting and before handover; heads are protected
+    or replaced.'
+- id: fm.hose-reel-coverage-gap
+  attaches_to:
+    system: fire-active.hydrants
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an area of the building not reached
+      by a fire hose reel?
+    criteria:
+      true: It explicitly reports an area of the building not reached by a fire hose reel.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.hydrants
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0336
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+- id: fm.detector-location-obstructed-by-airflow-or-equipment
+  attaches_to:
+    system: fire-active.detection
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a smoke detector or smoke alarm located
+      where ductwork, fans or airflow stop smoke reaching it?
+    criteria:
+      true: It explicitly reports a smoke detector or smoke alarm located where ductwork, fans or airflow
+        stop smoke reaching it.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.detection
+    - fire-active.smoke-alarms
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0339
+  - dataset: batch1
+    row: B1-0343
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.1 — Fire Detection and Alarm Systems'
+  - seed: ncc-reference-guide.md
+    anchor: '### Smoke Detection and Alarm Requirements'
+- id: fm.fire-panel-cannot-integrate-with-new-systems
+  attaches_to:
+    system: fire-active.detection
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an existing fire alarm panel unable
+      to interface with the new building management or control system?
+    criteria:
+      true: It explicitly reports an existing fire alarm panel unable to interface with the new building
+        management or control system.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.detection
+    - mechanical.controls-bms
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0341
+  - seed: fire-life-safety-guide.md
+    anchor: '## Smoke control, controls and cause and effect'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  notes: Also a plausible unforeseen condition of a legacy panel; see the legacy protocol discussion in
+    the works plan.
+- id: fm.smoke-alarm-interconnection-fails
+  attaches_to:
+    system: fire-active.smoke-alarms
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report interconnected smoke alarms that do
+      not all sound when one is tested?
+    criteria:
+      true: It explicitly reports interconnected smoke alarms that do not all sound when one is tested.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - fire-active.smoke-alarms
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0342
+  - seed: as-standards-reference.md
+    anchor: '## AS 3786 — Smoke Alarms Using Scattered Light, Transmitted Light or Ionisation'
+  notes: 'Workmanship. Hold point: interconnection test at commissioning before the certificate of occupation.'
+- id: fm.accessible-room-plan-cannot-achieve-clearances
+  attaches_to:
+    system: access-egress.accessible-facilities
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an accessible toilet or adaptable
+      dwelling plan that cannot achieve the clearances it needs?
+    criteria:
+      true: It explicitly reports an accessible toilet or adaptable dwelling plan that cannot achieve
+        the clearances it needs.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.accessible-facilities
+    - access-egress.livable-housing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0369
+  - dataset: batch1
+    row: B1-0376
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Sanitary Facilities, Signage, and Hearing Augmentation'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+- id: fm.stair-handrail-not-as-specified
+  attaches_to:
+    system: access-egress.stairs-and-ramps
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a stair handrail or balustrade installed
+      with missing extensions or a height outside the specified tolerance?
+    criteria:
+      true: It explicitly reports a stair handrail or balustrade installed with missing extensions or
+        a height outside the specified tolerance.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.stairs-and-ramps
+    - access-egress.barriers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0372
+  - dataset: batch1
+    row: B1-0752
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  notes: 'Workmanship. Hold point: handrail check at the pre-handover inspection.'
+- id: fm.tactile-indicators-clash-with-stair-geometry
+  attaches_to:
+    system: access-egress.accessible-access
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report tactile indicators laid out in conflict
+      with stair nosing or stair geometry?
+    criteria:
+      true: It explicitly reports tactile indicators laid out in conflict with stair nosing or stair geometry.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.accessible-access
+    - access-egress.stairs-and-ramps
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0373
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+- id: fm.door-opening-force-reported-excessive
+  attaches_to:
+    system: access-egress.egress-doors
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report an egress door whose opening force
+      is reported too high?
+    criteria:
+      true: It explicitly reports an egress door whose opening force is reported too high.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.egress-doors
+    - access-egress.accessible-access
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0374
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  notes: Workmanship. Closer adjustment and stair or lobby pressure are the usual causes; check at the
+    commissioning inspection.
+- id: fm.stair-nosing-slippery
+  attaches_to:
+    system: access-egress.stairs-and-ramps
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a stair tread nosing or finish reported
+      slippery?
+    criteria:
+      true: It explicitly reports a stair tread nosing or finish reported slippery.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.stairs-and-ramps
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0753
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+  notes: 'Workmanship or finish selection. Hold point: slip resistance evidence for the installed finish
+    before handover.'
+- id: fm.barrier-or-anchor-fixing-fails-test
+  attaches_to:
+    system: access-egress.barriers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a balustrade fixing or roof anchor
+      failing a pull-out or proof test?
+    criteria:
+      true: It explicitly reports a balustrade fixing or roof anchor failing a pull-out or proof test.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.barriers
+    - access-egress.maintenance-access
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0185
+  - dataset: batch1
+    row: B1-0287
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+  notes: 'Workmanship. Hold point: proof or pull-out test of fixings and anchors before the barrier or
+    anchor is used.'
+- id: fm.barrier-edge-load-not-in-structural-design
+  attaches_to:
+    system: access-egress.barriers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a barrier load at the slab edge that
+      was not allowed for in the edge structure?
+    criteria:
+      true: It explicitly reports a barrier load at the slab edge that was not allowed for in the edge
+        structure.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.barriers
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0186
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+- id: fm.glass-balustrade-shatters-at-install
+  attaches_to:
+    system: access-egress.barriers
+  severity: cost
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a toughened glass balustrade panel
+      shattering during handling or installation?
+    criteria:
+      true: It explicitly reports a toughened glass balustrade panel shattering during handling or installation.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.barriers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0754
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+  notes: 'Workmanship or supply. Hold point: inspect panel edges on delivery and protect them through
+    installation.'
+- id: fm.pool-barrier-fails-inspection
+  attaches_to:
+    system: access-egress.pool-barriers
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a pool barrier failing its inspection?
+    criteria:
+      true: It explicitly reports a pool barrier failing its inspection.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.pool-barriers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0488
+  - seed: ncc-reference-guide.md
+    anchor: '### Pool Barriers and Construction in Flood Hazard Areas'
+  - seed: as-standards-reference.md
+    anchor: '## AS 1926 Series — Swimming Pool Safety'
+  notes: 'Workmanship. Hold point: barrier inspection and certification before the pool is filled or used.'
+- id: fm.step-free-threshold-fails-accessibility
+  attaches_to:
+    interface: if.accessible-threshold-weatherproofing
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a door threshold that is not step-free
+      or level because the drainage and weatherproofing detail was not coordinated?
+    criteria:
+      true: It explicitly reports a door threshold that is not step-free or level because the drainage
+        and weatherproofing detail was not coordinated.
+      false: It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress.accessible-access
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0244
+  - seed: ncc-reference-guide.md
+    anchor: '### Accessible Entrances and Paths of Travel'
