@@ -41,6 +41,12 @@ failure_modes:
     anchor: '### Outdoor air and indoor air quality'
   - dataset: batch1
     row: B1-0514
+  - dataset: batch2
+    row: B2-0231
+  - dataset: batch2
+    row: B2-0516
+  - dataset: batch2
+    row: B2-0300
 - id: fm.exhaust-penetrates-envelope
   attaches_to:
     interface: if.exhaust-penetrates-envelope
@@ -62,6 +68,8 @@ failure_modes:
     anchor: '### Wet area exhaust'
   - dataset: batch1
     row: B1-0263
+  - dataset: batch2
+    row: B2-0260
 - id: fm.plant-loads-structure
   attaches_to:
     interface: if.plant-loads-structure
@@ -138,6 +146,8 @@ failure_modes:
     row: B1-0502
   - dataset: batch1
     row: B1-0529
+  - dataset: batch2
+    row: B2-0690
 - id: fm.roof-drainage-waterproofing
   attaches_to:
     interface: if.roof-drainage-waterproofing
@@ -261,6 +271,12 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS/NZS 3500 Series — Plumbing and Drainage'
+  - dataset: batch2
+    row: B2-0408
+  - dataset: batch2
+    row: B2-0409
+  - dataset: batch2
+    row: B2-0438
 - id: fm.kitchen-exhaust-makeup-air
   attaches_to:
     interface: if.kitchen-exhaust-makeup-air
@@ -359,6 +375,14 @@ failure_modes:
     row: B1-0472
   - dataset: batch1
     row: B1-0486
+  - dataset: batch2
+    row: B2-0506
+  - dataset: batch2
+    row: B2-0527
+  - dataset: batch2
+    row: B2-0528
+  - dataset: batch2
+    row: B2-0539
 - id: fm.cooling-tower-stagnant-dead-leg
   attaches_to:
     interface: if.cooling-tower-water-treatment-drainage
@@ -549,6 +573,8 @@ failure_modes:
     row: B1-0490
   - seed: hydraulic-services-guide.md
     anchor: '## Construction, testing and handover'
+  - dataset: batch2
+    row: B2-0503
 - id: fm.drainage-in-slab-conflicts-reinforcement
   attaches_to:
     system: hydraulic.sanitary
@@ -641,6 +667,8 @@ failure_modes:
     row: B1-0497
   - seed: hydraulic-services-guide.md
     anchor: '## Construction, testing and handover'
+  - dataset: batch2
+    row: B2-0391
 - id: fm.roof-outlets-overload-site-stormwater
   attaches_to:
     system: hydraulic.roof-drainage
@@ -770,6 +798,8 @@ failure_modes:
     row: B1-0417
   - seed: hydraulic-services-guide.md
     anchor: '## Construction, testing and handover'
+  - dataset: batch2
+    row: B2-0403
 - id: fm.sanitary-trap-seal-lost
   attaches_to:
     system: hydraulic.sanitary
@@ -944,6 +974,8 @@ failure_modes:
     row: B1-0410
   - seed: hydraulic-services-guide.md
     anchor: '## Design review and coordination controls'
+  - dataset: batch2
+    row: B2-0380
 - id: fm.pressure-limiting-valve-absent-or-failed
   attaches_to:
     system: hydraulic.cold-water
@@ -1011,6 +1043,8 @@ failure_modes:
     row: B1-0411
   - seed: hydraulic-services-guide.md
     anchor: '## Design review and coordination controls'
+  - dataset: batch2
+    row: B2-0419
 - id: fm.dissimilar-metals-in-pipework
   attaches_to:
     system: hydraulic.cold-water
@@ -1268,6 +1302,8 @@ failure_modes:
     row: B1-0441
   - seed: hydraulic-services-guide.md
     anchor: '## Design review and coordination controls'
+  - dataset: batch2
+    row: B2-0262
 - id: fm.range-hood-backdrafts-flued-gas-appliance
   attaches_to:
     system: mechanical.local-exhaust
@@ -1337,6 +1373,8 @@ failure_modes:
     row: B1-0498
   - seed: hydraulic-services-guide.md
     anchor: '## Construction, testing and handover'
+  - dataset: batch2
+    row: B2-0167
 - id: fm.medical-gas-pipework-fails-purity-test
   attaches_to:
     system: hydraulic.specialist-process
@@ -1357,6 +1395,8 @@ failure_modes:
     row: B1-0446
   - seed: hydraulic-services-guide.md
     anchor: '## Construction, testing and handover'
+  - dataset: batch2
+    row: B2-0727
 - id: fm.compressed-air-lines-leak
   attaches_to:
     system: mechanical.process-specialist
@@ -1441,6 +1481,8 @@ failure_modes:
     row: B1-0473
   - seed: hydraulic-services-guide.md
     anchor: '## Design review and coordination controls'
+  - dataset: batch2
+    row: B2-0392
 - id: fm.pipework-clashes-with-structure-in-ceiling
   attaches_to:
     system: hydraulic.sanitary
@@ -1551,6 +1593,8 @@ failure_modes:
     row: B1-0412
   - seed: hydraulic-services-guide.md
     anchor: '## Design review and coordination controls'
+  - dataset: batch2
+    row: B2-0416
 - id: fm.wall-hung-fixture-framing-not-provided
   attaches_to:
     system: hydraulic.sanitary
@@ -1573,6 +1617,8 @@ failure_modes:
     row: B1-0471
   - seed: hydraulic-services-guide.md
     anchor: '## Design review and coordination controls'
+  - dataset: batch2
+    row: B2-0400
 - id: fm.stack-penetration-through-membrane-leaks
   attaches_to:
     system: hydraulic.sanitary
@@ -1883,6 +1929,8 @@ failure_modes:
     row: B1-0520
   - seed: mechanical-services-guide.md
     anchor: '### Refrigerant, condensate and water interfaces'
+  - dataset: batch2
+    row: B2-0263
 - id: fm.refrigerant-leak-detection-missing
   attaches_to:
     system: mechanical.refrigerant-condensate
@@ -1945,6 +1993,8 @@ failure_modes:
     row: B1-0527
   - seed: mechanical-services-guide.md
     anchor: '### Coordination'
+  - dataset: batch2
+    row: B2-0264
 - id: fm.plant-room-heat-not-removed
   attaches_to:
     system: mechanical.central-plant
@@ -2123,6 +2173,10 @@ failure_modes:
     row: B1-0547
   - seed: mechanical-services-guide.md
     anchor: '## Commissioning and handover'
+  - dataset: batch2
+    row: B2-0239
+  - dataset: batch2
+    row: B2-0249
 - id: fm.fan-rotation-wrong-at-commissioning
   attaches_to:
     interface: if.mechanical-power-supply
@@ -2169,6 +2223,8 @@ failure_modes:
     row: B1-0545
   - seed: mechanical-services-guide.md
     anchor: '## Commissioning and handover'
+  - dataset: batch2
+    row: B2-0268
 - id: fm.energy-metering-missing
   attaches_to:
     system: mechanical.controls-bms
@@ -2474,6 +2530,8 @@ failure_modes:
     row: B1-0778
   - seed: mechanical-services-guide.md
     anchor: '### Coordination'
+  - dataset: batch2
+    row: B2-0730
 - id: fm.cold-store-vapour-barrier-damaged
   attaches_to:
     system: mechanical.process-specialist
@@ -2563,3 +2621,1707 @@ failure_modes:
     row: B1-0405
   - seed: mechanical-services-guide.md
     anchor: '### Refrigerant, condensate and water interfaces'
+  - dataset: batch2
+    row: B2-0234
+  - dataset: batch2
+    row: B2-0514
+- id: fm.pipe-through-podium-membrane-without-sleeve
+  attaches_to:
+    system: hydraulic
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a pipe passing through a podium membrane with no sleeve, so the sheet is dressed to the pipe itself?"
+    criteria:
+      "true": "It explicitly states a pipe passing through a podium membrane with no sleeve, so the sheet is dressed to the pipe itself."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 4654; not verified. Owner early warning: The penetration detail shows a bare pipe rather than a sleeve."
+  sources:
+  - dataset: batch2
+    row: B2-0127
+- id: fm.bathroom-flood-test-fails-at-pipe-penetration
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a flood test of a refurbished wet area that fails at a pipe penetration?"
+    criteria:
+      "true": "It explicitly states a flood test of a refurbished wet area that fails at a pipe penetration."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3740; not verified. Owner early warning: The test holds everywhere except the penetration. Hold point: Leave penetrations exposed for the test."
+  sources:
+  - dataset: batch2
+    row: B2-0130
+- id: fm.balcony-grate-set-proud-of-finished-tiles
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a balcony grate or outlet sitting above the finished tile level so that water ponds?"
+    criteria:
+      "true": "It explicitly states a balcony grate or outlet sitting above the finished tile level so that water ponds."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.roof-drainage
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 4654; not verified. Owner early warning: The grate level against the tile would show it is high. Hold point: Set the grate to the finished tile."
+  sources:
+  - dataset: batch2
+    row: B2-0132
+- id: fm.under-tile-heating-cut-by-later-floor-waste-fixing
+  attaches_to:
+    system: mechanical.air-conditioning
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state under-tile heating cable crossing a floor waste that was fixed after the heating was laid?"
+    criteria:
+      "true": "It explicitly states under-tile heating cable crossing a floor waste that was fixed after the heating was laid."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-conditioning
+    - hydraulic.sanitary
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3740; not verified. Owner early warning: The heating layout crosses the waste. Hold point: Set out wastes before the heating cable is fixed."
+  sources:
+  - dataset: batch2
+    row: B2-0153
+- id: fm.irrigation-pipe-drilled-through-podium-membrane-after-test
+  attaches_to:
+    system: hydraulic.non-potable-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state irrigation pipework passing through a podium membrane after the flood test was signed off?"
+    criteria:
+      "true": "It explicitly states irrigation pipework passing through a podium membrane after the flood test was signed off."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.non-potable-water
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 4654; not verified. Owner early warning: The irrigation layout was not in the penetration schedule that was tested. Hold point: Include every later pipe in the test."
+  sources:
+  - dataset: batch2
+    row: B2-0158
+- id: fm.plant-room-hob-too-low-to-hold-flood-test
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a plant-room membrane perimeter lower than the depth of water the flood test needs?"
+    criteria:
+      "true": "It explicitly states a plant-room membrane perimeter lower than the depth of water the flood test needs."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 4654; not verified. Owner early warning: The hob height is less than the test water depth."
+  sources:
+  - dataset: batch2
+    row: B2-0161
+- id: fm.ensuite-membrane-open-to-corridor-without-set-down
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an ensuite waterproofing opening onto a corridor with a flush threshold and no set-down, hob or drain?"
+    criteria:
+      "true": "It explicitly states an ensuite waterproofing opening onto a corridor with a flush threshold and no set-down, hob or drain."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3740; not verified. Owner early warning: The threshold is flush and the corridor is not protected."
+  sources:
+  - dataset: batch2
+    row: B2-0162
+- id: fm.cool-room-placed-over-kitchen-floor-waste
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a kitchen floor waste covered by or inaccessible under a new cool room?"
+    criteria:
+      "true": "It explicitly states a kitchen floor waste covered by or inaccessible under a new cool room."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The cool-room outline covers the waste."
+  sources:
+  - dataset: batch2
+    row: B2-0163
+- id: fm.smoke-exhaust-without-make-up-air-path
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a smoke exhaust with no make-up air inlet path once the facade is sealed?"
+    criteria:
+      "true": "It explicitly states a smoke exhaust with no make-up air inlet path once the facade is sealed."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.fire-mode-air-systems
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The exhaust quantity has no inlet."
+  sources:
+  - dataset: batch2
+    row: B2-0192
+- id: fm.fire-rated-duct-run-longer-than-tested-length
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a fire-rated duct run between compartments with no damper, shown longer than the tested unprotected length?"
+    criteria:
+      "true": "It explicitly states a fire-rated duct run between compartments with no damper, shown longer than the tested unprotected length."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.fire-mode-air-systems
+    - fire-passive.penetrations
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The duct length between walls exceeds the test."
+  sources:
+  - dataset: batch2
+    row: B2-0201
+- id: fm.flexible-connections-omitted-at-replacement-air-handler
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state rigid pipework or ductwork connected to a replaced air handler with no flexible connection?"
+    criteria:
+      "true": "It explicitly states rigid pipework or ductwork connected to a replaced air handler with no flexible connection."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+    - structure.alterations
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The pipes are rigid at the unit. Hold point: Fit flexible connections at the plant."
+  sources:
+  - dataset: batch2
+    row: B2-0238
+- id: fm.return-air-through-void-closed-as-fire-barrier
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state return air carried in a ceiling void that the fire strategy treats as a barrier?"
+    criteria:
+      "true": "It explicitly states return air carried in a ceiling void that the fire strategy treats as a barrier."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+    - fire-passive.penetrations
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The return path and the fire barrier are the same void."
+  sources:
+  - dataset: batch2
+    row: B2-0240
+- id: fm.substituted-facade-glass-raises-cooling-load
+  attaches_to:
+    system: mechanical.central-plant
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state facade glass specified differently from the glass the plant was modelled and sized on?"
+    criteria:
+      "true": "It explicitly states facade glass specified differently from the glass the plant was modelled and sized on."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  notes: "Owner list cites NCC; not verified. Owner early warning: The glass specification and the energy model name different products."
+  sources:
+  - dataset: batch2
+    row: B2-0243
+- id: fm.carpark-exhaust-discharges-beside-openable-window
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a car-park exhaust discharge located beside an openable window?"
+    criteria:
+      "true": "It explicitly states a car-park exhaust discharge located beside an openable window."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The discharge is within the separation of the window."
+  sources:
+  - dataset: batch2
+    row: B2-0244
+- id: fm.split-system-condensate-never-connected
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state split-system condensate pipe that stops inside a wall or has no connection to a discharge point?"
+    criteria:
+      "true": "It explicitly states split-system condensate pipe that stops inside a wall or has no connection to a discharge point."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.refrigerant-condensate
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The drain stops inside the wall. Hold point: Connect condensate to a lawful point."
+  sources:
+  - dataset: batch2
+    row: B2-0245
+- id: fm.chilled-water-insulation-compressed-at-hangers
+  attaches_to:
+    system: mechanical.central-plant
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state chilled-water pipe insulation crushed at the hangers with the vapour barrier broken?"
+    criteria:
+      "true": "It explicitly states chilled-water pipe insulation crushed at the hangers with the vapour barrier broken."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The insulation is crushed at each clip. Hold point: Use a hanger that keeps the vapour barrier continuous."
+  sources:
+  - dataset: batch2
+    row: B2-0252
+- id: fm.pump-commissioning-set-without-straight-pipe
+  attaches_to:
+    system: mechanical.central-plant
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state no straight pipe length at a replacement pump for its commissioning set?"
+    criteria:
+      "true": "It explicitly states no straight pipe length at a replacement pump for its commissioning set."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: Bends are hard against the pump flanges."
+  sources:
+  - dataset: batch2
+    row: B2-0253
+- id: fm.outside-air-intake-taken-from-loading-dock
+  attaches_to:
+    system: mechanical.ventilation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an outside-air intake facing or drawing from a loading dock?"
+    criteria:
+      "true": "It explicitly states an outside-air intake facing or drawing from a loading dock."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The intake faces the dock."
+  sources:
+  - dataset: batch2
+    row: B2-0256
+- id: fm.sealed-floor-has-no-relief-air-path
+  attaches_to:
+    system: mechanical.ventilation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a sealed refurbished floor with supply air and no relief air path?"
+    criteria:
+      "true": "It explicitly states a sealed refurbished floor with supply air and no relief air path."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: Doors are hard to open once the fan runs."
+  sources:
+  - dataset: batch2
+    row: B2-0257
+- id: fm.sealed-windows-leave-classroom-without-ventilation
+  attaches_to:
+    system: mechanical.ventilation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state classroom windows sealed by new facade work with no replacement ventilation path?"
+    criteria:
+      "true": "It explicitly states classroom windows sealed by new facade work with no replacement ventilation path."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The rooms relied on those windows."
+  sources:
+  - dataset: batch2
+    row: B2-0258
+- id: fm.rangehood-duct-longer-than-fan-capability
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a domestic rangehood duct shown longer than the fan curve allows?"
+    criteria:
+      "true": "It explicitly states a domestic rangehood duct shown longer than the fan curve allows."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The duct length exceeds the fan curve."
+  sources:
+  - dataset: batch2
+    row: B2-0259
+- id: fm.extension-slab-blocks-existing-subfloor-vents
+  attaches_to:
+    system: mechanical.ventilation
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state subfloor ventilation openings covered or blocked by a new extension slab?"
+    criteria:
+      "true": "It explicitly states subfloor ventilation openings covered or blocked by a new extension slab."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The vents are on the wall the slab covers."
+  sources:
+  - dataset: batch2
+    row: B2-0261
+- id: fm.smoke-damper-fails-shut-without-smoke-mode-path
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a smoke damper that closes in fire mode leaving no air path for the smoke mode?"
+    criteria:
+      "true": "It explicitly states a smoke damper that closes in fire mode leaving no air path for the smoke mode."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.fire-mode-air-systems
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The only air path closes in the fire condition."
+  sources:
+  - dataset: batch2
+    row: B2-0269
+- id: fm.floor-finish-change-reduces-underfloor-heating-output
+  attaches_to:
+    system: mechanical.air-conditioning
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state underfloor heating designed for one floor finish and covered with a different finish?"
+    criteria:
+      "true": "It explicitly states underfloor heating designed for one floor finish and covered with a different finish."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-conditioning
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The finish resistance is higher than the heating design."
+  sources:
+  - dataset: batch2
+    row: B2-0274
+- id: fm.fan-coil-trap-wrong-for-unit-pressure
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a fan-coil condensate trap arrangement that does not match the unit's pressure regime?"
+    criteria:
+      "true": "It explicitly states a fan-coil condensate trap arrangement that does not match the unit's pressure regime."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The trap arrangement does not match the unit. Hold point: Fit the trap to the unit's pressure regime."
+  sources:
+  - dataset: batch2
+    row: B2-0275
+- id: fm.expansion-vessel-undersized-for-extended-heating-loop
+  attaches_to:
+    system: mechanical.central-plant
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an expansion vessel not sized to the water volume of an extended heating system?"
+    criteria:
+      "true": "It explicitly states an expansion vessel not sized to the water volume of an extended heating system."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The vessel relief lifts when the system heats."
+  sources:
+  - dataset: batch2
+    row: B2-0277
+- id: fm.process-extract-joined-to-general-exhaust
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state process extract connected to a general office exhaust riser?"
+    criteria:
+      "true": "It explicitly states process extract connected to a general office exhaust riser."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+    - mechanical.process-specialist
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The booth duct joins the office riser."
+  sources:
+  - dataset: batch2
+    row: B2-0280
+- id: fm.process-heat-omitted-from-shed-ventilation
+  attaches_to:
+    system: mechanical.ventilation
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state process heat from added plant left out of the ventilation air quantity?"
+    criteria:
+      "true": "It explicitly states process heat from added plant left out of the ventilation air quantity."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The shed overheats when the process runs."
+  sources:
+  - dataset: batch2
+    row: B2-0281
+- id: fm.dust-collector-relief-or-explosion-vent-faces-path
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a dust collector relief or explosion vent directed at a path of travel?"
+    criteria:
+      "true": "It explicitly states a dust collector relief or explosion vent directed at a path of travel."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.process-specialist
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The vent faces the path."
+  sources:
+  - dataset: batch2
+    row: B2-0283
+  - dataset: batch2
+    row: B2-0740
+- id: fm.heat-pump-defrost-water-ponds-on-balcony-membrane
+  attaches_to:
+    system: mechanical.central-plant
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state heat pump defrost water discharged onto a balcony membrane with no drain?"
+    criteria:
+      "true": "It explicitly states heat pump defrost water discharged onto a balcony membrane with no drain."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 4654; not verified. Owner early warning: Defrost water ponds on the membrane."
+  sources:
+  - dataset: batch2
+    row: B2-0285
+- id: fm.server-room-cooling-without-second-path
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state server-room cooling with a single unit on a single supply and no second path?"
+    criteria:
+      "true": "It explicitly states server-room cooling with a single unit on a single supply and no second path."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.process-specialist
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: There is a single unit on a single supply."
+  sources:
+  - dataset: batch2
+    row: B2-0286
+- id: fm.cooling-and-servers-share-one-supply
+  attaches_to:
+    system: mechanical.process-specialist
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state server-room cooling and the servers fed from one board with no separation?"
+    criteria:
+      "true": "It explicitly states server-room cooling and the servers fed from one board with no separation."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.process-specialist
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: Cooling and servers share one supply."
+  sources:
+  - dataset: batch2
+    row: B2-0720
+- id: fm.laboratory-exhaust-re-enters-added-terrace
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state laboratory fume exhaust discharging below or beside a terrace added by the fit-out?"
+    criteria:
+      "true": "It explicitly states laboratory fume exhaust discharging below or beside a terrace added by the fit-out."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The exhaust is below the terrace."
+  sources:
+  - dataset: batch2
+    row: B2-0287
+- id: fm.radiant-panels-clash-with-sprinkler-spacing
+  attaches_to:
+    system: mechanical
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state radiant panels located in the spray pattern of sprinkler heads?"
+    criteria:
+      "true": "It explicitly states radiant panels located in the spray pattern of sprinkler heads."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+    - fire-active.sprinklers
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 2118; not verified. Owner early warning: The panels sit in the spray pattern."
+  sources:
+  - dataset: batch2
+    row: B2-0290
+- id: fm.acoustic-louvre-depth-consumes-plant-room-floor
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state acoustic louvre depth overlapping the clearance needed by replacement chillers?"
+    criteria:
+      "true": "It explicitly states acoustic louvre depth overlapping the clearance needed by replacement chillers."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The louvre depth overlaps the chiller clearance."
+  sources:
+  - dataset: batch2
+    row: B2-0299
+- id: fm.garage-exhaust-fan-fixed-to-bedroom-floor-structure
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an exhaust fan fixed to the floor structure of the bedroom above?"
+    criteria:
+      "true": "It explicitly states an exhaust fan fixed to the floor structure of the bedroom above."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The fan is on the bedroom joists."
+  sources:
+  - dataset: batch2
+    row: B2-0293
+- id: fm.isolation-room-extract-joins-general-riser
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state extract from an isolation or contaminated room joined to a general exhaust riser?"
+    criteria:
+      "true": "It explicitly states extract from an isolation or contaminated room joined to a general exhaust riser."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The extract duct joins the general riser."
+  sources:
+  - dataset: batch2
+    row: B2-0297
+- id: fm.tempering-valve-too-far-from-outlet
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a tempering valve and an outlet with the pipe length between them stated as beyond the valve's limit?"
+    criteria:
+      "true": "It explicitly states a tempering valve and an outlet with the pipe length between them stated as beyond the valve's limit."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The outlet is further from the valve than the limit."
+  sources:
+  - dataset: batch2
+    row: B2-0383
+- id: fm.downpipe-and-soil-stack-share-riser-space
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a downpipe and a soil stack drawn in the same riser space?"
+    criteria:
+      "true": "It explicitly states a downpipe and a soil stack drawn in the same riser space."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.roof-drainage
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: Both pipes are drawn in the same shaft."
+  sources:
+  - dataset: batch2
+    row: B2-0385
+- id: fm.backflow-device-relief-port-without-drain
+  attaches_to:
+    system: hydraulic.backflow-prevention
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a backflow device whose relief port discharges onto the floor with no drain?"
+    criteria:
+      "true": "It explicitly states a backflow device whose relief port discharges onto the floor with no drain."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.backflow-prevention
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The relief discharges onto the floor."
+  sources:
+  - dataset: batch2
+    row: B2-0387
+- id: fm.sewage-pump-without-alarm-or-storage
+  attaches_to:
+    interface: if.sewage-pump-power-and-alarm
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a sewage pump for a fixture below the sewer shown with no alarm or storage volume?"
+    criteria:
+      "true": "It explicitly states a sewage pump for a fixture below the sewer shown with no alarm or storage volume."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The pump detail has no alarm or well volume."
+  sources:
+  - dataset: batch2
+    row: B2-0394
+- id: fm.shower-mixer-outside-reach-of-screen
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a shower mixer positioned outside the area the screen leaves reachable?"
+    criteria:
+      "true": "It explicitly states a shower mixer positioned outside the area the screen leaves reachable."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The mixer is outside the screen."
+  sources:
+  - dataset: batch2
+    row: B2-0402
+- id: fm.overflow-relief-gully-buried-by-paving
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an overflow relief gully covered by new paving?"
+    criteria:
+      "true": "It explicitly states an overflow relief gully covered by new paving."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The gully is under the paving. Hold point: Keep the gully as the low point and keep it accessible."
+  sources:
+  - dataset: batch2
+    row: B2-0405
+- id: fm.cooling-tower-makeup-backflow-below-hazard-rating
+  attaches_to:
+    system: hydraulic.backflow-prevention
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state cooling-tower make-up water protected by a backflow device of lower rating than the tower hazard?"
+    criteria:
+      "true": "It explicitly states cooling-tower make-up water protected by a backflow device of lower rating than the tower hazard."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.backflow-prevention
+    - mechanical.cooling-towers
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The device hazard is below the tower."
+  sources:
+  - dataset: batch2
+    row: B2-0410
+- id: fm.eyewash-without-tempered-water-or-drain
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an eyewash installed on cold water only or with no drain?"
+    criteria:
+      "true": "It explicitly states an eyewash installed on cold water only or with no drain."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.hot-water
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The eyewash has no drain and is on cold water only."
+  sources:
+  - dataset: batch2
+    row: B2-0413
+- id: fm.pipe-cast-into-slab-without-sleeve
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a pipe cast into a slab with no sleeve so the membrane cannot dress to it?"
+    criteria:
+      "true": "It explicitly states a pipe cast into a slab with no sleeve so the membrane cannot dress to it."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The pipe is tight in the concrete. Hold point: Sleeve pipes that must move or be waterproofed."
+  sources:
+  - dataset: batch2
+    row: B2-0415
+- id: fm.tundish-concealed-above-fixed-ceiling
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a tundish or relief discharge located above a fixed ceiling where a discharge cannot be seen?"
+    criteria:
+      "true": "It explicitly states a tundish or relief discharge located above a fixed ceiling where a discharge cannot be seen."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The tundish is above a fixed ceiling."
+  sources:
+  - dataset: batch2
+    row: B2-0429
+- id: fm.hot-water-relief-valve-discharges-onto-path
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a hot-water relief valve discharging at a path where a person can be scalded?"
+    criteria:
+      "true": "It explicitly states a hot-water relief valve discharging at a path where a person can be scalded."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The relief points at a path."
+  sources:
+  - dataset: batch2
+    row: B2-0420
+- id: fm.water-heater-safe-tray-without-drain
+  attaches_to:
+    system: hydraulic.hot-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a safe tray under a water heater with no outlet?"
+    criteria:
+      "true": "It explicitly states a safe tray under a water heater with no outlet."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.hot-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The tray has no outlet. Hold point: Drain the tray."
+  sources:
+  - dataset: batch2
+    row: B2-0421
+- id: fm.siphonic-outlets-miss-low-points-of-existing-roof
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state siphonic roof outlets positioned away from the real low points of the existing roof?"
+    criteria:
+      "true": "It explicitly states siphonic roof outlets positioned away from the real low points of the existing roof."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.roof-drainage
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: Water ponds away from the outlets."
+  sources:
+  - dataset: batch2
+    row: B2-0423
+- id: fm.greywater-system-without-surplus-disposal
+  attaches_to:
+    system: hydraulic.non-potable-water
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a greywater system with no stated disposal path for surplus water?"
+    criteria:
+      "true": "It explicitly states a greywater system with no stated disposal path for surplus water."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.non-potable-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The site cannot dispose of the surplus."
+  sources:
+  - dataset: batch2
+    row: B2-0425
+- id: fm.laboratory-or-process-waste-joins-domestic-sewer
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state laboratory or process waste connected to the domestic sewer or stack?"
+    criteria:
+      "true": "It explicitly states laboratory or process waste connected to the domestic sewer or stack."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+    - hydraulic.specialist-process
+    - hydraulic.trade-waste
+  flag_when: true
+  status: draft
+  notes: "Owner list cites Plumbing Code of Australia; not verified. Owner early warning: The lab sink is on the domestic stack."
+  sources:
+  - dataset: batch2
+    row: B2-0426
+  - dataset: batch2
+    row: B2-0738
+- id: fm.live-main-cut-without-thrust-restraint
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a live water main cut or capped for a diversion without a thrust block or restraint?"
+    criteria:
+      "true": "It explicitly states a live water main cut or capped for a diversion without a thrust block or restraint."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The cap has no thrust block. Hold point: Restrain the main before it is cut."
+  sources:
+  - dataset: batch2
+    row: B2-0432
+- id: fm.recycled-water-pipe-unmarked-beside-potable
+  attaches_to:
+    system: hydraulic.non-potable-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state recycled-water pipe running unmarked beside potable pipe?"
+    criteria:
+      "true": "It explicitly states recycled-water pipe running unmarked beside potable pipe."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.non-potable-water
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The pipes are the same colour and adjacent. Hold point: Identify and separate the recycled pipe."
+  sources:
+  - dataset: batch2
+    row: B2-0435
+- id: fm.stack-inspection-opening-hidden-behind-joinery
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a stack inspection opening or clearing point behind fixed joinery or linings where it cannot be reached?"
+    criteria:
+      "true": "It explicitly states a stack inspection opening or clearing point behind fixed joinery or linings where it cannot be reached."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The opening cannot be reached."
+  sources:
+  - dataset: batch2
+    row: B2-0538
+  - dataset: batch2
+    row: B2-0417
+- id: fm.ceiling-zone-claimed-by-several-services
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state duct, cable tray or pipework competing for the same measured ceiling zone, or one duct taking the whole zone?"
+    criteria:
+      "true": "It explicitly states duct, cable tray or pipework competing for the same measured ceiling zone, or one duct taking the whole zone."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The three services do not fit in the measured zone."
+  sources:
+  - dataset: batch2
+    row: B2-0501
+  - dataset: batch2
+    row: B2-0520
+- id: fm.riser-lining-reduces-clear-size-below-services
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a riser clear size after lining that is smaller than the coordinated drawing shows?"
+    criteria:
+      "true": "It explicitly states a riser clear size after lining that is smaller than the coordinated drawing shows."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+    - fire-passive.penetrations
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The clear size after lining is below the services."
+  sources:
+  - dataset: batch2
+    row: B2-0502
+- id: fm.two-trades-set-out-one-penetration-differently
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state two trades setting out the same penetration in different positions?"
+    criteria:
+      "true": "It explicitly states two trades setting out the same penetration in different positions."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+    - structure.alterations
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The hole and the service do not line up."
+  sources:
+  - dataset: batch2
+    row: B2-0504
+- id: fm.grille-does-not-fit-ceiling-drop-under-beam
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an air grille that does not fit the ceiling drop under a beam?"
+    criteria:
+      "true": "It explicitly states an air grille that does not fit the ceiling drop under a beam."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The beam zone is shallower than the grille."
+  sources:
+  - dataset: batch2
+    row: B2-0505
+- id: fm.services-drawing-coordinated-to-superseded-structural-issue
+  attaches_to:
+    system: mechanical
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a services coordination drawing based on a superseded structural revision?"
+    criteria:
+      "true": "It explicitly states a services coordination drawing based on a superseded structural revision."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The beam sizes on the services drawing are not the current issue."
+  sources:
+  - dataset: batch2
+    row: B2-0508
+- id: fm.access-panel-falls-inside-tenancy-base-building-cannot-enter
+  attaches_to:
+    system: mechanical
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an access panel to base-building plant located inside a tenancy?"
+    criteria:
+      "true": "It explicitly states an access panel to base-building plant located inside a tenancy."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The panel is on the tenant side of the demise."
+  sources:
+  - dataset: batch2
+    row: B2-0507
+- id: fm.drain-fall-blocked-by-cable-tray-at-pipe-level
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a cable tray at the level a drain needs for its fall?"
+    criteria:
+      "true": "It explicitly states a cable tray at the level a drain needs for its fall."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The tray is at the level the pipe needs."
+  sources:
+  - dataset: batch2
+    row: B2-0513
+- id: fm.duct-below-door-head-in-existing-corridor
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a duct routed below the head height of a door in an existing corridor?"
+    criteria:
+      "true": "It explicitly states a duct routed below the head height of a door in an existing corridor."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The duct is below the head height."
+  sources:
+  - dataset: batch2
+    row: B2-0518
+- id: fm.duct-bulkhead-blocks-exit-sign-sightline
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a duct bulkhead that blocks the sightline to an exit sign?"
+    criteria:
+      "true": "It explicitly states a duct bulkhead that blocks the sightline to an exit sign."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  notes: "Owner list cites NCC; not verified. Owner early warning: The sign cannot be seen past the bulkhead."
+  sources:
+  - dataset: batch2
+    row: B2-0519
+- id: fm.hangers-hit-cast-in-anchors-of-another-trade
+  attaches_to:
+    system: mechanical
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state hanger fixings of one trade coinciding with cast-in anchors of another?"
+    criteria:
+      "true": "It explicitly states hanger fixings of one trade coinciding with cast-in anchors of another."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The anchors coincide."
+  sources:
+  - dataset: batch2
+    row: B2-0521
+- id: fm.wall-chase-cuts-loadbearing-stud-flange
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a wall chase for a pipe cutting through a loadbearing stud?"
+    criteria:
+      "true": "It explicitly states a wall chase for a pipe cutting through a loadbearing stud."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+    - structure.timber
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1684; not verified. Owner early warning: The flange is cut through. Hold point: Do not chase the part of the wall that carries load."
+  sources:
+  - dataset: batch2
+    row: B2-0523
+- id: fm.two-wet-risers-drawn-in-shaft-for-one
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state two wet risers shown in a shaft that fits only one?"
+    criteria:
+      "true": "It explicitly states two wet risers shown in a shaft that fits only one."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+    - fire-active.hydrants
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 2419; not verified. Owner early warning: The clear shaft fits one riser and its clearance."
+  sources:
+  - dataset: batch2
+    row: B2-0524
+- id: fm.pipe-run-through-switchboard-clearance
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a pipe routed through the clearance in front of a switchboard?"
+    criteria:
+      "true": "It explicitly states a pipe routed through the clearance in front of a switchboard."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS/NZS 3000; not verified. Owner early warning: The pipe is inside the clearance."
+  sources:
+  - dataset: batch2
+    row: B2-0529
+- id: fm.drain-vent-on-curtain-wall-stack-joint
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a drainage vent located where the curtain wall stack joint falls?"
+    criteria:
+      "true": "It explicitly states a drainage vent located where the curtain wall stack joint falls."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+    - envelope.curtain-wall
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The vent is on the stack joint."
+  sources:
+  - dataset: batch2
+    row: B2-0531
+- id: fm.roof-cowls-in-plant-walkway
+  attaches_to:
+    system: mechanical.central-plant
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state roof cowls located in the walkway to plant?"
+    criteria:
+      "true": "It explicitly states roof cowls located in the walkway to plant."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1657; not verified. Owner early warning: The cowls are on the walkway."
+  sources:
+  - dataset: batch2
+    row: B2-0532
+- id: fm.shared-bracket-deflects-drain-loses-fall
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a bracket shared with other services deflecting so that a drain loses its fall?"
+    criteria:
+      "true": "It explicitly states a bracket shared with other services deflecting so that a drain loses its fall."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The pipe no longer falls. Hold point: Stiffen the bracket so the fall remains."
+  sources:
+  - dataset: batch2
+    row: B2-0534
+- id: fm.seismic-restraint-locks-flexible-connector
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state seismic restraint that locks a flexible connector at plant?"
+    criteria:
+      "true": "It explicitly states seismic restraint that locks a flexible connector at plant."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1170; not verified. Owner early warning: The restraint locks the connector."
+  sources:
+  - dataset: batch2
+    row: B2-0535
+- id: fm.services-support-below-headroom-of-path-of-travel
+  attaches_to:
+    system: mechanical
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a services support shown lower than the stated headroom over a path of travel?"
+    criteria:
+      "true": "It explicitly states a services support shown lower than the stated headroom over a path of travel."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+  flag_when: true
+  status: draft
+  notes: "Owner list cites NCC; not verified. Owner early warning: The lowest support is below the required headroom."
+  sources:
+  - dataset: batch2
+    row: B2-0540
+- id: fm.gutter-sump-and-smoke-exhaust-housing-share-roof-opening
+  attaches_to:
+    system: hydraulic.roof-drainage
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a gutter sump and a smoke-exhaust fan housing drawn in the same roof opening?"
+    criteria:
+      "true": "It explicitly states a gutter sump and a smoke-exhaust fan housing drawn in the same roof opening."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.roof-drainage
+    - mechanical.fire-mode-air-systems
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: Both are drawn in one hole."
+  sources:
+  - dataset: batch2
+    row: B2-0541
+- id: fm.plant-room-trench-clashes-with-column-thickening
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a plant-room trench on the line of a column thickening in the slab?"
+    criteria:
+      "true": "It explicitly states a plant-room trench on the line of a column thickening in the slab."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The thickening is on the trench line."
+  sources:
+  - dataset: batch2
+    row: B2-0542
+- id: fm.cable-tray-and-crane-beam-share-one-line
+  attaches_to:
+    system: mechanical
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a cable tray run within the envelope of a crane or crane beam?"
+    criteria:
+      "true": "It explicitly states a cable tray run within the envelope of a crane or crane beam."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The tray is in the crane envelope."
+  sources:
+  - dataset: batch2
+    row: B2-0544
+- id: fm.pipe-rack-crosses-swing-of-egress-door
+  attaches_to:
+    system: mechanical
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a pipe rack crossing the swing of the only fire-egress door?"
+    criteria:
+      "true": "It explicitly states a pipe rack crossing the swing of the only fire-egress door."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+  flag_when: true
+  status: draft
+  notes: "Owner list cites NCC; not verified. Owner early warning: The rack is in the door swing."
+  sources:
+  - dataset: batch2
+    row: B2-0545
+- id: fm.expansion-loop-fills-cupboard-beside-joinery
+  attaches_to:
+    system: mechanical.central-plant
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an expansion loop located inside a cupboard it was meant to sit beside?"
+    criteria:
+      "true": "It explicitly states an expansion loop located inside a cupboard it was meant to sit beside."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The loop is inside the cupboard."
+  sources:
+  - dataset: batch2
+    row: B2-0549
+- id: fm.services-model-origin-differs-from-site-survey
+  attaches_to:
+    system: mechanical
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a services model that uses a different setout origin from the site survey?"
+    criteria:
+      "true": "It explicitly states a services model that uses a different setout origin from the site survey."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: Services miss the structure by a constant offset."
+  sources:
+  - dataset: batch2
+    row: B2-0550
+- id: fm.laboratory-bench-services-on-wrong-side
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state laboratory bench services set out on the side of the bench that is not used?"
+    criteria:
+      "true": "It explicitly states laboratory bench services set out on the side of the bench that is not used."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.specialist-process
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The outlets face the aisle, not the user."
+  sources:
+  - dataset: batch2
+    row: B2-0673
+- id: fm.duct-through-acoustic-wall-unlagged
+  attaches_to:
+    system: mechanical.air-distribution
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a duct through an acoustic wall with no lagging or lining so that it links the rooms?"
+    criteria:
+      "true": "It explicitly states a duct through an acoustic wall with no lagging or lining so that it links the rooms."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The duct is open between the rooms."
+  sources:
+  - dataset: batch2
+    row: B2-0689
+- id: fm.door-undercut-used-as-air-path
+  attaches_to:
+    system: mechanical.ventilation
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an acoustic door undercut to serve as an air path?"
+    criteria:
+      "true": "It explicitly states an acoustic door undercut to serve as an air path."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.ventilation
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The door no longer seals."
+  sources:
+  - dataset: batch2
+    row: B2-0694
+- id: fm.garbage-chute-fixed-to-habitable-room-wall
+  attaches_to:
+    system: hydraulic
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a garbage chute fixed to the wall of a habitable room?"
+    criteria:
+      "true": "It explicitly states a garbage chute fixed to the wall of a habitable room."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The chute is on the room wall."
+  sources:
+  - dataset: batch2
+    row: B2-0697
+- id: fm.plant-screen-reflects-noise-toward-neighbour
+  attaches_to:
+    system: mechanical.central-plant
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a plant screen positioned so that it reflects noise toward a neighbour?"
+    criteria:
+      "true": "It explicitly states a plant screen positioned so that it reflects noise toward a neighbour."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.central-plant
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The neighbour's level rises."
+  sources:
+  - dataset: batch2
+    row: B2-0706
+- id: fm.bath-against-party-wall-without-isolation
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a bath fixed hard against a party wall with a neighbour's bedroom?"
+    criteria:
+      "true": "It explicitly states a bath fixed hard against a party wall with a neighbour's bedroom."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The bath is hard against the wall."
+  sources:
+  - dataset: batch2
+    row: B2-0709
+- id: fm.medical-gas-pipe-clashes-with-structure-at-bed-head
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state medical gas pipework and structure occupying the same zone at a bed head?"
+    criteria:
+      "true": "It explicitly states medical gas pipework and structure occupying the same zone at a bed head."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.specialist-process
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: The pipe and the structure occupy one zone."
+  sources:
+  - dataset: batch2
+    row: B2-0726
+- id: fm.cold-room-floor-step-on-accessible-path
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an insulated cold-room floor step on an accessible path?"
+    criteria:
+      "true": "It explicitly states an insulated cold-room floor step on an accessible path."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.refrigerant-condensate
+    - access-egress.stairs-and-ramps
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1428; not verified. Owner early warning: The step is on the accessible path."
+  sources:
+  - dataset: batch2
+    row: B2-0731
+- id: fm.gas-valve-not-interlocked-with-kitchen-exhaust
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state kitchen gas supply that is not interlocked with the mechanical exhaust?"
+    criteria:
+      "true": "It explicitly states kitchen gas supply that is not interlocked with the mechanical exhaust."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+    - hydraulic.gas
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 5601; not verified. Owner early warning: Gas flows when the exhaust is off."
+  sources:
+  - dataset: batch2
+    row: B2-0734
+- id: fm.grease-duct-touches-combustible-ceiling
+  attaches_to:
+    system: mechanical.local-exhaust
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a grease exhaust duct in contact with a combustible ceiling?"
+    criteria:
+      "true": "It explicitly states a grease exhaust duct in contact with a combustible ceiling."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - mechanical.local-exhaust
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The duct touches the ceiling."
+  sources:
+  - dataset: batch2
+    row: B2-0735
+- id: fm.compressed-air-pipe-falls-wrong-way
+  attaches_to:
+    system: hydraulic.specialist-process
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state compressed-air pipework falling away from its drain traps so that condensate collects?"
+    criteria:
+      "true": "It explicitly states compressed-air pipework falling away from its drain traps so that condensate collects."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.specialist-process
+  flag_when: true
+  status: draft
+  notes: "Owner early warning: Water collects in the line. Hold point: Fall the pipe to traps."
+  sources:
+  - dataset: batch2
+    row: B2-0739
+- id: fm.sanitary-compartment-too-small-after-wall-build-up
+  attaches_to:
+    system: hydraulic.sanitary
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a sanitary compartment whose clear room is short once the wall build-up with services is included?"
+    criteria:
+      "true": "It explicitly states a sanitary compartment whose clear room is short once the wall build-up with services is included."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.sanitary
+    - access-egress.accessible-facilities
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 1428; not verified. Owner early warning: The clear room is short."
+  sources:
+  - dataset: batch2
+    row: B2-0918
+- id: fm.town-main-pressure-without-booster-pump
+  attaches_to:
+    system: hydraulic.cold-water
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state town-main pressure that will not serve the top floor with no pump in the design?"
+    criteria:
+      "true": "It explicitly states town-main pressure that will not serve the top floor with no pump in the design."
+      "false": "It does not state this; a general mention of the system is insufficient."
+    runs_on:
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The pressure is low at the top floor."
+  sources:
+  - dataset: batch2
+    row: B2-0933
