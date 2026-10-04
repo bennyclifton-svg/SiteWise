@@ -70,6 +70,10 @@ unforeseen:
   - testing_commissioning
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0185
+  - dataset: batch2
+    row: B2-0934
   - dataset: batch1
     row: B1-0365
   - seed: fire-life-safety-guide.md
@@ -220,9 +224,1297 @@ unforeseen:
   - construction
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0892
   - dataset: batch1
     row: B1-0686
   - seed: fire-life-safety-guide.md
     anchor: '## Existing buildings, refurbishment and remediation'
   notes: Compare fm.fire-impairment-without-temporary-protection, which flags a measure isolated without
     its temporary protection.
+- id: uc.existing-exit-stair-not-fire-isolated-for-new-use
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: access-egress.stairs-and-ramps
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - retain
+        system:
+        - access-egress.stairs-and-ramps
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-exit-stair-isolation-stated
+  de_risk:
+    kind: investigation
+    label: Survey of the existing exit stair enclosure against the new use before the use is documented
+  contract: Separable portion or provisional sum for any enclosure of the stair.
+  effect:
+  - compliance
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0169
+  - dataset: batch2
+    row: B2-0571
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+  notes: B2-0571 is the same circumstance for a single stair relied on for short-stay use. Owner list
+    cites NCC; not verified.
+- id: uc.smoke-door-binds-on-out-of-level-floor
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.openings
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        - replace
+        system:
+        - fire-passive.openings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.floor-level-at-smoke-door-stated
+  de_risk:
+    kind: investigation
+    label: Level survey at each smoke door before door and closer are specified
+  contract: Allow for floor making-good or a re-hung door set.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0172
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  notes: Owner list cites AS 1905; not verified.
+- id: uc.fire-door-frame-or-leaf-distorted-so-door-will-not-close-or-seal
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.openings
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - upgrade
+        - retain
+        system:
+        - fire-passive.openings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-fire-door-frame-condition-stated
+  de_risk:
+    kind: investigation
+    label: Door-by-door check of frame squareness, leaf drop and seal fit before closers and seals are
+      specified
+  contract: Provisional sum for frame repair or rehanging.
+  effect:
+  - compliance
+  - cost
+  - quality
+  severity: compliance
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0195
+  - dataset: batch2
+    row: B2-0197
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  notes: Owner list cites AS 1905; not verified.
+- id: uc.existing-ceiling-is-not-the-rated-ceiling
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.rated-elements
+  when:
+    all:
+    - works:
+        action:
+        - retain
+        - alter
+        - upgrade
+        system:
+        - fire-passive.rated-elements
+    - det: existing_building
+      is: true
+  signals:
+  - sig.rated-ceiling-build-up-stated
+  de_risk:
+    kind: investigation
+    label: Open-up and identify the existing ceiling build-up before the strategy relies on it
+  contract: Provisional sum for replacing the ceiling with a tested system.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - demolition_strip_out
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0218
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  notes: Owner list cites NCC; not verified.
+- id: uc.installed-fire-stopping-not-on-maintenance-schedule
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: fire-passive.penetrations
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        system:
+        - fire-passive.penetrations
+    - det: existing_building
+      is: true
+  signals:
+  - sig.installed-penetration-system-recorded-stated
+  de_risk:
+    kind: hold_point
+    label: Installed penetration systems recorded on the maintenance schedule before handover
+  contract: Contractor obligation to hand over a penetration register.
+  effect:
+  - compliance
+  severity: compliance
+  discovered_at:
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0227
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+  notes: Owner list cites AS 1851; not verified.
+- id: uc.fire-stopping-product-untested-for-gap-width
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.penetrations
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        system:
+        - fire-passive.penetrations
+        - fire-passive.rated-elements
+    - det: existing_building
+      is: true
+  signals:
+  - sig.gap-width-measured-for-fire-stopping-stated
+  de_risk:
+    kind: investigation
+    label: Measure existing gaps and select a system tested for those widths before tender
+  contract: Provisional sum for non-standard gaps.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0170
+  - seed: ncc-reference-guide.md
+    anchor: '### SOU Separation and Service Penetrations'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+  notes: Owner list cites AS 4072.1; not verified.
+- id: uc.hydrant-main-has-no-rated-route-through-existing-building
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-active.hydrants
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - alter
+        - new
+        system:
+        - fire-active.hydrants
+    - det: existing_building
+      is: true
+  signals:
+  - sig.hydrant-main-route-stated
+  de_risk:
+    kind: investigation
+    label: Riser survey for a compliant hydrant main route before the main is designed
+  contract: Provisional sum for new shaft or protected route.
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0175
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+  notes: Owner list cites AS 2419; not verified.
+- id: uc.reused-smoke-lobby-too-small-for-door-swings
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.openings
+  when:
+    all:
+    - works:
+        action:
+        - retain
+        - alter
+        system:
+        - fire-passive.openings
+        - access-egress.egress-doors
+    - det: existing_building
+      is: true
+  signals:
+  - sig.lobby-door-swings-drawn-stated
+  de_risk:
+    kind: investigation
+    label: Draw both door swings on the measured lobby plan before the lobby is accepted
+  contract: Separable portion for lobby reconfiguration.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0176
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  notes: Owner list cites NCC; not verified.
+- id: uc.fire-pump-room-not-reachable-from-outside
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: fire-active.fire-water
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - replace
+        - retain
+        system:
+        - fire-active.fire-water
+    - det: existing_building
+      is: true
+  signals:
+  - sig.pump-room-access-route-stated
+  de_risk:
+    kind: investigation
+    label: Confirm brigade access to the pump room before the upgrade is documented
+  contract: Separable portion for relocating the pump room door or room.
+  effect:
+  - compliance
+  - safety
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0183
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  - seed: as-standards-reference.md
+    anchor: '## AS 2941 — Fixed Fire Protection Installations — Pumpset Systems'
+  notes: Owner list cites AS 2419; not verified.
+- id: uc.sprinkler-valve-set-does-not-fit-allocated-room
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: fire-active.sprinklers
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - fire-active.sprinklers
+    - det: existing_building
+      is: true
+  signals:
+  - sig.valve-set-room-dimensions-stated
+  de_risk:
+    kind: investigation
+    label: Size the valve room to the valve set before tender
+  contract: Provisional sum for room enlargement.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0199
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  notes: Owner list cites AS 2118; not verified.
+- id: uc.hydrant-riser-cannot-be-supported-from-lightweight-stair
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: fire-active.hydrants
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - alter
+        - replace
+        system:
+        - fire-active.hydrants
+    - det: existing_building
+      is: true
+  signals:
+  - sig.hydrant-riser-support-stated
+  de_risk:
+    kind: investigation
+    label: Structural check of the support for the riser before the main is routed
+  contract: Provisional sum for new supports.
+  effect:
+  - cost
+  - safety
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0209
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+  notes: Owner list cites AS 2419; not verified.
+- id: uc.external-hydrant-removed-by-road-authority
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: fire-active.hydrants
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - fire-active.hydrants
+  signals:
+  - sig.external-hydrant-confirmed-on-site-stated
+  de_risk:
+    kind: approval
+    label: Authority and site confirmation of external hydrants before coverage is claimed
+  contract: Client cost for a new street hydrant if the authority requires one.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0210
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  notes: Owner list cites AS 2419; not verified.
+- id: uc.fire-isolated-passageway-used-as-store
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: access-egress.exits
+  when:
+    all:
+    - works:
+        action:
+        - retain
+        - alter
+    - det: existing_building
+      is: true
+  signals:
+  - sig.passage-management-rules-stated
+  de_risk:
+    kind: obligation
+    label: Management rules for keeping exits clear handed to the occupant at handover
+  contract: Client and occupant obligation; not a contract variation.
+  effect:
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0211
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  notes: Owner list cites NCC; not verified.
+- id: uc.tenancy-exit-controlled-by-neighbour
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: access-egress.exits
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - new
+        system:
+        - access-egress.exits
+    - det: existing_building
+      is: true
+  signals:
+  - sig.tenancy-exit-control-stated
+  de_risk:
+    kind: investigation
+    label: Check every exit on the tenancy plan is controlled by the tenancy that relies on it
+  contract: Design responsibility with the architect; programme allowance for plan change.
+  effect:
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0213
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  notes: Owner list cites NCC; not verified.
+- id: uc.fire-shutter-leaves-gap-on-sloping-floor
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.openings
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - new
+        - upgrade
+        system:
+        - fire-passive.openings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.floor-level-at-fire-shutter-stated
+  de_risk:
+    kind: investigation
+    label: Survey the floor along the shutter line and sill the shutter to it
+  contract: Provisional sum for floor making-good.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0215
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  notes: Owner list says general knowledge; not verified.
+- id: uc.gaseous-suppression-room-too-leaky-for-design-concentration
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-active.special-suppression
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - replace
+        system:
+        - fire-active.special-suppression
+    - det: existing_building
+      is: true
+  signals:
+  - sig.room-integrity-test-result-stated
+  de_risk:
+    kind: investigation
+    label: Room integrity test before the agent quantity is finalised
+  contract: Provisional sum for sealing the room.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0217
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  notes: Owner list says general knowledge; not verified.
+- id: uc.sprinkler-hangers-do-not-fit-existing-purlins
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: fire-active.sprinklers
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - replace
+        - alter
+        system:
+        - fire-active.sprinklers
+    - det: existing_building
+      is: true
+  signals:
+  - sig.purlin-section-for-hangers-stated
+  de_risk:
+    kind: investigation
+    label: Match hangers to the surveyed purlin profile before they are ordered
+  contract: Provisional sum for alternative hangers or supports.
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0222
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  notes: Owner list cites AS 2118; not verified.
+- id: uc.fire-panel-has-no-spare-loop-capacity
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-active.detection
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        system:
+        - fire-active.detection
+    - det: existing_building
+      is: true
+  signals:
+  - sig.fire-panel-spare-loop-capacity-stated
+  de_risk:
+    kind: investigation
+    label: Panel schedule check of spare capacity before devices are added
+  contract: Provisional sum for panel expansion or replacement.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0224
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom'
+  notes: Owner list cites AS 1670; not verified.
+- id: uc.retained-fire-door-hardware-obsolete
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: fire-passive.openings
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - retain
+    - det: existing_building
+      is: true
+  signals:
+  - sig.retained-door-hardware-model-stated
+  de_risk:
+    kind: obligation
+    label: Allow a complete door set where hardware cannot be matched
+  contract: Provisional sum for replacement door sets.
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0226
+  - seed: ncc-reference-guide.md
+    anchor: '### Protection of Openings in Fire-Resisting Construction'
+  notes: Owner list cites AS 1905; not verified.
+- id: uc.removed-smoke-detectors-contain-radioactive-source
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: fire-active.detection
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - remove
+        - upgrade
+        system:
+        - fire-active.detection
+    - det: existing_building
+      is: true
+  signals:
+  - sig.detector-type-radioactive-source-stated
+  de_risk:
+    kind: investigation
+    label: Identify detector type before removal and arrange the licensed disposal path
+  contract: Contractor obligation to dispose by the licensed path; separable cost.
+  effect:
+  - compliance
+  - safety
+  severity: compliance
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0482
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  notes: Owner list says general knowledge; not verified. Regulatory path not checked.
+- id: uc.fire-door-core-contains-asbestos
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: fire-passive.openings
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - alter
+        - upgrade
+        system:
+        - fire-passive.openings
+    - det: existing_building
+      is: true
+  signals:
+  - sig.fire-door-core-construction-stated
+  de_risk:
+    kind: investigation
+    label: Sample or identify door cores before any drilling and replace the door set where asbestos is
+      found
+  contract: Provisional sum for licensed removal and new door sets.
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0487
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  notes: Owner list cites AS 1905; not verified.
+- id: uc.changed-use-needs-more-exits-than-building-has
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: access-egress.exits
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.new-use-occupant-load-and-exit-count-stated
+  de_risk:
+    kind: investigation
+    label: Egress review against the new use before the change of use is committed
+  contract: Separable portion for new exits.
+  effect:
+  - compliance
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0552
+  - dataset: batch2
+    row: B2-0563
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+  - seed: ncc-reference-guide.md
+    anchor: '### Travel Distances and Number of Exits'
+  notes: B2-0563 is a roof-space bedroom with no second way out. Owner list cites NCC; not verified.
+- id: uc.changed-use-corridor-widths-below-new-use
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: access-egress.exits
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-corridor-widths-stated
+  de_risk:
+    kind: investigation
+    label: Survey path widths against the new use before the use is decided
+  contract: Separable portion for widening works.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0554
+  - seed: ncc-reference-guide.md
+    anchor: '### Fire-Isolated Exits, Emergency Lighting, and Accessible Egress'
+  notes: Owner list cites NCC; not verified.
+- id: uc.performance-solution-assumptions-do-not-match-new-tenancy
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: fire-passive
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - retain
+    - det: existing_building
+      is: true
+  signals:
+  - sig.performance-solution-assumptions-stated
+  de_risk:
+    kind: approval
+    label: Review of the performance solution assumptions against the new layout and tenant before the
+      layout is built
+  contract: Design risk with the fire engineer; programme for certifier re-review.
+  effect:
+  - compliance
+  - cost
+  - safety
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0559
+  - dataset: batch2
+    row: B2-0770
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+  notes: B2-0770 is the management-rule variant. Complements uc.performance-solution-rejected-by-authority.
+    Owner list cites NCC; not verified.
+- id: uc.existing-stair-geometry-does-not-meet-new-use
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: access-egress.stairs-and-ramps
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - retain
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-stair-geometry-stated
+  de_risk:
+    kind: investigation
+    label: Measure the existing stair against the new use before the use is committed
+  contract: Separable portion for stair rebuild.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0561
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+  notes: Owner list cites NCC; not verified.
+- id: uc.no-accessible-path-to-new-public-use
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: access-egress.accessible-access
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.accessible-path-to-entry-stated
+  de_risk:
+    kind: investigation
+    label: Accessible path audit before the building is opened to the public
+  contract: Separable portion for ramp or lift.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0562
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  notes: Owner list cites the Premises Standards; not verified.
+- id: uc.existing-dock-entry-grade-too-steep-for-accessible-path
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: access-egress.accessible-access
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.dock-entry-grade-stated
+  de_risk:
+    kind: investigation
+    label: Survey the grade before the dock is nominated as the accessible entry
+  contract: Provisional sum for regrading.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0569
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  notes: Owner list cites AS 1428; not verified.
+- id: uc.existing-threshold-step-cannot-be-ramped
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: access-egress.accessible-access
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.floor-level-difference-at-join-stated
+  de_risk:
+    kind: investigation
+    label: Level survey at joins between existing floors before the accessible path is drawn
+  contract: Provisional sum for floor build-up or lift.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0679
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  notes: Owner list cites AS 1428; not verified.
+- id: uc.hydrant-coverage-does-not-reach-extended-occupancy
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: fire-active.hydrants
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - new
+        system:
+        - fire-active.hydrants
+    - det: existing_building
+      is: true
+  signals:
+  - sig.hydrant-coverage-of-occupied-area-stated
+  de_risk:
+    kind: investigation
+    label: Check hydrant coverage of the extended occupancy before the change is committed
+  contract: Separable portion for hydrant extension.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0565
+  - seed: as-standards-reference.md
+    anchor: '## AS 2419 Series — Fire Hydrant Installations'
+  notes: Owner list cites AS 2419; not verified.
+- id: uc.existing-detection-unsuited-to-new-sleeping-use
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: fire-active.detection
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-detector-types-in-sleeping-areas-stated
+  de_risk:
+    kind: investigation
+    label: Detector audit against the sleeping use before the use is decided
+  contract: Separable portion for detection upgrade.
+  effect:
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0568
+  - seed: as-standards-reference.md
+    anchor: '## AS 1670.3 and AS 1670.4 — Fire Alarm Monitoring and Emergency Warning and Intercom'
+  notes: Owner list cites AS 1670; not verified.
+- id: uc.tactile-indicators-do-not-bond-to-existing-floor
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: access-egress.accessible-access
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+    - det: existing_building
+      is: true
+  signals:
+  - sig.tactile-bond-test-stated
+  de_risk:
+    kind: hold_point
+    label: Bond test of a tactile sample on the existing surface before the full installation
+  contract: Allow for surface preparation or mechanical fixing.
+  effect:
+  - compliance
+  - quality
+  severity: compliance
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0668
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  notes: Owner list cites AS 1428; not verified.
+- id: uc.design-occupancy-differs-from-tenant-use
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    stage: design
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - new
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.tenant-use-and-design-occupancy-stated
+  de_risk:
+    kind: investigation
+    label: Confirm the lease use against the design classification before design is fixed
+  contract: Client to confirm the lease use in the brief.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0752
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+  notes: Owner list cites NCC; not verified.
+- id: uc.authority-requires-larger-accessible-room-than-drawn
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        system:
+        - access-egress.accessible-facilities
+  signals:
+  - sig.authority-reading-of-access-standard-stated
+  de_risk:
+    kind: approval
+    label: Early certifier confirmation of the accessible room size before design is fixed
+  contract: Design risk stays with the designer; programme for resubmission.
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0769
+  - seed: as-standards-reference.md
+    anchor: '## AS 1428 Series — Design for Access and Mobility'
+  notes: Owner list cites AS 1428; not verified.
+- id: uc.dangerous-goods-quantity-exceeds-fire-strategy-assumption
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: fire-active.special-suppression
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+    - det: existing_building
+      is: true
+  signals:
+  - sig.dangerous-goods-quantity-and-strategy-assumption-stated
+  de_risk:
+    kind: investigation
+    label: Confirm the stored quantity against the fire strategy before the fit-out is designed
+  contract: Client to confirm stored quantities in the brief.
+  effect:
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0788
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+  notes: Owner list cites NCC; not verified.
+- id: uc.partial-occupation-while-shared-stair-is-work-area
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    stage: completion
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - repair
+        system:
+        - access-egress.stairs-and-ramps
+    - det: existing_building
+      is: true
+  signals:
+  - sig.shared-stair-separation-from-works-stated
+  de_risk:
+    kind: hold_point
+    label: Separation of the occupied part from the work area inspected before partial occupation
+  contract: Separable portion for the partially occupied part.
+  effect:
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - handover_defects
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0797
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  notes: Owner list cites NCC; not verified. Compare fm.occupied-stage-shared-fire-unavailable.
+- id: uc.retained-balustrade-below-current-height
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: access-egress.barriers
+  when:
+    all:
+    - works:
+        action:
+        - retain
+        - repair
+        - alter
+    - det: existing_building
+      is: true
+  signals:
+  - sig.existing-balustrade-height-stated
+  de_risk:
+    kind: investigation
+    label: Measure existing balustrades and agree with the certifier whether works trigger an upgrade
+  contract: Provisional sum for raising or replacing balustrades.
+  effect:
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0850
+  - seed: ncc-reference-guide.md
+    anchor: '### Stairways, Ramps, and Barriers'
+  notes: Owner list cites NCC; not verified.
+- id: uc.services-route-crosses-secure-path
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    stage: design
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - alter
+        - replace
+    - det: existing_building
+      is: true
+  signals:
+  - sig.services-route-and-secure-zones-stated
+  de_risk:
+    kind: investigation
+    label: Route survey with the occupant security rules before services are routed
+  contract: Programme allowance for escorted or out-of-hours access.
+  effect:
+  - programme
+  - cost
+  severity: programme
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0890
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+  notes: Owner list says general knowledge; not verified.
