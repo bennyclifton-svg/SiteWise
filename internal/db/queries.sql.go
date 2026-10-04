@@ -369,8 +369,13 @@ func (q *Queries) CreateOrg(ctx context.Context, arg CreateOrgParams) error {
 }
 
 const createProject = `-- name: CreateProject :exec
-INSERT INTO projects (org_id, id, name)
-VALUES ($1::uuid, $2::uuid, $3)
+WITH site AS (
+    INSERT INTO sites (org_id, id, label)
+    VALUES ($1::uuid, md5('site:' || $2::uuid::text)::uuid, COALESCE(NULLIF(left($3, 120), ''), 'Site'))
+    RETURNING org_id, id
+)
+INSERT INTO projects (org_id, id, name, site_id)
+SELECT site.org_id, $2::uuid, $3, site.id FROM site
 `
 
 type CreateProjectParams struct {
@@ -904,7 +909,7 @@ func (q *Queries) GetPassage(ctx context.Context, arg GetPassageParams) (GetPass
 }
 
 const getProject = `-- name: GetProject :one
-SELECT id::text AS id, name
+SELECT id::text AS id, name, site_id::text AS site_id
 FROM projects
 WHERE org_id = $1::uuid
   AND id = $2::uuid
@@ -916,14 +921,15 @@ type GetProjectParams struct {
 }
 
 type GetProjectRow struct {
-	ID   string
-	Name string
+	ID     string
+	Name   string
+	SiteID string
 }
 
 func (q *Queries) GetProject(ctx context.Context, arg GetProjectParams) (GetProjectRow, error) {
 	row := q.db.QueryRow(ctx, getProject, arg.OrgID, arg.ID)
 	var i GetProjectRow
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.SiteID)
 	return i, err
 }
 
