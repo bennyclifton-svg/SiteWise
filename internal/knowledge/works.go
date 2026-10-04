@@ -79,14 +79,14 @@ type Signal struct {
 	Status       string   `yaml:"status"`
 }
 
-// Question is the signal as a Jev question (id "sig:<id>").
+// Question is the signal as a Jev question (id "sig:<id>"). Its consumer is
+// WP-27, once D-12 decides how signals are asked.
 func (s Signal) Question() Question {
 	return Question{ID: "sig:" + s.ID, Type: s.Type, Instructions: s.Instructions, Criteria: s.Criteria, RunsOn: s.RunsOn}
 }
 
 type worksData struct {
 	actions          []Action
-	answers          map[string]string
 	workTypeDefaults map[string]string
 	conditions       []string
 	interfaceCQ      []InterfaceConsequence
@@ -163,7 +163,6 @@ func (c *Catalog) loadActions(path string) error {
 	var file struct {
 		Version            int               `yaml:"version"`
 		Actions            []Action          `yaml:"actions"`
-		Answers            map[string]string `yaml:"answers"`
 		WorkTypeDefaults   map[string]string `yaml:"work_type_defaults"`
 		ExistingConditions struct {
 			Values []struct {
@@ -178,7 +177,6 @@ func (c *Catalog) loadActions(path string) error {
 		return fmt.Errorf("%s: version %d", path, file.Version)
 	}
 	c.works.actions = file.Actions
-	c.works.answers = file.Answers
 	c.works.workTypeDefaults = file.WorkTypeDefaults
 	for _, v := range file.ExistingConditions.Values {
 		c.works.conditions = append(c.works.conditions, v.ID)
@@ -211,6 +209,9 @@ func (c *Catalog) loadSignals(path string) error {
 	if err := unmarshal(path, &file); err != nil {
 		return err
 	}
+	if file.Version != 1 {
+		return fmt.Errorf("%s: version %d", path, file.Version)
+	}
 	for _, s := range file.Signals {
 		if s.ID == "" || s.Type != "noul" {
 			return fmt.Errorf("%s: signal %q must be a noul with an id", path, s.ID)
@@ -242,8 +243,21 @@ func (c *Catalog) loadInterfaceConsequences(path string) error {
 	if err := unmarshal(path, &file); err != nil {
 		return err
 	}
+	if file.Version != 1 {
+		return fmt.Errorf("%s: version %d", path, file.Version)
+	}
+	types := map[string]bool{}
+	for _, i := range c.Interfaces {
+		types[i.Type] = true
+	}
 	for _, r := range file.Records {
 		ic := r.InterfaceConsequence
+		if !types[ic.Type] {
+			return fmt.Errorf("%s: %s names interface type %q, which no interface has", path, ic.ID, ic.Type)
+		}
+		if r.Actions == nil {
+			return fmt.Errorf("%s: %s needs actions (a list or any)", path, ic.ID)
+		}
 		switch r.Actions.(type) {
 		case string:
 			if r.Actions != "any" {
@@ -280,6 +294,9 @@ func (c *Catalog) loadConsequences(path string) error {
 	if err := unmarshal(path, &file); err != nil {
 		return err
 	}
+	if file.Version != 1 {
+		return fmt.Errorf("%s: version %d", path, file.Version)
+	}
 	for _, r := range file.Consequences {
 		if err := c.checkWorksRefs(path, r.ID, r.When, r.Signals); err != nil {
 			return err
@@ -300,6 +317,9 @@ func (c *Catalog) loadUnforeseen(path string) error {
 	if err := unmarshal(path, &file); err != nil {
 		return err
 	}
+	if file.Version != 1 {
+		return fmt.Errorf("%s: version %d", path, file.Version)
+	}
 	for _, r := range file.Unforeseen {
 		if err := c.checkWorksRefs(path, r.ID, r.When, r.Signals); err != nil {
 			return err
@@ -308,6 +328,9 @@ func (c *Catalog) loadUnforeseen(path string) error {
 			if _, known := c.systems[sys]; !known {
 				return fmt.Errorf("%s: %s attaches to unknown system %s", path, r.ID, sys)
 			}
+		}
+		if id, ok := r.AttachesTo["interface"]; ok && !c.hasInterface(id) {
+			return fmt.Errorf("%s: %s attaches to unknown interface %s", path, r.ID, id)
 		}
 		c.works.unforeseen = append(c.works.unforeseen, r)
 	}
@@ -324,23 +347,53 @@ func (c *Catalog) checkWorksRefs(path, id string, when any, signals []string) er
 		}
 	}
 	var bad error
+	fail := func(format string, args ...any) {
+		if bad == nil {
+			bad = fmt.Errorf("%s: %s "+format, append([]any{path, id}, args...)...)
+		}
+	}
 	walkPredicate(when, func(m map[string]any) {
-		w, ok := asMap(m["works"])
-		if !ok || bad != nil {
+		if det, ok := m["det"]; ok {
+			if _, known := c.Determinant(fmt.Sprint(det)); !known {
+				fail("reads unknown determinant %v", det)
+			}
+		}
+		raw, ok := m["works"]
+		if !ok {
 			return
+		}
+		// A malformed works map would match every item, so refuse it here.
+		w, ok := asMap(raw)
+		if !ok || len(w) == 0 {
+			fail("works must be a map of action and system lists")
+			return
+		}
+		for key, val := range w {
+			if (key != "action" && key != "system") || len(asList(val)) == 0 {
+				fail("works key %q must be action or system with a non-empty list", key)
+			}
 		}
 		for _, a := range asList(w["action"]) {
 			if !c.isAction(fmt.Sprint(a)) {
-				bad = fmt.Errorf("%s: %s works names unknown action %v", path, id, a)
+				fail("works names unknown action %v", a)
 			}
 		}
 		for _, s := range asList(w["system"]) {
 			if _, ok := c.systems[fmt.Sprint(s)]; !ok {
-				bad = fmt.Errorf("%s: %s works names unknown system %v", path, id, s)
+				fail("works names unknown system %v", s)
 			}
 		}
 	})
 	return bad
+}
+
+func (c *Catalog) hasInterface(id string) bool {
+	for _, i := range c.Interfaces {
+		if i.ID == id {
+			return true
+		}
+	}
+	return false
 }
 
 func walkPredicate(p any, visit func(map[string]any)) {

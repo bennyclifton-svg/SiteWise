@@ -123,9 +123,13 @@ func evalPredicate(p any, env predEnv) tri {
 		case "not":
 			t = not(evalPredicate(val, env))
 		case "system_present":
-			t = triFalse
-			if env.present != nil && env.present(fmt.Sprint(val)) {
+			switch {
+			case env.present == nil:
+				t = triUnknown
+			case env.present(fmt.Sprint(val)):
 				t = triTrue
+			default:
+				t = triFalse
 			}
 		case "works":
 			t = triUnknown

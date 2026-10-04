@@ -80,10 +80,24 @@ func TestWorksPredicateOnARealRecord(t *testing.T) {
 		{"building age unknown keeps it", []knowledge.WorkItem{{System: "fire-active.hydrants", Action: "alter"}}, nil, knowledge.Unknown},
 		{"new building", []knowledge.WorkItem{{System: "fire-active.sprinklers", Action: "new"}}, map[string]string{"existing_building": "stated_false"}, knowledge.False},
 		{"coarse item on the whole family might be sprinklers", []knowledge.WorkItem{{System: "fire-active", Action: "upgrade"}}, existing, knowledge.Unknown},
+		{"action not yet resolved might be a listed one", []knowledge.WorkItem{{System: "fire-active.sprinklers"}}, existing, knowledge.Unknown},
+		{"unresolved action on another system", []knowledge.WorkItem{{System: "electrical"}}, existing, knowledge.False},
 	}
 	for _, c := range cases {
 		if got := cat.Holds(when, knowledge.WorksEnv{Values: c.values, Items: c.items}); got != c.want {
 			t.Errorf("%s: %s, want %s", c.name, got, c.want)
+		}
+	}
+}
+
+// Until D-07 feeds work_type from the part or project, a record that tests
+// it stays unknown whatever value the caller passes.
+func TestWorkTypeStaysUnknownUntilDecided(t *testing.T) {
+	cat := loadRepo(t)
+	pred := map[string]any{"det": "work_type", "any_of": []any{"extend"}}
+	for _, v := range []string{"extend", "refurb"} {
+		if got := cat.Holds(pred, knowledge.WorksEnv{Values: map[string]string{"work_type": v}}); got != knowledge.Unknown {
+			t.Fatalf("work_type %s: %s", v, got)
 		}
 	}
 }
@@ -102,8 +116,8 @@ func TestSystemExistingAndPresent(t *testing.T) {
 	if got := cat.Holds(present, knowledge.WorksEnv{Present: func(s string) bool { return s == "fire-active.sprinklers" }}); got != knowledge.True {
 		t.Fatalf("system_present keeps its meaning: %s", got)
 	}
-	if got := cat.Holds(present, knowledge.WorksEnv{}); got != knowledge.False {
-		t.Fatalf("system_present without systems: %s", got)
+	if got := cat.Holds(present, knowledge.WorksEnv{}); got != knowledge.Unknown {
+		t.Fatalf("system_present with no systems input: %s", got)
 	}
 }
 
@@ -147,6 +161,15 @@ work_type_defaults: {new: new}
 		},
 		"consequence cites an unknown signal": {
 			"clusters/fire/consequences.yaml": "version: 1\nconsequences:\n  - {id: cq.x, signals: [sig.missing], when: {works: {action: [new]}}}\n",
+		},
+		"unknown determinant": {
+			"clusters/fire/consequences.yaml": "version: 1\nconsequences:\n  - {id: cq.x, when: {det: no_such_det, is: true}}\n",
+		},
+		"malformed works map": {
+			"clusters/fire/unforeseen.yaml": "version: 1\nunforeseen:\n  - {id: uc.x, when: {works: {systems: [fire-passive]}}}\n",
+		},
+		"interface consequence without actions": {
+			"works/interface_consequences.yaml": "version: 1\ninterface_consequences:\n  - {id: ic.x, type: supplies, touches: from, propose: {kind: investigation, label: x}}\n",
 		},
 		"default action is not an action": {
 			"works/actions.yaml": "version: 1\nactions:\n  - {id: new, describes: d, excludes: e}\nwork_type_defaults: {refurb: alter}\n",

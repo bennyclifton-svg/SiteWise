@@ -33,6 +33,7 @@ type WorksEnv struct {
 	// multi-choice), as in Relevant.
 	Values map[string]string
 	// Present reports system_present: the system is in the completed building.
+	// Nil makes it unknown.
 	Present func(system string) bool
 	// Items are the in-scope work items. An empty list makes every `works`
 	// condition false: no works touch anything.
@@ -45,7 +46,16 @@ type WorksEnv struct {
 // Holds evaluates a works-layer predicate (consequence or unforeseen `when`,
 // or an applies_when) in code. It never calls Jev.
 func (c *Catalog) Holds(p any, env WorksEnv) Truth {
-	e := predEnv{values: env.Values, present: env.Present,
+	// The work_type determinant has no options yet and will be fed by code
+	// from the part or project work type (D-07). Until then a record that
+	// tests it stays unknown rather than being hidden by a stray value.
+	values := make(map[string]string, len(env.Values))
+	for k, v := range env.Values {
+		if k != "work_type" {
+			values[k] = v
+		}
+	}
+	e := predEnv{values: values, present: env.Present,
 		works: func(cond map[string]any) tri { return c.worksMatch(cond, env.Items) }}
 	if env.Existing != nil {
 		e.existing = func(sys string) tri { return toTri(env.Existing(sys)) }
@@ -61,18 +71,28 @@ func (c *Catalog) worksMatch(cond map[string]any, items []WorkItem) tri {
 	actions, systems := asList(cond["action"]), asList(cond["system"])
 	result := triFalse
 	for _, it := range items {
-		if len(actions) > 0 && !listHas(actions, it.Action) {
+		// An item whose action is not yet resolved might have a listed one.
+		actionKnown := it.Action != ""
+		if len(actions) > 0 && actionKnown && !listHas(actions, it.Action) {
 			continue
 		}
+		match := triUnknown
+		if actionKnown || len(actions) == 0 {
+			match = triTrue
+		}
 		if len(systems) == 0 {
-			return triTrue
+			if match == triTrue {
+				return triTrue
+			}
+			result = triUnknown
+			continue
 		}
 		for _, s := range systems {
 			listed := fmt.Sprint(s)
 			switch {
-			case c.covers(it.System, listed):
+			case c.covers(it.System, listed) && match == triTrue:
 				return triTrue
-			case c.covers(listed, it.System):
+			case c.covers(it.System, listed), c.covers(listed, it.System):
 				result = triUnknown
 			}
 		}
