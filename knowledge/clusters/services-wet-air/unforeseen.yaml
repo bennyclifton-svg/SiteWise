@@ -208,6 +208,8 @@ unforeseen:
     row: B1-0539
   - seed: mechanical-services-guide.md
     anchor: '### Coordination'
+  - dataset: batch2
+    row: B2-0247
 - id: uc.cooling-tower-plume-complaint
   kind: process_authority_supply_weather
   category: third_parties_and_occupation
@@ -852,6 +854,10 @@ unforeseen:
     row: B1-0557
   - seed: mechanical-services-guide.md
     anchor: '### Existing buildings and live environments'
+  - dataset: batch2
+    row: B2-0242
+  - dataset: batch2
+    row: B2-0526
 - id: uc.asbestos-in-existing-ductwork
   kind: unforeseen_condition
   category: hazardous_materials
@@ -930,6 +936,8 @@ unforeseen:
     row: B1-0963
   - seed: mechanical-services-guide.md
     anchor: '### Existing buildings and live environments'
+  - dataset: batch2
+    row: B2-0799
 - id: uc.existing-drains-and-services-under-new-footprint
   kind: unforeseen_condition
   category: concealed_services_and_earlier_work
@@ -968,3 +976,2567 @@ unforeseen:
     row: B1-0978
   - seed: hydraulic-services-guide.md
     anchor: '## Refurbishment and commercial fit-out overlay'
+- id: uc.heating-coil-buried-in-existing-floor
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.heating-coil-buried-in-existing-floor-stated
+  de_risk:
+    kind: investigation
+    label: "Locate heating coils before floor wastes are set out"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner early warning: A thermal scan or the old heating drawing would show the coil."
+  sources:
+  - dataset: batch2
+    row: B2-0059
+- id: uc.existing-floor-waste-flange-incompatible-with-membrane
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-floor-waste-flange-incompatible-with-membrane-stated
+  de_risk:
+    kind: investigation
+    label: "Expose the flange and match the membrane system to it before tender"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner list cites AS 3740; not verified. Owner early warning: The flange type, once tiles are lifted, does not match the membrane's approved termination."
+  sources:
+  - dataset: batch2
+    row: B2-0117
+- id: uc.shower-waste-set-high-by-earlier-renovation
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.shower-waste-set-high-by-earlier-renovation-stated
+  de_risk:
+    kind: investigation
+    label: "Reset the waste before the bed is laid"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 3740; not verified. Owner early warning: A level on the waste against the slab would show the waste is the high point."
+  sources:
+  - dataset: batch2
+    row: B2-0123
+- id: uc.existing-bath-lip-below-wall-membrane-line
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-bath-lip-below-wall-membrane-line-stated
+  de_risk:
+    kind: investigation
+    label: "Choose a bath whose lip can take the membrane"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 3740; not verified. Owner early warning: The lip height against the upturn would show a gap."
+  sources:
+  - dataset: batch2
+    row: B2-0146
+- id: uc.existing-slab-uneven-under-shower-base
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-slab-uneven-under-shower-base-stated
+  de_risk:
+    kind: investigation
+    label: "Bed the base fully before the wall junction is sealed"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality]
+  severity: durability
+  discovered_at: [handover_defects]
+  status: draft
+  notes: "Owner list cites AS 3740; not verified. Owner early warning: A straight edge on the slab would show the hollow under the base."
+  sources:
+  - dataset: batch2
+    row: B2-0147
+- id: uc.existing-copper-shower-tray-pinholed
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-copper-shower-tray-pinholed-stated
+  de_risk:
+    kind: investigation
+    label: "Test the tray before the screen is relied on as the seal"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner early warning: A water test of the tray alone would show the pinholes."
+  sources:
+  - dataset: batch2
+    row: B2-0164
+- id: uc.laundry-over-tenancy-has-no-floor-waste
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.laundry-over-tenancy-has-no-floor-waste-stated
+  de_risk:
+    kind: investigation
+    label: "Add a waste before appliances are specified"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The slab has no waste penetration on the survey."
+  sources:
+  - dataset: batch2
+    row: B2-0165
+- id: uc.fire-damper-cannot-be-fitted-in-existing-duct
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.fire-mode-air-systems]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.fire-damper-cannot-be-fitted-in-existing-duct-stated
+  de_risk:
+    kind: investigation
+    label: "Measure the duct zone before the damper is ordered"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme, compliance]
+  severity: compliance
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 1682, AS 1668; not verified. Owner early warning: The duct-to-slab dimension is less than the damper needs."
+  sources:
+  - dataset: batch2
+    row: B2-0168
+  - dataset: batch2
+    row: B2-0248
+- id: uc.existing-smoke-damper-has-no-access-panel
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.fire-mode-air-systems]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-smoke-damper-has-no-access-panel-stated
+  de_risk:
+    kind: investigation
+    label: "Provide access before the damper is accepted"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [compliance, quality]
+  severity: compliance
+  discovered_at: [handover_defects]
+  status: draft
+  notes: "Owner list cites AS 1851; not verified. Owner early warning: The ceiling type is fixed and there is no panel."
+  sources:
+  - dataset: batch2
+    row: B2-0190
+- id: uc.existing-beam-blocks-smoke-exhaust-opening
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.fire-mode-air-systems]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-beam-blocks-smoke-exhaust-opening-stated
+  de_risk:
+    kind: investigation
+    label: "Coordinate the opening with the beam before the model is relied on"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The beam is in the opening on the structural drawing."
+  sources:
+  - dataset: batch2
+    row: B2-0191
+- id: uc.transfer-beam-leaves-no-ceiling-zone-for-duct
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.transfer-beam-leaves-no-ceiling-zone-for-duct-stated
+  de_risk:
+    kind: investigation
+    label: "Measure the zone before the duct is sized"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The beam depth against the ceiling height leaves less than the duct needs."
+  sources:
+  - dataset: batch2
+    row: B2-0230
+- id: uc.existing-air-handler-cannot-deliver-outside-air-for-new-occupancy
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution, mechanical.ventilation]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-air-handler-cannot-deliver-outside-air-for-new-occupancy-stated
+  de_risk:
+    kind: investigation
+    label: "Check the existing plant against the new rate before the use is approved"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The unit's fan curve is below the new outside-air quantity."
+  sources:
+  - dataset: batch2
+    row: B2-0232
+- id: uc.replacement-cooling-tower-heavier-than-roof-allowance
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.cooling-towers
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.cooling-towers, mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.replacement-cooling-tower-heavier-than-roof-allowance-stated
+  de_risk:
+    kind: investigation
+    label: "Check the roof for the replacement weight before the towers are ordered"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1170; not verified. Owner early warning: The new operating weight exceeds the original plant allowance."
+  sources:
+  - dataset: batch2
+    row: B2-0233
+- id: uc.tenant-condensers-exceed-roof-allowance-on-existing-roof
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.tenant-condensers-exceed-roof-allowance-on-existing-roof-stated
+  de_risk:
+    kind: investigation
+    label: "Check the remaining allowance before more plant is accepted"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The roof allowance is already used by other tenancies."
+  sources:
+  - dataset: batch2
+    row: B2-0236
+- id: uc.kitchen-exhaust-has-no-rated-riser-in-existing-shaft
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.local-exhaust]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.kitchen-exhaust-has-no-rated-riser-in-existing-shaft-stated
+  de_risk:
+    kind: investigation
+    label: "Secure a rated path before the kitchen is documented"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The shaft survey shows no spare rated flue."
+  sources:
+  - dataset: batch2
+    row: B2-0235
+- id: uc.corridor-has-no-room-for-heating-expansion-loop
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.corridor-has-no-room-for-heating-expansion-loop-stated
+  de_risk:
+    kind: investigation
+    label: "Find a loop location before the pipe is ordered"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner early warning: The corridor width cannot fit the loop."
+  sources:
+  - dataset: batch2
+    row: B2-0237
+- id: uc.existing-duct-lining-unfit-for-reuse
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-duct-lining-unfit-for-reuse-stated
+  de_risk:
+    kind: investigation
+    label: "Inspect linings before ducts are nominated for reuse"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [cost, programme, safety]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner list cites AS 4254, AS 3666; not verified. Owner early warning: A sample of the lining would show it is not acceptable to retain."
+  sources:
+  - dataset: batch2
+    row: B2-0241
+  - dataset: batch2
+    row: B2-0288
+- id: uc.existing-glazing-drives-heating-load-beyond-replacement-plant
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-glazing-drives-heating-load-beyond-replacement-plant-stated
+  de_risk:
+    kind: investigation
+    label: "Decide whether the glass or the plant changes"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites NCC; not verified. Owner early warning: The glass performance drives a load the plant cannot cover."
+  sources:
+  - dataset: batch2
+    row: B2-0295
+- id: uc.existing-flue-or-chimney-unsuitable-for-replacement-boiler
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.heating-appliances
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.heating-appliances]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-flue-or-chimney-unsuitable-for-replacement-boiler-stated
+  de_risk:
+    kind: investigation
+    label: "Check the flue before the boiler is selected"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 5601; not verified. Owner early warning: The flue area is below the appliance data."
+  sources:
+  - dataset: batch2
+    row: B2-0246
+  - dataset: batch2
+    row: B2-0278
+- id: uc.existing-riser-full-for-extension-ductwork
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-riser-full-for-extension-ductwork-stated
+  de_risk:
+    kind: investigation
+    label: "Find another path before the extension services are tendered"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: A riser survey shows no free area."
+  sources:
+  - dataset: batch2
+    row: B2-0250
+- id: uc.replacement-air-handler-coil-handing-opposite-to-risers
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution, hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.replacement-air-handler-coil-handing-opposite-to-risers-stated
+  de_risk:
+    kind: investigation
+    label: "Confirm handing against the risers before the unit is ordered"
+  contract: "Hold the coordinated size or selection in the order; a late supply change sits with the party that ordered."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner early warning: The factory handing does not match the pipes."
+  sources:
+  - dataset: batch2
+    row: B2-0251
+- id: uc.existing-warm-water-system-cannot-be-disinfected-for-new-use
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.hot-water
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.hot-water, mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-warm-water-system-cannot-be-disinfected-for-new-use-stated
+  de_risk:
+    kind: investigation
+    label: "Replace or alter the system so it can be disinfected"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [safety, compliance]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3666; not verified. Owner early warning: The system has dead legs that cannot be flushed."
+  sources:
+  - dataset: batch2
+    row: B2-0255
+- id: uc.plant-deck-drain-cannot-take-rain-and-coil-water
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.roof-drainage
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.roof-drainage, mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.plant-deck-drain-cannot-take-rain-and-coil-water-stated
+  de_risk:
+    kind: investigation
+    label: "Check the deck drainage against the new plant"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The existing drain is undersized for the combined flow."
+  sources:
+  - dataset: batch2
+    row: B2-0265
+- id: uc.pneumatic-controls-have-no-points-for-new-bms
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.controls-bms
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.controls-bms]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.pneumatic-controls-have-no-points-for-new-bms-stated
+  de_risk:
+    kind: investigation
+    label: "Provide an interface or replace the controls"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The controllers have no electronic output."
+  sources:
+  - dataset: batch2
+    row: B2-0267
+- id: uc.existing-stair-door-leakage-defeats-pressurisation-fan
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.fire-mode-air-systems]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-stair-door-leakage-defeats-pressurisation-fan-stated
+  de_risk:
+    kind: investigation
+    label: "Measure leakage before the fan is ordered"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: Door gaps are larger than the fan was selected for."
+  sources:
+  - dataset: batch2
+    row: B2-0270
+- id: uc.beam-in-jet-fan-throw-omitted-from-airflow-model
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.carpark-ventilation
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.carpark-ventilation]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.beam-in-jet-fan-throw-omitted-from-airflow-model-stated
+  de_risk:
+    kind: investigation
+    label: "Model the beams that are actually there"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, compliance]
+  severity: compliance
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The beam is in the throw on the structural drawing."
+  sources:
+  - dataset: batch2
+    row: B2-0272
+- id: uc.removed-return-air-heater-leaves-return-unheated
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.removed-return-air-heater-leaves-return-unheated-stated
+  de_risk:
+    kind: investigation
+    label: "Replace the heating the removal takes away"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The heater is in the only return path."
+  sources:
+  - dataset: batch2
+    row: B2-0273
+- id: uc.existing-hydronic-loop-has-no-treatment-dose-point
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant, hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-hydronic-loop-has-no-treatment-dose-point-stated
+  de_risk:
+    kind: investigation
+    label: "Add treatment access before new plant is connected"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3666; not verified. Owner early warning: The loop has no sample or dose point."
+  sources:
+  - dataset: batch2
+    row: B2-0276
+- id: uc.combustion-air-for-reused-plant-room-drawn-from-loading-area
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.combustion-air-for-reused-plant-room-drawn-from-loading-area-stated
+  de_risk:
+    kind: investigation
+    label: "Provide clean combustion air"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [safety, quality]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 5601; not verified. Owner early warning: The only louvre faces the dock."
+  sources:
+  - dataset: batch2
+    row: B2-0279
+- id: uc.existing-extract-duct-velocity-too-low-for-new-process-dust
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [mechanical.local-exhaust, mechanical.process-specialist]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-extract-duct-velocity-too-low-for-new-process-dust-stated
+  de_risk:
+    kind: investigation
+    label: "Check velocity for the material"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [quality, safety]
+  severity: life-safety
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner early warning: The duct size is too large for the new flow."
+  sources:
+  - dataset: batch2
+    row: B2-0282
+- id: uc.energy-recovery-wheel-leaks-exhaust-into-outside-air
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.ventilation
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.ventilation, mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.energy-recovery-wheel-leaks-exhaust-into-outside-air-stated
+  de_risk:
+    kind: investigation
+    label: "Select a wheel arrangement that suits the exhaust"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [quality, safety]
+  severity: life-safety
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: A tracer test shows transfer across the wheel."
+  sources:
+  - dataset: batch2
+    row: B2-0289
+- id: uc.reused-outside-air-intake-has-no-screen
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.ventilation
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.ventilation]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.reused-outside-air-intake-has-no-screen-stated
+  de_risk:
+    kind: investigation
+    label: "Fit a screen that can be cleaned"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality]
+  severity: durability
+  discovered_at: [handover_defects]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The opening has no screen and fills with debris."
+  sources:
+  - dataset: batch2
+    row: B2-0292
+- id: uc.underfloor-air-plenum-obstructed-by-later-cabling
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.underfloor-air-plenum-obstructed-by-later-cabling-stated
+  de_risk:
+    kind: investigation
+    label: "Clear a path for the air or duct it"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The void is obstructed."
+  sources:
+  - dataset: batch2
+    row: B2-0294
+- id: uc.humidifier-needs-water-quality-supply-lacks
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical, hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.humidifier-needs-water-quality-supply-lacks-stated
+  de_risk:
+    kind: investigation
+    label: "Treat the water or change the unit"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner early warning: The supply analysis does not meet the unit."
+  sources:
+  - dataset: batch2
+    row: B2-0296
+- id: uc.new-refrigerant-unsuitable-for-existing-pipework
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.refrigerant-condensate]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.new-refrigerant-unsuitable-for-existing-pipework-stated
+  de_risk:
+    kind: investigation
+    label: "Replace the pipe or choose a compatible refrigerant path"
+  contract: "Hold the coordinated size or selection in the order; a late supply change sits with the party that ordered."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The pipe specification does not match the new refrigerant."
+  sources:
+  - dataset: batch2
+    row: B2-0298
+- id: uc.existing-sewer-branch-above-new-fixture-outlets
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-sewer-branch-above-new-fixture-outlets-stated
+  de_risk:
+    kind: approval
+    label: "Survey the branch before fixtures are set"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The branch invert is above the fixture outlets."
+  sources:
+  - dataset: batch2
+    row: B2-0376
+  - dataset: batch2
+    row: B2-0960
+- id: uc.new-soil-stack-clashes-with-existing-beam
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.new-soil-stack-clashes-with-existing-beam-stated
+  de_risk:
+    kind: investigation
+    label: "Move the stack or the beam penetration before tender"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The beam is on the stack line."
+  sources:
+  - dataset: batch2
+    row: B2-0377
+- id: uc.existing-slab-thicker-than-surveyed-loses-drain-grade
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-slab-thicker-than-surveyed-loses-drain-grade-stated
+  de_risk:
+    kind: investigation
+    label: "Measure the soffit before grades are fixed"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The soffit is lower than the long section assumed."
+  sources:
+  - dataset: batch2
+    row: B2-0378
+- id: uc.fixture-in-new-internal-room-has-no-vent-path
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.fixture-in-new-internal-room-has-no-vent-path-stated
+  de_risk:
+    kind: investigation
+    label: "Vent the fixture or relocate it"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: There is no path for a vent."
+  sources:
+  - dataset: batch2
+    row: B2-0379
+- id: uc.existing-galvanised-water-service-fails-when-cut
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-galvanised-water-service-fails-when-cut-stated
+  de_risk:
+    kind: investigation
+    label: "Allow to replace the service, not just tap into it"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The pipe sheds rust and will not hold a joint."
+  sources:
+  - dataset: batch2
+    row: B2-0381
+- id: uc.replacement-hot-water-plant-will-not-fit-cupboard-or-flue
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.hot-water
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.hot-water, mechanical.heating-appliances]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.replacement-hot-water-plant-will-not-fit-cupboard-or-flue-stated
+  de_risk:
+    kind: investigation
+    label: "Measure the space before the unit is selected"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The unit and flue exceed the cupboard."
+  sources:
+  - dataset: batch2
+    row: B2-0382
+- id: uc.trade-waste-arrestor-will-not-fit-level-or-access
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.trade-waste
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.trade-waste]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.trade-waste-arrestor-will-not-fit-level-or-access-stated
+  de_risk:
+    kind: approval
+    label: "Agree the location before the arrestor is ordered"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites Plumbing Code of Australia; not verified. Owner early warning: The invert and the access path do not suit the authority's rules."
+  sources:
+  - dataset: batch2
+    row: B2-0384
+  - dataset: batch2
+    row: B2-0774
+- id: uc.authority-requires-separate-sanitary-connection
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.authority-requires-separate-sanitary-connection-stated
+  de_risk:
+    kind: approval
+    label: "Separate the sanitary connection"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The authority requires a separate sewer."
+  sources:
+  - dataset: batch2
+    row: B2-0386
+- id: uc.fire-and-potable-water-share-connection-without-backflow-break
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.backflow-prevention
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.backflow-prevention, fire-active.fire-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.fire-and-potable-water-share-connection-without-backflow-break-stated
+  de_risk:
+    kind: investigation
+    label: "Protect the potable supply from the fire system"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [compliance, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The services join without a break."
+  sources:
+  - dataset: batch2
+    row: B2-0388
+- id: uc.plant-room-floor-waste-has-no-fall-in-existing-slab
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.plant-room-floor-waste-has-no-fall-in-existing-slab-stated
+  de_risk:
+    kind: investigation
+    label: "Form falls or move the waste"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality]
+  severity: durability
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The slab falls away from the waste."
+  sources:
+  - dataset: batch2
+    row: B2-0389
+- id: uc.existing-stack-leaks-when-new-fixtures-connected
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-stack-leaks-when-new-fixtures-connected-stated
+  de_risk:
+    kind: investigation
+    label: "Camera or test the stack before it is reused"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The stack weeps at joints under the extra flow."
+  sources:
+  - dataset: batch2
+    row: B2-0390
+- id: uc.water-meter-relocated-inside-tenancy
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.water-meter-relocated-inside-tenancy-stated
+  de_risk:
+    kind: investigation
+    label: "Put the meter where it can be read"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The meter is inside the demise."
+  sources:
+  - dataset: batch2
+    row: B2-0393
+- id: uc.existing-grease-arrestor-undersized-for-new-kitchen
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.trade-waste
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.trade-waste]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-grease-arrestor-undersized-for-new-kitchen-stated
+  de_risk:
+    kind: investigation
+    label: "Size the arrestor to the kitchen"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The fixture load exceeds the arrestor."
+  sources:
+  - dataset: batch2
+    row: B2-0395
+- id: uc.hot-water-ring-extension-cannot-be-balanced
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.hot-water
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.hot-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.hot-water-ring-extension-cannot-be-balanced-stated
+  de_risk:
+    kind: investigation
+    label: "Balance the ring or reconfigure it"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The end fixture does not hold temperature."
+  sources:
+  - dataset: batch2
+    row: B2-0396
+- id: uc.abandoned-pipework-leaves-dead-legs-after-strip-out
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.abandoned-pipework-leaves-dead-legs-after-strip-out-stated
+  de_risk:
+    kind: investigation
+    label: "Cut back dead legs"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [compliance, safety]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The abandoned pipe is still connected."
+  sources:
+  - dataset: batch2
+    row: B2-0397
+- id: uc.press-fittings-do-not-suit-existing-copper-size
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.press-fittings-do-not-suit-existing-copper-size-stated
+  de_risk:
+    kind: investigation
+    label: "Identify the pipe before fittings are ordered"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The pipe diameter is not a current size."
+  sources:
+  - dataset: batch2
+    row: B2-0398
+- id: uc.in-wall-cistern-clashes-with-existing-stud
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.in-wall-cistern-clashes-with-existing-stud-stated
+  de_risk:
+    kind: investigation
+    label: "Open the wall and set the cistern to the framing"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner early warning: The stud is in the cistern bay."
+  sources:
+  - dataset: batch2
+    row: B2-0399
+- id: uc.stack-vent-too-close-to-new-openable-window
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.stack-vent-too-close-to-new-openable-window-stated
+  de_risk:
+    kind: investigation
+    label: "Move the vent or the window"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The terminal is inside the clearance of the window."
+  sources:
+  - dataset: batch2
+    row: B2-0404
+- id: uc.sewer-surcharge-with-no-reflux-valve
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter, repair]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.sewer-surcharge-with-no-reflux-valve-stated
+  de_risk:
+    kind: approval
+    label: "Fit a reflux valve that can be maintained"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The authority advises the sewer can surcharge."
+  sources:
+  - dataset: batch2
+    row: B2-0406
+- id: uc.no-serviceable-position-for-reflux-valve
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.no-serviceable-position-for-reflux-valve-stated
+  de_risk:
+    kind: investigation
+    label: "Provide an accessible valve"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The drain is under the slab with no riser."
+  sources:
+  - dataset: batch2
+    row: B2-0407
+- id: uc.trade-waste-quality-exceeds-authority-agreement
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.trade-waste
+  when:
+    all:
+    - works:
+        action: [new, alter, upgrade, replace]
+        system: [hydraulic.trade-waste]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.trade-waste-quality-exceeds-authority-agreement-stated
+  de_risk:
+    kind: approval
+    label: "Treat the waste to the agreement or renegotiate it"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites Plumbing Code of Australia; not verified. Owner early warning: Samples exceed the agreement."
+  sources:
+  - dataset: batch2
+    row: B2-0411
+  - dataset: batch2
+    row: B2-0773
+- id: uc.dilution-pit-clashes-with-process-equipment-base
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.trade-waste
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.trade-waste]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.dilution-pit-clashes-with-process-equipment-base-stated
+  de_risk:
+    kind: investigation
+    label: "Coordinate the pit and the equipment"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The pit depth clashes with the equipment base."
+  sources:
+  - dataset: batch2
+    row: B2-0412
+- id: uc.hose-reel-teed-from-potable-main-without-backflow-device
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.backflow-prevention
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.backflow-prevention, fire-active.hydrants]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.hose-reel-teed-from-potable-main-without-backflow-device-stated
+  de_risk:
+    kind: investigation
+    label: "Protect the potable supply"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [compliance, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The reel is teed off the potable pipe with no backflow device."
+  sources:
+  - dataset: batch2
+    row: B2-0414
+- id: uc.easement-drain-damaged-will-not-take-extension
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.easement-drain-damaged-will-not-take-extension-stated
+  de_risk:
+    kind: investigation
+    label: "Prove the outfall before the extension drainage is designed"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [excavation]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: A camera of the easement pipe shows it is collapsed."
+  sources:
+  - dataset: batch2
+    row: B2-0418
+- id: uc.existing-galvanised-stack-sheds-rust-into-new-fixtures
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-galvanised-stack-sheds-rust-into-new-fixtures-stated
+  de_risk:
+    kind: investigation
+    label: "Replace the stack or line it before the fixtures are connected"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [handover_defects]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: Rust appears in the new basins."
+  sources:
+  - dataset: batch2
+    row: B2-0422
+- id: uc.existing-structure-prevents-siphonic-pipe-height
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: hydraulic.roof-drainage
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.roof-drainage]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-structure-prevents-siphonic-pipe-height-stated
+  de_risk:
+    kind: investigation
+    label: "Route the pipe where the height can be kept"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: Beams force the pipe below its design height."
+  sources:
+  - dataset: batch2
+    row: B2-0424
+- id: uc.existing-sewer-rising-main-at-end-of-life
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-sewer-rising-main-at-end-of-life-stated
+  de_risk:
+    kind: approval
+    label: "Test or replace the main before the load is added"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The main bursts under test pressure."
+  sources:
+  - dataset: batch2
+    row: B2-0427
+- id: uc.chemical-drain-material-wrong-for-process-chemical
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.chemical-drain-material-wrong-for-process-chemical-stated
+  de_risk:
+    kind: investigation
+    label: "Match the pipe to the chemical"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The pipe data does not resist the chemical."
+  sources:
+  - dataset: batch2
+    row: B2-0428
+- id: uc.water-meter-upstream-of-new-branch
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.water-meter-upstream-of-new-branch-stated
+  de_risk:
+    kind: approval
+    label: "Meter all the water the account must cover"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [compliance]
+  severity: compliance
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The new branch leaves the main before the meter."
+  sources:
+  - dataset: batch2
+    row: B2-0431
+- id: uc.stack-in-shaft-has-no-access-to-joints
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new]
+        system: [hydraulic.sanitary]
+  signals:
+  - sig.stack-in-shaft-has-no-access-to-joints-stated
+  de_risk:
+    kind: investigation
+    label: "Provide access to the joints"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: There is no platform or door."
+  sources:
+  - dataset: batch2
+    row: B2-0434
+- id: uc.hospital-pan-room-flush-overloads-existing-stack
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.hospital-pan-room-flush-overloads-existing-stack-stated
+  de_risk:
+    kind: investigation
+    label: "Size the stack for the simultaneous flush"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The stack surcharges when the pans flush together."
+  sources:
+  - dataset: batch2
+    row: B2-0436
+- id: uc.trade-waste-pit-or-line-under-new-paving-lacks-cover
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.trade-waste
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.trade-waste]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.trade-waste-pit-or-line-under-new-paving-lacks-cover-stated
+  de_risk:
+    kind: investigation
+    label: "Replace the cover for the vehicle load"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The cover is a light lid."
+  sources:
+  - dataset: batch2
+    row: B2-0437
+  - dataset: batch2
+    row: B2-0607
+- id: uc.asbestos-cement-flue-on-heater-being-replaced
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.heating-appliances
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.heating-appliances]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.asbestos-cement-flue-on-heater-being-replaced-stated
+  de_risk:
+    kind: investigation
+    label: "Remove the flue under an asbestos method, not as ordinary demolition"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The flue is asbestos cement."
+  sources:
+  - dataset: batch2
+    row: B2-0468
+- id: uc.asbestos-gaskets-and-rope-in-plant-being-disconnected
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.asbestos-gaskets-and-rope-in-plant-being-disconnected-stated
+  de_risk:
+    kind: investigation
+    label: "Treat the disconnection as asbestos work"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The gasket material is asbestos."
+  sources:
+  - dataset: batch2
+    row: B2-0469
+  - dataset: batch2
+    row: B2-0495
+- id: uc.mercury-thermostats-removed-with-old-controls
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.controls-bms
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.controls-bms]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.mercury-thermostats-removed-with-old-controls-stated
+  de_risk:
+    kind: investigation
+    label: "Capture the mercury when they are removed"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [safety]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The devices are a mercury type."
+  sources:
+  - dataset: batch2
+    row: B2-0481
+- id: uc.old-laboratory-extract-duct-contaminated
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.local-exhaust]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.old-laboratory-extract-duct-contaminated-stated
+  de_risk:
+    kind: investigation
+    label: "Clean or replace the duct before it is opened"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The duct history is a contaminated process."
+  sources:
+  - dataset: batch2
+    row: B2-0483
+- id: uc.asbestos-lagging-in-riser-new-pipe-must-enter
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.asbestos-lagging-in-riser-new-pipe-must-enter-stated
+  de_risk:
+    kind: investigation
+    label: "Remove it or work so it is not disturbed, under an asbestos method"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [safety, cost, programme]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The lagging is asbestos."
+  sources:
+  - dataset: batch2
+    row: B2-0489
+- id: uc.refrigerant-in-old-plant-needs-recovery-before-removal
+  kind: process_authority_supply_weather
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.refrigerant-condensate]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.refrigerant-in-old-plant-needs-recovery-before-removal-stated
+  de_risk:
+    kind: investigation
+    label: "Recover the refrigerant before the plant is cut out"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [compliance, safety]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The plant still holds refrigerant."
+  sources:
+  - dataset: batch2
+    row: B2-0496
+- id: uc.mould-in-air-handler-and-ducts-before-reuse
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.mould-in-air-handler-and-ducts-before-reuse-stated
+  de_risk:
+    kind: investigation
+    label: "Clean or replace the air path"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner list cites AS 3666; not verified. Owner early warning: The coils and ducts are mouldy."
+  sources:
+  - dataset: batch2
+    row: B2-0497
+- id: uc.damaged-duct-insulation-sheds-fibres-in-clinical-ceiling
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.damaged-duct-insulation-sheds-fibres-in-clinical-ceiling-stated
+  de_risk:
+    kind: investigation
+    label: "Contain the work before the ceiling is opened over a clinical room"
+  contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
+  effect: [safety]
+  severity: life-safety
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The insulation is unbound."
+  sources:
+  - dataset: batch2
+    row: B2-0500
+- id: uc.shop-to-cafe-change-has-no-path-for-grease-arrestor
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.trade-waste
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.trade-waste]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.shop-to-cafe-change-has-no-path-for-grease-arrestor-stated
+  de_risk:
+    kind: approval
+    label: "Confirm a lawful trade-waste path before the use is approved"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites Plumbing Code of Australia; not verified. Owner early warning: There is no level or access for an arrestor."
+  sources:
+  - dataset: batch2
+    row: B2-0553
+- id: uc.sanitary-fixture-count-short-for-new-occupant-load
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.sanitary-fixture-count-short-for-new-occupant-load-stated
+  de_risk:
+    kind: investigation
+    label: "Add fixtures to the load"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites NCC; not verified. Owner early warning: The fixture count is below the load."
+  sources:
+  - dataset: batch2
+    row: B2-0555
+- id: uc.aged-care-conversion-rooms-too-small-for-accessible-bathroom
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.aged-care-conversion-rooms-too-small-for-accessible-bathroom-stated
+  de_risk:
+    kind: investigation
+    label: "Select rooms that can fit the bathroom or enlarge them"
+  contract: "Settle feasibility before the brief is fixed; later change is a variation."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1428; not verified. Owner early warning: The room size is below the bathroom layout."
+  sources:
+  - dataset: batch2
+    row: B2-0566
+- id: uc.laboratory-conversion-has-no-fume-exhaust-shaft
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.local-exhaust]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.laboratory-conversion-has-no-fume-exhaust-shaft-stated
+  de_risk:
+    kind: investigation
+    label: "Provide an exhaust path before the laboratory is documented"
+  contract: "Settle feasibility before the brief is fixed; later change is a variation."
+  effect: [cost, compliance, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: There is no spare shaft."
+  sources:
+  - dataset: batch2
+    row: B2-0567
+- id: uc.authority-will-not-accept-basement-pump-out-discharge
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new]
+        system: [hydraulic.sanitary]
+  signals:
+  - sig.authority-will-not-accept-basement-pump-out-discharge-stated
+  de_risk:
+    kind: approval
+    label: "Agree the discharge before the pumps are designed"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, compliance]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The authority will not take the pump discharge."
+  sources:
+  - dataset: batch2
+    row: B2-0590
+- id: uc.shared-downpipe-serves-neighbour-and-cannot-be-moved
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.roof-drainage
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.roof-drainage]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.shared-downpipe-serves-neighbour-and-cannot-be-moved-stated
+  de_risk:
+    kind: investigation
+    label: "Keep the neighbour's roof connected"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The pipe takes both roofs."
+  sources:
+  - dataset: batch2
+    row: B2-0634
+- id: uc.roof-plant-over-quiet-room-on-flexible-roof
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.roof-plant-over-quiet-room-on-flexible-roof-stated
+  de_risk:
+    kind: investigation
+    label: "Isolate the plant or stiffen the roof"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [handover_defects]
+  status: draft
+  notes: "Owner early warning: The room hears the plant."
+  sources:
+  - dataset: batch2
+    row: B2-0695
+- id: uc.cross-talk-attenuator-will-not-fit-duct-branch
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.cross-talk-attenuator-will-not-fit-duct-branch-stated
+  de_risk:
+    kind: investigation
+    label: "Size the branch for the attenuator"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The branch is too small."
+  sources:
+  - dataset: batch2
+    row: B2-0710
+- id: uc.laboratory-gas-cabinet-has-no-exhaust-connection
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.local-exhaust]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.laboratory-gas-cabinet-has-no-exhaust-connection-stated
+  de_risk:
+    kind: investigation
+    label: "Provide the exhaust before the cabinet is installed"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: There is no exhaust connection."
+  sources:
+  - dataset: batch2
+    row: B2-0729
+- id: uc.cool-room-condenser-in-ceiling-cannot-reject-heat
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.refrigerant-condensate]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.cool-room-condenser-in-ceiling-cannot-reject-heat-stated
+  de_risk:
+    kind: investigation
+    label: "Reject the heat to a place that can take it"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner early warning: The ceiling overheats and the room will not hold temperature."
+  sources:
+  - dataset: batch2
+    row: B2-0732
+- id: uc.kitchen-canopy-heavier-than-existing-roof-framing
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.local-exhaust
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.local-exhaust]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.kitchen-canopy-heavier-than-existing-roof-framing-stated
+  de_risk:
+    kind: investigation
+    label: "Check the roof for the canopy"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [safety, cost]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1170; not verified. Owner early warning: The canopy weight exceeds the framing."
+  sources:
+  - dataset: batch2
+    row: B2-0733
+- id: uc.water-authority-limits-connection-size-below-design
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.cold-water
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.cold-water]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.water-authority-limits-connection-size-below-design-stated
+  de_risk:
+    kind: approval
+    label: "Design to the connection that will be granted"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The authority limits the size."
+  sources:
+  - dataset: batch2
+    row: B2-0754
+- id: uc.sewer-point-of-connection-moved-after-drain-design
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.sewer-point-of-connection-moved-after-drain-design-stated
+  de_risk:
+    kind: approval
+    label: "Redesign the drains to the current point"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The nominated point has changed."
+  sources:
+  - dataset: batch2
+    row: B2-0755
+- id: uc.no-gas-main-in-street-for-design-connection
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: hydraulic.gas
+  when:
+    all:
+    - works:
+        action: [new, alter]
+        system: [hydraulic.gas]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.no-gas-main-in-street-for-design-connection-stated
+  de_risk:
+    kind: approval
+    label: "Confirm a main before gas appliances are specified"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 5601; not verified. Owner early warning: The utility plan shows no main."
+  sources:
+  - dataset: batch2
+    row: B2-0757
+- id: uc.cool-room-condensate-classed-as-trade-waste
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: mechanical.refrigerant-condensate
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.refrigerant-condensate]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.cool-room-condensate-classed-as-trade-waste-stated
+  de_risk:
+    kind: approval
+    label: "Drain the condensate to the system named"
+  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  effect: [compliance, cost]
+  severity: compliance
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites Plumbing Code of Australia; not verified. Owner early warning: The authority names trade waste, not stormwater."
+  sources:
+  - dataset: batch2
+    row: B2-0787
+- id: uc.shared-riser-access-refused-by-other-tenant
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.shared-riser-access-refused-by-other-tenant-stated
+  de_risk:
+    kind: obligation
+    label: "Secure access before the riser work is programmed"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [programme, cost]
+  severity: cost
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner early warning: Access is refused."
+  sources:
+  - dataset: batch2
+    row: B2-0828
+- id: uc.existing-plant-has-no-isolation-for-live-cutover
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-plant-has-no-isolation-for-live-cutover-stated
+  de_risk:
+    kind: investigation
+    label: "Provide isolation before the cutover is planned"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [programme, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: There are no isolation valves or switches."
+  sources:
+  - dataset: batch2
+    row: B2-0829
+- id: uc.subfloor-clearance-too-small-for-new-services
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.sanitary
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.sanitary]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.subfloor-clearance-too-small-for-new-services-stated
+  de_risk:
+    kind: investigation
+    label: "Choose a route the subfloor can take"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The clearance is below the services."
+  sources:
+  - dataset: batch2
+    row: B2-0841
+- id: uc.roof-insulation-fills-space-for-new-unit
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.roof-insulation-fills-space-for-new-unit-stated
+  de_risk:
+    kind: investigation
+    label: "Clear a space or locate the unit elsewhere"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, quality]
+  severity: durability
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: There is no clear space."
+  sources:
+  - dataset: batch2
+    row: B2-0844
+- id: uc.operating-crane-remains-on-runway-to-be-altered
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.operating-crane-remains-on-runway-to-be-altered-stated
+  de_risk:
+    kind: obligation
+    label: "Agree a shutdown before the runway is altered"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [programme, safety]
+  severity: life-safety
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner early warning: The crane is still in service."
+  sources:
+  - dataset: batch2
+    row: B2-0854
+- id: uc.only-sump-discharges-to-blocked-line
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: hydraulic.roof-drainage
+  when:
+    all:
+    - works:
+        action: [repair]
+        system: [hydraulic.roof-drainage]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.only-sump-discharges-to-blocked-line-stated
+  de_risk:
+    kind: investigation
+    label: "Clear or replace the outfall"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [quality, cost]
+  severity: durability
+  discovered_at: [testing_commissioning]
+  status: draft
+  notes: "Owner list cites AS 3500; not verified. Owner early warning: The outfall does not flow."
+  sources:
+  - dataset: batch2
+    row: B2-0869
+- id: uc.old-oil-tank-occupies-plant-room-for-new-boilers
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.old-oil-tank-occupies-plant-room-for-new-boilers-stated
+  de_risk:
+    kind: investigation
+    label: "Remove the tank before the boilers are planned into the room"
+  contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
+  effect: [cost, programme]
+  severity: cost
+  discovered_at: [demolition_strip_out]
+  status: draft
+  notes: "Owner early warning: The tank is in the room."
+  sources:
+  - dataset: batch2
+    row: B2-0870
+- id: uc.medical-gas-cannot-be-isolated-to-one-wing
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: hydraulic.specialist-process
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [hydraulic.specialist-process]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.medical-gas-cannot-be-isolated-to-one-wing-stated
+  de_risk:
+    kind: investigation
+    label: "Provide isolation that does not shut the adjoining wing"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [safety, programme]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: There is no zone valve."
+  sources:
+  - dataset: batch2
+    row: B2-0886
+- id: uc.theatre-air-handler-outage-not-allowed-in-planned-hours
+  kind: process_authority_supply_weather
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.air-distribution
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.air-distribution]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.theatre-air-handler-outage-not-allowed-in-planned-hours-stated
+  de_risk:
+    kind: obligation
+    label: "Programme the outage to the theatre list"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [programme, safety]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The theatre list does not allow the outage."
+  sources:
+  - dataset: batch2
+    row: B2-0888
+- id: uc.negative-pressure-room-loses-pressure-when-adjacent-ceiling-opened
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.process-specialist
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.process-specialist]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.negative-pressure-room-loses-pressure-when-adjacent-ceiling-opened-stated
+  de_risk:
+    kind: investigation
+    label: "Keep the room's air path intact while adjacent work proceeds"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [safety, quality]
+  severity: life-safety
+  discovered_at: [construction]
+  status: draft
+  notes: "Owner list cites AS 1668; not verified. Owner early warning: The room no longer holds pressure."
+  sources:
+  - dataset: batch2
+    row: B2-0894
+- id: uc.steam-main-has-no-isolation-for-altered-wing
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: mechanical.process-specialist
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.process-specialist]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.steam-main-has-no-isolation-for-altered-wing-stated
+  de_risk:
+    kind: investigation
+    label: "Provide isolation before the wing is altered"
+  contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
+  effect: [safety, programme]
+  severity: life-safety
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The steam main serves both wings from one valve."
+  sources:
+  - dataset: batch2
+    row: B2-0895
+- id: uc.pool-plant-upgrade-cannot-drain-pool-for-work-duration
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: mechanical.central-plant
+  when:
+    all:
+    - works:
+        action: [alter, upgrade, replace]
+        system: [mechanical.central-plant]
+    - {det: existing_building, is: true}
+  signals:
+  - sig.pool-plant-upgrade-cannot-drain-pool-for-work-duration-stated
+  de_risk:
+    kind: obligation
+    label: "Stage the plant so the pool can stay in service"
+  contract: "Hold the coordinated size or selection in the order; a late supply change sits with the party that ordered."
+  effect: [programme, cost]
+  severity: cost
+  discovered_at: [design]
+  status: draft
+  notes: "Owner early warning: The pool must stay open."
+  sources:
+  - dataset: batch2
+    row: B2-0896

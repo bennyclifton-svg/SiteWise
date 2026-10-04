@@ -386,3 +386,1257 @@ signals:
   sources:
   - seed: hydraulic-services-guide.md
     anchor: '## Refurbishment and commercial fit-out overlay'
+- id: sig.heating-coil-buried-in-existing-floor-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the locations of any heating coils or cables in the existing floor?"
+  criteria:
+    "true": "It states the locations of any heating coils or cables in the existing floor."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  - mechanical.air-conditioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0059
+- id: sig.existing-floor-waste-flange-incompatible-with-membrane-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the type of floor-waste flange in the existing wet area?"
+  criteria:
+    "true": "It states the type of floor-waste flange in the existing wet area."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  - interiors.wet-area-waterproofing
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0117
+- id: sig.shower-waste-set-high-by-earlier-renovation-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the level of the existing shower waste against the slab?"
+  criteria:
+    "true": "It states the level of the existing shower waste against the slab."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0123
+- id: sig.existing-bath-lip-below-wall-membrane-line-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the height of the bath lip against the wall membrane upturn?"
+  criteria:
+    "true": "It states the height of the bath lip against the wall membrane upturn."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0146
+- id: sig.existing-slab-uneven-under-shower-base-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the flatness of the existing slab under the shower base?"
+  criteria:
+    "true": "It states the flatness of the existing slab under the shower base."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0147
+- id: sig.existing-copper-shower-tray-pinholed-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a water test of the existing shower tray before a screen is sealed to it?"
+  criteria:
+    "true": "It states a water test of the existing shower tray before a screen is sealed to it."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  - interiors.wet-area-waterproofing
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0164
+- id: sig.laundry-over-tenancy-has-no-floor-waste-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a floor waste in the slab of the laundry area?"
+  criteria:
+    "true": "It states a floor waste in the slab of the laundry area."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0165
+- id: sig.fire-damper-cannot-be-fitted-in-existing-duct-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the duct length available at the rated element for a fire damper?"
+  criteria:
+    "true": "It states the duct length available at the rated element for a fire damper."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.fire-mode-air-systems
+  - fire-passive.penetrations
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0168
+  - dataset: batch2
+    row: B2-0248
+- id: sig.existing-smoke-damper-has-no-access-panel-stated
+  type: noul
+  instructions: "Using `text`, does the passage state an access panel to each existing smoke damper?"
+  criteria:
+    "true": "It states an access panel to each existing smoke damper."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.fire-mode-air-systems
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0190
+- id: sig.existing-beam-blocks-smoke-exhaust-opening-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the position of the existing beam against the smoke exhaust opening?"
+  criteria:
+    "true": "It states the position of the existing beam against the smoke exhaust opening."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.fire-mode-air-systems
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0191
+- id: sig.transfer-beam-leaves-no-ceiling-zone-for-duct-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the measured ceiling zone under existing beams?"
+  criteria:
+    "true": "It states the measured ceiling zone under existing beams."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0230
+- id: sig.existing-air-handler-cannot-deliver-outside-air-for-new-occupancy-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the outside-air quantity the existing air handler can deliver?"
+  criteria:
+    "true": "It states the outside-air quantity the existing air handler can deliver."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  - mechanical.ventilation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0232
+- id: sig.replacement-cooling-tower-heavier-than-roof-allowance-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the roof structure allowance against the operating weight of the replacement plant?"
+  criteria:
+    "true": "It states the roof structure allowance against the operating weight of the replacement plant."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.cooling-towers
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0233
+- id: sig.tenant-condensers-exceed-roof-allowance-on-existing-roof-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the remaining roof allowance for tenant condensers?"
+  criteria:
+    "true": "It states the remaining roof allowance for tenant condensers."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0236
+- id: sig.kitchen-exhaust-has-no-rated-riser-in-existing-shaft-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a survey of the existing shaft for a spare rated riser?"
+  criteria:
+    "true": "It states a survey of the existing shaft for a spare rated riser."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.local-exhaust
+  - fire-passive.penetrations
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0235
+- id: sig.corridor-has-no-room-for-heating-expansion-loop-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a location for the pipework expansion loops?"
+  criteria:
+    "true": "It states a location for the pipework expansion loops."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0237
+- id: sig.existing-duct-lining-unfit-for-reuse-stated
+  type: noul
+  instructions: "Using `text`, does the passage state an inspection of the lining of the existing ducts nominated for reuse?"
+  criteria:
+    "true": "It states an inspection of the lining of the existing ducts nominated for reuse."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0241
+  - dataset: batch2
+    row: B2-0288
+- id: sig.existing-glazing-drives-heating-load-beyond-replacement-plant-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the glazing performance used for the heating load of the replacement plant?"
+  criteria:
+    "true": "It states the glazing performance used for the heating load of the replacement plant."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0295
+- id: sig.existing-flue-or-chimney-unsuitable-for-replacement-boiler-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the flue or chimney size and lining against the replacement appliance data?"
+  criteria:
+    "true": "It states the flue or chimney size and lining against the replacement appliance data."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.heating-appliances
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0246
+  - dataset: batch2
+    row: B2-0278
+- id: sig.existing-riser-full-for-extension-ductwork-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a riser survey showing free area for the extension duct?"
+  criteria:
+    "true": "It states a riser survey showing free area for the extension duct."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0250
+- id: sig.replacement-air-handler-coil-handing-opposite-to-risers-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the coil handing confirmed against the pipe risers?"
+  criteria:
+    "true": "It states the coil handing confirmed against the pipe risers."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0251
+- id: sig.existing-warm-water-system-cannot-be-disinfected-for-new-use-stated
+  type: noul
+  instructions: "Using `text`, does the passage state dead legs or flushing points in the existing warm-water system?"
+  criteria:
+    "true": "It states dead legs or flushing points in the existing warm-water system."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.hot-water
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0255
+- id: sig.plant-deck-drain-cannot-take-rain-and-coil-water-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the capacity of the existing plant-deck drain against the added coil water?"
+  criteria:
+    "true": "It states the capacity of the existing plant-deck drain against the added coil water."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.roof-drainage
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0265
+- id: sig.pneumatic-controls-have-no-points-for-new-bms-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the type of the existing controls and whether they have electronic outputs?"
+  criteria:
+    "true": "It states the type of the existing controls and whether they have electronic outputs."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.controls-bms
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0267
+- id: sig.existing-stair-door-leakage-defeats-pressurisation-fan-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the measured leakage of the existing stair doors?"
+  criteria:
+    "true": "It states the measured leakage of the existing stair doors."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.fire-mode-air-systems
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0270
+- id: sig.beam-in-jet-fan-throw-omitted-from-airflow-model-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the beams included in the car-park airflow model?"
+  criteria:
+    "true": "It states the beams included in the car-park airflow model."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.carpark-ventilation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0272
+- id: sig.removed-return-air-heater-leaves-return-unheated-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the heating that the removed return-air heater provided?"
+  criteria:
+    "true": "It states the heating that the removed return-air heater provided."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0273
+- id: sig.existing-hydronic-loop-has-no-treatment-dose-point-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a sample or dosing point on the existing hydronic loop?"
+  criteria:
+    "true": "It states a sample or dosing point on the existing hydronic loop."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0276
+- id: sig.combustion-air-for-reused-plant-room-drawn-from-loading-area-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the source of combustion air for the existing plant room?"
+  criteria:
+    "true": "It states the source of combustion air for the existing plant room."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0279
+- id: sig.existing-extract-duct-velocity-too-low-for-new-process-dust-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the extract duct velocity for the material the new process releases?"
+  criteria:
+    "true": "It states the extract duct velocity for the material the new process releases."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.local-exhaust
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0282
+- id: sig.energy-recovery-wheel-leaks-exhaust-into-outside-air-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a tracer or leakage test of the energy-recovery wheel?"
+  criteria:
+    "true": "It states a tracer or leakage test of the energy-recovery wheel."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.ventilation
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0289
+- id: sig.reused-outside-air-intake-has-no-screen-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a screen on each reused outside-air intake?"
+  criteria:
+    "true": "It states a screen on each reused outside-air intake."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.ventilation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0292
+- id: sig.underfloor-air-plenum-obstructed-by-later-cabling-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the clear condition of the underfloor void used as an air plenum?"
+  criteria:
+    "true": "It states the clear condition of the underfloor void used as an air plenum."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0294
+- id: sig.humidifier-needs-water-quality-supply-lacks-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the water analysis of the building supply against the humidifier requirement?"
+  criteria:
+    "true": "It states the water analysis of the building supply against the humidifier requirement."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0296
+- id: sig.new-refrigerant-unsuitable-for-existing-pipework-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the specification of the existing refrigerant pipework against the refrigerant to be used?"
+  criteria:
+    "true": "It states the specification of the existing refrigerant pipework against the refrigerant to be used."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.refrigerant-condensate
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0298
+- id: sig.existing-sewer-branch-above-new-fixture-outlets-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the invert level of the existing sewer branch?"
+  criteria:
+    "true": "It states the invert level of the existing sewer branch."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0376
+  - dataset: batch2
+    row: B2-0960
+- id: sig.new-soil-stack-clashes-with-existing-beam-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the position of existing beams on the stack line?"
+  criteria:
+    "true": "It states the position of existing beams on the stack line."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  - structure.alterations
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0377
+- id: sig.existing-slab-thicker-than-surveyed-loses-drain-grade-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the measured soffit level under the existing slab?"
+  criteria:
+    "true": "It states the measured soffit level under the existing slab."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0378
+- id: sig.fixture-in-new-internal-room-has-no-vent-path-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a vent path to the existing stack for the new fixture?"
+  criteria:
+    "true": "It states a vent path to the existing stack for the new fixture."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0379
+- id: sig.existing-galvanised-water-service-fails-when-cut-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the material and condition of the existing water service?"
+  criteria:
+    "true": "It states the material and condition of the existing water service."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0381
+- id: sig.replacement-hot-water-plant-will-not-fit-cupboard-or-flue-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the dimensions of the space and flue for the replacement water heater?"
+  criteria:
+    "true": "It states the dimensions of the space and flue for the replacement water heater."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.hot-water
+  - mechanical.heating-appliances
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0382
+- id: sig.trade-waste-arrestor-will-not-fit-level-or-access-stated
+  type: noul
+  instructions: "Using `text`, does the passage state agreement with the authority on the arrestor location, level and collection access?"
+  criteria:
+    "true": "It states agreement with the authority on the arrestor location, level and collection access."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0384
+  - dataset: batch2
+    row: B2-0774
+- id: sig.authority-requires-separate-sanitary-connection-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the authority's requirement for the sanitary connection?"
+  criteria:
+    "true": "It states the authority's requirement for the sanitary connection."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0386
+- id: sig.fire-and-potable-water-share-connection-without-backflow-break-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a backflow device between the fire water and potable water connections?"
+  criteria:
+    "true": "It states a backflow device between the fire water and potable water connections."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.backflow-prevention
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0388
+- id: sig.plant-room-floor-waste-has-no-fall-in-existing-slab-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the fall of the existing slab to the plant-room floor waste?"
+  criteria:
+    "true": "It states the fall of the existing slab to the plant-room floor waste."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0389
+- id: sig.existing-stack-leaks-when-new-fixtures-connected-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a camera inspection or test of the existing stack?"
+  criteria:
+    "true": "It states a camera inspection or test of the existing stack."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0390
+- id: sig.water-meter-relocated-inside-tenancy-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the location of the water meter relative to the tenancy?"
+  criteria:
+    "true": "It states the location of the water meter relative to the tenancy."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0393
+- id: sig.existing-grease-arrestor-undersized-for-new-kitchen-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the capacity of the existing grease arrestor against the new kitchen fixtures?"
+  criteria:
+    "true": "It states the capacity of the existing grease arrestor against the new kitchen fixtures."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0395
+- id: sig.hot-water-ring-extension-cannot-be-balanced-stated
+  type: noul
+  instructions: "Using `text`, does the passage state balancing of the extended hot-water ring?"
+  criteria:
+    "true": "It states balancing of the extended hot-water ring."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.hot-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0396
+- id: sig.abandoned-pipework-leaves-dead-legs-after-strip-out-stated
+  type: noul
+  instructions: "Using `text`, does the passage state abandoned pipework cut back to the live main?"
+  criteria:
+    "true": "It states abandoned pipework cut back to the live main."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0397
+- id: sig.press-fittings-do-not-suit-existing-copper-size-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the diameter and type of the existing copper pipe?"
+  criteria:
+    "true": "It states the diameter and type of the existing copper pipe."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0398
+- id: sig.in-wall-cistern-clashes-with-existing-stud-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the framing in the wall where the in-wall cistern will sit?"
+  criteria:
+    "true": "It states the framing in the wall where the in-wall cistern will sit."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0399
+- id: sig.stack-vent-too-close-to-new-openable-window-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the position of the vent terminal against the new openable window?"
+  criteria:
+    "true": "It states the position of the vent terminal against the new openable window."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0404
+- id: sig.sewer-surcharge-with-no-reflux-valve-stated
+  type: noul
+  instructions: "Using `text`, does the passage state authority advice on sewer surcharge at the connection?"
+  criteria:
+    "true": "It states authority advice on sewer surcharge at the connection."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0406
+- id: sig.no-serviceable-position-for-reflux-valve-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a serviceable position for a reflux valve on the existing drain?"
+  criteria:
+    "true": "It states a serviceable position for a reflux valve on the existing drain."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0407
+- id: sig.trade-waste-quality-exceeds-authority-agreement-stated
+  type: noul
+  instructions: "Using `text`, does the passage state sampling results against the trade-waste agreement?"
+  criteria:
+    "true": "It states sampling results against the trade-waste agreement."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0411
+  - dataset: batch2
+    row: B2-0773
+- id: sig.dilution-pit-clashes-with-process-equipment-base-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the pit depth against the equipment base?"
+  criteria:
+    "true": "It states the pit depth against the equipment base."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0412
+- id: sig.hose-reel-teed-from-potable-main-without-backflow-device-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a backflow device on the hose-reel connection?"
+  criteria:
+    "true": "It states a backflow device on the hose-reel connection."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.backflow-prevention
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0414
+- id: sig.easement-drain-damaged-will-not-take-extension-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a camera survey of the easement drain?"
+  criteria:
+    "true": "It states a camera survey of the easement drain."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0418
+- id: sig.existing-galvanised-stack-sheds-rust-into-new-fixtures-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the material of the existing stack?"
+  criteria:
+    "true": "It states the material of the existing stack."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0422
+- id: sig.existing-structure-prevents-siphonic-pipe-height-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the structure on the siphonic pipe route?"
+  criteria:
+    "true": "It states the structure on the siphonic pipe route."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.roof-drainage
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0424
+- id: sig.existing-sewer-rising-main-at-end-of-life-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a pressure test or condition report of the existing rising main?"
+  criteria:
+    "true": "It states a pressure test or condition report of the existing rising main."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0427
+- id: sig.chemical-drain-material-wrong-for-process-chemical-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the chemical the drain will carry and the pipe material?"
+  criteria:
+    "true": "It states the chemical the drain will carry and the pipe material."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  - hydraulic.specialist-process
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0428
+- id: sig.water-meter-upstream-of-new-branch-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the position of the new branch relative to the meter?"
+  criteria:
+    "true": "It states the position of the new branch relative to the meter."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0431
+- id: sig.stack-in-shaft-has-no-access-to-joints-stated
+  type: noul
+  instructions: "Using `text`, does the passage state access to the stack joints in the shaft?"
+  criteria:
+    "true": "It states access to the stack joints in the shaft."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0434
+- id: sig.hospital-pan-room-flush-overloads-existing-stack-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the stack size against simultaneous pan flushing?"
+  criteria:
+    "true": "It states the stack size against simultaneous pan flushing."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0436
+- id: sig.trade-waste-pit-or-line-under-new-paving-lacks-cover-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the cover and depth of the trade-waste pit or line under new paving?"
+  criteria:
+    "true": "It states the cover and depth of the trade-waste pit or line under new paving."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0437
+  - dataset: batch2
+    row: B2-0607
+- id: sig.asbestos-cement-flue-on-heater-being-replaced-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the flue material of the heater being replaced?"
+  criteria:
+    "true": "It states the flue material of the heater being replaced."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.heating-appliances
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0468
+- id: sig.asbestos-gaskets-and-rope-in-plant-being-disconnected-stated
+  type: noul
+  instructions: "Using `text`, does the passage state asbestos in the gaskets and seals of the plant being disconnected?"
+  criteria:
+    "true": "It states asbestos in the gaskets and seals of the plant being disconnected."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0469
+  - dataset: batch2
+    row: B2-0495
+- id: sig.mercury-thermostats-removed-with-old-controls-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the type of the existing thermostats?"
+  criteria:
+    "true": "It states the type of the existing thermostats."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.controls-bms
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0481
+- id: sig.old-laboratory-extract-duct-contaminated-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the process history of the existing laboratory extract duct?"
+  criteria:
+    "true": "It states the process history of the existing laboratory extract duct."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.local-exhaust
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0483
+- id: sig.asbestos-lagging-in-riser-new-pipe-must-enter-stated
+  type: noul
+  instructions: "Using `text`, does the passage state an asbestos assessment of the lagging in the riser?"
+  criteria:
+    "true": "It states an asbestos assessment of the lagging in the riser."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0489
+- id: sig.refrigerant-in-old-plant-needs-recovery-before-removal-stated
+  type: noul
+  instructions: "Using `text`, does the passage state refrigerant recovery before the plant is cut out?"
+  criteria:
+    "true": "It states refrigerant recovery before the plant is cut out."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.refrigerant-condensate
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0496
+- id: sig.mould-in-air-handler-and-ducts-before-reuse-stated
+  type: noul
+  instructions: "Using `text`, does the passage state an inspection of the coils and ducts for mould?"
+  criteria:
+    "true": "It states an inspection of the coils and ducts for mould."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0497
+- id: sig.damaged-duct-insulation-sheds-fibres-in-clinical-ceiling-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the condition and binding of duct insulation above clinical rooms?"
+  criteria:
+    "true": "It states the condition and binding of duct insulation above clinical rooms."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0500
+- id: sig.shop-to-cafe-change-has-no-path-for-grease-arrestor-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a level and access for a grease arrestor at the premises?"
+  criteria:
+    "true": "It states a level and access for a grease arrestor at the premises."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0553
+- id: sig.sanitary-fixture-count-short-for-new-occupant-load-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the sanitary fixture count against the stated occupant load?"
+  criteria:
+    "true": "It states the sanitary fixture count against the stated occupant load."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0555
+- id: sig.aged-care-conversion-rooms-too-small-for-accessible-bathroom-stated
+  type: noul
+  instructions: "Using `text`, does the passage state room sizes tested against the accessible bathroom layout?"
+  criteria:
+    "true": "It states room sizes tested against the accessible bathroom layout."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0566
+- id: sig.laboratory-conversion-has-no-fume-exhaust-shaft-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a spare shaft for laboratory fume exhaust?"
+  criteria:
+    "true": "It states a spare shaft for laboratory fume exhaust."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.local-exhaust
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0567
+- id: sig.authority-will-not-accept-basement-pump-out-discharge-stated
+  type: noul
+  instructions: "Using `text`, does the passage state agreement of the authority to the basement pump-out discharge point?"
+  criteria:
+    "true": "It states agreement of the authority to the basement pump-out discharge point."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0590
+- id: sig.shared-downpipe-serves-neighbour-and-cannot-be-moved-stated
+  type: noul
+  instructions: "Using `text`, does the passage state which neighbouring roofs the shared downpipe serves?"
+  criteria:
+    "true": "It states which neighbouring roofs the shared downpipe serves."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.roof-drainage
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0634
+- id: sig.roof-plant-over-quiet-room-on-flexible-roof-stated
+  type: noul
+  instructions: "Using `text`, does the passage state vibration isolation of plant over occupied quiet rooms?"
+  criteria:
+    "true": "It states vibration isolation of plant over occupied quiet rooms."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0695
+- id: sig.cross-talk-attenuator-will-not-fit-duct-branch-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the branch size against the attenuator size?"
+  criteria:
+    "true": "It states the branch size against the attenuator size."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0710
+- id: sig.laboratory-gas-cabinet-has-no-exhaust-connection-stated
+  type: noul
+  instructions: "Using `text`, does the passage state an exhaust connection for the laboratory gas cabinet?"
+  criteria:
+    "true": "It states an exhaust connection for the laboratory gas cabinet."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.local-exhaust
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0729
+- id: sig.cool-room-condenser-in-ceiling-cannot-reject-heat-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the location where the cool-room condenser rejects its heat?"
+  criteria:
+    "true": "It states the location where the cool-room condenser rejects its heat."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.refrigerant-condensate
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0732
+- id: sig.kitchen-canopy-heavier-than-existing-roof-framing-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a roof framing check for the weight of the kitchen canopy?"
+  criteria:
+    "true": "It states a roof framing check for the weight of the kitchen canopy."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.local-exhaust
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0733
+- id: sig.water-authority-limits-connection-size-below-design-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the connection size the water authority will allow?"
+  criteria:
+    "true": "It states the connection size the water authority will allow."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.cold-water
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0754
+- id: sig.sewer-point-of-connection-moved-after-drain-design-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the sewer connection point confirmed by the authority?"
+  criteria:
+    "true": "It states the sewer connection point confirmed by the authority."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0755
+- id: sig.no-gas-main-in-street-for-design-connection-stated
+  type: noul
+  instructions: "Using `text`, does the passage state confirmation of a gas main serving the site?"
+  criteria:
+    "true": "It states confirmation of a gas main serving the site."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.gas
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0757
+- id: sig.cool-room-condensate-classed-as-trade-waste-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the authority's classification of the cool-room condensate discharge?"
+  criteria:
+    "true": "It states the authority's classification of the cool-room condensate discharge."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.refrigerant-condensate
+  - hydraulic.trade-waste
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0787
+- id: sig.shared-riser-access-refused-by-other-tenant-stated
+  type: noul
+  instructions: "Using `text`, does the passage state agreed access to the shared riser?"
+  criteria:
+    "true": "It states agreed access to the shared riser."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0828
+- id: sig.existing-plant-has-no-isolation-for-live-cutover-stated
+  type: noul
+  instructions: "Using `text`, does the passage state isolation valves or switches on the existing plant?"
+  criteria:
+    "true": "It states isolation valves or switches on the existing plant."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0829
+- id: sig.subfloor-clearance-too-small-for-new-services-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the measured subfloor clearance?"
+  criteria:
+    "true": "It states the measured subfloor clearance."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.sanitary
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0841
+- id: sig.roof-insulation-fills-space-for-new-unit-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the clear roof space available for the unit?"
+  criteria:
+    "true": "It states the clear roof space available for the unit."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0844
+- id: sig.operating-crane-remains-on-runway-to-be-altered-stated
+  type: noul
+  instructions: "Using `text`, does the passage state an agreed shutdown of the crane?"
+  criteria:
+    "true": "It states an agreed shutdown of the crane."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0854
+- id: sig.only-sump-discharges-to-blocked-line-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a flow test of the sump outfall?"
+  criteria:
+    "true": "It states a flow test of the sump outfall."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.roof-drainage
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0869
+- id: sig.old-oil-tank-occupies-plant-room-for-new-boilers-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the removal of the old oil tank from the plant room?"
+  criteria:
+    "true": "It states the removal of the old oil tank from the plant room."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0870
+- id: sig.medical-gas-cannot-be-isolated-to-one-wing-stated
+  type: noul
+  instructions: "Using `text`, does the passage state zone valves on the medical gas to the wing?"
+  criteria:
+    "true": "It states zone valves on the medical gas to the wing."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - hydraulic.specialist-process
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0886
+- id: sig.theatre-air-handler-outage-not-allowed-in-planned-hours-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the outage hours agreed with the theatre list?"
+  criteria:
+    "true": "It states the outage hours agreed with the theatre list."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.air-distribution
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0888
+- id: sig.negative-pressure-room-loses-pressure-when-adjacent-ceiling-opened-stated
+  type: noul
+  instructions: "Using `text`, does the passage state protection of the room's air path while adjacent work proceeds?"
+  criteria:
+    "true": "It states protection of the room's air path while adjacent work proceeds."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.process-specialist
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0894
+- id: sig.steam-main-has-no-isolation-for-altered-wing-stated
+  type: noul
+  instructions: "Using `text`, does the passage state isolation valves on the steam main to the wing?"
+  criteria:
+    "true": "It states isolation valves on the steam main to the wing."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.process-specialist
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0895
+- id: sig.pool-plant-upgrade-cannot-drain-pool-for-work-duration-stated
+  type: noul
+  instructions: "Using `text`, does the passage state a staging plan that keeps the pool in service?"
+  criteria:
+    "true": "It states a staging plan that keeps the pool in service."
+    "false": "It does not state this; a requirement or intention to establish it is not a statement of it."
+  runs_on:
+  - mechanical.central-plant
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0896
