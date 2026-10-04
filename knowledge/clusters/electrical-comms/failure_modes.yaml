@@ -133,6 +133,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0717
   - seed: ict-av-security-guide.md
     anchor: '## Electronic security'
   - dataset: batch1
@@ -194,6 +196,10 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0219
+  - dataset: batch2
+    row: B2-0451
   - seed: electrical-services-guide.md
     anchor: '## Life-safety and specialist interfaces'
 - id: fm.lift-shaft-structural-dimensions
@@ -214,6 +220,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0452
   - seed: as-standards-reference.md
     anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
   - dataset: batch1
@@ -277,6 +285,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0454
   - seed: as-standards-reference.md
     anchor: '## AS 1735 Series — Lifts, Escalators and Moving Walks'
 - id: fm.pv-array-loads-roof
@@ -316,6 +326,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0977
   - seed: as-standards-reference.md
     anchor: '## AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays'
   - dataset: batch1
@@ -376,6 +388,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0357
   - seed: as-standards-reference.md
     anchor: '## AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems'
   - dataset: batch1
@@ -417,6 +431,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0746
   - seed: as-standards-reference.md
     anchor: '## AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling'
 - id: fm.ict-room-power-cooling
@@ -720,6 +736,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0439
   - dataset: batch1
     row: B1-0110
   - seed: as-standards-reference.md
@@ -786,6 +804,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0445
   - dataset: batch1
     row: B1-0565
   - seed: as-standards-reference.md
@@ -894,6 +914,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0696
   - dataset: batch1
     row: B1-0582
   - seed: as-standards-reference.md
@@ -958,6 +980,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0367
   - dataset: batch1
     row: B1-0309
   - seed: electrical-services-guide.md
@@ -1001,6 +1025,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0309
   - dataset: batch1
     row: B1-0601
   - seed: electrical-services-guide.md
@@ -1045,6 +1071,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0515
   - dataset: batch1
     row: B1-0605
   - dataset: batch1
@@ -1205,6 +1233,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0522
   - dataset: batch1
     row: B1-0626
   - seed: electrical-services-guide.md
@@ -1226,6 +1256,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0723
   - dataset: batch1
     row: B1-0622
   - seed: as-standards-reference.md
@@ -1315,6 +1347,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0358
   - dataset: batch1
     row: B1-0691
   - seed: electrical-services-guide.md
@@ -1336,6 +1370,10 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0373
+  - dataset: batch2
+    row: B2-0881
   - dataset: batch1
     row: B1-0627
   - seed: electrical-services-guide.md
@@ -1359,6 +1397,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0320
   - dataset: batch1
     row: B1-0628
   - dataset: batch1
@@ -1449,6 +1489,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0336
   - dataset: batch1
     row: B1-0699
   - seed: electrical-services-guide.md
@@ -1492,6 +1534,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0364
   - dataset: batch1
     row: B1-0680
   - seed: electrical-services-guide.md
@@ -1555,6 +1599,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0342
   - dataset: batch1
     row: B1-0828
   - seed: electrical-services-guide.md
@@ -1619,6 +1665,10 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0317
+  - dataset: batch2
+    row: B2-0512
   - dataset: batch1
     row: B1-0707
   - seed: electrical-services-guide.md
@@ -1683,6 +1733,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0330
   - dataset: batch1
     row: B1-0640
   - seed: electrical-services-guide.md
@@ -1856,6 +1908,10 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0716
+  - dataset: batch2
+    row: B2-0750
   - dataset: batch1
     row: B1-0655
   - seed: ict-av-security-guide.md
@@ -1877,6 +1933,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0718
   - dataset: batch1
     row: B1-0656
   - seed: ict-av-security-guide.md
@@ -1960,6 +2018,8 @@ failure_modes:
   flag_when: true
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0337
   - dataset: batch1
     row: B1-0668
   - seed: electrical-services-guide.md
@@ -2007,3 +2067,1012 @@ failure_modes:
     row: B1-0672
   - seed: electrical-services-guide.md
     anchor: '## Generation, storage and EV infrastructure'
+- id: fm.lift-pit-inserts-pierce-tanking
+  attaches_to:
+    interface: if.lift-pit-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state lift-pit buffer fixings, the sump or other pit inserts pass through the tanking without a collar?"
+    criteria:
+      "true": "It explicitly states lift-pit buffer fixings, the sump or other pit inserts pass through the tanking without a collar."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - substructure.damp-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0136
+  - dataset: batch2
+    row: B2-0449
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Hold point: pit waterproofing inspection before the pit slab or walls are covered. Owner list cites AS 1735; not verified."
+- id: fm.lift-supporting-slab-not-checked-for-selected-lift
+  attaches_to:
+    system: vertical-transport.passenger-lifts
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the slab or floor supporting the lift was not designed for the loads of the lift type later selected?"
+    criteria:
+      "true": "It explicitly states the slab or floor supporting the lift was not designed for the loads of the lift type later selected."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.passenger-lifts
+    - vertical-transport.lift-shafts-pits
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0443
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; not verified."
+- id: fm.lift-lifting-beam-omitted
+  attaches_to:
+    system: vertical-transport.lift-shafts-pits
+  severity: programme
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the lifting beam over the lift shaft was omitted or is not rated for the car, so the lift cannot be installed?"
+    criteria:
+      "true": "It explicitly states the lifting beam over the lift shaft was omitted or is not rated for the car, so the lift cannot be installed."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0444
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; not verified."
+- id: fm.lift-landing-door-clashes-with-lobby-bulkhead
+  attaches_to:
+    system: vertical-transport.passenger-lifts
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a lobby bulkhead or ceiling is lower than the lift landing door head or otherwise clashes with the landing door?"
+    criteria:
+      "true": "It explicitly states a lobby bulkhead or ceiling is lower than the lift landing door head or otherwise clashes with the landing door."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.passenger-lifts
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0446
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; not verified."
+- id: fm.lift-call-button-lands-on-tile-joint
+  attaches_to:
+    system: vertical-transport.passenger-lifts
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the lift call button position falls on a tile joint or other position without a solid background to fix to?"
+    criteria:
+      "true": "It explicitly states the lift call button position falls on a tile joint or other position without a solid background to fix to."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.passenger-lifts
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0447
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: fm.goods-lift-door-clashes-with-dock-leveller
+  attaches_to:
+    system: vertical-transport.goods-lifts
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a goods-lift door and a dock leveller occupy the same opening?"
+    criteria:
+      "true": "It explicitly states a goods-lift door and a dock leveller occupy the same opening."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.goods-lifts
+    - site.loading-docks
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0453
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: fm.escalator-truss-reactions-miss-supporting-beams
+  attaches_to:
+    system: vertical-transport.escalators-walks
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the escalator truss reactions fall between the supporting beams provided?"
+    criteria:
+      "true": "It explicitly states the escalator truss reactions fall between the supporting beams provided."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.escalators-walks
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0456
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; not verified."
+- id: fm.home-lift-opening-cuts-more-joists-than-floor-can-lose
+  attaches_to:
+    system: vertical-transport.platform-lifts
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the opening for a home lift cuts a run of joists so the timber floor cannot carry its load?"
+    criteria:
+      "true": "It explicitly states the opening for a home lift cuts a run of joists so the timber floor cannot carry its load."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.platform-lifts
+    - structure.timber
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0463
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1684; not verified."
+- id: fm.lift-well-wall-missing-at-floor-the-lift-does-not-serve
+  attaches_to:
+    interface: if.lift-shaft-fire-separation
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a floor the lift does not open to has an opening in the lift well with no shaft wall?"
+    criteria:
+      "true": "It explicitly states a floor the lift does not open to has an opening in the lift well with no shaft wall."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - vertical-transport.lift-shafts-pits
+    - fire-passive.compartments
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0460
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.cabling-routed-through-fire-isolated-stair
+  attaches_to:
+    system: fire-passive.rated-elements
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a cable tray or data or power cabling is routed inside a fire-isolated stair enclosure?"
+    criteria:
+      "true": "It explicitly states a cable tray or data or power cabling is routed inside a fire-isolated stair enclosure."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - fire-passive.rated-elements
+    - electrical.cabling-wiring
+    - comms-security.ict-rooms-pathways
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0187
+  - dataset: batch2
+    row: B2-0749
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.penetration-seal-filled-beyond-tested-fill
+  attaches_to:
+    system: fire-passive.penetrations
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state cables in a fire-rated wall seal exceed the fill percentage the seal system was tested for?"
+    criteria:
+      "true": "It explicitly states cables in a fire-rated wall seal exceed the fill percentage the seal system was tested for."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - fire-passive.penetrations
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0202
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Hold point: inspection of each penetration seal against its tested system before cables are added or the seal is covered. Owner list cites AS 4072.1; not verified."
+- id: fm.emergency-lighting-spaced-to-shell-not-final-layout
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state emergency lights were spaced for the shell or open plan and the final partitions leave exit paths below the required lighting?"
+    criteria:
+      "true": "It explicitly states emergency lights were spaced for the shell or open plan and the final partitions leave exit paths below the required lighting."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - fire-active.emergency-lighting
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0204
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.joinery-blocks-emergency-lighting-on-exit-path
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state joinery blocks the emergency lighting on an exit path?"
+    criteria:
+      "true": "It explicitly states joinery blocks the emergency lighting on an exit path."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - fire-active.emergency-lighting
+    - interiors.joinery
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0331
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.emergency-light-battery-inside-fire-rated-void
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state emergency-light battery packs are located inside a fire-rated ceiling or void?"
+    criteria:
+      "true": "It explicitly states emergency-light battery packs are located inside a fire-rated ceiling or void."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - fire-active.emergency-lighting
+    - fire-passive.compartments
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0205
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.emergency-lighting-on-circuit-that-can-be-isolated
+  attaches_to:
+    system: fire-active.emergency-lighting
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state emergency lighting is supplied from a local circuit or board that other works or equipment can turn off?"
+    criteria:
+      "true": "It explicitly states emergency lighting is supplied from a local circuit or board that other works or equipment can turn off."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - fire-active.emergency-lighting
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0374
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.essential-and-general-loads-combined-on-one-board
+  attaches_to:
+    interface: if.electrical-power-for-fire-systems
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state essential and general loads are combined on a board the fire strategy treats as separated?"
+    criteria:
+      "true": "It explicitly states essential and general loads are combined on a board the fire strategy treats as separated."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.switchboards
+    - fire-active
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0324
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.fire-pump-start-drops-board-voltage
+  attaches_to:
+    interface: if.electrical-power-for-fire-systems
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state starting the fire pump drops the voltage on the rest of the board it shares?"
+    criteria:
+      "true": "It explicitly states starting the fire pump drops the voltage on the rest of the board it shares."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.switchboards
+    - fire-active.fire-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0323
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: fm.pv-shutdown-switch-not-at-firefighter-attendance-point
+  attaches_to:
+    rule: rule.as5033.pv-firefighter-safety
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the solar array shutdown switch is on the roof or elsewhere and not at the point firefighters attend?"
+    criteria:
+      "true": "It explicitly states the solar array shutdown switch is on the roof or elsewhere and not at the point firefighters attend."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.solar-pv
+    - fire-active.fire-control
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0359
+  - seed: electrical-services-guide.md
+    anchor: "## Generation, storage and EV infrastructure"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: fm.exit-door-lock-wired-fail-secure
+  attaches_to:
+    interface: if.fire-alarm-releases-security
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an exit door that must release on fire alarm was wired to fail secure so it locks when power is lost?"
+    criteria:
+      "true": "It explicitly states an exit door that must release on fire alarm was wired to fail secure so it locks when power is lost."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - comms-security.access-control
+    - fire-active.detection
+    - access-egress.egress-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0747
+  - seed: ict-av-security-guide.md
+    anchor: "## Electronic security"
+  notes: "Hold point: fire alarm interface test of every access-controlled exit door before handover. Owner list cites NCC; not verified."
+- id: fm.public-address-zone-crosses-fire-compartment
+  attaches_to:
+    system: fire-active.occupant-warning
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a public-address or paging zone crosses a fire compartment boundary?"
+    criteria:
+      "true": "It explicitly states a public-address or paging zone crosses a fire compartment boundary."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - fire-active.occupant-warning
+    - comms-security.audiovisual
+    - fire-passive.compartments
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0741
+  - seed: ict-av-security-guide.md
+    anchor: "## Audiovisual systems"
+  notes: "Owner list cites AS 1670; not verified."
+- id: fm.cable-tray-blocks-access-to-smoke-damper
+  attaches_to:
+    system: mechanical.fire-mode-air-systems
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a cable tray or other electrical containment blocks the only access to a smoke damper or its access panel?"
+    criteria:
+      "true": "It explicitly states a cable tray or other electrical containment blocks the only access to a smoke damper or its access panel."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - mechanical.fire-mode-air-systems
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0511
+  - seed: electrical-services-guide.md
+    anchor: "## Construction, commissioning and handover"
+  notes: "Owner list cites AS 1851; not verified."
+- id: fm.service-hanger-anchors-collide-on-slab
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state two services have hanger anchors detailed at the same point on the slab?"
+    criteria:
+      "true": "It explicitly states two services have hanger anchors detailed at the same point on the slab."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0509
+  - seed: electrical-services-guide.md
+    anchor: "## Construction, commissioning and handover"
+- id: fm.rigid-conduit-or-tray-bridges-vibration-isolators
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state rigid conduit or cable tray is fixed across the vibration isolators under a fan or other plant?"
+    criteria:
+      "true": "It explicitly states rigid conduit or cable tray is fixed across the vibration isolators under a fan or other plant."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0266
+  - dataset: batch2
+    row: B2-0533
+  - seed: electrical-services-guide.md
+    anchor: "## Construction, commissioning and handover"
+  notes: "Hold point: inspection of flexible connections at plant before handover."
+- id: fm.crane-collector-gear-interrupted-by-tray-or-partition
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a cable tray or a new partition clashes with or interrupts the overhead crane collector gear?"
+    criteria:
+      "true": "It explicitly states a cable tray or a new partition clashes with or interrupts the overhead crane collector gear."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+    - electrical.process-hazardous
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0353
+  - dataset: batch2
+    row: B2-0737
+  - seed: electrical-services-guide.md
+    anchor: "## Construction, commissioning and handover"
+- id: fm.back-to-back-outlets-breach-acoustic-wall
+  attaches_to:
+    system: interiors.acoustic-separation
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state power outlets are fitted back to back in an acoustic or party wall?"
+    criteria:
+      "true": "It explicitly states power outlets are fitted back to back in an acoustic or party wall."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - interiors.acoustic-separation
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0687
+  - seed: electrical-services-guide.md
+    anchor: "## Construction, commissioning and handover"
+  notes: "Hold point: inspection of outlet positions in the wall frame before lining."
+- id: fm.lighting-zones-do-not-follow-final-rooms
+  attaches_to:
+    system: electrical.lighting
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state one lighting switch or zone controls more than one of the rooms the new partitions create?"
+    criteria:
+      "true": "It explicitly states one lighting switch or zone controls more than one of the rooms the new partitions create."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.lighting
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0313
+  - seed: electrical-services-guide.md
+    anchor: "## Lighting and controls"
+- id: fm.floor-boxes-set-before-workstation-layout-agreed
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state floor boxes were cast or set before the tenant agreed the workstation layout and do not sit at the desks?"
+    criteria:
+      "true": "It explicitly states floor boxes were cast or set before the tenant agreed the workstation layout and do not sit at the desks."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+    - interiors.floor-finishes
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0328
+  - seed: electrical-services-guide.md
+    anchor: "## Construction, commissioning and handover"
+- id: fm.pv-feet-land-between-purlins
+  attaches_to:
+    interface: if.pv-array-loads-roof
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the solar array feet land between the roof purlins?"
+    criteria:
+      "true": "It explicitly states the solar array feet land between the roof purlins."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.solar-pv
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0973
+  - seed: electrical-services-guide.md
+    anchor: "## Generation, storage and EV infrastructure"
+  notes: "Owner list cites AS 1170; not verified."
+- id: fm.wet-area-equipotential-bonding-missed
+  attaches_to:
+    system: electrical.earthing-lightning
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state equipotential bonding was not made to metal in a new wet area?"
+    criteria:
+      "true": "It explicitly states equipotential bonding was not made to metal in a new wet area."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.earthing-lightning
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0339
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Hold point: bonding check in the verification inspection before the wet area is lined. Owner list cites AS/NZS 3000; not verified."
+- id: fm.socket-outlet-inside-restricted-wet-zone
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a socket outlet is installed inside the restricted zone around a tub, basin or other wet fitting?"
+    criteria:
+      "true": "It explicitly states a socket outlet is installed inside the restricted zone around a tub, basin or other wet fitting."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+    - hydraulic
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0369
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Hold point: inspection of outlet positions against wet-area zones before handover. Owner list cites AS/NZS 3000; not verified."
+- id: fm.structural-steel-earth-path-not-bonded-across-joints
+  attaches_to:
+    system: electrical.earthing-lightning
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state structural steelwork used as an earth path is not bonded across expansion joints?"
+    criteria:
+      "true": "It explicitly states structural steelwork used as an earth path is not bonded across expansion joints."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.earthing-lightning
+    - structure.steel
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0352
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Hold point: continuity test of the steelwork earth path before it is relied on. Owner list cites AS/NZS 3000; not verified."
+- id: fm.earth-lifted-from-live-board-during-cutover
+  attaches_to:
+    system: electrical.switchboards
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the earth to an energised board was lifted during cutover before the new earth was connected?"
+    criteria:
+      "true": "It explicitly states the earth to an energised board was lifted during cutover before the new earth was connected."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.switchboards
+    - electrical.earthing-lightning
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0371
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Hold point: earth continuity check before each cutover step. Owner list cites AS/NZS 3000; not verified."
+- id: fm.comms-rack-earth-not-bonded-to-building-earth
+  attaches_to:
+    system: electrical.earthing-lightning
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the communications rack earth stops at the rack and is not bonded to the building earth?"
+    criteria:
+      "true": "It explicitly states the communications rack earth stops at the rack and is not bonded to the building earth."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.earthing-lightning
+    - comms-security.ict-rooms-pathways
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0722
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+  notes: "Hold point: bonding check at the rack in commissioning. Owner list cites AS/NZS 3000; not verified."
+- id: fm.voltage-drop-fails-on-built-cable-route
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state voltage drop on the longest circuit fails because the built route is longer than the route calculated?"
+    criteria:
+      "true": "It explicitly states voltage drop on the longest circuit fails because the built route is longer than the route calculated."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0305
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: fm.switchroom-door-swing-reduces-exit-width
+  attaches_to:
+    system: electrical.switchboards
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a switchroom door swings across a required exit and reduces its width?"
+    criteria:
+      "true": "It explicitly states a switchroom door swings across a required exit and reduces its width."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.switchboards
+    - access-egress.egress-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0361
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Owner list cites NCC; not verified."
+- id: fm.protective-devices-do-not-discriminate-or-coordinate
+  attaches_to:
+    system: electrical.switchboards
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state circuit breakers or fuses do not discriminate or coordinate with the upstream device, or differ from the devices the discrimination study used?"
+    criteria:
+      "true": "It explicitly states circuit breakers or fuses do not discriminate or coordinate with the upstream device, or differ from the devices the discrimination study used."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0307
+  - dataset: batch2
+    row: B2-0349
+  - dataset: batch2
+    row: B2-0375
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Hold point: comparison of the delivered device list with the discrimination study before the board is accepted. Owner list cites AS/NZS 3000; not verified."
+- id: fm.drive-cable-longer-than-drive-allows
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the cable from a variable-speed drive to its motor is longer than the drive allows?"
+    criteria:
+      "true": "It explicitly states the cable from a variable-speed drive to its motor is longer than the drive allows."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0350
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+- id: fm.common-area-supply-fed-from-tenancy-board
+  attaches_to:
+    system: electrical.switchboards
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state common-area lighting or other common loads are fed from a tenancy board?"
+    criteria:
+      "true": "It explicitly states common-area lighting or other common loads are fed from a tenancy board."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.switchboards
+    - electrical.metering
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0365
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: fm.metering-does-not-follow-tenancy-split
+  attaches_to:
+    system: electrical.metering
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state one meter covers more than one tenancy after the fit-out splits the tenancies?"
+    criteria:
+      "true": "It explicitly states one meter covers more than one tenancy after the fit-out splits the tenancies."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.metering
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0344
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: fm.temporary-board-inside-permanent-switchroom-footprint
+  attaches_to:
+    system: electrical.temporary-power
+  severity: programme
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the temporary power board sits where the permanent switchroom is to be built?"
+    criteria:
+      "true": "It explicitly states the temporary power board sits where the permanent switchroom is to be built."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.temporary-power
+    - electrical.switchboards
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0815
+  - seed: electrical-services-guide.md
+    anchor: "## Construction, commissioning and handover"
+- id: fm.supply-kiosk-placed-in-building-entry
+  attaches_to:
+    system: electrical.utility-supply
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a supply kiosk is placed in the building entry?"
+    criteria:
+      "true": "It explicitly states a supply kiosk is placed in the building entry."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.utility-supply
+    - access-egress
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0780
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: fm.generator-flue-discharges-near-openable-window
+  attaches_to:
+    system: electrical.standby-power
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the generator flue terminates within the clearance of an openable window or other opening?"
+    criteria:
+      "true": "It explicitly states the generator flue terminates within the clearance of an openable window or other opening."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.standby-power
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0325
+  - seed: electrical-services-guide.md
+    anchor: "## Generation, storage and EV infrastructure"
+  notes: "Owner list cites AS 5601; not verified."
+- id: fm.demolition-starts-before-services-proved-dead
+  attaches_to:
+    system: electrical.cabling-wiring
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state demolition of a wall started before the services in it were proved dead or diverted?"
+    criteria:
+      "true": "It explicitly states demolition of a wall started before the services in it were proved dead or diverted."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - electrical.cabling-wiring
+    - site.demolition
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0822
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Hold point: isolation and proving-dead record for each service before demolition starts. Owner list cites AS 2601; not verified."
+- id: fm.hearing-loop-defeated-by-slab-reinforcement
+  attaches_to:
+    system: comms-security.audiovisual
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a hearing loop does not work because of the slab reinforcement?"
+    criteria:
+      "true": "It explicitly states a hearing loop does not work because of the slab reinforcement."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - comms-security.audiovisual
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0742
+  - seed: ict-av-security-guide.md
+    anchor: "## Audiovisual systems"
+- id: fm.satellite-dish-sightline-lost-to-new-screen
+  attaches_to:
+    system: comms-security.networks-integration
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a satellite dish has lost its sightline to the satellite behind a new screen or structure?"
+    criteria:
+      "true": "It explicitly states a satellite dish has lost its sightline to the satellite behind a new screen or structure."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - comms-security.networks-integration
+    - envelope
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0743
+  - seed: ict-av-security-guide.md
+    anchor: "## Networks, integration and cybersecurity"
+- id: fm.entry-intercom-off-accessible-path
+  attaches_to:
+    system: comms-security.access-control
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state an entry intercom is placed where it cannot be reached from the accessible path?"
+    criteria:
+      "true": "It explicitly states an entry intercom is placed where it cannot be reached from the accessible path."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - comms-security.access-control
+    - access-egress.accessible-access
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0744
+  - seed: ict-av-security-guide.md
+    anchor: "## Electronic security"
+  notes: "Owner list cites AS 1428; not verified."
+- id: fm.security-head-end-not-on-essential-supply
+  attaches_to:
+    interface: if.ict-equipment-power-resilience
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state the security head-end is on the general board and not on the essential supply?"
+    criteria:
+      "true": "It explicitly states the security head-end is on the general board and not on the essential supply."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - comms-security.networks-integration
+    - comms-security.access-control
+    - electrical.standby-power
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0715
+  - seed: ict-av-security-guide.md
+    anchor: "## Electronic security"
+- id: fm.pneumatic-tube-station-inside-door-swing
+  attaches_to:
+    system: comms-security.networks-integration
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state a pneumatic-tube station is placed within a door swing?"
+    criteria:
+      "true": "It explicitly states a pneumatic-tube station is placed within a door swing."
+      "false": "It does not state this, only discusses the topic generally, or states the opposite."
+    runs_on:
+    - comms-security.networks-integration
+    - access-egress.egress-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0728
+  - seed: ict-av-security-guide.md
+    anchor: "## Networks, integration and cybersecurity"

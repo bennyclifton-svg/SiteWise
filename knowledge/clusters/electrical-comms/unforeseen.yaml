@@ -97,6 +97,8 @@ unforeseen:
   - construction
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0793
   - dataset: batch1
     row: B1-0609
   - dataset: batch1
@@ -167,6 +169,8 @@ unforeseen:
   - testing_commissioning
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0756
   - dataset: batch1
     row: B1-0602
   - dataset: batch1
@@ -270,6 +274,8 @@ unforeseen:
   - testing_commissioning
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0312
   - dataset: batch1
     row: B1-0673
   - seed: electrical-services-guide.md
@@ -399,6 +405,8 @@ unforeseen:
   - handover_defects
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0332
   - dataset: batch1
     row: B1-0392
   - dataset: batch1
@@ -496,6 +504,8 @@ unforeseen:
   - construction
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0781
   - dataset: batch1
     row: B1-0650
   - dataset: batch1
@@ -640,6 +650,10 @@ unforeseen:
   - demolition_strip_out
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0310
+  - dataset: batch2
+    row: B2-0335
   - dataset: batch1
     row: B1-0678
   - seed: electrical-services-guide.md
@@ -676,6 +690,12 @@ unforeseen:
   - design
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0302
+  - dataset: batch2
+    row: B2-0360
+  - dataset: batch2
+    row: B2-0366
   - dataset: batch1
     row: B1-0679
   - dataset: batch1
@@ -780,6 +800,8 @@ unforeseen:
   - construction
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0887
   - dataset: batch1
     row: B1-0683
   - seed: electrical-services-guide.md
@@ -813,6 +835,14 @@ unforeseen:
   - demolition_strip_out
   status: draft
   sources:
+  - dataset: batch2
+    row: B2-0304
+  - dataset: batch2
+    row: B2-0314
+  - dataset: batch2
+    row: B2-0334
+  - dataset: batch2
+    row: B2-0713
   - dataset: batch1
     row: B1-0685
   - seed: electrical-services-guide.md
@@ -880,3 +910,1767 @@ unforeseen:
     row: B1-0695
   - seed: electrical-services-guide.md
     anchor: '## Distribution, protection and access'
+- id: uc.existing-lift-shaft-pit-or-headroom-too-small-for-replacement
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: vertical-transport.lift-shafts-pits
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        system:
+        - vertical-transport.passenger-lifts
+        - vertical-transport.lift-shafts-pits
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-lift-shaft-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Survey of shaft width, pit depth, headroom and plumb before the replacement lift is selected"
+  contract: "Provisional sum for shaft, pit or overrun alteration; lift offers priced against surveyed dimensions."
+  effect:
+  - cost
+  - compliance
+  - programme
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0440
+  - dataset: batch2
+    row: B2-0441
+  - dataset: batch2
+    row: B2-0442
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; Disability (Access to Premises — Buildings) Standards; not verified."
+- id: uc.existing-lift-lobby-too-small-for-accessible-lift
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: vertical-transport.passenger-lifts
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        system:
+        - vertical-transport.passenger-lifts
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-lift-shaft-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Survey of lobby depth against the lift selected for the access upgrade"
+  contract: "Allowance for enlarging the lobby, or lift selection limited to what the lobby can serve."
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0464
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1428; not verified."
+- id: uc.existing-lift-machine-floor-cannot-carry-replacement-machine
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: vertical-transport.lift-shafts-pits
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        system:
+        - vertical-transport.passenger-lifts
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-structure-capacity-stated
+  de_risk:
+    kind: investigation
+    label: "Structural check of the machine floor, including timber floors, for the replacement machine reactions"
+  contract: "Provisional sum for strengthening the machine floor."
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0450
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; not verified."
+- id: uc.lift-pit-sump-has-no-lawful-discharge
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: vertical-transport.lift-shafts-pits
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        system:
+        - vertical-transport.lift-shafts-pits
+  signals:
+  - sig.pit-sump-discharge-stated
+  de_risk:
+    kind: approval
+    label: "Agreed discharge point for the pit sump with the drainage authority at design"
+  contract: "Allowance for a pit discharge arrangement the authority accepts."
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0448
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 3500; not verified."
+- id: uc.lift-well-slab-gap-not-fire-stopped
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: vertical-transport.lift-shafts-pits
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - replace
+        - alter
+        system:
+        - vertical-transport.passenger-lifts
+        - vertical-transport.lift-shafts-pits
+    - {det: existing_building, is: true}
+  signals:
+  - sig.lift-well-fire-stopping-stated
+  de_risk:
+    kind: investigation
+    label: "Inspection of the lift well at each floor for open gaps once linings are removed"
+  contract: "Provisional sum for fire-stopping the lift well at each floor."
+  effect:
+  - compliance
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0455
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites NCC; not verified."
+- id: uc.shared-lift-well-needs-divider-under-current-rules
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: vertical-transport.lift-shafts-pits
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - replace
+        system:
+        - vertical-transport.passenger-lifts
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-lift-shaft-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Check whether cars sharing one well need a divider under the rules that apply to the upgrade"
+  contract: "Allowance for a well divider where the upgrade triggers current separation requirements."
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0461
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; not verified."
+- id: uc.escalator-pit-clashes-with-transfer-beam
+  kind: design_or_coordination_error
+  category: design_and_scope
+  attaches_to:
+    system: vertical-transport.escalators-walks
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - vertical-transport.escalators-walks
+        - structure.concrete
+  signals:
+  - sig.escalator-support-details-stated
+  de_risk:
+    kind: hold_point
+    label: "Pit and structure coordination sign-off before the pit is formed"
+  contract: "Escalator package states the pit and support dimensions the structure must provide."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0457
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+  notes: "Owner list cites AS 1735; not verified."
+- id: uc.moving-walk-seat-missing-from-slab-edge
+  kind: design_or_coordination_error
+  category: design_and_scope
+  attaches_to:
+    system: vertical-transport.escalators-walks
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - vertical-transport.escalators-walks
+  signals:
+  - sig.escalator-support-details-stated
+  de_risk:
+    kind: hold_point
+    label: "Check of the moving-walk seat and slab-edge angle against supplier drawings before the pour"
+  contract: "Moving-walk package states the seat details the structure must provide."
+  effect:
+  - programme
+  - cost
+  severity: programme
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0458
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: uc.buried-hydraulic-lift-oil-line-leaking
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: vertical-transport.passenger-lifts
+  when:
+    all:
+    - works:
+        action:
+        - repair
+        - replace
+        - upgrade
+        system:
+        - vertical-transport.passenger-lifts
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Pressure test of the oil line and pit inspection before deciding between seal repair and line replacement"
+  contract: "Provisional sum to replace the buried oil line rather than the seals alone."
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0459
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: uc.lift-equipment-cannot-be-craned-to-roof-of-occupied-building
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    stage: construction
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        system:
+        - vertical-transport.passenger-lifts
+        - vertical-transport.lift-shafts-pits
+    - {det: existing_building, is: true}
+  signals:
+  - sig.lift-delivery-method-stated
+  de_risk:
+    kind: investigation
+    label: "Crane reach and delivery route check from the shaft position before the lift is ordered"
+  contract: "Lift package states the delivery path and who provides the crane or hoist."
+  effect:
+  - programme
+  - cost
+  severity: programme
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0462
+  - seed: as-standards-reference.md
+    anchor: "## AS 1735 Series — Lifts, Escalators and Moving Walks"
+- id: uc.existing-board-has-no-spare-ways-or-rating-for-fit-out
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - electrical.switchboards
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-board-schedule-and-rating-stated
+  de_risk:
+    kind: investigation
+    label: "Board schedule and demand check for spare ways and rating before the fit-out is tendered"
+  contract: "Provisional sum for board replacement or a new sub-board."
+  effect:
+  - cost
+  - programme
+  - compliance
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0301
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.existing-busbar-has-no-spare-tap-off
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - electrical.switchboards
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-board-schedule-and-rating-stated
+  de_risk:
+    kind: investigation
+    label: "Confirmation of a spare tap-off on the existing busbar before the load is added"
+  contract: "Allowance for a new riser feeder where no tap-off is available."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0322
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.existing-supply-single-phase-for-three-phase-plant
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.utility-supply
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - new
+        system:
+        - electrical.utility-supply
+        - electrical.switchboards
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-fault-level-and-phases-stated
+  de_risk:
+    kind: investigation
+    label: "Confirmation of the existing supply phases against the plant before plant is ordered"
+  contract: "Provisional sum for a supply upgrade with the network operator."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0315
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.existing-underground-consumer-main-undersized-or-untraceable
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: electrical.utility-supply
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - alter
+        system:
+        - electrical.utility-supply
+    - {det: existing_building, is: true}
+  signals:
+  - sig.in-ground-services-located-stated
+  de_risk:
+    kind: investigation
+    label: "Locate and size the existing underground main before it is reused"
+  contract: "Provisional sum for a new consumer main where the existing one cannot be proved."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0318
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+  notes: "Owner list cites AS 5488; not verified."
+- id: uc.point-of-supply-not-where-design-assumed
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - electrical.utility-supply
+  signals:
+  - sig.utility-connection-offer-stated
+  de_risk:
+    kind: approval
+    label: "Written confirmation of the point of supply from the network operator before the mains route is designed"
+  contract: "Provisional sum for mains rerouting where the point of supply differs from the design."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0303
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.earthing-relied-on-water-pipe-now-plastic
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.earthing-lightning
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - electrical.earthing-lightning
+        - electrical.switchboards
+    - {det: existing_building, is: true}
+  signals:
+  - sig.earthing-arrangement-stated
+  de_risk:
+    kind: investigation
+    label: "Identify how the existing installation is earthed, including any reliance on a metal water pipe"
+  contract: "Allowance for a new earth electrode where the water pipe can no longer serve."
+  effect:
+  - compliance
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0308
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.replacement-generator-does-not-fit-room-or-flue-path
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.standby-power
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        system:
+        - electrical.standby-power
+    - {det: existing_building, is: true}
+  signals:
+  - sig.generator-room-and-flue-stated
+  de_risk:
+    kind: investigation
+    label: "Measure the generator room and flue path against the set before it is ordered"
+  contract: "Allowance for room alteration or an external generator position."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0311
+  - seed: electrical-services-guide.md
+    anchor: "## Generation, storage and EV infrastructure"
+- id: uc.generator-fuel-fill-point-not-reachable-by-tanker
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.standby-power
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        - alter
+        system:
+        - electrical.standby-power
+    - {det: existing_building, is: true}
+  signals:
+  - sig.generator-room-and-flue-stated
+  de_risk:
+    kind: investigation
+    label: "Check tanker access to the fill point when an existing generator room is reused"
+  contract: "Allowance for a remote fill point."
+  effect:
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0326
+  - seed: electrical-services-guide.md
+    anchor: "## Generation, storage and EV infrastructure"
+- id: uc.harmonic-current-overheats-undersized-neutral
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.cabling-wiring
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - electrical.cabling-wiring
+        - electrical.switchboards
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-board-schedule-and-rating-stated
+  de_risk:
+    kind: investigation
+    label: "Neutral sizing check for the harmonic content of the new equipment before it is connected"
+  contract: "Allowance for upsizing neutrals on circuits serving non-linear loads."
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0321
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.main-earthing-conductor-route-blocked-to-new-electrode
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.earthing-lightning
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - replace
+        system:
+        - electrical.earthing-lightning
+    - {det: existing_building, is: true}
+  signals:
+  - sig.earthing-arrangement-stated
+  de_risk:
+    kind: investigation
+    label: "Agree a continuous earthing conductor route before an electrode is relocated"
+  contract: "Allowance for an alternative electrode position or route."
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0338
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.lightning-downconductor-cannot-be-separated-from-power-cables
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.earthing-lightning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - electrical.earthing-lightning
+    - {det: existing_building, is: true}
+  signals:
+  - sig.lightning-protection-design-stated
+  de_risk:
+    kind: investigation
+    label: "Survey of risers for a path to earth separate from power cabling"
+  contract: "Allowance for an external or alternative downconductor route."
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0340
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+- id: uc.existing-roof-cannot-take-lightning-air-terminal-fixing
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: electrical.earthing-lightning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - electrical.earthing-lightning
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-structure-capacity-stated
+  de_risk:
+    kind: investigation
+    label: "Check roof members and fixing positions for the air terminals at design"
+  contract: "Allowance for additional roof framing at terminal fixings."
+  effect:
+  - cost
+  - safety
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0341
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+- id: uc.new-roof-plant-outside-existing-lightning-protection-zone
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: electrical.earthing-lightning
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        system:
+        - electrical.earthing-lightning
+    - {det: existing_building, is: true}
+  signals:
+  - sig.lightning-protection-design-stated
+  de_risk:
+    kind: investigation
+    label: "Check the protected zone of the existing lightning protection against added roof plant"
+  contract: "Allowance for extending the lightning protection to new roof plant."
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0368
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+- id: uc.existing-private-pole-unsafe-to-reconnect-upgraded-mains
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.utility-supply
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - replace
+        system:
+        - electrical.utility-supply
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Inspection of the private pole and its hardware before mains are reconnected"
+  contract: "Provisional sum for pole replacement."
+  effect:
+  - safety
+  - cost
+  severity: life-safety
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0343
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.switchboard-fault-rating-below-or-unproven-against-fault-level
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - alter
+        - new
+        system:
+        - electrical.switchboards
+        - electrical.utility-supply
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-fault-level-and-phases-stated
+  de_risk:
+    kind: investigation
+    label: "Obtain the network fault level and prove the board fault rating before the board is reused or ordered"
+  contract: "Provisional sum for board replacement where the rating cannot be proved."
+  effect:
+  - safety
+  - compliance
+  - cost
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0347
+  - dataset: batch2
+    row: B2-0348
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.hazardous-area-equipment-not-rated-for-the-zone
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: electrical.process-hazardous
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        system:
+        - electrical.process-hazardous
+  signals:
+  - sig.hazardous-area-classification-stated
+  de_risk:
+    kind: investigation
+    label: "Match the zone drawing to the equipment ratings before equipment is ordered"
+  contract: "Equipment package states the zone classification and required rating."
+  effect:
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0351
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.in-ground-supply-asset-clashes-with-new-works
+  kind: unforeseen_condition
+  category: ground_and_site
+  attaches_to:
+    system: site.services-connections
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - electrical.utility-supply
+        - electrical.lighting
+  signals:
+  - sig.in-ground-services-located-stated
+  de_risk:
+    kind: investigation
+    label: "Locate in-ground electrical assets from the utility plan before pole bases, footings or crossings are set out"
+  contract: "Provisional sum for service diversion or protection."
+  effect:
+  - cost
+  - programme
+  - safety
+  severity: cost
+  discovered_at:
+  - excavation
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0333
+  - dataset: batch2
+    row: B2-0354
+  - dataset: batch2
+    row: B2-0370
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+  notes: "Owner list cites AS 5488; Before You Dig Australia; not verified."
+- id: uc.existing-substation-room-ventilation-short-of-transformer-needs
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.utility-supply
+  when:
+    all:
+    - works:
+        action:
+        - replace
+        - upgrade
+        system:
+        - electrical.utility-supply
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Free ventilation area of the existing substation room against the transformer needs before reuse"
+  contract: "Allowance for ventilation upgrade to the substation room."
+  effect:
+  - safety
+  - compliance
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0355
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: uc.high-voltage-easement-crosses-extension-site
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - electrical.utility-supply
+  signals:
+  - sig.high-voltage-easement-stated
+  de_risk:
+    kind: investigation
+    label: "Title and utility plan check for high-voltage easements before the extension is sited"
+  contract: "Brief states building clear of easements; allowance for an easement variation or diversion."
+  effect:
+  - cost
+  - compliance
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0356
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: uc.mineral-insulated-cable-cannot-be-diverted
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: electrical.cabling-wiring
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - replace
+        system:
+        - electrical.cabling-wiring
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Identify cable type before a diversion is planned"
+  contract: "Provisional sum to replace rather than divert existing mineral-insulated cable."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0363
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.imaging-equipment-voltage-dips-with-shared-mechanical-load
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - electrical.switchboards
+        - electrical.cabling-wiring
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-board-schedule-and-rating-stated
+  de_risk:
+    kind: investigation
+    label: "Review which loads share the supply with sensitive imaging equipment"
+  contract: "Allowance for a dedicated supply for sensitive equipment."
+  effect:
+  - quality
+  - cost
+  severity: durability
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0372
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.pcb-in-old-fitting-capacitors-or-transformer-oil
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - remove
+        - replace
+        - upgrade
+        system:
+        - electrical.lighting
+        - electrical.switchboards
+    - {det: existing_building, is: true}
+  signals:
+  - sig.hazardous-materials-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Testing of old light-fitting capacitors and transformer oil for PCBs before removal"
+  contract: "Provisional sum for PCB testing, handling and licensed disposal."
+  effect:
+  - safety
+  - compliance
+  - cost
+  severity: life-safety
+  discovered_at:
+  - demolition_strip_out
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0472
+  - dataset: batch2
+    row: B2-0480
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+- id: uc.shared-distribution-board-sits-inside-tenancy-landlord-cannot-enter
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: electrical.switchboards
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - new
+        system:
+        - electrical.switchboards
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Check which tenancy each shared board serves and who can reach it before a floor is split"
+  contract: "Lease and fit-out terms state access to shared boards."
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0319
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.distributor-rejects-submetering-arrangement
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - electrical.metering
+  signals:
+  - sig.metering-arrangement-agreed-stated
+  de_risk:
+    kind: approval
+    label: "Distributor agreement to the metering arrangement before tender"
+  contract: "Provisional sum for the metering the distributor accepts."
+  effect:
+  - cost
+  - compliance
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0345
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: uc.existing-ceiling-zone-too-shallow-for-new-cable-tray
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: electrical.cabling-wiring
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - electrical.cabling-wiring
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-ceiling-zone-dimensions-stated
+  de_risk:
+    kind: investigation
+    label: "Measure the ceiling zone against the tray depth before the tray is specified"
+  contract: "Allowance for alternative containment routes."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0306
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+- id: uc.existing-slab-too-thin-for-specified-floor-box
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: electrical.cabling-wiring
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - electrical.cabling-wiring
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-structure-capacity-stated
+  de_risk:
+    kind: investigation
+    label: "Check slab thickness and reinforcement before floor boxes are selected"
+  contract: "Allowance for a shallower box or a raised floor solution."
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0329
+  - seed: electrical-services-guide.md
+    anchor: "## Refurbishment and live work"
+- id: uc.supplied-cable-does-not-match-breaker-lug
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    package_kind: supply
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - replace
+        - upgrade
+        system:
+        - electrical.switchboards
+        - electrical.cabling-wiring
+  signals:
+  - sig.long-lead-delivery-stated
+  de_risk:
+    kind: hold_point
+    label: "Check cable and lug sizes against each other before delivery"
+  contract: "Supply order states cable and termination sizes."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0346
+  - seed: electrical-services-guide.md
+    anchor: "## Distribution, protection and access"
+  notes: "Owner list cites AS/NZS 3000; not verified."
+- id: uc.substation-lease-area-larger-than-designed-room
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    stage: approvals
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - electrical.utility-supply
+  signals:
+  - sig.utility-connection-offer-stated
+  de_risk:
+    kind: approval
+    label: "Network operator lease area confirmed before the substation room is designed"
+  contract: "Provisional sum for substation room enlargement."
+  effect:
+  - cost
+  - compliance
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0779
+  - seed: electrical-services-guide.md
+    anchor: "## Supply, demand and resilience"
+- id: uc.existing-service-inside-stair-now-relied-on-as-fire-isolated
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.rated-elements
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        system:
+        - fire-passive.rated-elements
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-electrical-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Survey the stair enclosure for unrelated services before it is treated as fire-isolated"
+  contract: "Allowance for diverting services out of the stair."
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0327
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites NCC; not verified."
+- id: uc.existing-fire-wall-has-no-room-for-cable-penetration-seal
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-passive.penetrations
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        - upgrade
+        system:
+        - fire-passive.penetrations
+        - electrical.cabling-wiring
+    - {det: existing_building, is: true}
+  signals:
+  - sig.penetration-seal-details-stated
+  de_risk:
+    kind: investigation
+    label: "Check wall thickness and tray fill against the seal system before the penetration is detailed"
+  contract: "Allowance for splitting or rerouting trays where the seal cannot be fitted."
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0316
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites AS 4072.1; not verified."
+- id: uc.existing-riser-has-no-path-for-warden-or-refuge-phone
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: fire-active.occupant-warning
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        - alter
+        system:
+        - fire-active.occupant-warning
+        - fire-active.detection
+        - comms-security.ict-rooms-pathways
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-ict-pathway-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Survey spare conduit from each warden or refuge phone position to the panel before the phones are specified"
+  contract: "Allowance for new containment to the fire panel."
+  effect:
+  - compliance
+  - cost
+  severity: compliance
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0207
+  - dataset: batch2
+    row: B2-0220
+  - seed: electrical-services-guide.md
+    anchor: "## Life-safety and specialist interfaces"
+  notes: "Owner list cites AS 1670; not verified."
+- id: uc.comms-room-too-small-for-racks-and-clearance
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: comms-security.ict-rooms-pathways
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - comms-security.ict-rooms-pathways
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-ict-pathway-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Measure the room depth against the racks and the clearance in front of them"
+  contract: "Allowance for enlarging or relocating the communications room."
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0711
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+- id: uc.no-cable-path-from-street-lead-in-to-comms-room
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: comms-security.carrier-lead-in
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - comms-security.carrier-lead-in
+        - comms-security.ict-rooms-pathways
+    - {det: existing_building, is: true}
+  signals:
+  - sig.carrier-pit-position-confirmed
+  de_risk:
+    kind: approval
+    label: "Lead-in path agreed with the carrier before design is fixed"
+  contract: "Provisional sum for new lead-in conduit and pits."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0712
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+- id: uc.ceiling-positions-for-access-points-already-occupied
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: comms-security.ict-rooms-pathways
+  when:
+    all:
+    - works:
+        action:
+        - new
+        system:
+        - comms-security.networks-integration
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-ict-pathway-survey-stated
+  de_risk:
+    kind: hold_point
+    label: "Reserve and mark access point positions on the coordinated ceiling plan"
+  contract: "Allowance for re-siting services or access points."
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - construction
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0714
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+- id: uc.raised-floor-void-too-shallow-for-air-and-cabling
+  kind: unforeseen_condition
+  category: existing_structure
+  attaches_to:
+    system: comms-security.ict-rooms-pathways
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - alter
+        system:
+        - comms-security.ict-rooms-pathways
+        - comms-security.structured-cabling
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-ict-pathway-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Decide what the raised floor void carries before cabling is added"
+  contract: "Allowance for overhead containment instead of under-floor routes."
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0721
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+- id: uc.radio-coverage-shielded-in-lifts-and-basements
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: comms-security.ict-rooms-pathways
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - comms-security.ict-rooms-pathways
+        - comms-security.networks-integration
+    - {det: existing_building, is: true}
+  signals:
+  - sig.radio-coverage-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Radio coverage survey of lifts, basements and other shielded spaces before the design is fixed"
+  contract: "Allowance for additional antennas in shielded spaces."
+  effect:
+  - quality
+  - safety
+  severity: durability
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0724
+  - seed: ict-av-security-guide.md
+    anchor: "## ICT rooms, pathways and cabling"
+- id: uc.nurse-call-cabling-has-no-path-to-occupied-rooms
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: comms-security.ict-rooms-pathways
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - comms-security.networks-integration
+        - comms-security.ict-rooms-pathways
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-ict-pathway-survey-stated
+  de_risk:
+    kind: investigation
+    label: "Survey of containment to occupied rooms before devices are specified"
+  contract: "Allowance for new containment and staging in occupied areas."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0725
+  - seed: ict-av-security-guide.md
+    anchor: "## Refurbishment, migration and live cutover"
+- id: uc.existing-nurse-call-has-no-spare-capacity-for-extension
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: comms-security.networks-integration
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - comms-security.networks-integration
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-life-safety-comms-capacity-stated
+  de_risk:
+    kind: investigation
+    label: "Capacity check of the existing nurse-call system before rooms are added"
+  contract: "Provisional sum to extend or replace the system."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0745
+  - seed: ict-av-security-guide.md
+    anchor: "## Networks, integration and cybersecurity"
+- id: uc.partial-nurse-call-upgrade-mixes-incompatible-devices
+  kind: process_authority_supply_weather
+  category: existing_systems_on_test
+  attaches_to:
+    system: comms-security.networks-integration
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - replace
+        system:
+        - comms-security.networks-integration
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-life-safety-comms-capacity-stated
+  de_risk:
+    kind: investigation
+    label: "Confirm old field devices work with the new head-end, or upgrade a compatible set together"
+  contract: "Allowance to replace field devices that the new head-end cannot support."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0893
+  - seed: ict-av-security-guide.md
+    anchor: "## Refurbishment, migration and live cutover"
+- id: uc.plant-controllers-do-not-expose-points-the-bms-needs
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: mechanical.controls-bms
+  when:
+    all:
+    - works:
+        action:
+        - new
+        - upgrade
+        system:
+        - mechanical.controls-bms
+        - comms-security.networks-integration
+    - {det: existing_building, is: true}
+  signals:
+  - sig.bms-point-list-stated
+  de_risk:
+    kind: investigation
+    label: "Confirm available controller points against the BMS point list before the BMS is specified"
+  contract: "Allowance for controller replacement or gateways."
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0719
+  - seed: ict-av-security-guide.md
+    anchor: "## Networks, integration and cybersecurity"
+- id: uc.existing-public-address-amplifier-cannot-drive-added-speakers
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: comms-security.audiovisual
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - alter
+        system:
+        - comms-security.audiovisual
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-life-safety-comms-capacity-stated
+  de_risk:
+    kind: investigation
+    label: "Check the amplifier rating against the total speaker load at design"
+  contract: "Allowance for amplifier replacement."
+  effect:
+  - cost
+  - quality
+  severity: cost
+  discovered_at:
+  - testing_commissioning
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0748
+  - seed: ict-av-security-guide.md
+    anchor: "## Audiovisual systems"
+- id: uc.live-equipment-prevents-work-under-raised-floor
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: comms-security.ict-rooms-pathways
+  when:
+    all:
+    - works:
+        action:
+        - alter
+        - upgrade
+        - replace
+        system:
+        - comms-security.ict-rooms-pathways
+        - electrical.cabling-wiring
+    - {det: existing_building, is: true}
+  signals:
+  - sig.occupant-shutdown-notice-stated
+  de_risk:
+    kind: hold_point
+    label: "Agreed staging plan around equipment that cannot be shut down"
+  contract: "Contract states which equipment stays live and the staging the contractor must follow."
+  effect:
+  - programme
+  - safety
+  severity: life-safety
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0898
+  - seed: ict-av-security-guide.md
+    anchor: "## Refurbishment, migration and live cutover"
+- id: uc.existing-door-locks-cannot-be-rezoned-to-new-security-zones
+  kind: unforeseen_condition
+  category: existing_systems_on_test
+  attaches_to:
+    system: comms-security.access-control
+  when:
+    all:
+    - works:
+        action:
+        - upgrade
+        - alter
+        system:
+        - comms-security.access-control
+    - {det: existing_building, is: true}
+  signals:
+  - sig.existing-lock-types-stated
+  de_risk:
+    kind: investigation
+    label: "Survey of existing lock types against the new zone scheme before it is promised"
+  contract: "Allowance for replacing locks that cannot be zoned."
+  effect:
+  - cost
+  - programme
+  severity: cost
+  discovered_at:
+  - design
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0900
+  - seed: ict-av-security-guide.md
+    anchor: "## Electronic security"
