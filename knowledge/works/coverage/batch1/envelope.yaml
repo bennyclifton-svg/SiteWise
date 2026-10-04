@@ -1,0 +1,604 @@
+# K4 Pass B overlay, cluster envelope.
+version: 1
+rows:
+  B1-0165:
+    records:
+    - fm.envelope-roof-extension-drainage-overload
+  B1-0166:
+    records:
+    - uc.heritage-wall-opening-conflicts-with-fabric
+  B1-0168:
+    records:
+    - uc.existing-facade-ties-corroded
+  B1-0173:
+    records:
+    - uc.hail-damages-installed-roof-sheeting
+  B1-0174:
+    records:
+    - fm.envelope-roof-outlet-blockage-no-overflow
+  B1-0201:
+    records:
+    - uc.wrong-size-or-handing-delivered
+  B1-0203:
+    records:
+    - fm.envelope-window-head-sill-flashing-defective
+  B1-0204:
+    records:
+    - fm.envelope-roof-covering-damaged-by-later-trades
+  B1-0205:
+    records:
+    - fm.envelope-concealed-condensation-in-assembly
+  B1-0207:
+    records:
+    - uc.cladding-product-discontinued-and-substituted
+  B1-0208:
+    records:
+    - uc.weather-damages-or-halts-incomplete-envelope
+  B1-0209:
+    records:
+    - fm.envelope-facade-frame-movement
+  B1-0211:
+    records:
+    - fm.envelope-roof-ponding
+  B1-0212:
+    records:
+    - fm.envelope-balcony-leak-into-apartment-below
+  B1-0213:
+    records:
+    - fm.envelope-services-acoustic-penetrations
+  B1-0214:
+    records:
+    - fm.envelope-air-tightness-test-fails
+  B1-0215:
+    records:
+    - fm.envelope-roof-sheet-fixing-pattern-wrong
+  B1-0216:
+    records:
+    - fm.envelope-roof-sheet-lap-leak-low-pitch
+  B1-0217:
+    records:
+    - fm.envelope-skylight-kerb-leak
+  B1-0218:
+    records:
+    - fm.envelope-glazing-solar-gain-overheating
+  B1-0221:
+    records:
+    - fm.envelope-roof-wall-junction-flashing-missing
+  B1-0222:
+    records:
+    - fm.envelope-parapet-cap-flashing-failure
+  B1-0223:
+    records:
+    - fm.envelope-roof-insulation-compressed-by-traffic
+  B1-0224:
+    records:
+    - fm.envelope-spray-foam-off-gassing
+  B1-0225:
+    records:
+    - fm.envelope-insulation-over-existing-wiring
+  B1-0226:
+    records:
+    - fm.envelope-insulation-gaps
+  B1-0227:
+    records:
+    - fm.envelope-wall-wrap-torn-or-untaped
+  B1-0228:
+    records:
+    - fm.envelope-cladding-over-wet-framing
+  B1-0229:
+    records:
+    - fm.envelope-cladding-drainage-cavity
+  B1-0230:
+    records:
+    - uc.colour-or-dye-batch-variation
+  B1-0231:
+    records:
+    - fm.envelope-cladding-fixings-not-corrosion-rated
+  B1-0232:
+    records:
+    - fm.envelope-thermal-break-missing
+  B1-0233:
+    records:
+    - uc.facade-product-late-or-unavailable
+  B1-0234:
+    records:
+    - fm.envelope-curtain-wall-water-test-fails
+  B1-0235:
+    records:
+    - fm.envelope-glass-panel-breakage-during-installation
+  B1-0236:
+    records:
+    - uc.nickel-sulfide-glass-breakage
+  B1-0237:
+    records:
+    - fm.envelope-glass-thermal-stress-cracking
+  B1-0238:
+    records:
+    - fm.envelope-glass-weight-exceeds-frame-capacity
+  B1-0239:
+    records:
+    - fm.envelope-thermal-break-missing
+  B1-0240:
+    records:
+    - fm.envelope-frame-out-of-square
+  B1-0241:
+    records:
+    - fm.envelope-window-head-sill-flashing-defective
+  B1-0242:
+    records:
+    - fm.envelope-sliding-door-track-drainage
+  B1-0243:
+    records:
+    - fm.envelope-door-threshold-conflicts-with-upturn
+  B1-0245:
+    records:
+    - fm.envelope-external-door-warps-in-sun
+  B1-0246:
+    records:
+    - fm.envelope-shopfront-glazing-before-slab
+  B1-0247:
+    records:
+    - fm.envelope-vehicle-door-mounting-clash
+  B1-0248:
+    records:
+    - fm.envelope-dock-door-seal-height-mismatch
+  B1-0250:
+    records:
+    - fm.envelope-cladding-vehicle-impact-damage
+  B1-0251:
+    records:
+    - fm.envelope-translucent-roof-sheet-uv-cracking
+  B1-0252:
+    records:
+    - fm.envelope-ridge-vent-wind-driven-rain
+  B1-0253:
+    rejected: too_vague
+  B1-0254:
+    records:
+    - fm.envelope-insulation-blocks-eaves-ventilation
+  B1-0255:
+    records:
+    - fm.envelope-concealed-condensation-in-assembly
+  B1-0256:
+    records:
+    - fm.envelope-landscaped-roof-protection
+  B1-0257:
+    records:
+    - fm.envelope-landscaped-roof-protection
+  B1-0258:
+    records:
+    - fm.envelope-roof-paver-pedestal-drainage
+  B1-0259:
+    records:
+    - fm.envelope-membrane-upstand-low-at-door
+  B1-0260:
+    records:
+    - fm.envelope-waterproofing-flood-test-fails
+  B1-0261:
+    records:
+    - fm.envelope-membrane-cure-time-not-observed
+  B1-0262:
+    records:
+    - fm.envelope-membrane-not-dressed-to-floor-waste
+  B1-0264:
+    records:
+    - fm.envelope-mould-behind-wet-area-linings
+  B1-0268:
+    records:
+    - uc.asbestos-cladding-disturbed
+  B1-0269:
+    records:
+    - uc.lead-paint-on-old-windows
+  B1-0270:
+    records:
+    - fm.envelope-glass-weight-exceeds-frame-capacity
+  B1-0271:
+    records:
+    - fm.envelope-retrofit-insulation-dampness
+  B1-0272:
+    records:
+    - fm.envelope-overcladding-over-defective-substrate
+  B1-0274:
+    records:
+    - fm.envelope-extension-roof-form-mismatch
+  B1-0275:
+    records:
+    - fm.envelope-old-new-weather-barrier
+  B1-0276:
+    records:
+    - fm.envelope-extension-openings-finishes-mismatch
+  B1-0279:
+    records:
+    - fm.envelope-weepholes-wind-driven-rain
+  B1-0280:
+    records:
+    - fm.envelope-vehicle-door-mounting-clash
+  B1-0281:
+    records:
+    - fm.envelope-cladding-vehicle-impact-damage
+  B1-0282:
+    records:
+    - fm.envelope-louvre-free-area-restricts-airflow
+  B1-0283:
+    records:
+    - fm.envelope-louvre-water-ingress
+  B1-0284:
+    records:
+    - fm.envelope-operable-window-wind-pressure
+  B1-0285:
+    records:
+    - fm.envelope-shading-wind-load-omitted
+  B1-0286:
+    records:
+    - fm.envelope-facade-maintenance-access-omitted
+  B1-0288:
+    records:
+    - fm.envelope-sealant-joint-movement-exceeded
+  B1-0289:
+    records:
+    - fm.envelope-sealant-stains-natural-stone
+  B1-0290:
+    records:
+    - fm.envelope-stone-cladding-anchor-pull-out
+  B1-0292:
+    records:
+    - uc.cladding-product-fails-compliance-test
+  B1-0293:
+    records:
+    - fm.envelope-facade-frame-movement
+  B1-0294:
+    records:
+    - fm.envelope-window-frame-corner-leak
+  B1-0296:
+    records:
+    - fm.envelope-sarking-before-roof
+  B1-0297:
+    records:
+    - fm.envelope-roof-covering-damaged-by-later-trades
+  B1-0298:
+    records:
+    - fm.envelope-eaves-gaps-vermin-entry
+  B1-0299:
+    records:
+    - uc.window-film-voids-glass-warranty
+  B1-0300:
+    records:
+    - fm.envelope-glass-weight-exceeds-frame-capacity
+  B1-0310:
+    records:
+    - uc.cladding-product-fails-compliance-test
+  B1-0311:
+    records:
+    - fm.envelope-fire-rated-wall-stops-at-ceiling
+  B1-0316:
+    records:
+    - fm.fire-facade-slab-edge
+  B1-0317:
+    records:
+    - fm.envelope-fire-rated-glazing-substituted
+  B1-0344:
+    records:
+    - uc.bal-increased-after-design
+  B1-0345:
+    records:
+    - fm.envelope-ember-mesh-restricts-ventilation
+  B1-0357:
+    records:
+    - fm.envelope-heritage-fabric-blocks-egress-stair
+  B1-0359:
+    records:
+    - uc.combustible-insulation-panels-discovered
+  B1-0360:
+    records:
+    - uc.existing-roof-space-lacks-fire-separation
+  B1-0361:
+    records:
+    - fm.party-wall-stops-in-roof
+  B1-0377:
+    records:
+    - uc.energy-assessment-fails-at-certification
+  B1-0378:
+    records:
+    - uc.energy-assessment-fails-at-certification
+  B1-0384:
+    records:
+    - uc.overlooking-rules-force-window-redesign
+  B1-0395:
+    records:
+    - fm.envelope-boundary-opening-unprotected
+  B1-0399:
+    records:
+    - fm.envelope-roof-terrace-second-exit-missing
+  B1-0408:
+    records:
+    - fm.envelope-floor-falls-miss-waste
+  B1-0428:
+    records:
+    - fm.envelope-roof-outlet-blockage-no-overflow
+  B1-0551:
+    records:
+    - fm.envelope-sealed-envelope-ventilation
+  B1-0573:
+    records:
+    - fm.envelope-floor-finish-impact-sound
+  B1-0574:
+    records:
+    - fm.envelope-services-acoustic-penetrations
+  B1-0575:
+    records:
+    - fm.envelope-acoustic-door-seals-omitted
+  B1-0576:
+    records:
+    - fm.envelope-room-acoustic-finishes
+  B1-0577:
+    records:
+    - fm.envelope-ceiling-floor-acoustic-flanking
+  B1-0578:
+    records:
+    - fm.envelope-ceiling-floor-acoustic-flanking
+  B1-0580:
+    records:
+    - fm.envelope-floor-finish-impact-sound
+  B1-0583:
+    records:
+    - fm.envelope-facade-glazing-fails-traffic-noise
+  B1-0584:
+    records:
+    - fm.envelope-sealed-envelope-ventilation
+  B1-0585:
+    records:
+    - uc.neighbouring-noise-source-requires-upgraded-facade
+  B1-0595:
+    records:
+    - fm.envelope-roof-heat-gain-upper-rooms
+  B1-0596:
+    records:
+    - fm.envelope-glazing-solar-gain-overheating
+  B1-0689:
+    records:
+    - uc.ceiling-cavity-hidden-services-and-asbestos
+  B1-0701:
+    records:
+    - fm.envelope-floor-cupping
+  B1-0702:
+    records:
+    - fm.envelope-tile-cracks-over-movement-joint
+  B1-0703:
+    records:
+    - fm.envelope-paint-adhesion
+  B1-0704:
+    records:
+    - fm.envelope-plasterboard-movement-cracking
+  B1-0705:
+    records:
+    - fm.envelope-joinery-made-before-site-measure
+  B1-0706:
+    records:
+    - fm.envelope-door-swing-clashes-with-fitout
+  B1-0708:
+    records:
+    - fm.envelope-floor-finish-fails-on-slab-moisture
+  B1-0709:
+    records:
+    - fm.envelope-services-acoustic-penetrations
+  B1-0710:
+    records:
+    - fm.envelope-screed-or-leveller-cracking
+  B1-0711:
+    records:
+    - fm.envelope-screed-or-leveller-cracking
+  B1-0715:
+    rejected: too_vague
+  B1-0716:
+    records:
+    - fm.envelope-substrate-flatness-shows-through
+  B1-0717:
+    records:
+    - uc.colour-or-dye-batch-variation
+  B1-0718:
+    records:
+    - fm.envelope-adhesive-membrane-compatibility
+  B1-0719:
+    records:
+    - fm.envelope-grout-staining
+  B1-0720:
+    records:
+    - fm.envelope-wet-membrane-puncture
+  B1-0721:
+    records:
+    - uc.stone-floor-stains-from-unsealed-stone
+  B1-0723:
+    records:
+    - fm.envelope-floor-finish-fails-on-slab-moisture
+  B1-0724:
+    records:
+    - uc.finish-curing-affected-by-site-temperature
+  B1-0725:
+    records:
+    - fm.envelope-substrate-flatness-shows-through
+  B1-0726:
+    records:
+    - fm.envelope-floor-build-up-reduces-door-clearance
+  B1-0727:
+    records:
+    - uc.colour-or-dye-batch-variation
+  B1-0728:
+    rejected: too_vague
+  B1-0729:
+    records:
+    - fm.envelope-skirting-level-or-gap
+  B1-0731:
+    records:
+    - fm.envelope-floor-transition-trip-hazard
+  B1-0732:
+    records:
+    - fm.envelope-plasterboard-joints-visible-raking-light
+  B1-0733:
+    records:
+    - uc.finish-curing-affected-by-site-temperature
+  B1-0734:
+    records:
+    - fm.envelope-plaster-dust-in-ductwork
+  B1-0735:
+    records:
+    - fm.envelope-paint-before-flooring
+  B1-0736:
+    records:
+    - fm.envelope-plasterboard-movement-cracking
+  B1-0737:
+    records:
+    - fm.envelope-paint-preparation-inadequate
+  B1-0738:
+    records:
+    - fm.envelope-paint-adhesion
+  B1-0739:
+    records:
+    - fm.envelope-paint-spec-change-poor-coverage
+  B1-0740:
+    records:
+    - fm.envelope-adhesive-fails-on-damp-wall
+  B1-0741:
+    records:
+    - uc.finish-selection-or-sample-approval-late
+  B1-0742:
+    records:
+    - fm.envelope-joinery-made-before-site-measure
+  B1-0743:
+    records:
+    - fm.envelope-timber-joinery-swells-from-moisture
+  B1-0744:
+    records:
+    - fm.envelope-appliance-does-not-fit-cavity
+  B1-0745:
+    records:
+    - fm.envelope-joinery-service-positions
+  B1-0746:
+    records:
+    - fm.envelope-stone-benchtop-cracks-at-cutout
+  B1-0747:
+    rejected: too_vague
+  B1-0748:
+    records:
+    - fm.envelope-joinery-service-positions
+  B1-0750:
+    records:
+    - fm.envelope-joinery-swing-clash
+  B1-0751:
+    records:
+    - fm.envelope-joinery-swing-clash
+  B1-0756:
+    records:
+    - uc.wrong-size-or-handing-delivered
+  B1-0757:
+    records:
+    - fm.envelope-frame-out-of-square
+  B1-0758:
+    records:
+    - fm.envelope-timber-joinery-swells-from-moisture
+  B1-0759:
+    records:
+    - fm.envelope-floor-build-up-reduces-door-clearance
+  B1-0761:
+    records:
+    - fm.envelope-door-closer-force-accessibility
+  B1-0762:
+    records:
+    - fm.envelope-glazed-screen-deflection
+  B1-0763:
+    records:
+    - fm.envelope-lining-sag
+  B1-0764:
+    rejected: too_vague
+  B1-0765:
+    records:
+    - fm.envelope-services-ceiling-space
+  B1-0766:
+    records:
+    - fm.envelope-services-ceiling-space
+  B1-0767:
+    records:
+    - fm.envelope-joinery-made-before-site-measure
+  B1-0769:
+    records:
+    - fm.envelope-rough-in-before-linings
+  B1-0774:
+    records:
+    - fm.envelope-shopfront-tenancy-fire-separation-missing
+  B1-0775:
+    records:
+    - uc.food-premises-finish-requirements-not-met
+  B1-0776:
+    records:
+    - fm.envelope-floor-falls-miss-waste
+  B1-0779:
+    records:
+    - fm.envelope-fitout-load-exceeds-floor-capacity
+  B1-0780:
+    records:
+    - fm.envelope-radiation-shielding-omitted
+  B1-0786:
+    records:
+    - fm.envelope-clinical-finish-cleaning
+  B1-0787:
+    records:
+    - fm.envelope-wall-corner-protection-omitted
+  B1-0789:
+    records:
+    - uc.furniture-delivered-before-final-clean
+  B1-0792:
+    records:
+    - fm.envelope-furnishings-obstruct-sprinklers
+  B1-0793:
+    records:
+    - fm.envelope-blinds-do-not-fit-reveal
+  B1-0794:
+    records:
+    - fm.envelope-joinery-obstructs-ventilation
+  B1-0795:
+    records:
+    - fm.envelope-glass-thermal-stress-cracking
+  B1-0796:
+    records:
+    - fm.envelope-finish-damaged-before-final-clean
+  B1-0798:
+    records:
+    - fm.envelope-skirting-level-or-gap
+  B1-0799:
+    records:
+    - fm.envelope-adhesive-fails-on-damp-wall
+  B1-0800:
+    records:
+    - fm.envelope-floating-floor-no-expansion-gap
+  B1-0816:
+    records:
+    - fm.envelope-hoist-tie-facade-damage
+  B1-0835:
+    records:
+    - uc.weather-damages-or-halts-incomplete-envelope
+  B1-0885:
+    records:
+    - uc.vandalism-of-unfinished-building
+  B1-0895:
+    records:
+    - uc.facade-product-late-or-unavailable
+  B1-0904:
+    records:
+    - uc.substituted-sealant-does-not-bond
+  B1-0919:
+    records:
+    - uc.finish-selection-or-sample-approval-late
+  B1-0945:
+    records:
+    - uc.waterproofing-warranty-void-by-installation
+  B1-0949:
+    records:
+    - uc.combustible-cladding-on-existing-facade
+  B1-0950:
+    records:
+    - uc.combustible-cladding-on-existing-facade
+  B1-0951:
+    records:
+    - uc.cladding-removal-reveals-concealed-damage
+  B1-0976:
+    records:
+    - fm.envelope-extension-openings-finishes-mismatch
