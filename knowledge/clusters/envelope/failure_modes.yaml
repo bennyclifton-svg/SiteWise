@@ -92,6 +92,8 @@ failure_modes:
     anchor: '## Interface 3: Kitchen and bathroom services rough-in before wall lining'
   - dataset: batch1
     row: B1-0769
+  - dataset: batch2
+    row: B2-0548
 - id: fm.envelope-joinery-service-positions
   attaches_to:
     interface: if.envelope-joinery-service-positions
@@ -206,6 +208,10 @@ failure_modes:
     anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
   - dataset: batch1
     row: B1-0229
+  - dataset: batch2
+    row: B2-0072
+  - dataset: batch2
+    row: B2-0080
 - id: fm.envelope-dpc-slab-membrane
   attaches_to:
     interface: if.envelope-dpc-slab-membrane
@@ -288,6 +294,8 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 3740 — Waterproofing of Domestic Wet Areas'
+  - dataset: batch2
+    row: B2-0131
 - id: fm.envelope-waterproofing-before-tiles
   attaches_to:
     interface: if.envelope-waterproofing-before-tiles
@@ -308,6 +316,8 @@ failure_modes:
   sources:
   - seed: trade-interfaces-coordination-guide.md
     anchor: '## Interface 2: Wet area waterproofing to tiling'
+  - dataset: batch2
+    row: B2-0140
 - id: fm.envelope-adhesive-membrane-compatibility
   attaches_to:
     interface: if.envelope-adhesive-membrane-compatibility
@@ -696,6 +706,8 @@ failure_modes:
     row: B1-0577
   - dataset: batch1
     row: B1-0578
+  - dataset: batch2
+    row: B2-0686
 - id: fm.envelope-floor-finish-impact-sound
   attaches_to:
     interface: if.envelope-floor-finish-impact-sound
@@ -722,6 +734,10 @@ failure_modes:
     row: B1-0573
   - dataset: batch1
     row: B1-0580
+  - dataset: batch2
+    row: B2-0692
+  - dataset: batch2
+    row: B2-0700
 - id: fm.envelope-room-acoustic-finishes
   attaches_to:
     interface: if.envelope-room-acoustic-finishes
@@ -930,6 +946,8 @@ failure_modes:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 4200 Series — Pliable Building Membranes and Underlays'
+  - dataset: batch2
+    row: B2-0904
 - id: fm.envelope-safety-glass-substitution
   attaches_to:
     system: envelope.windows-doors
@@ -950,6 +968,8 @@ failure_modes:
   sources:
   - seed: finishes-residential.md
     anchor: '### Safety glazing requirements'
+  - dataset: batch2
+    row: B2-0096
 - id: fm.envelope-window-test-mismatch
   attaches_to:
     system: envelope.windows-doors
@@ -1032,6 +1052,14 @@ failure_modes:
     anchor: '## Interface 2: Wet area waterproofing to tiling'
   - dataset: batch1
     row: B1-0720
+  - dataset: batch2
+    row: B2-0141
+  - dataset: batch2
+    row: B2-0120
+  - dataset: batch2
+    row: B2-0145
+  - dataset: batch2
+    row: B2-0149
 - id: fm.envelope-tile-drumming
   attaches_to:
     system: interiors.tiling
@@ -1113,6 +1141,8 @@ failure_modes:
   sources:
   - seed: finishes-residential.md
     anchor: '## Common defects at key trade interfaces'
+  - dataset: batch2
+    row: B2-0098
 - id: fm.envelope-insulation-gaps
   attaches_to:
     system: envelope.thermal-insulation
@@ -1133,6 +1163,8 @@ failure_modes:
     anchor: '## AS/NZS 4859 Series — Thermal Insulation Materials'
   - dataset: batch1
     row: B1-0226
+  - dataset: batch2
+    row: B2-0940
 - id: fm.envelope-basix-glazing-substitution
   attaches_to:
     system: envelope.thermal-performance
@@ -1152,6 +1184,8 @@ failure_modes:
   sources:
   - seed: sustainability-energy-guide.md
     anchor: '### 4.1 Window U-value and SHGC substitution'
+  - dataset: batch2
+    row: B2-0753
 - id: fm.envelope-basix-existing-assumption
   attaches_to:
     system: envelope.thermal-performance
@@ -1452,6 +1486,12 @@ failure_modes:
     row: B1-0174
   - dataset: batch1
     row: B1-0428
+  - dataset: batch2
+    row: B2-0100
+  - dataset: batch2
+    row: B2-0942
+  - dataset: batch2
+    row: B2-0976
 - id: fm.envelope-roof-ponding
   attaches_to:
     system: envelope.roof-coverings
@@ -1472,6 +1512,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0211
+  - dataset: batch2
+    row: B2-0938
 - id: fm.envelope-roof-covering-damaged-by-later-trades
   attaches_to:
     system: envelope.roof-coverings
@@ -1837,6 +1879,10 @@ failure_modes:
     row: B1-0203
   - dataset: batch1
     row: B1-0241
+  - dataset: batch2
+    row: B2-0078
+  - dataset: batch2
+    row: B2-0079
 - id: fm.envelope-window-frame-corner-leak
   attaches_to:
     system: envelope.windows-doors
@@ -1880,6 +1926,10 @@ failure_modes:
     row: B1-0240
   - dataset: batch1
     row: B1-0757
+  - dataset: batch2
+    row: B2-0646
+  - dataset: batch2
+    row: B2-0866
 - id: fm.envelope-sliding-door-track-drainage
   attaches_to:
     system: envelope.windows-doors
@@ -1921,6 +1971,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0243
+  - dataset: batch2
+    row: B2-0073
 - id: fm.envelope-membrane-upstand-low-at-door
   attaches_to:
     system: envelope.external-waterproofing
@@ -2082,6 +2134,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0252
+  - dataset: batch2
+    row: B2-0110
 - id: fm.envelope-insulation-blocks-eaves-ventilation
   attaches_to:
     system: envelope.thermal-insulation
@@ -2298,6 +2352,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0282
+  - dataset: batch2
+    row: B2-0702
 - id: fm.envelope-louvre-water-ingress
   attaches_to:
     system: envelope.windows-doors
@@ -2416,6 +2472,10 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0288
+  - dataset: batch2
+    row: B2-0089
+  - dataset: batch2
+    row: B2-0139
 - id: fm.envelope-sealant-stains-natural-stone
   attaches_to:
     system: envelope.flashings-seals
@@ -2436,6 +2496,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0289
+  - dataset: batch2
+    row: B2-0667
 - id: fm.envelope-stone-cladding-anchor-pull-out
   attaches_to:
     system: envelope.external-walls
@@ -2475,6 +2537,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0583
+  - dataset: batch2
+    row: B2-0693
 - id: fm.envelope-acoustic-door-seals-omitted
   attaches_to:
     system: interiors.acoustic-separation
@@ -2554,6 +2618,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0395
+  - dataset: batch2
+    row: B2-0221
 - id: fm.envelope-shopfront-tenancy-fire-separation-missing
   attaches_to:
     system: envelope.windows-doors
@@ -2632,6 +2698,8 @@ failure_modes:
     row: B1-0408
   - dataset: batch1
     row: B1-0776
+  - dataset: batch2
+    row: B2-0166
 - id: fm.envelope-floor-finish-fails-on-slab-moisture
   attaches_to:
     system: interiors.floor-finishes
@@ -2673,6 +2741,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0800
+  - dataset: batch2
+    row: B2-0654
 - id: fm.envelope-tile-cracks-over-movement-joint
   attaches_to:
     system: interiors.tiling
@@ -2692,6 +2762,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0702
+  - dataset: batch2
+    row: B2-0638
 - id: fm.envelope-screed-or-leveller-cracking
   attaches_to:
     system: interiors.floor-finishes
@@ -2735,6 +2807,8 @@ failure_modes:
     row: B1-0716
   - dataset: batch1
     row: B1-0725
+  - dataset: batch2
+    row: B2-0656
 - id: fm.envelope-plasterboard-movement-cracking
   attaches_to:
     system: interiors.walls-linings
@@ -2757,6 +2831,8 @@ failure_modes:
     row: B1-0704
   - dataset: batch1
     row: B1-0736
+  - dataset: batch2
+    row: B2-0650
 - id: fm.envelope-plasterboard-joints-visible-raking-light
   attaches_to:
     system: interiors.walls-linings
@@ -2823,6 +2899,8 @@ failure_modes:
     row: B1-0742
   - dataset: batch1
     row: B1-0767
+  - dataset: batch2
+    row: B2-0643
 - id: fm.envelope-grout-staining
   attaches_to:
     system: interiors.tiling
@@ -2980,6 +3058,8 @@ failure_modes:
     row: B1-0759
   - dataset: batch1
     row: B1-0726
+  - dataset: batch2
+    row: B2-0685
 - id: fm.envelope-door-closer-force-accessibility
   attaches_to:
     system: interiors.internal-doors
@@ -3036,6 +3116,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0731
+  - dataset: batch2
+    row: B2-0639
 - id: fm.envelope-fitout-load-exceeds-floor-capacity
   attaches_to:
     system: interiors.floor-finishes
@@ -3055,6 +3137,8 @@ failure_modes:
   sources:
   - dataset: batch1
     row: B1-0779
+  - dataset: batch2
+    row: B2-0672
 - id: fm.envelope-radiation-shielding-omitted
   attaches_to:
     system: interiors.walls-linings
@@ -3354,3 +3438,1219 @@ failure_modes:
     row: B1-0237
   - dataset: batch1
     row: B1-0795
+- id: fm.envelope-balustrade-fixed-through-balcony-membrane
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that balustrade posts or base plates were fixed through the balcony membrane without a sleeve or a sealed penetration?"
+    criteria:
+      "true": "It explicitly states that balustrade posts or base plates were fixed through the balcony membrane without a sleeve or a sealed penetration."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+    - access-egress.barriers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0074
+  - dataset: batch2
+    row: B2-0945
+  notes: "Hold point or inspection: Fix the posts without breaking the membrane. Owner list cites AS 4654; not verified."
+- id: fm.envelope-balustrade-channel-holds-water-at-slab-edge
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a glass balustrade channel holds water against the balcony slab edge because the channel has no drainage?"
+    criteria:
+      "true": "It explicitly states that a glass balustrade channel holds water against the balcony slab edge because the channel has no drainage."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0075
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-parapet-capping-falls-toward-roof
+  attaches_to:
+    system: envelope.flashings-seals
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that parapet capping falls back toward the roof so that water is shed onto the membrane termination?"
+    criteria:
+      "true": "It explicitly states that parapet capping falls back toward the roof so that water is shed onto the membrane termination."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.flashings-seals
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0076
+  notes: "Hold point or inspection: Check capping falls before the membrane is terminated. Owner list cites AS 4654; not verified."
+- id: fm.envelope-dormer-cheek-meets-tiles-without-soaker
+  attaches_to:
+    system: envelope.roof-coverings
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a dormer cheek meets existing roof tiles with no soaker and the junction is only butted?"
+    criteria:
+      "true": "It explicitly states that a dormer cheek meets existing roof tiles with no soaker and the junction is only butted."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.roof-coverings
+    - envelope.flashings-seals
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0084
+  notes: "Hold point or inspection: Detail the roof-to-wall flashing before the dormer is tendered. Owner list cites SA HB 39; not verified."
+- id: fm.envelope-window-reveal-lining-clashes-with-hardware
+  attaches_to:
+    system: envelope.windows-doors
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a window stay or other hardware clashes with the depth of the reveal lining?"
+    criteria:
+      "true": "It explicitly states that a window stay or other hardware clashes with the depth of the reveal lining."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.windows-doors
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0099
+- id: fm.envelope-facade-sealant-incompatible-with-existing-impregnator
+  attaches_to:
+    system: envelope.flashings-seals
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a sealant would not bond to stone that carries an existing impregnator?"
+    criteria:
+      "true": "It explicitly states that a sealant would not bond to stone that carries an existing impregnator."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.flashings-seals
+    - envelope.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0070
+- id: fm.envelope-dissimilar-metals-in-contact-at-flashing
+  attaches_to:
+    system: envelope.flashings-seals
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that dissimilar metals in contact at a flashing, valley or junction are corroding?"
+    criteria:
+      "true": "It explicitly states that dissimilar metals in contact at a flashing, valley or junction are corroding."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.flashings-seals
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0085
+- id: fm.envelope-copper-runoff-stains-aluminium-below
+  attaches_to:
+    system: envelope.roof-coverings
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that run-off from a copper roof or flashing lands on aluminium below and stains or corrodes it?"
+    criteria:
+      "true": "It explicitly states that run-off from a copper roof or flashing lands on aluminium below and stains or corrodes it."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0102
+- id: fm.envelope-render-cracks-over-unreinforced-sheet-joints
+  attaches_to:
+    system: envelope.external-walls
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that render over lightweight sheet cracked along sheet joints that had no joint reinforcement?"
+    criteria:
+      "true": "It explicitly states that render over lightweight sheet cracked along sheet joints that had no joint reinforcement."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-walls
+    - envelope.flashings-seals
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0087
+  notes: "Hold point or inspection: Specify joint reinforcement before render is tendered."
+- id: fm.envelope-new-coating-fails-on-chalking-or-dusting-surface
+  attaches_to:
+    system: envelope.external-walls
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a new coating delaminated or would not bond because the existing surface was chalking or dusting?"
+    criteria:
+      "true": "It explicitly states that a new coating delaminated or would not bond because the existing surface was chalking or dusting."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-walls
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0088
+  - dataset: batch2
+    row: B2-0642
+  - dataset: batch2
+    row: B2-0848
+  notes: "Hold point or inspection: Adhesion-test the new coating on the existing surface before specification."
+- id: fm.envelope-spandrel-insulation-stops-short-of-slab
+  attaches_to:
+    system: envelope.curtain-wall
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that spandrel insulation stops short of the slab edge so that the thermal and fire line is broken?"
+    criteria:
+      "true": "It explicitly states that spandrel insulation stops short of the slab edge so that the thermal and fire line is broken."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.curtain-wall
+    - fire-passive.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0090
+  notes: "Hold point or inspection: Detail the insulation to meet the slab before installation. Owner list cites NCC; not verified."
+- id: fm.envelope-fire-stopping-blocks-curtain-wall-weeps
+  attaches_to:
+    system: envelope.curtain-wall
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that fire-stopping installed against the transom blocks the drainage path or weeps of a curtain wall?"
+    criteria:
+      "true": "It explicitly states that fire-stopping installed against the transom blocks the drainage path or weeps of a curtain wall."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.curtain-wall
+    - fire-passive.external-walls
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0091
+  notes: "Hold point or inspection: Keep fire-stopping clear of the frame's drainage path."
+- id: fm.envelope-green-roof-exceeds-podium-load-and-membrane-rating
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a green-roof build-up on a podium exceeds the slab load or the trafficable rating of the membrane?"
+    criteria:
+      "true": "It explicitly states that a green-roof build-up on a podium exceeds the slab load or the trafficable rating of the membrane."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0093
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-planter-membrane-terminates-below-soil
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a planter membrane terminates below the soil level so that its upturn cannot be inspected or maintained?"
+    criteria:
+      "true": "It explicitly states that a planter membrane terminates below the soil level so that its upturn cannot be inspected or maintained."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0094
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-facade-acoustic-zone-hits-slab-edge
+  attaches_to:
+    system: envelope.facade-acoustics
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the build-up needed for facade acoustics is deeper than the zone available at the slab edge?"
+    criteria:
+      "true": "It explicitly states that the build-up needed for facade acoustics is deeper than the zone available at the slab edge."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.facade-acoustics
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0095
+  notes: "Owner list cites AS/NZS 2107; not verified."
+- id: fm.envelope-roof-anchors-set-on-membrane-laps
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that roof safety anchors were set on the laps of the roof membrane?"
+    criteria:
+      "true": "It explicitly states that roof safety anchors were set on the laps of the roof membrane."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+    - access-egress
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0105
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-plant-curb-dams-roof-falls
+  attaches_to:
+    system: envelope.roof-coverings
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a curb for roof plant or an exhaust sits on the low side of a roof and dams the falls to the outlet?"
+    criteria:
+      "true": "It explicitly states that a curb for roof plant or an exhaust sits on the low side of a roof and dams the falls to the outlet."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.roof-coverings
+    - mechanical.local-exhaust
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0106
+  notes: "Owner list cites AS 3500; not verified."
+- id: fm.envelope-tile-underlay-stops-short-of-gutter
+  attaches_to:
+    system: envelope.roof-coverings
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that roof tile underlay stops short of the gutter so that wind-driven rain enters at the eaves?"
+    criteria:
+      "true": "It explicitly states that roof tile underlay stops short of the gutter so that wind-driven rain enters at the eaves."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.roof-coverings
+    - hydraulic.roof-drainage
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0109
+  notes: "Hold point or inspection: Inspect the underlay-to-gutter junction before scaffolding comes down. Owner list cites SA HB 39; not verified."
+- id: fm.envelope-polycarbonate-and-metal-sheets-share-fasteners
+  attaches_to:
+    system: envelope.roof-coverings
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that polycarbonate and metal roof sheets that expand differently share fasteners that have torn?"
+    criteria:
+      "true": "It explicitly states that polycarbonate and metal roof sheets that expand differently share fasteners that have torn."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.roof-coverings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0111
+  notes: "Owner list cites SA HB 39; not verified."
+- id: fm.envelope-roof-davit-bases-clash-with-plant-pads
+  attaches_to:
+    system: envelope.roof-coverings
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that davit bases for facade access clash with the pads of roof plant?"
+    criteria:
+      "true": "It explicitly states that davit bases for facade access clash with the pads of roof plant."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.roof-coverings
+    - mechanical.cooling-towers
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0113
+  notes: "Owner list cites AS 1657; not verified."
+- id: fm.envelope-fascia-reset-before-site-levels
+  attaches_to:
+    system: envelope.roof-coverings
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a fascia was reset before the new site levels so that the gutter cannot reach its outlet?"
+    criteria:
+      "true": "It explicitly states that a fascia was reset before the new site levels so that the gutter cannot reach its outlet."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.roof-coverings
+    - site.stormwater-detention
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0114
+  notes: "Owner list cites AS 3500; not verified."
+- id: fm.envelope-sample-approved-off-site-does-not-match-in-place
+  attaches_to:
+    system: envelope.external-walls
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a sample approved off site does not match the finish once it is seen on the building in its own light?"
+    criteria:
+      "true": "It explicitly states that a sample approved off site does not match the finish once it is seen on the building in its own light."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-walls
+    - interiors.floor-finishes
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0116
+  - dataset: batch2
+    row: B2-0665
+- id: fm.envelope-tile-bed-lifts-bathroom-above-adjacent-floor
+  attaches_to:
+    system: interiors.wet-area-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the tile bed is thicker than the set-down so that bathroom water flows into the adjacent room?"
+    criteria:
+      "true": "It explicitly states that the tile bed is thicker than the set-down so that bathroom water flows into the adjacent room."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0121
+  notes: "Hold point or inspection: Set tile thickness so the bathroom remains below the adjacent floor. Owner list cites AS 3740; not verified."
+- id: fm.envelope-podium-planter-has-no-drain
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a podium planter has no drain and its membrane sits in water it was not detailed to hold?"
+    criteria:
+      "true": "It explicitly states that a podium planter has no drain and its membrane sits in water it was not detailed to hold."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+    - hydraulic.sanitary
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0133
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-curtain-wall-stack-joint-sized-before-slab-deflection
+  attaches_to:
+    system: envelope.curtain-wall
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the stack joint of a curtain wall is closed because the slab deflection was calculated after the facade was procured?"
+    criteria:
+      "true": "It explicitly states that the stack joint of a curtain wall is closed because the slab deflection was calculated after the facade was procured."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.curtain-wall
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0937
+  notes: "Owner list cites AS 2047; not verified."
+- id: fm.envelope-membrane-laps-face-up-the-fall
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that roof membrane laps face up the fall instead of down it?"
+    criteria:
+      "true": "It explicitly states that roof membrane laps face up the fall instead of down it."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0142
+  notes: "Hold point or inspection: Lap sheets down the fall. Owner list cites AS 4654; not verified."
+- id: fm.envelope-new-membrane-incompatible-with-existing-outlet-metal
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a new membrane is incompatible with the metal of the existing outlet it terminates on?"
+    criteria:
+      "true": "It explicitly states that a new membrane is incompatible with the metal of the existing outlet it terminates on."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+    - hydraulic.roof-drainage
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0144
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-balcony-overflow-discharges-onto-facade
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a balcony overflow discharges onto the facade below, which has no flashing to take it?"
+    criteria:
+      "true": "It explicitly states that a balcony overflow discharges onto the facade below, which has no flashing to take it."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+    - hydraulic.roof-drainage
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0150
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-wet-area-lining-board-not-wet-grade
+  attaches_to:
+    system: interiors.wet-area-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the lining board behind a wet-area membrane is not a wet-area grade and has swollen?"
+    criteria:
+      "true": "It explicitly states that the lining board behind a wet-area membrane is not a wet-area grade and has swollen."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0152
+  notes: "Hold point or inspection: Specify and check the board grade before the membrane. Owner list cites AS 3740; not verified."
+- id: fm.envelope-podium-joint-at-low-point-ponds
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a podium joint sits at a low point and ponds water?"
+    criteria:
+      "true": "It explicitly states that a podium joint sits at a low point and ponds water."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0601
+  notes: "Owner list cites AS 4654; not verified."
+- id: fm.envelope-ceiling-grid-set-out-misses-penetrations
+  attaches_to:
+    system: interiors.ceilings
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the ceiling grid was set out from a different grid to the penetrations so that penetrations miss the tiles?"
+    criteria:
+      "true": "It explicitly states that the ceiling grid was set out from a different grid to the penetrations so that penetrations miss the tiles."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.ceilings
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0525
+  notes: "Hold point or inspection: Set the ceiling from the same grid as the penetrations."
+- id: fm.envelope-acoustic-baffle-blocks-return-air-path
+  attaches_to:
+    system: interiors.acoustic-separation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that an acoustic baffle blocks the return-air path?"
+    criteria:
+      "true": "It explicitly states that an acoustic baffle blocks the return-air path."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.acoustic-separation
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0547
+  notes: "Owner list cites AS 1668; not verified."
+- id: fm.envelope-reclad-downpipes-miss-existing-risers
+  attaches_to:
+    system: envelope.external-walls
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that downpipes on a reclad facade do not line up with the existing in-ground risers?"
+    criteria:
+      "true": "It explicitly states that downpipes on a reclad facade do not line up with the existing in-ground risers."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-walls
+    - hydraulic.roof-drainage
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0582
+  notes: "Owner list cites AS 3500; not verified."
+- id: fm.envelope-skirting-bridges-acoustic-joint
+  attaches_to:
+    system: interiors.acoustic-separation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a skirting was fixed across an acoustic joint and bridges it?"
+    criteria:
+      "true": "It explicitly states that a skirting was fixed across an acoustic joint and bridges it."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.acoustic-separation
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0640
+  notes: "Hold point or inspection: Break the skirting at the joint."
+- id: fm.envelope-paint-applied-to-uncured-substrate
+  attaches_to:
+    system: interiors.painting
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that paint was applied to a substrate that had not cured and the film has failed?"
+    criteria:
+      "true": "It explicitly states that paint was applied to a substrate that had not cured and the film has failed."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0641
+  notes: "Hold point or inspection: Paint only when the substrate is ready."
+- id: fm.envelope-benchtop-thicker-than-window-clearance
+  attaches_to:
+    system: interiors.joinery
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a stone benchtop is thicker than the clearance under an existing window?"
+    criteria:
+      "true": "It explicitly states that a stone benchtop is thicker than the clearance under an existing window."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.joinery
+    - envelope.windows-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0644
+- id: fm.envelope-cabinetry-covers-valves-that-must-stay-reachable
+  attaches_to:
+    system: interiors.joinery
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that new cabinetry covers valves that must stay reachable?"
+    criteria:
+      "true": "It explicitly states that new cabinetry covers valves that must stay reachable."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.joinery
+    - hydraulic.cold-water
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0645
+- id: fm.envelope-door-hardware-clashes-with-smoke-seal
+  attaches_to:
+    system: interiors.internal-doors
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that door hardware clashes with the smoke seal of a smoke door?"
+    criteria:
+      "true": "It explicitly states that door hardware clashes with the smoke seal of a smoke door."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.internal-doors
+    - fire-passive.openings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0647
+  notes: "Owner list cites AS 1905; not verified."
+- id: fm.envelope-service-hung-from-ceiling-tile
+  attaches_to:
+    system: interiors.ceilings
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a service was fixed to a ceiling tile instead of to the grid or the structure?"
+    criteria:
+      "true": "It explicitly states that a service was fixed to a ceiling tile instead of to the grid or the structure."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.ceilings
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0648
+  notes: "Hold point or inspection: Hang services from the grid or the structure."
+- id: fm.envelope-bulkhead-smaller-than-insulated-duct
+  attaches_to:
+    system: interiors.ceilings
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a bulkhead was sized without allowing for the insulated duct it must hide?"
+    criteria:
+      "true": "It explicitly states that a bulkhead was sized without allowing for the insulated duct it must hide."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.ceilings
+    - mechanical.air-distribution
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0649
+- id: fm.envelope-wet-area-tile-lip-ponds-water
+  attaches_to:
+    system: interiors.wet-area-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a tile lip in a wet area is large enough to pond water?"
+    criteria:
+      "true": "It explicitly states that a tile lip in a wet area is large enough to pond water."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0651
+  notes: "Hold point or inspection: Keep lips small enough for water to reach the waste. Owner list cites AS 3958; not verified."
+- id: fm.envelope-grout-etches-natural-stone
+  attaches_to:
+    system: interiors.tiling
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that grout has etched a natural stone floor?"
+    criteria:
+      "true": "It explicitly states that grout has etched a natural stone floor."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.tiling
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0652
+- id: fm.envelope-stair-nosing-not-flush-with-finished-floor
+  attaches_to:
+    system: interiors.floor-finishes
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a stair nosing does not finish flush with the thickness of the new floor?"
+    criteria:
+      "true": "It explicitly states that a stair nosing does not finish flush with the thickness of the new floor."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.floor-finishes
+    - access-egress.stairs-and-ramps
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0657
+  notes: "Owner list cites AS 1428; not verified."
+- id: fm.envelope-splashback-cut-before-outlets-fixed
+  attaches_to:
+    system: interiors.joinery
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a glass splashback was cut before the power points were moved to their final positions?"
+    criteria:
+      "true": "It explicitly states that a glass splashback was cut before the power points were moved to their final positions."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.joinery
+    - electrical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0659
+- id: fm.envelope-mirror-cabinet-hits-door
+  attaches_to:
+    system: interiors.joinery
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a mirror cabinet is deeper than the wall allows and hits the door?"
+    criteria:
+      "true": "It explicitly states that a mirror cabinet is deeper than the wall allows and hits the door."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.joinery
+    - interiors.internal-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0660
+- id: fm.envelope-ceiling-bulkhead-covers-wardrobe-track-line
+  attaches_to:
+    system: interiors.ceilings
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a ceiling bulkhead covers the fixing line needed for a wardrobe door track?"
+    criteria:
+      "true": "It explicitly states that a ceiling bulkhead covers the fixing line needed for a wardrobe door track."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.ceilings
+    - interiors.joinery
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0661
+- id: fm.envelope-delivered-piece-exceeds-lift-or-stair-access
+  attaches_to:
+    system: interiors.ffe
+  severity: programme
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a stone piece or loose furniture is too large for the lift or stair of the existing building?"
+    criteria:
+      "true": "It explicitly states that a stone piece or loose furniture is too large for the lift or stair of the existing building."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.ffe
+    - interiors.tiling
+    - interiors.joinery
+    - vertical-transport.passenger-lifts
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0664
+  - dataset: batch2
+    row: B2-0671
+- id: fm.envelope-entrance-mat-well-shallower-than-mat
+  attaches_to:
+    system: interiors.floor-finishes
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that an entrance mat well is shallower than the mat set in it?"
+    criteria:
+      "true": "It explicitly states that an entrance mat well is shallower than the mat set in it."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.floor-finishes
+    - access-egress.accessible-access
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0669
+  notes: "Owner list cites AS 1428; not verified."
+- id: fm.envelope-mat-well-clashes-with-door-track
+  attaches_to:
+    system: interiors.internal-doors
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a mat well clashes with the existing door track?"
+    criteria:
+      "true": "It explicitly states that a mat well clashes with the existing door track."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.internal-doors
+    - interiors.floor-finishes
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0670
+- id: fm.envelope-partition-stops-at-perforated-ceiling
+  attaches_to:
+    system: interiors.ceilings
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a partition stops at a perforated ceiling so the room is not private?"
+    criteria:
+      "true": "It explicitly states that a partition stops at a perforated ceiling so the room is not private."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.ceilings
+    - interiors.walls-linings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0704
+- id: fm.envelope-riser-door-in-acoustic-wall-not-acoustic-rated
+  attaches_to:
+    system: interiors.acoustic-separation
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a riser door in an acoustic wall is a standard door that does not match the wall?"
+    criteria:
+      "true": "It explicitly states that a riser door in an acoustic wall is a standard door that does not match the wall."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.acoustic-separation
+    - interiors.internal-doors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0708
+- id: fm.envelope-temporary-waterproofing-fails-and-floods-lower-levels
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that temporary waterproofing to an open deck failed and water reached finished levels below?"
+    criteria:
+      "true": "It explicitly states that temporary waterproofing to an open deck failed and water reached finished levels below."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+    - interiors.wet-area-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0809
+  notes: "Hold point or inspection: Keep water out of finished floors while the deck is open."
+- id: fm.envelope-balcony-falls-not-recorded-before-tiling
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that balcony falls were not recorded before tiling and a membrane warranty inspection failed?"
+    criteria:
+      "true": "It explicitly states that balcony falls were not recorded before tiling and a membrane warranty inspection failed."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0798
+  notes: "Hold point or inspection: Record falls and test before tiles. Owner list cites AS 4654; not verified."
+- id: fm.envelope-strip-out-above-occupied-floor-without-protection
+  attaches_to:
+    system: interiors.floor-finishes
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a protection screen was omitted to an occupied floor while the floor above was stripped?"
+    criteria:
+      "true": "It explicitly states that a protection screen was omitted to an occupied floor while the floor above was stripped."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.floor-finishes
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0823
+  notes: "Hold point or inspection: Separate the strip-out from the occupied floor. Owner list cites AS 2601; not verified."
+- id: fm.envelope-existing-finishes-not-isolated-from-adjacent-works
+  attaches_to:
+    system: interiors.floor-finishes
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that existing finishes that were to remain were damaged by adjacent works and had to be redone?"
+    criteria:
+      "true": "It explicitly states that existing finishes that were to remain were damaged by adjacent works and had to be redone."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.floor-finishes
+    - interiors.painting
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0826
+  notes: "Hold point or inspection: Isolate the work from finishes that stay."
+- id: fm.envelope-ceiling-opened-over-clinical-room-without-infection-barrier
+  attaches_to:
+    system: interiors.ceilings
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a ceiling over a clinical room was opened without infection-control barriers between the work and the clinical space?"
+    criteria:
+      "true": "It explicitly states that a ceiling over a clinical room was opened without infection-control barriers between the work and the clinical space."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.ceilings
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0883
+- id: fm.envelope-existing-membrane-cut-by-new-penetration-not-made-good
+  attaches_to:
+    system: interiors.wet-area-waterproofing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that an existing membrane was cut by a new penetration and was not made good?"
+    criteria:
+      "true": "It explicitly states that an existing membrane was cut by a new penetration and was not made good."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors.wet-area-waterproofing
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0836
+  notes: "Hold point or inspection: Make the membrane good at every new hole. Owner list cites AS 3740; not verified."
+- id: fm.envelope-weather-line-and-air-barrier-do-not-meet-at-window
+  attaches_to:
+    system: envelope.windows-doors
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the weatherproofing line and the air barrier are detailed as separate products that never meet at the window?"
+    criteria:
+      "true": "It explicitly states that the weatherproofing line and the air barrier are detailed as separate products that never meet at the window."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.windows-doors
+    - envelope.building-sealing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0905
+  notes: "Owner list cites AS 2047; not verified."
+- id: fm.envelope-facade-bracket-clashes-with-slab-edge-reinforcement
+  attaches_to:
+    system: envelope.external-walls
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a facade bracket and the slab-edge reinforcement need the same zone?"
+    criteria:
+      "true": "It explicitly states that a facade bracket and the slab-edge reinforcement need the same zone."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-walls
+    - structure.concrete
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0908
+- id: fm.envelope-balcony-depth-measured-to-structure-not-finished-face
+  attaches_to:
+    system: envelope.external-waterproofing
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that balcony depth was measured to the structure so that it is short of the planning minimum once the facade build-up is added?"
+    criteria:
+      "true": "It explicitly states that balcony depth was measured to the structure so that it is short of the planning minimum once the facade build-up is added."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.external-waterproofing
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0915
+- id: fm.envelope-end-of-trip-rooms-short-of-permit-numbers
+  attaches_to:
+    system: interiors
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the end-of-trip rooms provide fewer facilities than the permit states?"
+    criteria:
+      "true": "It explicitly states that the end-of-trip rooms provide fewer facilities than the permit states."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0920
+- id: fm.envelope-waste-room-too-small-for-collection-bins
+  attaches_to:
+    system: interiors
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that the waste room is too small for the bins that the collection service uses?"
+    criteria:
+      "true": "It explicitly states that the waste room is too small for the bins that the collection service uses."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - interiors
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0921
+  - dataset: batch2
+    row: B2-0570
+- id: fm.envelope-skylight-well-clashes-with-roof-beam
+  attaches_to:
+    system: envelope.windows-doors
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a skylight well cannot pass a roof beam?"
+    criteria:
+      "true": "It explicitly states that a skylight well cannot pass a roof beam."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.windows-doors
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0923
+- id: fm.envelope-window-opening-outside-frame-tolerance
+  attaches_to:
+    system: envelope.windows-doors
+  severity: cost
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that a window opening is outside the tolerance of the manufactured frame?"
+    criteria:
+      "true": "It explicitly states that a window opening is outside the tolerance of the manufactured frame."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.windows-doors
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0939
+  notes: "Hold point or inspection: Hold openings to the frame tolerance. Owner list cites AS 2047; not verified."
+- id: fm.envelope-service-penetrations-leave-air-barrier-open
+  attaches_to:
+    system: envelope.building-sealing
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage state that service penetrations through the air barrier were left unsealed?"
+    criteria:
+      "true": "It explicitly states that service penetrations through the air barrier were left unsealed."
+      "false": "It does not report this condition as present, or describes it only as a hypothetical risk, a compliant detail, or a requirement to prevent it."
+    runs_on:
+    - envelope.building-sealing
+    - envelope.external-walls
+    - mechanical
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0941
+  notes: "Hold point or inspection: Seal every penetration to the barrier. Owner list cites ABCB Condensation in Buildings handbook; not verified."

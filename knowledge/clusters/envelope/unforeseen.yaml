@@ -255,6 +255,8 @@ unforeseen:
   sources:
   - dataset: batch1
     row: B1-0689
+  - dataset: batch2
+    row: B2-0466
 - id: uc.combustible-cladding-on-existing-facade
   kind: unforeseen_condition
   category: concealed_services_and_earlier_work
@@ -294,6 +296,8 @@ unforeseen:
     row: B1-0949
   - dataset: batch1
     row: B1-0950
+  - dataset: batch2
+    row: B2-0066
 - id: uc.cladding-removal-reveals-concealed-damage
   kind: unforeseen_condition
   category: existing_structure
@@ -362,6 +366,8 @@ unforeseen:
     row: B1-0208
   - dataset: batch1
     row: B1-0835
+  - dataset: batch2
+    row: B2-0795
 - id: uc.hail-damages-installed-roof-sheeting
   kind: process_authority_supply_weather
   category: supply_and_site_operations
@@ -672,6 +678,8 @@ unforeseen:
   sources:
   - dataset: batch1
     row: B1-0344
+  - dataset: batch2
+    row: B2-0767
 - id: uc.energy-assessment-fails-at-certification
   kind: process_authority_supply_weather
   category: authorities_and_utilities
@@ -825,6 +833,8 @@ unforeseen:
     row: B1-0724
   - dataset: batch1
     row: B1-0733
+  - dataset: batch2
+    row: B2-0666
 - id: uc.food-premises-finish-requirements-not-met
   kind: process_authority_supply_weather
   category: authorities_and_utilities
@@ -857,6 +867,10 @@ unforeseen:
   sources:
   - dataset: batch1
     row: B1-0775
+  - dataset: batch2
+    row: B2-0786
+  - dataset: batch2
+    row: B2-0899
 - id: uc.furniture-delivered-before-final-clean
   kind: process_authority_supply_weather
   category: supply_and_site_operations
@@ -967,3 +981,1617 @@ unforeseen:
   sources:
   - dataset: batch1
     row: B1-0945
+- id: uc.balcony-membrane-upturn-short-of-door-sill
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.external-waterproofing
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-membrane-upturn-height-at-sills-stated"]
+  de_risk:
+    kind: investigation
+    label: "Expose the upturn at sills and posts before the repair scope is tendered"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0065
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.existing-balcony-door-has-no-flange-and-membrane-stops-short
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.windows-doors", "envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-membrane-upturn-height-at-sills-stated"]
+  de_risk:
+    kind: obligation
+    label: "Include a flange in the repair scope before tender"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0124
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.existing-curtain-wall-stack-joints-closed
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.curtain-wall
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.curtain-wall"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-stack-joint-widths-surveyed"]
+  de_risk:
+    kind: investigation
+    label: "Measure stack joints before any glass or seal replacement is tendered"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0067
+  notes: "Owner list cites AS 2047; not verified."
+- id: uc.existing-window-openings-outside-replacement-frame-tolerance
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.windows-doors"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-opening-sizes-surveyed"]
+  de_risk:
+    kind: investigation
+    label: "Survey every opening before frames are ordered"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme", "quality"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0068
+  notes: "Owner list cites AS 2047; not verified."
+- id: uc.existing-brick-ties-too-short-for-rainscreen-cavity
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.external-walls"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-cavity-depth-measured"]
+  de_risk:
+    kind: investigation
+    label: "Measure the cavity before the rainscreen build-up is specified"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0069
+- id: uc.single-skin-wall-cannot-provide-cladding-cavity
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.external-walls"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-cavity-depth-measured"]
+  de_risk:
+    kind: obligation
+    label: "Choose a system that suits a solid wall before tender"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0103
+- id: uc.existing-slab-edge-off-facade-grid
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.curtain-wall
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.curtain-wall"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-slab-edge-position-surveyed"]
+  de_risk:
+    kind: investigation
+    label: "Survey the slab edge before brackets are fabricated"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0071
+- id: uc.existing-wall-out-of-plumb-beyond-bracket-adjustment
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.external-walls"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-wall-plumb-survey-stated"]
+  de_risk:
+    kind: investigation
+    label: "Survey plumb before the bracket system is chosen"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0077
+- id: uc.existing-wall-out-of-plumb-beyond-lining-absorption
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.walls-linings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.walls-linings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-wall-plumb-survey-stated"]
+  de_risk:
+    kind: investigation
+    label: "Survey plumb before the lining system is chosen"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0833
+- id: uc.coastal-exposure-outside-coating-warranty
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.windows-doors"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-coastal-exposure-stated"]
+  de_risk:
+    kind: approval
+    label: "Match the coating to the actual exposure before the louvres are specified"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0081
+  notes: "Owner list cites AS 2312; not verified."
+- id: uc.existing-sarking-torn-at-eaves
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-eaves-sarking-condition-stated"]
+  de_risk:
+    kind: investigation
+    label: "Inspect sarking before the gutter scope is frozen"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0082
+  notes: "Owner list cites SA HB 39; not verified."
+- id: uc.replacement-tile-gauge-does-not-match-existing-battens
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-roof-purlin-spacing-stated"]
+  de_risk:
+    kind: investigation
+    label: "Confirm the tile gauge before battens are reused"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["cost", "programme"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0083
+- id: uc.existing-pier-too-narrow-for-new-lintel-bearing
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["new", "alter"]
+        system: ["envelope.windows-doors", "envelope.external-walls"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: investigation
+    label: "Measure piers before lintels are ordered"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "safety"]
+  severity: life-safety
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0092
+  notes: "Owner list cites AS 3700; not verified."
+- id: uc.existing-skylight-well-unlined-condensation
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.windows-doors", "envelope.thermal-insulation"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Line and insulate the well as part of the roof upgrade"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality"]
+  severity: durability
+  discovered_at: ["handover_defects"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0097
+  notes: "Owner list cites ABCB Condensation in Buildings handbook; not verified."
+- id: uc.existing-box-gutter-sump-not-at-low-point
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-roof-falls-stated"]
+  de_risk:
+    kind: hold_point
+    label: "Water-test the gutter before linings below are closed"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["testing_commissioning"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0101
+  notes: "Owner list cites AS 3500; not verified."
+- id: uc.existing-box-gutter-cannot-take-added-catchment
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["new", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-overflow-paths-traced-stated"]
+  de_risk:
+    kind: obligation
+    label: "Resize the catchment or add an outlet before the extension is tendered"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "compliance"]
+  severity: compliance
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0107
+  notes: "Owner list cites AS 3500; not verified."
+- id: uc.box-gutter-overflow-built-over-discharges-into-ceiling
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["new", "alter"]
+        system: ["envelope.roof-coverings", "envelope.external-walls"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-overflow-paths-traced-stated"]
+  de_risk:
+    kind: investigation
+    label: "Trace overflows before new work covers them"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["handover_defects"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0108
+  notes: "Owner list cites AS 3500; not verified."
+- id: uc.existing-purlin-spacing-unsuited-to-replacement-sheet
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-roof-purlin-spacing-stated"]
+  de_risk:
+    kind: investigation
+    label: "Check span and gauge before the sheet is ordered"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["construction", "design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0112
+  - dataset: batch2
+    row: B2-0853
+  notes: "Owner list cites SA HB 39; not verified."
+- id: uc.matching-roof-fixing-no-longer-available
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: investigation
+    label: "Identify the sheet profile and a compatible fixing before the repair is tendered"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0115
+  notes: "Owner list cites SA HB 39; not verified."
+- id: uc.existing-shower-hob-lower-than-membrane-upturn
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.wet-area-waterproofing
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["interiors.wet-area-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-wet-area-hob-or-set-down-stated"]
+  de_risk:
+    kind: obligation
+    label: "Raise the hob or change the termination before tiling"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0119
+  notes: "Owner list cites AS 3740; not verified."
+- id: uc.ground-floor-fitout-below-external-paving-no-threshold-drain
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.floor-finishes
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.floor-finishes", "envelope.windows-doors"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-floor-levels-surveyed"]
+  de_risk:
+    kind: obligation
+    label: "Raise the floor or add a drain before tender"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0128
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.membrane-junction-between-two-systems-unwarranted
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.external-waterproofing
+  when:
+    all:
+    - works:
+        action: ["new"]
+        system: ["envelope.external-waterproofing", "interiors.wet-area-waterproofing"]
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Use one system, or obtain a written junction detail from both, before tender"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0129
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.membrane-clamping-ring-does-not-fit-existing-outlet
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.external-waterproofing
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-outlet-type-stated"]
+  de_risk:
+    kind: investigation
+    label: "Identify the outlet before the membrane system is ordered"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0143
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.window-in-shower-wall-outside-membrane-system
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.windows-doors", "interiors.wet-area-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Include the frame in the waterproofing scope"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["handover_defects"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0151
+  notes: "Owner list cites AS 3740; not verified."
+- id: uc.terrace-tiles-bonded-to-membrane
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.tiling
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["interiors.tiling", "envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-tile-bond-to-substrate-stated"]
+  de_risk:
+    kind: obligation
+    label: "Allow for a full membrane replacement if tiles are bonded"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme"]
+  severity: cost
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0159
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.existing-gutter-outlet-does-not-match-downpipe-boss
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-outlet-type-stated"]
+  de_risk:
+    kind: obligation
+    label: "Match the boss to the outlet"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0433
+  notes: "Owner list cites AS 3500; not verified."
+- id: uc.asbestos-in-existing-floor-finishes-or-adhesive
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: interiors.floor-finishes
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.floor-finishes", "interiors.tiling"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-floor-covering-asbestos-sampling-stated"]
+  de_risk:
+    kind: investigation
+    label: "Sample floors before they are nominated for removal"
+  contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
+  effect: ["safety", "cost", "programme"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0465
+  - dataset: batch2
+    row: B2-0488
+- id: uc.asbestos-cement-eaves-at-roof-tie-in
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["new", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Include the eaves in the asbestos scope"
+  contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
+  effect: ["safety", "cost"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0467
+- id: uc.ceiling-void-dust-or-loose-insulation-contaminates-work-area
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.ceilings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-ceiling-void-condition-stated"]
+  de_risk:
+    kind: investigation
+    label: "Clean the void before services are run"
+  contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
+  effect: ["safety", "cost", "quality"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0471
+  - dataset: batch2
+    row: B2-0473
+  - dataset: batch2
+    row: B2-0490
+- id: uc.ceiling-void-or-roof-space-biologically-contaminated
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["interiors.ceilings", "envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-ceiling-void-condition-stated"]
+  de_risk:
+    kind: investigation
+    label: "Clean the void before the new ceiling"
+  contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
+  effect: ["safety", "cost"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0475
+  - dataset: batch2
+    row: B2-0484
+  - dataset: batch2
+    row: B2-0485
+- id: uc.mould-behind-external-wall-lining
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.external-walls", "interiors.walls-linings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-moisture-behind-external-wall-linings-stated"]
+  de_risk:
+    kind: obligation
+    label: "Dry the wall before new linings are fixed"
+  contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
+  effect: ["safety", "quality"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0474
+- id: uc.lead-flashing-runoff-contaminates-soil
+  kind: unforeseen_condition
+  category: hazardous_materials
+  attaches_to:
+    system: envelope.flashings-seals
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.flashings-seals"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Deal with the soil as well as the flashing"
+  contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
+  effect: ["cost", "safety"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0491
+- id: uc.existing-ceiling-height-below-minimum-for-new-use
+  kind: unforeseen_condition
+  category: design_and_scope
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.ceilings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-ceiling-height-stated"]
+  de_risk:
+    kind: obligation
+    label: "Do not adopt a use the height cannot support"
+  contract: "Principal's risk until the design is confirmed; variation if the scope changes."
+  effect: ["compliance"]
+  severity: compliance
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0557
+  notes: "Owner list cites NCC; not verified."
+- id: uc.alteration-triggers-energy-provisions-existing-glazing-fails
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.windows-doors"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-window-performance-stated"]
+  de_risk:
+    kind: investigation
+    label: "Confirm how much of the envelope must be upgraded"
+  contract: "Principal carries the approval risk; separable portion for conditions imposed after tender."
+  effect: ["compliance", "cost"]
+  severity: compliance
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0560
+  - dataset: batch2
+    row: B2-0839
+  notes: "Owner list cites NCC; not verified."
+- id: uc.operable-wall-track-follows-beam-deflection
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.walls-linings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.walls-linings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: investigation
+    label: "Check the beam against the track tolerance"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["testing_commissioning"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0662
+- id: uc.operable-wall-pocket-full-of-services
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.walls-linings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.walls-linings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Keep the pocket clear"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0663
+- id: uc.existing-industrial-slab-has-no-falls-for-self-levelling-coat
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.floor-finishes
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["interiors.floor-finishes"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-floor-levels-surveyed"]
+  de_risk:
+    kind: obligation
+    label: "Form falls before a self-levelling finish, or accept the ponds"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["handover_defects"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0674
+- id: uc.window-sill-below-safety-height-after-floor-build-up
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.windows-doors", "interiors.floor-finishes"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: investigation
+    label: "Measure from the finished floor"
+  contract: "Provisional sum for protection and staging; occupant constraints stated in the tender."
+  effect: ["safety", "compliance"]
+  severity: life-safety
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0681
+  notes: "Owner list cites NCC; not verified."
+- id: uc.drop-outside-low-window-greater-than-surveyed
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.windows-doors"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Protect the opening for the drop that exists"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["safety", "compliance"]
+  severity: life-safety
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0682
+  notes: "Owner list cites NCC; not verified."
+- id: uc.shared-ceiling-plenum-connects-separated-rooms
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.ceilings", "interiors.walls-linings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Continue the wall through the plenum or stop the plenum"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "compliance"]
+  severity: compliance
+  discovered_at: ["testing_commissioning"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0688
+- id: uc.facade-acoustic-line-lost-at-existing-slab-edge
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.facade-acoustics
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.facade-acoustics", "envelope.external-walls"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-slab-edge-position-surveyed"]
+  de_risk:
+    kind: obligation
+    label: "Continue the acoustic line to the slab"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "compliance"]
+  severity: compliance
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0701
+  notes: "Owner list cites AS/NZS 2107; not verified."
+- id: uc.reused-single-glazing-faces-road-noise
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.windows-doors", "envelope.facade-acoustics"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-glass-type-stated"]
+  de_risk:
+    kind: obligation
+    label: "Select glass for the noise that is outside"
+  contract: "Provisional sum for protection and staging; occupant constraints stated in the tender."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0705
+  notes: "Owner list cites AS/NZS 2107; not verified."
+- id: uc.rain-noise-on-metal-roof-over-classroom
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Build up the roof to deaden rain noise"
+  contract: "Provisional sum for protection and staging; occupant constraints stated in the tender."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["handover_defects"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0707
+- id: uc.heritage-interior-fabric-constrains-alterations-and-service-routes
+  kind: unforeseen_condition
+  category: authorities_and_utilities
+  attaches_to:
+    system: interiors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.walls-linings", "interiors.ceilings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-interior-heritage-fabric-identified-stated"]
+  de_risk:
+    kind: obligation
+    label: "Keep the fabric and route new work around it"
+  contract: "Principal carries the approval risk; separable portion for conditions imposed after tender."
+  effect: ["compliance", "cost", "programme"]
+  severity: compliance
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0761
+  - dataset: batch2
+    row: B2-0875
+- id: uc.balcony-cladding-product-not-permitted-at-height
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action: ["new", "repair", "replace", "alter"]
+        system: ["envelope.external-walls", "envelope.external-waterproofing"]
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Specify a product the rules allow"
+  contract: "Principal carries the approval risk; separable portion for conditions imposed after tender."
+  effect: ["compliance", "cost"]
+  severity: compliance
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0768
+  notes: "Owner list cites NCC; not verified."
+- id: uc.specified-membrane-discontinued-before-installation
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: envelope.external-waterproofing
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: approval
+    label: "Name an approved alternative before tender or allow a substitution path"
+  contract: "Principal carries the approval risk; separable portion for conditions imposed after tender."
+  effect: ["programme", "quality"]
+  severity: programme
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0794
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.materials-hoist-cannot-take-board-packs
+  kind: unforeseen_condition
+  category: supply_and_site_operations
+  attaches_to:
+    stage: construction
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.walls-linings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Choose a hoist the materials fit"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["programme", "cost"]
+  severity: programme
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0812
+- id: uc.roof-plant-occupies-facade-access-davit-zone
+  kind: unforeseen_condition
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.external-walls
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.external-walls"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Free a davit zone or choose another access method"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["cost", "safety"]
+  severity: life-safety
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0813
+  notes: "Owner list cites AS 1657; not verified."
+- id: uc.retained-ceiling-supports-live-services
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.ceilings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-ceiling-support-of-services-stated"]
+  de_risk:
+    kind: obligation
+    label: "Support the services before the ceiling goes"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["safety", "cost"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0821
+  notes: "Owner list cites AS 2601; not verified."
+- id: uc.existing-ceiling-grid-module-differs-from-new-tiles
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["interiors.ceilings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Match the tile to the grid or replace the grid"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0835
+- id: uc.lath-and-plaster-ceiling-collapses-when-services-move
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.ceilings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-ceiling-support-of-services-stated"]
+  de_risk:
+    kind: obligation
+    label: "Protect or replace the ceiling before the services move"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["safety", "cost"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0847
+- id: uc.bonded-tile-or-stone-lost-when-substrate-is-repaired
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.tiling
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["interiors.tiling", "interiors.wet-area-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-tile-bond-to-substrate-stated"]
+  de_risk:
+    kind: obligation
+    label: "Allow to replace the membrane"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "programme", "quality"]
+  severity: cost
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0849
+  - dataset: batch2
+    row: B2-0874
+  notes: "Owner list cites AS 3740; not verified."
+- id: uc.existing-balustrade-glass-not-safety-glass
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.windows-doors", "envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-glass-type-stated"]
+  de_risk:
+    kind: obligation
+    label: "Replace glass that guards a fall if it is not safety glass"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["safety", "compliance"]
+  severity: life-safety
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0851
+  notes: "Owner list cites AS 1288; not verified."
+- id: uc.existing-roof-sheet-cannot-be-walked
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Provide access that does not load the sheet"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["safety", "cost"]
+  severity: life-safety
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0852
+  notes: "Owner list cites AS 1657; not verified."
+- id: uc.existing-floor-falls-beyond-rigid-finish
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.floor-finishes
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.floor-finishes", "interiors.tiling"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-floor-levels-surveyed"]
+  de_risk:
+    kind: obligation
+    label: "Level the floor or choose a finish that can follow it"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0865
+- id: uc.existing-wired-glass-not-accepted-by-new-screen
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.windows-doors", "interiors.internal-glazing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-glass-type-stated"]
+  de_risk:
+    kind: obligation
+    label: "Replace the glass with a type the system can hold"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0867
+  notes: "Owner list cites AS 1288; not verified."
+- id: uc.floor-topping-hides-services
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.floor-finishes
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.floor-finishes"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: investigation
+    label: "Scan the topping before it is removed"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "safety"]
+  severity: life-safety
+  discovered_at: ["demolition_strip_out"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0873
+- id: uc.ornate-ceiling-below-leaking-wet-area
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: interiors.ceilings
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["interiors.ceilings", "interiors.wet-area-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Repair the wet area before the ceiling is conserved"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0876
+  notes: "Owner list cites AS 3740; not verified."
+- id: uc.existing-roof-falls-wrong-way-for-new-membrane
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.external-waterproofing
+  when:
+    all:
+    - works:
+        action: ["repair", "replace", "alter"]
+        system: ["envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-roof-falls-stated"]
+  de_risk:
+    kind: obligation
+    label: "Correct the falls or move the outlets"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0877
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.existing-balcony-falls-drain-toward-new-door
+  kind: unforeseen_condition
+  category: concealed_services_and_earlier_work
+  attaches_to:
+    system: envelope.windows-doors
+  when:
+    all:
+    - works:
+        action: ["new", "alter"]
+        system: ["envelope.windows-doors", "envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-roof-falls-stated"]
+  de_risk:
+    kind: obligation
+    label: "Rebuild the falls or set the door above them"
+  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0840
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.existing-roof-discharge-onto-neighbour-continued-by-extension
+  kind: unforeseen_condition
+  category: third_parties_and_occupation
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["new", "alter"]
+        system: ["envelope.roof-coverings"]
+    - det: existing_building
+      is: true
+  signals: ["sig.envelope-existing-overflow-paths-traced-stated"]
+  de_risk:
+    kind: obligation
+    label: "Bring the discharge to a lawful point"
+  contract: "Provisional sum for protection and staging; occupant constraints stated in the tender."
+  effect: ["compliance", "cost"]
+  severity: compliance
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0635
+  notes: "Owner list cites AS 3500; not verified."
+- id: uc.roof-screen-condition-or-planning-envelope-not-in-documents
+  kind: process_authority_supply_weather
+  category: authorities_and_utilities
+  attaches_to:
+    system: envelope.roof-coverings
+  when:
+    all:
+    - works:
+        action: ["new", "alter"]
+        system: ["envelope.roof-coverings"]
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Absorb the conditions into the documents before tender"
+  contract: "Principal carries the approval risk; separable portion for conditions imposed after tender."
+  effect: ["compliance", "cost"]
+  severity: compliance
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0751
+  - dataset: batch2
+    row: B2-0914
+  notes: "Owner list cites NCC; not verified."
+- id: uc.pv-feet-penetration-pattern-voids-membrane-warranty
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: envelope.external-waterproofing
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["envelope.external-waterproofing"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: approval
+    label: "Agree the foot detail with the membrane manufacturer before the array is designed"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0104
+  notes: "Owner list cites AS 4654; not verified."
+- id: uc.natural-stone-thickness-exceeds-bedding-allowance
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: interiors.tiling
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.tiling"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Allow a bed that suits the stone supplied"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["quality", "cost"]
+  severity: durability
+  discovered_at: ["construction"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0653
+- id: uc.floor-finish-and-underfloor-heating-combination-voids-warranty
+  kind: process_authority_supply_weather
+  category: supply_and_site_operations
+  attaches_to:
+    system: interiors.floor-finishes
+  when:
+    all:
+    - works:
+        action: ["alter", "replace", "upgrade"]
+        system: ["interiors.floor-finishes"]
+    - det: existing_building
+      is: true
+  signals: []
+  de_risk:
+    kind: obligation
+    label: "Choose a floor the heating can sit under"
+  contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
+  effect: ["cost", "quality"]
+  severity: cost
+  discovered_at: ["design"]
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0655
