@@ -1,0 +1,72 @@
+# What doing work to one side of an interface raises for the other side.
+# Applies when the works touch `touches` of an interface of `type` with one of
+# `actions` (or `any`), and the other side exists on the site and is not being
+# replaced. Interface direction: `from` acts on `to`. Over-proposal is fixed
+# here, not in code. Plan: docs/plans/2026-10-04-next-wave-architecture-schema.md,
+# "Interface consequences".
+version: 1
+interface_consequences:
+  - id: ic.loads-investigate-supported
+    type: loads
+    touches: from
+    actions: [new, replace, upgrade]
+    propose: {kind: investigation, label: Capacity of the existing structure or ground for the new load}
+    status: draft
+    sources: &plan
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "### Interface consequences"}
+  - id: ic.supplies-investigate-supply
+    type: supplies
+    touches: to
+    actions: [new, upgrade, alter]
+    propose: {kind: investigation, label: Capacity of the existing supply (flow and pressure, electrical, cooling)}
+    status: draft
+    sources: *plan
+  - id: ic.supplies-keep-served-working
+    type: supplies
+    touches: from
+    actions: [replace, upgrade, alter, remove]
+    propose: {kind: obligation, label: Keep the served system working during the works (changeover, temporary supply or shutdown window)}
+    status: draft
+    sources: *plan
+  - id: ic.penetrates-make-good
+    type: penetrates
+    touches: from
+    actions: [new, alter, replace]
+    propose: {kind: work_item, label: Make good the penetrated construction at penetrations (for example fire-stopping)}
+    status: draft
+    sources: *plan
+  - id: ic.controls-test-link
+    type: controls
+    touches: either
+    actions: any
+    propose: {kind: investigation, label: Test the control link at commissioning}
+    status: draft
+    sources: *plan
+  - id: ic.depends-on-check-reliance
+    type: depends_on
+    touches: to
+    actions: [alter, replace, remove]
+    propose: {kind: investigation, label: Whether what relies on it still holds (for example FRL concessions relying on sprinklers)}
+    status: draft
+    sources: *plan
+  - id: ic.sequences-hold-point
+    type: sequences
+    touches: either
+    actions: any
+    propose: {kind: hold_point, label: Hold point in the package doing the earlier work}
+    status: draft
+    sources: *plan
+  - id: ic.shares-space-coordinate
+    type: shares_space
+    touches: from
+    actions: [new, alter]
+    propose: {kind: obligation, label: Coordinate set-out with the existing system in that space}
+    status: draft
+    sources: *plan
+  - id: ic.boundary-assign
+    type: boundary
+    touches: either
+    actions: any
+    propose: {kind: obligation, label: Assign the boundary to a package (gap check)}
+    status: draft
+    sources: *plan

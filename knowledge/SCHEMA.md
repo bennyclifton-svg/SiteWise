@@ -338,3 +338,229 @@ those whose own `systems` touch the scope, and `always_shown`. The checker
 warns about a profile determinant that can never become relevant: read by
 no rule, no `systems`, not always shown. Fix a profile that shows too much
 or too little here, in the schema, not in code.
+
+## Works layer (2026-10-04)
+
+See `docs/plans/2026-10-04-next-wave-architecture-schema.md` ("Works model",
+"Building logic for works"). The building layers say what exists and what
+rules apply; the works layer says what a kind of work does to a system and
+what that raises. Evaluated by code during the profile rebuild; the only Jev
+parts are the signal questions. Everything here is `status: draft` until the
+owner reviews it. Nothing in this layer states a clause number or a numeric
+legal claim; a regulatory trigger carries `clause_verified: false` until the
+instrument itself is read.
+
+```text
+knowledge/works/
+  actions.yaml                 the eight actions, work-type defaults, existing conditions
+  interface_consequences.yaml  what work on one side of an interface raises for the other
+  signals.yaml                 shared Jev signal questions, cited by id
+  coverage/<dataset>.yaml      ledger: every source row accounted for
+knowledge/clusters/<cluster>/
+  consequences.yaml            cq.* records (list key `consequences`)
+  unforeseen.yaml              uc.* records (list key `unforeseen`)
+data/unforeseen/
+  manifest.json                dataset manifest
+  <dataset>.csv                owner-supplied rows with stable row ids
+```
+
+| Kind | Form | Example |
+|---|---|---|
+| Interface consequence | `ic.<slug>` | `ic.loads-investigate-supported` |
+| Consequence | `cq.<slug>` | `cq.pre-2004-fabric-hazardous-materials-survey` |
+| Unforeseen condition | `uc.<slug>` | `uc.existing-fire-water-fails-flow-test` |
+| Signal | `sig.<slug>` | `sig.existing-fire-water-test-results-stated` |
+| Dataset row | `<prefix>-<4+ digits>` | `B1-0042` |
+
+### Actions (`works/actions.yaml`)
+
+Jev reads `describes` and `excludes`, so write them literally with the
+boundary cases, as for systems. Top-level keys: `actions` (the eight: new,
+replace, upgrade, alter, repair, remove, retain, investigate), `answers`,
+`work_type_defaults` and `existing_conditions`.
+
+```yaml
+version: 1
+status: draft
+sources: [{design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "### Actions"}]
+actions:
+  - id: upgrade
+    describes: The works increase the capacity or performance of an existing one, ...
+    excludes: Like-for-like renewal is replace.
+answers:                    # extra answers of the Jev choice sys.<leaf>.action
+  several: ...              # more than one action stated: goes to Needs mapping
+  not_stated: ...           # falls back to the work-type default
+work_type_defaults: {new: new, extend: new, refurb: alter, remediation: repair, advisory: investigate}
+existing_conditions:
+  source: {clerk_file: data/taxonomy/asset-register.json}
+  values: [{id: serviceable, label: Serviceable}, ...]   # 7 Clerk conditions
+```
+
+`work_type_defaults` must cover every work type in `profile/taxonomy.yaml`.
+The user's choice of action is final.
+
+### Interface consequences (`works/interface_consequences.yaml`)
+
+One entry per row of the plan's table. List key `interface_consequences`.
+Applies when the works touch `touches` of an interface of `type` with one of
+`actions`, and the other side exists on the site and is not being replaced.
+Direction follows Interfaces: `from` acts on `to`.
+
+```yaml
+- id: ic.supplies-investigate-supply
+  type: supplies              # an interface type
+  touches: to                 # from | to | either
+  actions: [new, upgrade, alter]   # action ids, or `any` for either-side rows
+  propose: {kind: investigation, label: Capacity of the existing supply}
+  status: draft
+  sources: [...]
+```
+
+Proposal `kind`: `investigation` (a work item), `discipline` (a package
+suggestion), `approval` or `hold_point` (a delivery item), `obligation`
+(package scope). Interface consequences also allow `work_item` (physical
+make-good work).
+
+### Consequences (`cq.*`, `clusters/<cluster>/consequences.yaml`)
+
+For what interfaces cannot express, chiefly regulatory triggers on existing
+buildings. List key `consequences`.
+
+```yaml
+- id: cq.pre-2004-fabric-hazardous-materials-survey
+  when:                       # a predicate, may use `works`
+    all:
+      - works: {action: [alter, replace, upgrade, repair, remove]}
+      - {det: construction_year, lt: 2004}
+  propose:                    # one or more proposals
+    - {kind: investigation, label: Hazardous materials survey of areas affected by the works}
+  signals: [sig.hazardous-materials-survey-stated]   # optional: evidence it is already addressed
+  governed_by: []             # rule ids; may be empty until a rule is verified
+  clause_verified: false      # required when governed_by is non-empty
+  severity: life-safety       # same values as failure modes
+  status: draft
+  sources: [...]
+  notes: ...
+```
+
+### Unforeseen conditions (`uc.*`, `clusters/<cluster>/unforeseen.yaml`)
+
+A state of the site or building commonly discovered during works, raised by
+the work items that make it likely. A failure mode is a pitfall a document
+can show; an unforeseen condition is discovered during the works. List key
+`unforeseen`. Never record a frequency or cost percentage unless a source
+states it, and then mark it unverified.
+
+```yaml
+- id: uc.existing-fire-water-fails-flow-test
+  kind: unforeseen_condition  # unforeseen_condition | design_or_coordination_error | workmanship_defect | process_authority_supply_weather
+  category: existing_systems_on_test
+  attaches_to: {system: fire-active.fire-water}   # exactly one of system | interface | stage | package_kind
+  when:
+    all:
+      - works: {action: [new, upgrade, alter], system: [fire-active.sprinklers, fire-active.hydrants]}
+      - {det: existing_building, is: true}
+  signals: [sig.existing-fire-water-test-results-stated]
+  de_risk: {kind: investigation, label: Flow and pressure test of the existing fire water supply before design}
+  contract: Provisional sum or separable portion for any supply upgrade.
+  effect: [cost, programme, compliance]   # cost | programme | safety | compliance | quality
+  severity: life-safety
+  discovered_at: [design, testing_commissioning]  # one or a list
+  status: draft
+  sources: [...]
+```
+
+`category` is one of the plan's nine: `ground_and_site`, `existing_structure`,
+`hazardous_materials`, `concealed_services_and_earlier_work`,
+`existing_systems_on_test`, `authorities_and_utilities`,
+`third_parties_and_occupation`, `design_and_scope`,
+`supply_and_site_operations`. `discovered_at` is one of `design`,
+`demolition_strip_out`, `excavation`, `construction`,
+`testing_commissioning`, `handover_defects`. A `stage` target is one of
+`investigation`, `design`, `approvals`, `procurement`, `construction`,
+`completion`, `defects`; a `package_kind` target is `services`, `works` or
+`supply`.
+
+### Signals (`works/signals.yaml`)
+
+One shared catalogue, so many records share one Jev question
+([patterns](https://docs.typesafe.ai/patterns)). A signal is a noul in the
+Questions format, written with the same authoring rules, at the top level of
+the entry. `true` means the thing is stated, so a signal says what a passage
+shows, never whether the condition exists. Criteria keys are quoted
+(`"true"`, `"false"`); the checker accepts either form. Records reference
+signals by id in `signals`.
+
+```yaml
+- id: sig.existing-fire-water-test-results-stated
+  type: noul
+  instructions: Using `text`, does the passage state measured flow or pressure results from a test of the existing fire water supply?
+  criteria:
+    "true": It states measured flow or pressure results for the existing supply.
+    "false": It does not state test results; a requirement or intention to test is not a result.
+  runs_on: [fire-active.fire-water]
+  status: draft
+  sources: [...]
+```
+
+### Predicates added
+
+- `works: {action: [...], system: [...]}`: an in-scope work item with one of
+  these actions on one of these systems. Either list may be omitted; actions
+  must exist in `actions.yaml`, systems must exist.
+- `system_existing: <system id>`: the system is on the site and is not being
+  replaced.
+- `system_present` keeps its meaning: the system is in the completed building.
+
+Valid in `applies_when`, consequence `when` and unforeseen `when`.
+
+### Determinant `construction_year`
+
+Integer, `pre_parsed`, narrow triggers (`year built`, `built in 1985`). Read
+by consequences and unforeseen conditions, which compare it in code. The older
+`existing_building_year` is read by the demolition rules; the owner decides
+whether to merge the two.
+
+### Dataset sources and the coverage ledger
+
+Owner-supplied lists (for example `docs/unforeseen/construction_interfaces_1000.xlsx`)
+are exported to `data/unforeseen/<dataset>.csv` with a stable `row_id` first
+column and registered in `data/unforeseen/manifest.json`. They are
+AI-generated and unverified, and the manifest must say so:
+
+```json
+{"datasets": [{"id": "batch1", "file": "batch1.csv", "row_id_column": "row_id", "rows": 1000,
+               "ai_generated": true, "status": "draft", "origin": "..."}]}
+```
+
+A record cites a row with a new source form, which the checker resolves:
+
+```yaml
+sources:
+  - {dataset: batch1, row: B1-0042}
+  - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "### Actions"}
+```
+
+`design` cites a document in this repo by a heading line. Plans can be
+untracked in a worktree, so a missing file warns; a present file must contain
+the anchor. A dataset row alone does not justify a number: it is a lead, not
+a source of fact.
+
+Every dataset has a ledger `knowledge/works/coverage/<dataset>.yaml` naming
+every row exactly once:
+
+```yaml
+version: 1
+dataset: batch1
+status: draft
+rows:
+  B1-0001: pending                                  # not yet processed
+  B1-0002: {records: [uc.rock-at-footing-depth]}    # enriched into these records
+  B1-0003: {rejected: duplicate_of, ref: B1-0001}   # a row or a record
+  B1-0004: {rejected: too_vague}
+  B1-0005: {rejected: out_of_scope}
+```
+
+The checker fails on a missing, extra or repeated row, an unknown record id
+and an invalid disposition. Pending rows are allowed and counted in its
+summary.

@@ -1,0 +1,30 @@
+# Shared signal questions. A consequence or unforeseen condition cites a signal
+# by id, so many records share one Jev question. Each is a noul that asks what
+# a passage states, never whether a condition exists. `true` means the signal
+# is present (the thing is stated). Same authoring rules as SCHEMA.md Questions.
+version: 1
+signals:
+  - id: sig.existing-fire-water-test-results-stated
+    type: noul
+    instructions: >-
+      Using `text`, does the passage state measured flow or pressure results
+      from a test of the existing fire water supply?
+    criteria:
+      "true": It states measured flow or pressure results for the existing supply.
+      "false": It does not state test results; a requirement or intention to test is not a result.
+    runs_on: [fire-active.fire-water]
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Active systems and water supply"}
+  - id: sig.hazardous-materials-survey-stated
+    type: noul
+    instructions: >-
+      Using `text`, does the passage state that a hazardous materials survey,
+      asbestos survey or hazardous materials register exists for the building?
+    criteria:
+      "true": It says a survey or register has been carried out or is held for the building.
+      "false": It does not mention one, or only says a survey is required or recommended.
+    runs_on: [structure.alterations, site.demolition]
+    status: draft
+    sources:
+      - {seed: remediation-due-diligence-guide.md, anchor: "## Asbestos Assessment and Management in Construction"}

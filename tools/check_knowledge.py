@@ -9,6 +9,7 @@ may define them) unless --strict.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import re
 import sys
@@ -49,6 +50,33 @@ _VOCAB: dict = {}
 QUESTION_TYPES = {"noul", "choice", "score"}
 PREDICATE_OPS = {"any_of", "eq", "is", "gt", "gte", "lt", "lte"}
 
+# Works layer (SCHEMA.md "Works layer"). Vocabularies are fixed here and in the
+# schema together; ACTIONS is read from knowledge/works/actions.yaml.
+WORKS_DIR = "works"
+CLUSTER_WORKS_FILES = {"consequences.yaml": "consequences", "unforeseen.yaml": "unforeseen"}
+ACTIONS: set = set()
+DATASETS: dict = {}          # dataset id -> set of row ids, from data/unforeseen/manifest.json
+UNFORESEEN_DIR = ROOT / "data" / "unforeseen"
+PROPOSAL_KINDS = {"investigation", "discipline", "approval", "hold_point", "obligation"}
+INTERFACE_PROPOSAL_KINDS = PROPOSAL_KINDS | {"work_item"}
+TOUCHES = {"from", "to", "either"}
+UC_KINDS = {"unforeseen_condition", "design_or_coordination_error", "workmanship_defect", "process_authority_supply_weather"}
+UC_CATEGORIES = {"ground_and_site", "existing_structure", "hazardous_materials", "concealed_services_and_earlier_work",
+                 "existing_systems_on_test", "authorities_and_utilities", "third_parties_and_occupation",
+                 "design_and_scope", "supply_and_site_operations"}
+UC_EFFECTS = {"cost", "programme", "safety", "compliance", "quality"}
+DISCOVERED_AT = {"design", "demolition_strip_out", "excavation", "construction", "testing_commissioning", "handover_defects"}
+UC_STAGES = {"investigation", "design", "approvals", "procurement", "construction", "completion", "defects"}
+PACKAGE_KINDS = {"services", "works", "supply"}
+LEDGER_REJECTIONS = {"duplicate_of", "too_vague", "out_of_scope"}
+WORKS_ID = {
+    "ic": re.compile(r"^ic\.[a-z0-9-]+$"),
+    "cq": re.compile(r"^cq\.[a-z0-9-]+$"),
+    "uc": re.compile(r"^uc\.[a-z0-9-]+$"),
+    "sig": re.compile(r"^sig\.[a-z0-9-]+$"),
+}
+ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*-\d{4,}$")
+
 
 class Report:
     def __init__(self) -> None:
@@ -66,7 +94,9 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
     loaded = []
     for path in sorted(KNOWLEDGE.rglob("*.yaml")):
         rel = path.relative_to(ROOT).as_posix()
-        if path.parent.name in ("tables", PROFILE_DIR):
+        if path.parent.name in ("tables", PROFILE_DIR, WORKS_DIR) or path.parent.parent.name == WORKS_DIR:
+            continue
+        if path.name in CLUSTER_WORKS_FILES and path.parent.parent.name == "clusters":
             continue
         try:
             doc = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -149,6 +179,24 @@ def check_sources(where: str, sources, seed_dir: Path, report: Report, heading_c
             if not str(src.get("anchor", "")).strip():
                 report.error(where, "document source needs an anchor line")
             continue
+        if isinstance(src, dict) and "dataset" in src:
+            # Owner-supplied, AI-generated list: cite the dataset and a row id.
+            rows = DATASETS.get(src["dataset"])
+            if rows is None:
+                report.error(where, f"dataset not in data/unforeseen/manifest.json: {src['dataset']}")
+            elif src.get("row") not in rows:
+                report.error(where, f"row not in dataset {src['dataset']}: {src.get('row')}")
+            continue
+        if isinstance(src, dict) and "design" in src:
+            # A design or plan document in this repo. Plans can be untracked in a
+            # worktree, so a missing file warns; a present file must hold the anchor.
+            path = ROOT / str(src["design"])
+            if not path.is_file():
+                report.warn(where, f"design file not found: {src['design']}")
+            elif str(src.get("anchor", "")).rstrip() not in {
+                    line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()}:
+                report.error(where, f"anchor not found in {src['design']}: {src.get('anchor')!r}")
+            continue
         if isinstance(src, dict) and "clerk_file" in src:
             # Clerk data (taxonomy JSON) is copied as data; cite the file it came from.
             if not (seed_dir.parent.parent / src["clerk_file"]).is_file():
@@ -179,7 +227,8 @@ def check_question(where: str, q, report: Report, refs: list, runs_on_required: 
         report.error(where, "question needs instructions")
     criteria = q.get("criteria")
     if qtype == "noul" and criteria is not None:
-        if not isinstance(criteria, dict) or set(criteria) != {True, False}:
+        # Existing files use bare booleans; works files quote the keys ("true").
+        if not isinstance(criteria, dict) or {str(k).lower() for k in criteria} != {"true", "false"} or len(criteria) != 2:
             report.error(where, "noul criteria must have exactly `true` and `false`")
     if qtype == "choice" and criteria is not None and not isinstance(criteria, dict):
         report.error(where, "choice criteria must be a mapping")
@@ -192,6 +241,20 @@ def check_question(where: str, q, report: Report, refs: list, runs_on_required: 
         report.error(where, "question needs a non-empty runs_on list")
     else:
         refs.extend(("system", where, s) for s in runs_on)
+
+
+def check_works_predicate(where: str, val, report: Report, refs: list) -> None:
+    """`works`: an in-scope work item with one of these actions on one of these systems."""
+    if not isinstance(val, dict) or not val or not val.keys() <= {"action", "system"}:
+        report.error(where, f"`works` needs action and/or system lists: {val}")
+        return
+    for field in ("action", "system"):
+        if field in val and (not isinstance(val[field], list) or not val[field]):
+            report.error(where, f"works.{field} must be a non-empty list")
+    for action in val.get("action") or []:
+        if action not in ACTIONS:
+            report.error(where, f"unknown action in works predicate: {action}")
+    refs.extend(("system", where, s) for s in val.get("system") or [])
 
 
 def check_predicate(where: str, pred, report: Report, refs: list) -> None:
@@ -209,6 +272,11 @@ def check_predicate(where: str, pred, report: Report, refs: list) -> None:
             check_predicate(where, val, report, refs)
         elif key == "system_present":
             refs.append(("system", where, val))
+        elif key == "system_existing":
+            # On the site and not being replaced; system_present is the completed building.
+            refs.append(("system", where, val))
+        elif key == "works":
+            check_works_predicate(where, val, report, refs)
         elif key == "det":
             refs.append(("determinant", where, val))
             ops = set(pred) - {"det"}
@@ -541,6 +609,342 @@ def check_derivation_output(where: str, rule: dict, determinants: dict, report: 
         report.error(where, "derivation output must be a derived determinant owned by this rule, not an extracted fact")
 
 
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """Safe loader that rejects a repeated mapping key, which would otherwise
+    silently drop a coverage-ledger row."""
+
+    def construct_mapping(self, node, deep=False):
+        seen = set()
+        for key_node, _ in node.value:
+            key = self.construct_object(key_node, deep=True)
+            if key in seen:
+                raise yaml.constructor.ConstructorError(None, None, f"duplicate key {key!r}", key_node.start_mark)
+            seen.add(key)
+        return super().construct_mapping(node, deep)
+
+
+def load_datasets(report: Report) -> dict:
+    """Dataset id -> row ids, from data/unforeseen/manifest.json and each CSV."""
+    path = UNFORESEEN_DIR / "manifest.json"
+    if not path.is_file():
+        return {}
+    rel = path.relative_to(ROOT).as_posix()
+    out = {}
+    for entry in json.loads(path.read_text(encoding="utf-8")).get("datasets", []):
+        did = entry.get("id")
+        if not did or entry.get("ai_generated") is not True or entry.get("status") not in STATUSES \
+                or not str(entry.get("origin", "")).strip():
+            report.error(rel, f"dataset needs id, origin, status and ai_generated: true: {did}")
+            continue
+        csv_path = UNFORESEEN_DIR / str(entry.get("file", ""))
+        if not csv_path.is_file():
+            report.error(rel, f"dataset file not found: {entry.get('file')}")
+            continue
+        with csv_path.open(encoding="utf-8", newline="") as fh:
+            ids = [row.get(entry.get("row_id_column", "row_id"), "") for row in csv.DictReader(fh)]
+        bad = [i for i in ids if not ROW_ID.match(i)]
+        if bad or len(set(ids)) != len(ids):
+            report.error(rel, f"dataset {did} row ids must be unique and well-formed (e.g. B1-0001): {bad[:3]}")
+        if entry.get("rows") != len(ids):
+            report.error(rel, f"dataset {did} declares {entry.get('rows')} rows but the file has {len(ids)}")
+        out[did] = set(ids)
+    return out
+
+
+def load_works_doc(path: Path, key: str, report: Report):
+    rel = path.relative_to(ROOT).as_posix()
+    try:
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        report.error(rel, f"invalid YAML: {exc}")
+        return rel, None
+    if not isinstance(doc, dict) or doc.get("version") != 1:
+        report.error(rel, "must be a mapping with version: 1")
+        return rel, None
+    if key and not isinstance(doc.get(key) or [], list):
+        report.error(rel, f"{key} must be a list")
+        return rel, None
+    return rel, doc
+
+
+def load_actions(report: Report) -> dict | None:
+    """Fills ACTIONS before any predicate is checked."""
+    path = KNOWLEDGE / WORKS_DIR / "actions.yaml"
+    if not path.is_file():
+        return None
+    rel, doc = load_works_doc(path, "actions", report)
+    if doc is None:
+        return None
+    for action in doc.get("actions") or []:
+        where = f"{rel} [{action.get('id') if isinstance(action, dict) else '?'}]"
+        if not isinstance(action, dict) or not str(action.get("id", "")).strip() \
+                or not str(action.get("describes", "")).strip() or not str(action.get("excludes", "")).strip():
+            report.error(where, "action needs id, describes and excludes")
+            continue
+        if action["id"] in ACTIONS:
+            report.error(where, "duplicate action id")
+        ACTIONS.add(action["id"])
+    return doc
+
+
+def check_actions(rel: str, doc: dict, seed_dir: Path, report: Report, cache: dict) -> None:
+    if doc.get("status") not in STATUSES:
+        report.error(rel, "actions file needs a status")
+    check_sources(rel, doc.get("sources"), seed_dir, report, cache)
+    if len(ACTIONS) != 8:
+        report.warn(rel, f"expected the 8 actions of the plan, found {len(ACTIONS)}")
+    for ans in ("several", "not_stated"):
+        if not str((doc.get("answers") or {}).get(ans, "")).strip():
+            report.error(rel, f"answers.{ans} is missing")
+    taxonomy = KNOWLEDGE / PROFILE_DIR / "taxonomy.yaml"
+    work_types = set()
+    if taxonomy.is_file():
+        work_types = {w.get("id") for w in (yaml.safe_load(taxonomy.read_text(encoding="utf-8")) or {}).get("work_types") or []}
+    defaults = doc.get("work_type_defaults")
+    if not isinstance(defaults, dict) or not defaults:
+        report.error(rel, "work_type_defaults is missing")
+        defaults = {}
+    for wt, action in defaults.items():
+        if work_types and wt not in work_types:
+            report.error(rel, f"work_type_defaults: unknown work type {wt}")
+        if action not in ACTIONS:
+            report.error(rel, f"work_type_defaults: unknown action {action}")
+    if work_types and work_types - defaults.keys():
+        report.error(rel, f"work_type_defaults missing work types: {sorted(work_types - defaults.keys())}")
+    cond = doc.get("existing_conditions") or {}
+    values = cond.get("values")
+    if not isinstance(values, list) or not values:
+        report.error(rel, "existing_conditions.values is missing")
+    else:
+        ids = [v.get("id") if isinstance(v, dict) else None for v in values]
+        if len(set(ids)) != len(ids) or not all(isinstance(i, str) and ID_PATTERNS["determinants"].match(i) for i in ids):
+            report.error(rel, "existing_conditions ids must be unique snake_case")
+    check_sources(rel, [cond.get("source")] if cond.get("source") else None, seed_dir, report, cache)
+
+
+def check_proposal(where: str, prop, kinds: set, report: Report, field: str = "propose") -> None:
+    if not isinstance(prop, dict) or prop.get("kind") not in kinds or not str(prop.get("label", "")).strip():
+        report.error(where, f"{field} needs a kind from {sorted(kinds)} and a label: {prop}")
+
+
+def check_common(where: str, kind: str, item: dict, required: set, seed_dir: Path, report: Report, cache: dict) -> None:
+    missing = required - item.keys()
+    if missing:
+        report.error(where, f"missing fields: {sorted(missing)}")
+    if "id" in item and not WORKS_ID[kind].match(str(item["id"])):
+        report.error(where, f"id does not match {WORKS_ID[kind].pattern}")
+    if item.get("status") not in STATUSES:
+        report.error(where, f"status must be one of {sorted(STATUSES)}")
+    check_sources(where, item.get("sources"), seed_dir, report, cache)
+
+
+def check_signal_refs(where: str, ids, signals: dict, report: Report) -> None:
+    if not isinstance(ids, list):
+        report.error(where, "signals must be a list of signal ids")
+        return
+    for sid in ids:
+        if sid not in signals:
+            report.error(where, f"unknown signal {sid}")
+
+
+def check_interface_consequence(rel: str, item, seed_dir: Path, report: Report, cache: dict) -> None:
+    where = f"{rel} [{item.get('id', '?') if isinstance(item, dict) else '?'}]"
+    if not isinstance(item, dict):
+        report.error(rel, "entry must be a mapping")
+        return
+    check_common(where, "ic", item, {"id", "type", "touches", "actions", "propose", "status", "sources"}, seed_dir, report, cache)
+    if item.get("type") not in INTERFACE_TYPES:
+        report.error(where, f"type must be one of {sorted(INTERFACE_TYPES)}")
+    if item.get("touches") not in TOUCHES:
+        report.error(where, f"touches must be one of {sorted(TOUCHES)}")
+    actions = item.get("actions")
+    if actions != "any":
+        if not isinstance(actions, list) or not actions:
+            report.error(where, "actions must be a list or `any`")
+        else:
+            for a in actions:
+                if a not in ACTIONS:
+                    report.error(where, f"unknown action {a}")
+    check_proposal(where, item.get("propose"), INTERFACE_PROPOSAL_KINDS, report)
+
+
+def check_consequence(rel: str, item, seed_dir: Path, report: Report, refs: list, cache: dict, signals: dict) -> None:
+    where = f"{rel} [{item.get('id', '?') if isinstance(item, dict) else '?'}]"
+    if not isinstance(item, dict):
+        report.error(rel, "entry must be a mapping")
+        return
+    check_common(where, "cq", item, {"id", "when", "propose", "governed_by", "severity", "status", "sources"},
+                 seed_dir, report, cache)
+    if "when" in item:
+        check_predicate(where, item["when"], report, refs)
+    props = item.get("propose")
+    if not isinstance(props, list) or not props:
+        report.error(where, "propose must be a non-empty list")
+    else:
+        for prop in props:
+            check_proposal(where, prop, PROPOSAL_KINDS, report)
+    if item.get("severity") not in SEVERITIES:
+        report.error(where, f"severity must be one of {sorted(SEVERITIES)}")
+    if not isinstance(item.get("governed_by"), list):
+        report.error(where, "governed_by must be a list of rule ids (may be empty)")
+    else:
+        refs.extend(("rule", where, r) for r in item["governed_by"])
+    # Regulatory triggers stay unverified until the instrument is read.
+    if "clause_verified" in item and not isinstance(item["clause_verified"], bool):
+        report.error(where, "clause_verified must be a boolean")
+    if item.get("clause_verified") is True and not item.get("primary_source"):
+        report.error(where, "verified clause needs primary_source")
+    if item.get("governed_by") and "clause_verified" not in item:
+        report.error(where, "a consequence governed by a rule needs clause_verified")
+    check_signal_refs(where, item.get("signals", []), signals, report)
+
+
+def check_unforeseen(rel: str, item, seed_dir: Path, report: Report, refs: list, cache: dict, signals: dict) -> None:
+    where = f"{rel} [{item.get('id', '?') if isinstance(item, dict) else '?'}]"
+    if not isinstance(item, dict):
+        report.error(rel, "entry must be a mapping")
+        return
+    check_common(where, "uc", item, {"id", "kind", "category", "attaches_to", "when", "signals", "de_risk", "contract",
+                                     "effect", "severity", "discovered_at", "status", "sources"}, seed_dir, report, cache)
+    if item.get("kind") not in UC_KINDS:
+        report.error(where, f"kind must be one of {sorted(UC_KINDS)}")
+    if item.get("category") not in UC_CATEGORIES:
+        report.error(where, f"category must be one of {sorted(UC_CATEGORIES)}")
+    on = item.get("attaches_to")
+    if not isinstance(on, dict) or len(on) != 1 or not on.keys() <= {"system", "interface", "stage", "package_kind"}:
+        report.error(where, "`attaches_to` must be exactly one of system, interface, stage or package_kind")
+    else:
+        (target_kind, target), = on.items()
+        if target_kind in ("system", "interface"):
+            refs.append((target_kind, where, target))
+        elif target not in (UC_STAGES if target_kind == "stage" else PACKAGE_KINDS):
+            report.error(where, f"unknown {target_kind}: {target}")
+    if "when" in item:
+        check_predicate(where, item["when"], report, refs)
+    check_signal_refs(where, item.get("signals"), signals, report)
+    check_proposal(where, item.get("de_risk"), PROPOSAL_KINDS, report, "de_risk")
+    if not str(item.get("contract", "")).strip():
+        report.error(where, "contract needs a plain statement")
+    effect = item.get("effect")
+    if not isinstance(effect, list) or not effect or not set(effect) <= UC_EFFECTS:
+        report.error(where, f"effect must be a non-empty list from {sorted(UC_EFFECTS)}")
+    if item.get("severity") not in SEVERITIES:
+        report.error(where, f"severity must be one of {sorted(SEVERITIES)}")
+    found = item.get("discovered_at")
+    found = [found] if isinstance(found, str) else found
+    if not isinstance(found, list) or not found or not set(found) <= DISCOVERED_AT:
+        report.error(where, f"discovered_at must be one or more of {sorted(DISCOVERED_AT)}")
+
+
+def check_ledger(path: Path, records: set, report: Report) -> int:
+    """Every dataset row appears once with a disposition. Returns the pending count."""
+    rel = path.relative_to(ROOT).as_posix()
+    try:
+        doc = yaml.load(path.read_text(encoding="utf-8"), Loader=_UniqueKeyLoader)
+    except yaml.YAMLError as exc:
+        report.error(rel, f"invalid YAML: {exc}")
+        return 0
+    if not isinstance(doc, dict) or doc.get("version") != 1 or not isinstance(doc.get("rows"), dict):
+        report.error(rel, "ledger must be a mapping with version: 1 and a rows mapping")
+        return 0
+    dataset = doc.get("dataset")
+    if dataset != path.stem or dataset not in DATASETS:
+        report.error(rel, f"ledger dataset must match its filename and the manifest: {dataset}")
+        return 0
+    if doc.get("status") not in STATUSES:
+        report.error(rel, "ledger needs a status")
+    rows = doc["rows"]
+    expected = DATASETS[dataset]
+    missing = sorted(expected - rows.keys())
+    for rid in missing[:5]:
+        report.error(rel, f"dataset row missing from the ledger: {rid}")
+    if len(missing) > 5:
+        report.error(rel, f"... {len(missing)} dataset rows missing in all")
+    for rid in sorted(rows.keys() - expected)[:5]:
+        report.error(rel, f"ledger row is not in the dataset: {rid}")
+    pending = 0
+    for rid, disp in rows.items():
+        where = f"{rel} [{rid}]"
+        if disp == "pending":
+            pending += 1
+        elif isinstance(disp, dict) and set(disp) == {"records"} and isinstance(disp["records"], list) and disp["records"]:
+            for rec in disp["records"]:
+                if rec not in records:
+                    report.error(where, f"unknown record {rec}")
+        elif isinstance(disp, dict) and disp.get("rejected") in LEDGER_REJECTIONS:
+            if disp["rejected"] == "duplicate_of":
+                if disp.get("ref") not in expected and disp.get("ref") not in records:
+                    report.error(where, f"duplicate_of needs a ref to a dataset row or record: {disp.get('ref')}")
+                elif disp.get("ref") == rid:
+                    report.error(where, "a row cannot duplicate itself")
+            elif set(disp) != {"rejected"}:
+                report.error(where, f"unexpected fields: {sorted(set(disp) - {'rejected'})}")
+        else:
+            report.error(where, f"disposition must be pending, a records list or a rejection ({sorted(LEDGER_REJECTIONS)}): {disp}")
+    return pending
+
+
+def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions_doc: dict | None, known: dict) -> int:
+    """Validates knowledge/works/ and the per-cluster consequences and unforeseen
+    files. Returns the number of pending ledger rows."""
+    folder = KNOWLEDGE / WORKS_DIR
+    signals: dict = {}
+    path = folder / "signals.yaml"
+    if path.is_file():
+        rel, doc = load_works_doc(path, "signals", report)
+        for sig in (doc or {}).get("signals") or []:
+            where = f"{rel} [{sig.get('id', '?') if isinstance(sig, dict) else '?'}]"
+            if not isinstance(sig, dict):
+                report.error(rel, "signal must be a mapping")
+                continue
+            check_common(where, "sig", sig, {"id", "type", "instructions", "criteria", "runs_on", "status", "sources"},
+                         seed_dir, report, cache)
+            check_question(where, sig, report, refs)
+            if sig.get("type") != "noul":
+                report.error(where, "a signal must be a noul")
+            if sig.get("id") in signals:
+                report.error(where, "duplicate signal id")
+            signals[sig.get("id")] = rel
+    known["signal"] = signals
+    if actions_doc is not None:
+        check_actions("knowledge/works/actions.yaml", actions_doc, seed_dir, report, cache)
+    path = folder / "interface_consequences.yaml"
+    if path.is_file():
+        rel, doc = load_works_doc(path, "interface_consequences", report)
+        for item in (doc or {}).get("interface_consequences") or []:
+            check_interface_consequence(rel, item, seed_dir, report, cache)
+            if isinstance(item, dict) and "id" in item:
+                if item["id"] in known["interface_consequence"]:
+                    report.error(rel, f"duplicate id {item['id']}")
+                known["interface_consequence"][item["id"]] = rel
+    for cluster in sorted((KNOWLEDGE / "clusters").iterdir()):
+        for name, key in CLUSTER_WORKS_FILES.items():
+            path = cluster / name
+            if not path.is_file():
+                continue
+            rel, doc = load_works_doc(path, key, report)
+            for item in (doc or {}).get(key) or []:
+                if key == "consequences":
+                    check_consequence(rel, item, seed_dir, report, refs, cache, signals)
+                    bucket = known["consequence"]
+                else:
+                    check_unforeseen(rel, item, seed_dir, report, refs, cache, signals)
+                    bucket = known["unforeseen"]
+                if isinstance(item, dict) and "id" in item:
+                    if item["id"] in bucket:
+                        report.error(rel, f"duplicate id {item['id']} (also in {bucket[item['id']]})")
+                    bucket[item["id"]] = rel
+    records = set(known["consequence"]) | set(known["unforeseen"])
+    pending = 0
+    ledger_dir = folder / "coverage"
+    ledger_files = sorted(ledger_dir.glob("*.yaml")) if ledger_dir.is_dir() else []
+    for dataset in sorted(DATASETS.keys() - {p.stem for p in ledger_files}):
+        report.error("knowledge/works/coverage", f"dataset {dataset} has no coverage ledger")
+    for ledger in ledger_files:
+        pending += check_ledger(ledger, records, report)
+    return pending
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed-dir", type=Path, default=DEFAULT_SEED_DIR)
@@ -551,12 +955,15 @@ def main() -> int:
         print(f"seed dir not found: {args.seed_dir}", file=sys.stderr)
         return 2
 
-    global DOCUMENT_IDS
+    global DOCUMENT_IDS, DATASETS
     DOCUMENT_IDS = load_document_ids()
     report = Report()
+    DATASETS = load_datasets(report)
+    actions_doc = load_actions(report)
     refs: list[tuple[str, str, str]] = []
     deprecated: dict = {}
-    known = {k: {} for k in ("system", "determinant", "rule", "interface", "failure_mode")}
+    known = {k: {} for k in ("system", "determinant", "rule", "interface", "failure_mode",
+                             "consequence", "unforeseen", "interface_consequence", "signal")}
     kind_key = {"systems": "system", "determinants": "determinant", "rules": "rule",
                 "interfaces": "interface", "failure_modes": "failure_mode"}
     cache: dict = {}
@@ -583,6 +990,7 @@ def main() -> int:
     for where, rule in rules:
         check_derivation_output(where, rule, determinants, report)
     check_profile(report, args.seed_dir, known, deprecated, refs, cache, determinants, rules)
+    pending = check_works(report, args.seed_dir, refs, cache, actions_doc, known)
     check_replacements(deprecated, known, report)
     check_deprecated_refs(refs, deprecated, report)
 
@@ -603,8 +1011,10 @@ def main() -> int:
         print(f"WARN  {w}")
     for e in report.errors:
         print(f"ERROR {e}")
-    counts = ", ".join(f"{len(v)} {k}s" for k, v in known.items())
-    print(f"\n{counts}; {len(report.errors)} errors, {len(report.warnings)} warnings")
+    counts = ", ".join(f"{len(v)} {k.replace('_', ' ')}s" for k, v in known.items())
+    rows = sum(len(r) for r in DATASETS.values())
+    print(f"\n{counts}; {len(ACTIONS)} actions; {rows} dataset rows, {pending} pending in the coverage ledger")
+    print(f"{len(report.errors)} errors, {len(report.warnings)} warnings")
     return 1 if report.errors else 0
 
 
