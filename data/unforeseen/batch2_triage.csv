@@ -1,0 +1,1001 @@
+row_id,kind,category,side_a,side_b,categories,work_types,existing_building,cluster,dup_rows,similar_existing,note
+B2-0001,unforeseen_condition,existing_structure,structure.concrete,hydraulic.sanitary,commercial,refurb,yes,structure,B2-0362,fm.coring-or-slab-opening-cuts-reinforcement-or-tendon,
+B2-0002,unforeseen_condition,existing_structure,structure.concrete,hydraulic.cold-water,commercial;institution,refurb,yes,structure,,,
+B2-0003,unforeseen_condition,existing_structure,structure.timber,interiors.floor-finishes,residential,refurb,yes,structure,,,
+B2-0004,unforeseen_condition,existing_structure,structure.concrete,mechanical.air-distribution,commercial,refurb,yes,structure,,,
+B2-0005,design_or_coordination_error,,structure.concrete,interiors.ceilings,commercial;institution,refurb;remediation,yes,structure,,,
+B2-0006,unforeseen_condition,existing_structure,structure.steel,mechanical.central-plant,commercial;industrial,refurb,yes,structure,,,
+B2-0007,design_or_coordination_error,,structure.alterations,envelope.flashings-seals,commercial,remediation,yes,structure,,,
+B2-0008,unforeseen_condition,existing_structure,structure.precast,access-egress.stairs-and-ramps,commercial,refurb,yes,structure,,,
+B2-0009,unforeseen_condition,existing_structure,substructure.footings,structure,residential;commercial,extend,yes,structure,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0010,unforeseen_condition,existing_structure,structure.concrete,envelope.external-waterproofing,residential;commercial,remediation,yes,structure,,,
+B2-0011,unforeseen_condition,existing_structure,structure.concrete,hydraulic.cold-water,commercial,refurb,yes,structure,,,
+B2-0012,unforeseen_condition,existing_structure,structure.alterations,interiors,institution,extend,yes,structure,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0013,unforeseen_condition,existing_structure,structure.steel,envelope.external-walls,commercial,refurb,yes,structure,,,
+B2-0014,unforeseen_condition,existing_structure,structure.timber,envelope.roof-coverings,residential,remediation,yes,structure,,,
+B2-0015,design_or_coordination_error,,structure.steel,vertical-transport.lift-shafts-pits,commercial;industrial,refurb,yes,structure,,,
+B2-0016,unforeseen_condition,existing_structure,structure.concrete,hydraulic.roof-drainage,commercial,refurb,yes,structure,,fm.coring-or-slab-opening-cuts-reinforcement-or-tendon,
+B2-0017,unforeseen_condition,existing_structure,structure.masonry,fire-passive.compartments,residential;commercial,refurb,yes,structure,,,
+B2-0018,unforeseen_condition,existing_structure,structure.steel,interiors,commercial,remediation,yes,structure,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0019,unforeseen_condition,existing_structure,structure.precast,mechanical,commercial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0020,design_or_coordination_error,,structure.concrete,interiors,commercial;institution,refurb,yes,structure,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0021,unforeseen_condition,existing_structure,structure.concrete,substructure.footings,commercial,extend,yes,structure,,,
+B2-0022,unforeseen_condition,existing_structure,structure.concrete,mechanical.central-plant,commercial,refurb,yes,structure,,,
+B2-0023,unforeseen_condition,hazardous_materials,structure.alterations,interiors.acoustic-separation,residential,refurb,yes,structure,,,
+B2-0024,unforeseen_condition,existing_structure,structure.masonry,envelope.external-walls,residential;commercial,remediation,yes,structure,,,
+B2-0025,design_or_coordination_error,,structure.alterations,access-egress,commercial,refurb,yes,structure,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0026,unforeseen_condition,existing_structure,structure.concrete,interiors.floor-finishes,commercial;institution,refurb,yes,structure,,,
+B2-0027,unforeseen_condition,existing_structure,structure.concrete,interiors.floor-finishes,commercial,refurb,yes,structure,,fm.structural-movement-joint-not-bridged-by-finishes,
+B2-0028,unforeseen_condition,existing_structure,structure.temporary-works,mechanical,industrial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0029,unforeseen_condition,existing_structure,structure.concrete,mechanical,commercial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0030,design_or_coordination_error,,structure.steel,fire-passive.structural-fire-protection,commercial;industrial,refurb,yes,structure,,,
+B2-0031,unforeseen_condition,existing_structure,structure.alterations,envelope.curtain-wall,commercial,extend,yes,structure,,,
+B2-0032,unforeseen_condition,existing_structure,structure.precast,electrical,commercial,refurb,yes,structure,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0033,unforeseen_condition,existing_structure,structure.alterations,interiors.floor-finishes,commercial;institution,refurb,yes,structure,,,
+B2-0034,unforeseen_condition,existing_structure,structure.concrete,substructure.slab-on-ground,residential,extend,yes,structure,,,
+B2-0035,unforeseen_condition,third_parties_and_occupation,substructure.basement-retention,neighbour,commercial,extend,yes,structure,,,
+B2-0036,unforeseen_condition,existing_structure,structure.steel,structure.steel,commercial;industrial,remediation,yes,structure,,,
+B2-0037,design_or_coordination_error,,structure.alterations,mechanical,commercial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0038,unforeseen_condition,existing_structure,structure.timber,mechanical.air-conditioning,institution,refurb,yes,structure,,,
+B2-0039,unforeseen_condition,existing_structure,structure.concrete,structure.concrete,commercial,refurb,yes,structure,,,
+B2-0040,unforeseen_condition,existing_structure,structure.concrete,envelope.external-waterproofing,residential,remediation,yes,structure,,,
+B2-0041,unforeseen_condition,existing_structure,structure.concrete,interiors,institution,refurb,yes,structure,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0042,unforeseen_condition,existing_structure,structure.temporary-works,mechanical,industrial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0043,unforeseen_condition,existing_structure,structure.concrete,interiors.ceilings,commercial,remediation,yes,structure,,,
+B2-0044,design_or_coordination_error,,structure.precast,mechanical,commercial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0045,design_or_coordination_error,,structure.concrete,fire-passive.compartments,residential;commercial,refurb,yes,structure,,,
+B2-0046,unforeseen_condition,existing_structure,structure.concrete,hydraulic,commercial,refurb,yes,structure,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0047,unforeseen_condition,existing_structure,structure.concrete,electrical.solar-pv,residential;commercial,refurb,yes,structure,,,
+B2-0048,unforeseen_condition,existing_structure,structure.concrete,envelope.windows-doors,commercial,refurb,yes,structure,,,
+B2-0049,unforeseen_condition,existing_structure,structure.steel,structure.steel,industrial,remediation,yes,structure,,,
+B2-0050,design_or_coordination_error,,structure.alterations,fire-passive.openings,commercial,refurb,yes,structure,,,
+B2-0051,unforeseen_condition,ground_and_site,substructure.damp-waterproofing,hydraulic.sanitary,commercial;institution,extend,yes,structure,,,
+B2-0052,unforeseen_condition,existing_structure,structure.concrete,hydraulic.cold-water,commercial,refurb,yes,structure,,,
+B2-0053,unforeseen_condition,existing_structure,structure.masonry,envelope.roof-coverings,commercial,remediation,yes,structure,,,
+B2-0054,unforeseen_condition,existing_structure,structure.timber,substructure.damp-waterproofing,industrial,refurb,yes,structure,,,
+B2-0055,design_or_coordination_error,,structure.concrete,interiors.ffe,institution,refurb,yes,structure,,,
+B2-0056,unforeseen_condition,existing_structure,structure.alterations,interiors.walls-linings,institution,refurb,yes,structure,,,
+B2-0057,unforeseen_condition,existing_structure,structure.masonry,access-egress.stairs-and-ramps,residential;commercial,refurb,yes,structure,,,
+B2-0058,design_or_coordination_error,,structure.concrete,mechanical.central-plant,commercial;institution,refurb,yes,structure,,,
+B2-0059,unforeseen_condition,existing_structure,hydraulic.sanitary,mechanical.air-conditioning,residential;commercial,refurb,yes,services-wet-air,,,
+B2-0060,unforeseen_condition,existing_structure,structure.steel,mechanical,commercial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0061,design_or_coordination_error,,structure.masonry,fire-active.hydrants,commercial,refurb,yes,structure,,,
+B2-0062,unforeseen_condition,existing_structure,structure.alterations,access-egress.stairs-and-ramps,commercial;institution,extend,yes,structure,,,
+B2-0063,unforeseen_condition,existing_structure,structure.precast,envelope.external-walls,commercial,remediation,yes,structure,,,
+B2-0064,design_or_coordination_error,,structure.timber,envelope.roof-coverings,residential,extend,yes,structure,,,
+B2-0065,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-waterproofing,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0066,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-walls,fire-passive.external-walls,residential;commercial,remediation,yes,envelope,,,"Combustible cladding found against a brief that said solid aluminium: unforeseen condition, but the brief error is also a design miss."
+B2-0067,unforeseen_condition,concealed_services_and_earlier_work,envelope.curtain-wall,structure.concrete,commercial,remediation,yes,envelope,,,
+B2-0068,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,structure.alterations,institution,refurb,yes,envelope,,,
+B2-0069,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-walls,structure.temporary-works,commercial,refurb,yes,envelope,,,
+B2-0070,design_or_coordination_error,,envelope.flashings-seals,interiors.tiling,commercial,remediation,yes,envelope,,,
+B2-0071,unforeseen_condition,concealed_services_and_earlier_work,envelope.curtain-wall,structure.concrete,commercial,refurb,yes,envelope,,,
+B2-0072,workmanship_defect,,envelope.flashings-seals,interiors.painting,residential;commercial,remediation,yes,envelope,B2-0943,,
+B2-0073,design_or_coordination_error,,envelope.windows-doors,hydraulic.sanitary,residential,remediation,yes,envelope,B2-0944,fm.envelope-door-threshold-conflicts-with-upturn,
+B2-0074,design_or_coordination_error,,envelope.external-waterproofing,structure.steel,residential;commercial,remediation,yes,envelope,,,
+B2-0075,design_or_coordination_error,,envelope.external-waterproofing,structure.concrete,residential,refurb,yes,envelope,,,
+B2-0076,workmanship_defect,,envelope.flashings-seals,hydraulic.sanitary,commercial,remediation,yes,envelope,,,
+B2-0077,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-walls,structure.alterations,commercial;institution,refurb,yes,envelope,,,
+B2-0078,workmanship_defect,,envelope.windows-doors,interiors,residential;institution,refurb,yes,envelope,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0079,workmanship_defect,,envelope.windows-doors,structure.alterations,residential,refurb,yes,envelope,,,
+B2-0080,design_or_coordination_error,,envelope.external-walls,fire-passive.external-walls,residential;commercial,new;refurb,yes,envelope,,fm.envelope-cladding-drainage-cavity;if.envelope-cladding-drainage-cavity,
+B2-0081,process_authority_supply_weather,supply_and_site_operations,envelope.windows-doors,weather,residential;commercial,refurb,yes,envelope,,,
+B2-0082,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,hydraulic.roof-drainage,residential,remediation,yes,envelope,,,
+B2-0083,process_authority_supply_weather,supply_and_site_operations,envelope.roof-coverings,structure.alterations,residential,refurb,yes,envelope,,,
+B2-0084,workmanship_defect,,envelope.roof-coverings,structure.alterations,residential,extend,yes,envelope,,,
+B2-0085,design_or_coordination_error,,envelope.flashings-seals,envelope.roof-coverings,residential;commercial,remediation,yes,envelope,B2-0974,,
+B2-0086,design_or_coordination_error,,envelope.roof-coverings,structure,industrial,refurb,yes,envelope,,fm.roof-sheet-thermal-movement-not-allowed-for,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0087,workmanship_defect,,envelope.flashings-seals,interiors.walls-linings,commercial,remediation,yes,envelope,,,
+B2-0088,workmanship_defect,,envelope.external-walls,interiors.painting,commercial;institution,remediation,yes,envelope,,,
+B2-0089,unforeseen_condition,concealed_services_and_earlier_work,envelope.flashings-seals,structure.precast,commercial,remediation,yes,envelope,,fm.envelope-sealant-joint-movement-exceeded,
+B2-0090,workmanship_defect,,envelope.curtain-wall,fire-passive.external-walls,commercial,remediation,yes,envelope,,,
+B2-0091,workmanship_defect,,envelope.curtain-wall,fire-passive.external-walls,commercial,new;refurb,yes,envelope,,,
+B2-0092,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,structure.steel,residential,extend,yes,envelope,,,
+B2-0093,design_or_coordination_error,,envelope.external-waterproofing,structure.concrete,commercial,refurb,yes,envelope,,,
+B2-0094,design_or_coordination_error,,envelope.external-waterproofing,interiors.wet-area-waterproofing,residential;commercial,new;refurb,yes,envelope,,,
+B2-0095,design_or_coordination_error,,envelope.facade-acoustics,structure.concrete,commercial;institution,refurb,yes,envelope,,,
+B2-0096,workmanship_defect,,envelope.windows-doors,access-egress.exits,institution,refurb,yes,envelope,B2-0975,fm.envelope-safety-glass-substitution,
+B2-0097,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,mechanical,institution,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0098,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,mechanical,institution,refurb,yes,envelope,,fm.envelope-insulated-glass-seal,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0099,design_or_coordination_error,,envelope.windows-doors,interiors.walls-linings,residential;institution,refurb,yes,envelope,,,
+B2-0100,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,hydraulic.roof-drainage,institution,remediation,yes,envelope,,,
+B2-0101,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,structure.alterations,commercial,remediation,yes,envelope,,,
+B2-0102,design_or_coordination_error,,envelope.roof-coverings,envelope.roof-coverings,commercial,extend,yes,envelope,,,
+B2-0103,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-walls,structure.masonry,commercial;industrial,refurb,yes,envelope,,,
+B2-0104,process_authority_supply_weather,supply_and_site_operations,envelope.external-waterproofing,electrical.solar-pv,commercial;industrial,refurb,yes,envelope,B2-0977,,
+B2-0105,design_or_coordination_error,,envelope.external-waterproofing,access-egress,commercial,new;remediation,yes,envelope,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0106,design_or_coordination_error,,envelope.roof-coverings,mechanical.local-exhaust,commercial;industrial,refurb,yes,envelope,,,
+B2-0107,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,structure.alterations,commercial,extend,yes,envelope,,,
+B2-0108,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,interiors.ceilings,residential;commercial,extend,yes,envelope,,,
+B2-0109,workmanship_defect,,envelope.roof-coverings,hydraulic.roof-drainage,residential,refurb,yes,envelope,,,
+B2-0110,workmanship_defect,,envelope.roof-coverings,mechanical,residential,refurb,yes,envelope,,fm.envelope-ridge-vent-wind-driven-rain,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0111,design_or_coordination_error,,envelope.roof-coverings,structure.concrete,industrial,refurb,yes,envelope,,,
+B2-0112,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,structure.steel,commercial,refurb,yes,envelope,,,
+B2-0113,design_or_coordination_error,,envelope.roof-coverings,mechanical.cooling-towers,commercial,refurb,yes,envelope,,,
+B2-0114,design_or_coordination_error,,envelope.roof-coverings,site.stormwater-detention,residential,extend,yes,envelope,,,
+B2-0115,process_authority_supply_weather,supply_and_site_operations,envelope.roof-coverings,weather,commercial;industrial,remediation,yes,envelope,,,
+B2-0116,design_or_coordination_error,,envelope.external-walls,occupant,commercial;institution,remediation,yes,envelope,,,
+B2-0117,unforeseen_condition,existing_systems_on_test,hydraulic.sanitary,interiors.wet-area-waterproofing,residential,remediation,yes,services-wet-air,B2-0947,fm.envelope-wet-waste-before-membrane,
+B2-0118,unforeseen_condition,existing_structure,structure.alterations,hydraulic.sanitary,residential,refurb,yes,structure,B2-0148;B2-0946,,
+B2-0119,unforeseen_condition,concealed_services_and_earlier_work,interiors.wet-area-waterproofing,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0120,workmanship_defect,,interiors.wet-area-waterproofing,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0121,workmanship_defect,,interiors.wet-area-waterproofing,hydraulic.cold-water,residential,refurb,yes,envelope,,,
+B2-0122,unforeseen_condition,existing_structure,structure.concrete,interiors.wet-area-waterproofing,commercial;institution,refurb,yes,structure,,uc.slab-moisture-too-high-to-lay-flooring,
+B2-0123,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,interiors.wet-area-waterproofing,residential,remediation,yes,services-wet-air,,,
+B2-0124,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0125,workmanship_defect,,substructure.damp-waterproofing,site.contamination,residential;commercial,new,no,structure,,,
+B2-0126,workmanship_defect,,substructure.basement-retention,structure,commercial,new,no,structure,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0127,design_or_coordination_error,,hydraulic.cold-water,envelope.external-waterproofing,commercial,new;refurb,yes,services-wet-air,,,
+B2-0128,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,site.stormwater-detention,commercial,refurb,yes,envelope,,,
+B2-0129,process_authority_supply_weather,supply_and_site_operations,envelope.external-waterproofing,interiors.wet-area-waterproofing,commercial,new,no,envelope,,,
+B2-0130,workmanship_defect,,hydraulic.cold-water,interiors.wet-area-waterproofing,residential,remediation,yes,services-wet-air,,,
+B2-0131,workmanship_defect,,interiors.wet-area-waterproofing,hydraulic,residential,new;refurb,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0132,workmanship_defect,,hydraulic.cold-water,interiors.tiling,residential,remediation,yes,services-wet-air,,,
+B2-0133,design_or_coordination_error,,envelope.external-waterproofing,hydraulic.sanitary,commercial,new,yes,envelope,,,
+B2-0134,design_or_coordination_error,,structure.concrete,interiors.walls-linings,commercial,remediation,yes,structure,,,
+B2-0135,design_or_coordination_error,,substructure.damp-waterproofing,hydraulic.sanitary,commercial,new,yes,structure,,,
+B2-0136,design_or_coordination_error,,vertical-transport.lift-shafts-pits,substructure.damp-waterproofing,commercial;institution,new,no,electrical-comms,,,
+B2-0137,process_authority_supply_weather,third_parties_and_occupation,substructure.damp-waterproofing,neighbour,residential;commercial,new;extend,yes,structure,,,
+B2-0138,unforeseen_condition,existing_structure,substructure.damp-waterproofing,hydraulic.cold-water,commercial,remediation,yes,structure,,,
+B2-0139,design_or_coordination_error,,envelope.external-waterproofing,structure.alterations,commercial,new,no,envelope,,,
+B2-0140,workmanship_defect,,interiors.wet-area-waterproofing,envelope.external-waterproofing,commercial,new,no,envelope,,,
+B2-0141,workmanship_defect,,envelope.external-waterproofing,interiors.wet-area-waterproofing,residential;commercial,new;remediation,yes,envelope,,fm.envelope-wet-membrane-puncture,
+B2-0142,workmanship_defect,,envelope.external-waterproofing,hydraulic.sanitary,commercial,remediation,yes,envelope,,,
+B2-0143,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-waterproofing,hydraulic,commercial,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0144,design_or_coordination_error,,envelope.external-waterproofing,hydraulic.cold-water,residential;commercial,remediation,yes,envelope,,,
+B2-0145,workmanship_defect,,interiors.wet-area-waterproofing,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0146,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,interiors.wet-area-waterproofing,residential,refurb,yes,services-wet-air,,,
+B2-0147,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,structure.concrete,residential,remediation,yes,services-wet-air,,,
+B2-0148,unforeseen_condition,existing_structure,structure,interiors.wet-area-waterproofing,residential,refurb,yes,structure,B2-0118;B2-0946,,Side A element 'bathroom set-down' fits no single leaf system; mapped to the top-level system structure.
+B2-0149,workmanship_defect,,interiors.wet-area-waterproofing,hydraulic,residential,refurb,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0150,design_or_coordination_error,,envelope.external-waterproofing,hydraulic.roof-drainage,residential,remediation,yes,envelope,,,
+B2-0151,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0152,workmanship_defect,,interiors.wet-area-waterproofing,hydraulic,residential,refurb,yes,envelope,,fm.envelope-wet-substrate-membrane,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0153,workmanship_defect,,mechanical.air-conditioning,hydraulic,residential,refurb,yes,services-wet-air,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0154,design_or_coordination_error,,substructure.piles,structure.alterations,commercial,new,no,structure,B2-0966,,
+B2-0155,workmanship_defect,,substructure.basement-retention,structure,commercial,new,no,structure,B2-0965,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0156,workmanship_defect,,structure.concrete,substructure.slab-on-ground,residential,new,no,structure,,,
+B2-0157,workmanship_defect,,structure.concrete,substructure.slab-on-ground,residential,new,no,structure,,,
+B2-0158,workmanship_defect,,hydraulic.non-potable-water,envelope.external-waterproofing,commercial,new,no,services-wet-air,,,
+B2-0159,unforeseen_condition,hazardous_materials,interiors.tiling,envelope.external-waterproofing,residential,remediation,yes,envelope,,,
+B2-0160,unforeseen_condition,existing_structure,structure.concrete,envelope.external-waterproofing,commercial,new;refurb,yes,structure,,,
+B2-0161,design_or_coordination_error,,hydraulic.cold-water,structure,commercial,new,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0162,design_or_coordination_error,,hydraulic.cold-water,access-egress.exits,institution,refurb,yes,services-wet-air,,,
+B2-0163,design_or_coordination_error,,hydraulic.sanitary,interiors.wet-area-waterproofing,commercial,refurb,yes,services-wet-air,,,
+B2-0164,unforeseen_condition,existing_systems_on_test,hydraulic.cold-water,interiors.wet-area-waterproofing,residential,remediation,yes,services-wet-air,,,
+B2-0165,unforeseen_condition,existing_systems_on_test,hydraulic.sanitary,interiors.wet-area-waterproofing,commercial,refurb,yes,services-wet-air,,,
+B2-0166,workmanship_defect,,interiors.floor-finishes,hydraulic.sanitary,commercial,remediation,yes,envelope,,,
+B2-0167,workmanship_defect,,hydraulic.sanitary,fire-passive.penetrations,residential;commercial,refurb,yes,services-wet-air,B2-0913,,
+B2-0168,unforeseen_condition,existing_systems_on_test,mechanical.fire-mode-air-systems,fire-passive.penetrations,commercial;institution,refurb,yes,services-wet-air,,fm.duct-through-fire-wall-without-damper,
+B2-0169,unforeseen_condition,concealed_services_and_earlier_work,access-egress.stairs-and-ramps,fire-passive,commercial;institution,refurb,yes,fire,,,Side B (Passive fire protection) is not narrowed by the row text; mapped to the top-level system fire-passive.
+B2-0170,unforeseen_condition,concealed_services_and_earlier_work,fire-passive.rated-elements,structure.concrete,commercial,remediation,yes,fire,B2-0985,,Product tested for a different gap: could be design or workmanship; kept as given.
+B2-0171,workmanship_defect,,fire-passive.compartments,interiors.ceilings,commercial,refurb,yes,fire,B2-0984,fm.envelope-fire-rated-wall-stops-at-ceiling,
+B2-0172,unforeseen_condition,concealed_services_and_earlier_work,fire-passive.openings,interiors.floor-finishes,commercial;institution,remediation,yes,fire,B2-0990,,
+B2-0173,design_or_coordination_error,,fire-active.sprinklers,interiors.ceilings,commercial,refurb,yes,fire,B2-0994,,
+B2-0174,design_or_coordination_error,,fire-active.hydrants,access-egress,commercial,extend,yes,fire,B2-0954,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0175,unforeseen_condition,concealed_services_and_earlier_work,fire-active.hydrants,fire-passive.rated-elements,commercial;institution,refurb,yes,fire,,,
+B2-0176,unforeseen_condition,concealed_services_and_earlier_work,access-egress.egress-doors,fire-passive.openings,commercial,refurb,yes,fire,,,
+B2-0177,design_or_coordination_error,,fire-active.detection,fire-passive.external-walls,commercial,refurb,yes,fire,B2-0992,,
+B2-0178,unforeseen_condition,concealed_services_and_earlier_work,fire-active.special-suppression,mechanical,commercial,refurb,yes,fire,B2-0995,fm.kitchen-hood-suppression-missing,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0179,design_or_coordination_error,,access-egress.exits,mechanical,commercial;institution,refurb,yes,fire,B2-0519;B2-0993,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0180,design_or_coordination_error,,fire-active.hydrants,interiors.walls-linings,commercial,refurb,yes,fire,B2-0991,fm.hose-reel-coverage-gap,
+B2-0181,design_or_coordination_error,,fire-active.sprinklers,interiors.ceilings,commercial,refurb,yes,fire,,,
+B2-0182,unforeseen_condition,concealed_services_and_earlier_work,fire-active.sprinklers,interiors,industrial,refurb,yes,fire,,fm.suppression-hazard-changed,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0183,unforeseen_condition,existing_systems_on_test,fire-active.fire-water,access-egress,commercial;industrial,refurb,yes,fire,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0184,design_or_coordination_error,,fire-active.fire-water,hydraulic.cold-water,commercial,new;refurb,yes,fire,,,
+B2-0185,unforeseen_condition,authorities_and_utilities,fire-active.hydrants,utility,commercial;industrial,new;refurb,yes,fire,,,
+B2-0186,design_or_coordination_error,,fire-active.hydrants,hydraulic.cold-water,commercial,refurb,yes,fire,,,
+B2-0187,design_or_coordination_error,,electrical.cabling-wiring,fire-passive.penetrations,commercial,refurb,yes,electrical-comms,B2-0988,,
+B2-0188,workmanship_defect,,fire-passive.rated-elements,structure.timber,commercial,new;refurb,yes,fire,,,
+B2-0189,unforeseen_condition,existing_structure,structure.timber,fire-passive.rated-elements,residential,refurb,yes,structure,,,
+B2-0190,unforeseen_condition,existing_systems_on_test,mechanical.fire-mode-air-systems,fire-active.smoke-control,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0191,unforeseen_condition,concealed_services_and_earlier_work,mechanical.fire-mode-air-systems,structure.masonry,commercial,refurb,yes,services-wet-air,,,
+B2-0192,design_or_coordination_error,,mechanical.fire-mode-air-systems,envelope.external-walls,commercial,refurb,yes,services-wet-air,B2-0936,,
+B2-0193,design_or_coordination_error,,structure.alterations,mechanical.fire-mode-air-systems,commercial;institution,refurb,yes,structure,,,
+B2-0194,workmanship_defect,,fire-passive.openings,access-egress.egress-doors,commercial,refurb,yes,fire,B2-0948,,
+B2-0195,unforeseen_condition,concealed_services_and_earlier_work,fire-passive.openings,interiors.internal-doors,commercial;institution,remediation,yes,fire,,,
+B2-0196,workmanship_defect,,fire-passive.openings,interiors.internal-doors,commercial,refurb,yes,fire,B2-0996,,
+B2-0197,unforeseen_condition,concealed_services_and_earlier_work,fire-passive.openings,access-egress.egress-doors,institution,remediation,yes,fire,,,
+B2-0198,workmanship_defect,,fire-active.sprinklers,mechanical,industrial,new;refurb,yes,fire,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0199,unforeseen_condition,existing_systems_on_test,fire-active.sprinklers,interiors,industrial,refurb,yes,fire,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0200,unforeseen_condition,concealed_services_and_earlier_work,fire-active.sprinklers,interiors,industrial,refurb,yes,fire,B2-0987,fm.suppression-hazard-changed,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0201,design_or_coordination_error,,mechanical.fire-mode-air-systems,fire-passive.penetrations,commercial,refurb,yes,services-wet-air,,,
+B2-0202,workmanship_defect,,electrical.cabling-wiring,fire-passive.penetrations,commercial;institution,refurb,yes,electrical-comms,B2-0986,,
+B2-0203,unforeseen_condition,existing_structure,structure.steel,fire-passive.structural-fire-protection,commercial;industrial,remediation,yes,structure,,,
+B2-0204,design_or_coordination_error,,electrical.lighting,access-egress,commercial,refurb,yes,electrical-comms,B2-0949,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0205,design_or_coordination_error,,electrical.battery-storage,fire-passive.compartments,commercial,refurb,yes,electrical-comms,,,
+B2-0206,design_or_coordination_error,,fire-active.occupant-warning,access-egress.exits,commercial;institution,refurb,yes,fire,,,
+B2-0207,unforeseen_condition,existing_systems_on_test,comms-security.structured-cabling,fire-active.detection,commercial,refurb,yes,electrical-comms,B2-0998,,
+B2-0208,design_or_coordination_error,,fire-active.hydrants,access-egress.stairs-and-ramps,commercial,refurb,yes,fire,,,
+B2-0209,unforeseen_condition,existing_systems_on_test,fire-active.hydrants,structure.alterations,commercial,refurb,yes,fire,,,
+B2-0210,process_authority_supply_weather,authorities_and_utilities,fire-active.hydrants,authority,commercial,new;refurb,yes,fire,,,
+B2-0211,unforeseen_condition,third_parties_and_occupation,access-egress.egress-doors,occupant,commercial,refurb,yes,fire,,,
+B2-0212,workmanship_defect,,fire-passive.openings,interiors.painting,commercial;institution,remediation,yes,fire,B2-0999,,
+B2-0213,unforeseen_condition,third_parties_and_occupation,access-egress.exits,occupant,commercial,refurb,yes,fire,,,
+B2-0214,workmanship_defect,,fire-passive.rated-elements,structure.steel,commercial;industrial,new;refurb,yes,fire,,,
+B2-0215,unforeseen_condition,concealed_services_and_earlier_work,fire-passive.openings,interiors.floor-finishes,industrial,refurb,yes,fire,B2-1000,,
+B2-0216,design_or_coordination_error,,fire-passive.rated-elements,interiors.ceilings,commercial,new,no,fire,,,
+B2-0217,unforeseen_condition,concealed_services_and_earlier_work,fire-active.special-suppression,interiors,commercial;institution,refurb,yes,fire,B2-0997,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0218,unforeseen_condition,concealed_services_and_earlier_work,fire-passive.rated-elements,interiors.ceilings,commercial,refurb,yes,fire,,,
+B2-0219,design_or_coordination_error,,vertical-transport.lift-fire-service,electrical.cabling-wiring,commercial;institution,refurb,yes,electrical-comms,B2-0451,,
+B2-0220,unforeseen_condition,concealed_services_and_earlier_work,comms-security.structured-cabling,fire-active.detection,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0221,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-walls,fire-passive.openings,residential;commercial,extend,yes,envelope,,fm.envelope-boundary-opening-unprotected,
+B2-0222,unforeseen_condition,existing_systems_on_test,fire-active.sprinklers,structure.steel,industrial,refurb,yes,fire,,,
+B2-0223,design_or_coordination_error,,fire-active.fire-water,hydraulic.specialist-process,industrial,new;extend,yes,fire,,,
+B2-0224,unforeseen_condition,concealed_services_and_earlier_work,fire-active.detection,electrical,commercial;institution,extend,yes,fire,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0225,design_or_coordination_error,,fire-passive.rated-elements,structure,commercial,refurb,yes,fire,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0226,process_authority_supply_weather,supply_and_site_operations,fire-passive.openings,access-egress.egress-doors,commercial;institution,remediation,yes,fire,,,
+B2-0227,unforeseen_condition,authorities_and_utilities,fire-passive.penetrations,authority,commercial;institution,refurb,yes,fire,,,
+B2-0228,workmanship_defect,,fire-passive.compartments,interiors.acoustic-separation,residential,refurb,yes,fire,,,
+B2-0229,design_or_coordination_error,,access-egress.stairs-and-ramps,envelope,residential;commercial,extend,yes,fire,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0230,unforeseen_condition,existing_systems_on_test,mechanical.air-distribution,structure.concrete,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0231,unforeseen_condition,concealed_services_and_earlier_work,mechanical.local-exhaust,mechanical.local-exhaust,commercial,refurb,yes,services-wet-air,B2-0957,fm.exhaust-intake-separation,
+B2-0232,unforeseen_condition,third_parties_and_occupation,mechanical.air-distribution,occupant,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0233,unforeseen_condition,concealed_services_and_earlier_work,mechanical.cooling-towers,structure.alterations,commercial,refurb,yes,services-wet-air,,,
+B2-0234,unforeseen_condition,existing_systems_on_test,mechanical.refrigerant-condensate,hydraulic.sanitary,commercial,refurb,yes,services-wet-air,B2-0514;B2-0956,fm.condensate-drain-without-fall,
+B2-0235,unforeseen_condition,concealed_services_and_earlier_work,mechanical.local-exhaust,fire-passive.penetrations,commercial,refurb,yes,services-wet-air,B2-0958,,
+B2-0236,unforeseen_condition,concealed_services_and_earlier_work,mechanical,structure.alterations,commercial,refurb,yes,services-wet-air,,,Side A element 'condenser allowance' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0237,unforeseen_condition,concealed_services_and_earlier_work,mechanical.central-plant,structure.alterations,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0238,workmanship_defect,,mechanical.air-distribution,structure.alterations,commercial,refurb,yes,services-wet-air,,,
+B2-0239,design_or_coordination_error,,mechanical.controls-bms,interiors.ceilings,commercial,refurb,yes,services-wet-air,,fm.air-balancing-dampers-or-boxes-inaccessible,
+B2-0240,design_or_coordination_error,,mechanical.air-distribution,fire-passive.compartments,commercial,refurb,yes,services-wet-air,,,
+B2-0241,unforeseen_condition,third_parties_and_occupation,mechanical.air-distribution,occupant,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0242,unforeseen_condition,existing_systems_on_test,mechanical.central-plant,access-egress.egress-doors,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0243,design_or_coordination_error,,mechanical.central-plant,envelope,commercial,refurb,yes,services-wet-air,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0244,design_or_coordination_error,,mechanical.local-exhaust,envelope.windows-doors,residential;commercial,new;extend,yes,services-wet-air,,,
+B2-0245,workmanship_defect,,mechanical.refrigerant-condensate,envelope.thermal-insulation,residential;commercial,refurb,yes,services-wet-air,,,
+B2-0246,unforeseen_condition,concealed_services_and_earlier_work,mechanical.heating-appliances,envelope.roof-coverings,residential;institution,refurb,yes,services-wet-air,,,
+B2-0247,unforeseen_condition,third_parties_and_occupation,mechanical.central-plant,neighbour,commercial;industrial,refurb,yes,services-wet-air,B2-0959,uc.plant-noise-to-neighbours-over-limit,
+B2-0248,unforeseen_condition,concealed_services_and_earlier_work,mechanical.fire-mode-air-systems,fire-passive.penetrations,commercial,refurb,yes,services-wet-air,,fm.duct-through-fire-wall-without-damper,
+B2-0249,design_or_coordination_error,,mechanical.air-distribution,interiors.ceilings,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0250,unforeseen_condition,existing_systems_on_test,mechanical.air-distribution,structure.alterations,commercial,extend,yes,services-wet-air,,,
+B2-0251,process_authority_supply_weather,supply_and_site_operations,mechanical.air-distribution,hydraulic.cold-water,commercial,refurb,yes,services-wet-air,,,
+B2-0252,workmanship_defect,,mechanical.central-plant,structure,commercial;institution,refurb,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0253,design_or_coordination_error,,mechanical.controls-bms,hydraulic.cold-water,commercial,refurb,yes,services-wet-air,,,
+B2-0254,unforeseen_condition,existing_structure,structure.alterations,mechanical.air-conditioning,commercial,refurb,yes,structure,,,
+B2-0255,unforeseen_condition,existing_systems_on_test,mechanical.central-plant,hydraulic.cold-water,institution,refurb,yes,services-wet-air,,,
+B2-0256,design_or_coordination_error,,mechanical.carpark-ventilation,site.loading-docks,commercial;industrial,refurb,yes,services-wet-air,,,
+B2-0257,design_or_coordination_error,,mechanical.fire-mode-air-systems,envelope,commercial,refurb,yes,services-wet-air,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0258,design_or_coordination_error,,mechanical.ventilation,envelope.windows-doors,institution,refurb,yes,services-wet-air,,,
+B2-0259,design_or_coordination_error,,mechanical.local-exhaust,envelope.roof-coverings,residential,extend,yes,services-wet-air,,,
+B2-0260,workmanship_defect,,mechanical.local-exhaust,envelope.roof-coverings,residential,refurb,yes,services-wet-air,,fm.exhaust-penetrates-envelope,
+B2-0261,design_or_coordination_error,,mechanical.ventilation,substructure.slab-on-ground,residential,extend,yes,services-wet-air,,,
+B2-0262,unforeseen_condition,concealed_services_and_earlier_work,mechanical.heating-appliances,envelope.windows-doors,residential,extend,yes,services-wet-air,,fm.gas-storage-or-flue-too-close-to-openings,
+B2-0263,design_or_coordination_error,,mechanical.refrigerant-condensate,electrical,residential;commercial,refurb,yes,services-wet-air,,fm.split-system-line-length-exceeded,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0264,design_or_coordination_error,,mechanical.central-plant,envelope.external-waterproofing,commercial,refurb,yes,services-wet-air,,fm.plant-screening-restricts-condenser-airflow,
+B2-0265,unforeseen_condition,existing_systems_on_test,mechanical.central-plant,hydraulic.sanitary,commercial,refurb,yes,services-wet-air,,,
+B2-0266,workmanship_defect,,electrical.switchboards,mechanical,commercial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0267,unforeseen_condition,concealed_services_and_earlier_work,mechanical.controls-bms,comms-security,commercial;institution,refurb,yes,services-wet-air,,,Side B (Communications and security) is not narrowed by the row text; mapped to the top-level system comms-security.
+B2-0268,workmanship_defect,,mechanical.controls-bms,occupant,commercial,refurb,yes,services-wet-air,,,
+B2-0269,design_or_coordination_error,,mechanical.fire-mode-air-systems,fire-active.smoke-control,commercial,refurb,yes,services-wet-air,,,
+B2-0270,unforeseen_condition,existing_systems_on_test,mechanical.fire-mode-air-systems,fire-passive.openings,commercial;institution,refurb,yes,services-wet-air,,fm.stair-pressurisation-fan-underperforms,
+B2-0271,design_or_coordination_error,,mechanical.central-plant,vertical-transport.lift-shafts-pits,commercial,extend,yes,services-wet-air,B2-0445,fm.lift-shaft-vent-blocked,
+B2-0272,unforeseen_condition,existing_systems_on_test,mechanical.carpark-ventilation,structure,commercial,refurb,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0273,unforeseen_condition,concealed_services_and_earlier_work,mechanical,interiors,residential,refurb,yes,services-wet-air,,,Side A element 'return-air heater' fits no single leaf system; mapped to the top-level system mechanical. Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0274,design_or_coordination_error,,mechanical.air-conditioning,interiors.tiling,residential,refurb,yes,services-wet-air,,,
+B2-0275,workmanship_defect,,mechanical.air-conditioning,hydraulic.sanitary,commercial,refurb,yes,services-wet-air,,,
+B2-0276,unforeseen_condition,concealed_services_and_earlier_work,mechanical.central-plant,hydraulic.cold-water,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0277,design_or_coordination_error,,mechanical.central-plant,hydraulic.cold-water,institution,extend,yes,services-wet-air,,,
+B2-0278,unforeseen_condition,existing_systems_on_test,mechanical.heating-appliances,envelope,residential;institution,refurb,yes,services-wet-air,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0279,unforeseen_condition,concealed_services_and_earlier_work,mechanical.central-plant,site.loading-docks,industrial,refurb,yes,services-wet-air,,,
+B2-0280,design_or_coordination_error,,mechanical.local-exhaust,occupant,industrial,extend,yes,services-wet-air,,,
+B2-0281,design_or_coordination_error,,mechanical.ventilation,electrical,industrial,extend,yes,services-wet-air,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0282,unforeseen_condition,third_parties_and_occupation,mechanical.local-exhaust,occupant,industrial,extend,yes,services-wet-air,,,
+B2-0283,design_or_coordination_error,,mechanical.process-specialist,access-egress,industrial,new;extend,yes,services-wet-air,B2-0740,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0284,unforeseen_condition,existing_structure,structure.alterations,mechanical.cooling-towers,commercial,refurb,yes,structure,,,
+B2-0285,design_or_coordination_error,,mechanical.central-plant,envelope.external-waterproofing,residential,refurb,yes,services-wet-air,,,
+B2-0286,design_or_coordination_error,,mechanical.process-specialist,electrical,commercial;institution,refurb,yes,services-wet-air,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0287,design_or_coordination_error,,mechanical.local-exhaust,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0288,unforeseen_condition,third_parties_and_occupation,mechanical.air-distribution,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0289,unforeseen_condition,third_parties_and_occupation,mechanical.controls-bms,occupant,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0290,design_or_coordination_error,,mechanical,fire-active.sprinklers,commercial,refurb,yes,services-wet-air,,,Side A element 'radiant panel' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0291,design_or_coordination_error,,mechanical.air-distribution,envelope.windows-doors,commercial,remediation,yes,services-wet-air,,fm.envelope-louvre-free-area-restricts-airflow,
+B2-0292,unforeseen_condition,concealed_services_and_earlier_work,mechanical.ventilation,site,commercial,refurb,yes,services-wet-air,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0293,design_or_coordination_error,,mechanical.local-exhaust,structure,residential,new;extend,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0294,unforeseen_condition,existing_systems_on_test,mechanical.air-distribution,comms-security.structured-cabling,commercial,refurb,yes,services-wet-air,,,
+B2-0295,unforeseen_condition,concealed_services_and_earlier_work,mechanical.central-plant,envelope.windows-doors,commercial,refurb,yes,services-wet-air,,,
+B2-0296,unforeseen_condition,concealed_services_and_earlier_work,mechanical,hydraulic.cold-water,commercial;institution,refurb,yes,services-wet-air,,,Side A element 'humidifier' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0297,design_or_coordination_error,,mechanical.local-exhaust,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0298,process_authority_supply_weather,supply_and_site_operations,mechanical.refrigerant-condensate,mechanical.refrigerant-condensate,commercial,refurb,yes,services-wet-air,,,
+B2-0299,design_or_coordination_error,,mechanical.air-distribution,envelope.windows-doors,commercial,refurb,yes,services-wet-air,,,
+B2-0300,design_or_coordination_error,,mechanical.local-exhaust,occupant,industrial,extend,yes,services-wet-air,,,
+B2-0301,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,mechanical,commercial;institution,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0302,unforeseen_condition,authorities_and_utilities,electrical.utility-supply,utility,commercial;industrial,refurb,yes,electrical-comms,B2-0952,,
+B2-0303,unforeseen_condition,authorities_and_utilities,electrical.utility-supply,utility,commercial;industrial,new;refurb,yes,electrical-comms,,,"Point of supply moved by the supplier: system is the utility connection, kind could be process."
+B2-0304,unforeseen_condition,existing_systems_on_test,electrical.utility-supply,mechanical,commercial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0305,unforeseen_condition,existing_systems_on_test,electrical.cabling-wiring,interiors,residential;commercial,refurb,yes,electrical-comms,B2-0953,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0306,unforeseen_condition,concealed_services_and_earlier_work,electrical.cabling-wiring,structure.alterations,commercial,refurb,yes,electrical-comms,,,
+B2-0307,process_authority_supply_weather,supply_and_site_operations,electrical.switchboards,electrical.switchboards,commercial;industrial,refurb,yes,electrical-comms,B2-0983,,
+B2-0308,unforeseen_condition,concealed_services_and_earlier_work,electrical.earthing-lightning,hydraulic.cold-water,residential,refurb,yes,electrical-comms,,,
+B2-0309,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,access-egress,commercial;institution,refurb,yes,electrical-comms,B2-0951,fm.switchboard-room-clearances-not-reserved,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0310,unforeseen_condition,hazardous_materials,electrical.switchboards,occupant,residential;commercial;institution,refurb,yes,electrical-comms,,,
+B2-0311,unforeseen_condition,existing_systems_on_test,electrical.standby-power,mechanical.heating-appliances,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0312,unforeseen_condition,authorities_and_utilities,electrical.solar-pv,utility,residential;commercial;industrial,refurb,yes,electrical-comms,,,
+B2-0313,design_or_coordination_error,,electrical.lighting,interiors.walls-linings,commercial,refurb,yes,electrical-comms,,,
+B2-0314,unforeseen_condition,concealed_services_and_earlier_work,electrical.cabling-wiring,structure.concrete,commercial,refurb,yes,electrical-comms,,uc.existing-risers-and-conduits-full,
+B2-0315,unforeseen_condition,authorities_and_utilities,electrical,utility,residential;commercial,refurb,yes,electrical-comms,,,Side A element 'supply' fits no single leaf system; mapped to the top-level system electrical.
+B2-0316,unforeseen_condition,concealed_services_and_earlier_work,electrical.cabling-wiring,fire-passive.penetrations,commercial,refurb,yes,electrical-comms,,fm.electrical-penetration-of-rated-element-unprotected,
+B2-0317,design_or_coordination_error,,electrical.switchboards,fire-active.sprinklers,commercial,refurb,yes,electrical-comms,B2-0512,,
+B2-0318,unforeseen_condition,existing_systems_on_test,electrical.utility-supply,site.ground-conditions,commercial,refurb,yes,electrical-comms,,,
+B2-0319,unforeseen_condition,third_parties_and_occupation,electrical.switchboards,occupant,commercial,refurb,yes,electrical-comms,,,
+B2-0320,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,mechanical,commercial;industrial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0321,unforeseen_condition,concealed_services_and_earlier_work,electrical.earthing-lightning,mechanical,commercial;industrial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0322,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,electrical.switchboards,commercial;industrial,extend,yes,electrical-comms,,,
+B2-0323,unforeseen_condition,existing_systems_on_test,electrical.standby-power,fire-active.fire-water,commercial;industrial,refurb,yes,electrical-comms,B2-0955,,
+B2-0324,design_or_coordination_error,,electrical.standby-power,fire-active,commercial;institution,refurb,yes,electrical-comms,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Active fire protection) is not narrowed by the row text; mapped to the top-level system fire-active."
+B2-0325,design_or_coordination_error,,electrical.standby-power,envelope.windows-doors,commercial,refurb,yes,electrical-comms,,,
+B2-0326,unforeseen_condition,existing_systems_on_test,electrical.standby-power,access-egress,commercial;institution,refurb,yes,electrical-comms,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0327,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,fire-passive,commercial,refurb,yes,electrical-comms,,,Side B (Passive fire protection) is not narrowed by the row text; mapped to the top-level system fire-passive.
+B2-0328,design_or_coordination_error,,electrical,interiors.floor-finishes,commercial,refurb,yes,electrical-comms,,,Side A element 'floor box' fits no single leaf system; mapped to the top-level system electrical.
+B2-0329,unforeseen_condition,concealed_services_and_earlier_work,electrical,structure.concrete,commercial,refurb,yes,electrical-comms,,,Side A element 'floor box' fits no single leaf system; mapped to the top-level system electrical.
+B2-0330,design_or_coordination_error,,electrical.lighting,interiors.floor-finishes,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0331,design_or_coordination_error,,electrical.lighting,interiors.joinery,commercial,refurb,yes,electrical-comms,,,
+B2-0332,design_or_coordination_error,,electrical.lighting,neighbour,commercial;industrial,new;refurb,yes,electrical-comms,,,
+B2-0333,unforeseen_condition,concealed_services_and_earlier_work,electrical.utility-supply,site.services-connections,commercial,new;extend,yes,electrical-comms,,,
+B2-0334,unforeseen_condition,existing_systems_on_test,electrical.cabling-wiring,electrical.cabling-wiring,commercial;institution,extend,yes,electrical-comms,,uc.existing-risers-and-conduits-full,
+B2-0335,unforeseen_condition,hazardous_materials,electrical.cabling-wiring,occupant,commercial,refurb,yes,electrical-comms,,,
+B2-0336,workmanship_defect,,electrical.solar-pv,envelope.external-waterproofing,residential;commercial,refurb,yes,electrical-comms,,,
+B2-0337,unforeseen_condition,existing_systems_on_test,electrical.solar-pv,mechanical,commercial;industrial,refurb,yes,electrical-comms,,fm.inverter-location-unventilated,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0338,unforeseen_condition,existing_systems_on_test,electrical.earthing-lightning,site,commercial,refurb,yes,electrical-comms,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0339,workmanship_defect,,electrical.earthing-lightning,hydraulic,residential,extend,yes,electrical-comms,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0340,unforeseen_condition,existing_systems_on_test,electrical.earthing-lightning,electrical.earthing-lightning,commercial,refurb,yes,electrical-comms,,,
+B2-0341,unforeseen_condition,existing_systems_on_test,electrical.earthing-lightning,structure.alterations,commercial,refurb,yes,electrical-comms,,,
+B2-0342,process_authority_supply_weather,supply_and_site_operations,electrical.temporary-power,programme,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0343,unforeseen_condition,authorities_and_utilities,electrical.utility-supply,utility,residential,refurb,yes,electrical-comms,,,
+B2-0344,design_or_coordination_error,,electrical.metering,occupant,commercial,refurb,yes,electrical-comms,,,
+B2-0345,process_authority_supply_weather,authorities_and_utilities,electrical.metering,authority,residential;commercial,refurb,yes,electrical-comms,,,
+B2-0346,process_authority_supply_weather,supply_and_site_operations,electrical.cabling-wiring,electrical.switchboards,commercial;industrial,refurb,yes,electrical-comms,,,
+B2-0347,unforeseen_condition,authorities_and_utilities,electrical.switchboards,utility,commercial;industrial,refurb,yes,electrical-comms,,,
+B2-0348,unforeseen_condition,existing_systems_on_test,electrical.switchboards,electrical,commercial,refurb,yes,electrical-comms,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0349,design_or_coordination_error,,electrical.switchboards,electrical.switchboards,industrial,extend,yes,electrical-comms,,,
+B2-0350,design_or_coordination_error,,electrical.cabling-wiring,mechanical,industrial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0351,unforeseen_condition,hazardous_materials,electrical.process-hazardous,occupant,industrial,refurb,yes,electrical-comms,B2-0982,,
+B2-0352,workmanship_defect,,electrical.earthing-lightning,structure.steel,industrial,new;extend,yes,electrical-comms,,,
+B2-0353,design_or_coordination_error,,electrical.cabling-wiring,mechanical,industrial,extend,yes,electrical-comms,B2-0544,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0354,unforeseen_condition,concealed_services_and_earlier_work,electrical.utility-supply,substructure.footings,commercial,new,no,electrical-comms,,,
+B2-0355,unforeseen_condition,existing_systems_on_test,electrical.utility-supply,mechanical.ventilation,commercial,refurb,yes,electrical-comms,,,
+B2-0356,unforeseen_condition,concealed_services_and_earlier_work,electrical.cabling-wiring,site.survey-boundaries,commercial;industrial,extend,yes,electrical-comms,,,High-voltage easement over the site: utility anchor chosen for side B.
+B2-0357,unforeseen_condition,existing_systems_on_test,electrical.battery-storage,mechanical,commercial;institution,refurb,yes,electrical-comms,,fm.battery-ventilation-environment,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0358,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,electrical.switchboards,commercial,extend,yes,electrical-comms,,,
+B2-0359,design_or_coordination_error,,electrical.solar-pv,fire-active.fire-control,residential;commercial,refurb,yes,electrical-comms,,,
+B2-0360,unforeseen_condition,authorities_and_utilities,electrical.ev-charging,utility,residential;commercial,refurb,yes,electrical-comms,,,
+B2-0361,design_or_coordination_error,,electrical.switchboards,access-egress.egress-doors,commercial,new;refurb,yes,electrical-comms,,,
+B2-0362,unforeseen_condition,concealed_services_and_earlier_work,electrical.cabling-wiring,structure.concrete,commercial,refurb,yes,electrical-comms,B2-0001,fm.coring-or-slab-opening-cuts-reinforcement-or-tendon;fm.fixings-drilled-into-post-tensioned-slab,
+B2-0363,unforeseen_condition,existing_systems_on_test,electrical.cabling-wiring,vertical-transport.passenger-lifts,commercial,extend,yes,electrical-comms,,,
+B2-0364,design_or_coordination_error,,electrical.metering,envelope.external-walls,residential,refurb,yes,electrical-comms,,fm.meter-box-access-blocked-by-extension,
+B2-0365,design_or_coordination_error,,electrical.lighting,occupant,commercial,refurb,yes,electrical-comms,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0366,unforeseen_condition,concealed_services_and_earlier_work,electrical,mechanical,commercial,refurb,yes,electrical-comms,,,Side A element 'kitchen supply' fits no single leaf system; mapped to the top-level system electrical. Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0367,workmanship_defect,,electrical.cabling-wiring,fire-passive.penetrations,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0368,unforeseen_condition,concealed_services_and_earlier_work,electrical.earthing-lightning,mechanical.central-plant,commercial,extend,yes,electrical-comms,,,
+B2-0369,workmanship_defect,,electrical.cabling-wiring,hydraulic,residential,refurb,yes,electrical-comms,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0370,unforeseen_condition,concealed_services_and_earlier_work,electrical.lighting,site.trees,residential;commercial,new;extend,yes,electrical-comms,,,
+B2-0371,workmanship_defect,,electrical.switchboards,occupant,commercial,refurb,yes,electrical-comms,,,
+B2-0372,unforeseen_condition,concealed_services_and_earlier_work,electrical.cabling-wiring,mechanical,institution,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0373,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,hydraulic.cold-water,commercial,refurb,yes,electrical-comms,B2-0881,fm.switchboard-in-wet-area,
+B2-0374,design_or_coordination_error,,electrical.lighting,occupant,institution,refurb,yes,electrical-comms,,,
+B2-0375,process_authority_supply_weather,supply_and_site_operations,electrical.switchboards,contract,commercial;industrial,refurb,yes,electrical-comms,,,
+B2-0376,unforeseen_condition,authorities_and_utilities,hydraulic.sanitary,utility,residential;commercial,extend,yes,services-wet-air,,,
+B2-0377,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,structure.alterations,residential;commercial,refurb,yes,services-wet-air,B2-0961,,
+B2-0378,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,structure.concrete,commercial,refurb,yes,services-wet-air,,,
+B2-0379,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,structure.alterations,residential;commercial,refurb,yes,services-wet-air,,,
+B2-0380,unforeseen_condition,authorities_and_utilities,hydraulic.cold-water,utility,residential;commercial,refurb,yes,services-wet-air,,fm.cold-water-supply-below-peak-demand,
+B2-0381,unforeseen_condition,existing_systems_on_test,hydraulic.cold-water,hydraulic.cold-water,residential,extend,yes,services-wet-air,,,
+B2-0382,unforeseen_condition,existing_systems_on_test,hydraulic.hot-water,mechanical.heating-appliances,residential;institution,refurb,yes,services-wet-air,,,
+B2-0383,design_or_coordination_error,,hydraulic.hot-water,occupant,commercial;institution,refurb,yes,services-wet-air,B2-0962,,
+B2-0384,unforeseen_condition,authorities_and_utilities,hydraulic.sanitary,authority,commercial;industrial,refurb,yes,services-wet-air,B2-0774;B2-0963,,
+B2-0385,design_or_coordination_error,,hydraulic.roof-drainage,envelope,residential;commercial,extend,yes,services-wet-air,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0386,process_authority_supply_weather,authorities_and_utilities,hydraulic.sanitary,authority,residential;commercial,extend,yes,services-wet-air,,,
+B2-0387,design_or_coordination_error,,hydraulic.backflow-prevention,hydraulic.backflow-prevention,commercial;industrial,refurb,yes,services-wet-air,,,
+B2-0388,unforeseen_condition,existing_systems_on_test,hydraulic.backflow-prevention,fire-active,commercial,refurb,yes,services-wet-air,,,Side B (Active fire protection) is not narrowed by the row text; mapped to the top-level system fire-active.
+B2-0389,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,structure.concrete,commercial,refurb,yes,services-wet-air,,,
+B2-0390,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,interiors.ffe,residential,extend,yes,services-wet-air,,,
+B2-0391,workmanship_defect,,hydraulic.roof-drainage,site.stormwater-detention,residential,remediation,yes,services-wet-air,,fm.stormwater-connected-to-sewer,
+B2-0392,unforeseen_condition,existing_systems_on_test,hydraulic.sanitary,fire-passive.penetrations,commercial,extend,yes,services-wet-air,,fm.hydraulic-riser-space-undersized,
+B2-0393,unforeseen_condition,third_parties_and_occupation,hydraulic.cold-water,occupant,commercial,refurb,yes,services-wet-air,,,
+B2-0394,design_or_coordination_error,,hydraulic.sanitary,electrical,residential;commercial,refurb,yes,services-wet-air,,if.sewage-pump-power-and-alarm,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0395,unforeseen_condition,third_parties_and_occupation,hydraulic.trade-waste,occupant,commercial,refurb,yes,services-wet-air,,,
+B2-0396,unforeseen_condition,third_parties_and_occupation,hydraulic.cold-water,occupant,commercial;institution,extend,yes,services-wet-air,,,
+B2-0397,unforeseen_condition,third_parties_and_occupation,hydraulic.cold-water,occupant,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0398,unforeseen_condition,existing_systems_on_test,hydraulic.cold-water,hydraulic.cold-water,residential,remediation,yes,services-wet-air,,,
+B2-0399,unforeseen_condition,existing_systems_on_test,hydraulic.sanitary,structure.timber,residential;commercial,refurb,yes,services-wet-air,,,
+B2-0400,design_or_coordination_error,,hydraulic.sanitary,interiors.walls-linings,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0401,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,access-egress.accessible-facilities,commercial;institution,refurb,yes,services-wet-air,,fm.envelope-grab-rail-backing-before-lining;if.envelope-grab-rail-backing-before-lining,
+B2-0402,design_or_coordination_error,,hydraulic.roof-drainage,interiors.wet-area-waterproofing,residential,refurb,yes,services-wet-air,,,
+B2-0403,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,envelope.roof-coverings,residential,extend,yes,services-wet-air,,fm.drain-vent-terminates-in-roof-space,
+B2-0404,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,envelope.windows-doors,residential;commercial,extend,yes,services-wet-air,,,
+B2-0405,workmanship_defect,,hydraulic.roof-drainage,site.stormwater-detention,residential,extend,yes,services-wet-air,,,
+B2-0406,unforeseen_condition,authorities_and_utilities,hydraulic.sanitary,utility,residential;commercial,extend;remediation,yes,services-wet-air,,,
+B2-0407,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.cold-water,site.stormwater-detention,residential,remediation,yes,services-wet-air,,,
+B2-0408,workmanship_defect,,hydraulic.backflow-prevention,hydraulic.backflow-prevention,residential,new;refurb,yes,services-wet-air,B2-0964,,
+B2-0409,workmanship_defect,,hydraulic.non-potable-water,occupant,residential;commercial,new,yes,services-wet-air,,fm.potable-nonpotable-separation,
+B2-0410,design_or_coordination_error,,hydraulic.backflow-prevention,mechanical.air-conditioning,commercial,refurb,yes,services-wet-air,,,
+B2-0411,unforeseen_condition,authorities_and_utilities,hydraulic.trade-waste,authority,industrial,extend,yes,services-wet-air,B2-0773,,
+B2-0412,unforeseen_condition,existing_systems_on_test,hydraulic.trade-waste,structure,industrial,refurb,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0413,design_or_coordination_error,,hydraulic.sanitary,occupant,industrial;institution,refurb,yes,services-wet-air,B2-0980,,
+B2-0414,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.roof-drainage,fire-active.hydrants,commercial,remediation,yes,services-wet-air,,,
+B2-0415,workmanship_defect,,hydraulic.cold-water,structure.concrete,commercial,new;refurb,yes,services-wet-air,B2-0503,,
+B2-0416,design_or_coordination_error,,hydraulic.sanitary,interiors.walls-linings,residential,new;refurb,yes,services-wet-air,B2-0691,,
+B2-0417,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,interiors,residential;commercial,refurb,yes,services-wet-air,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0418,unforeseen_condition,existing_systems_on_test,hydraulic.sanitary,site.stormwater-detention,residential,extend,yes,services-wet-air,,,
+B2-0419,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.cold-water,hydraulic.cold-water,commercial,refurb,yes,services-wet-air,,,
+B2-0420,design_or_coordination_error,,hydraulic.hot-water,occupant,residential;institution,refurb,yes,services-wet-air,,,
+B2-0421,workmanship_defect,,hydraulic.hot-water,interiors,residential,refurb,yes,services-wet-air,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0422,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,interiors.ffe,residential,remediation,yes,services-wet-air,,,
+B2-0423,design_or_coordination_error,,hydraulic.roof-drainage,envelope.roof-coverings,commercial,refurb,yes,services-wet-air,,,
+B2-0424,unforeseen_condition,existing_systems_on_test,hydraulic.roof-drainage,structure.alterations,commercial,refurb,yes,services-wet-air,,,
+B2-0425,design_or_coordination_error,,hydraulic.non-potable-water,site,residential,new,no,services-wet-air,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0426,design_or_coordination_error,,hydraulic.specialist-process,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0427,unforeseen_condition,authorities_and_utilities,hydraulic.sanitary,utility,commercial,extend,yes,services-wet-air,,,
+B2-0428,unforeseen_condition,third_parties_and_occupation,hydraulic.sanitary,occupant,industrial,refurb,yes,services-wet-air,B2-0981,,
+B2-0429,design_or_coordination_error,,hydraulic.hot-water,interiors.ceilings,residential;commercial,refurb,yes,services-wet-air,,,
+B2-0430,design_or_coordination_error,,fire-active.sprinklers,hydraulic.sanitary,commercial,refurb,yes,fire,,,
+B2-0431,unforeseen_condition,authorities_and_utilities,hydraulic.cold-water,utility,commercial,extend,yes,services-wet-air,,,
+B2-0432,workmanship_defect,,hydraulic.cold-water,site.ground-conditions,commercial;industrial,new;extend,yes,services-wet-air,,,
+B2-0433,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,hydraulic.roof-drainage,residential,remediation,yes,envelope,,,
+B2-0434,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,access-egress,commercial,new,no,services-wet-air,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0435,workmanship_defect,,hydraulic.non-potable-water,hydraulic.non-potable-water,residential;commercial,new,no,services-wet-air,,,
+B2-0436,unforeseen_condition,third_parties_and_occupation,hydraulic.sanitary,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0437,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,site.stormwater-detention,commercial;industrial,extend,yes,services-wet-air,,,
+B2-0438,workmanship_defect,,hydraulic.non-potable-water,occupant,institution,remediation,yes,services-wet-air,,,
+B2-0439,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.lift-shafts-pits,structure.alterations,commercial;institution,refurb,yes,electrical-comms,B2-0950,fm.lift-shaft-out-of-plumb,
+B2-0440,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.lift-shafts-pits,access-egress,commercial;institution,refurb,yes,electrical-comms,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0441,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.lift-shafts-pits,structure.temporary-works,commercial,refurb,yes,electrical-comms,,,
+B2-0442,unforeseen_condition,existing_systems_on_test,vertical-transport.lift-shafts-pits,access-egress.accessible-access,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0443,design_or_coordination_error,,vertical-transport.passenger-lifts,structure.concrete,commercial,refurb,yes,electrical-comms,,,
+B2-0444,design_or_coordination_error,,vertical-transport.passenger-lifts,structure,commercial,new;refurb,yes,electrical-comms,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0445,design_or_coordination_error,,vertical-transport.lift-shafts-pits,mechanical.ventilation,commercial,extend,yes,electrical-comms,B2-0271,fm.lift-shaft-vent-blocked,
+B2-0446,design_or_coordination_error,,vertical-transport.passenger-lifts,interiors.ceilings,commercial,refurb,yes,electrical-comms,,,
+B2-0447,design_or_coordination_error,,vertical-transport.passenger-lifts,interiors.tiling,commercial,refurb,yes,electrical-comms,,,
+B2-0448,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.lift-shafts-pits,hydraulic.roof-drainage,commercial,new;refurb,yes,electrical-comms,,,
+B2-0449,workmanship_defect,,vertical-transport.lift-shafts-pits,substructure.damp-waterproofing,commercial,new,no,electrical-comms,,,
+B2-0450,unforeseen_condition,existing_systems_on_test,vertical-transport.passenger-lifts,structure.timber,commercial,refurb,yes,electrical-comms,,,
+B2-0451,design_or_coordination_error,,vertical-transport.passenger-lifts,electrical.standby-power,commercial;institution,refurb,yes,electrical-comms,B2-0219,,
+B2-0452,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.lift-shafts-pits,structure,commercial,new,no,electrical-comms,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0453,design_or_coordination_error,,vertical-transport.passenger-lifts,site.loading-docks,industrial,new;refurb,yes,electrical-comms,,,
+B2-0454,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.platform-lifts,access-egress.stairs-and-ramps,residential;institution,refurb,yes,electrical-comms,,,
+B2-0455,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.lift-shafts-pits,fire-passive.rated-elements,commercial,refurb,yes,electrical-comms,,,
+B2-0456,design_or_coordination_error,,vertical-transport.escalators-walks,structure.steel,commercial,new,no,electrical-comms,,,
+B2-0457,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.escalators-walks,structure.concrete,commercial,new,no,electrical-comms,,,
+B2-0458,unforeseen_condition,existing_systems_on_test,vertical-transport.escalators-walks,structure.concrete,commercial,new,no,electrical-comms,,,
+B2-0459,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.passenger-lifts,structure.concrete,commercial,remediation,yes,electrical-comms,,,
+B2-0460,design_or_coordination_error,,vertical-transport.lift-shafts-pits,fire-passive.compartments,commercial,new,no,electrical-comms,,,
+B2-0461,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.lift-shafts-pits,fire-passive,commercial,refurb,yes,electrical-comms,,,Side B (Passive fire protection) is not narrowed by the row text; mapped to the top-level system fire-passive.
+B2-0462,process_authority_supply_weather,supply_and_site_operations,vertical-transport.passenger-lifts,programme,commercial,refurb,yes,electrical-comms,,,
+B2-0463,design_or_coordination_error,,vertical-transport.passenger-lifts,structure.timber,residential,extend,yes,electrical-comms,,,
+B2-0464,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.passenger-lifts,access-egress.accessible-access,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0465,unforeseen_condition,hazardous_materials,interiors.tiling,occupant,residential;commercial;institution,refurb,yes,envelope,,,
+B2-0466,unforeseen_condition,hazardous_materials,interiors.ceilings,mechanical,commercial;institution,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0467,unforeseen_condition,hazardous_materials,envelope.roof-coverings,occupant,residential,extend,yes,envelope,,,
+B2-0468,unforeseen_condition,hazardous_materials,mechanical.heating-appliances,occupant,residential,refurb,yes,services-wet-air,,,
+B2-0469,unforeseen_condition,hazardous_materials,mechanical.central-plant,occupant,commercial;industrial,refurb,yes,services-wet-air,,,
+B2-0470,unforeseen_condition,hazardous_materials,structure.steel,occupant,commercial;industrial,remediation,yes,structure,,,
+B2-0471,unforeseen_condition,hazardous_materials,interiors.ceilings,electrical,residential;commercial,refurb,yes,envelope,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0472,unforeseen_condition,hazardous_materials,electrical.lighting,occupant,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0473,unforeseen_condition,hazardous_materials,interiors.ceilings,mechanical,residential,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0474,unforeseen_condition,hazardous_materials,interiors.walls-linings,envelope.external-walls,residential;institution,remediation,yes,envelope,,,
+B2-0475,unforeseen_condition,hazardous_materials,interiors.ceilings,hydraulic.sanitary,residential;commercial,remediation,yes,envelope,,,
+B2-0476,unforeseen_condition,hazardous_materials,site.contamination,authority,commercial;industrial,new;remediation,yes,structure,,,
+B2-0477,unforeseen_condition,hazardous_materials,site.ground-conditions,utility,commercial;industrial,new,no,structure,,,
+B2-0478,unforeseen_condition,hazardous_materials,site.contamination,structure.concrete,commercial;industrial,new;remediation,yes,structure,,,
+B2-0479,unforeseen_condition,hazardous_materials,substructure.slab-on-ground,occupant,industrial,remediation,yes,structure,,,
+B2-0480,unforeseen_condition,hazardous_materials,electrical.utility-supply,occupant,industrial,refurb,yes,electrical-comms,,,
+B2-0481,unforeseen_condition,hazardous_materials,mechanical.controls-bms,occupant,commercial,refurb,yes,services-wet-air,,,
+B2-0482,unforeseen_condition,hazardous_materials,fire-active.detection,authority,commercial;institution,refurb,yes,fire,,,
+B2-0483,unforeseen_condition,hazardous_materials,mechanical.local-exhaust,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0484,unforeseen_condition,hazardous_materials,envelope.roof-coverings,occupant,residential;commercial,refurb,yes,envelope,,,
+B2-0485,unforeseen_condition,hazardous_materials,interiors.ceilings,occupant,commercial,refurb,yes,envelope,,,
+B2-0486,process_authority_supply_weather,hazardous_materials,structure.concrete,occupant,commercial;institution,refurb,yes,structure,,uc.silica-dust-controls-restrict-cutting,
+B2-0487,unforeseen_condition,hazardous_materials,fire-passive.openings,occupant,commercial,remediation,yes,fire,,,
+B2-0488,unforeseen_condition,hazardous_materials,interiors.floor-finishes,occupant,residential,refurb,yes,envelope,,,
+B2-0489,unforeseen_condition,hazardous_materials,hydraulic.cold-water,occupant,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0490,unforeseen_condition,hazardous_materials,interiors.tiling,occupant,commercial,refurb,yes,envelope,,,
+B2-0491,unforeseen_condition,hazardous_materials,envelope.flashings-seals,site.contamination,residential,remediation,yes,envelope,,,
+B2-0492,unforeseen_condition,hazardous_materials,site.ground-conditions,occupant,residential,extend,yes,structure,,,
+B2-0493,unforeseen_condition,hazardous_materials,site.vehicle-access,authority,commercial,remediation,yes,structure,,,
+B2-0494,unforeseen_condition,hazardous_materials,structure.concrete,occupant,industrial,remediation,yes,structure,,,
+B2-0495,unforeseen_condition,hazardous_materials,mechanical.central-plant,occupant,industrial,refurb,yes,services-wet-air,,,
+B2-0496,process_authority_supply_weather,hazardous_materials,mechanical.refrigerant-condensate,authority,commercial,refurb,yes,services-wet-air,,,
+B2-0497,unforeseen_condition,hazardous_materials,mechanical.air-distribution,occupant,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0498,unforeseen_condition,hazardous_materials,site.erosion-sediment-control,hydraulic.roof-drainage,industrial,extend,yes,structure,,,
+B2-0499,unforeseen_condition,hazardous_materials,substructure.basement-retention,site.waste-storage,industrial,new;extend,yes,structure,,,
+B2-0500,unforeseen_condition,hazardous_materials,mechanical.air-distribution,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0501,design_or_coordination_error,,mechanical.air-distribution,electrical.cabling-wiring,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0502,design_or_coordination_error,,mechanical.air-distribution,fire-passive.penetrations,commercial,refurb,yes,services-wet-air,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0503,design_or_coordination_error,,hydraulic.cold-water,structure.concrete,commercial,new,no,services-wet-air,B2-0415,,
+B2-0504,design_or_coordination_error,,mechanical.air-distribution,structure.alterations,commercial,new;refurb,yes,services-wet-air,,,
+B2-0505,design_or_coordination_error,,mechanical.air-distribution,structure,commercial,refurb,yes,services-wet-air,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure."
+B2-0506,design_or_coordination_error,,hydraulic.cold-water,mechanical.air-distribution,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0507,design_or_coordination_error,,mechanical,occupant,commercial,refurb,yes,services-wet-air,,,Side A element 'access panel' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0508,design_or_coordination_error,,mechanical,structure.alterations,commercial,new,yes,services-wet-air,,,Side A element 'services coordination' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0509,design_or_coordination_error,,electrical,mechanical,commercial,new;refurb,yes,electrical-comms,,,Side A element 'services bracket' fits no single leaf system; mapped to the top-level system electrical. Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0510,design_or_coordination_error,,fire-passive.penetrations,hydraulic.cold-water,commercial,refurb,yes,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0511,design_or_coordination_error,,electrical.cabling-wiring,mechanical.fire-mode-air-systems,commercial,refurb,yes,electrical-comms,,,
+B2-0512,design_or_coordination_error,,electrical.switchboards,fire-active.sprinklers,commercial,refurb,yes,electrical-comms,B2-0317,,
+B2-0513,design_or_coordination_error,,hydraulic.sanitary,electrical.cabling-wiring,commercial,refurb,yes,services-wet-air,,,
+B2-0514,design_or_coordination_error,,mechanical.refrigerant-condensate,hydraulic.sanitary,commercial,refurb,yes,services-wet-air,B2-0234;B2-0956,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0515,design_or_coordination_error,,electrical.switchboards,fire-active.sprinklers,commercial,new,no,electrical-comms,,,
+B2-0516,design_or_coordination_error,,mechanical.local-exhaust,mechanical.local-exhaust,commercial,refurb,yes,services-wet-air,,fm.exhaust-intake-separation,
+B2-0517,design_or_coordination_error,,structure.concrete,hydraulic,commercial,new,no,structure,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0518,design_or_coordination_error,,mechanical.air-distribution,access-egress.egress-doors,commercial;institution,refurb,yes,services-wet-air,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0519,design_or_coordination_error,,mechanical.air-distribution,access-egress.egress-doors,commercial,refurb,yes,services-wet-air,B2-0179;B2-0993,,
+B2-0520,design_or_coordination_error,,mechanical.air-distribution,electrical,commercial,refurb,yes,services-wet-air,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0521,design_or_coordination_error,,mechanical,electrical,commercial,new,no,services-wet-air,,,Side A element 'cast-in anchor' fits no single leaf system; mapped to the top-level system mechanical. Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0522,design_or_coordination_error,,electrical.cabling-wiring,structure.alterations,commercial,new,no,electrical-comms,,fm.conduit-clashes-with-reinforcement,
+B2-0523,workmanship_defect,,hydraulic.cold-water,structure.timber,residential,refurb,yes,services-wet-air,,,
+B2-0524,design_or_coordination_error,,hydraulic.cold-water,fire-active,commercial,new,no,services-wet-air,,,Side B (Active fire protection) is not narrowed by the row text; mapped to the top-level system fire-active.
+B2-0525,workmanship_defect,,interiors.ceilings,mechanical,commercial,new;refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0526,process_authority_supply_weather,supply_and_site_operations,mechanical.central-plant,access-egress,commercial,refurb,yes,services-wet-air,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0527,design_or_coordination_error,,mechanical.central-plant,interiors.walls-linings,commercial,refurb,yes,services-wet-air,,,
+B2-0528,design_or_coordination_error,,mechanical.air-distribution,hydraulic.cold-water,commercial,refurb,yes,services-wet-air,,,
+B2-0529,design_or_coordination_error,,hydraulic.cold-water,electrical.switchboards,commercial,refurb,yes,services-wet-air,,,
+B2-0530,design_or_coordination_error,,fire-active.sprinklers,envelope.windows-doors,commercial,refurb,yes,fire,,,
+B2-0531,design_or_coordination_error,,hydraulic.sanitary,envelope.curtain-wall,commercial,new,no,services-wet-air,,,
+B2-0532,design_or_coordination_error,,mechanical.central-plant,access-egress.maintenance-access,commercial,new;refurb,yes,services-wet-air,,,
+B2-0533,workmanship_defect,,electrical.switchboards,mechanical,commercial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0534,workmanship_defect,,hydraulic.sanitary,structure.alterations,commercial,refurb,yes,services-wet-air,,,
+B2-0535,design_or_coordination_error,,mechanical.air-distribution,structure.alterations,commercial;institution,new;refurb,yes,services-wet-air,,,
+B2-0536,design_or_coordination_error,,structure.alterations,mechanical.air-distribution,commercial,new,no,structure,,,
+B2-0537,workmanship_defect,,fire-passive.compartments,mechanical,commercial,new,no,fire,,fm.envelope-rough-in-before-linings,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0538,design_or_coordination_error,,hydraulic.sanitary,interiors.joinery,residential;commercial,refurb,yes,services-wet-air,,,
+B2-0539,design_or_coordination_error,,hydraulic.cold-water,access-egress.stairs-and-ramps,commercial,new;refurb,yes,services-wet-air,,,
+B2-0540,design_or_coordination_error,,mechanical,access-egress.accessible-access,commercial;institution,refurb,yes,services-wet-air,,,Side A element 'services support' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0541,design_or_coordination_error,,hydraulic.roof-drainage,mechanical.fire-mode-air-systems,commercial,new,no,services-wet-air,,,
+B2-0542,design_or_coordination_error,,hydraulic.sanitary,structure,industrial,refurb,yes,services-wet-air,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure."
+B2-0543,design_or_coordination_error,,access-egress.egress-doors,mechanical.air-distribution,industrial,new;refurb,yes,fire,,,
+B2-0544,design_or_coordination_error,,mechanical,electrical.cabling-wiring,industrial,extend,yes,services-wet-air,B2-0353,,Side A element 'crane beam' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0545,design_or_coordination_error,,mechanical,access-egress.egress-doors,industrial,new;extend,yes,services-wet-air,,,Side A element 'pipe rack' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0546,design_or_coordination_error,,structure.precast,mechanical,commercial,new,yes,structure,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical."
+B2-0547,design_or_coordination_error,,interiors.acoustic-separation,mechanical,commercial,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0548,workmanship_defect,,interiors.ceilings,hydraulic,residential;commercial,refurb,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0549,design_or_coordination_error,,mechanical.central-plant,interiors.joinery,commercial,refurb,yes,services-wet-air,,,
+B2-0550,design_or_coordination_error,,mechanical,site.survey-boundaries,commercial;institution,new,no,services-wet-air,,,Side A element 'setout origin' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0551,unforeseen_condition,third_parties_and_occupation,structure.alterations,occupant,commercial;institution,refurb,yes,structure,,,
+B2-0552,unforeseen_condition,third_parties_and_occupation,access-egress.exits,occupant,commercial;industrial,refurb,yes,fire,,,
+B2-0553,unforeseen_condition,authorities_and_utilities,hydraulic.trade-waste,authority,commercial,refurb,yes,services-wet-air,,,
+B2-0554,unforeseen_condition,third_parties_and_occupation,access-egress.exits,occupant,residential;institution,refurb,yes,fire,,,
+B2-0555,unforeseen_condition,third_parties_and_occupation,hydraulic.sanitary,occupant,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0556,unforeseen_condition,design_and_scope,access-egress.exits,structure.alterations,industrial,refurb,yes,fire,,fm.mezzanine-addition-egress-not-reviewed,
+B2-0557,unforeseen_condition,design_and_scope,interiors.ceilings,structure.alterations,commercial;institution,refurb,yes,envelope,,,
+B2-0558,design_or_coordination_error,,access-egress.exits,interiors,commercial,refurb,yes,fire,,fm.travel-distance-to-exit-reported-exceeded,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0559,unforeseen_condition,third_parties_and_occupation,fire-passive,occupant,commercial,refurb,yes,fire,,,Side A element 'performance solution' fits no single leaf system; mapped to the top-level system fire-passive.
+B2-0560,unforeseen_condition,authorities_and_utilities,envelope.windows-doors,authority,commercial;institution,refurb,yes,envelope,,,
+B2-0561,unforeseen_condition,design_and_scope,access-egress.stairs-and-ramps,structure.alterations,commercial;institution,refurb,yes,fire,,,
+B2-0562,unforeseen_condition,design_and_scope,access-egress.accessible-access,site.public-domain,commercial;institution,refurb,yes,fire,,,
+B2-0563,unforeseen_condition,design_and_scope,access-egress,envelope.roof-coverings,residential,refurb,yes,fire,,,Side A element 'roof-space bedroom' fits no single leaf system; mapped to the top-level system access-egress.
+B2-0564,unforeseen_condition,third_parties_and_occupation,structure.alterations,occupant,industrial,refurb,yes,structure,,,
+B2-0565,unforeseen_condition,design_and_scope,fire-active.hydrants,access-egress,commercial;industrial,refurb,yes,fire,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0566,unforeseen_condition,design_and_scope,hydraulic.sanitary,access-egress.accessible-facilities,institution,refurb,yes,services-wet-air,,,
+B2-0567,unforeseen_condition,design_and_scope,mechanical.local-exhaust,structure.alterations,institution,refurb,yes,services-wet-air,,,
+B2-0568,unforeseen_condition,third_parties_and_occupation,fire-active.detection,occupant,residential;institution,refurb,yes,fire,,,
+B2-0569,unforeseen_condition,design_and_scope,access-egress.accessible-access,site.loading-docks,commercial,refurb,yes,fire,,,
+B2-0570,unforeseen_condition,authorities_and_utilities,interiors,authority,commercial;institution,refurb,yes,envelope,,,Side A element 'waste room' fits no single leaf system; mapped to the top-level system interiors.
+B2-0571,unforeseen_condition,design_and_scope,access-egress.stairs-and-ramps,fire-passive,residential,refurb,yes,fire,,,Side B (Passive fire protection) is not narrowed by the row text; mapped to the top-level system fire-passive.
+B2-0572,unforeseen_condition,authorities_and_utilities,site.survey-boundaries,authority,residential,extend,yes,structure,,,
+B2-0573,unforeseen_condition,authorities_and_utilities,site.trees,utility,residential;commercial,new;extend,yes,structure,,,
+B2-0574,unforeseen_condition,ground_and_site,site.vehicle-access,access-egress.stairs-and-ramps,commercial,refurb,yes,structure,,fm.external-levels-do-not-meet-entry-or-rail,
+B2-0575,unforeseen_condition,ground_and_site,site.flooding,structure.alterations,residential;commercial,extend,yes,structure,,,
+B2-0576,unforeseen_condition,third_parties_and_occupation,site.stormwater-detention,neighbour,residential,extend,yes,structure,,,
+B2-0577,unforeseen_condition,ground_and_site,site.stormwater-detention,hydraulic.cold-water,residential;commercial,extend,yes,structure,,,
+B2-0578,process_authority_supply_weather,authorities_and_utilities,site.vehicle-access,authority,residential,new;extend,yes,structure,,fm.street-tree-conflicts-with-driveway,
+B2-0579,design_or_coordination_error,,site.vehicle-access,envelope.external-walls,residential,extend,yes,structure,,,
+B2-0580,unforeseen_condition,authorities_and_utilities,site.stormwater-detention,utility,residential;commercial,new,no,structure,,,
+B2-0581,unforeseen_condition,ground_and_site,site.vehicle-access,structure.concrete,commercial,remediation,yes,structure,,,
+B2-0582,design_or_coordination_error,,envelope.external-walls,hydraulic.roof-drainage,commercial,refurb,yes,envelope,,,
+B2-0583,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,hydraulic.sanitary,residential,extend,yes,envelope,,fm.envelope-roof-extension-drainage-overload;uc.existing-roof-drainage-short-for-extension,
+B2-0584,design_or_coordination_error,,site.survey-boundaries,structure.masonry,residential;commercial,extend,yes,structure,,fm.survey-datum-controls-structural-setout,
+B2-0585,design_or_coordination_error,,site.stormwater-detention,hydraulic.sanitary,residential,new;extend,yes,structure,,,
+B2-0586,unforeseen_condition,authorities_and_utilities,site.stormwater-detention,authority,residential;commercial,new,no,structure,,,
+B2-0587,unforeseen_condition,ground_and_site,site.vehicle-access,envelope,industrial,remediation,yes,structure,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0588,unforeseen_condition,authorities_and_utilities,site.stormwater-detention,utility,residential;commercial,new,yes,structure,,,
+B2-0589,unforeseen_condition,ground_and_site,site.stormwater-detention,substructure.underpinning,commercial,new;extend,yes,structure,,,
+B2-0590,process_authority_supply_weather,authorities_and_utilities,hydraulic.sanitary,authority,commercial,new,no,services-wet-air,,,
+B2-0591,unforeseen_condition,ground_and_site,site.vehicle-access,access-egress.stairs-and-ramps,commercial,new;refurb,yes,structure,,,
+B2-0592,unforeseen_condition,ground_and_site,site.public-domain,access-egress.accessible-access,commercial,refurb,yes,structure,,,
+B2-0593,unforeseen_condition,authorities_and_utilities,site.stormwater-detention,utility,commercial,new,no,structure,,,
+B2-0594,design_or_coordination_error,,site.stormwater-detention,utility,residential,extend,yes,structure,,,
+B2-0595,unforeseen_condition,third_parties_and_occupation,site.ground-conditions,neighbour,residential,new;extend,yes,structure,,,
+B2-0596,design_or_coordination_error,,site.flooding,neighbour,residential,new,no,structure,,,
+B2-0597,process_authority_supply_weather,authorities_and_utilities,site.flooding,authority,residential;commercial,extend,yes,structure,B2-0766,uc.flood-planning-level-raised-after-design;fm.flood-level-controls-building-levels,
+B2-0598,unforeseen_condition,ground_and_site,site.stormwater-detention,hydraulic.sanitary,residential,extend,yes,structure,,,
+B2-0599,unforeseen_condition,ground_and_site,site.vehicle-access,structure.alterations,industrial,new;remediation,yes,structure,,fm.pavement-not-designed-for-heavy-vehicle-loads,
+B2-0600,unforeseen_condition,ground_and_site,site.loading-docks,structure.alterations,industrial,refurb,yes,structure,,,
+B2-0601,design_or_coordination_error,,envelope.external-waterproofing,site,commercial,new,no,envelope,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0602,process_authority_supply_weather,authorities_and_utilities,site.stormwater-detention,authority,commercial,new,no,structure,,,
+B2-0603,unforeseen_condition,ground_and_site,site.stormwater-detention,structure.alterations,commercial,extend,yes,structure,,,
+B2-0604,unforeseen_condition,ground_and_site,site.stormwater-detention,structure.alterations,residential;commercial,extend,yes,structure,,,
+B2-0605,design_or_coordination_error,,site.stormwater-detention,hydraulic.non-potable-water,residential,new,no,structure,,,
+B2-0606,unforeseen_condition,ground_and_site,site.loading-docks,structure.alterations,industrial,remediation,yes,structure,,,
+B2-0607,unforeseen_condition,existing_systems_on_test,hydraulic.sanitary,site.waste-storage,commercial,extend,yes,services-wet-air,,,
+B2-0608,process_authority_supply_weather,supply_and_site_operations,site.stormwater-detention,structure.alterations,commercial,new;extend,yes,structure,,,
+B2-0609,unforeseen_condition,third_parties_and_occupation,site.retaining-walls,neighbour,residential,extend,yes,structure,,,
+B2-0610,design_or_coordination_error,,site.contamination,structure.alterations,residential,extend,yes,structure,,,
+B2-0611,process_authority_supply_weather,authorities_and_utilities,site.trees,authority,residential;commercial,new,no,structure,,,
+B2-0612,unforeseen_condition,ground_and_site,site.stormwater-detention,substructure.damp-waterproofing,commercial,new,no,structure,,fm.buried-tank-buoyancy-not-checked,
+B2-0613,unforeseen_condition,ground_and_site,site.stormwater-detention,hydraulic.trade-waste,industrial,extend,yes,structure,,,
+B2-0614,process_authority_supply_weather,supply_and_site_operations,site.public-domain,envelope.windows-doors,commercial,refurb,yes,structure,,uc.council-changes-driveway-or-footpath-levels,
+B2-0615,unforeseen_condition,ground_and_site,site.vehicle-access,structure,residential,extend,yes,structure,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0616,unforeseen_condition,ground_and_site,site.vehicle-access,access-egress.egress-doors,residential;commercial,refurb,yes,structure,,,
+B2-0617,process_authority_supply_weather,third_parties_and_occupation,site.flooding,occupant,residential;commercial,new;refurb,yes,structure,,,
+B2-0618,unforeseen_condition,authorities_and_utilities,site.stormwater-detention,utility,industrial,new;extend,yes,structure,,,
+B2-0619,process_authority_supply_weather,authorities_and_utilities,site.stormwater-detention,authority,industrial,new,no,structure,,,
+B2-0620,process_authority_supply_weather,third_parties_and_occupation,site.flooding,neighbour,industrial,new,no,structure,,,
+B2-0621,design_or_coordination_error,,site.vehicle-access,access-egress.egress-doors,industrial,new;refurb,yes,structure,,,
+B2-0622,process_authority_supply_weather,authorities_and_utilities,site.ground-conditions,authority,residential,new,yes,structure,,,
+B2-0623,design_or_coordination_error,,site.stormwater-detention,hydraulic.roof-drainage,industrial,new;extend,yes,structure,,,
+B2-0624,unforeseen_condition,authorities_and_utilities,site.ground-conditions,utility,commercial,new,no,structure,,,
+B2-0625,design_or_coordination_error,,site.stormwater-detention,hydraulic.sanitary,commercial,new,no,structure,,,
+B2-0626,unforeseen_condition,authorities_and_utilities,site.stormwater-detention,utility,industrial,new;extend,yes,structure,,,
+B2-0627,unforeseen_condition,ground_and_site,site.stormwater-detention,hydraulic,residential,extend,yes,structure,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0628,unforeseen_condition,ground_and_site,site.trees,substructure.footings,residential,extend,yes,structure,B2-0760,uc.protected-or-neighbouring-tree-restricts-works,
+B2-0629,unforeseen_condition,ground_and_site,site.services-connections,electrical,residential;commercial,extend,yes,structure,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0630,unforeseen_condition,ground_and_site,site.stormwater-detention,structure.concrete,residential,new,yes,structure,,,
+B2-0631,design_or_coordination_error,,site.ground-conditions,envelope.roof-coverings,residential,extend,yes,structure,,fm.envelope-external-levels-moisture-bridge,
+B2-0632,unforeseen_condition,ground_and_site,site.stormwater-detention,hydraulic.sanitary,residential,extend,yes,structure,,,
+B2-0633,unforeseen_condition,third_parties_and_occupation,site.survey-boundaries,neighbour,residential;commercial,extend,yes,structure,,,
+B2-0634,unforeseen_condition,third_parties_and_occupation,hydraulic.roof-drainage,neighbour,residential,extend,yes,services-wet-air,,,
+B2-0635,unforeseen_condition,third_parties_and_occupation,envelope.roof-coverings,neighbour,residential,extend,yes,envelope,,,
+B2-0636,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,structure.concrete,commercial;institution,refurb,yes,envelope,,fm.slab-flatness-and-level-not-specified-for-use,
+B2-0637,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,structure.concrete,commercial;institution,refurb,yes,envelope,,uc.slab-moisture-too-high-to-lay-flooring;fm.envelope-floor-finish-fails-on-slab-moisture,
+B2-0638,workmanship_defect,,interiors.tiling,structure.concrete,residential;commercial,refurb,yes,envelope,,fm.envelope-tile-cracks-over-movement-joint,
+B2-0639,workmanship_defect,,interiors.floor-finishes,access-egress.accessible-access,commercial;institution,refurb,yes,envelope,,fm.envelope-floor-transition-trip-hazard,
+B2-0640,workmanship_defect,,interiors.acoustic-separation,structure.temporary-works,residential;commercial,new;refurb,yes,envelope,,,
+B2-0641,workmanship_defect,,interiors.painting,structure,residential;commercial,new,no,envelope,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0642,unforeseen_condition,concealed_services_and_earlier_work,interiors.painting,interiors.painting,commercial;institution,remediation,yes,envelope,,,
+B2-0643,design_or_coordination_error,,interiors.joinery,interiors.floor-finishes,residential;commercial,refurb,yes,envelope,,fm.envelope-joinery-made-before-site-measure,
+B2-0644,design_or_coordination_error,,interiors.joinery,envelope.windows-doors,residential,refurb,yes,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0645,design_or_coordination_error,,interiors.joinery,hydraulic.cold-water,residential;commercial,refurb,yes,envelope,,,
+B2-0646,unforeseen_condition,concealed_services_and_earlier_work,interiors.internal-doors,access-egress.egress-doors,residential;commercial,remediation,yes,envelope,,fm.envelope-frame-out-of-square,
+B2-0647,design_or_coordination_error,,interiors.internal-doors,fire-passive.openings,commercial,refurb,yes,envelope,,,
+B2-0648,workmanship_defect,,interiors.tiling,mechanical,commercial,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0649,design_or_coordination_error,,interiors.ceilings,mechanical.air-distribution,commercial,refurb,yes,envelope,,,
+B2-0650,workmanship_defect,,interiors.walls-linings,structure.alterations,commercial,new;refurb,yes,envelope,,,
+B2-0651,workmanship_defect,,interiors.wet-area-waterproofing,hydraulic.cold-water,residential,remediation,yes,envelope,,,
+B2-0652,design_or_coordination_error,,interiors.tiling,interiors.tiling,commercial,refurb,yes,envelope,,uc.stone-floor-stains-from-unsealed-stone,
+B2-0653,process_authority_supply_weather,supply_and_site_operations,interiors.tiling,structure.masonry,commercial,refurb,yes,envelope,,,
+B2-0654,workmanship_defect,,interiors.floor-finishes,structure.timber,residential,refurb,yes,envelope,,,
+B2-0655,process_authority_supply_weather,supply_and_site_operations,interiors.floor-finishes,mechanical.air-conditioning,residential,refurb,yes,envelope,,,
+B2-0656,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,structure.concrete,commercial;institution,refurb,yes,envelope,,,
+B2-0657,design_or_coordination_error,,interiors.floor-finishes,access-egress.stairs-and-ramps,commercial;institution,refurb,yes,envelope,,,
+B2-0658,workmanship_defect,,access-egress.stairs-and-ramps,interiors.walls-linings,commercial;institution,refurb,yes,fire,,,
+B2-0659,design_or_coordination_error,,interiors,electrical,residential,refurb,yes,envelope,,,Side A element 'splashback' fits no single leaf system; mapped to the top-level system interiors. Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0660,design_or_coordination_error,,interiors.joinery,access-egress.egress-doors,residential,refurb,yes,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0661,design_or_coordination_error,,interiors.ceilings,interiors.ceilings,residential,refurb,yes,envelope,,,
+B2-0662,unforeseen_condition,concealed_services_and_earlier_work,interiors.walls-linings,structure.alterations,commercial;institution,refurb,yes,envelope,,,
+B2-0663,unforeseen_condition,concealed_services_and_earlier_work,interiors.walls-linings,mechanical,commercial;institution,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0664,design_or_coordination_error,,interiors.tiling,vertical-transport.passenger-lifts,commercial,refurb,yes,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0665,design_or_coordination_error,,interiors.floor-finishes,occupant,commercial;institution,refurb,yes,envelope,,,
+B2-0666,process_authority_supply_weather,supply_and_site_operations,interiors.painting,weather,residential;commercial,remediation,yes,envelope,,,
+B2-0667,design_or_coordination_error,,interiors.tiling,envelope.flashings-seals,commercial,refurb,yes,envelope,,fm.envelope-sealant-stains-natural-stone,
+B2-0668,unforeseen_condition,concealed_services_and_earlier_work,access-egress.stairs-and-ramps,interiors.tiling,commercial;institution,refurb,yes,fire,,,
+B2-0669,design_or_coordination_error,,interiors.floor-finishes,access-egress.accessible-access,commercial,refurb,yes,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0670,design_or_coordination_error,,interiors.internal-doors,access-egress.egress-doors,commercial,refurb,yes,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0671,design_or_coordination_error,,interiors.ffe,vertical-transport.passenger-lifts,commercial,refurb,yes,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0672,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,structure.alterations,commercial;institution,refurb,yes,envelope,,,
+B2-0673,design_or_coordination_error,,hydraulic.specialist-process,interiors.joinery,institution,refurb,yes,services-wet-air,,,
+B2-0674,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,structure.concrete,industrial,remediation,yes,envelope,,,
+B2-0675,design_or_coordination_error,,access-egress.accessible-facilities,structure.alterations,commercial;institution,refurb,yes,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0676,unforeseen_condition,concealed_services_and_earlier_work,access-egress.stairs-and-ramps,structure.alterations,commercial;institution,remediation,yes,fire,,fm.tactile-indicators-clash-with-stair-geometry,
+B2-0677,design_or_coordination_error,,access-egress.stairs-and-ramps,interiors,commercial;institution,remediation,yes,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors."
+B2-0678,design_or_coordination_error,,access-egress.egress-doors,fire-passive.openings,commercial;institution,refurb,yes,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0679,unforeseen_condition,concealed_services_and_earlier_work,access-egress.stairs-and-ramps,interiors,commercial,refurb,yes,fire,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0680,design_or_coordination_error,,access-egress.exits,envelope.windows-doors,residential;commercial,extend,yes,fire,,,
+B2-0681,unforeseen_condition,third_parties_and_occupation,envelope.windows-doors,occupant,residential;institution,refurb,yes,envelope,,,
+B2-0682,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,site.survey-boundaries,residential,remediation,yes,envelope,,,
+B2-0683,design_or_coordination_error,,access-egress.stairs-and-ramps,electrical,commercial,refurb,yes,fire,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0684,design_or_coordination_error,,access-egress,site.vehicle-access,commercial;institution,extend,yes,fire,,,Side A element 'brigade access' fits no single leaf system; mapped to the top-level system access-egress.
+B2-0685,design_or_coordination_error,,interiors.floor-finishes,access-egress.egress-doors,residential;commercial,refurb,yes,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0686,unforeseen_condition,concealed_services_and_earlier_work,interiors.acoustic-separation,structure.concrete,residential,refurb,yes,envelope,,fm.envelope-ceiling-floor-acoustic-flanking,
+B2-0687,workmanship_defect,,electrical.cabling-wiring,interiors.acoustic-separation,residential,new;refurb,yes,electrical-comms,,,
+B2-0688,unforeseen_condition,concealed_services_and_earlier_work,interiors.ceilings,mechanical.air-distribution,commercial,refurb,yes,envelope,,,
+B2-0689,design_or_coordination_error,,mechanical.air-distribution,interiors.acoustic-separation,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0690,unforeseen_condition,concealed_services_and_earlier_work,mechanical.central-plant,structure.alterations,residential;commercial,refurb,yes,services-wet-air,,fm.plant-noise-vibration,
+B2-0691,design_or_coordination_error,,hydraulic.sanitary,interiors.walls-linings,residential,new;refurb,yes,services-wet-air,B2-0416,,
+B2-0692,design_or_coordination_error,,interiors.floor-finishes,structure,residential,refurb,yes,envelope,,fm.envelope-floor-finish-impact-sound,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0693,design_or_coordination_error,,envelope.windows-doors,occupant,residential;commercial,refurb,yes,envelope,,fm.envelope-facade-glazing-fails-traffic-noise,
+B2-0694,design_or_coordination_error,,mechanical.ventilation,interiors.acoustic-separation,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0695,unforeseen_condition,concealed_services_and_earlier_work,mechanical.central-plant,structure,commercial,refurb,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0696,unforeseen_condition,concealed_services_and_earlier_work,vertical-transport.passenger-lifts,interiors.walls-linings,residential,refurb,yes,electrical-comms,,,
+B2-0697,design_or_coordination_error,,hydraulic,interiors.walls-linings,residential,new;refurb,yes,services-wet-air,,,Side A element 'garbage chute' fits no single leaf system; mapped to the top-level system hydraulic.
+B2-0698,design_or_coordination_error,,access-egress.egress-doors,interiors.internal-doors,residential,new;extend,yes,fire,,,
+B2-0699,unforeseen_condition,existing_structure,structure.timber,interiors.floor-finishes,residential,refurb,yes,structure,,,
+B2-0700,workmanship_defect,,interiors.floor-finishes,structure,residential,new;refurb,yes,envelope,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0701,unforeseen_condition,concealed_services_and_earlier_work,envelope.facade-acoustics,structure.concrete,commercial,refurb,yes,envelope,,,
+B2-0702,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,mechanical.air-distribution,commercial;institution,refurb,yes,envelope,,fm.envelope-louvre-free-area-restricts-airflow,
+B2-0703,unforeseen_condition,existing_structure,structure.concrete,site.trees,commercial,new,no,structure,,,
+B2-0704,design_or_coordination_error,,interiors.ceilings,interiors.ceilings,commercial,refurb,yes,envelope,,,
+B2-0705,unforeseen_condition,third_parties_and_occupation,envelope.windows-doors,occupant,residential;institution,refurb,yes,envelope,,,
+B2-0706,design_or_coordination_error,,mechanical.central-plant,neighbour,commercial,refurb,yes,services-wet-air,,,
+B2-0707,unforeseen_condition,third_parties_and_occupation,envelope.roof-coverings,occupant,institution,refurb,yes,envelope,,,
+B2-0708,design_or_coordination_error,,interiors.internal-doors,access-egress.stairs-and-ramps,residential,new;refurb,yes,envelope,,,
+B2-0709,design_or_coordination_error,,hydraulic.cold-water,interiors.wet-area-waterproofing,residential,new;refurb,yes,services-wet-air,,,
+B2-0710,unforeseen_condition,existing_systems_on_test,mechanical.air-distribution,interiors,commercial,refurb,yes,services-wet-air,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0711,unforeseen_condition,concealed_services_and_earlier_work,comms-security.ict-rooms-pathways,access-egress,commercial;institution,refurb,yes,electrical-comms,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0712,unforeseen_condition,concealed_services_and_earlier_work,comms-security.carrier-lead-in,site.trees,commercial,refurb,yes,electrical-comms,,,
+B2-0713,unforeseen_condition,concealed_services_and_earlier_work,comms-security.structured-cabling,electrical.cabling-wiring,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0714,unforeseen_condition,concealed_services_and_earlier_work,comms-security.networks-integration,mechanical,commercial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0715,design_or_coordination_error,,comms-security.access-control,electrical.standby-power,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0716,process_authority_supply_weather,supply_and_site_operations,comms-security.access-control,access-egress.egress-doors,commercial;institution,refurb,yes,electrical-comms,,fm.door-hardware-incompatible-with-access-control,
+B2-0717,design_or_coordination_error,,comms-security.access-control,fire-active.fire-control,commercial;institution,refurb,yes,electrical-comms,,fm.fire-alarm-controls-security-release,
+B2-0718,design_or_coordination_error,,comms-security.cctv,interiors.ceilings,commercial,refurb,yes,electrical-comms,,fm.cctv-sightline-blocked-by-structure,
+B2-0719,unforeseen_condition,concealed_services_and_earlier_work,comms-security.networks-integration,mechanical.controls-bms,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0720,design_or_coordination_error,,mechanical.process-specialist,electrical,commercial;institution,refurb,yes,services-wet-air,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0721,unforeseen_condition,existing_systems_on_test,comms-security.structured-cabling,mechanical,commercial,refurb,yes,electrical-comms,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0722,workmanship_defect,,comms-security.ict-rooms-pathways,electrical.earthing-lightning,commercial,refurb,yes,electrical-comms,,fm.lightning-electrical-earth-bonding,
+B2-0723,unforeseen_condition,concealed_services_and_earlier_work,comms-security.structured-cabling,structure.alterations,commercial,refurb,yes,electrical-comms,,,
+B2-0724,unforeseen_condition,existing_systems_on_test,comms-security.networks-integration,vertical-transport.passenger-lifts,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0725,unforeseen_condition,concealed_services_and_earlier_work,comms-security.audiovisual,interiors,institution,refurb,yes,electrical-comms,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0726,design_or_coordination_error,,hydraulic.specialist-process,structure,institution,refurb,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0727,workmanship_defect,,hydraulic.specialist-process,occupant,institution,new;refurb,yes,services-wet-air,,fm.medical-gas-pipework-fails-purity-test,
+B2-0728,design_or_coordination_error,,comms-security,access-egress.egress-doors,institution,refurb,yes,electrical-comms,,,Side A element 'pneumatic tube' fits no single leaf system; mapped to the top-level system comms-security.
+B2-0729,unforeseen_condition,third_parties_and_occupation,mechanical.local-exhaust,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0730,design_or_coordination_error,,mechanical.refrigerant-condensate,interiors,commercial;institution,refurb,yes,services-wet-air,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0731,design_or_coordination_error,,mechanical.refrigerant-condensate,access-egress.stairs-and-ramps,commercial;institution,refurb,yes,services-wet-air,,,
+B2-0732,unforeseen_condition,existing_systems_on_test,mechanical.refrigerant-condensate,envelope,commercial,refurb,yes,services-wet-air,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0733,unforeseen_condition,concealed_services_and_earlier_work,mechanical.local-exhaust,structure.alterations,commercial,refurb,yes,services-wet-air,,,
+B2-0734,design_or_coordination_error,,mechanical.local-exhaust,hydraulic.gas,commercial,refurb,yes,services-wet-air,B2-0979,,
+B2-0735,design_or_coordination_error,,mechanical.local-exhaust,fire-passive.penetrations,commercial,refurb,yes,services-wet-air,,fm.kitchen-exhaust-duct-not-fire-rated,
+B2-0736,unforeseen_condition,ground_and_site,site.stormwater-detention,structure.concrete,industrial,new;refurb,yes,structure,,fm.dock-leveller-pit-clashes-with-slab-reinforcement,
+B2-0737,design_or_coordination_error,,electrical.utility-supply,interiors.walls-linings,industrial,extend,yes,electrical-comms,,,
+B2-0738,design_or_coordination_error,,hydraulic.sanitary,occupant,industrial,extend,yes,services-wet-air,,,
+B2-0739,workmanship_defect,,mechanical.refrigerant-condensate,hydraulic.sanitary,industrial,refurb,yes,services-wet-air,,,
+B2-0740,design_or_coordination_error,,mechanical.process-specialist,access-egress.accessible-access,industrial,new;extend,yes,services-wet-air,B2-0283,,
+B2-0741,design_or_coordination_error,,comms-security.audiovisual,fire-passive.compartments,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0742,unforeseen_condition,existing_systems_on_test,comms-security.audiovisual,structure.concrete,commercial;institution,refurb,yes,electrical-comms,B2-0978,,
+B2-0743,design_or_coordination_error,,comms-security,envelope,residential;commercial,extend,yes,electrical-comms,,,Side A element 'satellite dish' fits no single leaf system; mapped to the top-level system comms-security. Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0744,design_or_coordination_error,,comms-security.access-control,access-egress.accessible-access,residential;commercial,new;refurb,yes,electrical-comms,,,
+B2-0745,unforeseen_condition,existing_systems_on_test,comms-security.audiovisual,electrical.utility-supply,institution,extend,yes,electrical-comms,,,
+B2-0746,design_or_coordination_error,,comms-security.structured-cabling,electrical.cabling-wiring,institution,refurb,yes,electrical-comms,,,
+B2-0747,workmanship_defect,,comms-security.access-control,fire-active.detection,commercial;institution,refurb,yes,electrical-comms,,,
+B2-0748,unforeseen_condition,existing_systems_on_test,comms-security.audiovisual,electrical,institution,refurb,yes,electrical-comms,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0749,design_or_coordination_error,,comms-security.structured-cabling,fire-passive.penetrations,commercial,refurb,yes,electrical-comms,,,
+B2-0750,unforeseen_condition,existing_systems_on_test,comms-security.access-control,access-egress.egress-doors,commercial,refurb,yes,electrical-comms,,,Reader on a hollow wall plus latch mismatch: two causes in one row.
+B2-0751,process_authority_supply_weather,authorities_and_utilities,envelope.roof-coverings,authority,commercial,new;extend,yes,envelope,,,
+B2-0752,unforeseen_condition,third_parties_and_occupation,fire-passive,occupant,commercial,refurb,yes,fire,,,Side A element 'occupancy classification' fits no single leaf system; mapped to the top-level system fire-passive.
+B2-0753,design_or_coordination_error,,envelope.external-walls,mechanical,commercial,new;refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0754,process_authority_supply_weather,authorities_and_utilities,hydraulic.cold-water,authority,commercial;industrial,new;extend,yes,services-wet-air,,,
+B2-0755,process_authority_supply_weather,authorities_and_utilities,hydraulic.sanitary,authority,residential;commercial,new;extend,yes,services-wet-air,,,
+B2-0756,process_authority_supply_weather,supply_and_site_operations,electrical.utility-supply,programme,commercial;industrial,new;refurb,yes,electrical-comms,,,
+B2-0757,unforeseen_condition,authorities_and_utilities,hydraulic.gas,utility,residential;commercial,new;extend,yes,services-wet-air,,,
+B2-0758,unforeseen_condition,authorities_and_utilities,site.ground-conditions,utility,residential;commercial;industrial,new;extend;refurb,yes,structure,,,
+B2-0759,unforeseen_condition,authorities_and_utilities,site.survey-boundaries,authority,residential;commercial,new,no,structure,,,
+B2-0760,unforeseen_condition,authorities_and_utilities,site.trees,substructure.footings,residential;commercial,new;extend,yes,structure,B2-0628,uc.protected-or-neighbouring-tree-restricts-works,
+B2-0761,unforeseen_condition,authorities_and_utilities,interiors,authority,commercial;institution,refurb,yes,envelope,,,Side A element 'heritage fabric' fits no single leaf system; mapped to the top-level system interiors.
+B2-0762,process_authority_supply_weather,third_parties_and_occupation,structure.masonry,neighbour,residential;commercial,extend,yes,structure,,,
+B2-0763,process_authority_supply_weather,authorities_and_utilities,programme,authority,commercial,new,no,delivery,,,
+B2-0764,process_authority_supply_weather,authorities_and_utilities,utility,programme,commercial,new;extend,yes,delivery,,,
+B2-0765,process_authority_supply_weather,third_parties_and_occupation,programme,neighbour,commercial;institution,refurb,yes,delivery,,,
+B2-0766,process_authority_supply_weather,authorities_and_utilities,structure,authority,residential;commercial,new;extend,yes,structure,B2-0597,,Side A element 'flood level' fits no single leaf system; mapped to the top-level system structure.
+B2-0767,unforeseen_condition,authorities_and_utilities,envelope.bushfire-construction,authority,residential,new;extend,yes,envelope,,uc.bal-increased-after-design,
+B2-0768,process_authority_supply_weather,authorities_and_utilities,envelope.external-waterproofing,authority,residential,new;remediation,yes,envelope,,,
+B2-0769,process_authority_supply_weather,authorities_and_utilities,access-egress.accessible-access,authority,commercial;institution,new;refurb,yes,fire,,,
+B2-0770,unforeseen_condition,third_parties_and_occupation,fire-passive,occupant,commercial,refurb,yes,fire,,,Side A element 'fire engineering report' fits no single leaf system; mapped to the top-level system fire-passive.
+B2-0771,unforeseen_condition,authorities_and_utilities,authority,contract,residential;commercial,extend,yes,delivery,,,
+B2-0772,process_authority_supply_weather,authorities_and_utilities,programme,authority,commercial;institution,new;refurb,yes,delivery,,,
+B2-0773,unforeseen_condition,authorities_and_utilities,hydraulic.sanitary,authority,commercial;industrial,refurb,yes,services-wet-air,B2-0411,,
+B2-0774,unforeseen_condition,authorities_and_utilities,hydraulic.trade-waste,authority,commercial,refurb,yes,services-wet-air,B2-0384;B2-0963,,
+B2-0775,unforeseen_condition,authorities_and_utilities,site.stormwater-detention,authority,commercial,new,no,structure,,,
+B2-0776,process_authority_supply_weather,authorities_and_utilities,site.stormwater-detention,authority,residential;commercial,new,no,structure,,,
+B2-0777,process_authority_supply_weather,authorities_and_utilities,substructure.footings,authority,residential;commercial,new;extend,yes,structure,,,
+B2-0778,unforeseen_condition,authorities_and_utilities,substructure.slab-on-ground,utility,commercial,new,no,structure,,,
+B2-0779,process_authority_supply_weather,authorities_and_utilities,electrical.utility-supply,authority,commercial,new,no,electrical-comms,,,
+B2-0780,design_or_coordination_error,,electrical.utility-supply,access-egress,commercial,new,no,electrical-comms,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0781,process_authority_supply_weather,authorities_and_utilities,comms-security.carrier-lead-in,utility,commercial,new,no,electrical-comms,,,
+B2-0782,process_authority_supply_weather,authorities_and_utilities,programme,authority,commercial,new,no,delivery,,,
+B2-0783,process_authority_supply_weather,authorities_and_utilities,substructure.basement-retention,authority,commercial;industrial,new,no,structure,,,
+B2-0784,process_authority_supply_weather,authorities_and_utilities,substructure.piles,authority,industrial,new,no,structure,,,
+B2-0785,unforeseen_condition,hazardous_materials,substructure.footings,authority,industrial,new;remediation,yes,structure,,,
+B2-0786,unforeseen_condition,authorities_and_utilities,interiors.floor-finishes,structure.alterations,commercial,refurb,yes,envelope,,uc.food-premises-finish-requirements-not-met,
+B2-0787,process_authority_supply_weather,authorities_and_utilities,mechanical.refrigerant-condensate,authority,commercial,refurb,yes,services-wet-air,,,
+B2-0788,unforeseen_condition,third_parties_and_occupation,fire-active.special-suppression,occupant,industrial,refurb,yes,fire,,,
+B2-0789,process_authority_supply_weather,third_parties_and_occupation,structure.masonry,neighbour,residential,extend;remediation,yes,structure,,,
+B2-0790,unforeseen_condition,authorities_and_utilities,site.survey-boundaries,authority,residential;commercial,extend,yes,structure,,,
+B2-0791,process_authority_supply_weather,third_parties_and_occupation,contract,occupant,residential,refurb,yes,delivery,,,
+B2-0792,unforeseen_condition,hazardous_materials,contract,occupant,commercial;institution,refurb,yes,delivery,,,
+B2-0793,process_authority_supply_weather,supply_and_site_operations,electrical.switchboards,programme,commercial;industrial,refurb,yes,electrical-comms,,,
+B2-0794,process_authority_supply_weather,authorities_and_utilities,envelope.external-waterproofing,contract,commercial,remediation,yes,envelope,,,
+B2-0795,process_authority_supply_weather,supply_and_site_operations,envelope.roof-coverings,weather,commercial;institution,remediation,yes,envelope,,,
+B2-0796,design_or_coordination_error,,structure.alterations,contract,commercial,new,no,structure,,,
+B2-0797,process_authority_supply_weather,supply_and_site_operations,access-egress.stairs-and-ramps,programme,commercial,refurb,yes,fire,,,
+B2-0798,workmanship_defect,,envelope.external-waterproofing,contract,residential,new;remediation,yes,envelope,,,
+B2-0799,unforeseen_condition,authorities_and_utilities,mechanical,contract,commercial;institution,refurb,yes,services-wet-air,,,Side A element 'existing services drawing' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0800,unforeseen_condition,authorities_and_utilities,structure,contract,commercial,refurb,yes,structure,,,Side A element 'provisional sum' fits no single leaf system; mapped to the top-level system structure.
+B2-0801,design_or_coordination_error,,site.loading-docks,structure.temporary-works,commercial,remediation,yes,structure,B2-0967,,
+B2-0802,unforeseen_condition,authorities_and_utilities,site.public-domain,utility,commercial,new;refurb,yes,structure,,,
+B2-0803,design_or_coordination_error,,structure.temporary-works,programme,commercial,new,no,structure,,,
+B2-0804,unforeseen_condition,concealed_services_and_earlier_work,programme,site,commercial,remediation,yes,structure,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0805,unforeseen_condition,ground_and_site,site.loading-docks,envelope.external-walls,commercial,refurb,yes,structure,,,
+B2-0806,design_or_coordination_error,,access-egress.barriers,envelope.external-walls,commercial,new;remediation,yes,fire,,,
+B2-0807,design_or_coordination_error,,structure.temporary-works,contract,commercial,new,no,structure,,,
+B2-0808,process_authority_supply_weather,third_parties_and_occupation,structure.temporary-works,occupant,commercial,extend,yes,structure,,,
+B2-0809,workmanship_defect,,envelope.external-waterproofing,interiors.wet-area-waterproofing,commercial,new;refurb,yes,envelope,,,
+B2-0810,unforeseen_condition,ground_and_site,site.vehicle-access,programme,commercial;industrial,new,no,structure,,,
+B2-0811,design_or_coordination_error,,structure.temporary-works,envelope.external-walls,commercial,new,no,structure,,,
+B2-0812,unforeseen_condition,concealed_services_and_earlier_work,programme,interiors.walls-linings,commercial,refurb,yes,envelope,,,
+B2-0813,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-walls,mechanical.central-plant,commercial,remediation,yes,envelope,,,
+B2-0814,design_or_coordination_error,,site.vehicle-access,substructure.basement-retention,commercial,new,no,structure,,,
+B2-0815,design_or_coordination_error,,electrical.temporary-power,programme,commercial,new,no,electrical-comms,,,
+B2-0816,unforeseen_condition,ground_and_site,site,structure.temporary-works,commercial,new,yes,structure,,,Side A element 'scaffold tie' fits no single leaf system; mapped to the top-level system site.
+B2-0817,unforeseen_condition,existing_structure,structure.alterations,mechanical.heating-appliances,residential,remediation,yes,structure,,,
+B2-0818,design_or_coordination_error,,site.impact-protection,envelope.external-waterproofing,commercial,remediation,yes,structure,,,
+B2-0819,design_or_coordination_error,,access-egress.stairs-and-ramps,fire-passive.openings,commercial,refurb,yes,fire,,,
+B2-0820,process_authority_supply_weather,authorities_and_utilities,substructure.basement-retention,authority,commercial,new,no,structure,,,
+B2-0821,unforeseen_condition,concealed_services_and_earlier_work,interiors.ceilings,electrical,commercial;institution,refurb,yes,envelope,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0822,workmanship_defect,,electrical,hydraulic,residential;commercial,refurb,yes,electrical-comms,,,Side A element 'live service' fits no single leaf system; mapped to the top-level system electrical. Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0823,workmanship_defect,,interiors.floor-finishes,occupant,commercial;institution,refurb,yes,envelope,,,
+B2-0824,design_or_coordination_error,,access-egress.stairs-and-ramps,occupant,commercial;institution,refurb,yes,fire,,,
+B2-0825,process_authority_supply_weather,third_parties_and_occupation,programme,occupant,commercial;institution,refurb,yes,delivery,,,
+B2-0826,workmanship_defect,,interiors.floor-finishes,occupant,commercial,refurb,yes,envelope,,,
+B2-0827,unforeseen_condition,third_parties_and_occupation,programme,occupant,commercial;institution,refurb,yes,delivery,,,
+B2-0828,process_authority_supply_weather,third_parties_and_occupation,mechanical.air-distribution,occupant,commercial,refurb,yes,services-wet-air,,,
+B2-0829,unforeseen_condition,existing_systems_on_test,mechanical.central-plant,electrical,commercial;institution,refurb,yes,services-wet-air,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0830,unforeseen_condition,existing_structure,structure.alterations,contract,commercial;institution,refurb,yes,structure,,,
+B2-0831,unforeseen_condition,existing_structure,structure.alterations,mechanical,commercial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0832,unforeseen_condition,existing_structure,structure.alterations,interiors.floor-finishes,commercial;institution,refurb,yes,structure,,,
+B2-0833,unforeseen_condition,concealed_services_and_earlier_work,interiors.walls-linings,structure.alterations,residential;commercial,refurb,yes,envelope,,,
+B2-0834,unforeseen_condition,existing_structure,structure.masonry,interiors.floor-finishes,residential;commercial,refurb,yes,structure,,,
+B2-0835,unforeseen_condition,concealed_services_and_earlier_work,interiors.tiling,interiors.tiling,commercial,remediation,yes,envelope,,,
+B2-0836,workmanship_defect,,envelope.external-waterproofing,hydraulic,residential;commercial,refurb,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0837,unforeseen_condition,existing_structure,structure.timber,interiors,residential,refurb,yes,structure,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0838,unforeseen_condition,third_parties_and_occupation,structure.masonry,neighbour,residential;commercial,refurb,yes,structure,,,
+B2-0839,unforeseen_condition,third_parties_and_occupation,envelope.windows-doors,occupant,commercial;institution,refurb,yes,envelope,,,
+B2-0840,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,access-egress.egress-doors,residential,extend,yes,envelope,,,
+B2-0841,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.sanitary,structure,residential,refurb,yes,services-wet-air,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0842,unforeseen_condition,existing_structure,structure.timber,envelope.external-walls,residential,remediation,yes,structure,,,
+B2-0843,unforeseen_condition,existing_structure,structure,interiors.ceilings,residential,refurb,yes,structure,,,Side A element 'roof-space access' fits no single leaf system; mapped to the top-level system structure.
+B2-0844,unforeseen_condition,concealed_services_and_earlier_work,mechanical,envelope.roof-coverings,residential,refurb,yes,services-wet-air,,,Side A element 'roof space' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0845,unforeseen_condition,existing_structure,structure.masonry,envelope,residential,refurb,yes,structure,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0846,unforeseen_condition,third_parties_and_occupation,structure.alterations,neighbour,residential,refurb,yes,structure,,,
+B2-0847,unforeseen_condition,concealed_services_and_earlier_work,interiors.ceilings,mechanical,residential;commercial,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0848,unforeseen_condition,concealed_services_and_earlier_work,interiors.painting,interiors.painting,residential;commercial,remediation,yes,envelope,,,
+B2-0849,unforeseen_condition,hazardous_materials,interiors.tiling,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0850,unforeseen_condition,concealed_services_and_earlier_work,access-egress.barriers,envelope,residential;commercial,remediation,yes,fire,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0851,unforeseen_condition,concealed_services_and_earlier_work,envelope,access-egress.barriers,residential,remediation,yes,envelope,,,Side A element 'balustrade glass' fits no single leaf system; mapped to the top-level system envelope.
+B2-0852,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,access-egress,industrial,remediation,yes,envelope,,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0853,unforeseen_condition,concealed_services_and_earlier_work,envelope.roof-coverings,structure.steel,industrial,refurb,yes,envelope,,,
+B2-0854,unforeseen_condition,existing_systems_on_test,mechanical,programme,industrial,refurb,yes,services-wet-air,,,Side A element 'crane runway' fits no single leaf system; mapped to the top-level system mechanical.
+B2-0855,unforeseen_condition,third_parties_and_occupation,programme,occupant,industrial,extend,yes,delivery,,,
+B2-0856,unforeseen_condition,existing_structure,structure.concrete,site,industrial,refurb,yes,structure,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0857,unforeseen_condition,existing_structure,structure.concrete,interiors,industrial,remediation,yes,structure,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0858,unforeseen_condition,existing_structure,structure.concrete,site.stormwater-detention,industrial,refurb,yes,structure,,,
+B2-0859,unforeseen_condition,ground_and_site,substructure.basement-retention,hydraulic,industrial,extend,yes,structure,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0860,unforeseen_condition,ground_and_site,site.retaining-walls,hydraulic.cold-water,industrial,remediation,yes,structure,,fm.bund-volume-below-stored-volume,
+B2-0861,unforeseen_condition,authorities_and_utilities,contract,authority,residential;commercial,extend,yes,delivery,,,
+B2-0862,unforeseen_condition,existing_structure,structure.alterations,site,residential;commercial,extend,yes,structure,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0863,unforeseen_condition,existing_structure,structure.masonry,interiors.walls-linings,residential,refurb,yes,structure,,,
+B2-0864,unforeseen_condition,existing_structure,structure.steel,envelope.windows-doors,residential,remediation,yes,structure,,,
+B2-0865,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,structure.alterations,residential;commercial,refurb,yes,envelope,,,
+B2-0866,unforeseen_condition,concealed_services_and_earlier_work,interiors.internal-doors,access-egress.egress-doors,residential;commercial,remediation,yes,envelope,,fm.envelope-frame-out-of-square,
+B2-0867,unforeseen_condition,concealed_services_and_earlier_work,envelope.windows-doors,interiors.internal-glazing,commercial,refurb,yes,envelope,,,
+B2-0868,unforeseen_condition,existing_structure,substructure.basement-retention,interiors.walls-linings,commercial,remediation,yes,structure,,,
+B2-0869,unforeseen_condition,concealed_services_and_earlier_work,hydraulic.roof-drainage,site,commercial,remediation,yes,services-wet-air,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0870,unforeseen_condition,concealed_services_and_earlier_work,mechanical.central-plant,site,commercial,refurb,yes,services-wet-air,,,Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site.
+B2-0871,unforeseen_condition,concealed_services_and_earlier_work,access-egress.maintenance-access,mechanical.central-plant,commercial;institution,refurb,yes,fire,,uc.new-plant-does-not-fit-old-plant-room-or-route,
+B2-0872,unforeseen_condition,existing_structure,structure.alterations,envelope.flashings-seals,commercial,remediation,yes,structure,,,
+B2-0873,unforeseen_condition,concealed_services_and_earlier_work,interiors.floor-finishes,electrical,commercial,refurb,yes,envelope,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0874,unforeseen_condition,hazardous_materials,interiors.tiling,structure.masonry,commercial,remediation,yes,envelope,,,
+B2-0875,unforeseen_condition,concealed_services_and_earlier_work,interiors,mechanical,commercial;institution,refurb,yes,envelope,,,Side A element 'heritage fabric' fits no single leaf system; mapped to the top-level system interiors. Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0876,unforeseen_condition,concealed_services_and_earlier_work,interiors.wet-area-waterproofing,hydraulic,residential,remediation,yes,envelope,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0877,unforeseen_condition,concealed_services_and_earlier_work,envelope.external-waterproofing,structure.alterations,commercial,remediation,yes,envelope,,,
+B2-0878,unforeseen_condition,existing_structure,structure.concrete,interiors.floor-finishes,commercial,refurb,yes,structure,,uc.existing-slab-levels-and-thickness-vary,
+B2-0879,unforeseen_condition,existing_structure,structure.concrete,envelope,residential;commercial,remediation,yes,structure,,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0880,unforeseen_condition,existing_structure,structure.concrete,mechanical,commercial,refurb,yes,structure,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0881,unforeseen_condition,concealed_services_and_earlier_work,electrical.switchboards,hydraulic,commercial,refurb,yes,electrical-comms,B2-0373,fm.switchboard-in-wet-area,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0882,process_authority_supply_weather,third_parties_and_occupation,programme,occupant,institution,refurb,yes,delivery,,,
+B2-0883,design_or_coordination_error,,interiors.ceilings,occupant,institution,refurb,yes,envelope,,,
+B2-0884,unforeseen_condition,third_parties_and_occupation,programme,occupant,institution,refurb,yes,delivery,,,
+B2-0885,design_or_coordination_error,,access-egress.egress-doors,occupant,institution,refurb,yes,fire,,,
+B2-0886,unforeseen_condition,third_parties_and_occupation,hydraulic.specialist-process,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0887,unforeseen_condition,third_parties_and_occupation,electrical.switchboards,occupant,institution,refurb,yes,electrical-comms,,,
+B2-0888,process_authority_supply_weather,third_parties_and_occupation,mechanical.air-distribution,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0889,unforeseen_condition,third_parties_and_occupation,structure.alterations,interiors.floor-finishes,institution,refurb,yes,structure,,,
+B2-0890,unforeseen_condition,third_parties_and_occupation,access-egress,mechanical,institution,refurb,yes,fire,,,Side A element 'secure path' fits no single leaf system; mapped to the top-level system access-egress. Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0891,unforeseen_condition,third_parties_and_occupation,structure.alterations,interiors,institution,refurb,yes,structure,,,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0892,unforeseen_condition,third_parties_and_occupation,fire-active.detection,programme,institution,refurb,yes,fire,,,
+B2-0893,process_authority_supply_weather,supply_and_site_operations,comms-security.audiovisual,electrical,institution,refurb,yes,electrical-comms,,,Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0894,unforeseen_condition,third_parties_and_occupation,mechanical.process-specialist,occupant,institution,refurb,yes,services-wet-air,,,
+B2-0895,unforeseen_condition,third_parties_and_occupation,mechanical.process-specialist,hydraulic.cold-water,institution,refurb,yes,services-wet-air,,,
+B2-0896,process_authority_supply_weather,supply_and_site_operations,mechanical.central-plant,programme,institution,refurb,yes,services-wet-air,,,
+B2-0897,design_or_coordination_error,,access-egress.stairs-and-ramps,occupant,institution,refurb,yes,fire,,,
+B2-0898,unforeseen_condition,third_parties_and_occupation,comms-security,electrical,commercial;institution,refurb,yes,electrical-comms,,,Side A element 'raised floor' fits no single leaf system; mapped to the top-level system comms-security. Side B (Electrical services) is not narrowed by the row text; mapped to the top-level system electrical.
+B2-0899,unforeseen_condition,third_parties_and_occupation,interiors.floor-finishes,mechanical,institution,refurb,yes,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0900,unforeseen_condition,third_parties_and_occupation,comms-security.access-control,access-egress.egress-doors,institution,refurb,yes,electrical-comms,,,
+B2-0901,process_authority_supply_weather,third_parties_and_occupation,structure.alterations,occupant,institution,refurb,yes,structure,,,
+B2-0902,design_or_coordination_error,,access-egress.livable-housing,site,residential,new,no,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Site and external works) is not narrowed by the row text; mapped to the top-level system site."
+B2-0903,design_or_coordination_error,,substructure.termite-management,structure.concrete,residential,new;extend,yes,structure,,,
+B2-0904,design_or_coordination_error,,envelope.external-walls,mechanical.controls-bms,residential;commercial,new,yes,envelope,,,
+B2-0905,design_or_coordination_error,,envelope.windows-doors,envelope.windows-doors,residential;commercial,new,no,envelope,,,
+B2-0906,design_or_coordination_error,,structure.concrete,hydraulic.cold-water,commercial,new,no,structure,,,
+B2-0907,workmanship_defect,,structure.concrete,contract,commercial,new,no,structure,,,Kind changed from latent condition: a result below the assumed value is a construction quality failure.
+B2-0908,design_or_coordination_error,,envelope.external-walls,structure.concrete,commercial,new,no,envelope,,,
+B2-0909,workmanship_defect,,structure.steel,structure.steel,industrial,new,no,structure,,,
+B2-0910,workmanship_defect,,structure.precast,envelope.external-walls,commercial,new,no,structure,,,
+B2-0911,design_or_coordination_error,,access-egress.stairs-and-ramps,structure,commercial;institution,new,no,fire,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0912,design_or_coordination_error,,access-egress.accessible-access,site.vehicle-access,commercial;institution,new,no,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0913,workmanship_defect,,hydraulic.sanitary,fire-passive.penetrations,residential,new,no,services-wet-air,B2-0167,,
+B2-0914,process_authority_supply_weather,authorities_and_utilities,envelope.roof-coverings,authority,commercial,new,no,envelope,,,
+B2-0915,design_or_coordination_error,,envelope.external-waterproofing,authority,residential,new,no,envelope,,,
+B2-0916,design_or_coordination_error,,access-egress,structure,commercial,new,no,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side A element 'car-park clearance' fits no single leaf system; mapped to the top-level system access-egress. Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure."
+B2-0917,design_or_coordination_error,,access-egress,structure.concrete,industrial,new,no,fire,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side A element 'dock headroom' fits no single leaf system; mapped to the top-level system access-egress."
+B2-0918,design_or_coordination_error,,hydraulic.sanitary,access-egress,commercial;institution,new;refurb,yes,services-wet-air,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress."
+B2-0919,design_or_coordination_error,,access-egress.exits,occupant,commercial,new,yes,fire,,,
+B2-0920,design_or_coordination_error,,interiors,authority,commercial,new,no,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side A element 'end-of-trip room' fits no single leaf system; mapped to the top-level system interiors."
+B2-0921,design_or_coordination_error,,interiors,authority,commercial;institution,new,no,envelope,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side A element 'waste room' fits no single leaf system; mapped to the top-level system interiors."
+B2-0922,design_or_coordination_error,,structure,access-egress.accessible-access,commercial;institution,new,no,structure,,,Side A element 'turning circle' fits no single leaf system; mapped to the top-level system structure.
+B2-0923,design_or_coordination_error,,envelope.windows-doors,structure,residential,new,no,envelope,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0924,process_authority_supply_weather,third_parties_and_occupation,substructure.basement-retention,neighbour,commercial,new,no,structure,,,
+B2-0925,unforeseen_condition,ground_and_site,substructure.piles,structure.alterations,commercial;industrial,new,no,structure,,,
+B2-0926,unforeseen_condition,design_and_scope,substructure.basement-retention,hydraulic.cold-water,commercial,new,no,structure,,fm.groundwater-loads-basement,
+B2-0927,unforeseen_condition,authorities_and_utilities,site.acid-sulfate-soils,authority,residential;commercial,new,no,structure,,uc.acid-sulfate-soil-exposed-by-excavation;if.earthworks-disturbs-acid-sulfate-soils,
+B2-0928,unforeseen_condition,design_and_scope,substructure.footings,structure.alterations,residential,new,no,structure,,uc.reactive-clay-or-tree-moisture-movement,
+B2-0929,unforeseen_condition,ground_and_site,substructure.footings,structure.concrete,residential,new,no,structure,,uc.uncontrolled-fill-found-under-building-pad,
+B2-0930,unforeseen_condition,existing_structure,substructure.slab-on-ground,structure.concrete,industrial,new,no,structure,,,
+B2-0931,unforeseen_condition,ground_and_site,substructure.slab-on-ground,structure.concrete,residential,new,no,structure,,,
+B2-0932,unforeseen_condition,ground_and_site,site.ground-conditions,hydraulic,residential,new,no,structure,,,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0933,design_or_coordination_error,,hydraulic.cold-water,utility,residential;commercial,new,no,services-wet-air,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0934,design_or_coordination_error,,fire-active.hydrants,utility,commercial;industrial,new,no,fire,,uc.street-main-below-fire-flow-demand,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0935,design_or_coordination_error,,fire-active.sprinklers,interiors.ceilings,commercial,new,no,fire,,if.sprinklers-share-ceiling-services;fm.sprinklers-share-ceiling-services,
+B2-0936,design_or_coordination_error,,mechanical.fire-mode-air-systems,envelope,commercial,new,no,services-wet-air,B2-0192,,Side B (Building envelope) is not narrowed by the row text; mapped to the top-level system envelope.
+B2-0937,design_or_coordination_error,,envelope.curtain-wall,structure.concrete,commercial,new,no,envelope,,,
+B2-0938,workmanship_defect,,envelope.roof-coverings,hydraulic.sanitary,commercial,new,no,envelope,,fm.envelope-roof-ponding,
+B2-0939,workmanship_defect,,envelope.windows-doors,structure.alterations,residential;commercial,new,no,envelope,,,
+B2-0940,workmanship_defect,,envelope.windows-doors,mechanical,commercial,new,no,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0941,workmanship_defect,,envelope.external-walls,mechanical,residential;commercial,new,no,envelope,,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0942,design_or_coordination_error,,envelope.roof-coverings,hydraulic.roof-drainage,residential;commercial,new,no,envelope,,,
+B2-0943,workmanship_defect,,envelope.flashings-seals,interiors.walls-linings,residential,new,no,envelope,B2-0072,,
+B2-0944,design_or_coordination_error,,envelope.windows-doors,hydraulic,residential,new,yes,envelope,B2-0073,fm.envelope-door-threshold-conflicts-with-upturn,Side B (Hydraulic services) is not narrowed by the row text; mapped to the top-level system hydraulic.
+B2-0945,workmanship_defect,,envelope.external-waterproofing,structure,residential,new,no,envelope,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0946,workmanship_defect,,structure.concrete,hydraulic.sanitary,residential;commercial,new,no,structure,B2-0118;B2-0148,,
+B2-0947,process_authority_supply_weather,supply_and_site_operations,hydraulic.sanitary,interiors.wet-area-waterproofing,residential,new,no,services-wet-air,B2-0117,fm.envelope-wet-waste-before-membrane,
+B2-0948,workmanship_defect,,fire-passive.openings,access-egress.egress-doors,commercial,new,no,fire,B2-0194,,
+B2-0949,design_or_coordination_error,,electrical.lighting,access-egress,commercial,new,no,electrical-comms,B2-0204,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0950,workmanship_defect,,vertical-transport.lift-shafts-pits,structure,commercial,new,no,electrical-comms,B2-0439,fm.lift-shaft-out-of-plumb,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0951,design_or_coordination_error,,electrical.switchboards,access-egress,commercial;industrial,new,no,electrical-comms,B2-0309,fm.switchboard-room-clearances-not-reserved,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0952,design_or_coordination_error,,electrical.utility-supply,utility,commercial;industrial,new,no,electrical-comms,B2-0302,,
+B2-0953,design_or_coordination_error,,electrical.cabling-wiring,interiors,residential;commercial,new,no,electrical-comms,B2-0305,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors."
+B2-0954,design_or_coordination_error,,fire-active.hydrants,access-egress,commercial,new,no,fire,B2-0174,,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0955,design_or_coordination_error,,electrical.standby-power,fire-active.fire-water,commercial;industrial,new,no,electrical-comms,B2-0323,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0956,design_or_coordination_error,,mechanical.refrigerant-condensate,hydraulic.sanitary,commercial,new,no,services-wet-air,B2-0234;B2-0514,fm.condensate-drain-without-fall,
+B2-0957,design_or_coordination_error,,mechanical.local-exhaust,mechanical.local-exhaust,commercial,new,no,services-wet-air,B2-0231,fm.exhaust-intake-separation,
+B2-0958,design_or_coordination_error,,mechanical.local-exhaust,fire-passive.penetrations,commercial,new,no,services-wet-air,B2-0235,fm.kitchen-exhaust-duct-not-fire-rated,
+B2-0959,design_or_coordination_error,,mechanical.central-plant,neighbour,commercial;industrial,new,no,services-wet-air,B2-0247,uc.plant-noise-to-neighbours-over-limit,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0960,design_or_coordination_error,,hydraulic.sanitary,utility,residential;commercial,new,no,services-wet-air,,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0961,design_or_coordination_error,,hydraulic.sanitary,structure,residential;commercial,new,no,services-wet-air,B2-0377,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0962,design_or_coordination_error,,hydraulic.hot-water,occupant,commercial;institution,new,yes,services-wet-air,B2-0383,,
+B2-0963,design_or_coordination_error,,hydraulic.sanitary,authority,commercial,new,no,services-wet-air,B2-0384;B2-0774,,
+B2-0964,workmanship_defect,,hydraulic.roof-drainage,hydraulic.backflow-prevention,residential,new,no,services-wet-air,B2-0408,,
+B2-0965,workmanship_defect,,substructure.basement-retention,structure,commercial,new,no,structure,B2-0155,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0966,workmanship_defect,,substructure.piles,structure.alterations,commercial,new,no,structure,B2-0154,,
+B2-0967,design_or_coordination_error,,site.loading-docks,structure.temporary-works,commercial,new,yes,structure,B2-0801,,
+B2-0968,unforeseen_condition,ground_and_site,site.retaining-walls,substructure.basement-retention,commercial;industrial,new,no,structure,,,
+B2-0969,unforeseen_condition,ground_and_site,substructure.piles,structure,commercial,new,no,structure,,,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0970,unforeseen_condition,ground_and_site,substructure.basement-retention,structure,commercial,new,no,structure,,fm.ground-anchor-proof-load-test-fails,Side B (Structure) is not narrowed by the row text; mapped to the top-level system structure.
+B2-0971,workmanship_defect,,structure.concrete,envelope.external-waterproofing,commercial,new,no,structure,,,
+B2-0972,workmanship_defect,,structure.alterations,structure.alterations,residential;commercial,extend,yes,structure,,fm.envelope-facade-frame-movement,
+B2-0973,design_or_coordination_error,,electrical.solar-pv,structure.steel,commercial;industrial,new;refurb,yes,electrical-comms,,,
+B2-0974,design_or_coordination_error,,envelope.flashings-seals,envelope.flashings-seals,residential;commercial,new;remediation,yes,envelope,B2-0085,,
+B2-0975,workmanship_defect,,envelope.windows-doors,access-egress,residential;commercial;institution,new;refurb,yes,envelope,B2-0096,fm.envelope-safety-glass-substitution,Side B (Access and egress) is not narrowed by the row text; mapped to the top-level system access-egress.
+B2-0976,design_or_coordination_error,,envelope.roof-coverings,hydraulic.roof-drainage,commercial,new;remediation,yes,envelope,,fm.envelope-roof-outlet-blockage-no-overflow,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0977,process_authority_supply_weather,supply_and_site_operations,electrical.solar-pv,envelope.external-waterproofing,commercial,new;refurb,yes,electrical-comms,B2-0104,,
+B2-0978,design_or_coordination_error,,comms-security.audiovisual,structure.concrete,commercial;institution,new;refurb,yes,electrical-comms,B2-0742,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0979,workmanship_defect,,hydraulic.gas,mechanical.local-exhaust,commercial,new;refurb,yes,services-wet-air,B2-0734,,
+B2-0980,design_or_coordination_error,,hydraulic.sanitary,occupant,industrial;institution,new;refurb,yes,services-wet-air,B2-0413,,
+B2-0981,design_or_coordination_error,,hydraulic.sanitary,occupant,industrial,new;refurb,yes,services-wet-air,B2-0428,,
+B2-0982,design_or_coordination_error,,electrical.process-hazardous,occupant,industrial,new;refurb,yes,electrical-comms,B2-0351,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0983,process_authority_supply_weather,supply_and_site_operations,electrical.switchboards,electrical.switchboards,commercial;industrial,new;refurb,yes,electrical-comms,B2-0307,,
+B2-0984,workmanship_defect,,fire-passive.compartments,interiors.ceilings,commercial,new;refurb,yes,fire,B2-0171,fm.envelope-fire-rated-wall-stops-at-ceiling,
+B2-0985,design_or_coordination_error,,fire-passive.penetrations,structure.alterations,commercial,new;remediation,yes,fire,B2-0170,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0986,workmanship_defect,,electrical.cabling-wiring,fire-passive.penetrations,commercial,new;refurb,yes,electrical-comms,B2-0202,,
+B2-0987,design_or_coordination_error,,fire-active.sprinklers,interiors,industrial,new;refurb,yes,fire,B2-0200,fm.suppression-hazard-changed,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors."
+B2-0988,design_or_coordination_error,,electrical.cabling-wiring,fire-passive.penetrations,commercial,new;refurb,yes,electrical-comms,B2-0187,,
+B2-0989,design_or_coordination_error,,structure.steel,fire-passive.structural-fire-protection,commercial;industrial,new;remediation,yes,structure,,fm.structural-steel-fire-protection-thickness-short,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0990,design_or_coordination_error,,fire-passive.openings,interiors.floor-finishes,commercial,new;remediation,yes,fire,B2-0172,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0991,design_or_coordination_error,,fire-active.hydrants,interiors,commercial,new;refurb,yes,fire,B2-0180,fm.hose-reel-coverage-gap,Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors.
+B2-0992,design_or_coordination_error,,fire-active.detection,fire-passive.compartments,commercial,new;refurb,yes,fire,B2-0177,,
+B2-0993,design_or_coordination_error,,access-egress.exits,mechanical,commercial,new;refurb,yes,fire,B2-0179;B2-0519,,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0994,design_or_coordination_error,,fire-active.sprinklers,interiors.ceilings,commercial,new;refurb,yes,fire,B2-0173,fm.sprinklers-share-ceiling-services,
+B2-0995,design_or_coordination_error,,fire-active.special-suppression,mechanical,commercial,new;refurb,yes,fire,B2-0178,fm.kitchen-hood-suppression-missing,Side B (Mechanical services) is not narrowed by the row text; mapped to the top-level system mechanical.
+B2-0996,workmanship_defect,,fire-passive.openings,interiors.internal-doors,commercial,new;refurb,yes,fire,B2-0196,,
+B2-0997,design_or_coordination_error,,fire-active.special-suppression,interiors,commercial,new;refurb,yes,fire,B2-0217,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site. Side B (Interiors and finishes) is not narrowed by the row text; mapped to the top-level system interiors."
+B2-0998,design_or_coordination_error,,comms-security.structured-cabling,fire-active.detection,commercial,new;refurb,yes,electrical-comms,B2-0207,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."
+B2-0999,workmanship_defect,,fire-passive.openings,interiors.painting,commercial;institution,new;remediation,yes,fire,B2-0212,,
+B2-1000,design_or_coordination_error,,fire-passive.openings,interiors.floor-finishes,industrial,new;refurb,yes,fire,B2-0215,,"Kind changed from latent condition: the row describes a design or coordination miss, not a state of the building found on site."

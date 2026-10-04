@@ -31,7 +31,7 @@ CATEGORIES = {'ground_and_site', 'existing_structure', 'hazardous_materials',
 ANCHORS = {'programme', 'contract', 'procurement', 'design', 'authority', 'utility', 'weather',
            'neighbour', 'occupant', 'commissioning', 'handover', 'budget', 'insurance',
            'site_operations'}
-BUILDING_CATEGORIES = {'residential', 'commercial', 'industrial'}
+BUILDING_CATEGORIES = {'residential', 'commercial', 'industrial', 'institution'}
 WORK_TYPES = {'new', 'extend', 'refurb', 'remediation'}
 
 
@@ -52,9 +52,9 @@ def active_systems():
 
 
 def record_ids():
-    """Existing failure mode and interface ids from every cluster."""
+    """Existing failure mode, unforeseen condition and interface ids from every cluster."""
     ids = set()
-    for kind in ('failure_modes', 'interfaces'):
+    for kind in ('failure_modes', 'unforeseen', 'interfaces'):
         for p in glob.glob(os.path.join(ROOT, 'knowledge', 'clusters', '*', kind + '.yaml')):
             for r in load_yaml(p).get(kind) or []:
                 ids.add(r['id'])
@@ -146,7 +146,7 @@ def check_triage(dataset, errors):
                 errors.append(f'{rid}: dup_rows {d} does not list {rid} back')
         for s in split(r['similar_existing']):
             if s not in records:
-                errors.append(f'{rid}: similar_existing {s!r} is not an existing fm or if id')
+                errors.append(f'{rid}: similar_existing {s!r} is not an existing fm, uc or if id')
 
 
 def check_terms(errors):

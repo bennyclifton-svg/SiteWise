@@ -2844,3 +2844,42 @@ terms:
 - term: Young concrete
   ids: [structure.concrete]
   status: draft
+- term: Substructure
+  ids: [substructure]
+  status: draft
+- term: Hydraulic services
+  ids: [hydraulic]
+  status: draft
+- term: Mechanical services
+  ids: [mechanical]
+  status: draft
+- term: Electrical services
+  ids: [electrical]
+  status: draft
+- term: Building envelope
+  ids: [envelope]
+  status: draft
+- term: Interiors and finishes
+  ids: [interiors]
+  status: draft
+- term: Site and external works
+  ids: [site]
+  status: draft
+- term: Access and egress
+  ids: [access-egress]
+  status: draft
+- term: Active fire protection
+  ids: [fire-active]
+  status: draft
+- term: Passive fire protection
+  ids: [fire-passive]
+  status: draft
+- term: Communications and security
+  ids: [comms-security]
+  status: draft
+- term: Vertical transport
+  ids: [vertical-transport]
+  status: draft
+- term: occupant
+  ids: [occupant]
+  status: draft
