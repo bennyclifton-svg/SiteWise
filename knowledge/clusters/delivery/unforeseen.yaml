@@ -1,0 +1,929 @@
+# Delivery cluster: unforeseen conditions where neither side is a physical system.
+# Draft from batch 1 rows; owner review pending. No frequencies or costs are recorded.
+version: 1
+unforeseen:
+  - id: uc.plant-cannot-access-or-operate-on-site
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.plant-access-or-lift-study-stated"]
+    de_risk: {"kind": "investigation", "label": "Plant access and lift study for piling rigs and cranes against ground, clearance and site constraints before mobilisation"}
+    contract: "Tender documents state site access limits; builder carries plant selection unless a provisional sum is allowed."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0026"}
+      - {"dataset": "batch1", "row": "B1-0814"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: uc.truck-swept-paths-fail-site-layout
+    kind: design_or_coordination_error
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.vehicle-swept-path-check-stated"]
+    de_risk: {"kind": "discipline", "label": "Swept path check of design vehicles against the site layout"}
+    contract: "Design responsibility sits with the traffic or civil designer."
+    effect: ["cost", "programme"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0877"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: uc.haulage-or-delivery-route-blocked
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Name alternative tip sites and delivery routes and carry a traffic management plan"}
+    contract: "Builder carries haulage and delivery routes; authority closures may support an extension of time."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction", "excavation"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0085"}
+      - {"dataset": "batch1", "row": "B1-0804"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+    notes: "B1-0085 is a spoil tip closed by an authority; B1-0804 is a road closure. Both stop material movement."
+  - id: uc.delivery-wrong-or-damaged
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"package_kind": "supply"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "hold_point", "label": "Check delivered material against the schedule and for damage at receipt, before the pour or installation that needs it"}
+    contract: "Supplier carries delivery condition; builder checks at receipt."
+    effect: ["programme", "cost", "quality"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0121"}
+      - {"dataset": "batch1", "row": "B1-0291"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Procurement Sequencing and the Program"}
+  - id: uc.material-shortage-or-discontinued-product
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"package_kind": "supply"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "investigation", "label": "Confirm availability and lead time of specified products before tender and order long lead items early"}
+    contract: "Substitution rights and lead-time risk stated in the contract."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0903"}
+      - {"dataset": "batch1", "row": "B1-0915"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Procurement Sequencing and the Program"}
+  - id: uc.shop-drawing-approval-delays-fabrication
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "procurement"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Programme shop drawing submission and review periods before fabrication starts"}
+    contract: "Review periods stated in the contract."
+    effect: ["programme"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0918"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Procurement Sequencing and the Program"}
+  - id: uc.product-lacks-certification-or-test-evidence
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"package_kind": "supply"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.product-certificate-stated"]
+    de_risk: {"kind": "obligation", "label": "Require test reports, certificates or certification for each product before it is ordered or used"}
+    contract: "Supplier warrants product certification; builder holds the evidence for the certifier."
+    effect: ["compliance", "programme", "cost"]
+    severity: compliance
+    discovered_at: ["construction", "handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0390"}
+      - {"dataset": "batch1", "row": "B1-0896"}
+      - {"dataset": "batch1", "row": "B1-0948"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+    notes: "B1-0896 adds customs holding an imported product. Regulatory references stay unverified."
+  - id: uc.non-conforming-or-recalled-product-found
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"package_kind": "supply"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "investigation", "label": "Check installed products against recall and non-conforming product notices"}
+    contract: "Supplier and head contract allocate replacement cost."
+    effect: ["safety", "cost", "compliance"]
+    severity: compliance
+    discovered_at: ["construction", "handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0946"}
+      - {"dataset": "batch1", "row": "B1-0947"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: uc.inspection-missed-or-failed-holds-next-trade
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.mandatory-inspections-stated"]
+    de_risk: {"kind": "hold_point", "label": "Book mandatory inspections and hold the next trade until the previous work is approved"}
+    contract: "Certifier inspection points listed in the contract programme."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0770"}
+      - {"dataset": "batch1", "row": "B1-0900"}
+      - {"dataset": "batch1", "row": "B1-0902"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+    notes: "B1-0770 overlaps fm.hydraulic-rough-in-before-linings, which covers the concealed-work failure rather than the process."
+  - id: uc.occupation-certificate-withheld
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "completion"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.completion-certificates-requirement-stated"]
+    de_risk: {"kind": "obligation", "label": "Compile certificates and compliance documentation for the certifier before final inspection"}
+    contract: "Documentation deliverables stated in the contract; settlement dates in sale contracts depend on the certificate."
+    effect: ["programme", "compliance", "cost"]
+    severity: programme
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0388"}
+      - {"dataset": "batch1", "row": "B1-0389"}
+      - {"dataset": "batch1", "row": "B1-0942"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: uc.authority-requires-design-change-after-approval
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "approvals"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.consent-conditions-stated"]
+    de_risk: {"kind": "approval", "label": "Confirm with the certifier or consent authority whether the design change needs a modification or fresh approval"}
+    contract: "Contract states who carries approval risk and conditions of consent."
+    effect: ["programme", "cost", "compliance"]
+    severity: programme
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0387"}
+      - {"dataset": "batch1", "row": "B1-0901"}
+      - {"dataset": "batch1", "row": "B1-0992"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: uc.development-consent-lapses-before-start
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "approvals"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Record the consent expiry and the physical commencement needed to keep it alive"}
+    contract: "Owner carries consent; programme must start works inside the consent period."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0991"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: uc.planning-control-limit-reached-after-design
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new", "extend"]}
+    signals: ["sig.planning-control-limits-stated"]
+    de_risk: {"kind": "investigation", "label": "Check setbacks, height, overshadowing and floor area controls against the design before lodgement"}
+    contract: "Designer carries planning compliance of the design."
+    effect: ["cost", "programme", "compliance"]
+    severity: programme
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0386"}
+      - {"dataset": "batch1", "row": "B1-0973"}
+      - {"dataset": "batch1", "row": "B1-0974"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: uc.extension-approval-slow-or-objected
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "approvals"}
+    when: {"det": "work_type", "any_of": ["extend"]}
+    signals: []
+    de_risk: {"kind": "investigation", "label": "Consult neighbours and the council early and allow approval time in the programme"}
+    contract: "Owner carries approval time unless the contract starts on approval."
+    effect: ["programme"]
+    severity: programme
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0971"}
+      - {"dataset": "batch1", "row": "B1-0972"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: uc.easement-or-utility-asset-restricts-footprint
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "investigation"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.easement-or-utility-asset-stated"]
+    de_risk: {"kind": "investigation", "label": "Search easements and utility assets on the title and site before fixing the footprint"}
+    contract: "Owner carries title and authority works; relocation costs may need a provisional sum."
+    effect: ["cost", "programme"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0852"}
+      - {"dataset": "batch1", "row": "B1-0857"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: uc.heritage-status-found-late
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "investigation"}
+    when: {"det": "work_type", "any_of": ["new", "refurb"]}
+    signals: []
+    de_risk: {"kind": "investigation", "label": "Check heritage listing and conservation area before design and before demolition or alteration"}
+    contract: "Owner carries heritage approvals and risk of retention of significant fabric."
+    effect: ["cost", "programme", "compliance"]
+    severity: compliance
+    discovered_at: ["design", "demolition_strip_out"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0850"}
+      - {"dataset": "batch1", "row": "B1-0954"}
+      - {"seed": "renovation-guide.md", "anchor": "## Heritage and character due diligence"}
+  - id: uc.heritage-materials-and-trades-scarce
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"package_kind": "supply"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}, {"det": "heritage_status", "any_of": ["conservation_area", "local_item", "state_register"]}]}
+    signals: []
+    de_risk: {"kind": "investigation", "label": "Confirm availability of authentic materials and heritage trades before pricing"}
+    contract: "Provisional sum or lead-time allowance for heritage materials and specialist trades."
+    effect: ["cost", "programme"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0955"}
+      - {"dataset": "batch1", "row": "B1-0956"}
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Heritage and Adaptive Reuse in Commercial Construction"}
+  - id: uc.change-of-use-or-alteration-triggers-whole-building-upgrade
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "approvals"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.change-of-use-stated"]
+    de_risk: {"kind": "investigation", "label": "Early certifier advice on upgrades triggered by change of use or alteration"}
+    contract: "Owner carries upgrade scope found after approval unless a provisional sum is stated."
+    effect: ["cost", "programme", "compliance"]
+    severity: compliance
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0356"}
+      - {"dataset": "batch1", "row": "B1-0952"}
+      - {"dataset": "batch1", "row": "B1-0953"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+    notes: "Regulatory triggers stay clause_verified false until the instrument is read."
+  - id: uc.building-height-triggers-additional-fire-measures
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "discipline", "label": "Fire engineer or certifier check of height-driven measures at concept stage"}
+    contract: "Designer carries compliance; cost change is a design variation if found after pricing."
+    effect: ["cost", "compliance"]
+    severity: compliance
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0366"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: uc.outdoor-kitchen-clearance-to-structures
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "design"}
+    when: {"all": [{"det": "work_type", "any_of": ["extend"]}, {"det": "existing_building", "is": true}]}
+    signals: []
+    de_risk: {"kind": "discipline", "label": "Check appliance clearances to structures and boundaries before design is fixed"}
+    contract: "Designer carries compliance of appliance location."
+    effect: ["cost", "compliance", "safety"]
+    severity: compliance
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0393"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: uc.secondary-dwelling-fire-separation
+    kind: design_or_coordination_error
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"all": [{"det": "work_type", "any_of": ["extend"]}, {"det": "existing_building", "is": true}]}
+    signals: []
+    de_risk: {"kind": "discipline", "label": "Certifier review of separation between a secondary dwelling and the main dwelling"}
+    contract: "Designer carries fire separation compliance."
+    effect: ["cost", "compliance", "safety"]
+    severity: compliance
+    discovered_at: ["design"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0396"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: uc.flammable-liquids-store-non-compliant
+    kind: design_or_coordination_error
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.flammable-liquids-storage-stated"]
+    de_risk: {"kind": "discipline", "label": "Dangerous goods storage design review of rating and bunding before layout is fixed"}
+    contract: "Designer carries storage compliance; owner supplies the dangerous goods inventory."
+    effect: ["compliance", "safety", "cost"]
+    severity: life-safety
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0348"}
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: uc.office-mezzanine-acoustic-separation-missed
+    kind: design_or_coordination_error
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.acoustic-separation-stated"]
+    de_risk: {"kind": "discipline", "label": "Acoustic review of offices against factory noise at design stage"}
+    contract: "Acoustic performance stated in the specification and checked at commissioning."
+    effect: ["quality", "cost"]
+    severity: cost
+    discovered_at: ["design", "handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0783"}
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Quality Assurance and Commissioning"}
+  - id: uc.hoarding-or-site-permit-delays-start
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "approvals"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "approval", "label": "Lodge street works and hoarding permit applications early and allow approval time"}
+    contract: "Builder carries site permits unless the contract says the owner does."
+    effect: ["programme"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0820"}
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Workplace Health and Safety in Commercial Construction"}
+  - id: uc.work-hours-restriction-limits-pours
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.work-hours-restriction-stated"]
+    de_risk: {"kind": "approval", "label": "Seek extended-hours approval for large pours before the programme is set"}
+    contract: "Builder carries working hours unless the consent restricts them beyond tender information."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0823"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Weather and Seasonal Planning"}
+  - id: uc.neighbour-boundary-risks-from-crane-and-falling-objects
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.neighbour-condition-survey-stated"]
+    de_risk: {"kind": "approval", "label": "Neighbour permission for crane overswing and catch fans or hoardings at the boundary before lifting starts"}
+    contract: "Builder carries overswing permissions and boundary protection."
+    effect: ["programme", "safety", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0812"}
+      - {"dataset": "batch1", "row": "B1-0819"}
+      - {"seed": "renovation-guide.md", "anchor": "## Dilapidation and neighbour management"}
+  - id: uc.regulator-stops-work-after-complaint-or-incident
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Neighbour liaison and a complaints and incident procedure with the regulator contacts named"}
+    contract: "Builder carries stop-work orders caused by its own conduct; others are an extension-of-time question."
+    effect: ["programme", "cost", "safety"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0824"}
+      - {"dataset": "batch1", "row": "B1-0887"}
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Workplace Health and Safety in Commercial Construction"}
+  - id: uc.site-establishment-conflicts-with-staging
+    kind: design_or_coordination_error
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "discipline", "label": "Stage the site establishment against excavation and later works before mobilisation"}
+    contract: "Builder carries site establishment planning."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0831"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: uc.wind-or-lightning-stops-crane-operations
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Programme weather lost-time allowance for crane operations"}
+    contract: "Weather lost-time allowance and extension of time rules stated in the contract."
+    effect: ["programme"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0802"}
+      - {"dataset": "batch1", "row": "B1-0840"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Weather and Seasonal Planning"}
+  - id: uc.rain-heat-smoke-or-storm-halts-site-work
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Programme weather and air quality lost-time allowance and a site securing procedure"}
+    contract: "Weather lost-time allowance and extension of time rules stated in the contract; roof weathertightness gates internal trades."
+    effect: ["programme", "safety"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0833"}
+      - {"dataset": "batch1", "row": "B1-0834"}
+      - {"dataset": "batch1", "row": "B1-0838"}
+      - {"dataset": "batch1", "row": "B1-0839"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Weather and Seasonal Planning"}
+  - id: uc.temporary-works-fail-in-wind
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.temporary-works-wind-design-stated"]
+    de_risk: {"kind": "discipline", "label": "Wind design and ballast for edge protection, hoarding and temporary fencing"}
+    contract: "Builder carries temporary works design."
+    effect: ["safety", "cost"]
+    severity: life-safety
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0818"}
+      - {"dataset": "batch1", "row": "B1-0883"}
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Workplace Health and Safety in Commercial Construction"}
+  - id: uc.protected-vegetation-or-species-on-site
+    kind: unforeseen_condition
+    category: ground_and_site
+    attaches_to: {"stage": "investigation"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.ecological-survey-stated"]
+    de_risk: {"kind": "investigation", "label": "Ecological and vegetation survey of the site before design and clearing"}
+    contract: "Owner carries protected species approvals; clearing is held until approvals are in place."
+    effect: ["programme", "compliance", "cost"]
+    severity: compliance
+    discovered_at: ["design", "excavation"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0844"}
+      - {"dataset": "batch1", "row": "B1-0845"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: uc.trade-availability-breaks-sequence
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Confirm trade commitments and a short-term look-ahead programme with each trade"}
+    contract: "Builder carries trade availability."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0890"}
+      - {"dataset": "batch1", "row": "B1-0891"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: uc.trades-clash-and-damage-work
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "hold_point", "label": "Sequence trades by area and hold fit-out until the base building area is released"}
+    contract: "Builder carries sequencing; fit-out access dates in the contract protect base building work."
+    effect: ["programme", "quality", "cost"]
+    severity: cost
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0771"}
+      - {"dataset": "batch1", "row": "B1-0906"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: uc.contractor-or-key-trade-insolvency
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Check financial standing of key trades and keep security, and step-in or replacement terms in the contract"}
+    contract: "Security and step-in rights in the contract; replacement takes time."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0892"}
+      - {"dataset": "batch1", "row": "B1-0937"}
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: uc.defects-found-after-payment-and-retention-disputed
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "defects"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Hold retention or security until defects are rectified and record the release terms"}
+    contract: "Retention and release terms stated in the head contract and the subcontracts."
+    effect: ["cost", "quality"]
+    severity: cost
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0893"}
+      - {"dataset": "batch1", "row": "B1-0936"}
+      - {"seed": "defects-and-dlp-guide.md", "anchor": "## 1. DLP overview"}
+  - id: uc.payment-claim-and-adjudication-disputes
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Keep payment claim and notice timelines in a contract register"}
+    contract: "Statutory and contractual payment timelines in the contract."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0935"}
+      - {"dataset": "batch1", "row": "B1-0998"}
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: uc.delay-notice-extension-of-time-and-liquidated-damages
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.notice-time-limit-stated"]
+    de_risk: {"kind": "obligation", "label": "Record delay events with evidence and give notices inside the contract time limits"}
+    contract: "Notice time bars, extension of time and liquidated damages terms stated in the contract."
+    effect: ["programme", "cost"]
+    severity: cost
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0932"}
+      - {"dataset": "batch1", "row": "B1-0933"}
+      - {"dataset": "batch1", "row": "B1-0934"}
+      - {"seed": "contract-administration-guide.md", "anchor": "### Time bars"}
+  - id: uc.special-conditions-not-read
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "procurement"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.special-conditions-stated"]
+    de_risk: {"kind": "obligation", "label": "Review special conditions for risk allocation before signing the contract"}
+    contract: "Special conditions override general conditions where they conflict."
+    effect: ["cost", "programme"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0931"}
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: uc.fixed-price-contract-on-unresolved-design
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "procurement"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "investigation", "label": "Confirm the design is complete enough for the contract form before fixing the price"}
+    contract: "Variation and provisional sum terms stated in the contract."
+    effect: ["cost", "programme"]
+    severity: cost
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0997"}
+      - {"seed": "procurement-tendering-guide.md", "anchor": "### Risk Allocation and Baseline Reports"}
+  - id: uc.design-responsibility-gap-on-novation-or-design-and-construct
+    kind: process_authority_supply_weather
+    category: design_and_scope
+    attaches_to: {"stage": "procurement"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.design-novation-stated"]
+    de_risk: {"kind": "obligation", "label": "Record design responsibility, design intent and reliance at novation or award"}
+    contract: "Contract states design responsibility and the design intent that must be kept."
+    effect: ["cost", "quality", "compliance"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0929"}
+      - {"dataset": "batch1", "row": "B1-0930"}
+      - {"seed": "procurement-tendering-guide.md", "anchor": "### Risk Allocation and Baseline Reports"}
+  - id: uc.late-design-information-or-brief-change
+    kind: process_authority_supply_weather
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Design freeze and response periods for requests for information and changes"}
+    contract: "Variation process and request for information response periods stated in the contract."
+    effect: ["cost", "programme"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0913"}
+      - {"dataset": "batch1", "row": "B1-0917"}
+      - {"dataset": "batch1", "row": "B1-0920"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Design Phase Programming"}
+  - id: uc.specification-conflicts-with-drawings
+    kind: design_or_coordination_error
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.document-precedence-stated"]
+    de_risk: {"kind": "discipline", "label": "Reconcile specification and drawings before tender and state the order of precedence"}
+    contract: "Order of precedence of contract documents stated in the contract."
+    effect: ["cost", "quality"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0916"}
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: uc.client-supplied-items-late-or-approvals-slow
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "construction"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.client-supplied-items-stated"]
+    de_risk: {"kind": "obligation", "label": "List client-supplied items with delivery dates and variation approval periods"}
+    contract: "Items outside the contract and approval periods stated in the contract."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0921"}
+      - {"dataset": "batch1", "row": "B1-0922"}
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: uc.provisional-sum-allowance-too-low
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "procurement"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.provisional-sum-stated"]
+    de_risk: {"kind": "investigation", "label": "Investigate and scope each provisional sum item before it is priced"}
+    contract: "Provisional sum adjustment terms stated in the contract."
+    effect: ["cost"]
+    severity: cost
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0923"}
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: uc.value-engineering-removes-function-or-fails-compliance
+    kind: process_authority_supply_weather
+    category: design_and_scope
+    attaches_to: {"stage": "procurement"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "approval", "label": "Reassess each value engineering change for function and compliance before acceptance"}
+    contract: "Value engineering changes treated as variations needing designer and certifier review."
+    effect: ["compliance", "quality", "cost"]
+    severity: compliance
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0926"}
+      - {"dataset": "batch1", "row": "B1-0927"}
+      - {"seed": "procurement-tendering-guide.md", "anchor": "### Risk Allocation and Baseline Reports"}
+  - id: uc.commissioning-squeezed-or-started-early
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "completion"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Programme commissioning after installation is complete, with its own duration"}
+    contract: "Commissioning duration and sequence stated in the programme."
+    effect: ["programme", "quality", "compliance"]
+    severity: programme
+    discovered_at: ["testing_commissioning"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0979"}
+      - {"dataset": "batch1", "row": "B1-0980"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Commissioning and Handover Programming"}
+    notes: "Related fm.services-startup-substitutes-functional-test covers the start-up substituted for a functional test."
+  - id: uc.seasonal-testing-not-possible-before-handover
+    kind: process_authority_supply_weather
+    category: existing_systems_on_test
+    attaches_to: {"stage": "completion"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: ["sig.seasonal-testing-stated"]
+    de_risk: {"kind": "obligation", "label": "Plan seasonal re-testing after handover and keep the contractor engaged for it"}
+    contract: "Seasonal testing obligation and retention stated in the contract."
+    effect: ["quality", "compliance"]
+    severity: durability
+    discovered_at: ["testing_commissioning", "handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0981"}
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Commissioning and Handover Programming"}
+  - id: uc.handover-documentation-and-training-incomplete
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "completion"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.om-manuals-requirement-stated", "sig.operator-training-requirement-stated"]
+    de_risk: {"kind": "obligation", "label": "Handover requirements for manuals, training and warranties listed in the contract and checked before completion"}
+    contract: "Handover deliverables stated as conditions of practical completion."
+    effect: ["quality", "cost"]
+    severity: durability
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0982"}
+      - {"dataset": "batch1", "row": "B1-0983"}
+      - {"dataset": "batch1", "row": "B1-0984"}
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Handover and Practical Completion"}
+  - id: uc.practical-completion-disputed-or-defect-list-long
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "completion"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "hold_point", "label": "Pre-completion inspection and agreed definition of practical completion"}
+    contract: "Practical completion definition and defect tolerance stated in the contract."
+    effect: ["programme", "cost", "quality"]
+    severity: programme
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0797"}
+      - {"dataset": "batch1", "row": "B1-0986"}
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Handover and Practical Completion"}
+  - id: uc.defects-emerge-in-defects-period
+    kind: process_authority_supply_weather
+    category: supply_and_site_operations
+    attaches_to: {"stage": "defects"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Defects period inspections and records, and warranty terms for latent defects"}
+    contract: "Defects liability period and warranty terms stated in the contract."
+    effect: ["cost", "quality"]
+    severity: durability
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0910"}
+      - {"dataset": "batch1", "row": "B1-0988"}
+      - {"seed": "defects-and-dlp-guide.md", "anchor": "## 1. DLP overview"}
+  - id: uc.owners-corporation-or-insurer-defect-claims
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "defects"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Keep as-built records and defect history for owners corporation and insurer claims"}
+    contract: "Warranty and insurance documentation obligations in the contract."
+    effect: ["cost", "quality"]
+    severity: cost
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0943"}
+      - {"dataset": "batch1", "row": "B1-0944"}
+      - {"seed": "defects-and-dlp-guide.md", "anchor": "## 1. DLP overview"}
+  - id: uc.defect-rectification-disrupts-occupants
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "defects"}
+    when: {"det": "work_type", "any_of": ["new", "extend", "refurb", "remediation"]}
+    signals: ["sig.occupied-works-stated"]
+    de_risk: {"kind": "obligation", "label": "Agree access times and notice with occupants for defects rectification"}
+    contract: "Access and notice terms for defects work stated in the contract."
+    effect: ["programme", "quality"]
+    severity: programme
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0987"}
+      - {"seed": "defects-and-dlp-guide.md", "anchor": "## 1. DLP overview"}
+  - id: uc.occupied-building-works-restrict-hours-and-methods
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "construction"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.occupied-works-stated"]
+    de_risk: {"kind": "obligation", "label": "Agree working hours, noise and dust limits and staging with occupants before pricing"}
+    contract: "Occupancy conditions and restrictions stated in the contract."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0957"}
+      - {"dataset": "batch1", "row": "B1-0958"}
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+  - id: uc.hospital-refurbishment-needs-infection-control-barriers
+    kind: design_or_coordination_error
+    category: design_and_scope
+    attaches_to: {"stage": "design"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}, {"det": "patient_care_area", "is": true}]}
+    signals: []
+    de_risk: {"kind": "discipline", "label": "Infection control risk assessment and barrier design with the facility before works"}
+    contract: "Infection control measures stated in the contract documents."
+    effect: ["safety", "cost", "programme"]
+    severity: life-safety
+    discovered_at: ["design", "construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0959"}
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+  - id: uc.occupancy-window-constrains-programme
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "construction"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.works-window-stated"]
+    de_risk: {"kind": "obligation", "label": "Fix the occupancy window and make the programme work back from its end date"}
+    contract: "Fixed access windows and completion dates stated in the contract."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0960"}
+      - {"dataset": "batch1", "row": "B1-0961"}
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+  - id: uc.vacant-possession-delayed-by-tenant-holdover
+    kind: process_authority_supply_weather
+    category: third_parties_and_occupation
+    attaches_to: {"stage": "construction"}
+    when: {"all": [{"det": "work_type", "any_of": ["refurb"]}, {"det": "existing_building", "is": true}]}
+    signals: ["sig.vacant-possession-stated"]
+    de_risk: {"kind": "obligation", "label": "Confirm vacant possession date and tenancy end before mobilising"}
+    contract: "Possession date and delay remedies stated in the contract."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["construction"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-1000"}
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+  - id: uc.strata-or-subdivision-registration-delayed
+    kind: process_authority_supply_weather
+    category: authorities_and_utilities
+    attaches_to: {"stage": "completion"}
+    when: {"det": "work_type", "any_of": ["new"]}
+    signals: []
+    de_risk: {"kind": "obligation", "label": "Lodge strata and subdivision applications with the programme and track the registration dates"}
+    contract: "Owner carries title registration; settlement dates in sale contracts depend on it."
+    effect: ["programme", "cost"]
+    severity: programme
+    discovered_at: ["handover_defects"]
+    status: draft
+    sources:
+      - {"dataset": "batch1", "row": "B1-0941"}
+      - {"dataset": "batch1", "row": "B1-0995"}
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
