@@ -1,0 +1,182 @@
+version: 1
+rows:
+  B1-0137:
+    records:
+    - fm.fire-protection-damaged-by-following-trades
+  B1-0185:
+    records:
+    - fm.barrier-or-anchor-fixing-fails-test
+  B1-0186:
+    records:
+    - fm.barrier-edge-load-not-in-structural-design
+  B1-0244:
+    records:
+    - fm.step-free-threshold-fails-accessibility
+  B1-0287:
+    records:
+    - fm.barrier-or-anchor-fixing-fails-test
+  B1-0301:
+    records:
+    - fm.plastic-pipe-without-fire-collar
+  B1-0302:
+    records:
+    - fm.sprinkler-spray-blocked-by-fixed-construction
+  B1-0303:
+    records:
+    - fm.sprinklers-share-ceiling-services
+  B1-0304:
+    records:
+    - fm.fire-water-supply-reported-insufficient
+  B1-0305:
+    records:
+    - fm.integrated-fire-test-failed
+  B1-0306:
+    records:
+    - fm.fire-door-gap-outside-tested-installation
+  B1-0312:
+    records:
+    - fm.electrical-penetration-of-rated-element-unprotected
+  B1-0314:
+    records:
+    - fm.damper-access-maintained
+  B1-0318:
+    records:
+    - fm.egress-door-swings-against-travel
+  B1-0319:
+    records:
+    - fm.exit-sign-sightline-obstructed
+  B1-0320:
+    records:
+    - fm.emergency-lighting-level-reported-short
+  B1-0321:
+    records:
+    - fm.fit-out-narrows-egress-path
+  B1-0322:
+    records:
+    - fm.travel-distance-to-exit-reported-exceeded
+  B1-0323:
+    records:
+    - fm.stair-pressurisation-fan-underperforms
+  B1-0324:
+    records:
+    - fm.pressurised-stair-door-fails-to-close
+  B1-0327:
+    records:
+    - fm.fire-pump-room-flood-exposure
+  B1-0328:
+    records:
+    - fm.fire-pump-fails-flow-test
+  B1-0329:
+    records:
+    - fm.sprinkler-pipework-concealed-before-pressure-test
+    - if.sprinkler-pressure-test-before-ceilings
+  B1-0330:
+    records:
+    - fm.sprinkler-head-painted-over
+  B1-0331:
+    records:
+    - fm.sprinkler-coverage-gap-after-layout-change
+  B1-0332:
+    records:
+    - fm.sprinkler-spray-blocked-by-fixed-construction
+  B1-0333:
+    records:
+    - uc.authority-requires-water-main-upgrade
+  B1-0334:
+    records:
+    - fm.suppression-hazard-changed
+  B1-0335:
+    records:
+    - fm.suppression-hazard-changed
+  B1-0336:
+    records:
+    - fm.hose-reel-coverage-gap
+  B1-0337:
+    records:
+    - fm.brigade-access-obstructed
+  B1-0339:
+    records:
+    - fm.detector-location-obstructed-by-airflow-or-equipment
+  B1-0340:
+    records:
+    - uc.dust-sets-off-fire-detectors
+  B1-0341:
+    records:
+    - fm.fire-panel-cannot-integrate-with-new-systems
+  B1-0342:
+    records:
+    - fm.smoke-alarm-interconnection-fails
+  B1-0343:
+    records:
+    - fm.detector-location-obstructed-by-airflow-or-equipment
+  B1-0354:
+    records:
+    - uc.performance-solution-rejected-by-authority
+  B1-0362:
+    records:
+    - fm.electrical-penetration-of-rated-element-unprotected
+  B1-0365:
+    records:
+    - uc.street-main-below-fire-flow-demand
+  B1-0367:
+    records:
+    - fm.occupant-load-exceeds-exit-capacity
+  B1-0369:
+    records:
+    - fm.accessible-room-plan-cannot-achieve-clearances
+  B1-0372:
+    records:
+    - fm.stair-handrail-not-as-specified
+  B1-0373:
+    records:
+    - fm.tactile-indicators-clash-with-stair-geometry
+  B1-0374:
+    records:
+    - fm.door-opening-force-reported-excessive
+  B1-0376:
+    records:
+    - fm.accessible-room-plan-cannot-achieve-clearances
+  B1-0397:
+    records:
+    - fm.open-plan-without-additional-smoke-measures
+  B1-0400:
+    records:
+    - fm.exit-sign-sightline-obstructed
+  B1-0479:
+    records:
+    - fm.sprinkler-pipe-clashes-with-other-services
+  B1-0488:
+    records:
+    - fm.pool-barrier-fails-inspection
+  B1-0494:
+    records:
+    - fm.fire-tank-footprint-not-in-site-layout
+  B1-0495:
+    records:
+    - fm.fire-water-supply-reported-insufficient
+  B1-0637:
+    records:
+    - fm.emergency-lighting-battery-fails-duration-test
+  B1-0659:
+    records:
+    - fm.automatic-door-fails-closed-on-power-loss
+  B1-0686:
+    records:
+    - uc.fire-alarm-replacement-needs-occupant-shutdown
+  B1-0688:
+    records:
+    - fm.emergency-lighting-not-revised-for-new-layout
+  B1-0752:
+    records:
+    - fm.stair-handrail-not-as-specified
+  B1-0753:
+    records:
+    - fm.stair-nosing-slippery
+  B1-0754:
+    records:
+    - fm.glass-balustrade-shatters-at-install
+  B1-0760:
+    records:
+    - fm.fire-door-hardware-not-rated-for-door
+  B1-0886:
+    rejected: out_of_scope

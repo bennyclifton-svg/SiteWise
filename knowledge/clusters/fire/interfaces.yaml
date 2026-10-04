@@ -498,12 +498,15 @@ interfaces:
     runs_on:
     - access-egress.accessible-access
     - envelope
-  failure_modes: []
+  failure_modes:
+  - fm.step-free-threshold-fails-accessibility
   cross_cluster: true
   status: draft
   sources:
   - seed: access-consultant-guide.md
     anchor: '### Concept and schematic design [concept]'
+  - dataset: batch1
+    row: B1-0244
 - id: if.fire-warning-acoustic-environment
   type: depends_on
   from:
@@ -675,3 +678,39 @@ interfaces:
   sources:
   - seed: fire-life-safety-guide.md
     anchor: '### Pre-DA consultation and development application [development_application]'
+- id: if.sprinkler-pressure-test-before-ceilings
+  type: sequences
+  from:
+  - fire-active.sprinklers
+  to:
+  - interiors.ceilings
+  summary: Sprinkler pipework is pressure tested and the test recorded before ceilings and linings conceal
+    it, so leaks are found while the pipe is still reachable.
+  governed_by:
+  - rule.as2118.sprinkler-design
+  resolved_when:
+  - type: noul
+    instructions: Using `text`, does this passage state a pressure test record for sprinkler pipework
+      before ceilings close?
+    criteria:
+      true: It states a pressure test record for sprinkler pipework made before the ceiling or lining
+        conceals it.
+      false: It does not state this; a general mention of the sprinkler system is insufficient.
+    runs_on:
+    - fire-active.sprinklers
+    - interiors.ceilings
+  failure_modes:
+  - fm.sprinkler-pipework-concealed-before-pressure-test
+  cross_cluster: true
+  status: draft
+  sources:
+  - dataset: batch1
+    row: B1-0329
+  - seed: as-standards-reference.md
+    anchor: '## AS 2118 Series — Automatic Fire Sprinkler Systems'
+  - seed: fire-life-safety-guide.md
+    anchor: '## Construction verification and integrated testing'
+  hold_point:
+    before: interiors.ceilings
+    after: fire-active.sprinklers
+    evidence: a recorded pressure test of the sprinkler pipework

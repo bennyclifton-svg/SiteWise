@@ -1,0 +1,60 @@
+version: 1
+signals:
+- id: sig.fire-water-authority-capacity-advice-stated
+  type: noul
+  instructions: Using `text`, does the passage state the water authority's advice on the mains flow or
+    pressure available at the site?
+  criteria:
+    'true': It states advice, a letter or a result from the water authority on available mains flow or
+      pressure.
+    'false': It does not state authority advice; an intention to apply for advice or to test is not advice.
+  runs_on:
+  - fire-active.fire-water
+  - fire-active.hydrants
+  - site.services-connections
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Active systems and water supply'
+- id: sig.detector-isolation-during-works-stated
+  type: noul
+  instructions: Using `text`, does the passage state how fire detectors are covered, isolated or otherwise
+    handled during dusty works?
+  criteria:
+    'true': It states a method for covering, isolating or otherwise handling detectors during works.
+    'false': It does not state a method; a general mention of dust control or of the fire alarm is not
+      enough.
+  runs_on:
+  - fire-active.detection
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
+- id: sig.performance-solution-acceptance-stated
+  type: noul
+  instructions: Using `text`, does the passage state that the certifier or authority has accepted or approved
+    the fire engineering performance solution?
+  criteria:
+    'true': It states acceptance or approval of the performance solution by the certifier or authority.
+    'false': It does not state acceptance; a solution that is proposed, submitted or under review is not
+      accepted.
+  runs_on:
+  - fire-passive
+  - fire-active
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Passive fire protection'
+- id: sig.fire-alarm-staging-plan-stated
+  type: noul
+  instructions: Using `text`, does the passage state how the fire alarm stays active, or what temporary
+    cover is provided, while the existing alarm is replaced?
+  criteria:
+    'true': It states how the alarm stays active or what temporary cover is provided during replacement.
+    'false': It does not state this; a general mention of replacing the fire alarm is not enough.
+  runs_on:
+  - fire-active.detection
+  status: draft
+  sources:
+  - seed: fire-life-safety-guide.md
+    anchor: '## Existing buildings, refurbishment and remediation'
