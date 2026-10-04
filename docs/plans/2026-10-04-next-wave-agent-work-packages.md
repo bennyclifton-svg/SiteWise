@@ -1167,8 +1167,8 @@ The integration lead keeps this table current.
 | WP-70 | 7 | B+A | WP-60 | Not started |
 | WP-71 | 7 | release | VPS | Not started |
 | WP-X1 | 3/5/7 | C | stage ends | Not started |
-| WP-K0 | K | knowledge | owner approval | Implemented (K0 shapes); new shapes Not started |
+| WP-K0 | K | knowledge | owner approval of shapes; D-07, D-09, D-24, D-30 for the remaining shapes | K0 shapes implemented (approval pending); new catalogue shapes **Implemented**, merged `6e47383` (stages, package defaults, planning keys, key scope, clauses, benchmarks) |
 | WP-K1-K3 | K | knowledge | WP-K0 | Not started |
-| WP-K4 | K | knowledge | none | Implemented (Pass A/B); merge pass Not started |
+| WP-K4 | K | knowledge | owner review | Pass A/B implemented; owner review packet merged `f665501` (`docs/unforeseen/k4-owner-review-packet.md`); merge-pass edits not started |
 | WP-K5 | K | owner | owner time | Not started |
 | WP-K6 | K | knowledge | WP-26, WP-28, WP-K1-K3 | Not started |
