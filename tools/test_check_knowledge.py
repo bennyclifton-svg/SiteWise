@@ -196,3 +196,49 @@ class ProfileSchemaTests(unittest.TestCase):
         self.assertIn(('system', 'substructure'), [(k, t) for k, _, t in refs])
         report, _ = _check('determinants', _det(systems=[]))
         self.assertTrue(report.errors)
+
+
+class CatalogueTests(unittest.TestCase):
+    """Delivery and commercial catalogues (SCHEMA.md, 2026-10-05)."""
+
+    def run_catalogues(self, files):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for rel, body in files.items():
+                path = root / 'knowledge' / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(yaml.safe_dump(body))
+            report = checker.Report()
+            with patch.object(checker, 'ROOT', root), patch.object(checker, 'KNOWLEDGE', root / 'knowledge'):
+                checker.check_catalogues(report, root, {}, {})
+        return report
+
+    def test_money_totals_cannot_be_planning_values(self):
+        report = self.run_catalogues({'profile/planning_keys.yaml': {'version': 1, 'keys': [
+            {'key': 'cost.total', 'label': 'Total', 'value': 'number', 'scope': 'project'},
+            {'key': 'budget', 'label': 'Budget', 'value': 'money', 'scope': 'project'}]}})
+        self.assertEqual(sum('money totals' in e for e in report.errors), 2)
+
+    def test_benchmark_amount_must_be_a_decimal_string(self):
+        report = self.run_catalogues({'costs/benchmarks.yaml': {'version': 1, 'benchmarks': [
+            {'id': 'bm.test', 'version': 1, 'basis': 'lump_sum', 'amount': 1250.5, 'currency': 'AUD',
+             'tax_basis': 'ex_tax', 'price_date': '2026-10-01', 'geography': 'NSW', 'quality': 'standard',
+             'inclusions': [], 'exclusions': [], 'status': 'draft', 'sources': []}]}})
+        self.assertTrue(any('decimal string' in e for e in report.errors))
+
+    def test_stages_must_be_the_unforeseen_stage_targets(self):
+        report = self.run_catalogues({'works/stages.yaml': {'version': 1, 'status': 'draft', 'stages': [
+            {'id': 'design', 'label': 'Design', 'substages': [{'id': 'concept_design', 'label': 'Concept', 'novation': 'later'}]}]}})
+        self.assertTrue(any('top-level stages' in e for e in report.errors))
+        self.assertTrue(any('novation' in e for e in report.errors))
+
+    def test_clause_needs_outputs_and_a_version(self):
+        report = self.run_catalogues({'reports/clauses.yaml': {'version': 1, 'clauses': [
+            {'id': 'cl.x', 'version': 0, 'outputs': ['memo'], 'section': 's', 'text': 't', 'status': 'draft'}]}})
+        self.assertTrue(any('positive integer' in e for e in report.errors))
+        self.assertTrue(any('outputs' in e for e in report.errors))
+
+    def test_repository_catalogues_pass(self):
+        report = checker.Report()
+        checker.check_catalogues(report, checker.DEFAULT_SEED_DIR, {}, {})
+        self.assertEqual(report.errors, [])
