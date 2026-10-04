@@ -438,3 +438,227 @@ signals:
   sources:
   - seed: ncc-reference-guide.md
     anchor: '### Rising Damp Protection and External Weatherproofing'
+- id: sig.slab-reinforcement-or-tendon-scan-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state that a scan of the existing slab or beam, or its post-tension drawings, show where reinforcement or tendons lie?'
+  criteria:
+    'true': 'It states scan results or post-tension drawings that show reinforcement or tendon positions in the existing member.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - structure.concrete
+  - structure.precast
+  - structure.alterations
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0022}
+- id: sig.existing-member-size-measured-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state that the size, depth or thickness of an existing structural member was measured on site?'
+  criteria:
+    'true': 'It states a size, depth or thickness measured on site for an existing member.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - structure.alterations
+  - structure.steel
+  - structure.timber
+  - structure.concrete
+  - structure.masonry
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0018}
+- id: sig.existing-structure-capacity-check-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state that an existing floor, roof or member has been checked by calculation or assessment for the new load?'
+  criteria:
+    'true': 'It states a capacity check or structural assessment of the existing element for the new load.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - structure.alterations
+  - structure.concrete
+  - structure.steel
+  - structure.timber
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0047}
+- id: sig.existing-levels-surveyed-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state that levels of the existing floor, slab or building were surveyed?'
+  criteria:
+    'true': 'It states surveyed levels of the existing floor, slab or building.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - structure.alterations
+  - structure.concrete
+  - site.survey-boundaries
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0118}
+- id: sig.crack-or-movement-monitoring-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state that cracks or movement of an existing structure or wall were monitored or surveyed?'
+  criteria:
+    'true': 'It states a crack survey, tell-tale or movement monitoring result for the existing structure or wall.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - structure.alterations
+  - structure.concrete
+  - structure.masonry
+  - site.retaining-walls
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0017}
+- id: sig.soil-waste-classification-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state a waste classification for excavated soil or removed material?'
+  criteria:
+    'true': 'It states a waste classification for soil or removed material.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.contamination
+  - site.ground-conditions
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0476}
+- id: sig.dewatering-discharge-approval-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state the water quality or volume conditions under which pumped groundwater may be discharged?'
+  criteria:
+    'true': 'It states quality or volume conditions, an approval or a permit for discharge of pumped groundwater.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - substructure.basement-retention
+  - site.ground-conditions
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0820}
+- id: sig.stormwater-discharge-point-confirmed-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state the authority-confirmed point of discharge or connection pit for site stormwater?'
+  criteria:
+    'true': 'It states a discharge or connection point confirmed by the authority.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.stormwater-detention
+  - site.survey-boundaries
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0572}
+- id: sig.soil-permeability-test-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state a measured soil permeability or infiltration rate from a test?'
+  criteria:
+    'true': 'It states a measured permeability or infiltration result from a test on site.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.stormwater-detention
+  - site.ground-conditions
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0627}
+- id: sig.kerb-and-footpath-levels-surveyed-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state surveyed levels of the kerb, footpath or crossover against the building floor or entry level?'
+  criteria:
+    'true': 'It states surveyed kerb, footpath or crossover levels related to the building level.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.public-domain
+  - site.vehicle-access
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0591}
+- id: sig.overland-flow-levels-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state a modelled or surveyed overland flow level or depth across the site?'
+  criteria:
+    'true': 'It states an overland flow level or depth for the site.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.flooding
+  - site.stormwater-detention
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0575}
+- id: sig.vibration-limit-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state a vibration limit for an adjoining building or sensitive equipment?'
+  criteria:
+    'true': 'It states a vibration limit for an adjoining building or sensitive equipment.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.adjoining-structures
+  - structure.alterations
+  - substructure.basement-retention
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0703}
+- id: sig.pavement-subgrade-test-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state a subgrade test result such as a proof roll or CBR for the pavement or slab?'
+  criteria:
+    'true': 'It states a subgrade test result for the pavement or slab.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.vehicle-access
+  - substructure.slab-on-ground
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0930}
+- id: sig.vehicle-swept-path-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state that a swept path of the design vehicle was checked against the layout?'
+  criteria:
+    'true': 'It states a swept path check of the design vehicle against the layout.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.vehicle-access
+  - site.loading-docks
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0600}
+- id: sig.existing-stormwater-drain-capacity-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state the capacity or condition of an existing stormwater drain, pipe or interceptor?'
+  criteria:
+    'true': 'It states a capacity, camera inspection or condition result for the existing drain.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - site.stormwater-detention
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0577}
+- id: sig.authority-excavation-conditions-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state excavation or retention conditions imposed by an asset owner or authority?'
+  criteria:
+    'true': 'It states conditions set by an asset owner or authority for the excavation or retention.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - substructure.basement-retention
+  - site.adjoining-structures
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0783}
+- id: sig.existing-basement-leak-investigation-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state an investigation of the water head, source or earlier treatment of leakage in an existing basement?'
+  criteria:
+    'true': 'It states findings on the water head, source or earlier treatment of leakage in the existing basement.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - substructure.damp-waterproofing
+  - substructure.basement-retention
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0138}
+- id: sig.existing-steel-section-and-coating-stated
+  type: noul
+  instructions: 'Using `text`, does the passage state the section size and coating condition of existing structural steel?'
+  criteria:
+    'true': 'It states the section size and coating condition of existing steel.'
+    'false': It does not state this; a requirement, recommendation or intention is not a statement of fact.
+  runs_on:
+  - structure.steel
+  status: draft
+  sources:
+  - {dataset: batch2, row: B2-0203}
