@@ -1,0 +1,612 @@
+# K4 Pass B overlay, cluster envelope, dataset batch2.
+version: 1
+rows:
+  B2-0065:
+    records:
+    - uc.balcony-membrane-upturn-short-of-door-sill
+  B2-0066:
+    records:
+    - uc.combustible-cladding-on-existing-facade
+  B2-0067:
+    records:
+    - uc.existing-curtain-wall-stack-joints-closed
+  B2-0068:
+    records:
+    - uc.existing-window-openings-outside-replacement-frame-tolerance
+  B2-0069:
+    records:
+    - uc.existing-brick-ties-too-short-for-rainscreen-cavity
+  B2-0070:
+    records:
+    - fm.envelope-facade-sealant-incompatible-with-existing-impregnator
+  B2-0071:
+    records:
+    - uc.existing-slab-edge-off-facade-grid
+  B2-0072:
+    records:
+    - fm.envelope-cladding-drainage-cavity
+  B2-0073:
+    records:
+    - fm.envelope-door-threshold-conflicts-with-upturn
+  B2-0074:
+    records:
+    - fm.envelope-balustrade-fixed-through-balcony-membrane
+  B2-0075:
+    records:
+    - fm.envelope-balustrade-channel-holds-water-at-slab-edge
+  B2-0076:
+    records:
+    - fm.envelope-parapet-capping-falls-toward-roof
+  B2-0077:
+    records:
+    - uc.existing-wall-out-of-plumb-beyond-bracket-adjustment
+  B2-0078:
+    records:
+    - fm.envelope-window-head-sill-flashing-defective
+  B2-0079:
+    records:
+    - fm.envelope-window-head-sill-flashing-defective
+  B2-0080:
+    records:
+    - fm.envelope-cladding-drainage-cavity
+  B2-0081:
+    records:
+    - uc.coastal-exposure-outside-coating-warranty
+  B2-0082:
+    records:
+    - uc.existing-sarking-torn-at-eaves
+  B2-0083:
+    records:
+    - uc.replacement-tile-gauge-does-not-match-existing-battens
+  B2-0084:
+    records:
+    - fm.envelope-dormer-cheek-meets-tiles-without-soaker
+  B2-0085:
+    records:
+    - fm.envelope-dissimilar-metals-in-contact-at-flashing
+  B2-0086:
+    records:
+    - fm.roof-sheet-thermal-movement-not-allowed-for
+  B2-0087:
+    records:
+    - fm.envelope-render-cracks-over-unreinforced-sheet-joints
+  B2-0088:
+    records:
+    - fm.envelope-new-coating-fails-on-chalking-or-dusting-surface
+  B2-0089:
+    records:
+    - fm.envelope-sealant-joint-movement-exceeded
+  B2-0090:
+    records:
+    - fm.envelope-spandrel-insulation-stops-short-of-slab
+  B2-0091:
+    records:
+    - fm.envelope-fire-stopping-blocks-curtain-wall-weeps
+  B2-0092:
+    records:
+    - uc.existing-pier-too-narrow-for-new-lintel-bearing
+  B2-0093:
+    records:
+    - fm.envelope-green-roof-exceeds-podium-load-and-membrane-rating
+  B2-0094:
+    records:
+    - fm.envelope-planter-membrane-terminates-below-soil
+  B2-0095:
+    records:
+    - fm.envelope-facade-acoustic-zone-hits-slab-edge
+  B2-0096:
+    records:
+    - fm.envelope-safety-glass-substitution
+  B2-0097:
+    records:
+    - uc.existing-skylight-well-unlined-condensation
+  B2-0098:
+    records:
+    - fm.envelope-insulated-glass-seal
+  B2-0099:
+    records:
+    - fm.envelope-window-reveal-lining-clashes-with-hardware
+  B2-0100:
+    records:
+    - fm.envelope-roof-outlet-blockage-no-overflow
+  B2-0101:
+    records:
+    - uc.existing-box-gutter-sump-not-at-low-point
+  B2-0102:
+    records:
+    - fm.envelope-copper-runoff-stains-aluminium-below
+  B2-0103:
+    records:
+    - uc.single-skin-wall-cannot-provide-cladding-cavity
+  B2-0104:
+    records:
+    - uc.pv-feet-penetration-pattern-voids-membrane-warranty
+  B2-0105:
+    records:
+    - fm.envelope-roof-anchors-set-on-membrane-laps
+  B2-0106:
+    records:
+    - fm.envelope-plant-curb-dams-roof-falls
+  B2-0107:
+    records:
+    - uc.existing-box-gutter-cannot-take-added-catchment
+  B2-0108:
+    records:
+    - uc.box-gutter-overflow-built-over-discharges-into-ceiling
+  B2-0109:
+    records:
+    - fm.envelope-tile-underlay-stops-short-of-gutter
+  B2-0110:
+    records:
+    - fm.envelope-ridge-vent-wind-driven-rain
+  B2-0111:
+    records:
+    - fm.envelope-polycarbonate-and-metal-sheets-share-fasteners
+  B2-0112:
+    records:
+    - uc.existing-purlin-spacing-unsuited-to-replacement-sheet
+  B2-0113:
+    records:
+    - fm.envelope-roof-davit-bases-clash-with-plant-pads
+  B2-0114:
+    records:
+    - fm.envelope-fascia-reset-before-site-levels
+  B2-0115:
+    records:
+    - uc.matching-roof-fixing-no-longer-available
+  B2-0116:
+    records:
+    - fm.envelope-sample-approved-off-site-does-not-match-in-place
+  B2-0119:
+    records:
+    - uc.existing-shower-hob-lower-than-membrane-upturn
+  B2-0120:
+    records:
+    - fm.envelope-wet-membrane-puncture
+  B2-0121:
+    records:
+    - fm.envelope-tile-bed-lifts-bathroom-above-adjacent-floor
+  B2-0124:
+    records:
+    - uc.existing-balcony-door-has-no-flange-and-membrane-stops-short
+  B2-0128:
+    records:
+    - uc.ground-floor-fitout-below-external-paving-no-threshold-drain
+  B2-0129:
+    records:
+    - uc.membrane-junction-between-two-systems-unwarranted
+  B2-0131:
+    records:
+    - fm.envelope-wet-substrate-membrane
+  B2-0133:
+    records:
+    - fm.envelope-podium-planter-has-no-drain
+  B2-0139:
+    records:
+    - fm.envelope-sealant-joint-movement-exceeded
+  B2-0140:
+    records:
+    - fm.envelope-waterproofing-before-tiles
+  B2-0141:
+    records:
+    - fm.envelope-wet-membrane-puncture
+  B2-0142:
+    records:
+    - fm.envelope-membrane-laps-face-up-the-fall
+  B2-0143:
+    records:
+    - uc.membrane-clamping-ring-does-not-fit-existing-outlet
+  B2-0144:
+    records:
+    - fm.envelope-new-membrane-incompatible-with-existing-outlet-metal
+  B2-0145:
+    records:
+    - fm.envelope-wet-membrane-puncture
+  B2-0149:
+    records:
+    - fm.envelope-wet-membrane-puncture
+  B2-0150:
+    records:
+    - fm.envelope-balcony-overflow-discharges-onto-facade
+  B2-0151:
+    records:
+    - uc.window-in-shower-wall-outside-membrane-system
+  B2-0152:
+    records:
+    - fm.envelope-wet-area-lining-board-not-wet-grade
+  B2-0159:
+    records:
+    - uc.terrace-tiles-bonded-to-membrane
+  B2-0166:
+    records:
+    - fm.envelope-floor-falls-miss-waste
+  B2-0221:
+    records:
+    - fm.envelope-boundary-opening-unprotected
+  B2-0433:
+    records:
+    - uc.existing-gutter-outlet-does-not-match-downpipe-boss
+  B2-0465:
+    records:
+    - uc.asbestos-in-existing-floor-finishes-or-adhesive
+  B2-0466:
+    records:
+    - uc.ceiling-cavity-hidden-services-and-asbestos
+  B2-0467:
+    records:
+    - uc.asbestos-cement-eaves-at-roof-tie-in
+  B2-0471:
+    records:
+    - uc.ceiling-void-dust-or-loose-insulation-contaminates-work-area
+  B2-0473:
+    records:
+    - uc.ceiling-void-dust-or-loose-insulation-contaminates-work-area
+  B2-0474:
+    records:
+    - uc.mould-behind-external-wall-lining
+  B2-0475:
+    records:
+    - uc.ceiling-void-or-roof-space-biologically-contaminated
+  B2-0484:
+    records:
+    - uc.ceiling-void-or-roof-space-biologically-contaminated
+  B2-0485:
+    records:
+    - uc.ceiling-void-or-roof-space-biologically-contaminated
+  B2-0488:
+    records:
+    - uc.asbestos-in-existing-floor-finishes-or-adhesive
+  B2-0490:
+    records:
+    - uc.ceiling-void-dust-or-loose-insulation-contaminates-work-area
+  B2-0491:
+    records:
+    - uc.lead-flashing-runoff-contaminates-soil
+  B2-0525:
+    records:
+    - fm.envelope-ceiling-grid-set-out-misses-penetrations
+  B2-0547:
+    records:
+    - fm.envelope-acoustic-baffle-blocks-return-air-path
+  B2-0548:
+    records:
+    - fm.envelope-rough-in-before-linings
+  B2-0557:
+    records:
+    - uc.existing-ceiling-height-below-minimum-for-new-use
+  B2-0560:
+    records:
+    - uc.alteration-triggers-energy-provisions-existing-glazing-fails
+  B2-0570:
+    records:
+    - fm.envelope-waste-room-too-small-for-collection-bins
+  B2-0582:
+    records:
+    - fm.envelope-reclad-downpipes-miss-existing-risers
+  B2-0583:
+    records:
+    - uc.existing-roof-drainage-short-for-extension
+  B2-0601:
+    records:
+    - fm.envelope-podium-joint-at-low-point-ponds
+  B2-0635:
+    records:
+    - uc.existing-roof-discharge-onto-neighbour-continued-by-extension
+  B2-0636:
+    records:
+    - fm.slab-flatness-and-level-not-specified-for-use
+  B2-0637:
+    records:
+    - uc.slab-moisture-too-high-to-lay-flooring
+  B2-0638:
+    records:
+    - fm.envelope-tile-cracks-over-movement-joint
+  B2-0639:
+    records:
+    - fm.envelope-floor-transition-trip-hazard
+  B2-0640:
+    records:
+    - fm.envelope-skirting-bridges-acoustic-joint
+  B2-0641:
+    records:
+    - fm.envelope-paint-applied-to-uncured-substrate
+  B2-0642:
+    records:
+    - fm.envelope-new-coating-fails-on-chalking-or-dusting-surface
+  B2-0643:
+    records:
+    - fm.envelope-joinery-made-before-site-measure
+  B2-0644:
+    records:
+    - fm.envelope-benchtop-thicker-than-window-clearance
+  B2-0645:
+    records:
+    - fm.envelope-cabinetry-covers-valves-that-must-stay-reachable
+  B2-0646:
+    records:
+    - fm.envelope-frame-out-of-square
+  B2-0647:
+    records:
+    - fm.envelope-door-hardware-clashes-with-smoke-seal
+  B2-0648:
+    records:
+    - fm.envelope-service-hung-from-ceiling-tile
+  B2-0649:
+    records:
+    - fm.envelope-bulkhead-smaller-than-insulated-duct
+  B2-0650:
+    records:
+    - fm.envelope-plasterboard-movement-cracking
+  B2-0651:
+    records:
+    - fm.envelope-wet-area-tile-lip-ponds-water
+  B2-0652:
+    records:
+    - fm.envelope-grout-etches-natural-stone
+  B2-0653:
+    records:
+    - uc.natural-stone-thickness-exceeds-bedding-allowance
+  B2-0654:
+    records:
+    - fm.envelope-floating-floor-no-expansion-gap
+  B2-0655:
+    records:
+    - uc.floor-finish-and-underfloor-heating-combination-voids-warranty
+  B2-0656:
+    records:
+    - fm.envelope-substrate-flatness-shows-through
+  B2-0657:
+    records:
+    - fm.envelope-stair-nosing-not-flush-with-finished-floor
+  B2-0659:
+    records:
+    - fm.envelope-splashback-cut-before-outlets-fixed
+  B2-0660:
+    records:
+    - fm.envelope-mirror-cabinet-hits-door
+  B2-0661:
+    records:
+    - fm.envelope-ceiling-bulkhead-covers-wardrobe-track-line
+  B2-0662:
+    records:
+    - uc.operable-wall-track-follows-beam-deflection
+  B2-0663:
+    records:
+    - uc.operable-wall-pocket-full-of-services
+  B2-0664:
+    records:
+    - fm.envelope-delivered-piece-exceeds-lift-or-stair-access
+  B2-0665:
+    records:
+    - fm.envelope-sample-approved-off-site-does-not-match-in-place
+  B2-0666:
+    records:
+    - uc.finish-curing-affected-by-site-temperature
+  B2-0667:
+    records:
+    - fm.envelope-sealant-stains-natural-stone
+  B2-0669:
+    records:
+    - fm.envelope-entrance-mat-well-shallower-than-mat
+  B2-0670:
+    records:
+    - fm.envelope-mat-well-clashes-with-door-track
+  B2-0671:
+    records:
+    - fm.envelope-delivered-piece-exceeds-lift-or-stair-access
+  B2-0672:
+    records:
+    - fm.envelope-fitout-load-exceeds-floor-capacity
+  B2-0674:
+    records:
+    - uc.existing-industrial-slab-has-no-falls-for-self-levelling-coat
+  B2-0681:
+    records:
+    - uc.window-sill-below-safety-height-after-floor-build-up
+  B2-0682:
+    records:
+    - uc.drop-outside-low-window-greater-than-surveyed
+  B2-0685:
+    records:
+    - fm.envelope-floor-build-up-reduces-door-clearance
+  B2-0686:
+    records:
+    - fm.envelope-ceiling-floor-acoustic-flanking
+  B2-0688:
+    records:
+    - uc.shared-ceiling-plenum-connects-separated-rooms
+  B2-0692:
+    records:
+    - fm.envelope-floor-finish-impact-sound
+  B2-0693:
+    records:
+    - fm.envelope-facade-glazing-fails-traffic-noise
+  B2-0700:
+    records:
+    - fm.envelope-floor-finish-impact-sound
+  B2-0701:
+    records:
+    - uc.facade-acoustic-line-lost-at-existing-slab-edge
+  B2-0702:
+    records:
+    - fm.envelope-louvre-free-area-restricts-airflow
+  B2-0704:
+    records:
+    - fm.envelope-partition-stops-at-perforated-ceiling
+  B2-0705:
+    records:
+    - uc.reused-single-glazing-faces-road-noise
+  B2-0707:
+    records:
+    - uc.rain-noise-on-metal-roof-over-classroom
+  B2-0708:
+    records:
+    - fm.envelope-riser-door-in-acoustic-wall-not-acoustic-rated
+  B2-0751:
+    records:
+    - uc.roof-screen-condition-or-planning-envelope-not-in-documents
+  B2-0753:
+    records:
+    - fm.envelope-basix-glazing-substitution
+  B2-0761:
+    records:
+    - uc.heritage-interior-fabric-constrains-alterations-and-service-routes
+  B2-0767:
+    records:
+    - uc.bal-increased-after-design
+  B2-0768:
+    records:
+    - uc.balcony-cladding-product-not-permitted-at-height
+  B2-0786:
+    records:
+    - uc.food-premises-finish-requirements-not-met
+  B2-0794:
+    records:
+    - uc.specified-membrane-discontinued-before-installation
+  B2-0795:
+    records:
+    - uc.weather-damages-or-halts-incomplete-envelope
+  B2-0798:
+    records:
+    - fm.envelope-balcony-falls-not-recorded-before-tiling
+  B2-0809:
+    records:
+    - fm.envelope-temporary-waterproofing-fails-and-floods-lower-levels
+  B2-0812:
+    records:
+    - uc.materials-hoist-cannot-take-board-packs
+  B2-0813:
+    records:
+    - uc.roof-plant-occupies-facade-access-davit-zone
+  B2-0821:
+    records:
+    - uc.retained-ceiling-supports-live-services
+  B2-0823:
+    records:
+    - fm.envelope-strip-out-above-occupied-floor-without-protection
+  B2-0826:
+    records:
+    - fm.envelope-existing-finishes-not-isolated-from-adjacent-works
+  B2-0833:
+    records:
+    - uc.existing-wall-out-of-plumb-beyond-lining-absorption
+  B2-0835:
+    records:
+    - uc.existing-ceiling-grid-module-differs-from-new-tiles
+  B2-0836:
+    records:
+    - fm.envelope-existing-membrane-cut-by-new-penetration-not-made-good
+  B2-0839:
+    records:
+    - uc.alteration-triggers-energy-provisions-existing-glazing-fails
+  B2-0840:
+    records:
+    - uc.existing-balcony-falls-drain-toward-new-door
+  B2-0847:
+    records:
+    - uc.lath-and-plaster-ceiling-collapses-when-services-move
+  B2-0848:
+    records:
+    - fm.envelope-new-coating-fails-on-chalking-or-dusting-surface
+  B2-0849:
+    records:
+    - uc.bonded-tile-or-stone-lost-when-substrate-is-repaired
+  B2-0851:
+    records:
+    - uc.existing-balustrade-glass-not-safety-glass
+  B2-0852:
+    records:
+    - uc.existing-roof-sheet-cannot-be-walked
+  B2-0853:
+    records:
+    - uc.existing-purlin-spacing-unsuited-to-replacement-sheet
+  B2-0865:
+    records:
+    - uc.existing-floor-falls-beyond-rigid-finish
+  B2-0866:
+    records:
+    - fm.envelope-frame-out-of-square
+  B2-0867:
+    records:
+    - uc.existing-wired-glass-not-accepted-by-new-screen
+  B2-0873:
+    records:
+    - uc.floor-topping-hides-services
+  B2-0874:
+    records:
+    - uc.bonded-tile-or-stone-lost-when-substrate-is-repaired
+  B2-0875:
+    records:
+    - uc.heritage-interior-fabric-constrains-alterations-and-service-routes
+  B2-0876:
+    records:
+    - uc.ornate-ceiling-below-leaking-wet-area
+  B2-0877:
+    records:
+    - uc.existing-roof-falls-wrong-way-for-new-membrane
+  B2-0883:
+    records:
+    - fm.envelope-ceiling-opened-over-clinical-room-without-infection-barrier
+  B2-0899:
+    records:
+    - uc.food-premises-finish-requirements-not-met
+  B2-0904:
+    records:
+    - fm.envelope-vapour-barrier-position
+  B2-0905:
+    records:
+    - fm.envelope-weather-line-and-air-barrier-do-not-meet-at-window
+  B2-0908:
+    records:
+    - fm.envelope-facade-bracket-clashes-with-slab-edge-reinforcement
+  B2-0914:
+    records:
+    - uc.roof-screen-condition-or-planning-envelope-not-in-documents
+  B2-0915:
+    records:
+    - fm.envelope-balcony-depth-measured-to-structure-not-finished-face
+  B2-0920:
+    records:
+    - fm.envelope-end-of-trip-rooms-short-of-permit-numbers
+  B2-0921:
+    records:
+    - fm.envelope-waste-room-too-small-for-collection-bins
+  B2-0923:
+    records:
+    - fm.envelope-skylight-well-clashes-with-roof-beam
+  B2-0937:
+    records:
+    - fm.envelope-curtain-wall-stack-joint-sized-before-slab-deflection
+  B2-0938:
+    records:
+    - fm.envelope-roof-ponding
+  B2-0939:
+    records:
+    - fm.envelope-window-opening-outside-frame-tolerance
+  B2-0940:
+    records:
+    - fm.envelope-insulation-gaps
+  B2-0941:
+    records:
+    - fm.envelope-service-penetrations-leave-air-barrier-open
+  B2-0942:
+    records:
+    - fm.envelope-roof-outlet-blockage-no-overflow
+  B2-0943:
+    rejected: duplicate_of
+    ref: B2-0072
+  B2-0944:
+    rejected: duplicate_of
+    ref: B2-0073
+  B2-0945:
+    records:
+    - fm.envelope-balustrade-fixed-through-balcony-membrane
+  B2-0974:
+    rejected: duplicate_of
+    ref: B2-0085
+  B2-0975:
+    rejected: duplicate_of
+    ref: B2-0096
+  B2-0976:
+    records:
+    - fm.envelope-roof-outlet-blockage-no-overflow

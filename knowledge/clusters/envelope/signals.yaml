@@ -242,3 +242,343 @@ signals:
   sources:
   - dataset: batch1
     row: B1-0945
+- id: sig.envelope-membrane-upturn-height-at-sills-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the measured height of the existing membrane upturn at door sills or posts?"
+  criteria:
+    "true": "It states the measured height of the existing membrane upturn at door sills or posts."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.external-waterproofing
+  - envelope.windows-doors
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0065
+  - dataset: batch2
+    row: B2-0124
+- id: sig.envelope-stack-joint-widths-surveyed
+  type: noul
+  instructions: "Using `text`, does the passage state measured widths of the existing curtain-wall stack joints?"
+  criteria:
+    "true": "It states measured widths of the existing curtain-wall stack joints."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.curtain-wall
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0067
+- id: sig.envelope-opening-sizes-surveyed
+  type: noul
+  instructions: "Using `text`, does the passage state surveyed sizes of existing window or door openings?"
+  criteria:
+    "true": "It states surveyed sizes of existing window or door openings."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.windows-doors
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0068
+- id: sig.envelope-cavity-depth-measured
+  type: noul
+  instructions: "Using `text`, does the passage state the measured depth of the cavity or gap behind an existing wall?"
+  criteria:
+    "true": "It states the measured depth of the cavity or gap behind an existing wall."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.external-walls
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0069
+  - dataset: batch2
+    row: B2-0103
+- id: sig.envelope-slab-edge-position-surveyed
+  type: noul
+  instructions: "Using `text`, does the passage state a survey of the slab edge position against the facade grid?"
+  criteria:
+    "true": "It states a survey of the slab edge position against the facade grid."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.curtain-wall
+  - envelope.external-walls
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0071
+  - dataset: batch2
+    row: B2-0701
+- id: sig.envelope-wall-plumb-survey-stated
+  type: noul
+  instructions: "Using `text`, does the passage state measured plumb or out-of-plumb of an existing wall?"
+  criteria:
+    "true": "It states measured plumb or out-of-plumb of an existing wall."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.external-walls
+  - interiors.walls-linings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0077
+  - dataset: batch2
+    row: B2-0833
+- id: sig.envelope-coastal-exposure-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the distance of the site to salt water or its stated corrosion exposure?"
+  criteria:
+    "true": "It states the distance of the site to salt water or its stated corrosion exposure."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.windows-doors
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0081
+- id: sig.envelope-eaves-sarking-condition-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the condition of existing sarking or underlay at the eaves?"
+  criteria:
+    "true": "It states the condition of existing sarking or underlay at the eaves."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.roof-coverings
+  - envelope.pliable-membranes
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0082
+- id: sig.envelope-roof-purlin-spacing-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the spacing of the existing purlins or roof battens?"
+  criteria:
+    "true": "It states the spacing of the existing purlins or roof battens."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.roof-coverings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0083
+  - dataset: batch2
+    row: B2-0112
+  - dataset: batch2
+    row: B2-0853
+- id: sig.envelope-existing-roof-falls-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the falls of an existing roof or balcony surface?"
+  criteria:
+    "true": "It states the falls of an existing roof or balcony surface."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.roof-coverings
+  - envelope.external-waterproofing
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0101
+  - dataset: batch2
+    row: B2-0877
+  - dataset: batch2
+    row: B2-0840
+- id: sig.envelope-existing-overflow-paths-traced-stated
+  type: noul
+  instructions: "Using `text`, does the passage state where the overflows of an existing gutter or box gutter discharge?"
+  criteria:
+    "true": "It states where the overflows of an existing gutter or box gutter discharge."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.roof-coverings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0107
+  - dataset: batch2
+    row: B2-0108
+  - dataset: batch2
+    row: B2-0635
+- id: sig.envelope-existing-wet-area-hob-or-set-down-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the height of an existing shower hob or the set-down of an existing wet-area floor?"
+  criteria:
+    "true": "It states the height of an existing shower hob or the set-down of an existing wet-area floor."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.wet-area-waterproofing
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0119
+- id: sig.envelope-existing-floor-levels-surveyed
+  type: noul
+  instructions: "Using `text`, does the passage state a survey of the flatness, levels or falls of an existing floor?"
+  criteria:
+    "true": "It states a survey of the flatness, levels or falls of an existing floor."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.floor-finishes
+  - interiors.tiling
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0128
+  - dataset: batch2
+    row: B2-0674
+  - dataset: batch2
+    row: B2-0865
+- id: sig.envelope-existing-outlet-type-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the make, type or size of existing roof outlets or downpipe fittings?"
+  criteria:
+    "true": "It states the make, type or size of existing roof outlets or downpipe fittings."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.roof-coverings
+  - envelope.external-waterproofing
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0143
+  - dataset: batch2
+    row: B2-0433
+- id: sig.envelope-tile-bond-to-substrate-stated
+  type: noul
+  instructions: "Using `text`, does the passage state how existing tiles or stone are bonded to the membrane or substrate?"
+  criteria:
+    "true": "It states how existing tiles or stone are bonded to the membrane or substrate."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.tiling
+  - envelope.external-waterproofing
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0159
+  - dataset: batch2
+    row: B2-0849
+  - dataset: batch2
+    row: B2-0874
+- id: sig.envelope-floor-covering-asbestos-sampling-stated
+  type: noul
+  instructions: "Using `text`, does the passage state sampling results for asbestos in an existing floor finish or adhesive?"
+  criteria:
+    "true": "It states sampling results for asbestos in an existing floor finish or adhesive."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.floor-finishes
+  - interiors.tiling
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0465
+  - dataset: batch2
+    row: B2-0488
+- id: sig.envelope-ceiling-void-condition-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the condition of the ceiling void or roof space, such as dust, droppings, loose insulation or contamination?"
+  criteria:
+    "true": "It states the condition of the ceiling void or roof space, such as dust, droppings, loose insulation or contamination."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.ceilings
+  - envelope.roof-coverings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0471
+  - dataset: batch2
+    row: B2-0473
+  - dataset: batch2
+    row: B2-0490
+  - dataset: batch2
+    row: B2-0475
+  - dataset: batch2
+    row: B2-0484
+  - dataset: batch2
+    row: B2-0485
+- id: sig.envelope-moisture-behind-external-wall-linings-stated
+  type: noul
+  instructions: "Using `text`, does the passage state moisture or mould found behind the lining of an external wall?"
+  criteria:
+    "true": "It states moisture or mould found behind the lining of an external wall."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.external-walls
+  - interiors.walls-linings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0474
+- id: sig.envelope-existing-ceiling-height-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the measured finished ceiling height of the existing space?"
+  criteria:
+    "true": "It states the measured finished ceiling height of the existing space."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.ceilings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0557
+- id: sig.envelope-existing-window-performance-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the safety or energy performance of the existing windows?"
+  criteria:
+    "true": "It states the safety or energy performance of the existing windows."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.windows-doors
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0560
+  - dataset: batch2
+    row: B2-0839
+- id: sig.envelope-existing-glass-type-stated
+  type: noul
+  instructions: "Using `text`, does the passage state the type of existing glass, such as safety, wired, laminated or annealed glass?"
+  criteria:
+    "true": "It states the type of existing glass, such as safety, wired, laminated or annealed glass."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - envelope.windows-doors
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0705
+  - dataset: batch2
+    row: B2-0851
+  - dataset: batch2
+    row: B2-0867
+- id: sig.envelope-interior-heritage-fabric-identified-stated
+  type: noul
+  instructions: "Using `text`, does the passage state which interior fabric is original or significant, or is protected?"
+  criteria:
+    "true": "It states which interior fabric is original or significant, or is protected."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.walls-linings
+  - interiors.ceilings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0761
+  - dataset: batch2
+    row: B2-0875
+- id: sig.envelope-ceiling-support-of-services-stated
+  type: noul
+  instructions: "Using `text`, does the passage state whether an existing ceiling carries services or is hung from them?"
+  criteria:
+    "true": "It states whether an existing ceiling carries services or is hung from them."
+    "false": "It does not state this; a requirement or intention to survey, test or check is not a finding."
+  runs_on:
+  - interiors.ceilings
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0821
+  - dataset: batch2
+    row: B2-0847
