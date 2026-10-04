@@ -1,0 +1,274 @@
+# Delivery signals: Jev questions that ask what a passage states about programme,
+# contract, authority, site or handover facts. Same authoring rules as SCHEMA.md Questions.
+version: 1
+signals:
+  - id: sig.plant-access-or-lift-study-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a lift study, crane selection or plant access assessment for the site?"
+    criteria:
+      "true": "It states that a lift study, crane selection or plant access assessment was carried out or is held."
+      "false": "It does not mention one, or only says one is required."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: sig.vehicle-swept-path-check-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a swept path or turning path check for vehicles on the site?"
+    criteria:
+      "true": "It states a swept path or turning path check, drawing or analysis."
+      "false": "It does not mention one, or only says vehicles must be able to turn."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Program Risk Assessment"}
+  - id: sig.product-certificate-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a test report, certificate of conformity or product certification for a named product?"
+    criteria:
+      "true": "It names a test report, certificate or certification held for a named product."
+      "false": "It does not name one, or only says products must comply or be certified."
+    runs_on: ["fire-passive", "envelope"]
+    status: draft
+    sources:
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: sig.mandatory-inspections-stated
+    type: noul
+    instructions: "Using `text`, does the passage list mandatory inspections or hold points that must be passed before the next stage of work?"
+    criteria:
+      "true": "It lists one or more inspections or hold points, or names a stage that cannot proceed until an inspection is passed."
+      "false": "It does not list inspections or hold points, or only says work will be inspected."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: sig.completion-certificates-requirement-stated
+    type: noul
+    instructions: "Using `text`, does the passage state certificates or compliance documentation that must be given to the certifier at completion?"
+    criteria:
+      "true": "It names certificates or documentation required for final inspection or an occupation certificate."
+      "false": "It does not name any, or only says the building must comply."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: sig.consent-conditions-stated
+    type: noul
+    instructions: "Using `text`, does the passage state conditions of development consent that apply to the project?"
+    criteria:
+      "true": "It states one or more conditions of development consent for the project."
+      "false": "It does not state any consent conditions, or only refers to approvals in general."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: sig.planning-control-limits-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a planning control for the site such as a setback, building height limit, floor space ratio or overshadowing control?"
+    criteria:
+      "true": "It states at least one such control for the site."
+      "false": "It does not state any of them, or only says planning controls apply."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: sig.easement-or-utility-asset-stated
+    type: noul
+    instructions: "Using `text`, does the passage state an easement, or an overhead or underground utility asset, on or beside the site?"
+    criteria:
+      "true": "It states an easement or a utility asset located on or beside the site."
+      "false": "It does not state one, or only says services should be located."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: sig.change-of-use-stated
+    type: noul
+    instructions: "Using `text`, does the passage state that the building or part changes to a different use or class?"
+    criteria:
+      "true": "It states a change from one use or class to another."
+      "false": "It does not state a change of use, or only states the current use."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: sig.flammable-liquids-storage-stated
+    type: noul
+    instructions: "Using `text`, does the passage state storage of flammable or combustible liquids in the building?"
+    criteria:
+      "true": "It states that flammable or combustible liquids are stored."
+      "false": "It does not mention such storage."
+    runs_on: ["fire-passive"]
+    status: draft
+    sources:
+      - {"seed": "ncc-reference-guide.md", "anchor": "## 7. The certifier's role"}
+  - id: sig.acoustic-separation-stated
+    type: noul
+    instructions: "Using `text`, does the passage state an acoustic separation or sound rating between offices and factory or plant areas?"
+    criteria:
+      "true": "It states an acoustic separation or sound rating between those areas."
+      "false": "It does not state one, or only says noise should be controlled."
+    runs_on: ["interiors"]
+    status: draft
+    sources:
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Quality Assurance and Commissioning"}
+  - id: sig.work-hours-restriction-stated
+    type: noul
+    instructions: "Using `text`, does the passage state permitted working hours or days for the site?"
+    criteria:
+      "true": "It states permitted working hours or days."
+      "false": "It does not state them, or only says noise rules apply."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Weather and Seasonal Planning"}
+  - id: sig.neighbour-condition-survey-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a dilapidation or condition survey of neighbouring properties?"
+    criteria:
+      "true": "It states that a dilapidation or condition survey of neighbouring properties is held or required."
+      "false": "It does not mention one."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "renovation-guide.md", "anchor": "## Dilapidation and neighbour management"}
+  - id: sig.temporary-works-wind-design-stated
+    type: noul
+    instructions: "Using `text`, does the passage state that hoardings, edge protection or temporary fencing are designed or ballasted for wind?"
+    criteria:
+      "true": "It states wind design or ballast for temporary works."
+      "false": "It does not state this, or only says temporary works must be secure."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Workplace Health and Safety in Commercial Construction"}
+  - id: sig.ecological-survey-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a flora, fauna, tree or ecological survey of the site?"
+    criteria:
+      "true": "It states that an ecological, flora, fauna or tree survey has been carried out or is held."
+      "false": "It does not mention one, or only says one may be required."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "town-planning-guide.md", "anchor": "## Common failures and low-confidence flags"}
+  - id: sig.notice-time-limit-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a time limit for giving a notice or a claim under the contract?"
+    criteria:
+      "true": "It states a time limit for a notice or claim."
+      "false": "It does not state one, or only says notices must be given."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "contract-administration-guide.md", "anchor": "### Time bars"}
+  - id: sig.special-conditions-stated
+    type: noul
+    instructions: "Using `text`, does the passage state special conditions that amend the general conditions of the contract?"
+    criteria:
+      "true": "It states special conditions that amend the general conditions."
+      "false": "It does not mention special conditions."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: sig.design-novation-stated
+    type: noul
+    instructions: "Using `text`, does the passage state that design consultants are novated to the contractor or that the contractor carries design responsibility?"
+    criteria:
+      "true": "It states novation or contractor design responsibility."
+      "false": "It does not state either."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "procurement-tendering-guide.md", "anchor": "### Risk Allocation and Baseline Reports"}
+  - id: sig.document-precedence-stated
+    type: noul
+    instructions: "Using `text`, does the passage state which contract document prevails if the specification and the drawings conflict?"
+    criteria:
+      "true": "It states an order of precedence between specification and drawings."
+      "false": "It does not state an order of precedence."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: sig.client-supplied-items-stated
+    type: noul
+    instructions: "Using `text`, does the passage list items supplied by the client or owner?"
+    criteria:
+      "true": "It lists one or more items supplied by the client or owner."
+      "false": "It does not list any, or only mentions supply by the contractor."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: sig.provisional-sum-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a provisional sum item?"
+    criteria:
+      "true": "It states one or more provisional sum items."
+      "false": "It does not mention provisional sums."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "contract-administration-guide.md", "anchor": "## Common contract-administration failures"}
+  - id: sig.seasonal-testing-stated
+    type: noul
+    instructions: "Using `text`, does the passage state that heating and cooling systems are tested in more than one season or in both hot and cold conditions?"
+    criteria:
+      "true": "It states testing in more than one season or in hot and cold conditions."
+      "false": "It does not state this, or only says systems will be commissioned."
+    runs_on: ["mechanical"]
+    status: draft
+    sources:
+      - {"seed": "program-scheduling-guide.md", "anchor": "## Commissioning and Handover Programming"}
+  - id: sig.om-manuals-requirement-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a requirement for operation and maintenance manuals at handover?"
+    criteria:
+      "true": "It states that manuals are required or provided at handover."
+      "false": "It does not mention manuals."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Handover and Practical Completion"}
+  - id: sig.operator-training-requirement-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a requirement for training of building operators at handover?"
+    criteria:
+      "true": "It states that operator training is required or provided."
+      "false": "It does not mention operator training."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "commercial-construction-guide.md", "anchor": "## Handover and Practical Completion"}
+  - id: sig.occupied-works-stated
+    type: noul
+    instructions: "Using `text`, does the passage state that the building stays occupied or operating during the works?"
+    criteria:
+      "true": "It states that occupants stay or the building operates during the works."
+      "false": "It does not state this, or states the building is vacant."
+    runs_on: ["site", "interiors"]
+    status: draft
+    sources:
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+  - id: sig.works-window-stated
+    type: noul
+    instructions: "Using `text`, does the passage state a period when the works must be done, such as a school holiday or a trading calendar window?"
+    criteria:
+      "true": "It states a calendar window for the works."
+      "false": "It does not state one."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
+  - id: sig.vacant-possession-stated
+    type: noul
+    instructions: "Using `text`, does the passage state that the premises are vacant or will be handed over vacant at the start of works?"
+    criteria:
+      "true": "It states vacant possession or a vacant handover."
+      "false": "It does not state it, or states the premises stay occupied."
+    runs_on: ["site"]
+    status: draft
+    sources:
+      - {"seed": "renovation-guide.md", "anchor": "## Live occupancy and staging"}
