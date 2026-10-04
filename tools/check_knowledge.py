@@ -94,7 +94,8 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
     loaded = []
     for path in sorted(KNOWLEDGE.rglob("*.yaml")):
         rel = path.relative_to(ROOT).as_posix()
-        if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in path.relative_to(KNOWLEDGE).parts[:-1]:
+        parts = path.relative_to(KNOWLEDGE).parts[:-1]
+        if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in parts or set(CATALOGUE_DIRS) & set(parts):
             continue
         if path.name in CLUSTER_WORKS_FILES and path.parent.parent.name == "clusters":
             continue
@@ -978,6 +979,165 @@ def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions
     return pending
 
 
+
+# Delivery and commercial catalogues (SCHEMA.md, 2026-10-05). Each file is
+# optional; a present file must match its documented shape.
+CATALOGUE_DIRS = ("reports", "costs")
+PLANNING_VALUES = {"integer", "number", "boolean", "choice", "text"}
+SCOPES = {"site", "project"}
+NOVATION = {"pre", "post"}
+REPORT_OUTPUTS = {"rfp", "rft", "pmp"}
+CLAUSE_ID = re.compile(r"^cl\.[a-z0-9-]+$")
+BENCHMARK_ID = re.compile(r"^bm\.[a-z0-9-]+$")
+DECIMAL = re.compile(r"^-?\d+(\.\d+)?$")
+
+
+def load_catalogue(path: Path, key: str, report: Report):
+    if not path.is_file():
+        return None, None
+    rel, doc = load_works_doc(path, key, report)
+    return rel, doc
+
+
+def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: dict) -> None:
+    taxonomy = {}
+    tax_path = KNOWLEDGE / PROFILE_DIR / "taxonomy.yaml"
+    if tax_path.is_file():
+        taxonomy = yaml.safe_load(tax_path.read_text(encoding="utf-8")) or {}
+    classes = {c.get("id") for c in taxonomy.get("building_classes") or []}
+    work_types = {w.get("id") for w in taxonomy.get("work_types") or []}
+    conditions = {c.get("key") for c in taxonomy.get("conditions") or []}
+
+    rel, doc = load_catalogue(KNOWLEDGE / WORKS_DIR / "stages.yaml", "stages", report)
+    if doc is not None:
+        if doc.get("status") not in STATUSES:
+            report.error(rel, "stages file needs a status")
+        check_sources(rel, doc.get("sources"), seed_dir, report, cache)
+        ids = [s.get("id") for s in doc.get("stages") or [] if isinstance(s, dict)]
+        if set(ids) != UC_STAGES or len(ids) != len(UC_STAGES):
+            report.error(rel, f"top-level stages must be exactly {sorted(UC_STAGES)}")
+        seen = set(ids)
+        for stage in doc.get("stages") or []:
+            if not isinstance(stage, dict) or not str(stage.get("label", "")).strip():
+                report.error(rel, f"stage needs id and label: {stage}")
+                continue
+            for sub in stage.get("substages") or []:
+                where = f"{rel} [{stage.get('id')}]"
+                if not isinstance(sub, dict) or not ID_PATTERNS["determinants"].match(str(sub.get("id", ""))) \
+                        or not str(sub.get("label", "")).strip():
+                    report.error(where, f"sub-stage needs a snake_case id and a label: {sub}")
+                    continue
+                if sub.get("novation") is not None and sub.get("novation") not in NOVATION:
+                    report.error(where, f"novation must be one of {sorted(NOVATION)}")
+                if sub["id"] in seen:
+                    report.error(where, f"duplicate stage id {sub['id']}")
+                seen.add(sub["id"])
+
+    rel, doc = load_catalogue(KNOWLEDGE / WORKS_DIR / "package_defaults.yaml", "baselines", report)
+    if doc is not None:
+        if doc.get("status") not in STATUSES:
+            report.error(rel, "package defaults need a status")
+        check_sources(rel, [doc.get("source")] if doc.get("source") else None, seed_dir, report, cache)
+        for i, b in enumerate(doc.get("baselines") or []):
+            where = f"{rel} [baselines {i}]"
+            if not isinstance(b, dict) or not b.get("consultants"):
+                report.error(where, "baseline needs consultants")
+                continue
+            for c in b.get("building_classes") or []:
+                if classes and c not in classes:
+                    report.error(where, f"unknown building class {c}")
+            for w in b.get("work_types") or []:
+                if work_types and w not in work_types:
+                    report.error(where, f"unknown work type {w}")
+        for i, a in enumerate(doc.get("complexity_additions") or []):
+            where = f"{rel} [complexity_additions {i}]"
+            if not isinstance(a, dict) or not a.get("field") or not a.get("values") or not a.get("consultants"):
+                report.error(where, "addition needs field, values and consultants")
+                continue
+            if a["field"] not in determinants and a["field"] not in conditions:
+                report.warn(where, f"field {a['field']} is not a SiteWise determinant or condition; map it before use")
+
+    rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "planning_keys.yaml", "keys", report)
+    if doc is not None:
+        seen = set()
+        for k in doc.get("keys") or []:
+            where = f"{rel} [{k.get('key', '?') if isinstance(k, dict) else '?'}]"
+            if not isinstance(k, dict) or not str(k.get("key", "")).strip() or not str(k.get("label", "")).strip():
+                report.error(where, "planning key needs key and label")
+                continue
+            if k["key"].startswith("cost.") or k.get("value") not in PLANNING_VALUES:
+                report.error(where, f"value must be one of {sorted(PLANNING_VALUES)}; money totals belong to the cost plan")
+            if k.get("value") == "choice" and not k.get("options"):
+                report.error(where, "a choice key needs options")
+            if k.get("scope") not in SCOPES:
+                report.error(where, f"scope must be one of {sorted(SCOPES)}")
+            if k["key"] in seen:
+                report.error(where, "duplicate key")
+            seen.add(k["key"])
+
+    rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "key_scope.yaml", "families", report)
+    if doc is not None:
+        prefixes = set()
+        for f in doc.get("families") or []:
+            if not isinstance(f, dict) or not str(f.get("prefix", "")).strip() or f.get("scope") not in SCOPES:
+                report.error(rel, f"family needs a prefix and a scope in {sorted(SCOPES)}: {f}")
+                continue
+            if f["prefix"] in prefixes:
+                report.error(rel, f"duplicate prefix {f['prefix']}")
+            prefixes.add(f["prefix"])
+
+    rel, doc = load_catalogue(KNOWLEDGE / "reports" / "clauses.yaml", "clauses", report)
+    if doc is not None:
+        seen = set()
+        for c in doc.get("clauses") or []:
+            where = f"{rel} [{c.get('id', '?') if isinstance(c, dict) else '?'}]"
+            if not isinstance(c, dict):
+                report.error(rel, "clause must be a mapping")
+                continue
+            if not CLAUSE_ID.match(str(c.get("id", ""))):
+                report.error(where, f"id does not match {CLAUSE_ID.pattern}")
+            if not isinstance(c.get("version"), int) or c.get("version") < 1:
+                report.error(where, "version must be a positive integer")
+            if not c.get("outputs") or set(c.get("outputs")) - REPORT_OUTPUTS:
+                report.error(where, f"outputs must be a non-empty subset of {sorted(REPORT_OUTPUTS)}")
+            if not str(c.get("text", "")).strip() or not str(c.get("section", "")).strip():
+                report.error(where, "clause needs section and text")
+            if c.get("status") not in STATUSES:
+                report.error(where, f"status must be one of {sorted(STATUSES)}")
+            check_sources(where, c.get("sources"), seed_dir, report, cache)
+            if c.get("id") in seen:
+                report.error(where, "duplicate clause id")
+            seen.add(c.get("id"))
+
+    rel, doc = load_catalogue(KNOWLEDGE / "costs" / "benchmarks.yaml", "benchmarks", report)
+    if doc is not None:
+        seen = set()
+        required = {"id", "version", "basis", "amount", "currency", "tax_basis", "price_date", "geography",
+                    "quality", "inclusions", "exclusions", "status", "sources"}
+        for b in doc.get("benchmarks") or []:
+            where = f"{rel} [{b.get('id', '?') if isinstance(b, dict) else '?'}]"
+            if not isinstance(b, dict):
+                report.error(rel, "benchmark must be a mapping")
+                continue
+            missing = required - b.keys()
+            if missing:
+                report.error(where, f"missing fields: {sorted(missing)}")
+            if not BENCHMARK_ID.match(str(b.get("id", ""))):
+                report.error(where, f"id does not match {BENCHMARK_ID.pattern}")
+            if b.get("basis") not in ("lump_sum", "rate") or (b.get("basis") == "rate" and not b.get("unit")):
+                report.error(where, "basis must be lump_sum or rate (rate needs a unit)")
+            if not isinstance(b.get("amount"), str) or not DECIMAL.match(b.get("amount", "")):
+                report.error(where, "amount must be a decimal string, never a float")
+            if b.get("tax_basis") not in ("ex_tax", "inc_tax"):
+                report.error(where, "tax_basis must be ex_tax or inc_tax")
+            if b.get("status") not in STATUSES:
+                report.error(where, f"status must be one of {sorted(STATUSES)}")
+            check_sources(where, b.get("sources"), seed_dir, report, cache)
+            if b.get("id") in seen:
+                report.error(where, "duplicate benchmark id")
+            seen.add(b.get("id"))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed-dir", type=Path, default=DEFAULT_SEED_DIR)
@@ -1024,6 +1184,7 @@ def main() -> int:
         check_derivation_output(where, rule, determinants, report)
     check_profile(report, args.seed_dir, known, deprecated, refs, cache, determinants, rules)
     pending = check_works(report, args.seed_dir, refs, cache, actions_doc, known)
+    check_catalogues(report, args.seed_dir, cache, determinants)
     check_replacements(deprecated, known, report)
     check_deprecated_refs(refs, deprecated, report)
 

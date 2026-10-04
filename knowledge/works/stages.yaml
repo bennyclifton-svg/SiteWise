@@ -1,0 +1,25 @@
+# Delivery stages (SCHEMA.md "Delivery and commercial catalogues"). Top-level
+# ids are the unforeseen-condition stage targets. Sub-stages are editable
+# suggestions for staged fee lines, taken from the plan's cost example; the
+# novation side is a typical default a package may change. Draft for owner review.
+version: 1
+status: draft
+sources:
+  - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Core concepts"}
+  - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Cost plan through procurement"}
+stages:
+  - {id: investigation, label: Investigation}
+  - id: design
+    label: Design
+    substages:
+      - {id: concept_design, label: Concept design, novation: pre}
+      - {id: approval_documentation, label: Approval documentation, novation: pre}
+      - {id: construction_documentation, label: Construction documentation, novation: post}
+  - {id: approvals, label: Authorities and approvals}
+  - {id: procurement, label: Procurement}
+  - id: construction
+    label: Construction
+    substages:
+      - {id: construction_stage_inspections, label: Construction-stage inspections, novation: post}
+  - {id: completion, label: Completion}
+  - {id: defects, label: Defects liability}

@@ -565,3 +565,135 @@ rows:
 The checker fails on a missing, extra or repeated row, an unknown record id
 and an invalid disposition. Pending rows are allowed and counted in its
 summary.
+
+## Delivery and commercial catalogues (2026-10-05)
+
+Shapes for the next wave's packages, costs and reports (`docs/plans/2026-10-04-next-wave-implementation-plan.md` §4 and package WP-K0). Each shape is documented here before any data is written in it. Everything is `status: draft` until the owner reviews it. Only `reviewed` content may set a standard obligation, clause or benchmark; draft content stays visibly provisional.
+
+```text
+knowledge/works/stages.yaml            delivery stages and editable design sub-stages
+knowledge/works/package_defaults.yaml  default consultant packages, copied as data from Clerk
+knowledge/profile/planning_keys.yaml   keys a planning value (assumption or calculation) may use
+knowledge/profile/key_scope.yaml       whether each profile key belongs to the site or the project
+knowledge/reports/clauses.yaml         approved clause and prose fragments for RFP, RFT and PMP
+knowledge/costs/benchmarks.yaml        cost benchmarks an estimate may use
+```
+
+### Stages (`works/stages.yaml`)
+
+The top-level ids are the stage targets of unforeseen conditions:
+
+- `investigation`
+- `design`
+- `approvals`
+- `procurement`
+- `construction`
+- `completion`
+- `defects`
+
+`substages` are editable suggestions for staged fee lines, never requirements. `novation` says which side of a novation a sub-stage usually falls on (`pre` or `post`); a package may change it.
+
+```yaml
+version: 1
+status: draft
+sources: [...]
+stages:
+  - id: design
+    label: Design
+    substages:
+      - {id: concept_design, label: Concept design, novation: pre}
+```
+
+### Package defaults (`works/package_defaults.yaml`)
+
+Clerk's consultant rosters, copied as data, never code.
+
+- **`baselines`** suggest consultants by building class (taxonomy ids) and work type.
+- **`complexity_additions`** add a consultant when a profile field has one of the listed values. A `field` keeps Clerk's name. The checker warns when it is neither a determinant nor a taxonomy condition, so the owner can map it.
+
+Suggestions are proposals, never appointments.
+
+```yaml
+version: 1
+status: draft
+source: {clerk_file: data/taxonomy/consultant-rosters.json}
+baselines:
+  - {building_classes: [residential], work_types: [new, extend], consultants: [Architect, Structural]}
+complexity_additions:
+  - {field: heritage_status, values: [state_heritage_register], consultants: [Heritage]}
+```
+
+### Planning keys (`profile/planning_keys.yaml`)
+
+The registry of keys a `profile_planning_values` row may use.
+
+- `value` is `integer`, `number`, `boolean`, `choice` or `text`; `options` is required for `choice`.
+- `scope` is `site` or `project`.
+- Money totals belong to the cost plan, so `value: money` does not exist and a key may not start with `cost.`.
+
+```yaml
+version: 1
+status: draft
+keys:
+  - {key: gross_floor_area, label: Gross floor area, value: number, unit: m2, scope: site}
+```
+
+### Key scope (`profile/key_scope.yaml`)
+
+Says whether a profile key family is stored against the site or the project. The classification itself is owner decision D-04. The file is written only once D-04 is answered.
+
+```yaml
+version: 1
+status: draft
+families:                   # matched by prefix, longest prefix wins
+  - {prefix: "det.", scope: site}
+  - {prefix: "hdr.work_type", scope: project}
+```
+
+### Clauses (`reports/clauses.yaml`)
+
+The approved wording reports assemble; code never generates prose.
+
+- `id` is `cl.<slug>`.
+- `version` is a positive integer, raised on any wording change. Issued reports keep the version they used.
+- `outputs` lists the reports that may use the clause: `rfp`, `rft` or `pmp`.
+
+```yaml
+version: 1
+clauses:
+  - id: cl.rfp-fee-return
+    version: 1
+    outputs: [rfp]
+    section: fee_return
+    text: Return a lump-sum fee for each stage listed in the schedule.
+    status: draft
+    sources: [...]
+```
+
+### Benchmarks (`costs/benchmarks.yaml`)
+
+The only basis an estimate may use. With no suitable reviewed benchmark, the estimate asks for an input or stays unknown.
+
+- `id` is `bm.<slug>`.
+- Amounts are decimal strings, never floats.
+- `applies_when` uses the predicate operators above.
+
+```yaml
+version: 1
+benchmarks:
+  - id: bm.fire-hydrant-flow-test
+    version: 1
+    basis: lump_sum          # lump_sum | rate
+    unit: item               # required for rate
+    amount: "0.00"
+    currency: AUD
+    tax_basis: ex_tax
+    price_date: 2026-10-01
+    geography: NSW Sydney metro
+    quality: standard
+    inclusions: [...]
+    exclusions: [...]
+    applies_when: {...}
+    status: draft
+    sources: [...]
+```
