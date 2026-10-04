@@ -92,6 +92,7 @@ type Catalog struct {
 	tables     map[string]Table
 	evidence   []Question
 	profile    profileData
+	works      worksData
 }
 
 // Load reads knowledge/ (or a fixture with the same layout).
@@ -146,6 +147,15 @@ func Load(root string) (*Catalog, error) {
 		return nil, err
 	}
 	if err := c.loadProfile(filepath.Join(root, "profile")); err != nil {
+		return nil, err
+	}
+	var clusterDirs []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			clusterDirs = append(clusterDirs, filepath.Join(clusters, entry.Name()))
+		}
+	}
+	if err := c.loadWorks(root, clusterDirs); err != nil {
 		return nil, err
 	}
 	sort.Slice(c.evidence, func(i, j int) bool { return c.evidence[i].ID < c.evidence[j].ID })
