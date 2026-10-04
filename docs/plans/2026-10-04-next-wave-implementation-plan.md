@@ -536,6 +536,13 @@ Findings added during WP-00:
 - **F25.** The all-systems worst-case evidence call exceeds 64k tokens: about 144k at `02094db`, about 210k now. No real passage measured comes close, but WP-22 and WP-27 must measure their worst real passage against the limit.
 - **F26.** `TestRuleBudget` (`internal/intake`, 1,000 µs p90) failed once at 1,021 µs during a full parallel `go test ./...`, then passed 3 out of 3 in isolation. Treat it as a timing flake on this host, not a regression.
 - **F27.** `tools/check.ps1` run with `pwsh -File` from this agent shell fails at `npm --prefix web ci` (`Unknown command: "pm"`). The PowerShell npm shim mangles the arguments here. The same steps pass when run from bash. The gate script was left unchanged.
+- **F28. The intake gate was already red before this wave.** At `02094db`, `intake-eval -replay` failed with 129 unrecorded Jev requests: the recordings dated from 1 October, before later filing changes. They were re-recorded live (A1): 129 calls, 0 errors, 0 replay misses; aggregate metrics are in `data/eval/intake/results/live-latest.json`.
+  - The gate still stops at "no accepted baseline: review this report, then run with -accept".
+  - Accepting a baseline approves filing accuracy, which is an **owner** decision. It is not covered by §0.1, and I did not accept one.
+  - Note for the owner: held-out title accuracy on this run is 0.29, with 15 false-confident titles.
+- **F29. The latency bench also failed before this wave.** `cmd/intake-bench` refuses to run when requests have no recorded document: 178 before the re-recording, 52 after. The remainder are probably the 55 documents with no text layer (OCR path), which the eval run does not record.
+  - The latency gate is therefore not runnable locally, and the `whole_intake` timing under background load (WP-00 step 4) is **not verified**.
+  - Owner decision: re-record the OCR path or exclude those documents from the bench.
 
 ## 5. Decisions
 
