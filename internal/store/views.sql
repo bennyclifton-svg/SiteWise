@@ -50,7 +50,9 @@ LEFT JOIN supersessions s
 WHERE d.org_id = sqlc.arg(org_id)::uuid
   AND d.id = sqlc.arg(id)::uuid;
 
--- name: ListProjectDecisionViews :many
+-- The decisions of the listed documents, by id: no join, so a stale plan
+-- cannot multiply every document by every decision in the org (F30).
+-- name: ListDocumentDecisionViews :many
 SELECT
     dc.document_id::text AS document_id,
     dc.field,
@@ -60,11 +62,8 @@ SELECT
     COALESCE(dc.question_version, '') AS question_version,
     dc.confidence
 FROM decisions dc
-JOIN documents d
-    ON d.org_id = dc.org_id
-   AND d.id = dc.document_id
 WHERE dc.org_id = sqlc.arg(org_id)::uuid
-  AND d.project_id = sqlc.arg(project_id)::uuid
+  AND dc.document_id = ANY(sqlc.arg(document_ids)::text[]::uuid[])
 ORDER BY dc.document_id, dc.field;
 
 -- name: LatestEventID :one
