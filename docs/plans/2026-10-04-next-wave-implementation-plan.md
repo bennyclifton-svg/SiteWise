@@ -1,12 +1,12 @@
 # Next wave: implementation plan
 
-Status: **planning draft for owner review. No implementation is authorised by this document.**
+Status: **Revised plan, 5 October 2026. This turn is documentation-only: do not start or resume implementation.** Previous implementation evidence is retained; a later explicit implementation request is needed to resume work.
 Companion documents:
 
 - `docs/plans/2026-10-04-next-wave-requirements-register.md`: every PRG statement, requirement IDs (`NW-REQ-###`), the coverage ledger, traceability and status.
 - `docs/plans/2026-10-04-next-wave-agent-work-packages.md`: execution packages (`WP-##`), copy-ready briefs, file ownership, merge order and handoff rules.
 
-Authoritative source (PRG): `docs/plans/2026-10-04-next-wave-architecture-schema.md`, left unchanged.
+Authoritative source (PRG): `docs/plans/2026-10-04-next-wave-architecture-schema.md`, original 435-line baseline plus the review amendment. Baseline line citations remain valid.
 Decisions are recorded **once**, in §5 of this document (`D-##`). The register and packages refer to them by ID.
 
 ## 0. Planning baseline
@@ -22,7 +22,9 @@ Decisions are recorded **once**, in §5 of this document (`D-##`). The register 
 | Working tree | Untracked `.claude/` (agent worktrees) and `docs/unforeseen/pass-b-reports.md` (someone else's report). Left untouched. |
 | Planning date | 5 October 2026 |
 
-## 0.1 Standing owner authorisations (5 October 2026)
+## 0.1 Historical implementation authorisations (5 October 2026)
+
+These permissions describe the earlier run. They do not override the current instruction to modify the plan only. No implementation, live Jev calls, database operations, merges or deployment are part of this revision.
 
 The owner (Benny Clifton) granted these in conversation on 5 October 2026, while away from the keyboard for most of the implementation. Agents working this plan **do not need to ask again** for anything in this list. Each use is recorded in the package handoff (work-package document §4.2).
 
@@ -40,6 +42,22 @@ The owner (Benny Clifton) granted these in conversation on 5 October 2026, while
 
 **Still owner-only:** product decisions marked Open in §5; marking anything `reviewed`; any VPS or production change; pushing to the remote; new third-party dependencies beyond what an approved decision names (`AGENTS.md`).
 
+## 0.2 Current evidence status — single authoritative summary
+
+As recorded on 5 October 2026; this documentation revision ran no application checks. Evidence references are historical results, not re-verification of today's HEAD. Requirements register state updates and package handoffs are the detailed audit trail; other status tables link here rather than claiming independent current truth.
+
+| Item | Current recorded status | Evidence / remaining gate |
+| - | - | - |
+| WP-00 profile replay/workload | Implemented; source 15/15 and Hale 12/12 replays recorded | `docs/evidence/2026-10-05-evidence-workload.md`; does not prove all answer keys or filing quality |
+| Filing accuracy | Replay baseline accepted as a regression floor; quality remains inadequate | Same note: held-out title accuracy 0.29 and 15 confident wrong titles. Baseline acceptance is not quality approval. |
+| Filing latency | Local live whole_intake p50 377 / p90 1,245 ms against 1,000/2,000 ms | Same note: component budgets overrun; replay bench still fails because multi-sheet requests are missing. VPS evidence outstanding. |
+| WP-11 / WP-25 | Implemented and independently reviewed, not whole-wave Verified | Package handoffs/status history and register state updates; remaining dependent contracts still outstanding |
+| WP-K0 / WP-K4 | Shapes/catalogues and K4 drafts recorded as implemented; content review incomplete | Package history; no new reviewed knowledge is implied by format approval |
+| All other packages | Not demonstrated complete by the reviewed planning evidence | Treat as not verified; inspect actual handoffs before resuming |
+| M1/M2/M3 and new §8.6 gates | Planned; not run | Added by this documentation revision |
+
+§5 is the sole current decision table. §4.13 and the owner packet retain historical evidence; unedited recommendations are not owner approval. A technical planning default may guide a future authorised implementation, but cannot approve knowledge, answer keys, a new dependency or production changes.
+
 ## 1. Owner overview
 
 **What this wave builds.** It builds one shared record behind four outputs: the consultant RFP, the works RFT, the PMP and the cost plan.
@@ -52,33 +70,20 @@ The owner (Benny Clifton) granted these in conversation on 5 October 2026, while
 
 The stack stays as it is: Go, PostgreSQL, Jev as the only AI, local files, the existing jobs and SSE.
 
-**What must happen before any coding:**
+**Current direction:** prove the smallest useful 0991 workflow before completing the commercial and reporting programme. The status of earlier work is in §0.2; do not use the historical findings as a live task board.
 
-1. **The profile regression gate is broken on `main` today.** This is executed evidence: `go run ./cmd/profile-eval` and the Hale replay both report "evidence recording is stale" at HEAD, while the reviewed commit passes 15/15.
-   - The probable cause is the K4 knowledge merges. They grew failure-mode detectors, which ride in every evidence Jev call, from 23 in the fire cluster (and about 172 overall on 29 September) to 859.
-   - Stage 1's gate ("answer keys still pass") cannot be met until this is resolved. WP-00 and D-17 cover it.
-2. **Your decisions in §5.** Eight are blocking and need an answer before their packages start:
-   - D-03: sequencing of the gap check and delivery records.
-   - D-04: site and project value split.
-   - D-07: mixed interventions.
-   - D-09: responsibility rules.
-   - D-15: export renderer.
-   - D-18: speed budgets.
-   - D-05: existing-condition ownership; blocks WP-20.
-   - D-06: eligibility of user inputs for derivations; blocks WP-15.
-3. **Approval of the K0 shapes, which are already merged.** The PRG gate says "owner approves shapes". I found no record of that approval.
+### 1.1 Delivery milestones (D-31)
 
-**The sequence I recommend:**
+| Milestone | Required outcome | Dependencies and deliberately deferred work |
+| - | - | - |
+| M0 — restore evidence gates | Reproducible whole-file filing replay, explicit accuracy baseline, component and end-to-end timing results | WP-00 follow-up; no silent exclusion of multi-sheet or unreadable cases. Existing defects are tracked separately but a red required gate blocks new Lane A merges. |
+| M1 — reviewable 0991 RFP draft | Upload, review scope/actions/locations, inspect proposals, allocate a consultant package, edit and refresh a cited draft in the app | WP-11–15; WP-20–23; WP-25–26; WP-28a; WP-30–32; WP-35a; WP-40a; WP-41a; WP-42a; WP-45a; WP-K6a; WP-X1 for these routes. Relevant K0–K3 records only, still draft until owner review. |
+| M2 — issuable 0991 RFP | Complete costing/fee return, issue snapshot and readable PDF; measure upload-to-issuable-RFP | WP-24, WP-27, remaining WP-28/35/40–42/45, WP-33–34, WP-43–44; relevant knowledge and quality gates. |
+| M3 — broader workflows | 0777 fit-out validation, RFT, PMP and live reporting | WP-K6b and §8.6 pass on 0777 before WP-50–51/60; WP-70 refinement and WP-71 release proof follow. |
 
-- WP-00 restores the gate.
-- Stage 1 (sites and provenance) and the K-track run in parallel.
-- Stage 2 builds work items and proposals.
-- Stage 3 builds packages, costs and a minimal set of delivery records. The minimal delivery records are pulled forward from Stage 6 (D-03).
-- Stage 4 delivers the RFP on 0991, then the RFT, then the PMP, then live reporting, then interaction polish.
+Suffixes a/b are phases of the same package, not new stores or competing ownership. M1 uses final schemas and the same deterministic assembler. Cost fields are explicitly unavailable and omitted where optional; no placeholder amounts or second ledger. Issue/export endpoints are unavailable until M2. Dates, risks and approvals are manually entered through minimal controls, never inferred from uploads. Draft clauses remain visibly provisional; only owner-reviewed catalogue content establishes standard obligations.
 
-**Recommended first package after approval: WP-00.** If you approve D-17 option (b) instead, start WP-00 and WP-11 together.
-
-**Not ready to claim:** this plan is not "implementation-ready" in full. §5 lists open decisions, and the packages that depend on them are marked **Blocked** in the work-package document.
+M1 brings forward only the controls needed to review work items, proposals, responsibilities, provenance and the RFP. General tabs and optimistic-edit polish remain WP-70. M1 is a product-learning gate, not permission to issue or deploy. Failed quality gates stop expansion to M2; fix the scoped failure and rerun against the frozen key.
 
 ## 2. Repository findings
 
@@ -130,7 +135,7 @@ The evidence labels mean:
 ### 3.1 Boundaries (unchanged)
 
 - **One Go binary**: API, workers, the embedded SPA, SSE and PostgreSQL 17. Files sit on local disk by content hash.
-- **Jev is the only runtime AI.** It is asked only by background jobs (`label`, `evidence`) through `cachedAsk`.
+- **Jev is the only runtime AI.** New work in this wave asks it through background jobs (`label`, `evidence`) and `cachedAsk`; the existing foreground filing fan-out remains unchanged.
 - **Rebuilds, reads, edits, proposals, gap checks, totals and report assembly are code-only.**
 - **Ruled out:** no LLM, embeddings, agent harness, vector or graph database, additional service, workflow platform, universal dependency engine or untyped entity table.
 - **Research agents are outside the runtime.** K1 to K6 produce draft YAML in `knowledge/` only.
@@ -217,7 +222,7 @@ Controlled vocabularies are `CHECK` constraints. Migration numbers are reserved 
 
 ### 4.0 Why each new table is needed
 
-This answers the peer-review question "Is the proposed schema the smallest adequate extension?" (L421). Tables the PRG names are not repeated here. Each table below goes beyond the PRG's entity list and is an **INT addition needing owner approval** (NW-REQ-380):
+This answers the peer-review question "Is the proposed schema the smallest adequate extension?" (L421). Tables the PRG names are not repeated here. Each table below goes beyond the PRG's entity list and is an **INT addition proposed for future implementation** (NW-REQ-380):
 
 | Table | Why the PRG's tables are not enough |
 | - | - |
@@ -338,7 +343,7 @@ Columns:
 - Identity and placement: `id`, `project_id`, `site_id`, `part_id`, `system_id text NOT NULL` (a leaf or top-level system, validated at the boundary against the catalogue).
 - Action: `action CHECK (new, replace, upgrade, alter, repair, remove, retain, investigate)` and `inclusion CHECK (included, excluded)`.
 - Hierarchy: `parent_id NULL` and `is_group bool NOT NULL DEFAULT false`.
-- Description: `title text NOT NULL`, `existing_condition text NULL CHECK (serviceable, nearing_end_of_life, end_of_life, beyond_economical_repair, failed, defective, unknown)`. **This column's existence depends on D-05**: under option (a) it is replaced by a read-through of the site key `sys.<leaf>.condition` plus `existing_condition_note`. WP-20 is blocked until D-05 is decided., `existing_condition_note text CHECK ≤120`, and `target jsonb NOT NULL DEFAULT '{}'`, shaped `{values:[{key,value,unit}], clause_refs:[{id,version}], text}`.
+- Description: `title text NOT NULL`, `existing_condition_note text CHECK ≤120`, and `target jsonb NOT NULL DEFAULT '{}'`, shaped `{values:[{key,value,unit}], clause_refs:[{id,version}], text}`. Existing condition is read through from site key `sys.<leaf>.condition` under recorded D-05; there is no competing condition column on the work item.
 - Quantity: `quantity numeric NULL` and `unit text NULL`, both set or both null.
 - Provenance: the provenance columns, plus `user_touched bool NOT NULL DEFAULT false` and `coarse_key text NULL`.
 - Lifecycle: `source_proposal_key text NULL`, `retired_at`, `retired_by` and `version`.
@@ -501,7 +506,7 @@ Constraints:
 
 ### 4.12 Migration order, compatibility and recovery
 
-**Order:** 011 sites → 012 values → 013 planning → 014 revisions → 015 work items → 016 proposals → 017 packages → 018 scope items → 019 costs → 020 delivery → 021 reports → 022 adoption events.
+**Order:** 011 sites → 012 values → 013 planning → 014 revisions → 015 work items → 016 proposals → 017 packages → 018 scope items → 019 delivery → 020 reports → 021 costs → 022 adoption events.
 
 Each migration is additive, then backfill, then tighten (NOT NULL or new constraint), inside one transaction, with an assertion block that raises on any count or ownership mismatch.
 
@@ -525,7 +530,9 @@ The old `scope.*` user values are then deleted in the same transaction, so there
 - Rollback is by restore, not down-migrations; the repo has none.
 - Storage replication is a separate prerequisite and is not bundled (L417).
 
-## 4.13 Decisions resolved during implementation
+## 4.13 Historical decision evidence (superseded where §5 says so)
+
+This is an audit record, not the current decision table. In particular, “left unedited” and “no objection” below record the earlier agent’s interpretation, not proof of owner approval. Current dispositions are in §5.
 
 | Decision | Resolved | By | Outcome | Evidence |
 | - | - | - | - | - |
@@ -559,42 +566,50 @@ Findings added during WP-00:
 
 The status values mean:
 
-- **Open**: needs the owner.
+- **Recorded owner choice**: explicit answer retained in §4.13/owner packet.
+- **Planning default**: a proposed implementation choice, not inferred owner approval.
+- **Open**: unresolved; blocks only its named dependent work.
 - **Recommended**: technical default, proceed unless overruled.
 - **Blocking**: dependent packages wait.
 
 | ID | Decision (sources) | Options | Recommendation and consequences | Status | Affects |
 | - | - | - | - | - | - |
-| D-01 | Approve the PRG direction and this plan (L1, L399) | approve / amend | Required before any code. "Recheck HEAD before coding." | Open, blocking all | all WP |
-| D-02 | Primary user is the owner-side PM (L27, "assumed; owner to confirm") | confirm / change | Confirm. It changes report wording and default packages, not the schema. | Open | WP-40, WP-45, WP-30 |
-| D-03 | **Sequencing.** Stage 2 includes the gap check (L401), but packages arrive in Stage 3 (L403). First reports need dates, risks and approvals (L404-405) before Stage 6 (L406). | (a) Move the gap check and the accept path for `discipline`, `obligation`, `approval` and `hold_point` proposals into Stage 3, and add a minimal delivery-records package (WP-35) to Stage 3. (b) Create a skeleton packages table in Stage 2. | **(a).** The smallest change, and it adds no throwaway schema. In Stage 2, proposals of those kinds can be dismissed but not yet accepted ("accept after packages exist"). Stage 6 keeps progress, changes-since-issue and live summaries. | **Open, blocking** WP-32, WP-35 | WP-26, WP-30-32, WP-35, WP-45 |
-| D-04 | **Site and project value split and storage** (L136, L328; peer question L421) | (a) One `profile_user_values` table with `scope` and nullable `project_id`, plus a key-scope registry. (b) Separate `site_values` tables. | **(a).** One store, one reset path, unchanged keys. Proposed classification: header class, subclass and scale, `det.*` and existing-system condition → site; `hdr.work_type`, `hdr.cond.*`, `fact.*`, `sys.*.presence/provider/note/action` and scope → project. Determinants that describe the works rather than the building, such as `existing_building` ("Work to an existing building"), are listed for owner classification. | **Open, blocking** WP-12 | WP-12, WP-15, WP-21 |
-| D-05 | **Existing condition ownership.** The PRG puts it on the work item (L148) and among site values (L136). | (a) Authoritative on the site (key `sys.<leaf>.condition` on the part); the work item shows it read-through, plus a project note. (b) A snapshot field on the work item. (c) Both, with the site value updated on accept. | **(a).** One store, and it survives the next project (L21). In v1 (one project per site) the user sees the same thing. This deviates from the literal field list at L142, so owner approval is needed. | Open | WP-20, WP-24 |
-| D-06 | **Eligibility for derivations** (L278: "accepting a planning assumption must not make it eligible…") | (a) User `stated` values stay eligible, as today in `usableFacts`; `origin=assumption`, `meaning` allowance or forecast, and planning values are never eligible. A derived value whose inputs include unverified user values is labelled `accepted_for_planning`, not `verified`. (b) Only `verified` inputs are eligible. | **(a).** It preserves current derivations and answer keys and adds the bar. (b) would blank most derived rows today. Band outcome: under (a), a derivation from user-stated inputs keeps today's green band (`derive` in `reconcile.go`), with `review_status=accepted_for_planning`. Showing amber instead is a further option; it would change displayed bands. | **Open, blocking** WP-15 (answers peer-review question L421) | WP-13, WP-15 |
-| D-07 | **Mixed interventions** (L106, Hale) | (a) The project `hdr.work_type` stays singular (the primary type); an optional part-level `hdr.work_type` value overrides it for default actions; a `work_type` predicate (any part or project value) is added for knowledge. (b) Make `hdr.work_type` multi-choice. (c) Derive the work type from work items. | **(a).** The answer keys for the singular header are unchanged, and Hale gets per-part defaults (extension part → new, existing part → alter). It also makes the K4 `{det: work_type}` records evaluable (F12). To avoid a name collision, give the existing `work_type` determinant the five taxonomy options, with its value supplied by code from the part or project work type (never asked of Jev), rather than adding a new operator. (b) changes a Jev question and the answer keys. | **Open, blocking** WP-21 | WP-20, WP-21, WP-25, WP-K0 |
+| D-01 | Approve the PRG direction and this plan (L1, L399) | approve / amend | Earlier direction/start approval recorded; current request is plan-only. A later explicit request is required to resume. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | all WP |
+| D-02 | Primary user is the owner-side PM (L27, "assumed; owner to confirm") | confirm / change | Recorded owner change: owner-side PM and D&C contractor. D-33 adjusts design-role semantics; builder-side subcontract procurement remains excluded. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-40, WP-45, WP-30 |
+| D-03 | **Sequencing.** Stage 2 includes the gap check (L401), but packages arrive in Stage 3 (L403). First reports need dates, risks and approvals (L404-405) before Stage 6 (L406). | (a) Move the gap check and the accept path for `discipline`, `obligation`, `approval` and `hold_point` proposals into Stage 3, and add a minimal delivery-records package (WP-35) to Stage 3. (b) Create a skeleton packages table in Stage 2. | Historical option (a) selected; D-31 now brings minimal packages, gap check and delivery forward into M1. Non-investigation acceptance becomes available when its owning tables/routes exist. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-26, WP-30-32, WP-35, WP-45 |
+| D-04 | **Site and project value split and storage** (L136, L328; peer question L421) | (a) One `profile_user_values` table with `scope` and nullable `project_id`, plus a key-scope registry. (b) Separate `site_values` tables. | Recorded option (a). existing_building is a project key as an explicitly identified planning interpretation; no inferred owner approval of that classification. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-12, WP-15, WP-21 |
+| D-05 | **Existing condition ownership.** The PRG puts it on the work item (L148) and among site values (L136). | (a) Authoritative on the site (key `sys.<leaf>.condition` on the part); the work item shows it read-through, plus a project note. (b) A snapshot field on the work item. (c) Both, with the site value updated on accept. | Recorded option (a): site condition is authoritative; work items read it and add a project note. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-20, WP-24 |
+| D-06 | **Eligibility for derivations** (L278: "accepting a planning assumption must not make it eligible…") | (a) User `stated` values stay eligible, as today in `usableFacts`; `origin=assumption`, `meaning` allowance or forecast, and planning values are never eligible. A derived value whose inputs include unverified user values is labelled `accepted_for_planning`, not `verified`. (b) Only `verified` inputs are eligible. | **(a).** It preserves current derivations and answer keys and adds the bar. (b) would blank most derived rows today. Current band outcome is D-32: amber and explicit planning-only text for unverified inputs. Existing values remain; this deliberately changes presentation, not eligibility or answer-key facts. | Superseded for presentation by D-32; planning eligibility retained | WP-13, WP-15 |
+| D-07 | **Mixed interventions** (L106, Hale) | (a) The project `hdr.work_type` stays singular (the primary type); an optional part-level `hdr.work_type` value overrides it for default actions; a `work_type` predicate (any part or project value) is added for knowledge. (b) Make `hdr.work_type` multi-choice. (c) Derive the work type from work items. | Recorded option (a): singular project type, optional part override, code-fed work_type determinant; factual answer keys unchanged. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-20, WP-21, WP-25, WP-K0 |
 | D-08 | **Where coarse proposed work items live** (L144, L150, L328 "rebuild projections rather than … authoritative") | (a) Rows in `work_items` with deterministic IDs, owned by the rebuild only while `proposed` and untouched. (b) A separate projection, materialised on accept. | **(a).** Stable IDs exist before acceptance (cost lines and reports can reference them), there is one table, and the ownership rule is explicit and tested. | Recommended | WP-20 |
-| D-09 | **Responsibility semantics and gap rules** (L343, user gap 2) | See the rule set below this table. | Recommend the rule set below. It adds `needs_design` per action to `actions.yaml` (knowledge, draft, owner review). | **Open, blocking** WP-32 | WP-31, WP-32, WP-K0 |
+| D-09 | **Responsibility semantics and gap rules** (L343, user gap 2) | See the rule set below this table. | Apply rule set below with D-33: design may be held by one services or explicitly assigned works package. | Superseded for design allocation by D-33 | WP-31, WP-32, WP-K0 |
 | D-10 | **Which work items predicates see** (L262, L183) | (a) In-scope = `inclusion='included'`, not retired, not a group, any review status; a proposal from an unaccepted trigger is labelled. (b) Accepted only. | **(a).** Proposals appear on the first run (the adoption measure, L411); the labels keep them honest. `system_existing` is true iff the site records the system as existing **or** any live work item on it has an action other than `new`, **and** no live work item replaces or removes it. Treating `remove` as "not existing" is an interpretation. | Recommended | WP-25, WP-26 |
-| D-11 | How many proposals show (L179, "owner sets … after the first run") | owner value | The interim default shows the top 10 by rank, with the rest one click away. The value lives in `data/profile/proposals.json` and the owner sets it after the 0991 run. | Open, non-blocking | WP-26 |
-| D-12 | **Signals and the code-only rebuild** (L245 vs L179; user gap 6) | (a) Ask signals in the existing evidence fan-out by `runs_on` labels, like failure-mode detectors. Store the answers as facts `sig.<id>`. The rebuild reads them in code and marks a proposal `addressed_by_evidence` (still shown, never auto-dismissed). (b) Ask signals only for live proposals. | **(a).** It is deterministic and cache-friendly, and the rebuild stays Jev-free. (b) would make reading depend on work items and cause re-reads. This depends on the workload outcome of D-17. | Open | WP-27 |
-| D-13 | **Forecast** (L316 "budget/forecast variance", L338 metrics exclude forecast; user gap 7) | (a) Compute the forecast: for each posting leaf, commitment if known, else estimate, else budget, with the basis shown; null if all are null. (b) Add a stored `forecast` metric. | **(a).** It adds no ledger value and is computed on read. The PMP shows variance = forecast − budget, with its basis. | Open | WP-34, WP-51 |
+| D-11 | How many proposals show (L179, "owner sets … after the first run") | owner value | Default: ten proposals by rank, but all critical obligations stay visible even if the list exceeds ten; the rest are one click away. Freeze the display limit before scoring and evaluate full-output critical recall under D-34. | Updated by D-34/D-35; targets fixed before scored runs | WP-26 |
+| D-12 | **Signals and the code-only rebuild** (L245 vs L179; user gap 6) | (a) Ask signals in the existing evidence fan-out by `runs_on` labels, like failure-mode detectors. Store the answers as facts `sig.<id>`. The rebuild reads them in code and marks a proposal `addressed_by_evidence` (still shown, never auto-dismissed). (b) Ask signals only for live proposals. | **(a).** It is deterministic and cache-friendly, and the rebuild stays Jev-free. (b) would make reading depend on work items and cause re-reads. This depends on the workload outcome of D-17. | Planning default below; not independently evidenced owner approval | WP-27 |
+| D-13 | **Forecast** (L316 "budget/forecast variance", L338 metrics exclude forecast; user gap 7) | (a) Compute the forecast: for each posting leaf, commitment if known, else estimate, else budget, with the basis shown; null if all are null. (b) Add a stored `forecast` metric. | **(a).** It adds no ledger value and is computed on read. The PMP shows variance = forecast − budget, with its basis. | Planning default below; not independently evidenced owner approval | WP-34, WP-51 |
 | D-14 | **Money** (L306) | numeric precision and rounding | Amounts `numeric(18,2)`, rates `numeric(18,4)`. A single Go function `costs.Round` rounds half away from zero to cents, applied once at the line amount (quantity × rate). Totals are SQL `numeric` sums of rounded lines. Go carries money as `big.Rat` or strings (no new dependency). Currency is AUD by default and explicit; GST basis is per plan version, with a per-value override not supported in v1. | Recommended | WP-33, WP-34 |
-| D-15 | **Export renderer** (L409 "after choosing its renderer"; L377) | (a) A pure-Go PDF library (a new dependency, Lane C, needs justification). (b) Headless Chromium (a heavy binary; arguably an "additional service"). (c) An external CLI typesetter binary. | No recommendation until a one-day spike measures fidelity, size and time against a fixed fixture. Report assembly does not depend on the renderer; only WP-44 is blocked. | **Open, blocking** WP-44 | WP-44, WP-45 |
-| D-16 | Minimum font size and page geometry (L15 "at a readable size", L377 "Set a minimum font size") | owner value | Propose A4, 10 pt body, 8.5 pt minimum in tables, 15 mm margins. | Open, blocking WP-44 | WP-44 |
-| D-17 | **Restore the regression gate** (F01, F02) | (a) Re-record the source and Hale recordings live against HEAD, with owner consent and spend, after measuring the new call size. (b) Route failure-mode detectors and signals out of the profile evidence call, into a separate background stage or cache stage, so presence and provider calls regain their fingerprints. (c) Cap questions per call. | Measure first (WP-00 step 1). Calls per labelled passage: (a) 1 evidence call (larger); (b) 2 (profile evidence + detector stage); (c) 1 or more, depending on the cap. Option (b) adds a second Jev call per passage in a **background** state. `AGENTS.md` rule 3 ("one Jev fan-out per state; never serial round trips on a hot path") permits that only if it is a separate state off any hot path, so the owner must accept that reading. Read the TypeSafe [API](https://docs.typesafe.ai/api) and [jev-1.13](https://docs.typesafe.ai/model-jaggedness/jev-1.13) pages for limits on questions per call before choosing. The 331 signals (WP-27) land in the same call, so this decision covers them too. Recommendation: (a) if the measured call stays within documented limits and acceptable tokens, otherwise (b). | **Open, blocking** Stage 1 gate | WP-00, WP-22, WP-27 |
-| D-18 | **Budget conflicts** (L409 vs `bench/budgets.json`) | The PRG proposes "saved reads/writes p50 ≤100, p90 ≤250 ms"; existing `project_profile_read` and `profile_edit` are 50/150. `profile_rebuild` 100/300 is cited but not gated (F14). | Existing paths keep 50/150 (no loosening). New CRUD paths use 100/250. Add a `profile_rebuild` bench path at 100/300 on the larger Spec Home and 0991 fixtures. `profile_edit` keeps 50/150 on its existing bench project. These two can conflict: an edit on Spec Home includes a rebuild allowed 100 ms p50. The owner must choose one rule: (i) `profile_edit` 50/150 applies on every project, so the rebuild must be well under 50 ms; or (ii) `profile_edit` is measured on the bench project only, and large projects are governed by `profile_rebuild`. Recommend (ii), stated explicitly. **WP-26 step 0** measures evaluating the full ic/cq/uc set (~570 records) inside a rebuild before proposals join the edit path. If either budget breaks, stop and report the trade-off (`AGENTS.md`). | **Open, blocking** WP-14 bench | WP-14, WP-26, WP-71 |
+| D-15 | **Export renderer** (L409 "after choosing its renderer"; L377) | (a) A pure-Go PDF library (a new dependency, Lane C, needs justification). (b) Headless Chromium (a heavy binary; arguably an "additional service"). (c) An external CLI typesetter binary. | No recommendation until a one-day spike measures fidelity, size and time against a fixed fixture. Report assembly does not depend on the renderer; only WP-44 is blocked. | Spike planned; renderer and dependency unresolved; blocks M2 export only | WP-44, WP-45 |
+| D-16 | Minimum font size and page geometry (L15 "at a readable size", L377 "Set a minimum font size") | owner value | Propose A4, 10 pt body, 8.5 pt minimum in tables, 15 mm margins. | Planning default below; not independently evidenced owner approval | WP-44 |
+| D-17 | **Restore the regression gate** (F01, F02) | (a) Re-record the source and Hale recordings live against HEAD, with owner consent and spend, after measuring the new call size. (b) Route failure-mode detectors and signals out of the profile evidence call, into a separate background stage or cache stage, so presence and provider calls regain their fingerprints. (c) Cap questions per call. | Measure first (WP-00 step 1). Calls per labelled passage: (a) 1 evidence call (larger); (b) 2 (profile evidence + detector stage); (c) 1 or more, depending on the cap. Option (b) adds a second Jev call per passage in a **background** state. `AGENTS.md` rule 3 ("one Jev fan-out per state; never serial round trips on a hot path") permits that only if it is a separate state off any hot path, so the owner must accept that reading. Read the TypeSafe [API](https://docs.typesafe.ai/api) and [jev-1.13](https://docs.typesafe.ai/model-jaggedness/jev-1.13) pages for limits on questions per call before choosing. The 331 signals (WP-27) land in the same call, so this decision covers them too. Recommendation: (a) if the measured call stays within documented limits and acceptable tokens, otherwise (b). | Resolved: (a), recorded measurements; remaining gates §0.2 | WP-00, WP-22, WP-27 |
+| D-18 | **Budget conflicts** (L409 vs `bench/budgets.json`) | The PRG proposes "saved reads/writes p50 ≤100, p90 ≤250 ms"; existing `project_profile_read` and `profile_edit` are 50/150. `profile_rebuild` 100/300 is cited but not gated (F14). | Existing paths keep 50/150 (no loosening). New CRUD paths use 100/250. Add a `profile_rebuild` bench path at 100/300 on the larger Spec Home and 0991 fixtures. `profile_edit` keeps 50/150 on its existing bench project. These two can conflict: an edit on Spec Home includes a rebuild allowed 100 ms p50. The alternatives considered were: (i) `profile_edit` 50/150 applies on every project, so the rebuild must be well under 50 ms; or (ii) `profile_edit` is measured on the bench project only, and large projects are governed by `profile_rebuild`. Planning default is (ii), stated explicitly; report full edit timings on large fixtures as well so rebuild-only timings cannot hide a slow user path. **WP-26 step 0** measures evaluating the full ic/cq/uc set (~570 records) inside a rebuild before proposals join the edit path. If either budget breaks, stop and report the trade-off (`AGENTS.md`). | Planning default below; not independently evidenced owner approval | WP-14, WP-26, WP-71 |
 | D-19 | **Split, retire and change effects** (user gap 9) | See the policy below this table. | Recommend the policy. | Recommended | WP-24, WP-31, WP-34, WP-41 |
 | D-20 | **Issue reproducibility** (L363, L421; user gap 10) | See the policy below this table. | Recommend storing the canonical snapshot and the export blob. | Recommended | WP-43 |
-| D-21 | Measuring "active minutes" (L411) | (a) Server log of user-initiated requests and SPA focus heartbeats, counting gaps under 120 s as active. (b) The owner's stopwatch. | Both on the first run, compared, as one measurement. The owner sets the target afterwards. The stored events are minimal (`adoption_events`: org, project, user, at, kind), with no content. | Open | WP-45 |
-| D-22 | Default packages and lifecycle vocabulary (L296) | Data copied from Clerk `consultant-rosters.json` and `complexity-dimensions.json` into `knowledge/works/package_defaults.yaml` (draft) | Copy as data, never code. Owner review before suggestions show as anything other than draft. | Open | WP-30, WP-K0 |
-| D-23 | Authorship of the 0991 and 0777 work-item keys (L401 "owner-drafted … `reviewed: false`"), and the meaning of "by ID only" (L413) | (a) The agent drafts and the owner reviews. (b) The owner drafts, as L401 literally says. Manifest: (i) ID, relative path and hash, the existing shape (`data/eval/profile/manifest.json`); (ii) ID only, with paths kept outside the repo. | No settled recommendation: L401 literally says owner-drafted. If the owner agrees, (a) with (i) matches existing practice. Both are interpretations until decided. | Open | WP-28 |
-| D-24 | `uc.attaches_to` targets. The PRG says "a system, interface or action" (L222); K0 `SCHEMA.md` allows system, interface, stage or package kind, with no `action`. | accept K0 / add action | Accept K0 (stage and package-kind attachments are used by 49 delivery records). An action attachment is expressed through `when.works.action`. Owner approval. | Open | WP-K0, WP-26 |
+| D-21 | Measuring "active minutes" (L411) | (a) Server log of user-initiated requests and SPA focus heartbeats, counting gaps under 120 s as active. (b) The owner's stopwatch. | Use a stopwatch at M1 and M2 with D-35’s baseline and predefined target. Optional later instrumentation must agree with the stopwatch; `adoption_events` remains optional (org, project, user, at, kind only). No analytics migration blocks M1. | Updated by D-34/D-35; targets fixed before scored runs | WP-45 |
+| D-22 | Default packages and lifecycle vocabulary (L296) | Data copied from Clerk `consultant-rosters.json` and `complexity-dimensions.json` into `knowledge/works/package_defaults.yaml` (draft) | Copy as data, never code. Owner review before suggestions show as anything other than draft. | Planning default below; not independently evidenced owner approval | WP-30, WP-K0 |
+| D-23 | Authorship of the 0991 and 0777 work-item keys (L401 "owner-drafted … `reviewed: false`"), and the meaning of "by ID only" (L413) | (a) The agent drafts and the owner reviews. (b) The owner drafts, as L401 literally says. Manifest: (i) ID, relative path and hash, the existing shape (`data/eval/profile/manifest.json`); (ii) ID only, with paths kept outside the repo. | Planning default: agent drafts, owner reviews; manifest ID, relative path and hash, no personal details. Owner review remains a scored-gate prerequisite. | Planning default: agent drafts, owner reviews; ID/path/hash, no personal data | WP-28 |
+| D-24 | `uc.attaches_to` targets. The PRG says "a system, interface or action" (L222); K0 `SCHEMA.md` allows system, interface, stage or package kind, with no `action`. | accept K0 / add action | Accept K0 (stage and package-kind attachments are used by 49 delivery records). An action attachment is expressed through `when.works.action`. Owner approval. | Planning default below; not independently evidenced owner approval | WP-K0, WP-26 |
 | D-25 | Dependency types (L336 "supported dependency type") | finish-to-start only, plus lag | FS only, with integer lag days and cycle rejection. | Recommended | WP-35 |
 | D-26 | Location options (L175) | Option IDs `p1…pn` mapped in code to part IDs; criteria text = part label and kind; plus `whole_project`, `specific`, `multiple`, `not_stated`. Threshold key `location.n<count>`. | Recommended. The fingerprint changes when parts change, which re-reads that project's evidence. This is acceptable because parts change rarely; record it. | Recommended | WP-23 |
 | D-27 | **Existing-building presence** (L114, L152) | For `refurb`, `remediation` and `advisory` (project or part type), evidence presence with no action fact or `not_stated` writes a site row `sys.<leaf>.existing = present` (site scope), not a work item. `new` and `extend` keep today's behaviour. | Recommended. Hale's existing part follows its part-level type (D-07). Answer keys score `presence`, which is unchanged. Only scope inclusion moves. | Recommended | WP-21 |
-| D-29 | **Tenant fit-out against base-building capacity** (L197, L413 AT-15) | `if.tenant-fitout-base-building-hvac` is type `loads`. `ic.loads-investigate-supported` fires only for new, replace or upgrade on `from`, while refurb defaults to `alter`, and its label speaks of "structure or ground". Options: (a) K1 re-types or adds the edge as `supplies` (base plant supplies the tenancy), so `ic.supplies-investigate-supply` fires for new, upgrade or alter; (b) add an interface-type-specific ic label or record. | (a) plus a reviewed label. AT-15 cannot pass on today's knowledge. | Open | WP-K1, WP-26, WP-K6 |
-| D-30 | `ic.controls-test-link` has kind `investigation`, so accepting it creates an `investigate` work item. The `investigate` boundary (L169) says commissioning tests belong to that work. | (a) Change the kind to `obligation` (a `test` role on the package doing the work). (b) Keep it. | (a). Owner review in WP-K0. | Open | WP-K0, WP-26 |
+| D-29 | **Tenant fit-out against base-building capacity** (L197, L413 AT-15) | `if.tenant-fitout-base-building-hvac` is type `loads`. `ic.loads-investigate-supported` fires only for new, replace or upgrade on `from`, while refurb defaults to `alter`, and its label speaks of "structure or ground". Options: (a) K1 re-types or adds the edge as `supplies` (base plant supplies the tenancy), so `ic.supplies-investigate-supply` fires for new, upgrade or alter; (b) add an interface-type-specific ic label or record. | (a) plus a reviewed label. AT-15 cannot pass on today's knowledge. | Planning default below; not independently evidenced owner approval | WP-K1, WP-26, WP-K6 |
+| D-30 | `ic.controls-test-link` has kind `investigation`, so accepting it creates an `investigate` work item. The `investigate` boundary (L169) says commissioning tests belong to that work. | (a) Change the kind to `obligation` (a `test` role on the package doing the work). (b) Keep it. | (a). Owner review in WP-K0. | Planning default below; not independently evidenced owner approval | WP-K0, WP-26 |
 | D-28 | Ranking specificity (L179) | `specificity` = 3 for a match on the exact leaf system and action, 2 for a parent system, 1 for an action-only match, 0 otherwise. Severity order: life-safety > other values in `SCHEMA.md` order. | Recommended | WP-26 |
+| D-31 | Earlier 0991 proof | M1 draft before M2 issue | §1.1 phase split; final records and assembler, no temporary ledger | Adopted in revised plan; no implementation authorised | WP-28, 35, 40–45, K6 |
+| D-32 | Planning derivations look verified | Explicit trust presentation | Amber + “Planning only — inputs not verified”; verified/compliant wording prohibited without verified basis | Adopted; supersedes D-06 green-band recommendation | WP-15, 42, 45 |
+| D-33 | Design allocation for D&C | Role, not package-kind restriction | One accountable services or works package holds design; no duplicate consultant requirement | Adopted; supersedes services-only D-09 | WP-31, 32, 45, 50 |
+| D-34 | Useful and accurate proposals | Frozen keys and quality gates | §8.6; zero missed critical obligations, 90% work-item precision/recall, 80% top-list usefulness | Planning targets; owner reviews keys before scored run | WP-28, 26, K6, 45 |
+| D-35 | Time-to-decision | Manual comparison before scoring | At least 30% less active time; separately record background wall time; stopwatch first | Planning target; no achieved result | WP-45 |
+| D-36 | Replay, scale and release evidence | Complete workload and request bounds | §8.6; all-sheet replay, no silent truncation, per-component budgets, VPS before release | Planned; existing defects remain open | WP-00, 22, 23, 27, 71 |
 
 **D-09 rule set (recommended):**
 
@@ -603,7 +618,7 @@ The status values mean:
   - An owner `supply` package holding `supply` does not count as `install`.
   - More than one package holding `install` is an overlap.
   - More than one holding `supply` is an overlap.
-- **Design** is needed where `actions.yaml` marks `needs_design: true` (proposed: `new`, `replace`, `upgrade`, `alter`, and `repair` when the item is not a group). Such items need exactly one **services** package holding `design`.
+- **Design** is needed where `actions.yaml` marks `needs_design: true` (proposed: `new`, `replace`, `upgrade`, `alter`, and `repair` when the item is not a group). Under D-33, exactly one accountable package holds `design`: either a services package or a works package explicitly assigned that role. Package kind alone never implies design responsibility. Two assignments are an overlap; supply-only packages are ineligible. This allocation does not establish professional qualification or statutory approval; those remain explicit obligations. Builder-side subcontracts remain out of scope.
 - **`investigate`** needs exactly one package of any kind holding `inspect` or `test`, and needs no installer.
 - **`retain`** needs at least one live works package holding `maintain_operation` or `protect`. This is an obligation and not physical work; duplicates are not overlaps.
 - **Group parents** are not checked. Each child inherits the parent's responsibilities unless the child has its own for that role. A child's own responsibility replaces the inherited one for that role, so an inherited and an own responsibility for the same role is not an overlap.
@@ -665,34 +680,16 @@ These are the ten questions in the brief. The source statements and the affected
 
 ## 7. Dependency order
 
-```
-G0 owner approval (D-01) ──► WP-00 gate restore (D-17)
-                                │
-        ┌───────────────────────┼───────────────────────────┐
-        ▼                       ▼                           ▼
-   WP-11 sites ─► WP-12 values ─► WP-13 planning     WP-K0 closure ─► WP-K1, K2, K3 (parallel by cluster)
-        │              │                                  WP-K4 merge pass + review (parallel)
-        └─► WP-14 revisions/fingerprints ◄─ WP-25 loader (parallel after WP-K0)
-                       │
-                       ▼
-   WP-15 site routing and eligibility ─► WP-20 work items ─► WP-21 existing presence and part types
-                                             │                 WP-22 action Q ─► WP-23 location Q
-                                             │                 WP-24 edit/split/retire
-                                             ▼
-                                   WP-26 proposals (needs WP-25) ─► WP-27 signals ─► WP-K6 walk-through
-                                             │                     WP-28 eval keys/bench (from WP-20 on)
-                                             ▼
-   Stage 3: WP-30 packages ─► WP-31 responsibilities ─► WP-32 gap check
-            WP-33 cost schema (after WP-31: FKs to package_stages and package_scope_items) ─► WP-34 cost ops
-            WP-35 delivery minimal (parallel to WP-30)
-                                             ▼
-   WP-40 clause catalogue (knowledge, after WP-K0, before WP-31)
-   Stage 4: WP-41 assembler ─► WP-42 citations ─► WP-43 issue ─► WP-44 export (D-15/16) ─► WP-45 RFP 0991
-   Stage 5: WP-50 RFT ─► WP-51 PMP     Stage 6: WP-60 live reporting     Stage 7: WP-70 tabs/optimistic ─► WP-71 VPS verification
-   WP-X1 access/recovery sweep: runs at the end of Stages 3, 5 and 7.
-```
+The milestone ordering in §1.1 replaces the original all-backend-first sequence. Work-package §2.4 owns the exact phase order; its §2.1 owns migration reservations. Dependencies remain explicit and acyclic:
 
-There are no cycles. WP-25 (loader and evaluator) depends only on WP-K0. WP-26 needs WP-14's knowledge version and WP-25. WP-12 and WP-13 need WP-K0's `key_scope` and `planning_keys` shapes. WP-33 follows WP-31, because migration 019 references 017 and 018. WP-40 (clause catalogue) precedes WP-31, which validates clause references.
+1. M0 evidence repair; then WP-K0 shapes, WP-11 → 12 → 13 → 14 → 15, with WP-25 and relevant WP-40a knowledge in parallel where prerequisites permit.
+2. WP-20 → 21 → 22 → 23, WP-28a keys, and WP-26 proposals after WP-14/20/25. Relevant K1–K3 records and K6a review support the 0991 fixture.
+3. WP-30 → 31 → 32; WP-35a follows WP-30. WP-31 uses WP-40a clauses. WP-41a follows WP-14/26/30–32/35a/40a; then WP-42a → WP-45a. M1 review and route security checks precede wider expansion.
+4. After M1 passes: WP-24/27, WP-33 → 34, remaining WP-28/35/40/41/42, then WP-43 → 44 → WP-45b (M2). WP-43 needs full cost support; no issue endpoint in M1.
+5. 0777 scored K6b gate, then WP-50 → 51 → 60 → 70; WP-71 target-VPS proof before release. Knowledge beyond the M1 fixture can run independently, but does not block M1 unless needed for its critical-obligation key.
+
+Only uncreated migration reservations 019–021 change order: delivery, reports, costs. Already-created migrations are immutable. Recheck actual migrations before future implementation; if another session has created one of these numbers, the lead must reconcile reservations before coding, never renumber an applied migration.
+
 
 ## 8. Verification strategy
 
@@ -746,7 +743,7 @@ None is measured on the VPS yet.
 - Normal reads and edits make **zero** Jev calls. A fake Jev client asserts this (AT-25).
 - Background reading reports actual counts, never an ETA (AT-26).
 
-**Adoption measure:** active minutes from dropping the 0991 documents to an issuable RFP draft, on the first run (D-21). Recorded, not gated; the owner sets the target afterwards.
+**Adoption gates:** §8.6/D-35 sets the manual comparison and active-minute improvement before the scored run. M1 measures a reviewable in-app draft; M2 separately preserves upload-to-issuable-RFP measurement. Record wall time as well as active minutes.
 
 ### 8.4 Acceptance scenarios
 
@@ -782,18 +779,41 @@ Each scenario maps to the packages and the verification method.
 | AT-26 | Background progress is real, with no fabricated ETA | WP-14 | API |
 | AT-27 | All speed budgets in §8.3 | each WP, WP-71 | bench |
 
-AT-03 to AT-06 (answer keys and replays) and AT-27 are standing gates for **every** Lane A package. Each package handoff reports them (work-package document §4.2).
 | AT-28 | Small projects feel small (L29): 0991 shows a handful of items and packages; nothing required that is not needed | WP-20, 30, 45 | owner observation + count fixture |
 | AT-29 | Existing-system presence does not imply scope (L94, L152) | WP-21 | unit + keys |
 | AT-30 | New rooftop plant on an existing building → structural assessment proposal (L197) | WP-26, K1 | fixture |
 
-Private-corpus rule (L413): 0991 and 0777 are added to `data/eval/profile/manifest.json` "by ID only". Whether that means ID alone or the existing ID, path and hash shape is an interpretation pending D-23. Documents and personal details never enter the repo. Keys carry `reviewed: false` until the owner reviews them. L401 says "owner-drafted", so who drafts them is pending D-23.
+AT-03 to AT-06 (answer keys and replays) and AT-27 are standing gates for **every** Lane A package. Each package handoff reports them (work-package document §4.2).
+
+Private-corpus rule (L413, D-23 planning default): agents may draft 0991/0777 keys; only the owner reviews them. Manifest entries use ID, relative path and hash, with no personal details. Documents remain private. Keys stay `reviewed: false` until owner review; an unreviewed key cannot pass the scored M1/M3 quality gate.
 
 ### 8.5 Handoff and stop rules
 
 These are defined once, in the work-package document §4. An agent that meets a material ambiguity stops only the affected work and records it as `Q-<WP>-n` in its handoff. It does not rewrite a requirement.
 
-## 9. Audit record
+### 8.6 Product quality, workload and release gates (D-34–D-36)
+
+These are proposed acceptance targets in the revised plan, not measurements or reviewed knowledge. Freeze the key, corpus hashes, model/question/library versions and thresholds before each scored run; tuning cases and scored cases must be separated. Owner review of keys and obligations is still required. Record every numerator/denominator, not just percentages. Any failure remains visible; changing a target requires a dated decision and a fresh run, never retroactive passage.
+
+| Gate | Definition and threshold | Owner / evidence |
+| - | - | - |
+| Critical obligations | Owner labels expected life-safety, statutory and essential operational obligations before scoring. Zero missed critical obligations across the full proposal/report output, including omitted items and wrong part/action. Critical items must be visible ahead of non-critical items even if this exceeds the default top ten. | WP-28a/K6a on 0991; WP-28b/K6b on 0777 before RFT/PMP |
+| Work-item extraction | Match system, part and action against reviewed keys; precision TP/(TP+FP) and recall TP/(TP+FN) each ≥90%. Abstentions count as misses for required keyed items, not successes; duplicates are false positives. | WP-22/23/28; include sparse, mixed-action and ambiguous-location cases |
+| Proposal usefulness | Owner judges whether each of the first ten proposals is relevant and actionable without a material correction; ≥80% useful (all proposals if fewer than ten). Report complete-list critical recall separately. An empty list is not a pass where obligations are expected. | WP-26/K6; reasons for rejection retained |
+| Trust | Zero unsupported verified/compliant conclusions. Every material value has provenance, every material assumption is visible, unverified derivations are amber/planning-only. Document omission or a high Jev confidence does not establish compliance. | WP-15/42/45; AT-31 |
+| D&C coverage | Owner-side services design and works-package D&C design each satisfy one design obligation; no designer is a gap; both assigned is an overlap; supply-only assignment rejected. | WP-31/32; AT-32 |
+| Time-to-decision | Time an equivalent manual 0991 task with the same completeness checklist before the scored run. M1 active minutes ≤70% of manual baseline. Record assistance, corrections, background waiting and upload-to-draft wall time separately. Repeat at M2 for an issuable RFP. A single-project run is exploratory, not population-level proof. | WP-45a/b; stopwatch at M1, no analytics table required |
+| Regression and titles | Whole-file/multi-sheet replay contains every request the app makes. Existing answer keys still pass. Track held-out title precision/recall and false-confident counts; no increase over the recorded 15, and zero wrong identifiers/titles remain in the reviewed M1/M2 RFP. A regression floor is not satisfactory overall filing quality. | WP-00 follow-up; review/correct report source metadata before issue; broader title repair is a separately scoped defect |
+| Jev workload | For action, location and signal additions record actual request tokens, question count, latency and cache misses on 0991/0777 plus a many-system boundary case. Preflight against pinned-model request/state limits with measured token accounting or a proven conservative bound. Oversize → visible failed/needs-review state; no silent question loss, no hot-path retries or serial fan-outs. | WP-22/23/27; [API](https://docs.typesafe.ai/api), [models](https://docs.typesafe.ai/models), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [confidence](https://docs.typesafe.ai/confidence); AT-33 |
+| Latency and release | All applicable §8.3 user-path AND existing component gates pass under representative background load. Ordinary reads/edits/assembly make zero Jev calls. A local live pass does not replace repeatable replay coverage or VPS release evidence. Record corpus, concurrency, question mix, cold/warm cache and fault-injection results separately. | WP-00/26/71; failures are blockers, not “Verified” |
+
+Before M1, the owner reviews only the knowledge/clauses necessary for its critical checklist; unreviewed remainder stays visibly draft. Before M2, reviewed obligations, reproducible snapshots, readable export, all relevant gates and recorded source-metadata review are mandatory. Before deployment, target-VPS timings, isolation and restoration evidence must pass. Storage remains a separate prerequisite, with its evidence linked rather than silently assumed.
+
+Additional scenarios: **AT-31** planning-only status survives UI, draft refresh and export; **AT-32** owner-PM versus D&C responsibility fixtures above; **AT-33** oversized Jev request, unavailable provider and changed option count cannot create confident facts or block filing; **AT-34** M1 task/key/quality/time comparison; **AT-35** multi-sheet replay completeness. Packages own them through the register's review-amendment requirements.
+
+## 9. Historical audit record — before the review amendment
+
+Retained as an audit trail. Its decision statuses, migration numbers and unchanged-PRG statement describe the earlier review, not this revision. Use §5, work-package §2.1 and the appended PRG amendment for current direction.
 
 Reviewer: an independent agent in a separate context. It worked read-only and audited against the PRG on 5 October 2026. Its findings and their resolution:
 

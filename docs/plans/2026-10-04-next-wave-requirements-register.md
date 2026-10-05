@@ -1,11 +1,11 @@
 # Next wave: requirements register
 
-Status: planning draft for owner review. This register traces each PRG statement to a requirement, then to a package, then to an acceptance check, then to verification evidence.
+Status: revised planning register, 5 October 2026. **No implementation authorised by this revision.** Original rows preserve baseline traceability; section R explicitly overrides affected requirements. Current decision/evidence status is in the implementation plan §5/§0.2. Historical dispositions below are not a live status board.
 
 | Item | Value |
 | - | - |
 | Source (PRG) | `docs/plans/2026-10-04-next-wave-architecture-schema.md`, SHA-256 `6c1a03a7fd6a8b300079147fbd7b9e5fc864230bb1a755d929780d67e9a72cab`, 435 lines |
-| Locator | `L###` is a line of that file at that hash. Tables and code blocks are cited by row or line. |
+| Locator | `L###` is a line of the original 435-line baseline at that hash, excluding the appended review amendment. Tables/code cite those baseline lines. Section R cites the amendment and plan sections directly. |
 | HEAD at planning | `f0c170a` (see the implementation plan §0 for drift from `02094db`) |
 | Decisions, findings and schema | `docs/plans/2026-10-04-next-wave-implementation-plan.md` (`D-##`, `F##`, `AT-##`, §4) |
 | Packages | `docs/plans/2026-10-04-next-wave-agent-work-packages.md` (`WP-##`) |
@@ -26,7 +26,7 @@ Status: planning draft for owner review. This register traces each PRG statement
 | CTX | Context; maps to other requirements |
 | INT | Planner's interpretation or recommended addition; needs owner approval |
 
-**Current** is the state at HEAD `f0c170a`:
+**Current** in the original tables means the historical planning baseline at HEAD `f0c170a`, not current HEAD:
 
 | Code | Meaning |
 | - | - |
@@ -52,7 +52,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## A. Purpose and boundaries (L1-L5)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-001 | No implementation starts until the owner approves the direction (document is a draft for owner and peer review) | L1 "No implementation is authorised by this document" | CN | N/A | G0 | D-01 recorded in the handoff log before the first WP merges | D-01 | Planned |
 | NW-REQ-002 | One shared project foundation supports a live PMP, consultant RFPs, trade RFTs and a progressively detailed cost plan | L3 "one shared project foundation supporting a live PMP…" | SR | MISS (F19) | WP-33, 34, 41, 45, 50, 51 | AT-01: all four outputs on 0991 read the same work-item, package and cost IDs | D-03 | Planned |
@@ -62,7 +62,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## B. Decisions captured (L7-L31)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-006 | The profiler establishes the reviewable project definition: scope, quality, time, cost, constraints, evidence and unresolved decisions | L9 "scope, quality, time, cost, constraints, evidence and unresolved decisions" | DEC | PART: scope, constraints (conditions) and evidence exist; quality, time, cost and unresolved decisions do not | WP-13, 20, 33, 35, 60 | The profile read model exposes each of the seven areas from its owning record (work-item targets, delivery dates, cost summary, `value_state=unknown` list) | D-03 | Planned |
 | NW-REQ-007 | The profiler supports incomplete projects | L9 "It supports incomplete projects" | DEC | PART (blank bands) | WP-13 | AT-07 | none | Planned |
@@ -101,7 +101,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## C. Core concepts (L33-L77)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-040 | Adopt the ontology discipline, not the technology: no OWL, RDF store, graph database or reasoner | L35 "Adopt the discipline, not the technology" | CN / EX | SAT | all | Dependency review | none | Keep |
 | NW-REQ-041 | Postgres rows, YAML catalogues and code are sufficient and keep the speed budgets | L35 "Postgres rows, YAML catalogues and code are sufficient" | CN | SAT | all | §8.3 budgets | none | Keep |
@@ -130,7 +130,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## D. Existing foundation and gaps (L79-L114)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-064 | `knowledge/SCHEMA.md` remains the physical building model; discipline and trade are views over it | L83 | CN | SAT | WP-30 | Disciplines are IDs referencing knowledge, not a new hierarchy | none | Keep |
 | NW-REQ-065 | Reuse `project_parts`, `profile_facts`, protected `profile_user_values`, precomputed `profile_rows` and `profile_builds` | L84 | CN | SAT | WP-11-14 | Tables extended, not replaced (migration review) | none | Keep |
@@ -156,7 +156,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## E. Shared architecture (L116-L128)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-085 | Maintain three linked dimensions (physical, delivery, commercial) joined by the work item | L118 | PD | MISS | WP-20, 31, 33, 35 | FKs from scope items, cost revisions and delivery items to `work_items` | none | Planned |
 | NW-REQ-086 | The physical dimension is owned by the knowledge model, site and project profile | L122 | CN | SAT | WP-11-15 | none | none | Keep |
@@ -172,7 +172,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## F. Works model: sites, parts and work items (L130-L154)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-096 | A site is one address or campus | L134 | PD | MISS | WP-11 | Schema test | none | Planned |
 | NW-REQ-097 | Parts belong to the site | L134 | PD | MISS | WP-11 | FK `(org_id,site_id)` | none | Planned |
@@ -202,7 +202,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## G. Actions and locations (L156-L175)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-121 | Jev reads actions, so each has literal boundaries; the wording is a draft for owner review | L158 | SR | PART (draft file) | WP-K0 | Owner review recorded | D-01 | Implemented (knowledge, draft) |
 | NW-REQ-122 | The eight actions with exactly the tabled describes and boundary text (new, replace, upgrade, alter, repair, remove, retain, investigate) | L160-L169 (8 rows) | PD | SAT in knowledge (text matches, checked) | WP-K0 | Test asserts `actions.yaml` text equals the PRG table, or an owner-approved revision | D-01 | Implemented (knowledge, draft) |
@@ -222,7 +222,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## H. Building logic for works (L177-L262)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-136 | Interface consequences, consequences and unforeseen conditions are evaluated by code during the existing code-only rebuild; none calls Jev | L179 | PD | MISS | WP-26 | AT-25 | WP-25 | Planned |
 | NW-REQ-137 | Each result is a proposal carrying its reason: the work item and the interface, rule or record that raised it | L179 | PD | MISS | WP-26 | `reason` JSON test | none | Planned |
@@ -266,7 +266,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## I. Provenance and assumptions (L264-L278)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-175 | Origin: document, user, calculation or assumption | L268 | PD | MISS (bands only) | WP-12, 13 and every new table | CHECK | none | Planned |
 | NW-REQ-176 | Calculations retain their input origins | L268 | PD | MISS | WP-13, 15 | `provenance.inputs[].origin` populated for derived rows | none | Planned |
@@ -289,7 +289,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## J. Cost plan through procurement (L280-L318)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-193 | A stable cost item links early allowance, detailed scope and pricing schedule | L282 | PD | MISS | WP-33 | ID unchanged through subdivision and issue | none | Planned |
 | NW-REQ-194 | Example: a structural consultant with four staged fee lines; a concrete trade with three works lines on work items for Building A | L284-L292 | DX | N/A | WP-34 | Used as a fixture only | none | Planned (fixture) |
@@ -329,7 +329,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## K. Proposed schema (L320-L349)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-228 | Schema names are provisional for peer review, not DDL | L322 | CTX | none | Mapped→plan §4 | none | none | Mapped |
 | NW-REQ-229 | Project-owned rows carry `org_id` and `project_id`; site-owned rows carry `org_id` and `site_id` | L322 | CN | PART | WP-X1 (sweep checklist; every WP) | Schema review | none | Planned |
@@ -374,7 +374,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## L. Refresh and report behaviour (L351-L365)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-268 | A relevant evidence, reading-choice, override, library or project-record change marks affected projections stale | L353 | PD | MISS | WP-14, 41 | Report shows stale after each change class (table test) | none | Planned |
 | NW-REQ-269 | Use explicit domain revision dependencies first; avoid a universal dependency engine | L353 | CN | N/A | WP-14 | Static dependency map per report kind | none | Planned |
@@ -395,7 +395,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## M. Reports and eventual profile tabs (L367-L379)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-284 | PMP content: definition and quality; delivery and appointments; authorities and approvals; time and cost; material risks (including unforeseen conditions), changes, decisions and next actions | L371 | PD | MISS | WP-51 | Template section list test | WP-35 | Planned |
 | NW-REQ-285 | RFP content: shared brief; consultant stages, services and deliverables; investigations required; interfaces; dates; fee return and proposal requirements | L372 | PD | MISS | WP-45 | Template section list test | WP-30, 31, 35 | Planned |
@@ -417,7 +417,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## N. Knowledge research (L381-L393)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-301 | Context: the physical graph exists as drafts (140 interfaces, 172 failure modes, 227 rules, 4 with verified clauses) | L383 | CTX (counts stale: F05) | SAT | Mapped→NW-REQ-306-310 | none | none | Mapped |
 | NW-REQ-302 | Research is build-time only: it produces draft records in `knowledge/` that the checker validates and the owner reviews | L383 | CN | SAT | WP-K* | Checker; `status: draft` | none | Keep |
@@ -434,7 +434,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## O. Implementation sequence, budgets, acceptance and exclusions (L395-L417)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-313 | Stage 0: the owner approves the direction; an independent reviewer challenges schema, counting rules and scope; recheck HEAD before coding | L399 | PD | N/A | G0 | D-01; review record; HEAD check in every brief | D-01 | Planned |
 | NW-REQ-314 | Stage 1: provenance, assumptions, typed values, revision tracking, sites, parts on the site, site- and project-level values; gate: existing profile behaviour, user overrides, reading controls, corpus checks and answer keys pass; one site per project; no visible change | L400 | PD | gate currently fails (F01) | WP-00, 11-15 | `tools/check.ps1` green including both replays | D-17, D-04 | Blocked(D-17) |
@@ -491,7 +491,7 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 
 ## P. Peer review brief and source map (L419-L435)
 
-| ID | Requirement | Source | Type | Current | WP | Acceptance check | Deps | Disp. / State |
+| ID | Requirement (baseline; amendments in R) | Source | Type | Baseline finding | WP | Acceptance check | Deps | Historical disposition |
 | - | - | - | - | - | - | - | - | - |
 | NW-REQ-365 | Peer review answers: smallest adequate schema (plan §4); actions complete and literal (NW-REQ-122, WP-K0); site/project split (D-04); assumed inputs barred from verified compliance (D-06); rollups reconcile after subdivision (AT-17); scope, package and systems views avoid double counting (NW-REQ-211, 256); interface consequences over-propose and short-listing (D-11, D-28, WP-K6); reproducibility after reprocessing (D-20); approval, quotation and commitment distinct (NW-REQ-205); realistic update boundaries and speed gates (D-18, §8.3) | L421 | PD | N/A | G0 | Independent review record answers each question | D-01 | Planned |
 | NW-REQ-366 | Clerk reference data (asset register, consultant rosters, seed guides) is copied as data, never code | L433 | CN | SAT (K0 copied conditions as data) | WP-30, K0, K2 | Review: no Clerk code | none | Keep |
@@ -514,6 +514,24 @@ Evidence refers to findings `F##` in the plan §2, or to files. The basis is sta
 | NW-REQ-378 | Make `existing_building_year` and `existing_building` profile determinants (site, classification) so they are read | F06; NW-REQ-082 | WP-15 | Harvest test; label fingerprint change measured | D-01, D-17 | Planned |
 | NW-REQ-379 | New knowledge shapes: `stages.yaml`, `package_defaults.yaml`, clause catalogue, benchmark catalogue, `planning_keys.yaml`, proposal `action` for `work_item` kinds | NW-REQ-051, 199, 226, 238, 150, 263 | WP-K0 | Documented in `SCHEMA.md` first; checker | D-01 | Planned |
 | NW-REQ-380 | Amend the PRG concept table (L37-L55) for new concepts: proposal (projection), revision counter, report edit, planning value, adoption event, scope-cost link, package stage, cost item revision (justified in plan §4.0) | L59 discipline | G0 (owner edits the PRG) | PRG updated by the owner | D-01 | Blocked(D-01) |
+
+## R. Review amendment — current requirements (5 October 2026)
+
+The owner requested incorporation of the review recommendations, with no implementation. These rows supersede conflicting baseline wording; all are **Planned / not verified**. They do not mark any knowledge or answer key reviewed. Original requirement IDs remain valid.
+
+| ID | Requirement / baseline affected | Source | Packages | Acceptance | State |
+| - | - | - | - | - | - |
+| NW-REQ-381 | One current decision table and evidence summary; distinguish historical results, planning defaults and explicit owner approval. Restore complete all-sheet replay; no green gate inferred from a baseline or local timing alone. Updates 313, 314, 368, 369. | Amendment; plan §0.2, D-36 | Integration lead; WP-00, 22, 23, 27, 71 | AT-35; current evidence links and no stale blocker treated as current | Planned |
+| NW-REQ-382 | M1 0991 draft before full costing, signals, subdivision, issue/export; final shared records/assembler, minimal review UI, no competing ledger. M2 preserves issuable RFP. Updates 015–020, 093, 318, 321 and original sequence. | D-31; plan §1.1; packages §2.4 | WP-28, 35, 40, 41, 42, 45 (a/b phases) | AT-34, then AT-01/23/24 at M2; no issue endpoint at M1 | Planned |
+| NW-REQ-383 | Unverified-input derivations display amber and planning-only wording, never verified/compliant. Assumptions/allowances/forecasts/planning values remain ineligible. Updates D-06 and provenance requirements 175–192. | D-32 | WP-15, 42, 45 | AT-31 across profile, draft refresh and export; factual answer keys preserved | Planned |
+| NW-REQ-384 | Exactly one accountable design role on a services OR explicit D&C works package; supply-only cannot discharge it. Do not require a second consultant package. Updates 259/260/343 and D-09. | D-33 | WP-31, 32, 45, 50 | AT-32 owner-PM/D&C/no/duplicate/supply-only cases | Planned |
+| NW-REQ-385 | Freeze owner-reviewed keys; zero missed critical obligations, ≥90% work-item precision and recall, ≥80% useful top-list proposals; critical recall evaluated across complete output and critical items never hidden by ten-item cap. Updates 312, 333, 334. | D-34; plan §8.6 | WP-22, 23, 26, 28, 45, K6 | AT-34 on 0991 before M2; 0777 before RFT/PMP; counts and false positives reported | Planned |
+| NW-REQ-386 | Same-corpus manual baseline before scored run, ≥30% active-minute reduction; wall time separate. M1 reviewable draft and M2 issuable RFP measured separately. Stopwatch sufficient; analytics optional. Updates 333/375. | D-35 | WP-45 | AT-34; frozen task/completeness checklist, assistance and correction time recorded | Planned |
+| NW-REQ-387 | Actual action/location/signal workloads and request limits measured; preflight oversized calls to visible failure, never silent truncation or serial hot-path calls. Updates 131/272/369. | D-36; plan §8.6 | WP-22, 23, 27 | AT-33, AT-25/27 under representative load | Planned |
+| NW-REQ-388 | Local whole-intake pass does not prove component, replay or VPS gates; required red gates block merges/release. Existing title baseline is a regression floor, not quality approval. Updates 322/330/368. | D-36; plan §0.2/§8.6 | WP-00, 71 | AT-27/35; full-sheet coverage, explicit title metrics, target-VPS evidence | Planned |
+| NW-REQ-389 | Review/correct RFP source metadata; only reviewed clauses establish obligations; M1 is not issue/release approval. Link independent storage/restore prerequisite before deployment. Updates 304/318/364. | Amendment; plan §8.6 | WP-45, 71 | AT-31/34 at M1, AT-23/24 at M2; restore evidence at release | Planned |
+
+Current disposition precedence: section R for changed behaviour → plan §5 decisions → latest dated requirement evidence below → historical baseline cells. Only evidence can advance Implemented/Verified; editing this register cannot do so. States in package history and the old traceability counts are not alternative authorities.
 
 ## Source coverage ledger
 
@@ -578,9 +596,9 @@ Every line range of the PRG at the hash above maps to a disposition.
 | L419-L421 | Peer review brief | NW-REQ-365 |
 | L423-L435 | Source map links | CTX (links), plus NW-REQ-366 (Clerk as data) and NW-REQ-367 (TypeSafe citations) |
 
-## Traceability summary
+## Historical traceability summary (original 380 rows)
 
-These figures were counted from the tables above at planning time.
+These figures describe the original planning baseline only. They exclude the nine review-amendment requirements (381–389) and later state updates; they are not current completion totals.
 
 | | Count |
 | - | - |
@@ -594,13 +612,13 @@ These figures were counted from the tables above at planning time.
 | Disposition Implemented (knowledge drafts, unverified) | 10 |
 | Verified | **0** |
 
-These counts were generated by a script over the tables in this file at planning time; they change as the integration lead updates the Disp. / State cells.
+Retain these counts as history. The revised register has 389 unique requirement IDs, including nine new Planned requirements; no new verification is claimed here.
 
 Every requirement with disposition Planned, Keep or Blocked names at least one package or AT and one acceptance check. Each WP in the packages document lists the requirement IDs it serves; the integration lead checks this both ways at each merge (packages document §3).
 
 ## State updates
 
-The integration lead appends a row whenever a package merges. A state here overrides the Disp. / State cell above.
+The integration lead appends evidence updates here; the newest dated evidence overrides historical baseline cells. The current cross-package summary is plan §0.2. This review amendment leaves historical evidence intact.
 
 | Date | Requirements | New state | Evidence |
 | - | - | - | - |
@@ -612,3 +630,6 @@ The integration lead appends a row whenever a package merges. A state here overr
 | 2026-10-05 | NW-REQ-230 | Implemented for parts and sites | Composite FKs for parts (site, creating project on the same site). Profile values come in WP-12. |
 | 2026-10-05 | NW-REQ-099 | In progress | Parts exist; base-building items on site parts come with WP-20 |
 | 2026-10-05 | NW-REQ-173, 174, 144 (evaluator half), 261 (runtime half), 264 (loader half) | Implemented | WP-25 `17aeb0b`, `6524887`; knowledge tests; replays unchanged; independent review |
+
+| 2026-10-05 (review amendment) | NW-REQ-381–389 | Planned, not implemented | Documentation-only request; plan §1.1 and §8.6. No application tests run. |
+| 2026-10-05 (evidence reconciliation) | NW-REQ-272, 330 | Local whole-intake evidence recorded; not release-verified | Latest follow-up in `docs/evidence/2026-10-05-evidence-workload.md`: live p50 377 / p90 1,245 ms; replay bench/component and VPS gates remain unresolved. Supersedes the earlier “bench cannot run” statement only for the local live result. |

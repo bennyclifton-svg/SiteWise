@@ -1,5 +1,7 @@
 # Owner decision packet: what unblocks the next wave
 
+**Historical decision packet.** Answers below are retained verbatim as evidence. Its “waiting”, “blocked” and gate descriptions are historical, not current instructions. The implementation plan §5 is the current decision table and §0.2 the current evidence summary. The later review amendment supersedes the green-band choice (D-32), services-only design allocation (D-33) and original sequence (D-31). Unedited recommendations are planning defaults, not proof of owner approval. This revision authorises no implementation.
+
 For: Benny, on return. Written 5 October 2026 during the first unattended run. Full context for each decision is in `docs/plans/2026-10-04-next-wave-implementation-plan.md` §5.
 
 **Where things stand:**
