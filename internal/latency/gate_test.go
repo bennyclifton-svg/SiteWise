@@ -3,6 +3,7 @@ package latency
 import (
 	"bytes"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -56,7 +57,7 @@ func TestGateGoodMedianFailingP90(t *testing.T) {
 	samples := map[string][]int64{
 		"whole_intake": append(repeat(100, 17), 50_000, 50_000, 50_000),
 	}
-	code, report := Gate(budgets, samples)
+	code, report := Gate(budgets, samples, true)
 	if code == 0 {
 		t.Fatalf("expected nonzero exit, report: %s", report)
 	}
@@ -76,7 +77,7 @@ func TestGateInsufficientSamples(t *testing.T) {
 	}
 	code, _ := Gate(budgets, map[string][]int64{
 		"whole_intake": repeat(100, 19),
-	})
+	}, true)
 	if code == 0 {
 		t.Fatal("expected nonzero exit for insufficient samples")
 	}
@@ -93,9 +94,30 @@ func TestGatePass(t *testing.T) {
 	}
 	code, report := Gate(budgets, map[string][]int64{
 		"whole_intake": repeat(100, 20),
-	})
+	}, true)
 	if code != 0 {
 		t.Fatalf("exit %d: %s", code, report)
+	}
+}
+
+// D-37: a component budget is judged on the target VPS. Elsewhere an
+// overrun is reported, never hidden, and does not fail; a user path still does.
+func TestReleaseBudgetsReportOffTarget(t *testing.T) {
+	budgets := Budgets{MinSamples: 20, Paths: []PathBudget{
+		{Name: "deterministic_field_rules", P50US: 1_000, P90US: 1_000, Where: WhereRelease},
+		{Name: "whole_intake", P50US: 1_000_000, P90US: 2_000_000},
+	}}
+	samples := map[string][]int64{"deterministic_field_rules": repeat(3_000, 20), "whole_intake": repeat(100, 20)}
+	code, report := Gate(budgets, samples, false)
+	if code != 0 || !strings.Contains(report, "deterministic_field_rules") || !strings.Contains(report, "judged on the target VPS") {
+		t.Fatalf("off target: code %d report %q", code, report)
+	}
+	if code, _ := Gate(budgets, samples, true); code == 0 {
+		t.Fatal("on the target VPS the component budget must gate")
+	}
+	samples["whole_intake"] = repeat(3_000_000, 20)
+	if code, _ := Gate(budgets, samples, false); code == 0 {
+		t.Fatal("a user path must gate on every host")
 	}
 }
 
@@ -131,6 +153,11 @@ func TestCommittedBudgets(t *testing.T) {
 		limits, ok := want[pathBudget.Name]
 		if !ok {
 			t.Fatalf("unexpected path %s", pathBudget.Name)
+		}
+		component := map[string]bool{"identity_text_extraction": true, "candidate_harvesting": true,
+			"deterministic_field_rules": true, "jev_admission_request": true, "commit_sse_enqueue": true}
+		if (pathBudget.Where == WhereRelease) != component[pathBudget.Name] {
+			t.Fatalf("%s where=%q: only component budgets are release-only (D-37)", pathBudget.Name, pathBudget.Where)
 		}
 		if pathBudget.P50US != limits[0] || pathBudget.P90US != limits[1] {
 			t.Fatalf("%s = %d/%d", pathBudget.Name, pathBudget.P50US, pathBudget.P90US)

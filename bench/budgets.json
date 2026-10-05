@@ -4,27 +4,32 @@
     {
       "name": "identity_text_extraction",
       "p50_us": 80000,
-      "p90_us": 250000
+      "p90_us": 250000,
+      "where": "release"
     },
     {
       "name": "candidate_harvesting",
       "p50_us": 5000,
-      "p90_us": 10000
+      "p90_us": 10000,
+      "where": "release"
     },
     {
       "name": "deterministic_field_rules",
       "p50_us": 1000,
-      "p90_us": 1000
+      "p90_us": 1000,
+      "where": "release"
     },
     {
       "name": "jev_admission_request",
       "p50_us": 350000,
-      "p90_us": 800000
+      "p90_us": 800000,
+      "where": "release"
     },
     {
       "name": "commit_sse_enqueue",
       "p50_us": 5000,
-      "p90_us": 15000
+      "p90_us": 15000,
+      "where": "release"
     },
     {
       "name": "whole_intake",
@@ -71,5 +76,6 @@
       "p50_us": 500000,
       "p90_us": 1000000
     }
-  ]
+  ],
+  "note": "Budgets marked where=release are component budgets, judged only on the target VPS (owner decision D-37, 5 October 2026): elsewhere they are measured and reported, not gated. User paths gate everywhere."
 }

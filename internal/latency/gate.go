@@ -12,17 +12,29 @@ import (
 	"strings"
 )
 
-// PathBudget is a latency budget in integer microseconds.
+// PathBudget is a latency budget in integer microseconds. Where is "" for a
+// user path, gated on every host, or "release" for a component budget,
+// judged only on the target VPS (owner decision D-37): on any other host it
+// is measured and reported, never silently dropped, but does not fail.
 type PathBudget struct {
 	Name  string `json:"name"`
 	P50US int64  `json:"p50_us"`
 	P90US int64  `json:"p90_us"`
+	Where string `json:"where,omitempty"`
 }
+
+// WhereRelease marks a budget judged only on the target VPS.
+const WhereRelease = "release"
+
+// ReleaseRun reports whether this process is release evidence on the target
+// VPS, so component budgets gate too. Unit timing tests read it.
+func ReleaseRun() bool { return os.Getenv("SITEWISE_RELEASE_BENCH") == "1" }
 
 // Budgets is the committed set of path budgets and the sample floor.
 type Budgets struct {
 	MinSamples int          `json:"min_samples"`
 	Paths      []PathBudget `json:"paths"`
+	Note       string       `json:"note,omitempty"`
 }
 
 // Percentile returns the nearest-rank value at p, where 0 < p <= 1.
@@ -46,13 +58,19 @@ func Percentile(samples []int64, p float64) (int64, error) {
 
 // Gate checks every budgeted path. It returns a nonzero code when a path has
 // fewer than MinSamples observations or when p50 or p90 exceeds its budget.
-func Gate(budgets Budgets, samples map[string][]int64) (int, string) {
+// Unless release is true, a release-only budget is reported with a
+// "(reported; judged on the target VPS)" suffix and never changes the code.
+func Gate(budgets Budgets, samples map[string][]int64, release bool) (int, string) {
 	if budgets.MinSamples < 1 {
 		return 2, "min_samples must be positive"
 	}
 	var report strings.Builder
 	code := 0
 	for _, path := range budgets.Paths {
+		if path.Where == WhereRelease && !release {
+			fmt.Fprint(&report, reportOnly(path, samples[path.Name], budgets.MinSamples))
+			continue
+		}
 		observed := samples[path.Name]
 		if len(observed) < budgets.MinSamples {
 			fmt.Fprintf(&report, "%s: insufficient samples: got %d need %d\n", path.Name, len(observed), budgets.MinSamples)
@@ -89,6 +107,20 @@ func Gate(budgets Budgets, samples map[string][]int64) (int, string) {
 	return code, report.String()
 }
 
+// reportOnly describes a release-only budget on a non-release host.
+func reportOnly(path PathBudget, observed []int64, min int) string {
+	const suffix = " (reported; judged on the target VPS)\n"
+	if len(observed) < min {
+		return fmt.Sprintf("%s: %d samples%s", path.Name, len(observed), suffix)
+	}
+	p50, _ := Percentile(observed, 0.5)
+	p90, _ := Percentile(observed, 0.9)
+	if p50 <= path.P50US && p90 <= path.P90US {
+		return ""
+	}
+	return fmt.Sprintf("%s: p50 %dus p90 %dus over %d/%dus%s", path.Name, p50, p90, path.P50US, path.P90US, suffix)
+}
+
 // LoadBudgets reads a budget file. Durations in the file are microseconds.
 func LoadBudgets(path string) (Budgets, error) {
 	body, err := os.ReadFile(path)
@@ -104,6 +136,11 @@ func LoadBudgets(path string) (Budgets, error) {
 	}
 	if len(budgets.Paths) == 0 {
 		return Budgets{}, errors.New("no paths in budgets")
+	}
+	for _, p := range budgets.Paths {
+		if p.Where != "" && p.Where != WhereRelease {
+			return Budgets{}, fmt.Errorf("%s: where must be empty or %q", p.Name, WhereRelease)
+		}
 	}
 	return budgets, nil
 }
@@ -131,6 +168,7 @@ func RunGate(args []string, stderr io.Writer) int {
 	fs.SetOutput(stderr)
 	budgetsPath := fs.String("budgets", "bench/budgets.json", "budget file")
 	samplesPath := fs.String("samples", "bench/samples.json", "sample file of microsecond observations")
+	release := fs.Bool("release", false, "release evidence on the target VPS: component budgets gate too (D-37)")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -144,7 +182,7 @@ func RunGate(args []string, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "samples: %v\n", err)
 		return 2
 	}
-	code, report := Gate(budgets, samples)
+	code, report := Gate(budgets, samples, *release || ReleaseRun())
 	if report != "" {
 		fmt.Fprint(stderr, report)
 	}
