@@ -529,6 +529,17 @@ The old `scope.*` user values are then deleted in the same transaction, so there
 
 | Decision | Resolved | By | Outcome | Evidence |
 | - | - | - | - | - |
+| D-01 | 5 October 2026 | owner | Direction approved; implementation proceeds in plan order. | `docs/plans/2026-10-05-owner-decision-packet.md` |
+| D-02 | 5 October 2026 | owner | **Changed:** the primary users are the owner-side PM **and** the D&C contractor. This affects report wording and default packages, not the schema. Builder-side subcontract procurement stays outside this wave (PRG L27, L415) unless the owner says otherwise. | packet §7 |
+| D-03 | 5 October 2026 | owner | A: the gap check moves to Stage 3; minimal delivery records join Stage 3 (WP-35); Stage 2 package-type proposals are dismiss-only. | packet §5 |
+| D-04 | 5 October 2026 | owner | A: one table plus a key-scope registry, with the plan's classification. The side question on `existing_building` was **not answered**: the agent classifies it as **project** (it describes the intervention), recorded as an interpretation for the owner to overrule. | packet §1 |
+| D-05 | 5 October 2026 | owner | A: existing condition lives on the site (`sys.<leaf>.condition`); the work item reads it through and adds a project note. | packet §3 |
+| D-06 | 5 October 2026 | owner | A: user-stated values stay eligible, with derived rows labelled accepted-for-planning and keeping their current band; assumptions, allowances, forecasts and planning values are never eligible. | packet §2 |
+| D-07 | 5 October 2026 | owner | A: the project work type stays singular; a part may carry its own work type; the `work_type` determinant gets the taxonomy options, fed by code. | packet §4 |
+| D-09 | 5 October 2026 | owner | A: the rule set in §5. | packet §6 |
+| D-11, D-12, D-14, D-19, D-20, D-21, D-25 to D-28 | | | As recommended in §5 (marked Recommended; the owner raised no objection). D-12 still needs the workload measured when WP-27 starts. | |
+| D-13, D-15, D-16, D-18, D-22, D-23, D-24, D-29, D-30, K0 shapes | 5 October 2026 | owner | The recommendations in packet §7 were left unedited and are taken as accepted. | packet §7 |
+| F28, F29 | 5 October 2026 | owner delegated ("you choose") | See WP-00 follow-up. | packet §8 |
 | D-17 | 5 October 2026 | implementing agent under A9 | **(a) re-record.** Enlarged evidence calls stay well within jev-1.13's 64k-token request limit (largest real case about 22k); one call per passage is kept. Recordings were re-recorded live: source 15/15, Hale 12/12, 0 forbidden. | `docs/evidence/2026-10-05-evidence-workload.md` |
 
 Findings added during WP-00:
