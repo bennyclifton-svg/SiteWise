@@ -440,6 +440,10 @@ func readSnapshot(ctx context.Context, q rowQuerier, orgID, projectID string) (P
 		return snap, err
 	}
 	snap.Parts = parts
+	// OFFSET 0 keeps each lateral lookup parameterised by its exact ID instead
+	// of flattening into joins that multiply scans under stale statistics (F31).
+	// One statement also keeps facts and source metadata on the same snapshot
+	// when a background extraction replaces passages during a rebuild.
 	rows, err := q.Query(ctx, `
 SELECT f.question_id, f.value, f.unit, f.basis, f.part_label, f.excerpt, f.confidence, f.decided_by,
        f.document_id::text, COALESCE(f.passage_id::text, ''),
@@ -450,9 +454,17 @@ SELECT f.question_id, f.value, f.unit, f.basis, f.part_label, f.excerpt, f.confi
        COALESCE(doc.revision, ''), COALESCE(ps.page, 0), COALESCE(ps.location, ''), COALESCE(ps.section, ''),
        COALESCE(ps.start_offset, 0), COALESCE(ps.end_offset, 0)
 FROM profile_facts f
-LEFT JOIN documents doc ON doc.org_id = f.org_id AND doc.id = f.document_id
-LEFT JOIN files fl ON fl.org_id = doc.org_id AND fl.id = doc.file_id
-LEFT JOIN passage_sources ps ON ps.org_id = f.org_id AND ps.passage_id = f.passage_id
+LEFT JOIN LATERAL (
+  SELECT profile_read, filename, document_number, revision, org_id, file_id
+  FROM documents WHERE org_id = f.org_id AND id = f.document_id OFFSET 0
+) doc ON true
+LEFT JOIN LATERAL (
+  SELECT sha256 FROM files WHERE org_id = doc.org_id AND id = doc.file_id OFFSET 0
+) fl ON true
+LEFT JOIN LATERAL (
+  SELECT page, location, section, start_offset, end_offset
+  FROM passage_sources WHERE org_id = f.org_id AND passage_id = f.passage_id OFFSET 0
+) ps ON true
 WHERE f.org_id = $1::uuid AND f.project_id = $2::uuid
 ORDER BY f.document_id, f.passage_id, f.question_id`, orgID, projectID)
 	if err != nil {
@@ -528,24 +540,26 @@ func (s *Store) ProfileInput(ctx context.Context, orgID, projectID string) (Prof
 // readKinds are the automatically read kinds; nil applies no kind filter.
 func (s *Store) ReadProfile(ctx context.Context, orgID, projectID string, readKinds []string) (ProfileView, error) {
 	var v ProfileView
+	// Resolve document IDs before reading jobs/decisions: stale statistics must
+	// not turn the edit response into repeated project-wide scans (F31).
 	var exists bool
 	err := s.pool.QueryRow(ctx, `
 SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid),
        (SELECT built_at FROM profile_builds WHERE org_id = $1::uuid AND project_id = $2::uuid),
        COALESCE((SELECT thresholds_version FROM profile_builds WHERE org_id = $1::uuid AND project_id = $2::uuid), ''),
-       (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id = j.org_id AND d.id = j.document_id
-        WHERE j.org_id = $1::uuid AND d.project_id = $2::uuid AND j.status IN ('queued', 'leased')
+       (SELECT count(DISTINCT j.document_id) FROM jobs j
+        WHERE j.org_id = $1::uuid AND j.document_id = ANY(ARRAY(SELECT id FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid)) AND j.status IN ('queued', 'leased')
           AND j.kind IN ('full_text', 'label', 'evidence')),
-       (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
-        WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='leased' AND j.locked_until > now()
+       (SELECT count(DISTINCT j.document_id) FROM jobs j
+        WHERE j.org_id=$1::uuid AND j.document_id = ANY(ARRAY(SELECT id FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid)) AND j.status='leased' AND j.locked_until > now()
           AND j.kind IN ('full_text','label','evidence')),
        (SELECT count(*) FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid AND `+readableSQL("$3")+`
           AND EXISTS (SELECT 1 FROM jobs f WHERE f.org_id = d.org_id AND f.document_id = d.id AND f.kind = 'full_text' AND f.status = 'done')
           AND NOT EXISTS (SELECT 1 FROM jobs l WHERE l.org_id = d.org_id AND l.document_id = d.id AND l.kind = 'label')),
-       (SELECT count(DISTINCT j.document_id) FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
-        WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='failed' AND j.kind IN ('full_text','label','evidence')),
-       EXISTS (SELECT 1 FROM jobs j JOIN documents d ON d.org_id=j.org_id AND d.id=j.document_id
-        WHERE j.org_id=$1::uuid AND d.project_id=$2::uuid AND j.status='failed' AND j.kind IN ('label','evidence') AND j.last_error LIKE '%status 402%')`,
+       (SELECT count(DISTINCT j.document_id) FROM jobs j
+        WHERE j.org_id=$1::uuid AND j.document_id = ANY(ARRAY(SELECT id FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid)) AND j.status='failed' AND j.kind IN ('full_text','label','evidence')),
+       EXISTS (SELECT 1 FROM jobs j
+        WHERE j.org_id=$1::uuid AND j.document_id = ANY(ARRAY(SELECT id FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid)) AND j.status='failed' AND j.kind IN ('label','evidence') AND j.last_error LIKE '%status 402%')`,
 		orgID, projectID, nilIfEmpty(readKinds)).Scan(&exists, &v.BuiltAt, &v.ThresholdsVersion, &v.PendingDocuments, &v.ActiveDocuments, &v.UnreadDocuments, &v.FailedDocuments, &v.PaymentRequired)
 	if err != nil {
 		return v, err
@@ -556,8 +570,9 @@ SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)
 	if err := s.pool.QueryRow(ctx, `
 SELECT count(*) FILTER (WHERE `+readableSQL("$3")+`),
        count(*) FILTER (WHERE NOT `+readableSQL("$3")+`),
-       COALESCE((SELECT k.value FROM documents d JOIN decisions k ON k.org_id = d.org_id AND k.document_id = d.id AND k.field = 'kind'
-                 WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid AND NOT `+readableSQL("$3")+`
+       COALESCE((SELECT k.value FROM decisions k WHERE k.org_id=$1::uuid AND k.field='kind'
+                 AND k.document_id = ANY(ARRAY(SELECT d.id FROM documents d
+                   WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND NOT `+readableSQL("$3")+`))
                  GROUP BY k.value ORDER BY count(*) DESC, k.value LIMIT 1), '')
 FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid`,
 		orgID, projectID, nilIfEmpty(readKinds)).Scan(&v.ReadDocuments, &v.SkippedDocuments, &v.SkippedKind); err != nil {

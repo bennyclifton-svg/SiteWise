@@ -1156,7 +1156,7 @@ Blockers are as first planned; for future order use §2.4. Last updated 5 Octobe
 | WP-11 | 1 | A | none | **Implemented**, merged `0a13afd`; reviewed; site-edit lock, revision and event deferred to WP-14 |
 | WP-12 | 1 | A | WP-11, WP-K0, D-04, D-06 | **Implemented**, merged `ece0086`; reviewed; full gate green |
 | WP-13 | 1 | A | WP-12, WP-K0, D-06 | **Implemented**, merged `77ced4b`; reviewed; full gate green. `planning_keys.yaml` awaits owner review |
-| WP-14 | 1 | A | WP-12, WP-13, D-18 (bench) | **Next.** Fix F31 first (plan §4) |
+| WP-14 | 1 | A | WP-12, WP-13, D-18 (bench) | **Next.** F31 prerequisite fixed; full gate and independent review passed (`docs/evidence/2026-10-05-f31-profile-snapshot.md`). WP-14 implementation not started |
 | WP-15 | 1 | A | WP-14, D-04, D-06 | Not started |
 | WP-20 | 2 | A | WP-15, D-05 | Not started |
 | WP-21 | 2 | A | D-07 | Not started |
