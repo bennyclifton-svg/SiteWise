@@ -58,3 +58,26 @@ Both replays now pass at HEAD without `-live`. The recordings stay in git-ignore
 ## Effect on users
 
 The live passage cache (`passage_calls`) uses the same whole-call fingerprint. The next "Update project profile" on any existing project therefore re-reads every selected document's evidence stage once, with calls about 5-20% larger in input tokens on these cases. Filing is not affected: reading is a separate background job that the user starts.
+
+## Follow-up: filing gates (F28, F29), owner delegated "you choose"
+
+**F28 (filing accuracy baseline): accepted.** The baseline is the replay result after the live re-recording (`data/eval/intake/results/baseline.json`, hashes and aggregate metrics only). `intake-eval -replay` now passes. Accepting it sets a **regression floor, not a quality approval**: held-out title accuracy is 0.29, with 15 confident wrong titles, and that remains a known weakness to improve separately.
+
+**F29 (replayed bench): root cause found; replay gate still red.** The 52 unrecorded requests are ordinary filing calls (date, discipline, kind, number, title), not OCR.
+
+- `internal/eval/cases.go` files only page 1 of a multi-sheet drawing file. Its comment, "Intake reads the first page only", predates drawing-set expansion (migrations 006/007).
+- The bench uploads whole files, so the app files every sheet, and those sheet requests were never recorded.
+- The fix is for the intake eval to file, or at least record, every sheet the app files. That is filing work outside this wave, recorded as a follow-up.
+
+**Live bench (A1) instead, dev machine, `-live`:** 184 files × 2 rounds, concurrency 4, 2 background Jev callers (241 calls), 10% of Jev requests stalled to their deadline.
+
+| Path | p50 | p90 | Budget p50/p90 | Result |
+| - | - | - | - | - |
+| whole_intake (filing) | 377 ms | 1,245 ms | 1,000 / 2,000 | ok |
+| project_profile_read | 8.5 ms | 12.0 ms | 50 / 150 | ok |
+| profile_edit | 16.7 ms | 37.7 ms | 50 / 150 | ok |
+| identity_text_extraction | 56 ms | 365 ms | 80 / 250 | p90 over |
+| deterministic_field_rules | 1.0 ms | 3.1 ms | 1 / 1 | over (micro-budget; flaky on this host, F26) |
+| jev_admission_request | 236 ms | 1,200 ms | 350 / 800 | p90 over (p90 is the stalled calls hitting the 1.2 s deadline) |
+
+User-facing filing stays within budget under background reading (NW-REQ-272, 330, locally). The component overruns concern filing code this wave has not changed. Release evidence still needs the VPS (WP-71).
