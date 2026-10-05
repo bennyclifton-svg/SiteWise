@@ -166,7 +166,7 @@ func (q *Queries) ListPendingIntake(ctx context.Context, rowLimit int32) ([]List
 	return items, nil
 }
 
-const listProjectDecisionViews = `-- name: ListProjectDecisionViews :many
+const listDocumentDecisionViews = `-- name: ListDocumentDecisionViews :many
 SELECT
     dc.document_id::text AS document_id,
     dc.field,
@@ -176,20 +176,17 @@ SELECT
     COALESCE(dc.question_version, '') AS question_version,
     dc.confidence
 FROM decisions dc
-JOIN documents d
-    ON d.org_id = dc.org_id
-   AND d.id = dc.document_id
 WHERE dc.org_id = $1::uuid
-  AND d.project_id = $2::uuid
+  AND dc.document_id = ANY($2::text[]::uuid[])
 ORDER BY dc.document_id, dc.field
 `
 
-type ListProjectDecisionViewsParams struct {
-	OrgID     string
-	ProjectID string
+type ListDocumentDecisionViewsParams struct {
+	OrgID       string
+	DocumentIds []string
 }
 
-type ListProjectDecisionViewsRow struct {
+type ListDocumentDecisionViewsRow struct {
 	DocumentID      string
 	Field           string
 	Value           string
@@ -199,15 +196,15 @@ type ListProjectDecisionViewsRow struct {
 	Confidence      pgtype.Float8
 }
 
-func (q *Queries) ListProjectDecisionViews(ctx context.Context, arg ListProjectDecisionViewsParams) ([]ListProjectDecisionViewsRow, error) {
-	rows, err := q.db.Query(ctx, listProjectDecisionViews, arg.OrgID, arg.ProjectID)
+func (q *Queries) ListDocumentDecisionViews(ctx context.Context, arg ListDocumentDecisionViewsParams) ([]ListDocumentDecisionViewsRow, error) {
+	rows, err := q.db.Query(ctx, listDocumentDecisionViews, arg.OrgID, arg.DocumentIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListProjectDecisionViewsRow
+	var items []ListDocumentDecisionViewsRow
 	for rows.Next() {
-		var i ListProjectDecisionViewsRow
+		var i ListDocumentDecisionViewsRow
 		if err := rows.Scan(
 			&i.DocumentID,
 			&i.Field,

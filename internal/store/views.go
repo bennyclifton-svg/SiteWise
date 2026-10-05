@@ -84,7 +84,11 @@ func (s *Store) ProjectDocumentViews(ctx context.Context, orgID, projectID strin
 	if err != nil {
 		return nil, err
 	}
-	fields, err := s.q.ListProjectDecisionViews(ctx, db.ListProjectDecisionViewsParams{OrgID: orgID, ProjectID: projectID})
+	ids := make([]string, len(docs))
+	for i, d := range docs {
+		ids[i] = d.ID
+	}
+	fields, err := s.q.ListDocumentDecisionViews(ctx, db.ListDocumentDecisionViewsParams{OrgID: orgID, DocumentIds: ids})
 	if err != nil {
 		return nil, err
 	}
