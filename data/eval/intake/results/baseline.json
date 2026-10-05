@@ -1,0 +1,85 @@
+{
+  "accepted_at": "2026-10-05T00:36:13.7163382Z",
+  "inputs": {
+    "key:hale-design-docs.yaml": "5586ea53b5f0306a957915f12c61d37a45218d6b8c5ec2de83fdc9e3a7af544c",
+    "key:newham-design-docs.yaml": "25ff60caa7d01501febfee9319c84a695c6ca36688ee3d706923fab46b74cfa3",
+    "key:petersham-design-docs.yaml": "5fb17c9e3d6b7a79bd385bafafa5188f138cf1c9fdd95ca54abc5a5f79e67b88",
+    "manifest": "f29fe703c2dbee7af62d9e2ab0755dfdb6cfa661233e838818017df52ca60b9e",
+    "recordings": "45eb07d63ea7bbb9b0f7099f538b524156aa58a70ea7fd4b15af826dc09a263f",
+    "thresholds": "a0a90c1ad7e34cbec2812b9912432acbc882eac4928571905d586b0cc131f448"
+  },
+  "metrics": {
+    "date": {
+      "scored": 39,
+      "applied": 25,
+      "correct": 24,
+      "amber": 0,
+      "grey": 0,
+      "false_confident": 1,
+      "coverage": 0.6410256410256411,
+      "accuracy": 0.96,
+      "accuracy_low": 0.8391181966435798,
+      "accuracy_high": 0.9910261492162107,
+      "amber_rate": 0
+    },
+    "number": {
+      "scored": 27,
+      "applied": 17,
+      "correct": 16,
+      "amber": 0,
+      "grey": 0,
+      "false_confident": 1,
+      "coverage": 0.6296296296296297,
+      "accuracy": 0.9411764705882353,
+      "accuracy_low": 0.774421392554377,
+      "accuracy_high": 0.9867671272003679,
+      "amber_rate": 0
+    },
+    "revision": {
+      "scored": 35,
+      "applied": 16,
+      "correct": 14,
+      "amber": 0,
+      "grey": 0,
+      "false_confident": 2,
+      "coverage": 0.45714285714285713,
+      "accuracy": 0.875,
+      "accuracy_low": 0.6837666133634829,
+      "accuracy_high": 0.9577379286223212,
+      "amber_rate": 0
+    },
+    "supersedes": {
+      "scored": 27,
+      "applied": 0,
+      "correct": 0,
+      "amber": 0,
+      "grey": 0,
+      "false_confident": 0,
+      "coverage": 0,
+      "accuracy": 0,
+      "accuracy_low": 0,
+      "accuracy_high": 0,
+      "amber_rate": 0
+    },
+    "title": {
+      "scored": 45,
+      "applied": 21,
+      "correct": 6,
+      "amber": 0,
+      "grey": 0,
+      "false_confident": 15,
+      "coverage": 0.4666666666666667,
+      "accuracy": 0.2857142857142857,
+      "accuracy_low": 0.15559772536400182,
+      "accuracy_high": 0.46475195367328925,
+      "amber_rate": 0
+    }
+  },
+  "supersession": {
+    "asked": 2,
+    "scored": 27,
+    "automatic": 0,
+    "incorrect": 0,
+    "unverified": 0
+  }
+}

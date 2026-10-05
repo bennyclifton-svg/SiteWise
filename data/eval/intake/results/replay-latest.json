@@ -3,7 +3,7 @@
   "mode": "replay",
   "model": "jev-1.13.0",
   "question_version": "intake-76",
-  "generated_at": "2026-10-04T22:45:03.3744925Z",
+  "generated_at": "2026-10-05T00:36:27.0155895Z",
   "inputs": {
     "key:hale-design-docs.yaml": "5586ea53b5f0306a957915f12c61d37a45218d6b8c5ec2de83fdc9e3a7af544c",
     "key:newham-design-docs.yaml": "25ff60caa7d01501febfee9319c84a695c6ca36688ee3d706923fab46b74cfa3",
@@ -499,9 +499,7 @@
     "Discipline and kind labels are model or folder judgements in every key and are diagnostic only; they neither fit thresholds nor gate."
   ],
   "gate": {
-    "passed": false,
-    "failures": [
-      "no accepted baseline: review this report, then run with -accept"
-    ]
+    "passed": true,
+    "failures": []
   }
 }
