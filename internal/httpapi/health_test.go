@@ -192,7 +192,7 @@ func TestHealthSpeedBudget(t *testing.T) {
 			scoped.Paths = append(scoped.Paths, p)
 		}
 	}
-	if code, report := latency.Gate(scoped, samples); code != 0 {
+	if code, report := latency.Gate(scoped, samples, true); code != 0 {
 		t.Fatal(report)
 	}
 }

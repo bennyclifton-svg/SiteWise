@@ -372,6 +372,11 @@ func assertBudget(t *testing.T, name string, samples []int64, p50us, p90us int64
 		t.Fatal(err)
 	}
 	t.Logf("%s p50=%dus p90=%dus", name, p50, p90)
+	// Component budgets are judged on the target VPS (D-37); elsewhere the
+	// measurement is logged above and does not fail the build.
+	if !latency.ReleaseRun() {
+		return
+	}
 	if p50 > p50us || p90 > p90us {
 		t.Fatalf("%s p50 %dus p90 %dus exceeds %d/%d", name, p50, p90, p50us, p90us)
 	}

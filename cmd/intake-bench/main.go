@@ -69,6 +69,7 @@ type options struct {
 	samplesOut  string
 	out         string
 	target      string
+	release     bool
 	live        bool
 	rounds      int
 	concurrency int
@@ -95,6 +96,7 @@ func run(args []string, getenv func(string) string, stdout, stderr io.Writer) in
 	fs.StringVar(&o.samplesOut, "samples-out", "bench/samples.json", "microsecond samples, readable by `sitewise gate`")
 	fs.StringVar(&o.out, "out", "bench/results/latest.json", "results metadata")
 	fs.StringVar(&o.target, "target", "dev", "name of the host under test; release evidence needs the intended VPS")
+	fs.BoolVar(&o.release, "release", false, "release evidence on the target VPS: component budgets gate too (D-37)")
 	fs.BoolVar(&o.live, "live", false, "call System One (SITEWISE_JEV_API_KEY) instead of replaying recorded latency")
 	fs.IntVar(&o.rounds, "rounds", 2, "fresh projects, each receiving every corpus file; the first is the cold round")
 	fs.IntVar(&o.concurrency, "concurrency", 4, "parallel uploads")
@@ -121,19 +123,21 @@ func run(args []string, getenv func(string) string, stdout, stderr io.Writer) in
 
 // Results is the committed bench metadata. Raw samples go to -samples-out.
 type Results struct {
-	SchemaVersion int                   `json:"schema_version"`
-	GeneratedAt   time.Time             `json:"generated_at"`
-	Target        string                `json:"target"`
-	Host          Host                  `json:"host"`
-	Jev           string                `json:"jev"`
-	Model         string                `json:"model"`
-	Workload      Workload              `json:"workload"`
-	Outcomes      map[string]int        `json:"outcomes"`
-	Paths         map[string]PathResult `json:"paths"`
-	WholeByRound  map[string]PathResult `json:"whole_intake_by_round"`
-	Missing       []string              `json:"missing_paths"`
-	Gate          GateVerdict           `json:"gate"`
-	Notes         []string              `json:"notes"`
+	SchemaVersion int       `json:"schema_version"`
+	GeneratedAt   time.Time `json:"generated_at"`
+	Target        string    `json:"target"`
+	// Release is set on the target VPS: component budgets gate too (D-37).
+	Release      bool                  `json:"release"`
+	Host         Host                  `json:"host"`
+	Jev          string                `json:"jev"`
+	Model        string                `json:"model"`
+	Workload     Workload              `json:"workload"`
+	Outcomes     map[string]int        `json:"outcomes"`
+	Paths        map[string]PathResult `json:"paths"`
+	WholeByRound map[string]PathResult `json:"whole_intake_by_round"`
+	Missing      []string              `json:"missing_paths"`
+	Gate         GateVerdict           `json:"gate"`
+	Notes        []string              `json:"notes"`
 }
 
 // Host is the hardware the samples came from.
@@ -367,11 +371,12 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := writeJSON(o.samplesOut, snapshot); err != nil {
 		return 0, err
 	}
-	code, report := latency.Gate(budgets, snapshot)
+	code, report := latency.Gate(budgets, snapshot, o.release || latency.ReleaseRun())
 	res := Results{
 		SchemaVersion: 1,
 		GeneratedAt:   time.Now().UTC(),
 		Target:        o.target,
+		Release:       o.release || latency.ReleaseRun(),
 		Host:          host(),
 		Jev:           jevMode(o.live),
 		Model:         config.PinnedJevModel,
@@ -613,8 +618,11 @@ func printResults(w io.Writer, budgets latency.Budgets, r Results) {
 			continue
 		}
 		verdict := "FAIL"
-		if p.Pass != nil && *p.Pass {
+		switch {
+		case p.Pass != nil && *p.Pass:
 			verdict = "ok"
+		case b.Where == latency.WhereRelease && !r.Release:
+			verdict = "over (judged on target VPS)"
 		}
 		fmt.Fprintf(w, "  %-28s n=%-4d p50 %7.1f ms (budget %6.1f)  p90 %7.1f ms (budget %6.1f)  %s\n",
 			b.Name, p.N, ms(p.P50US), ms(b.P50US), ms(p.P90US), ms(b.P90US), verdict)
