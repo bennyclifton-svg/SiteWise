@@ -21,7 +21,7 @@ A site outlasts its projects, so facts about the building should key to the site
 
 Also: `existing_building` ("Work to an existing building") describes the works, not the building. Should it be site or project?
 
-Your answer:
+Your answer:A
 
 ## 2. D-06: can a value you typed feed a regulatory derivation? (blocks WP-15)
 
@@ -32,7 +32,7 @@ Today, any value you enter can feed derivations such as Type of Construction, an
   - Values you mark as an **assumption** or allowance never feed a derivation.
 - **B.** Only verified inputs feed derivations. Most derived rows would go blank today.
 
-Your answer:
+Your answer:A
 
 ## 3. D-05: where an existing system's condition lives (blocks WP-20, which is all of Stage 2)
 
@@ -41,14 +41,14 @@ The PRG puts "existing condition" on the work item and also among site facts.
 - **A (recommended).** On the site (`sys.<leaf>.condition`). The work item shows it, plus a project note. One record, and it survives to the next project.
 - **B.** A copy on each work item.
 
-Your answer:
+Your answer:A
 
 ## 4. D-07: mixed jobs like Hale (extension plus refurbishment) (blocks WP-21)
 
 - **A (recommended).** Keep one project work type for the header and answer keys. Let a part carry its own work type, for example the extension part `new` and the existing building `refurb`; default actions follow the part. The K4 records that test `work_type` start to work.
 - **B.** Make work type multi-choice. This changes a Jev question and the answer keys.
 
-Your answer:
+Your answer:A
 
 ## 5. D-03: order of Stage 2 and Stage 3 (blocks WP-32 and WP-35)
 
@@ -57,7 +57,7 @@ The PRG asks for the package gap check in Stage 2, but packages arrive in Stage 
 - **A (recommended).** Move the gap check to Stage 3, and build a minimal dates, risks and approvals register in Stage 3. Until then, package-type proposals can be dismissed but not accepted.
 - **B.** Build a skeleton packages table in Stage 2.
 
-Your answer:
+Your answer:A
 
 ## 6. D-09: who must do what, per action (blocks WP-32)
 
@@ -69,13 +69,13 @@ Your answer:
 - Retain needs a works package that keeps the system operating or protects it.
 - Groups inherit from their parent unless a child sets its own.
 
-Your answer:
+Your answer:A
 
 ## 7. Other open questions, one line each
 
 | Decision | Question | My recommendation |
 | - | - | - |
-| D-02 | Is the primary user the owner-side PM who appoints consultants and contractors? | Yes |
+| D-02 | Is the primary user the owner-side PM who appoints consultants and contractors? | No, primary users are owner-side PM and D&C Contractor, keeping targer user audience larger  |
 | D-13 | Forecast for the PMP variance | Computed: commitment, else estimate, else budget |
 | D-15 / D-16 | PDF renderer; minimum font size | A one-day renderer spike; A4, 10 pt body, 8.5 pt minimum in tables |
 | D-18 | Budget rule for large projects | Keep 50/150 ms on the bench project; large projects are governed by `profile_rebuild` 100/300 ms |
@@ -88,5 +88,5 @@ Your answer:
 
 ## 8. Gates that need you, not code
 
-- **Filing accuracy baseline (F28).** The intake gate stops until you accept a baseline (`go run ./cmd/intake-eval -manifest data/eval/intake/manifest.json -live -accept` after review). Held-out title accuracy in the latest run is 0.29, with 15 titles filled wrongly with high confidence. You may prefer to fix titles before accepting.
-- **Latency bench (F29).** 52 requests, probably the scanned no-text documents, have no recording, so the bench can't run locally. Re-record the OCR path, or exclude those documents from the bench?
+- **Filing accuracy baseline (F28).** The intake gate stops until you accept a baseline (`go run ./cmd/intake-eval -manifest data/eval/intake/manifest.json -live -accept` after review). Held-out title accuracy in the latest run is 0.29, with 15 titles filled wrongly with high confidence. You may prefer to fix titles before accepting.you choose. 
+- **Latency bench (F29).** 52 requests, probably the scanned no-text documents, have no recording, so the bench can't run locally. Re-record the OCR path, or exclude those documents from the bench? you choose. 
