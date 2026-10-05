@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-05T03:40:34.7333998Z",
+  "generated_at": "2026-10-05T04:45:47.8122339Z",
   "target": "dev",
   "release": false,
   "host": {
@@ -18,134 +18,134 @@
     "rounds": 2,
     "concurrency": 4,
     "background_jev_callers": 2,
-    "background_jev_calls": 150,
+    "background_jev_calls": 172,
     "degrade_percent": 10,
-    "stalled_jev_requests": 49,
+    "stalled_jev_requests": 53,
     "cold_round": "1"
   },
   "outcomes": {
     "filing": 258,
-    "grey_filings": 18,
+    "grey_filings": 25,
     "not_filed": 110
   },
   "paths": {
     "candidate_harvesting": {
       "n": 258,
-      "p50_us": 1999,
-      "p90_us": 4595,
-      "max_us": 159187,
+      "p50_us": 1998,
+      "p90_us": 4997,
+      "max_us": 132521,
       "pass": true
     },
     "commit_sse_enqueue": {
       "n": 258,
-      "p50_us": 3002,
-      "p90_us": 4002,
-      "max_us": 26000,
+      "p50_us": 3162,
+      "p90_us": 4864,
+      "max_us": 61363,
       "pass": true
     },
     "deterministic_field_rules": {
       "n": 258,
-      "p50_us": 1014,
-      "p90_us": 3120,
-      "max_us": 6169,
+      "p50_us": 1003,
+      "p90_us": 3002,
+      "max_us": 4019,
       "pass": false
     },
     "document_delete": {
       "n": 40,
-      "p50_us": 3080,
-      "p90_us": 4000,
-      "max_us": 7002,
+      "p50_us": 3564,
+      "p90_us": 4050,
+      "max_us": 5441,
       "pass": true
     },
     "field_correction": {
       "n": 40,
-      "p50_us": 1661,
-      "p90_us": 2056,
-      "max_us": 2170,
+      "p50_us": 1792,
+      "p90_us": 2112,
+      "max_us": 2216,
       "pass": true
     },
     "health_speed": {
       "n": 40,
-      "p50_us": 552,
-      "p90_us": 1109,
-      "max_us": 2067,
+      "p50_us": 531,
+      "p90_us": 1212,
+      "max_us": 1603,
       "pass": true
     },
     "identity_text_extraction": {
       "n": 368,
-      "p50_us": 57607,
-      "p90_us": 344716,
-      "max_us": 1315398,
+      "p50_us": 56319,
+      "p90_us": 325009,
+      "max_us": 1698111,
       "pass": false
     },
     "jev_admission_request": {
       "n": 258,
-      "p50_us": 236882,
-      "p90_us": 309939,
-      "max_us": 1202021,
+      "p50_us": 237092,
+      "p90_us": 524966,
+      "max_us": 1201236,
       "pass": true
     },
     "profile_edit": {
       "n": 120,
-      "p50_us": 22337,
-      "p90_us": 71149,
-      "max_us": 90833,
+      "p50_us": 18747,
+      "p90_us": 68603,
+      "max_us": 79151,
       "pass": true
     },
     "project_document_list": {
       "n": 40,
-      "p50_us": 8196,
-      "p90_us": 8591,
-      "max_us": 137146,
+      "p50_us": 5999,
+      "p90_us": 6736,
+      "max_us": 10227,
       "pass": true
     },
     "project_invite_auth": {
       "n": 42,
-      "p50_us": 1048,
-      "p90_us": 1179,
-      "max_us": 24817,
+      "p50_us": 1079,
+      "p90_us": 1202,
+      "max_us": 6733,
       "pass": true
     },
     "project_profile_read": {
       "n": 40,
-      "p50_us": 11620,
-      "p90_us": 15829,
-      "max_us": 24506,
+      "p50_us": 8193,
+      "p90_us": 12661,
+      "max_us": 19747,
       "pass": true
     },
     "sse_reconnect": {
       "n": 40,
-      "p50_us": 529,
-      "p90_us": 1040,
-      "max_us": 1066,
+      "p50_us": 569,
+      "p90_us": 1001,
+      "max_us": 1035,
       "pass": true
     },
     "whole_intake": {
       "n": 368,
-      "p50_us": 329518,
-      "p90_us": 750014,
-      "max_us": 1796949,
+      "p50_us": 345063,
+      "p90_us": 798949,
+      "max_us": 2923630,
       "pass": true
     }
   },
   "whole_intake_by_round": {
     "1": {
       "n": 184,
-      "p50_us": 317462,
-      "p90_us": 725504,
-      "max_us": 1794103
+      "p50_us": 323949,
+      "p90_us": 758303,
+      "max_us": 1911688
     },
     "2": {
       "n": 184,
-      "p50_us": 351164,
-      "p90_us": 820152,
-      "max_us": 1796949
+      "p50_us": 364004,
+      "p90_us": 941167,
+      "max_us": 2923630
     }
   },
   "missing_paths": null,
   "gate": {
     "code": 0,
-    "report": "identity_text_extraction: p50 57607us p90 344716us over 80000/250000us (reported; judged on the target VPS)\ndeterministic_field_rules: p50 1014us p90 3120us over 1000/1000us (reported; judged on the target VPS)\n"
+    "report": "identity_text_extraction: p50 56319us p90 325009us over 80000/250000us (reported; judged on the target VPS)\ndeterministic_field_rules: p50 1003us p90 3002us over 1000/1000us (reported; judged on the target VPS)\n"
   },
   "notes": [
     "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",

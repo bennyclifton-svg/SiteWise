@@ -196,6 +196,8 @@ type ListDocumentDecisionViewsRow struct {
 	Confidence      pgtype.Float8
 }
 
+// The decisions of the listed documents, by id: no join, so a stale plan
+// cannot multiply every document by every decision in the org (F30).
 func (q *Queries) ListDocumentDecisionViews(ctx context.Context, arg ListDocumentDecisionViewsParams) ([]ListDocumentDecisionViewsRow, error) {
 	rows, err := q.db.Query(ctx, listDocumentDecisionViews, arg.OrgID, arg.DocumentIds)
 	if err != nil {
