@@ -256,3 +256,52 @@ rules:
 	}
 	return cat
 }
+
+// D-06: a value the user states as fact feeds a derivation; the same value
+// marked as an assumption, allowance or requirement never does, even though
+// the user accepted it for planning.
+func TestAssumptionsNeverFeedDerivations(t *testing.T) {
+	cat := reviewedCatalog(t)
+	for _, c := range []struct {
+		origin, meaning string
+		derived         bool
+	}{
+		{"", "", true},
+		{profile.OriginUser, profile.MeaningStated, true},
+		{profile.OriginAssumption, profile.MeaningStated, false},
+		{profile.OriginUser, profile.MeaningAllowance, false},
+		{profile.OriginUser, profile.MeaningRequirement, false},
+		{profile.OriginUser, profile.MeaningForecast, false},
+	} {
+		in := input()
+		in.User = []profile.UserValue{
+			{PartID: whole, Key: "det.ncc_class", Value: str("7b"), Origin: c.origin, Meaning: c.meaning},
+			{PartID: whole, Key: "det.rise_in_storeys", Value: str("1")},
+		}
+		r := row(t, profile.Reconcile(in, cat), whole, "det.type_of_construction")
+		if (r.Value == "C") != c.derived {
+			t.Errorf("origin %q meaning %q: derived %q, want derived=%v", c.origin, c.meaning, r.Value, c.derived)
+		}
+	}
+}
+
+// Rows say where a value came from, independently of its band.
+func TestAnnotateProvenance(t *testing.T) {
+	in := input(jevFact("sys.hydraulic.gas.presence", "included", "d1", 0.9),
+		jevFact("det.bal", "BAL-29", "d1", 0.9), jevFact("det.bal.assertion", "allowance", "d1", 0.9))
+	in.User = []profile.UserValue{{PartID: whole, Key: "hdr.work_type", Value: str("refurb"), Origin: profile.OriginAssumption, Version: 3},
+		{PartID: whole, Key: "det.ncc_class", Value: nil}}
+	rows := profile.Build(in, repoCatalog(t))
+	if r := row(t, rows, whole, "sys.hydraulic.gas.presence"); r.Origin != "document" || r.ReviewStatus != "proposed" || r.Scope != "project" {
+		t.Fatalf("evidence %+v", r)
+	}
+	if r := row(t, rows, whole, "det.bal"); r.Meaning != "allowance" || r.Scope != "site" {
+		t.Fatalf("allowance %+v", r)
+	}
+	if r := row(t, rows, whole, "hdr.work_type"); r.Origin != "assumption" || r.ReviewStatus != "accepted_for_planning" || r.UserVersion != 3 || r.Scope != "project" {
+		t.Fatalf("user %+v", r)
+	}
+	if r := row(t, rows, whole, "det.ncc_class"); r.ValueState != "cleared" {
+		t.Fatalf("cleared %+v", r)
+	}
+}

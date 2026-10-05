@@ -22,6 +22,17 @@ type Fact struct {
 	// ReadSetting is the document's profile reading setting (auto, read, skip).
 	ReadSetting string
 	Superseded  bool
+	// Where the reading came from, kept as a snapshot because passage ids are
+	// replaced when a document is reprocessed (plan §4.1, SourceRef).
+	FileSHA256     string
+	Filename       string
+	DocumentNumber string
+	Revision       string
+	Page           int
+	Location       string
+	Section        string
+	StartOffset    int
+	EndOffset      int
 }
 
 // Part is a building, part, storey, compartment or tenancy facts belong to.
@@ -30,16 +41,33 @@ type Part struct{ ID, Label, Kind, NCCClass string }
 // UserValue is the user's word for one key on one part. It is final.
 type UserValue struct {
 	PartID, Key string
-	Value       *string // nil means cleared by the user
+	Value       *string // nil means cleared by the user, or unknown (State)
 	Note        string
+	// State is set, cleared or unknown; empty reads as set or cleared from Value.
+	State string
+	// Origin is user or assumption; Meaning is stated, requirement, allowance
+	// or forecast (plan §4.1). Empty means user and stated.
+	Origin, Meaning string
+	Version         int64
 }
 
 // Source is where a row's evidence came from.
+// It is a snapshot (SourceRef, plan §4.1): the document's hash, revision and
+// location survive reprocessing, which replaces passage ids.
 type Source struct {
-	DocumentID string   `json:"document_id"`
-	PassageID  string   `json:"passage_id,omitempty"`
-	Excerpt    string   `json:"excerpt,omitempty"`
-	Confidence *float64 `json:"confidence,omitempty"`
+	DocumentID     string   `json:"document_id"`
+	PassageID      string   `json:"passage_id,omitempty"`
+	Excerpt        string   `json:"excerpt,omitempty"`
+	Confidence     *float64 `json:"confidence,omitempty"`
+	FileSHA256     string   `json:"file_sha256,omitempty"`
+	Filename       string   `json:"filename,omitempty"`
+	DocumentNumber string   `json:"document_number,omitempty"`
+	Revision       string   `json:"revision,omitempty"`
+	Page           int      `json:"page,omitempty"`
+	Location       string   `json:"location,omitempty"`
+	Section        string   `json:"section,omitempty"`
+	StartOffset    int      `json:"start_offset,omitempty"`
+	EndOffset      int      `json:"end_offset,omitempty"`
 }
 
 // Alternative is one competing value in a conflict, with its support.
@@ -65,6 +93,15 @@ type Row struct {
 	Alternatives       []Alternative
 	Tenders            string // "", consistent, differ
 	Derived            *Derived
+	// Provenance (plan §4.1), set by Annotate: the key's owner (site or
+	// project), origin, review status, meaning and value state. UserVersion
+	// is the user value's version, for optimistic edits.
+	Scope        string
+	Origin       string
+	ReviewStatus string
+	Meaning      string
+	ValueState   string
+	UserVersion  int64
 }
 
 // Thresholds are per question shape. A missing amber floor applies nothing;
@@ -150,6 +187,7 @@ func Reconcile(in Input, cat *knowledge.Catalog) []Row {
 		if u.Value != nil {
 			r.Value = *u.Value
 		}
+		r.Origin, r.Meaning, r.ValueState, r.UserVersion = orDefault(u.Origin, OriginUser), orDefault(u.Meaning, MeaningStated), userState(u), u.Version
 	}
 	for _, leaf := range in.Suggested {
 		k := [2]string{parts.whole, "sys." + cat.Resolve(leaf) + ".presence"}
@@ -394,7 +432,9 @@ func assertionOf(facts []Fact, assertions map[string][]Fact, key string, th Thre
 }
 
 func source(f Fact) Source {
-	return Source{DocumentID: f.DocumentID, PassageID: f.PassageID, Excerpt: cut(f.Excerpt, maxNote), Confidence: f.Confidence}
+	return Source{DocumentID: f.DocumentID, PassageID: f.PassageID, Excerpt: cut(f.Excerpt, maxNote), Confidence: f.Confidence,
+		FileSHA256: f.FileSHA256, Filename: f.Filename, DocumentNumber: f.DocumentNumber, Revision: f.Revision,
+		Page: f.Page, Location: f.Location, Section: f.Section, StartOffset: f.StartOffset, EndOffset: f.EndOffset}
 }
 
 func cut(s string, n int) string {
@@ -470,7 +510,7 @@ func usableFacts(rows map[[2]string]*Row, part string) []knowledge.Fact {
 		if k[0] != part || !strings.HasPrefix(k[1], "det.") || r.Value == "" {
 			continue
 		}
-		usable := r.Band == bandUser || (r.Band == bandGreen && r.Derived != nil) ||
+		usable := eligibleUser(r) || (r.Band == bandGreen && r.Derived != nil) ||
 			((r.Band == bandGreen || r.Band == bandAmber) && r.Assertion == "stated")
 		if !usable {
 			continue

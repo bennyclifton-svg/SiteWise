@@ -106,7 +106,9 @@ func Build(in Input, cat *knowledge.Catalog) []Row {
 		in.Suggested = suggested
 		rows = Reconcile(in, cat)
 	}
-	return withScope(rows, wholePart(in.Parts), suggested)
+	rows = withScope(rows, wholePart(in.Parts), suggested)
+	Annotate(rows, cat)
+	return rows
 }
 
 const (

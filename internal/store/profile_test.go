@@ -82,7 +82,7 @@ func TestProfileStoreRoundTrip(t *testing.T) {
 	if err := st.RebuildProfile(ctx, orgA, projectA, "profile-1", compute); err != nil {
 		t.Fatal(err)
 	}
-	if err := st.SetUserValue(ctx, orgA, projectA, whole.ID, userA, "hdr.subclass", strPtr("warehouse"), "set by test"); err != nil {
+	if _, err := st.SetUserValue(ctx, orgA, projectA, whole.ID, userA, "hdr.subclass", store.UserWrite{Value: strPtr("warehouse"), Note: "set by test", Scope: "site"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := st.RebuildProfile(ctx, orgA, projectA, "profile-1", compute); err != nil {
@@ -125,7 +125,7 @@ func TestProfileOrgIsolation(t *testing.T) {
 	if _, err := st.UpdatePart(ctx, orgB, projectA, whole.ID, strPtr("X"), nil, nil); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("cross-org rename: %v", err)
 	}
-	if err := st.SetUserValue(ctx, orgB, projectA, whole.ID, userB, "hdr.subclass", strPtr("x"), ""); !errors.Is(err, store.ErrNotFound) {
+	if _, err := st.SetUserValue(ctx, orgB, projectA, whole.ID, userB, "hdr.subclass", store.UserWrite{Value: strPtr("x"), Scope: "site"}); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("cross-org user value: %v", err)
 	}
 	if err := st.ReplaceDocumentFacts(ctx, orgB, docA, []string{"sys."}, "profile-1", nil); !errors.Is(err, store.ErrNotFound) {
