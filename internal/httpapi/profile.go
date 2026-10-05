@@ -34,6 +34,15 @@ type cellJSON struct {
 	Sources      []profile.Source      `json:"sources"`
 	Alternatives []profile.Alternative `json:"alternatives"`
 	Derived      *profile.Derived      `json:"derived,omitempty"`
+	// Provenance (plan §4.1): the screen shows one mark (the band); these
+	// say where the value came from. Version is the user value's version
+	// to send back on an edit (0 when the user has not set one).
+	Scope        string `json:"scope,omitempty"`
+	Origin       string `json:"origin,omitempty"`
+	ReviewStatus string `json:"review_status,omitempty"`
+	Meaning      string `json:"meaning,omitempty"`
+	ValueState   string `json:"value_state,omitempty"`
+	Version      int64  `json:"version"`
 }
 
 type fieldJSON struct {
@@ -202,7 +211,9 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 			return cellJSON{Sources: []profile.Source{}, Alternatives: []profile.Alternative{}}
 		}
 		c := cellJSON{Value: r.Value, Band: r.Band, Assertion: r.Assertion, Tenders: r.Tenders, Note: r.Note,
-			Sources: r.Sources, Alternatives: r.Alternatives, Derived: r.Derived}
+			Sources: r.Sources, Alternatives: r.Alternatives, Derived: r.Derived,
+			Scope: r.Scope, Origin: r.Origin, ReviewStatus: r.ReviewStatus, Meaning: r.Meaning, ValueState: r.ValueState,
+			Version: r.UserVersion}
 		if c.Sources == nil {
 			c.Sources = []profile.Source{}
 		}
@@ -406,8 +417,11 @@ func contains(list []string, v string) bool {
 }
 
 // putProfileValue records the user's word for one key and rebuilds.
-// Body: {"part_id": "...", "value": "..." | null, "note": "...", "reset": bool}.
-// reset removes the user's value so evidence shows again.
+// Body: {"part_id": "...", "value": "..." | null, "note": "...", "reset": bool,
+// "version"?: n, "origin"?: "user"|"assumption", "meaning"?: "stated"|...,
+// "unknown"?: bool}. reset removes the user's value so evidence shows again;
+// unknown records an explicit unresolved value. A stale version is 409 with
+// the current version; a missing version is accepted (older clients).
 func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !originOK(r, deps.PublicOrigin) {
 		http.Error(w, "origin rejected", http.StatusForbidden)
@@ -423,10 +437,14 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	var body struct {
-		PartID string  `json:"part_id"`
-		Value  *string `json:"value"`
-		Note   string  `json:"note"`
-		Reset  bool    `json:"reset"`
+		PartID  string  `json:"part_id"`
+		Value   *string `json:"value"`
+		Note    string  `json:"note"`
+		Reset   bool    `json:"reset"`
+		Version *int64  `json:"version"`
+		Origin  string  `json:"origin"`
+		Meaning string  `json:"meaning"`
+		Unknown bool    `json:"unknown"`
 	}
 	if err := readJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -439,6 +457,14 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if msg := validProfileValue(deps.Knowledge, key, body.Value, body.Note); msg != "" {
 		http.Error(w, msg, http.StatusUnprocessableEntity)
 		return
+	}
+	if msg := validProvenance(body.Origin, body.Meaning, body.Unknown, body.Value); msg != "" {
+		http.Error(w, msg, http.StatusUnprocessableEntity)
+		return
+	}
+	scope := deps.Knowledge.KeyScope(key)
+	if scope == "" {
+		scope = "project"
 	}
 	ctx := r.Context()
 	part := body.PartID
@@ -457,13 +483,27 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	var err error
+	var current int64
 	if body.Reset {
-		err = deps.Store.DeleteUserValue(ctx, session.OrgID, projectID, part, key)
+		err = deps.Store.DeleteUserValue(ctx, session.OrgID, projectID, part, key, scope, body.Version)
 	} else {
-		err = deps.Store.SetUserValue(ctx, session.OrgID, projectID, part, session.UserID, key, body.Value, body.Note)
+		state := "set"
+		switch {
+		case body.Unknown:
+			state = "unknown"
+		case body.Value == nil:
+			state = "cleared"
+		}
+		current, err = deps.Store.SetUserValue(ctx, session.OrgID, projectID, part, session.UserID, key, store.UserWrite{
+			Value: body.Value, State: state, Note: body.Note, Origin: body.Origin, Meaning: body.Meaning,
+			Scope: scope, Version: body.Version})
 	}
 	if errors.Is(err, store.ErrNotFound) {
 		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	if errors.Is(err, store.ErrVersionConflict) {
+		writeJSON(w, http.StatusConflict, map[string]any{"error": "version_conflict", "current_version": current})
 		return
 	}
 	if err != nil {
@@ -482,6 +522,22 @@ func rebuildProfile(r *http.Request, deps Deps, orgID, projectID string) error {
 		func(s store.ProfileSnapshot) []profile.Row {
 			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: deps.ProfileThresholds, Read: deps.ProfileReading}, deps.Knowledge)
 		})
+}
+
+// validProvenance checks the optional provenance of a user edit.
+func validProvenance(origin, meaning string, unknown bool, value *string) string {
+	if origin != "" && origin != "user" && origin != "assumption" {
+		return "origin must be user or assumption"
+	}
+	switch meaning {
+	case "", "stated", "requirement", "allowance", "forecast":
+	default:
+		return "meaning must be stated, requirement, allowance or forecast"
+	}
+	if unknown && value != nil {
+		return "an unknown value has no value"
+	}
+	return ""
 }
 
 // validProfileValue is the boundary check: the key exists and the value is

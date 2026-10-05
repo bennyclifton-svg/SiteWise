@@ -640,14 +640,19 @@ keys:
 
 ### Key scope (`profile/key_scope.yaml`)
 
-Says whether a profile key family is stored against the site or the project. The classification itself is owner decision D-04. The file is written only once D-04 is answered.
+Says whether a profile key is stored against the site or the project (owner decision D-04, answered 5 October 2026).
+
+- **Matching.** Entries are checked in order and the first match wins. `match` is a glob in which `*` matches any characters, including dots. Put a specific key such as `det.existing_building` before its family `det.*`.
+- **Coverage.** Every key the catalogue can produce must match an entry. The loader refuses to start otherwise.
 
 ```yaml
 version: 1
 status: draft
-families:                   # matched by prefix, longest prefix wins
-  - {prefix: "det.", scope: site}
-  - {prefix: "hdr.work_type", scope: project}
+families:
+  - {match: det.existing_building, scope: project}
+  - {match: "det.*", scope: site}
+  - {match: "sys.*.condition", scope: site}
+  - {match: "sys.*", scope: project}
 ```
 
 ### Clauses (`reports/clauses.yaml`)

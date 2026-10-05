@@ -186,3 +186,27 @@ func TestRealKnowledgeLoadsProfile(t *testing.T) {
 		t.Fatal("rise in storeys must not trigger on storey counts")
 	}
 }
+
+// D-04: building facts key to the site, works facts to the project; the
+// registry covers every key the catalogue can produce (Load would fail).
+func TestKeyScopeFollowsD04(t *testing.T) {
+	cat := loadRepo(t)
+	for key, want := range map[string]string{
+		"hdr.building_class":                   "site",
+		"hdr.subclass":                         "site",
+		"det.ncc_class":                        "site",
+		"det.existing_building_year":           "site",
+		"det.existing_building":                "project",
+		"hdr.work_type":                        "project",
+		"hdr.cond.procurement_route":           "project",
+		"fact.consent_number":                  "project",
+		"sys.fire-active.sprinklers.presence":  "project",
+		"sys.fire-active.sprinklers.condition": "site",
+		"sys.fire-active.sprinklers.existing":  "site",
+		"scope.fire-active.sprinklers":         "project",
+	} {
+		if got := cat.KeyScope(key); got != want {
+			t.Errorf("%s: %q, want %q", key, got, want)
+		}
+	}
+}

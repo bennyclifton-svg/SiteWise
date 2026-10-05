@@ -1079,14 +1079,14 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
 
     rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "key_scope.yaml", "families", report)
     if doc is not None:
-        prefixes = set()
+        patterns = set()
         for f in doc.get("families") or []:
-            if not isinstance(f, dict) or not str(f.get("prefix", "")).strip() or f.get("scope") not in SCOPES:
-                report.error(rel, f"family needs a prefix and a scope in {sorted(SCOPES)}: {f}")
+            if not isinstance(f, dict) or not str(f.get("match", "")).strip() or f.get("scope") not in SCOPES:
+                report.error(rel, f"family needs a match and a scope in {sorted(SCOPES)}: {f}")
                 continue
-            if f["prefix"] in prefixes:
-                report.error(rel, f"duplicate prefix {f['prefix']}")
-            prefixes.add(f["prefix"])
+            if f["match"] in patterns:
+                report.error(rel, f"duplicate match {f['match']}")
+            patterns.add(f["match"])
 
     rel, doc = load_catalogue(KNOWLEDGE / "reports" / "clauses.yaml", "clauses", report)
     if doc is not None:

@@ -170,6 +170,7 @@ type profileData struct {
 	scaleFields  []ScaleField
 	scope        scopeDefaults
 	live         []Determinant
+	keyScope     []keyScopeEntry
 }
 
 // Preset is a named set of leaf systems the scope picker can apply at once.
@@ -286,7 +287,7 @@ func (c *Catalog) loadProfile(dir string) error {
 		}
 	}
 	c.profile.scope = scope
-	return nil
+	return c.loadKeyScope(dir)
 }
 
 func compileTriggers(d *Determinant) error {

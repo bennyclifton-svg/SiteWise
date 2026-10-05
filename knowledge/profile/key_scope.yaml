@@ -1,0 +1,24 @@
+# Whether each profile key is stored against the site (what exists, lasting
+# across projects) or the project (what the works are). Owner decision D-04,
+# 5 October 2026: option A. The first matching entry wins; `*` matches any
+# characters. Every key the catalogue can produce must match an entry.
+version: 1
+status: draft
+sources:
+  - {design: docs/plans/2026-10-04-next-wave-implementation-plan.md, anchor: "## 5. Decisions"}
+families:
+  # "Work to an existing building" describes this intervention, not the site.
+  # The owner left this unanswered in D-04; agent's interpretation, to review.
+  - {match: det.existing_building, scope: project}
+  - {match: "det.*", scope: site}
+  - {match: hdr.building_class, scope: site}
+  - {match: hdr.subclass, scope: site}
+  - {match: "hdr.scale.*", scope: site}
+  - {match: hdr.work_type, scope: project}
+  - {match: "hdr.cond.*", scope: project}
+  - {match: "fact.*", scope: project}
+  # Existing condition and existing systems belong to the site (D-05, D-27).
+  - {match: "sys.*.condition", scope: site}
+  - {match: "sys.*.existing", scope: site}
+  - {match: "sys.*", scope: project}
+  - {match: "scope.*", scope: project}
