@@ -6,6 +6,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // Key scope (SCHEMA.md "Key scope", owner decision D-04): whether a profile
@@ -23,8 +24,15 @@ type keyScopeEntry struct {
 }
 
 // KeyScope returns "site" or "project" for a profile key, or "" when the
-// registry is absent or no entry matches.
+// registry is absent or no entry matches. A planning key carries its own
+// scope in the planning-key registry.
 func (c *Catalog) KeyScope(key string) string {
+	if k, ok := strings.CutPrefix(key, PlanningPrefix); ok {
+		if pk, ok := c.PlanningKey(k); ok {
+			return pk.Scope
+		}
+		return ""
+	}
 	for _, e := range c.profile.keyScope {
 		if ok, _ := path.Match(e.Match, key); ok {
 			return e.Scope
@@ -98,6 +106,9 @@ func (c *Catalog) profileKeys() []string {
 			keys = append(keys, "sys."+id+"."+suffix)
 		}
 		keys = append(keys, "scope."+id)
+	}
+	for _, k := range c.planning.keys {
+		keys = append(keys, PlanningPrefix+k.Key)
 	}
 	return keys
 }

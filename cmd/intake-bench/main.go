@@ -930,6 +930,15 @@ func (a *apiClient) profileReadEdit(ctx context.Context, st *store.Store, cat *k
 		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/profile/scope", scope, http.StatusOK); err != nil {
 			return err
 		}
+		// And so is a planning value: the live value is superseded, then the
+		// profile rebuilds in code (WP-13). Its read is a profile read.
+		plan, _ := json.Marshal(map[string]any{"value": 1000 + i, "version": i})
+		if _, err := a.timed(ctx, "profile_edit", http.MethodPut, "/projects/"+doc.ProjectID+"/planning/gross_floor_area", plan, http.StatusOK); err != nil {
+			return err
+		}
+		if _, err := a.timed(ctx, "project_profile_read", http.MethodGet, "/projects/"+doc.ProjectID+"/planning", nil, http.StatusOK); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -462,6 +462,14 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, msg, http.StatusUnprocessableEntity)
 		return
 	}
+	// L276: a favourable value on a planning key is the user's stated word
+	// or nothing. An edit that omits origin keeps the stored one, which may
+	// be an assumption, so the origin must be sent as user.
+	if pk, ok := deps.Knowledge.PlanningKey(strings.TrimPrefix(key, knowledge.PlanningPrefix)); ok &&
+		strings.HasPrefix(key, knowledge.PlanningPrefix) && body.Origin != "user" && body.Value != nil && pk.IsFavourable(*body.Value) {
+		http.Error(w, favourableRefused(pk)+` (send origin "user")`, http.StatusUnprocessableEntity)
+		return
+	}
 	scope := deps.Knowledge.KeyScope(key)
 	if scope == "" {
 		scope = "project"
@@ -520,7 +528,7 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 func rebuildProfile(r *http.Request, deps Deps, orgID, projectID string) error {
 	return deps.Store.RebuildProfile(r.Context(), orgID, projectID, deps.ProfileThresholds.Version,
 		func(s store.ProfileSnapshot) []profile.Row {
-			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: deps.ProfileThresholds, Read: deps.ProfileReading}, deps.Knowledge)
+			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: deps.ProfileThresholds, Read: deps.ProfileReading}, deps.Knowledge)
 		})
 }
 
@@ -609,6 +617,17 @@ func validProfileValue(cat *knowledge.Catalog, key string, value *string, note s
 				return number()
 			}
 		}
+	case strings.HasPrefix(key, knowledge.PlanningPrefix):
+		// The user may state a planning key as fact; it outranks the
+		// assumption or calculation on the same key.
+		pk, ok := cat.PlanningKey(strings.TrimPrefix(key, knowledge.PlanningPrefix))
+		if !ok {
+			break
+		}
+		if value == nil || v == "" {
+			return ""
+		}
+		return pk.CheckPlanningValue(v)
 	case strings.HasPrefix(key, "fact.") || strings.HasPrefix(key, "det."):
 		var d knowledge.Determinant
 		var ok bool

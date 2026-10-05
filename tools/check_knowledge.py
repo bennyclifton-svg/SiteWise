@@ -986,6 +986,22 @@ def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions
 # optional; a present file must match its documented shape.
 CATALOGUE_DIRS = ("reports", "costs")
 PLANNING_VALUES = {"integer", "number", "boolean", "choice", "text"}
+PLANNING_KEY = re.compile(r"^[a-z][a-z0-9_]*$")
+
+
+def planning_value_ok(key: dict, value) -> bool:
+    """A favourable or starting value, as text, fits the key's type."""
+    v = str(value)
+    kind = key.get("value")
+    if kind == "integer":
+        return re.fullmatch(r"-?[0-9]+", v) is not None
+    if kind == "number":
+        return re.fullmatch(r"-?[0-9]+(\.[0-9]+)?", v) is not None
+    if kind == "boolean":
+        return v in ("true", "false")
+    if kind == "choice":
+        return v in {o.get("id") for o in key.get("options") or [] if isinstance(o, dict)}
+    return True
 SCOPES = {"site", "project"}
 NOVATION = {"pre", "post"}
 REPORT_OUTPUTS = {"rfp", "rft", "pmp"}
@@ -1067,10 +1083,17 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             if not isinstance(k, dict) or not str(k.get("key", "")).strip() or not str(k.get("label", "")).strip():
                 report.error(where, "planning key needs key and label")
                 continue
-            if k["key"].startswith("cost.") or k.get("value") not in PLANNING_VALUES:
+            if k["key"].startswith("cost") or k.get("value") not in PLANNING_VALUES:
                 report.error(where, f"value must be one of {sorted(PLANNING_VALUES)}; money totals belong to the cost plan")
+            elif not PLANNING_KEY.match(k["key"]):
+                report.error(where, f"key does not match {PLANNING_KEY.pattern}; the profile shows it as plan.<key>")
             if k.get("value") == "choice" and not k.get("options"):
                 report.error(where, "a choice key needs options")
+            for v in list(k.get("favourable") or []) + ([k["starting_value"]] if k.get("starting_value") else []):
+                if not planning_value_ok(k, v):
+                    report.error(where, f"{v!r} is not a {k.get('value')} value of this key")
+            if k.get("starting_value") and k["starting_value"] in (k.get("favourable") or []):
+                report.error(where, "a starting value may not be favourable (L276)")
             if k.get("scope") not in SCOPES:
                 report.error(where, f"scope must be one of {sorted(SCOPES)}")
             if k["key"] in seen:

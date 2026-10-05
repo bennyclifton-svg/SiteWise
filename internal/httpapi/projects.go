@@ -95,6 +95,9 @@ func Handler(deps Deps) http.Handler {
 		"PATCH /projects/{id}/parts/{part}":         updatePart,
 		"GET /projects/{id}/site":                   getProjectSite,
 		"PATCH /sites/{site}":                       patchSite,
+		"GET /projects/{id}/planning":               getPlanning,
+		"PUT /projects/{id}/planning/{key}":         putPlanning,
+		"DELETE /projects/{id}/planning/{key}":      deletePlanning,
 	}
 	for pattern, h := range routes {
 		path, timed := routePaths[pattern]
@@ -133,6 +136,10 @@ var routePaths = map[string]string{
 	"PATCH /projects/{id}/parts/{part}":         pathProfileEdit,
 	"GET /projects/{id}/site":                   pathProfileRead,
 	"PATCH /sites/{site}":                       pathProfileEdit,
+	// A planning write rebuilds the profile in code, so it is a profile edit.
+	"GET /projects/{id}/planning":          pathProfileRead,
+	"PUT /projects/{id}/planning/{key}":    pathProfileEdit,
+	"DELETE /projects/{id}/planning/{key}": pathProfileEdit,
 }
 
 func consumeSession(w http.ResponseWriter, r *http.Request, deps Deps) {

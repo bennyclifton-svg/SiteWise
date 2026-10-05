@@ -51,7 +51,7 @@ As recorded on 5 October 2026; this documentation revision ran no application ch
 | WP-00 profile replay/workload | Implemented; source 15/15 and Hale 12/12 replays recorded | `docs/evidence/2026-10-05-evidence-workload.md`; does not prove all answer keys or filing quality |
 | Filing accuracy | Replay baseline accepted as a regression floor; quality remains inadequate | Same note: held-out title accuracy 0.29 and 15 confident wrong titles. Baseline acceptance is not quality approval. |
 | Filing latency | Local live whole_intake p50 377 / p90 1,245 ms against 1,000/2,000 ms | M0 (`e2eaa6d`) restored whole-file replay (AT-35): the replayed bench runs with 0 unrecorded requests. D-37 (`31681f9`): component budgets are judged on the target VPS and only reported elsewhere; user paths gate locally and pass. VPS evidence outstanding. |
-| WP-11 / WP-25 / WP-12 | Implemented and independently reviewed, not whole-wave Verified | Register state updates (WP-12 merged `ece0086`, full gate green); remaining dependent contracts still outstanding |
+| WP-11 / WP-25 / WP-12 / WP-13 | Implemented and independently reviewed, not whole-wave Verified | Register state updates (WP-12 `ece0086`; WP-13 merged after F30 `3e55ca1`, full gate green); remaining dependent contracts still outstanding; F31 open |
 | WP-K0 / WP-K4 | Shapes/catalogues and K4 drafts recorded as implemented; content review incomplete | Package history; no new reviewed knowledge is implied by format approval |
 | All other packages | Not demonstrated complete by the reviewed planning evidence | Treat as not verified; inspect actual handoffs before resuming |
 | M1/M2/M3 and new §8.6 gates | Planned; not run | Added by this documentation revision |
@@ -561,6 +561,11 @@ Findings added during WP-00:
 - **F29. The latency bench also failed before this wave.** `cmd/intake-bench` refuses to run when requests have no recorded document: 178 before the re-recording, 52 after. The remainder are probably the 55 documents with no text layer (OCR path), which the eval run does not record.
   - The latency gate is therefore not runnable locally, and the `whole_intake` timing under background load (WP-00 step 4) is **not verified**.
   - Owner decision: re-record the OCR path or exclude those documents from the bench.
+
+Findings added during WP-12 and WP-13 (5 October 2026):
+
+- **F30. The document list slowed to about 200 ms after a bulk filing** (bench `project_document_list`, budget 50/150 ms), in roughly 7 of 17 local runs. Root cause from `auto_explain`: with stale statistics right after many filings, the planner joined decisions to documents as a nested loop over every decision and every document in the org (~165 ms). Whether autovacuum had analysed the tables decided each run. Fixed and merged (`3e55ca1`): decisions are read by the listed document ids with no join, and migration 012a indexes documents by project. With statistics held stale on purpose, the list fell from 195 ms to 7 ms. Not caused by WP-12 or WP-13.
+- **F31. Profile edits are also plan-sensitive.** With statistics held stale on purpose (autovacuum off on documents, decisions, jobs and document_sources), `profile_edit` measured p50 251 ms against 50 ms. Under normal conditions it passes (p50 about 20 ms, p90 about 68 ms). The rebuild's snapshot queries should get the same treatment as F30 before WP-14 adds the `profile_rebuild` path; until then it is a known risk for the first minutes after a large upload into a nearly empty database.
 
 ## 5. Decisions
 

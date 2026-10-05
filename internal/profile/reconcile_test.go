@@ -305,3 +305,49 @@ func TestAnnotateProvenance(t *testing.T) {
 		t.Fatalf("cleared %+v", r)
 	}
 }
+
+// WP-13, AT-07, AT-09 (assumption half): a planning value shows as itself,
+// an accepted assumption stays an assumption, unknown is explicit, the
+// user's stated word on the same key wins, and nothing it holds feeds a
+// derivation.
+func TestPlanningValuesShowAsAssumptions(t *testing.T) {
+	cat := repoCatalog(t)
+	in := input()
+	in.Planning = []profile.PlanningValue{
+		{PartID: whole, Key: "gross_floor_area", State: profile.StateSet, Value: str("1000"), Origin: profile.OriginAssumption,
+			ReviewStatus: profile.ReviewAccepted, Meaning: profile.MeaningStated, Rationale: "Area schedule", Version: 2},
+		{PartID: whole, Key: "existing_structure_adequate", State: profile.StateUnknown, Origin: profile.OriginAssumption,
+			ReviewStatus: profile.ReviewAccepted, Meaning: profile.MeaningStated, Version: 1},
+		{PartID: whole, Key: "construction_duration", State: profile.StateSet, Value: str("40"), Origin: profile.OriginAssumption,
+			ReviewStatus: profile.ReviewAccepted, Meaning: profile.MeaningForecast, Version: 1},
+	}
+	in.User = []profile.UserValue{{PartID: whole, Key: "plan.construction_duration", Value: str("52"), Version: 1}}
+	rows := profile.Build(in, cat)
+	if r := row(t, rows, whole, "plan.gross_floor_area"); r.Band != "planning" || r.Value != "1000" || r.Origin != "assumption" ||
+		r.ReviewStatus != "accepted_for_planning" || r.Scope != "site" || r.UserVersion != 0 || r.Note != "Area schedule" {
+		t.Fatalf("assumption %+v", r)
+	}
+	if r := row(t, rows, whole, "plan.existing_structure_adequate"); r.Value != "" || r.ValueState != "unknown" || r.Origin != "assumption" {
+		t.Fatalf("unknown %+v", r)
+	}
+	if r := row(t, rows, whole, "plan.construction_duration"); r.Band != "user" || r.Value != "52" || r.Origin != "user" {
+		t.Fatalf("the user's word must win: %+v", r)
+	}
+	// Planning values change no derived row (D-06): with the user's stated
+	// class and rise the type of construction derives; planning values alone
+	// derive nothing.
+	reviewed := reviewedCatalog(t)
+	stated := input()
+	stated.User = []profile.UserValue{{PartID: whole, Key: "det.ncc_class", Value: str("7b")}, {PartID: whole, Key: "det.rise_in_storeys", Value: str("1")}}
+	stated.Planning = in.Planning
+	if r := row(t, profile.Reconcile(stated, reviewed), whole, "det.type_of_construction"); r.Value != "C" {
+		t.Fatalf("stated inputs must still derive: %+v", r)
+	}
+	only := input()
+	only.Planning = in.Planning
+	for _, r := range profile.Reconcile(only, reviewed) {
+		if r.Derived != nil && r.Value != "" {
+			t.Fatalf("planning values derived %s = %q", r.Key, r.Value)
+		}
+	}
+}

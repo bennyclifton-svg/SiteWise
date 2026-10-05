@@ -1,0 +1,38 @@
+# Keys a planning value (an assumption or a calculated value) may use.
+# Shape: knowledge/SCHEMA.md "Planning keys". Draft: no starting value is
+# proposed until the owner reviews this file (NW-REQ-185).
+# `favourable` values are never recorded as an assumption or a calculation:
+# structural adequacy, ground conditions and compliance are not defaulted as
+# favourable (PRG L276). Record them unknown, or as the user's stated word.
+version: 1
+status: draft
+keys:
+  - {key: gross_floor_area, label: Gross floor area, value: number, unit: m2, scope: site}
+  - {key: site_area, label: Site area, value: number, unit: m2, scope: site}
+  - {key: construction_duration, label: Construction duration, value: number, unit: weeks, scope: project}
+  - {key: target_completion, label: Target completion, value: text, scope: project}
+  - key: site_classification
+    label: Site classification (AS 2870)
+    value: choice
+    scope: site
+    options:
+      - {id: A, label: "Class A: rock or sand"}
+      - {id: S, label: "Class S: slightly reactive"}
+      - {id: M, label: "Class M: moderately reactive"}
+      - {id: H1, label: "Class H1: highly reactive"}
+      - {id: H2, label: "Class H2: highly reactive"}
+      - {id: E, label: "Class E: extremely reactive"}
+      - {id: P, label: "Class P: problem site"}
+    favourable: [A, S]
+  - {key: contamination_present, label: Ground contamination present, value: boolean, scope: site, favourable: ["false"]}
+  - {key: hazardous_materials_present, label: Hazardous building materials present, value: boolean, scope: site, favourable: ["false"]}
+  - {key: existing_structure_adequate, label: Existing structure adequate for the works, value: boolean, scope: site, favourable: ["true"]}
+  - key: existing_compliance
+    label: Existing building compliance
+    value: choice
+    scope: site
+    options:
+      - {id: complies, label: Complies}
+      - {id: partly_complies, label: Partly complies}
+      - {id: does_not_comply, label: Does not comply}
+    favourable: [complies]

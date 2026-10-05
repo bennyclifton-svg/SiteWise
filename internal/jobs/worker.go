@@ -294,7 +294,7 @@ func (w *Worker) rebuildProfile(ctx context.Context, orgID, documentID string) e
 		return err
 	}
 	return w.Store.RebuildProfile(ctx, orgID, doc.ProjectID, w.Profile.Version, func(s store.ProfileSnapshot) []profile.Row {
-		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Thresholds: w.Profile, Read: w.Reading}, w.Catalog)
+		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: w.Profile, Read: w.Reading}, w.Catalog)
 	})
 }
 
