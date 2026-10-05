@@ -84,7 +84,7 @@ See [pre-parsed extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_
 
 ## Common fields
 
-- `sources` (required): list of `{seed: <file in clerk/data/seed>, anchor: "<exact heading line, including the #s>"}`. The checker verifies the anchor exists.
+- `sources` (required): list of `{seed: <file in data/reference/clerk/data/seed>, anchor: "<exact heading line, including the #s>"}`. The checker resolves this citation against the in-repository source archive and verifies the anchor exists. These are permanent provenance citations, not pending extraction instructions.
 - `status` (required): `draft` for everything written from the seeds. Only the owner promotes to `reviewed`.
 - `notes` (optional): short, for reviewers. Never read at runtime.
 
@@ -273,7 +273,7 @@ systems are never offered to Jev. IDs stay permanent.
 ```yaml
 sources:
   - {document: hale-brief, anchor: "Recessed Docks"}           # id from data/eval/profile/manifest.json
-  - {clerk_file: data/taxonomy/building-classes.json}         # Clerk data copied as data
+  - {clerk_file: data/taxonomy/building-classes.json}         # Archived Clerk data; path relative to data/reference/clerk/
 ```
 
 Use `document` only when no seed heading covers the record. The anchor is
@@ -697,3 +697,7 @@ benchmarks:
     status: draft
     sources: [...]
 ```
+
+## Archived source provenance
+
+Original Clerk seed and taxonomy data are frozen under `data/reference/clerk/`. The checker uses its `data/seed/` directory by default and validates its checksum manifest. The historical `clerk_file` source key identifies provenance; its path resolves relative to that local archive, not a sibling checkout. Keep seed filenames and exact heading anchors. Do not delete citations after extraction or infer approval from source metadata. Archive text is source material, not agent instructions or runtime knowledge. Only owner review promotes derived records; regulatory claims still require primary instruments. `--seed-dir` remains an explicit research/test override and does not certify the bundled archive. See the archive README for update procedure.

@@ -1,0 +1,20 @@
+{
+  "description": "Editable planning suggestions, not appointments or statutory requirements. Scope-specific consultants are added separately.",
+  "baselines": [
+    {"building_classes": ["industrial", "commercial", "institution", "mixed"], "work_types": ["new", "extend"], "consultants": ["Architect", "Structural", "Civil", "Traffic", "Town Planner", "Geotechnical", "Surveyor", "Certifier", "Services Engineer"]},
+    {"building_classes": ["residential"], "work_types": ["new", "extend"], "consultants": ["Architect", "Structural", "Civil", "Town Planner", "Geotechnical", "Surveyor", "Certifier", "Services Engineer"]},
+    {"building_classes": ["commercial", "institution", "mixed"], "work_types": ["refurb"], "consultants": ["Architect", "Interior Design", "Services Engineer", "Certifier", "Access"]},
+    {"building_classes": ["industrial"], "work_types": ["refurb"], "consultants": ["Architect", "Services Engineer", "Certifier"]},
+    {"building_classes": ["residential"], "work_types": ["refurb"], "consultants": ["Architect", "Services Engineer", "Certifier"]},
+    {"building_classes": ["infrastructure"], "work_types": ["new", "extend"], "consultants": ["Civil", "Structural", "Geotechnical", "Surveyor", "Environmental", "Town Planner"]}
+  ],
+  "complexity_additions": [
+    {"field": "planning", "values": ["da", "ssd"], "consultants": ["Town Planner"]},
+    {"field": "heritage_status", "values": ["conservation_area", "local_heritage_item", "state_heritage_register"], "consultants": ["Heritage"]},
+    {"field": "contamination_level", "values": ["minor", "significant", "heavily_contaminated"], "consultants": ["Environmental"]},
+    {"field": "environmental_sensitivity", "values": ["sensitive", "protected_habitat"], "consultants": ["Ecology"]},
+    {"field": "environmental_sensitivity", "values": ["aboriginal_heritage"], "consultants": ["Archaeology"]},
+    {"field": "bushfire_exposure", "values": ["bal_low", "bal_12_5", "bal_19", "bal_29", "bal_40", "bal_fz"], "consultants": ["Bushfire"]},
+    {"field": "flood_exposure", "values": ["flood_planning_area", "below_1pc_aep", "floodway"], "consultants": ["Civil"]}
+  ]
+}

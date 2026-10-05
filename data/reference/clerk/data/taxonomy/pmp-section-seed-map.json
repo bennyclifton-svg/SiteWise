@@ -1,0 +1,297 @@
+{
+  "sections": {
+    "snapshot": {
+      "required": [
+        {
+          "path": "seed/setup-and-commission-guide.md",
+          "section_ids": ["shared-setup-workflow-all-roles"]
+        }
+      ]
+    },
+    "scope-client-requirements": {
+      "required": [
+        {
+          "path": "seed/residential-construction-guide.md",
+          "section_ids": [
+            "site-assessment-and-due-diligence",
+            "construction-sequence-and-programming-for-residential-projects"
+          ],
+          "when": {
+            "building_class": "residential",
+            "work_type": "new",
+            "subclasses": ["house", "townhouses"]
+          }
+        },
+        {
+          "path": "seed/residential-construction-guide.md",
+          "section_ids": [
+            "foundations-and-footing-systems",
+            "structural-framing-systems"
+          ],
+          "when": {
+            "building_class": "residential",
+            "subclasses": ["house", "townhouses"],
+            "work_scope": ["substructure", "superstructure"]
+          }
+        },
+        {
+          "path": "seed/multi-residential-apartments-guide.md",
+          "section_ids": [
+            "building-classification-for-multi-residential-projects",
+            "strata-title-and-common-property"
+          ],
+          "when": {
+            "building_class": "residential",
+            "work_type": ["new", "refurb", "extend"],
+            "subclasses": [
+              "apartments",
+              "btr",
+              "student_housing",
+              "social_affordable_housing"
+            ]
+          }
+        },
+        {
+          "path": "seed/industrial-construction-guide.md",
+          "section_ids": [
+            "activation-and-subtype-control",
+            "operational-brief-and-basis-of-design"
+          ],
+          "when": {
+            "building_class": "industrial",
+            "work_type": ["new", "refurb", "extend"]
+          }
+        },
+        {
+          "path": "seed/infrastructure-construction-guide.md",
+          "section_ids": [
+            "activation-and-subtype-control",
+            "authority-interfaces-and-network-operators",
+            "possessions-outages-and-live-network-access",
+            "safety-accreditation-and-worker-competency"
+          ],
+          "when": {
+            "building_class": "infrastructure",
+            "work_type": ["new", "refurb", "extend", "remediation"]
+          }
+        },
+        {
+          "path": "seed/institution-construction-guide.md",
+          "section_ids": [
+            "activation-and-subtype-control",
+            "public-procurement-and-probity",
+            "operating-calendar-and-live-environment-staging",
+            "child-protection-security-clearance-and-site-separation"
+          ],
+          "when": {
+            "building_class": "institution",
+            "work_type": ["new", "refurb", "extend", "remediation"]
+          }
+        },
+        {
+          "path": "seed/mixed-use-construction-guide.md",
+          "section_ids": [
+            "activation-and-subtype-control",
+            "multiple-classifications-in-one-structure",
+            "fire-and-acoustic-separation-between-uses",
+            "staged-handover-by-use"
+          ],
+          "when": {
+            "building_class": "mixed",
+            "work_type": ["new", "refurb", "extend", "remediation"]
+          }
+        },
+        {
+          "path": "seed/advisory-services-guide.md",
+          "section_ids": [
+            "define-the-decision-before-the-scope",
+            "advisory-service-types"
+          ],
+          "when": {"work_type": "advisory"}
+        }
+      ],
+      "optional": [
+        {
+          "path": "seed/residential-construction-guide.md",
+          "section_ids": ["wet-area-construction-and-waterproofing"],
+          "when": {
+            "building_class": "residential",
+            "subclasses": ["house", "townhouses"],
+            "work_scope": ["wet_areas"]
+          }
+        }
+      ]
+    },
+    "compliance-approvals": {
+      "required": [
+        {
+          "path": "seed/ncc-reference-guide.md",
+          "section_ids": ["compliance-pathways-and-documentation"]
+        },
+        {
+          "path": "seed/fire-life-safety-guide.md",
+          "section_ids": [
+            "compliance-strategy-and-responsibility",
+            "active-systems-and-water-supply"
+          ],
+          "when": {
+            "building_class": ["residential", "commercial", "industrial"],
+            "work_scope": ["fire_services"]
+          }
+        },
+        {
+          "path": "seed/as-standards-reference.md",
+          "section_ids": [
+            "as-2419-series-fire-hydrant-installations",
+            "as-2941-fixed-fire-protection-installations-pumpset-systems"
+          ],
+          "when": {
+            "building_class": ["commercial", "industrial", "institution", "mixed"],
+            "work_scope": ["fire_services"]
+          }
+        },
+        {
+          "path": "seed/remediation-due-diligence-guide.md",
+          "section_ids": [
+            "preliminary-site-assessment-phase-1",
+            "detailed-site-investigation-phase-2",
+            "remediation-action-plans-raps"
+          ],
+          "when": {
+            "work_type": "remediation",
+            "work_scope": ["contamination_remediation"]
+          }
+        },
+        {
+          "path": "seed/building-remediation-rectification-guide.md",
+          "section_ids": [
+            "investigation-before-solution",
+            "governance-and-approvals"
+          ],
+          "when": {
+            "work_type": "remediation"
+          }
+        },
+        {
+          "path": "seed/renovation-guide.md",
+          "section_ids": [
+            "heritage-and-character-due-diligence",
+            "waterproofing-and-old-to-new-tie-ins",
+            "dilapidation-and-neighbour-management",
+            "latent-conditions"
+          ],
+          "when": {
+            "building_class": "residential",
+            "work_type": ["refurb", "extend"],
+            "subclasses": ["house", "townhouses"]
+          }
+        }
+      ],
+      "optional": [
+        {
+          "path": "seed/remediation-due-diligence-guide.md",
+          "section_ids": ["regulatory-approvals-and-planning-controls"],
+          "when": {
+            "work_type": "remediation",
+            "work_scope": ["contamination_remediation"]
+          }
+        }
+      ]
+    },
+    "programme": {
+      "required": [
+        {
+          "path": "seed/program-scheduling-guide.md",
+          "section_ids": [
+            "construction-programming-fundamentals",
+            "milestone-planning-and-tracking"
+          ]
+        },
+        {
+          "path": "seed/remediation-due-diligence-guide.md",
+          "section_ids": ["remediation-in-the-construction-program"],
+          "when": {
+            "work_type": "remediation",
+            "work_scope": ["contamination_remediation"]
+          }
+        },
+        {
+          "path": "seed/building-remediation-rectification-guide.md",
+          "section_ids": [
+            "safety-occupation-and-temporary-controls",
+            "construction-verification-and-handover"
+          ],
+          "when": {
+            "work_type": "remediation"
+          }
+        }
+      ]
+    },
+    "cost-budget": {
+      "required": [
+        {
+          "path": "seed/cost-management-principles.md",
+          "section_ids": ["cost-planning-fundamentals"]
+        },
+        {
+          "path": "seed/cost-management-principles.md",
+          "section_ids": ["risk-adjusted-budgets"],
+          "when": {"risk_flags": ["contaminated_land", "live_operations", "remote_site"]}
+        }
+      ]
+    },
+    "procurement-delivery": {
+      "required": [
+        {
+          "path": "seed/procurement-quoting-guide.md",
+          "section_ids": [
+            "5-formal-procurement-pathway-eoi-rft-tender-period-evaluation-recommendation"
+          ],
+          "when": {
+            "building_class": "residential",
+            "work_type": ["new", "refurb", "extend"]
+          }
+        },
+        {
+          "path": "seed/procurement-tendering-guide.md",
+          "section_ids": [
+            "1-procurement-methods-and-strategies",
+            "3-the-tendering-process-flow",
+            "5-tender-evaluation-and-award"
+          ],
+          "when": {
+            "building_class": [
+              "commercial",
+              "industrial",
+              "institution",
+              "mixed",
+              "infrastructure"
+            ]
+          }
+        },
+        {
+          "path": "seed/procurement-tendering-guide.md",
+          "section_ids": [
+            "1-procurement-methods-and-strategies",
+            "4-tender-documentation-and-deliverables"
+          ],
+          "when": {
+            "work_type": "advisory",
+            "building_class": [
+              "commercial",
+              "industrial",
+              "institution",
+              "mixed",
+              "infrastructure"
+            ]
+          }
+        },
+        {
+          "path": "seed/contract-administration-guide.md",
+          "section_ids": ["contract-documentation-hierarchy"],
+          "when": {"work_type": "advisory"}
+        }
+      ]
+    }
+  }
+}

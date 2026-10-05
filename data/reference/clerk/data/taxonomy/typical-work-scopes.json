@@ -1,0 +1,95 @@
+{
+  "_comment": "Curated default Project Profile work_scope ticks for a complete job of that class. Specialist or absent items stay off so the user can add them. scope_narrative remains for bespoke leftovers only.",
+  "new": {
+    "house": [
+      "site_clearance",
+      "bulk_earthworks",
+      "temporary_works",
+      "earthworks_detailed",
+      "site_drainage",
+      "stormwater_management",
+      "internal_roads",
+      "substructure",
+      "superstructure",
+      "facade_system",
+      "roofing",
+      "glazing",
+      "waterproofing",
+      "mechanical_hvac",
+      "electrical_power",
+      "lighting",
+      "hydraulic_plumbing",
+      "ict_structured_cabling",
+      "partitions_walls",
+      "ceilings",
+      "flooring",
+      "joinery",
+      "landscaping",
+      "car_parking",
+      "fencing_gates",
+      "external_lighting"
+    ],
+    "townhouses": [
+      "site_clearance",
+      "bulk_earthworks",
+      "temporary_works",
+      "earthworks_detailed",
+      "site_drainage",
+      "stormwater_management",
+      "internal_roads",
+      "substructure",
+      "superstructure",
+      "facade_system",
+      "roofing",
+      "glazing",
+      "waterproofing",
+      "mechanical_hvac",
+      "electrical_power",
+      "lighting",
+      "hydraulic_plumbing",
+      "ict_structured_cabling",
+      "partitions_walls",
+      "ceilings",
+      "flooring",
+      "joinery",
+      "landscaping",
+      "car_parking",
+      "fencing_gates",
+      "external_lighting"
+    ]
+  },
+  "extend": {
+    "warehouse": [
+      "structural_tie_in",
+      "weatherproofing_tie_in",
+      "services_connections",
+      "partitions_walls",
+      "joinery",
+      "flooring",
+      "hydraulic_plumbing"
+    ],
+    "house": [
+      "structural_tie_in",
+      "weatherproofing_tie_in",
+      "services_connections",
+      "partitions_walls",
+      "joinery",
+      "flooring",
+      "hydraulic_plumbing"
+    ]
+  },
+  "refurb": {
+    "office": [
+      "stripout",
+      "partitions_walls",
+      "ceilings",
+      "flooring",
+      "joinery",
+      "workplace_furniture",
+      "ict_av_security",
+      "mechanical_hvac",
+      "electrical_power",
+      "lighting"
+    ]
+  }
+}

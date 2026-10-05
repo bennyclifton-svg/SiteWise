@@ -1,3 +1,5 @@
+# Seed citations below resolve locally under data/reference/clerk/data/seed/.
+# They preserve provenance of these drafted questions; they are not extraction tasks.
 # Delivery signals: Jev questions that ask what a passage states about programme,
 # contract, authority, site or handover facts. Same authoring rules as SCHEMA.md Questions.
 version: 1
