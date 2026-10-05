@@ -1,0 +1,90 @@
+{
+  "definitions": {
+    "high_security": {
+      "severity": "warning",
+      "title": "High Security Classification",
+      "description": "Top Secret/SCI facilities require SCIF construction, cleared workforce, and extended approval timelines."
+    },
+    "remote_site": {
+      "severity": "warning",
+      "title": "Very Remote Location",
+      "description": "Very remote sites add 40%+ to construction costs. Consider modular/prefabrication strategies."
+    },
+    "live_operations": {
+      "severity": "info",
+      "title": "Live Operational Environment",
+      "description": "Works in live environments require careful staging, safety protocols, and operational coordination."
+    },
+    "biosafety_3_plus": {
+      "severity": "critical",
+      "title": "BSL-3+ Laboratory",
+      "description": "High containment laboratories require specialized design, certification, and security protocols."
+    },
+    "gmp_manufacturing": {
+      "severity": "warning",
+      "title": "GMP Manufacturing",
+      "description": "Good Manufacturing Practice facilities require validation protocols and TGA/FDA compliance pathways."
+    },
+    "heritage_adaptive_reuse": {
+      "severity": "warning",
+      "title": "Heritage Adaptive Reuse",
+      "description": "Adaptive reuse of heritage buildings requires heritage consultant, conservation management plan, and approvals."
+    },
+    "critical_infrastructure": {
+      "severity": "warning",
+      "title": "Critical Infrastructure",
+      "description": "Critical infrastructure projects require SOCI Act compliance and enhanced security measures."
+    },
+    "multi_jurisdictional": {
+      "severity": "info",
+      "title": "Multi-Jurisdictional",
+      "description": "Projects spanning jurisdictions require coordination across multiple regulatory frameworks."
+    },
+    "native_title": {
+      "severity": "warning",
+      "title": "Native Title Considerations",
+      "description": "Sites with native title claims require Indigenous Land Use Agreement (ILUA) or consent processes."
+    },
+    "flood_overlay": {
+      "severity": "warning",
+      "title": "Flood Overlay",
+      "description": "Flood-prone land requires hydraulic study, flood-compatible design, and resilience measures."
+    },
+    "bushfire_prone": {
+      "severity": "warning",
+      "title": "Bushfire Prone Land",
+      "description": "Bushfire prone land requires a bushfire risk assessment, AS 3959 construction to the assessed BAL, and Planning for Bush Fire Protection compliance through the approval and construction certificate stages."
+    },
+    "bushfire_flame_zone": {
+      "severity": "critical",
+      "title": "Extreme Bushfire Exposure (BAL-40/FZ)",
+      "description": "BAL-40 and Flame Zone construction requires specialist shielding, tested window and door systems, and bushfire engineer sign-off. Expect long lead times on compliant systems and elevated approval risk."
+    },
+    "contaminated_land": {
+      "severity": "warning",
+      "title": "Contaminated Land",
+      "description": "Contamination may require environmental investigation, remediation, validation, and disposal controls."
+    }
+  },
+  "derivations": [
+    {"flag": "remote_site", "when": {"dimension": "access_constraints", "values": ["remote"]}},
+    {"flag": "remote_site", "when": {"dimension": "remoteness", "values": ["remote", "very_remote"]}},
+    {"flag": "live_operations", "when": {"dimension": "operational_constraints", "values": ["live_environment", "24_7_occupied"]}},
+    {"flag": "contaminated_land", "when": {"dimension": "contamination_level", "values": ["significant", "heavily_contaminated"]}},
+    {"flag": "native_title", "when": {"dimension": "environmental_sensitivity", "values": ["aboriginal_heritage"]}},
+    {"flag": "bushfire_prone", "when": {"dimension": "bushfire_exposure", "values": ["bal_low", "bal_12_5", "bal_19", "bal_29", "bal_40", "bal_fz"]}},
+    {"flag": "bushfire_flame_zone", "when": {"dimension": "bushfire_exposure", "values": ["bal_40", "bal_fz"]}},
+    {"flag": "flood_overlay", "when": {"dimension": "flood_exposure", "values": ["flood_planning_area", "below_1pc_aep", "floodway"]}},
+    {"flag": "heritage_adaptive_reuse", "when": {"dimension": "heritage_status", "values": ["conservation_area", "local_heritage_item", "state_heritage_register"]}},
+    {"flag": "critical_infrastructure", "when": {"dimension": "authority_interfaces", "values": ["critical_network"]}},
+    {"flag": "multi_jurisdictional", "when": {"dimension": "authority_interfaces", "values": ["multi_jurisdictional"]}},
+    {"flag": "gmp_manufacturing", "when": {"dimension": "hazardous_process", "values": ["gmp"]}},
+    {"flag": "biosafety_3_plus", "when": {"dimension": "hazardous_process", "values": ["biosafety"]}},
+    {"flag": "remote_site", "when": {"work_scope_any": ["remote_site", "remote_logistics"]}},
+    {"flag": "live_operations", "when": {"work_scope_any": ["live_environment_fitout", "live_operations"]}},
+    {"flag": "high_security", "when": {"work_scope_any": ["security_systems", "high_security", "secure_facility"]}},
+    {"flag": "contaminated_land", "when": {"work_scope_any": ["decontamination", "contamination_remediation"]}},
+    {"flag": "critical_infrastructure", "when": {"work_scope_any": ["fire_services", "utility_diversions", "utility_shutdown"]}},
+    {"flag": "flood_overlay", "when": {"work_scope_any": ["flood_overlay", "flood_resilience"]}}
+  ]
+}

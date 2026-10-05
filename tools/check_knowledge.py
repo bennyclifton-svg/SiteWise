@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import re
 import sys
@@ -19,7 +20,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 KNOWLEDGE = ROOT / "knowledge"
-DEFAULT_SEED_DIR = ROOT.parent / "clerk" / "data" / "seed"
+SOURCE_ARCHIVE = ROOT / "data" / "reference" / "clerk"
+DEFAULT_SEED_DIR = SOURCE_ARCHIVE / "data" / "seed"
 
 LIST_KEYS = {"systems", "rules", "interfaces", "failure_modes", "determinants"}
 ID_PATTERNS = {
@@ -199,7 +201,7 @@ def check_sources(where: str, sources, seed_dir: Path, report: Report, heading_c
                 report.error(where, f"anchor not found in {src['design']}: {src.get('anchor')!r}")
             continue
         if isinstance(src, dict) and "clerk_file" in src:
-            # Clerk data (taxonomy JSON) is copied as data; cite the file it came from.
+            # Historical provenance key; resolves inside the local archived source tree.
             if not (seed_dir.parent.parent / src["clerk_file"]).is_file():
                 report.error(where, f"clerk file not found: {src['clerk_file']}")
             continue
@@ -1138,6 +1140,46 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             seen.add(b.get("id"))
 
 
+def check_source_archive(archive: Path, report: Report) -> None:
+    """Keep cited source bytes reproducible without the original repository."""
+    where = "source archive"
+    try:
+        manifest = json.loads((archive / "manifest.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        report.error(where, f"cannot read manifest: {exc}")
+        return
+    if (not isinstance(manifest, dict) or manifest.get("version") != 1
+            or not isinstance(manifest.get("files"), list) or not manifest["files"]):
+        report.error(where, "expected version 1 and a non-empty files list")
+        return
+    seen = set()
+    for entry in manifest["files"]:
+        if not isinstance(entry, dict):
+            report.error(where, "file entry must be a mapping")
+            continue
+        name, digest = entry.get("path"), entry.get("sha256")
+        if (not isinstance(name, str) or not isinstance(digest, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", digest)):
+            report.error(where, "file entry needs path and SHA-256")
+            continue
+        path = (archive / name).resolve()
+        if not path.is_relative_to(archive.resolve()) or name in seen:
+            report.error(where, f"duplicate or out-of-archive path: {name}")
+            continue
+        seen.add(name)
+        try:
+            actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError:
+            report.error(where, f"source file not found or unreadable: {name}")
+            continue
+        if actual != digest:
+            report.error(where, f"source checksum mismatch: {name}")
+    actual_files = {p.relative_to(archive).as_posix()
+                    for p in (archive / "data").rglob("*") if p.is_file()}
+    for name in sorted(actual_files - seen):
+        report.error(where, f"source missing from manifest: {name}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed-dir", type=Path, default=DEFAULT_SEED_DIR)
@@ -1151,6 +1193,8 @@ def main() -> int:
     global DOCUMENT_IDS, DATASETS
     DOCUMENT_IDS = load_document_ids()
     report = Report()
+    if args.seed_dir.resolve() == DEFAULT_SEED_DIR.resolve():
+        check_source_archive(SOURCE_ARCHIVE, report)
     DATASETS = load_datasets(report)
     actions_doc = load_actions(report)
     refs: list[tuple[str, str, str]] = []

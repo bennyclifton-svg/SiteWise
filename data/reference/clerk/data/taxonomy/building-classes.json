@@ -1,0 +1,685 @@
+{
+  "work_types": [
+    {"value": "new", "label": "New build"},
+    {"value": "refurb", "label": "Refurbishment"},
+    {"value": "extend", "label": "Extension / addition"},
+    {"value": "remediation", "label": "Remediation / rectification"},
+    {"value": "advisory", "label": "Advisory services"}
+  ],
+  "building_classes": [
+    {
+      "value": "residential",
+      "label": "Residential",
+      "multi_subclass": false,
+      "work_types": ["new", "refurb", "extend", "remediation", "advisory"],
+      "subclasses": [
+        {
+          "value": "house",
+          "label": "House (Class 1a)",
+          "ncc_class": "1a",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number", "typical": "200-2000 sqm"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "50-800 sqm"},
+            {"key": "storeys", "label": "Storeys", "type": "integer", "typical": "1-3"},
+            {"key": "bedrooms", "label": "Bedrooms", "type": "integer", "typical": "2-6"},
+            {"key": "garage_spaces", "label": "Garage spaces", "type": "integer"}
+          ]
+        },
+        {
+          "value": "apartments",
+          "label": "Apartments (Class 2)",
+          "ncc_class": "2",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "storeys", "label": "Storeys", "type": "integer", "typical": "Low-rise 1-3, mid-rise 4-12, high-rise 13-40, super-tall 40+"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "units", "label": "Units", "type": "integer"},
+            {"key": "avg_unit_size_sqm", "label": "Average unit size sqm", "type": "number", "typical": "50-150 sqm/unit"}
+          ]
+        },
+        {
+          "value": "townhouses",
+          "label": "Townhouses (Class 1a)",
+          "ncc_class": "1a",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "dwellings", "label": "Dwellings", "type": "integer", "typical": "3-50"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "avg_dwelling_size_sqm", "label": "Average dwelling size sqm", "type": "number", "typical": "120-250 sqm each"}
+          ]
+        },
+        {
+          "value": "btr",
+          "label": "BTR (Build-to-Rent)",
+          "ncc_class": "2",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "storeys", "label": "Storeys", "type": "integer"},
+            {"key": "units", "label": "Units", "type": "integer", "typical": "100-500+"},
+            {"key": "amenity_gfa_sqm", "label": "Amenity GFA sqm", "type": "number", "typical": "5-10% amenity"},
+            {"key": "unit_mix", "label": "Unit mix", "type": "text", "typical": "Studio/1B/2B/3B"}
+          ]
+        },
+        {
+          "value": "student_housing",
+          "label": "Student Housing (PBSA)",
+          "ncc_class": "3",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "beds", "label": "Beds", "type": "integer", "typical": "200-1000+"},
+            {"key": "cluster_apartments", "label": "Cluster apartments", "type": "integer", "typical": "4-8 beds per cluster"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "common_area_sqm", "label": "Common area sqm", "type": "number"}
+          ]
+        },
+        {
+          "value": "retirement_living",
+          "label": "Retirement Living / ILUs",
+          "ncc_class": "2/9c",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "ilus", "label": "ILUs", "type": "integer", "typical": "20-300+"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "serviced_apartments", "label": "Serviced apartments", "type": "integer", "typical": "40-80 sqm each"},
+            {"key": "community_facilities_sqm", "label": "Community facilities sqm", "type": "number"},
+            {"key": "avg_ilu_size_sqm", "label": "Average ILU size sqm", "type": "number", "typical": "60-120 sqm per ILU"}
+          ]
+        },
+        {
+          "value": "residential_aged_care",
+          "label": "Residential Aged Care (Class 9c)",
+          "ncc_class": "9c",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "beds", "label": "Beds", "type": "integer", "typical": "60-150"},
+            {"key": "dementia_beds", "label": "Dementia beds", "type": "integer"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "gfa_per_bed_sqm", "label": "GFA per bed sqm", "type": "number", "typical": "50-80 sqm/bed"},
+            {"key": "households_wings", "label": "Households / wings", "type": "integer"},
+            {"key": "beds_per_household", "label": "Beds per household", "type": "integer", "typical": "10-16"}
+          ]
+        },
+        {
+          "value": "social_affordable_housing",
+          "label": "Social/Affordable Housing",
+          "ncc_class": "1a/2/3",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "dwellings", "label": "Dwellings", "type": "integer"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "tenure_mix", "label": "Tenure mix", "type": "text"},
+            {"key": "accessible_units", "label": "Accessible units", "type": "integer"}
+          ]
+        },
+        {"value": "other", "label": "Other", "ncc_class": "varies", "scale_fields": []}
+      ]
+    },
+    {
+      "value": "commercial",
+      "label": "Commercial",
+      "multi_subclass": false,
+      "work_types": ["new", "refurb", "extend", "remediation", "advisory"],
+      "subclasses": [
+        {
+          "value": "office",
+          "label": "Office (Class 5)",
+          "ncc_class": "5",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "storeys", "label": "Storeys", "type": "integer"},
+            {"key": "nla_sqm", "label": "NLA sqm", "type": "number", "typical": "1,000-80,000+ sqm NLA"},
+            {"key": "floor_plate_sqm", "label": "Floor plate sqm", "type": "number", "typical": "500-2,500 sqm"},
+            {"key": "tenancies", "label": "Tenancies", "type": "integer"},
+            {"key": "grade", "label": "Grade", "type": "text", "typical": "B/A/Premium/Trophy"},
+            {"key": "capacity_mw", "label": "Capacity MW", "type": "number", "typical": "Solar 1-500MW, wind 10-1,000MW"},
+            {"key": "battery_storage_mwh", "label": "Battery storage MWh", "type": "number"}
+          ]
+        },
+        {
+          "value": "retail_shopping_centre",
+          "label": "Retail - Shopping Centre (Class 6)",
+          "ncc_class": "6",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gla_sqm", "label": "GLA sqm", "type": "number", "typical": "Neighbourhood 5-15k, sub-regional 15-40k, regional 40-100k+ sqm"},
+            {"key": "major_anchors", "label": "Major anchors", "type": "integer"},
+            {"key": "specialties", "label": "Specialties", "type": "integer"},
+            {"key": "levels", "label": "Levels", "type": "integer"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {
+          "value": "retail_standalone",
+          "label": "Retail - Standalone (Class 6)",
+          "ncc_class": "6",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gla_sqm", "label": "GLA sqm", "type": "number", "typical": "200-5,000 sqm"},
+            {"key": "frontage_m", "label": "Frontage m", "type": "number", "typical": "10-50 m"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {
+          "value": "hotel",
+          "label": "Hotel (Class 3)",
+          "ncc_class": "3",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "rooms", "label": "Rooms", "type": "integer", "typical": "Budget 30-100, midscale 100-250, upscale 150-400, luxury 80-250"},
+            {"key": "storeys", "label": "Storeys", "type": "integer"},
+            {"key": "star_rating", "label": "Star rating", "type": "text", "typical": "3-5 star"},
+            {"key": "fb_outlets", "label": "F&B outlets", "type": "integer"},
+            {"key": "meeting_conference_sqm", "label": "Meeting / conference sqm", "type": "number"}
+          ]
+        },
+        {
+          "value": "food_beverage",
+          "label": "Food & Beverage (Class 6)",
+          "ncc_class": "6",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "seats", "label": "Seats", "type": "integer", "typical": "20-400"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "kitchen_sqm", "label": "Kitchen sqm", "type": "number", "typical": "15-25% of GFA"},
+            {"key": "liquor_license_type", "label": "Liquor licence type", "type": "text"}
+          ]
+        },
+        {
+          "value": "serviced_office_coworking",
+          "label": "Serviced Office/Coworking",
+          "ncc_class": "5",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "desks", "label": "Desks", "type": "integer"},
+            {"key": "private_offices", "label": "Private offices", "type": "integer"},
+            {"key": "meeting_rooms", "label": "Meeting rooms", "type": "integer"},
+            {"key": "nla_sqm", "label": "NLA sqm", "type": "number"}
+          ]
+        },
+        {
+          "value": "other",
+          "label": "Other",
+          "ncc_class": "varies",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "capacity_mw", "label": "Capacity MW", "type": "number", "typical": "Solar 1-500MW, wind 10-1,000MW"},
+            {"key": "battery_storage_mwh", "label": "Battery storage MWh", "type": "number"}
+          ]
+        }
+      ]
+    },
+    {
+      "value": "industrial",
+      "label": "Industrial",
+      "multi_subclass": false,
+      "work_types": ["new", "refurb", "extend", "remediation", "advisory"],
+      "subclasses": [
+        {
+          "value": "warehouse",
+          "label": "Warehouse (Class 7b)",
+          "ncc_class": "7b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "2,000-75,000+ sqm"},
+            {"key": "clear_height_m", "label": "Clear height m", "type": "number", "typical": "8-15m+"},
+            {"key": "dock_doors", "label": "Dock doors", "type": "integer"},
+            {"key": "hardstand_sqm", "label": "Hardstand sqm", "type": "number"},
+            {"key": "office_percent", "label": "Office %", "type": "number", "typical": "3-10% office"},
+            {"key": "capacity_mw", "label": "Capacity MW", "type": "number", "typical": "Solar 1-500MW, wind 10-1,000MW"},
+            {"key": "battery_storage_mwh", "label": "Battery storage MWh", "type": "number"}
+          ]
+        },
+        {
+          "value": "logistics_ecommerce",
+          "label": "Logistics/E-Commerce (Class 7b)",
+          "ncc_class": "7b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "10,000-100,000+ sqm"},
+            {"key": "clear_height_m", "label": "Clear height m", "type": "number", "typical": "12-18m"},
+            {"key": "dock_doors", "label": "Dock doors", "type": "integer"},
+            {"key": "cross_dock_bays", "label": "Cross-dock bays", "type": "integer"},
+            {"key": "automation_level", "label": "Automation level", "type": "text"},
+            {"key": "capacity_mw", "label": "Capacity MW", "type": "number", "typical": "Solar 1-500MW, wind 10-1,000MW"},
+            {"key": "battery_storage_mwh", "label": "Battery storage MWh", "type": "number"}
+          ]
+        },
+        {
+          "value": "manufacturing",
+          "label": "Manufacturing (Class 8)",
+          "ncc_class": "8",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "1,000-50,000 sqm"},
+            {"key": "process_area_sqm", "label": "Process area sqm", "type": "number"},
+            {"key": "cleanroom_class", "label": "Cleanroom class", "type": "text", "typical": "ISO 5-8"},
+            {"key": "crane_capacity_t", "label": "Crane capacity t", "type": "number", "typical": "5-50t"}
+          ]
+        },
+        {
+          "value": "cold_storage",
+          "label": "Cold Storage (Class 7b)",
+          "ncc_class": "7b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "2,000-30,000 sqm"},
+            {"key": "frozen_sqm", "label": "Frozen sqm (<-18C)", "type": "number"},
+            {"key": "chilled_sqm", "label": "Chilled sqm (0-4C)", "type": "number"},
+            {"key": "ambient_sqm", "label": "Ambient sqm", "type": "number"},
+            {"key": "blast_freezer_capacity_t_day", "label": "Blast freezer capacity t/day", "type": "number"}
+          ]
+        },
+        {
+          "value": "data_centre",
+          "label": "Data Centre (Class 7b)",
+          "ncc_class": "7b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "it_load_mw", "label": "IT load MW", "type": "number", "typical": "1-50+ MW"},
+            {"key": "total_gfa_sqm", "label": "Total GFA sqm", "type": "number"},
+            {"key": "white_space_sqm", "label": "White space sqm", "type": "number"},
+            {"key": "pue_target", "label": "PUE target", "type": "number", "typical": "1.2-1.6"},
+            {"key": "redundancy_tier", "label": "Redundancy tier", "type": "integer", "typical": "1-4"}
+          ]
+        },
+        {
+          "value": "dangerous_goods",
+          "label": "Dangerous Goods (Class 7a)",
+          "ncc_class": "7a",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "dangerous_goods_class", "label": "Dangerous goods class", "type": "text"},
+            {"key": "storage_capacity_t", "label": "Storage capacity t", "type": "number"},
+            {"key": "bunded_area_sqm", "label": "Bunded area sqm", "type": "number"},
+            {"key": "separation_distance_m", "label": "Separation distance m", "type": "number"}
+          ]
+        },
+        {
+          "value": "heavy_manufacturing",
+          "label": "Heavy Manufacturing (Foundry/Smelter)",
+          "ncc_class": "8",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "process_area_sqm", "label": "Process area sqm", "type": "number"},
+            {"key": "crane_capacity_t", "label": "Crane capacity t", "type": "number"},
+            {"key": "power_mva", "label": "Power demand MVA", "type": "number"}
+          ]
+        },
+        {
+          "value": "food_processing",
+          "label": "Food Processing / Cold Chain",
+          "ncc_class": "8",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "process_area_sqm", "label": "Process area sqm", "type": "number"},
+            {"key": "cold_room_sqm", "label": "Cold room sqm", "type": "number"},
+            {"key": "haccp_zones", "label": "HACCP zones", "type": "integer"}
+          ]
+        },
+        {
+          "value": "pharmaceutical_gmp",
+          "label": "Pharmaceutical/GMP Manufacturing",
+          "ncc_class": "8",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gmp_area_sqm", "label": "GMP area sqm", "type": "number"},
+            {"key": "cleanroom_sqm", "label": "Cleanroom area sqm", "type": "number"},
+            {"key": "process_rooms", "label": "Process rooms", "type": "integer"},
+            {"key": "validation_packages", "label": "Validation packages", "type": "integer"}
+          ]
+        },
+        {
+          "value": "cleanroom",
+          "label": "Clean Rooms (ISO Grade)",
+          "ncc_class": "8",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "cleanroom_sqm", "label": "Cleanroom Area sqm", "type": "number", "placeholder": "500-10000"},
+            {"key": "iso_class", "label": "ISO Class", "type": "integer", "min": 4, "max": 8},
+            {"key": "gfa_sqm", "label": "Total GFA sqm", "type": "number", "placeholder": "1000-50000"},
+            {"key": "change_rooms", "label": "Gowning/Change Rooms", "type": "integer"}
+          ]
+        },
+        {
+          "value": "battery_manufacturing",
+          "label": "Battery Manufacturing / Energy Storage",
+          "ncc_class": "8",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "production_capacity_mwh", "label": "Production capacity MWh", "type": "number"},
+            {"key": "dry_room_sqm", "label": "Dry room sqm", "type": "number"},
+            {"key": "hazardous_goods_zones", "label": "Hazardous goods zones", "type": "integer"}
+          ]
+        },
+        {
+          "value": "waste_to_energy",
+          "label": "Waste-to-Energy Facility",
+          "ncc_class": "8",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "throughput_tpa", "label": "Throughput tpa", "type": "number"},
+            {"key": "power_output_mw", "label": "Power output MW", "type": "number"},
+            {"key": "process_buildings", "label": "Process buildings", "type": "integer"},
+            {"key": "stack_height_m", "label": "Stack height m", "type": "number"}
+          ]
+        },
+        {
+          "value": "other",
+          "label": "Other",
+          "ncc_class": "varies",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "capacity_mw", "label": "Capacity MW", "type": "number", "typical": "Solar 1-500MW, wind 10-1,000MW"},
+            {"key": "battery_storage_mwh", "label": "Battery storage MWh", "type": "number"}
+          ]
+        }
+      ]
+    },
+    {
+      "value": "institution",
+      "label": "Institution",
+      "multi_subclass": false,
+      "work_types": ["new", "refurb", "extend", "remediation", "advisory"],
+      "subclasses": [
+        {
+          "value": "education_early_childhood",
+          "label": "Education - Early Childhood",
+          "ncc_class": "9b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "places", "label": "Places", "type": "integer", "typical": "30-120"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number"},
+            {"key": "indoor_sqm_per_child", "label": "Indoor sqm/child", "type": "number", "typical": "3.25 sqm indoor minimum"},
+            {"key": "outdoor_sqm_per_child", "label": "Outdoor sqm/child", "type": "number", "typical": "7 sqm outdoor minimum"}
+          ]
+        },
+        {
+          "value": "education_primary_secondary",
+          "label": "Education - Primary/Secondary (Class 9b)",
+          "ncc_class": "9b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "students", "label": "Students", "type": "integer", "typical": "300-2,000"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "10-15 sqm/student"},
+            {"key": "classrooms", "label": "Classrooms", "type": "integer"},
+            {"key": "specialist_rooms", "label": "Specialist rooms", "type": "integer"},
+            {"key": "halls_gyms", "label": "Halls / gyms", "type": "integer"},
+            {"key": "playing_fields", "label": "Playing fields", "type": "integer"}
+          ]
+        },
+        {
+          "value": "education_tertiary",
+          "label": "Education - Tertiary (Class 9b)",
+          "ncc_class": "9b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "students_fte", "label": "Students FTE", "type": "integer", "typical": "1,000-50,000 FTE"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "15-25 sqm/student"},
+            {"key": "lecture_theatres", "label": "Lecture theatres", "type": "integer"},
+            {"key": "labs", "label": "Labs", "type": "integer"},
+            {"key": "library_sqm", "label": "Library sqm", "type": "number"}
+          ]
+        },
+        {
+          "value": "healthcare_hospital",
+          "label": "Healthcare - Hospital (Class 9a)",
+          "ncc_class": "9a",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "beds", "label": "Beds", "type": "integer", "typical": "50-800+"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "100-150 sqm/bed"},
+            {"key": "ed_bays", "label": "ED bays", "type": "integer"},
+            {"key": "operating_theatres", "label": "Operating theatres", "type": "integer"},
+            {"key": "icu_beds", "label": "ICU beds", "type": "integer"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer", "typical": "2.5-4 parks/bed"}
+          ]
+        },
+        {
+          "value": "healthcare_medical_centre",
+          "label": "Healthcare - Medical Centre",
+          "ncc_class": "5/9a",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "consulting_rooms", "label": "Consulting rooms", "type": "integer", "typical": "5-50"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "25-40 sqm/room"},
+            {"key": "procedure_rooms", "label": "Procedure rooms", "type": "integer"},
+            {"key": "imaging_suites", "label": "Imaging suites", "type": "integer"}
+          ]
+        },
+        {
+          "value": "healthcare_clinic_allied",
+          "label": "Healthcare - Clinic/Allied",
+          "ncc_class": "5/9a",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "practitioners", "label": "Practitioners", "type": "integer", "typical": "2-20"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "60-100 sqm/practitioner"},
+            {"key": "treatment_rooms", "label": "Treatment rooms", "type": "integer"}
+          ]
+        },
+        {
+          "value": "government_civic",
+          "label": "Government/Civic",
+          "ncc_class": "5/9b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "1,000-50,000 sqm"},
+            {"key": "public_areas_sqm", "label": "Public areas sqm", "type": "number"},
+            {"key": "secure_areas_sqm", "label": "Secure areas sqm", "type": "number"},
+            {"key": "staff_count", "label": "Staff count", "type": "integer"}
+          ]
+        },
+        {
+          "value": "religious",
+          "label": "Religious (Class 9b)",
+          "ncc_class": "9b",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "seats", "label": "Seats", "type": "integer", "typical": "100-2,000+"},
+            {"key": "gfa_sqm", "label": "GFA sqm", "type": "number", "typical": "0.8-1.2 sqm/seat"},
+            {"key": "ancillary_halls_sqm", "label": "Ancillary halls sqm", "type": "number"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {"value": "other", "label": "Other", "ncc_class": "varies", "scale_fields": []}
+      ]
+    },
+    {
+      "value": "mixed",
+      "label": "Mixed use",
+      "multi_subclass": true,
+      "work_types": ["new", "refurb", "extend", "remediation", "advisory"],
+      "subclasses": [
+        {
+          "value": "residential_retail",
+          "label": "Residential + Retail",
+          "ncc_class": "2/6",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "total_storeys", "label": "Total storeys", "type": "integer", "typical": "5-80+"},
+            {"key": "total_gfa_sqm", "label": "Total GFA sqm", "type": "number"},
+            {"key": "podium_levels", "label": "Podium levels", "type": "integer"},
+            {"key": "tower_levels", "label": "Tower levels", "type": "integer"},
+            {"key": "residential_units", "label": "Residential units", "type": "integer", "typical": "50-500"},
+            {"key": "retail_gla_sqm", "label": "Retail GLA sqm", "type": "number", "typical": "500-10,000 sqm"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {
+          "value": "residential_commercial",
+          "label": "Residential + Commercial",
+          "ncc_class": "2/5",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "total_storeys", "label": "Total storeys", "type": "integer", "typical": "5-80+"},
+            {"key": "total_gfa_sqm", "label": "Total GFA sqm", "type": "number"},
+            {"key": "podium_levels", "label": "Podium levels", "type": "integer"},
+            {"key": "tower_levels", "label": "Tower levels", "type": "integer"},
+            {"key": "residential_units", "label": "Residential units", "type": "integer", "typical": "50-500"},
+            {"key": "commercial_nla_sqm", "label": "Commercial NLA sqm", "type": "number", "typical": "1,000-20,000 sqm"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {
+          "value": "hotel_residential",
+          "label": "Hotel + Residential",
+          "ncc_class": "2/3",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "total_storeys", "label": "Total storeys", "type": "integer", "typical": "5-80+"},
+            {"key": "total_gfa_sqm", "label": "Total GFA sqm", "type": "number"},
+            {"key": "podium_levels", "label": "Podium levels", "type": "integer"},
+            {"key": "tower_levels", "label": "Tower levels", "type": "integer"},
+            {"key": "residential_units", "label": "Residential units", "type": "integer"},
+            {"key": "hotel_rooms", "label": "Hotel rooms", "type": "integer", "typical": "100-300"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {
+          "value": "retail_office",
+          "label": "Retail + Office",
+          "ncc_class": "5/6",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "total_storeys", "label": "Total storeys", "type": "integer", "typical": "5-80+"},
+            {"key": "total_gfa_sqm", "label": "Total GFA sqm", "type": "number"},
+            {"key": "podium_levels", "label": "Podium levels", "type": "integer"},
+            {"key": "tower_levels", "label": "Tower levels", "type": "integer"},
+            {"key": "commercial_nla_sqm", "label": "Commercial NLA sqm", "type": "number"},
+            {"key": "retail_gla_sqm", "label": "Retail GLA sqm", "type": "number"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {
+          "value": "btr_retail",
+          "label": "Build-to-Rent + Retail",
+          "ncc_class": "2/6",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "total_storeys", "label": "Total storeys", "type": "integer", "typical": "5-80+"},
+            {"key": "total_gfa_sqm", "label": "Total GFA sqm", "type": "number"},
+            {"key": "podium_levels", "label": "Podium levels", "type": "integer"},
+            {"key": "tower_levels", "label": "Tower levels", "type": "integer"},
+            {"key": "residential_units", "label": "Residential units", "type": "integer"},
+            {"key": "amenity_gfa_sqm", "label": "Amenity GFA sqm", "type": "number"},
+            {"key": "retail_gla_sqm", "label": "Retail GLA sqm", "type": "number"}
+          ]
+        },
+        {
+          "value": "vertical_village",
+          "label": "Vertical Village (ILU + Aged Care)",
+          "ncc_class": "2/9c",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "total_storeys", "label": "Total storeys", "type": "integer", "typical": "5-80+"},
+            {"key": "total_gfa_sqm", "label": "Total GFA sqm", "type": "number"},
+            {"key": "ilus", "label": "ILUs", "type": "integer"},
+            {"key": "aged_care_beds", "label": "Aged care beds", "type": "integer"},
+            {"key": "community_facilities_sqm", "label": "Community facilities sqm", "type": "number"},
+            {"key": "car_parks", "label": "Car parks", "type": "integer"}
+          ]
+        },
+        {"value": "other", "label": "Other", "ncc_class": "varies", "scale_fields": []}
+      ]
+    },
+    {
+      "value": "infrastructure",
+      "label": "Infrastructure",
+      "multi_subclass": false,
+      "work_types": ["new", "refurb", "extend", "remediation", "advisory"],
+      "subclasses": [
+        {
+          "value": "roads_highways",
+          "label": "Roads/Highways",
+          "ncc_class": "not_applicable",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "length_km", "label": "Length km", "type": "number", "typical": "1-100+ km"},
+            {"key": "lanes", "label": "Lanes", "type": "integer", "typical": "2-8"},
+            {"key": "interchanges", "label": "Interchanges", "type": "integer"},
+            {"key": "bridges_tunnels", "label": "Bridges / tunnels", "type": "integer"},
+            {"key": "pavement_type", "label": "Pavement type", "type": "text"}
+          ]
+        },
+        {
+          "value": "rail_metro",
+          "label": "Rail/Metro",
+          "ncc_class": "not_applicable",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "length_km", "label": "Length km", "type": "number", "typical": "5-50+ km"},
+            {"key": "stations", "label": "Stations", "type": "integer", "typical": "2-20+"},
+            {"key": "rolling_stock_bays", "label": "Rolling stock bays", "type": "integer"},
+            {"key": "stabling", "label": "Stabling", "type": "integer"},
+            {"key": "tunnel_km", "label": "Tunnel km", "type": "number"}
+          ]
+        },
+        {
+          "value": "water_utilities",
+          "label": "Water/Utilities",
+          "ncc_class": "not_applicable",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "capacity_ml_day", "label": "Capacity ML/day", "type": "number", "typical": "10-1,000+ ML/day"},
+            {"key": "pipeline_km", "label": "Pipeline km", "type": "number"},
+            {"key": "pump_stations", "label": "Pump stations", "type": "integer"},
+            {"key": "reservoirs_ml", "label": "Reservoirs ML", "type": "number"}
+          ]
+        },
+        {
+          "value": "energy_renewables",
+          "label": "Energy/Renewables",
+          "ncc_class": "not_applicable",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "capacity_mw", "label": "Capacity MW", "type": "number", "typical": "Solar 1-500MW, wind 10-1,000MW"},
+            {"key": "panels_turbines", "label": "Panels / turbines", "type": "integer"},
+            {"key": "battery_storage_mwh", "label": "Battery storage MWh", "type": "number"},
+            {"key": "substation", "label": "Substation", "type": "boolean"}
+          ]
+        },
+        {
+          "value": "marine_ports",
+          "label": "Marine/Ports",
+          "ncc_class": "not_applicable",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "berths", "label": "Berths", "type": "integer", "typical": "2-50"},
+            {"key": "quay_length_m", "label": "Quay length m", "type": "number"},
+            {"key": "draft_m", "label": "Draft m", "type": "number", "typical": "8-18m"},
+            {"key": "container_teu", "label": "Container TEU", "type": "integer"},
+            {"key": "passenger_capacity", "label": "Passenger capacity", "type": "integer"}
+          ]
+        },
+        {
+          "value": "airports",
+          "label": "Airports",
+          "ncc_class": "not_applicable",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "runways", "label": "Runways", "type": "integer"},
+            {"key": "terminal_gfa_sqm", "label": "Terminal GFA sqm", "type": "number"},
+            {"key": "gates", "label": "Gates", "type": "integer"},
+            {"key": "annual_passengers", "label": "Annual passengers", "type": "integer"}
+          ]
+        },
+        {
+          "value": "telecommunications",
+          "label": "Telecommunications",
+          "ncc_class": "not_applicable",
+          "scale_fields": [
+            {"key": "site_sqm", "label": "Site sqm", "type": "number"},
+            {"key": "sites", "label": "Sites", "type": "integer"},
+            {"key": "fibre_route_km", "label": "Fibre route km", "type": "number"},
+            {"key": "towers", "label": "Towers", "type": "integer"},
+            {"key": "data_capacity_tbps", "label": "Data capacity Tbps", "type": "number"}
+          ]
+        },
+        {"value": "other", "label": "Other", "ncc_class": "not_applicable", "scale_fields": []}
+      ]
+    }
+  ]
+}

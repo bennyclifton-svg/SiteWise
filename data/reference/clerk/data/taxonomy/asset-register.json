@@ -1,0 +1,33 @@
+{
+  "_comment": "Existing assets a refurb, remediation or services project acts on. Scale fields describe the building; these describe the plant, equipment and elements being replaced, upgraded or remediated. For services-dominant work the asset register is the scope, so without it the specifics a PM supplies — make, capacity, age, refrigerant, which zones — have nowhere to land and are dropped before generation.",
+  "applies_to_work_types": ["refurb", "remediation", "extend", "advisory"],
+  "condition": [
+    {"value": "serviceable", "label": "Serviceable"},
+    {"value": "nearing_end_of_life", "label": "Nearing end of life"},
+    {"value": "end_of_life", "label": "End of life"},
+    {"value": "beyond_economical_repair", "label": "Beyond economical repair"},
+    {"value": "failed", "label": "Failed / out of service"},
+    {"value": "defective", "label": "Defective / non-compliant"},
+    {"value": "unknown", "label": "Not yet assessed"}
+  ],
+  "action": [
+    {"value": "replace", "label": "Replace"},
+    {"value": "upgrade", "label": "Upgrade"},
+    {"value": "remediate", "label": "Remediate"},
+    {"value": "remove", "label": "Remove"},
+    {"value": "retain", "label": "Retain"},
+    {"value": "investigate", "label": "Investigate"}
+  ],
+  "fields": [
+    {"key": "type", "label": "Asset", "type": "text", "required": true, "placeholder": "Split ducted AC system"},
+    {"key": "count", "label": "Qty", "type": "integer", "placeholder": "2"},
+    {"key": "location", "label": "Location", "type": "text", "placeholder": "Service centre; western office"},
+    {"key": "make_model", "label": "Make / model", "type": "text", "placeholder": "Pioneer"},
+    {"key": "capacity", "label": "Capacity / size", "type": "text", "placeholder": "30kW"},
+    {"key": "age_years", "label": "Age (years)", "type": "integer", "placeholder": "30"},
+    {"key": "condition", "label": "Condition", "type": "option", "options_key": "condition"},
+    {"key": "action", "label": "Proposed action", "type": "option", "options_key": "action"},
+    {"key": "replacement_spec", "label": "Replacement / target spec", "type": "text", "placeholder": "Actron 30kW split ducted"},
+    {"key": "notes", "label": "Notes", "type": "text", "placeholder": "R22 refrigerant; phase-out obligations"}
+  ]
+}

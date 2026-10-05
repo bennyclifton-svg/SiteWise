@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "source_repository": "clerk",
+  "source_commit": null,
+  "captured": "2026-10-05",
+  "status": "draft",
+  "note": "Working-tree data snapshot; source Git metadata unavailable in this session. Per-file hashes identify exact copied bytes. No application code or private project corpus copied.",
+  "files": [
+    {
+      "path": "data/seed/access-consultant-guide.md",
+      "sha256": "f1e17593e209411471a638e7df0a5361282bbfbe95e8970d6507c0f71311ca45"
+    },
+    {
+      "path": "data/seed/advisory-services-guide.md",
+      "sha256": "1d76c58c8380a479e5e898b87d6d2e03d1c2d37021ca1f13ae8de4951e37aacd"
+    },
+    {
+      "path": "data/seed/ancillary-guide.md",
+      "sha256": "3acefc8a64b9af41e99fb731239068743260bb6d01619005e88236aa6812fa58"
+    },
+    {
+      "path": "data/seed/arborist-guide.md",
+      "sha256": "0f71e3b332d54e0d3ab4a0f59176959a57a937f536bb9d0f88d922f53f49e607"
+    },
+    {
+      "path": "data/seed/architectural-services-guide.md",
+      "sha256": "edb417689f1eab670130630abff4afc813f604ae36bbd5881da710487ce839d8"
+    },
+    {
+      "path": "data/seed/as-standards-reference.md",
+      "sha256": "68b0e88151796645386580cd1910280ab3e0df834baf03e18d00bd8f5b1e3074"
+    },
+    {
+      "path": "data/seed/building-remediation-rectification-guide.md",
+      "sha256": "46e33255737154dd752f4edbe3b6930c325470ee159db49a1a8603c84fc9358d"
+    },
+    {
+      "path": "data/seed/civil-commercial-industrial-guide.md",
+      "sha256": "eef2fae641a1e7acf60dfb1617b9d64a7652e7b7349cb5cb1357329d810b6832"
+    },
+    {
+      "path": "data/seed/civil-residential.md",
+      "sha256": "f9ed77d0831aa3edb4f96e0d37d61c66a998b4d1ebb521d12c9aad479dcafc0d"
+    },
+    {
+      "path": "data/seed/commercial-construction-guide.md",
+      "sha256": "178409eedfb314aad103b08940921d7f8db4485a10376dbe269a656bd5b05f86"
+    },
+    {
+      "path": "data/seed/contract-administration-guide.md",
+      "sha256": "315aa246ddab403a71e561291fc40ba197573d11d29286298e9c63c640f170e9"
+    },
+    {
+      "path": "data/seed/cost-management-principles.md",
+      "sha256": "c85afd734ce9bc6ca20d410779b2c49f0eaff8e8a328ad596094b61a76e5f56b"
+    },
+    {
+      "path": "data/seed/defects-and-dlp-guide.md",
+      "sha256": "eaea7272a3f7ce4d406e25ff7be5f71525fd2ebf16f58dcae225bd5a517f55dc"
+    },
+    {
+      "path": "data/seed/electrical-services-guide.md",
+      "sha256": "1aae0429b093fd998ef4a2e811d38bc41fd26169286bf49e30aadd61953ef22d"
+    },
+    {
+      "path": "data/seed/finishes-residential.md",
+      "sha256": "e8cb5f9aa414aa9ef05ea150b0e10c20f5471264526f6dad0c128b3b0df11fd6"
+    },
+    {
+      "path": "data/seed/fire-life-safety-guide.md",
+      "sha256": "513a3ca7819aaf863f33463fdcdc0e7137c2634440cf39a309528e4cd895ca88"
+    },
+    {
+      "path": "data/seed/geotechnical-guide.md",
+      "sha256": "8f97f060f06efe86183d7931d55829693f2c1abadafc47b6ef7899ddcb46d1b6"
+    },
+    {
+      "path": "data/seed/hydraulic-services-guide.md",
+      "sha256": "412ca04901e2ab7e0a39c08561f34f607940186fd25acdf0dc2d44350321253c"
+    },
+    {
+      "path": "data/seed/ict-av-security-guide.md",
+      "sha256": "e69d56fcc9a9725b5a8a1cfd417597234531018f60a780419163a58b197d6ec2"
+    },
+    {
+      "path": "data/seed/industrial-construction-guide.md",
+      "sha256": "cf03c345ee0e3d53f490e56133cf6ac91a68cc66979253f63c012877607f34ba"
+    },
+    {
+      "path": "data/seed/infrastructure-construction-guide.md",
+      "sha256": "c459f0b208cce7bc338b2b28bfd7cb5640f92697000eab6cd8a0b79bab7314b9"
+    },
+    {
+      "path": "data/seed/institution-construction-guide.md",
+      "sha256": "fded43f22ca1cd89f21507e12b15078c9c58f7bb158d76b1779acd2278fa7578"
+    },
+    {
+      "path": "data/seed/landscape-architecture-guide.md",
+      "sha256": "f9236baa499db7d17889ad6ffe0fbdc5a531d719bc8a4d77116ee272f940c0dd"
+    },
+    {
+      "path": "data/seed/mechanical-services-guide.md",
+      "sha256": "206eb986d93ba4dc64f2be00d6d3ea1374c89046b4c8ae08bfb7a21b19588d0f"
+    },
+    {
+      "path": "data/seed/mep-residential.md",
+      "sha256": "636390a8fc7a8b0275fcc744f31a4d05bc6f94da770c25257ac4d059ca57ea11"
+    },
+    {
+      "path": "data/seed/mixed-use-construction-guide.md",
+      "sha256": "f58c552d3735b5a895cf77e09cebda8dd9998b68762b059c17d77348f6c4e06c"
+    },
+    {
+      "path": "data/seed/multi-dwelling-guide.md",
+      "sha256": "fba6d7ac47a52c2fc408354bb073ab4f4c52fd40422ef00ee20bb12669254b87"
+    },
+    {
+      "path": "data/seed/multi-residential-apartments-guide.md",
+      "sha256": "22a7f800f1c03285288e4af8daee94d56ee5937bab8548c418764bff50634643"
+    },
+    {
+      "path": "data/seed/ncc-reference-guide.md",
+      "sha256": "28df1518f9c6f0769133939a780fe07b79368be2dea6c284c743776e70a7bb27"
+    },
+    {
+      "path": "data/seed/new-dwelling-guide.md",
+      "sha256": "ff1e23272c7cedc128b7718067f4e598a4af1aa8ddfb600259e4428e720c5de4"
+    },
+    {
+      "path": "data/seed/non-residential-sustainability-energy-guide.md",
+      "sha256": "5f19731b2f72023dbb3f437874db337d2ac14b78b2b9372373d3e101b17edd1c"
+    },
+    {
+      "path": "data/seed/procurement-quoting-guide.md",
+      "sha256": "27aeaf98e2873455f302a27aa26febbb457ac26c3b65dbdc5d76bb8cc9197568"
+    },
+    {
+      "path": "data/seed/procurement-tendering-guide.md",
+      "sha256": "8d64f124f2ecaea3be6c33d985b149607685889ad68f97d0e8383a7e0350f4f9"
+    },
+    {
+      "path": "data/seed/program-scheduling-guide.md",
+      "sha256": "72494bc7f5e36925efb7e5050337520497ad2bb26dafb762abdfe30dd0d50c4f"
+    },
+    {
+      "path": "data/seed/remediation-due-diligence-guide.md",
+      "sha256": "7422835c2ee9a5589e64fff267e17dcd81e4a8493cb3d742f40d0c9456e8bf2d"
+    },
+    {
+      "path": "data/seed/renovation-guide.md",
+      "sha256": "bf5c966f17e52542913465672a4938fb32558133e70a22988be71deb55e0efaf"
+    },
+    {
+      "path": "data/seed/residential-construction-guide.md",
+      "sha256": "4a584c5e0645afceae6b0c988b50a62b9a03ec1bc7481735d29b7c6db0c7cadb"
+    },
+    {
+      "path": "data/seed/role-architect-pm.md",
+      "sha256": "d051ec5c94b8bbc0dd3c2b2ce116ebebc7c75726ad5898ae7c884238acb20875"
+    },
+    {
+      "path": "data/seed/role-builder.md",
+      "sha256": "cdcf1cd18aa1ff448137e502c977c062b50be7bfda06b1d4ff6560ee870fc174"
+    },
+    {
+      "path": "data/seed/role-d-and-c.md",
+      "sha256": "4ac887916634ec75c8c875f5f6886f54425d4c83fe1df4161c0c2e7e37f0eb9a"
+    },
+    {
+      "path": "data/seed/role-owner-builder.md",
+      "sha256": "c239b0735beda4610d422ce82ce54c09ad84e75ff99c11ec3bc0147271dc042f"
+    },
+    {
+      "path": "data/seed/setup-and-commission-guide.md",
+      "sha256": "435dcce40be7e6a16225b94ea109030ffd97a2deb1e750454db7019ff36deabc"
+    },
+    {
+      "path": "data/seed/small-commercial-guide.md",
+      "sha256": "1ca527c411f2b2ae3bcf2f3152848e11852707f4d337ef1a5e9a08fb37aaa6c3"
+    },
+    {
+      "path": "data/seed/structural-commercial-industrial-guide.md",
+      "sha256": "797fda3903d9f7e3d789d21e11fb16df33381ccc612ec46ebc05d60c2f3d8a1e"
+    },
+    {
+      "path": "data/seed/structural-residential.md",
+      "sha256": "4238f47481a0585a4489f05d94bb4018fb102f388d101b3cd04947efcd4a2767"
+    },
+    {
+      "path": "data/seed/surveying-guide.md",
+      "sha256": "7b745a3a8ba9c7b535ece9653a84a7c5c9fb5e1fb9f119a9e449c2e2728a98cc"
+    },
+    {
+      "path": "data/seed/sustainability-energy-guide.md",
+      "sha256": "ec4c3ec12f45cd767b4758a0187beacdba6cc9e3205e08b2ed723c91eaf5bbed"
+    },
+    {
+      "path": "data/seed/town-planning-guide.md",
+      "sha256": "5bf55b0d7673498fae21fb0126d468dc496a7796369671d7fb9c7ef669a55e97"
+    },
+    {
+      "path": "data/seed/trade-interfaces-coordination-guide.md",
+      "sha256": "73647bbe1d6da3b4c532c98941055805ec10e6afe5c59df9f8ff24d9308c49c6"
+    },
+    {
+      "path": "data/seed/traffic-transport-guide.md",
+      "sha256": "77a9489fd09723119e5227d19f75d3ab106bffa2c52010f3bdba86ac5542ac87"
+    },
+    {
+      "path": "data/seed/waste-management-guide.md",
+      "sha256": "a464067ded3fe2ec49c67bfadd0cd1d3d41803c050c63761736fd02bbe32a6d1"
+    },
+    {
+      "path": "data/taxonomy/asset-register.json",
+      "sha256": "6b563fe1bd1d4bcbad6db05b5826d0bfce792a9926bb72ec1f45186fdede3e92"
+    },
+    {
+      "path": "data/taxonomy/building-classes.json",
+      "sha256": "90cb09cbd93da02fdb0bba43c9312416d7bfc4b61fa1bed7b919943d5fc885cc"
+    },
+    {
+      "path": "data/taxonomy/complexity-dimensions.json",
+      "sha256": "1fb63cfb9f92fc02a871b36f99f131aa3bc872a3b015ea036727b5a1b7ed3e96"
+    },
+    {
+      "path": "data/taxonomy/consultant-rosters.json",
+      "sha256": "f218feea354b0b6a6ca57b8225e066fe0034ca786e0e65e1127d411bd995e5de"
+    },
+    {
+      "path": "data/taxonomy/disciplines.json",
+      "sha256": "6e079e5e91ff479e147cf3244a7a80fd34d2011e9fe749d570201614120157fa"
+    },
+    {
+      "path": "data/taxonomy/emphasis-profiles.json",
+      "sha256": "87688751089182d5dba631b208d43236c39df4beef01bb3d816d6775f0418347"
+    },
+    {
+      "path": "data/taxonomy/pmp-section-seed-map.json",
+      "sha256": "3789ef7a8ea886ee45255dd6a4bae1d9ed98d506d2a70537e320de772e1d8744"
+    },
+    {
+      "path": "data/taxonomy/risk-flags.json",
+      "sha256": "e72487756af87166791b53a503c8bce7490b6ac925d4becc86173bfc8f402754"
+    },
+    {
+      "path": "data/taxonomy/typical-work-scopes.json",
+      "sha256": "308f1bf04bed242266107b5a45602cdbcf4751266b5b78f67440c6e2d8dcd910"
+    },
+    {
+      "path": "data/taxonomy/work-scopes.json",
+      "sha256": "2128202310f23656e3af7fd4dabaa2656c5c2ef298dec83a170315fc37efc49a"
+    }
+  ]
+}

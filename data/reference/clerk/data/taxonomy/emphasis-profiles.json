@@ -1,0 +1,81 @@
+{
+  "sections": [
+    "snapshot",
+    "scope-client-requirements",
+    "consultants",
+    "accommodation-schedule",
+    "ffe-schedule",
+    "compliance-approvals",
+    "programme",
+    "cost-budget",
+    "procurement-delivery",
+    "risks",
+    "actions-decisions",
+    "citation-key"
+  ],
+  "base_weights": {
+    "residential|new": {"snapshot": 0.06, "scope-client-requirements": 0.14, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.13, "compliance-approvals": 0.10, "programme": 0.12, "cost-budget": 0.12, "procurement-delivery": 0.10, "risks": 0.10, "actions-decisions": 0.02, "citation-key": 0.04},
+    "residential|refurb": {"snapshot": 0.06, "scope-client-requirements": 0.11, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.10, "compliance-approvals": 0.13, "programme": 0.11, "cost-budget": 0.13, "procurement-delivery": 0.10, "risks": 0.13, "actions-decisions": 0.02, "citation-key": 0.04},
+    "residential|extend": {"snapshot": 0.06, "scope-client-requirements": 0.12, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.11, "compliance-approvals": 0.12, "programme": 0.11, "cost-budget": 0.13, "procurement-delivery": 0.10, "risks": 0.12, "actions-decisions": 0.02, "citation-key": 0.04},
+    "residential|remediation": {"snapshot": 0.10, "scope-client-requirements": 0.08, "accommodation-schedule": 0.01, "ffe-schedule": 0.03, "consultants": 0.06, "compliance-approvals": 0.19, "programme": 0.10, "cost-budget": 0.12, "procurement-delivery": 0.10, "risks": 0.16, "actions-decisions": 0.02, "citation-key": 0.04},
+    "residential|advisory": {"snapshot": 0.10, "scope-client-requirements": 0.12, "accommodation-schedule": 0.01, "ffe-schedule": 0.02, "consultants": 0.11, "compliance-approvals": 0.13, "programme": 0.08, "cost-budget": 0.10, "procurement-delivery": 0.10, "risks": 0.10, "actions-decisions": 0.10, "citation-key": 0.04},
+    "commercial|new": {"snapshot": 0.06, "scope-client-requirements": 0.08, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.07, "compliance-approvals": 0.18, "programme": 0.12, "cost-budget": 0.12, "procurement-delivery": 0.13, "risks": 0.11, "actions-decisions": 0.02, "citation-key": 0.04},
+    "commercial|refurb": {"snapshot": 0.06, "scope-client-requirements": 0.07, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.05, "compliance-approvals": 0.25, "programme": 0.10, "cost-budget": 0.10, "procurement-delivery": 0.12, "risks": 0.12, "actions-decisions": 0.02, "citation-key": 0.04},
+    "commercial|advisory": {"snapshot": 0.10, "scope-client-requirements": 0.10, "accommodation-schedule": 0.01, "ffe-schedule": 0.02, "consultants": 0.10, "compliance-approvals": 0.16, "programme": 0.08, "cost-budget": 0.10, "procurement-delivery": 0.10, "risks": 0.10, "actions-decisions": 0.10, "citation-key": 0.04},
+    "industrial|new": {"snapshot": 0.06, "scope-client-requirements": 0.08, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.06, "compliance-approvals": 0.18, "programme": 0.12, "cost-budget": 0.12, "procurement-delivery": 0.12, "risks": 0.13, "actions-decisions": 0.02, "citation-key": 0.04},
+    "industrial|remediation": {"snapshot": 0.10, "scope-client-requirements": 0.06, "accommodation-schedule": 0.01, "ffe-schedule": 0.03, "consultants": 0.04, "compliance-approvals": 0.24, "programme": 0.10, "cost-budget": 0.11, "procurement-delivery": 0.10, "risks": 0.16, "actions-decisions": 0.02, "citation-key": 0.04},
+    "industrial|advisory": {"snapshot": 0.10, "scope-client-requirements": 0.10, "accommodation-schedule": 0.01, "ffe-schedule": 0.02, "consultants": 0.09, "compliance-approvals": 0.17, "programme": 0.08, "cost-budget": 0.10, "procurement-delivery": 0.10, "risks": 0.10, "actions-decisions": 0.10, "citation-key": 0.04},
+    "institution|new": {"snapshot": 0.06, "scope-client-requirements": 0.08, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.07, "compliance-approvals": 0.20, "programme": 0.11, "cost-budget": 0.11, "procurement-delivery": 0.12, "risks": 0.12, "actions-decisions": 0.02, "citation-key": 0.04},
+    "institution|refurb": {"snapshot": 0.06, "scope-client-requirements": 0.06, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.05, "compliance-approvals": 0.26, "programme": 0.10, "cost-budget": 0.10, "procurement-delivery": 0.11, "risks": 0.13, "actions-decisions": 0.02, "citation-key": 0.04},
+    "institution|advisory": {"snapshot": 0.10, "scope-client-requirements": 0.10, "accommodation-schedule": 0.01, "ffe-schedule": 0.02, "consultants": 0.09, "compliance-approvals": 0.18, "programme": 0.08, "cost-budget": 0.09, "procurement-delivery": 0.10, "risks": 0.10, "actions-decisions": 0.10, "citation-key": 0.04},
+    "mixed|new": {"snapshot": 0.06, "scope-client-requirements": 0.08, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.06, "compliance-approvals": 0.18, "programme": 0.12, "cost-budget": 0.12, "procurement-delivery": 0.12, "risks": 0.13, "actions-decisions": 0.02, "citation-key": 0.04},
+    "mixed|advisory": {"snapshot": 0.10, "scope-client-requirements": 0.10, "accommodation-schedule": 0.01, "ffe-schedule": 0.02, "consultants": 0.10, "compliance-approvals": 0.16, "programme": 0.08, "cost-budget": 0.10, "procurement-delivery": 0.10, "risks": 0.10, "actions-decisions": 0.10, "citation-key": 0.04},
+    "infrastructure|new": {"snapshot": 0.06, "scope-client-requirements": 0.07, "accommodation-schedule": 0.04, "ffe-schedule": 0.03, "consultants": 0.05, "compliance-approvals": 0.20, "programme": 0.13, "cost-budget": 0.12, "procurement-delivery": 0.12, "risks": 0.12, "actions-decisions": 0.02, "citation-key": 0.04},
+    "infrastructure|remediation": {"snapshot": 0.10, "scope-client-requirements": 0.05, "accommodation-schedule": 0.01, "ffe-schedule": 0.02, "consultants": 0.05, "compliance-approvals": 0.23, "programme": 0.12, "cost-budget": 0.11, "procurement-delivery": 0.11, "risks": 0.15, "actions-decisions": 0.02, "citation-key": 0.04},
+    "infrastructure|advisory": {"snapshot": 0.10, "scope-client-requirements": 0.09, "accommodation-schedule": 0.01, "ffe-schedule": 0.02, "consultants": 0.09, "compliance-approvals": 0.17, "programme": 0.09, "cost-budget": 0.10, "procurement-delivery": 0.10, "risks": 0.10, "actions-decisions": 0.10, "citation-key": 0.04},
+    "default": {"snapshot": 0.10, "scope-client-requirements": 0.09, "accommodation-schedule": 0.01, "ffe-schedule": 0.03, "consultants": 0.08, "compliance-approvals": 0.15, "programme": 0.12, "cost-budget": 0.12, "procurement-delivery": 0.12, "risks": 0.13, "actions-decisions": 0.02, "citation-key": 0.04}
+  },
+  "scale_bands": [
+    {"band": "xs", "label": "XS", "max_budget": 250000, "word_target": 700},
+    {"band": "s", "label": "S", "max_budget": 2000000, "word_target": 1100},
+    {"band": "m", "label": "M", "max_budget": 20000000, "word_target": 1500},
+    {"band": "l", "label": "L", "max_budget": null, "word_target": 1900}
+  ],
+  "applicability": {
+    "accommodation-schedule": {
+      "include_when": {
+        "work_type_any": ["new", "extend", "refurb"],
+        "work_scope_any": [
+          "massing_study",
+          "highest_best_use",
+          "development_feasibility",
+          "design_audit"
+        ]
+      }
+    },
+    "ffe-schedule": {
+      "include_when": {
+        "work_type_any": ["new", "extend", "refurb", "remediation"],
+        "has_assets": true
+      }
+    },
+    "procurement-delivery": {
+      "exclude_when": {"work_type_any": ["advisory"]}
+    }
+  },
+  "modifiers": [
+    {"when": {"scale_band": "xs"}, "boost": {"snapshot": 0.04, "scope-client-requirements": 0.04, "procurement-delivery": -0.05, "consultants": -0.03}},
+    {"when": {"scale_band": "s"}, "boost": {"scope-client-requirements": 0.02, "procurement-delivery": -0.02}},
+    {"when": {"scale_band": "l"}, "boost": {"procurement-delivery": 0.03, "risks": 0.02, "consultants": 0.02}},
+    {"when": {"work_scope_any": ["fire_services"]}, "boost": {"compliance-approvals": 0.10}},
+    {"when": {"risk_flag": "live_operations"}, "boost": {"risks": 0.05}},
+    {"when": {"risk_flag": "heritage_adaptive_reuse"}, "boost": {"compliance-approvals": 0.05}},
+    {"when": {"risk_flag": "critical_infrastructure"}, "boost": {"compliance-approvals": 0.04, "risks": 0.03}},
+    {"when": {"risk_flag": "contaminated_land"}, "boost": {"compliance-approvals": 0.05, "risks": 0.04}},
+    {"when": {"risk_flag": "bushfire_prone"}, "boost": {"compliance-approvals": 0.05, "risks": 0.04}},
+    {"when": {"risk_flag": "bushfire_flame_zone"}, "boost": {"compliance-approvals": 0.03, "procurement-delivery": 0.03, "risks": 0.03}},
+    {"when": {"risk_flag": "flood_overlay"}, "boost": {"compliance-approvals": 0.04, "risks": 0.04}},
+    {"when": {"work_type": "remediation"}, "boost": {"compliance-approvals": 0.08, "risks": 0.05}},
+    {"when": {"work_type": "advisory"}, "boost": {"actions-decisions": 0.04}}
+  ]
+}

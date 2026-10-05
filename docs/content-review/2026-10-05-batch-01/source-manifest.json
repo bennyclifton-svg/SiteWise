@@ -1,0 +1,6128 @@
+{
+  "date": "2026-10-05",
+  "source_repository": "../clerk",
+  "purpose": "Frozen source locators for editorial reuse; no runtime code or private corpus text",
+  "files": [
+    {
+      "path": "data/seed/access-consultant-guide.md",
+      "sha256": "f1e17593e209411471a638e7df0a5361282bbfbe95e8970d6507c0f71311ca45",
+      "bytes": 4819,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Access Consultant"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 29,
+          "heading": "Activation"
+        },
+        {
+          "line": 35,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 42,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 49,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 57,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 64,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 71,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 79,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 86,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 93,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 100,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 106,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 111,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/advisory-services-guide.md",
+      "sha256": "1d76c58c8380a479e5e898b87d6d2e03d1c2d37021ca1f13ae8de4951e37aacd",
+      "bytes": 11460,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Advisory Services Guide"
+        },
+        {
+          "line": 19,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 32,
+          "heading": "Define the decision before the scope"
+        },
+        {
+          "line": 49,
+          "heading": "Advisory service types"
+        },
+        {
+          "line": 51,
+          "heading": "Technical due diligence"
+        },
+        {
+          "line": 59,
+          "heading": "Feasibility and option analysis"
+        },
+        {
+          "line": 66,
+          "heading": "Condition and capital planning"
+        },
+        {
+          "line": 74,
+          "heading": "Design review"
+        },
+        {
+          "line": 82,
+          "heading": "Procurement support"
+        },
+        {
+          "line": 89,
+          "heading": "Evidence plan"
+        },
+        {
+          "line": 105,
+          "heading": "Inspection, survey and testing"
+        },
+        {
+          "line": 121,
+          "heading": "Analysis and confidence"
+        },
+        {
+          "line": 143,
+          "heading": "Report and register discipline"
+        },
+        {
+          "line": 160,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 171,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 180,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 189,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 197,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 204,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 211,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 217,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 224,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 231,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 250,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 261,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/ancillary-guide.md",
+      "sha256": "3acefc8a64b9af41e99fb731239068743260bb6d01619005e88236aa6812fa58",
+      "bytes": 20342,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Archetype seed \u2014 Ancillary"
+        },
+        {
+          "line": 24,
+          "heading": "Scope of this archetype"
+        },
+        {
+          "line": 41,
+          "heading": "NCC class fork \u2014 do this first"
+        },
+        {
+          "line": 56,
+          "heading": "Planning pathway \u2014 CDC Affordable Housing (NSW default)"
+        },
+        {
+          "line": 60,
+          "heading": "CDC eligibility gate"
+        },
+        {
+          "line": 76,
+          "heading": "CDC pathway (fast track)"
+        },
+        {
+          "line": 87,
+          "heading": "DA pathway (fallback)"
+        },
+        {
+          "line": 98,
+          "heading": "Non-NSW \u2014 planning pathway callout"
+        },
+        {
+          "line": 105,
+          "heading": "Lifecycle \u2014 typical NSW CDC granny flat sequence"
+        },
+        {
+          "line": 124,
+          "heading": "Site due diligence for ancillary scope"
+        },
+        {
+          "line": 136,
+          "heading": "BASIX \u2014 ancillary structures"
+        },
+        {
+          "line": 150,
+          "heading": "Statutory instruments \u2014 ancillary scope"
+        },
+        {
+          "line": 152,
+          "heading": "HBCF / HOW"
+        },
+        {
+          "line": 160,
+          "heading": "Owner-builder permit"
+        },
+        {
+          "line": 164,
+          "heading": "Occupation Certificate"
+        },
+        {
+          "line": 168,
+          "heading": "Structural posture \u2014 ancillary structures"
+        },
+        {
+          "line": 179,
+          "heading": "Sequencing risks specific to ancillary"
+        },
+        {
+          "line": 188,
+          "heading": "Common failure modes \u2014 ancillary archetype"
+        },
+        {
+          "line": 197,
+          "heading": "Agent behaviour under this archetype"
+        },
+        {
+          "line": 209,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/arborist-guide.md",
+      "sha256": "0f71e3b332d54e0d3ab4a0f59176959a57a937f536bb9d0f88d922f53f49e607",
+      "bytes": 4963,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Arborist"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 29,
+          "heading": "Activation"
+        },
+        {
+          "line": 35,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 42,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 49,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 57,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 63,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 71,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 79,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 86,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 93,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 102,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 109,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 114,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/architectural-services-guide.md",
+      "sha256": "edb417689f1eab670130630abff4afc813f604ae36bbd5881da710487ce839d8",
+      "bytes": 17181,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Architectural Services Guide"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 41,
+          "heading": "Activation"
+        },
+        {
+          "line": 56,
+          "heading": "Architectural evidence sweep"
+        },
+        {
+          "line": 78,
+          "heading": "Appointment boundary and procurement route"
+        },
+        {
+          "line": 95,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 103,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 123,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 140,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 160,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 175,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 193,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 205,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 220,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 234,
+          "heading": "Conditional services"
+        },
+        {
+          "line": 255,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 273,
+          "heading": "Fee stages"
+        },
+        {
+          "line": 283,
+          "heading": "Architectural design review"
+        },
+        {
+          "line": 300,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 307,
+          "heading": "Common failure modes"
+        },
+        {
+          "line": 325,
+          "heading": "Low-confidence and escalation flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/as-standards-reference.md",
+      "sha256": "68b0e88151796645386580cd1910280ab3e0df834baf03e18d00bd8f5b1e3074",
+      "bytes": 286207,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Australian Standards reference \u2014 residential"
+        },
+        {
+          "line": 25,
+          "heading": "1. AS 2870 \u2014 Residential slabs and footings"
+        },
+        {
+          "line": 29,
+          "heading": "Site classification"
+        },
+        {
+          "line": 51,
+          "heading": "Geotechnical report requirement"
+        },
+        {
+          "line": 59,
+          "heading": "2. AS 1684 \u2014 Timber framing"
+        },
+        {
+          "line": 63,
+          "heading": "Key concepts for project leads"
+        },
+        {
+          "line": 85,
+          "heading": "3. AS 4055 \u2014 Wind loads for housing"
+        },
+        {
+          "line": 89,
+          "heading": "Wind classification system"
+        },
+        {
+          "line": 102,
+          "heading": "How the classification is determined"
+        },
+        {
+          "line": 119,
+          "heading": "4. AS 3959 \u2014 Construction in bushfire-prone areas"
+        },
+        {
+          "line": 123,
+          "heading": "BAL ratings"
+        },
+        {
+          "line": 135,
+          "heading": "How BAL is assessed"
+        },
+        {
+          "line": 144,
+          "heading": "AS 3959 and the new-dwelling lifecycle"
+        },
+        {
+          "line": 154,
+          "heading": "5. AS 3500 \u2014 Plumbing and drainage"
+        },
+        {
+          "line": 168,
+          "heading": "Residential plumbing posture for project leads"
+        },
+        {
+          "line": 185,
+          "heading": "6. AS 1170 \u2014 Structural loads for residential"
+        },
+        {
+          "line": 196,
+          "heading": "Typical residential load cases"
+        },
+        {
+          "line": 213,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 225,
+          "heading": "Low-confidence flags"
+        },
+        {
+          "line": 233,
+          "heading": "See also"
+        },
+        {
+          "line": 245,
+          "heading": "Commercial and Non-Residential Expansion"
+        },
+        {
+          "line": 247,
+          "heading": "AS/NZS 1170 Series \u2014 Structural Design Actions"
+        },
+        {
+          "line": 264,
+          "heading": "AS 3600 \u2014 Concrete Structures"
+        },
+        {
+          "line": 280,
+          "heading": "AS 4100 \u2014 Steel Structures"
+        },
+        {
+          "line": 297,
+          "heading": "AS 1720 Series \u2014 Timber Structures"
+        },
+        {
+          "line": 314,
+          "heading": "AS 3700 \u2014 Masonry Structures"
+        },
+        {
+          "line": 331,
+          "heading": "AS 2870 \u2014 Residential Slabs and Footings"
+        },
+        {
+          "line": 348,
+          "heading": "AS 1530 Series \u2014 Fire Testing"
+        },
+        {
+          "line": 365,
+          "heading": "AS 1670.1 \u2014 Fire Detection and Alarm Systems"
+        },
+        {
+          "line": 382,
+          "heading": "AS 2118 Series \u2014 Automatic Fire Sprinkler Systems"
+        },
+        {
+          "line": 399,
+          "heading": "AS 1851 \u2014 Routine Service of Fire Protection Systems"
+        },
+        {
+          "line": 416,
+          "heading": "AS 3740 \u2014 Waterproofing of Domestic Wet Areas"
+        },
+        {
+          "line": 433,
+          "heading": "AS 4654 Series \u2014 Waterproofing Membranes for External Above-Ground Use"
+        },
+        {
+          "line": 450,
+          "heading": "AS 1288 \u2014 Glass in Buildings"
+        },
+        {
+          "line": 467,
+          "heading": "AS 1926 Series \u2014 Swimming Pool Safety"
+        },
+        {
+          "line": 484,
+          "heading": "AS/NZS 3500 Series \u2014 Plumbing and Drainage"
+        },
+        {
+          "line": 501,
+          "heading": "AS/NZS 3666 Series \u2014 Air-Handling and Water Systems \u2014 Microbial Control"
+        },
+        {
+          "line": 518,
+          "heading": "AS/NZS 3000 \u2014 Wiring Rules"
+        },
+        {
+          "line": 535,
+          "heading": "AS/NZS 3008 Series \u2014 Electrical Installations \u2014 Selection of Cables"
+        },
+        {
+          "line": 552,
+          "heading": "AS 1428 Series \u2014 Design for Access and Mobility"
+        },
+        {
+          "line": 569,
+          "heading": "AS 3959 \u2014 Construction of Buildings in Bushfire-Prone Areas"
+        },
+        {
+          "line": 586,
+          "heading": "AS/NZS 4859 Series \u2014 Thermal Insulation Materials"
+        },
+        {
+          "line": 603,
+          "heading": "AS 1668 Series \u2014 Ventilation and Air-Conditioning"
+        },
+        {
+          "line": 620,
+          "heading": "AS/NZS ISO 9001 \u2014 Quality Management Systems"
+        },
+        {
+          "line": 637,
+          "heading": "AS 1012 Series \u2014 Methods of Testing Concrete"
+        },
+        {
+          "line": 654,
+          "heading": "AS 4000-1997 and AS 2124-1992 \u2014 General Conditions of Contract"
+        },
+        {
+          "line": 671,
+          "heading": "AS/NZS ISO 31000 \u2014 Risk Management"
+        },
+        {
+          "line": 688,
+          "heading": "AS 1726 \u2014 Geotechnical Site Investigations"
+        },
+        {
+          "line": 707,
+          "heading": "AS 1289 Series \u2014 Methods of Testing Soils for Engineering Purposes"
+        },
+        {
+          "line": 726,
+          "heading": "AS 3798 \u2014 Guidelines on Earthworks for Commercial and Residential Developments"
+        },
+        {
+          "line": 745,
+          "heading": "AS/NZS 4671 \u2014 Steel Reinforcing Materials"
+        },
+        {
+          "line": 764,
+          "heading": "AS 3610 Series \u2014 Formwork for Concrete"
+        },
+        {
+          "line": 783,
+          "heading": "AS/NZS 5131 \u2014 Structural Steelwork \u2014 Fabrication and Erection"
+        },
+        {
+          "line": 802,
+          "heading": "AS/NZS 1554 Series \u2014 Structural Steel Welding"
+        },
+        {
+          "line": 821,
+          "heading": "AS/NZS 2312 Series \u2014 Guide to the Protection of Structural Steelwork Against Atmospheric Corrosion"
+        },
+        {
+          "line": 840,
+          "heading": "AS 4312 \u2014 Atmospheric Corrosivity Zones in Australia"
+        },
+        {
+          "line": 859,
+          "heading": "AS 1684 Series \u2014 Residential Timber-Framed Construction"
+        },
+        {
+          "line": 878,
+          "heading": "AS 5604 \u2014 Timber \u2014 Natural Durability Ratings"
+        },
+        {
+          "line": 897,
+          "heading": "AS 2159 \u2014 Piling \u2014 Design and Installation"
+        },
+        {
+          "line": 916,
+          "heading": "AS 4678 \u2014 Earth-Retaining Structures"
+        },
+        {
+          "line": 935,
+          "heading": "AS/NZS 2107 \u2014 Acoustics \u2014 Recommended Design Sound Levels and Reverberation Times for Building Interiors"
+        },
+        {
+          "line": 954,
+          "heading": "AS 3671 \u2014 Acoustics \u2014 Road Traffic Noise Intrusion \u2014 Building Siting and Construction"
+        },
+        {
+          "line": 973,
+          "heading": "AS 2047 \u2014 Windows and External Glazed Doors in Buildings"
+        },
+        {
+          "line": 992,
+          "heading": "AS 4420 Series \u2014 Windows \u2014 Methods of Test"
+        },
+        {
+          "line": 1011,
+          "heading": "AS 1657 \u2014 Fixed Platforms, Walkways, Stairways and Ladders \u2014 Design, Construction and Installation"
+        },
+        {
+          "line": 1030,
+          "heading": "AS 4254 Series \u2014 Ductwork for Air-Handling Systems in Buildings"
+        },
+        {
+          "line": 1049,
+          "heading": "AS/NZS 3823 Series \u2014 Performance of Electrical Appliances \u2014 Air Conditioners and Heat Pumps"
+        },
+        {
+          "line": 1068,
+          "heading": "AS/NZS 5149 Series \u2014 Refrigerating Systems and Heat Pumps \u2014 Safety and Environmental Requirements"
+        },
+        {
+          "line": 1087,
+          "heading": "AS/NZS 3017 \u2014 Electrical Installations \u2014 Verification Guidelines"
+        },
+        {
+          "line": 1106,
+          "heading": "AS/NZS 61439 Series \u2014 Low-Voltage Switchgear and Controlgear Assemblies"
+        },
+        {
+          "line": 1125,
+          "heading": "AS/NZS 2293 Series \u2014 Emergency Escape Lighting and Exit Signs"
+        },
+        {
+          "line": 1144,
+          "heading": "AS 1768 \u2014 Lightning Protection"
+        },
+        {
+          "line": 1163,
+          "heading": "AS/NZS 5033 \u2014 Installation and Safety Requirements for Photovoltaic (PV) Arrays"
+        },
+        {
+          "line": 1182,
+          "heading": "AS/NZS 4777 Series \u2014 Grid Connection of Energy Systems via Inverters"
+        },
+        {
+          "line": 1201,
+          "heading": "AS/NZS 5139 \u2014 Electrical Installations \u2014 Safety of Battery Energy Storage Systems"
+        },
+        {
+          "line": 1220,
+          "heading": "AS/NZS 5601.1 \u2014 Gas Installations \u2014 General Installations"
+        },
+        {
+          "line": 1239,
+          "heading": "AS 2419 Series \u2014 Fire Hydrant Installations"
+        },
+        {
+          "line": 1258,
+          "heading": "AS 1670.3 and AS 1670.4 \u2014 Fire Alarm Monitoring and Emergency Warning and Intercom"
+        },
+        {
+          "line": 1277,
+          "heading": "AS 3786 \u2014 Smoke Alarms Using Scattered Light, Transmitted Light or Ionisation"
+        },
+        {
+          "line": 1296,
+          "heading": "AS 2941 \u2014 Fixed Fire Protection Installations \u2014 Pumpset Systems"
+        },
+        {
+          "line": 1315,
+          "heading": "AS 1905.1 \u2014 Components for the Protection of Openings in Fire-Resistant Walls \u2014 Part 1: Fire-Resistant Doorsets"
+        },
+        {
+          "line": 1334,
+          "heading": "AS 2444 \u2014 Portable Fire Extinguishers and Fire Blankets \u2014 Selection and Location"
+        },
+        {
+          "line": 1353,
+          "heading": "AS 4200 Series \u2014 Pliable Building Membranes and Underlays"
+        },
+        {
+          "line": 1372,
+          "heading": "AS 4284 \u2014 Testing of Building Facades"
+        },
+        {
+          "line": 1391,
+          "heading": "AS 1735 Series \u2014 Lifts, Escalators and Moving Walks"
+        },
+        {
+          "line": 1410,
+          "heading": "AS/CA S009 and AS/NZS 3080 \u2014 Telecommunications Cabling"
+        },
+        {
+          "line": 1429,
+          "heading": "AS/NZS 2201 Series and AS 4806 Series \u2014 Intruder Alarm and CCTV Systems"
+        },
+        {
+          "line": 1448,
+          "heading": "AS 1627.4 \u2014 Metal Finishing \u2014 Preparation and Pre-treatment of Surfaces \u2014 Abrasive Blast Cleaning"
+        },
+        {
+          "line": 1467,
+          "heading": "AS/NZS 1576 Series \u2014 Scaffolding"
+        },
+        {
+          "line": 1486,
+          "heading": "AS 2601 \u2014 The Demolition of Structures"
+        },
+        {
+          "line": 1505,
+          "heading": "AS 1418 and AS 2550 Series \u2014 Cranes, Hoists and Winches"
+        },
+        {
+          "line": 1524,
+          "heading": "AS 4905 and AS 4949 \u2014 Minor Works and Work Order Contracts"
+        },
+        {
+          "line": 1543,
+          "heading": "Standards evidence and editions"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/building-remediation-rectification-guide.md",
+      "sha256": "46e33255737154dd752f4edbe3b6930c325470ee159db49a1a8603c84fc9358d",
+      "bytes": 13711,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Building Remediation and Rectification Guide"
+        },
+        {
+          "line": 19,
+          "heading": "Purpose and boundary"
+        },
+        {
+          "line": 35,
+          "heading": "Activation and remediation type"
+        },
+        {
+          "line": 51,
+          "heading": "Evidence preservation and source hierarchy"
+        },
+        {
+          "line": 70,
+          "heading": "Investigation before solution"
+        },
+        {
+          "line": 89,
+          "heading": "Safety, occupation and temporary controls"
+        },
+        {
+          "line": 108,
+          "heading": "Design basis and option selection"
+        },
+        {
+          "line": 126,
+          "heading": "Governance and approvals"
+        },
+        {
+          "line": 144,
+          "heading": "Procurement and scope boundaries"
+        },
+        {
+          "line": 163,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 172,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 182,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 191,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 201,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 211,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 220,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 227,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 236,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 244,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 264,
+          "heading": "Construction verification and handover"
+        },
+        {
+          "line": 286,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 293,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/civil-commercial-industrial-guide.md",
+      "sha256": "eef2fae641a1e7acf60dfb1617b9d64a7652e7b7349cb5cb1357329d810b6832",
+      "bytes": 6300,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Civil Engineering: Commercial and Industrial"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 29,
+          "heading": "Activation"
+        },
+        {
+          "line": 36,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 45,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 52,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 62,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 73,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 83,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 93,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 101,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 109,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 120,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 128,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 136,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/civil-residential.md",
+      "sha256": "f9ed77d0831aa3edb4f96e0d37d61c66a998b4d1ebb521d12c9aad479dcafc0d",
+      "bytes": 17268,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 18,
+          "heading": "Trade seed \u2014 Civil (residential)"
+        },
+        {
+          "line": 26,
+          "heading": "Site earthworks \u2014 cut and fill"
+        },
+        {
+          "line": 28,
+          "heading": "Basic principles"
+        },
+        {
+          "line": 36,
+          "heading": "Batter slopes and retention"
+        },
+        {
+          "line": 48,
+          "heading": "Geotechnical sign-off trigger"
+        },
+        {
+          "line": 58,
+          "heading": "Compaction and fill quality"
+        },
+        {
+          "line": 64,
+          "heading": "Stormwater drainage"
+        },
+        {
+          "line": 66,
+          "heading": "Gravity drainage principles"
+        },
+        {
+          "line": 75,
+          "heading": "Connection to council drainage"
+        },
+        {
+          "line": 83,
+          "heading": "On-site detention (OSD)"
+        },
+        {
+          "line": 97,
+          "heading": "Rainwater tank"
+        },
+        {
+          "line": 107,
+          "heading": "Sewer connection"
+        },
+        {
+          "line": 109,
+          "heading": "Gravity sewer"
+        },
+        {
+          "line": 121,
+          "heading": "Inspection openings (IOs)"
+        },
+        {
+          "line": 125,
+          "heading": "Pump-out systems"
+        },
+        {
+          "line": 135,
+          "heading": "Septic and on-site wastewater"
+        },
+        {
+          "line": 146,
+          "heading": "Driveway crossover"
+        },
+        {
+          "line": 148,
+          "heading": "Definition"
+        },
+        {
+          "line": 152,
+          "heading": "Approvals"
+        },
+        {
+          "line": 161,
+          "heading": "Construction requirements"
+        },
+        {
+          "line": 169,
+          "heading": "Kerb and gutter reinstatement"
+        },
+        {
+          "line": 175,
+          "heading": "Subdivision and multi-dwelling civil interfaces"
+        },
+        {
+          "line": 188,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 197,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 207,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 216,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 224,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 234,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 241,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 248,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 257,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 264,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 278,
+          "heading": "Low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/commercial-construction-guide.md",
+      "sha256": "178409eedfb314aad103b08940921d7f8db4485a10376dbe269a656bd5b05f86",
+      "bytes": 67377,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 12,
+          "heading": "Commercial Construction Guide"
+        },
+        {
+          "line": 21,
+          "heading": "Commercial Building Classifications (Class 5\u20139)"
+        },
+        {
+          "line": 39,
+          "heading": "Type of Construction and Fire Resistance Levels"
+        },
+        {
+          "line": 59,
+          "heading": "Fire Detection, Alarm, and Suppression Systems"
+        },
+        {
+          "line": 79,
+          "heading": "Egress Design for Commercial Buildings"
+        },
+        {
+          "line": 99,
+          "heading": "Accessibility and DDA Compliance"
+        },
+        {
+          "line": 119,
+          "heading": "Structural Systems for Commercial Buildings"
+        },
+        {
+          "line": 139,
+          "heading": "Facade and Curtain Wall Systems"
+        },
+        {
+          "line": 159,
+          "heading": "Base Building vs Fitout \u2014 Scope Delineation"
+        },
+        {
+          "line": 179,
+          "heading": "Commercial HVAC and Mechanical Services"
+        },
+        {
+          "line": 201,
+          "heading": "Commercial Electrical Services"
+        },
+        {
+          "line": 223,
+          "heading": "Commercial Hydraulic Services"
+        },
+        {
+          "line": 245,
+          "heading": "Vertical Transport \u2014 Lifts and Escalators"
+        },
+        {
+          "line": 267,
+          "heading": "Acoustics in Commercial Buildings"
+        },
+        {
+          "line": 287,
+          "heading": "Essential Safety Measures (ESM)"
+        },
+        {
+          "line": 307,
+          "heading": "Workplace Health and Safety in Commercial Construction"
+        },
+        {
+          "line": 327,
+          "heading": "Environmental Sustainability and Green Star"
+        },
+        {
+          "line": 347,
+          "heading": "Construction Programming for Commercial Projects"
+        },
+        {
+          "line": 367,
+          "heading": "Quality Assurance and Commissioning"
+        },
+        {
+          "line": 387,
+          "heading": "Handover and Practical Completion"
+        },
+        {
+          "line": 407,
+          "heading": "Cost Planning for Commercial Projects"
+        },
+        {
+          "line": 431,
+          "heading": "Commercial Lease and Make-Good Obligations"
+        },
+        {
+          "line": 451,
+          "heading": "Heritage and Adaptive Reuse in Commercial Construction"
+        },
+        {
+          "line": 471,
+          "heading": "Security Systems and Access Control"
+        },
+        {
+          "line": 491,
+          "heading": "Demolition and Strip-Out for Commercial Refurbishment"
+        },
+        {
+          "line": 511,
+          "heading": "Carpark Design for Commercial Buildings"
+        },
+        {
+          "line": 533,
+          "heading": "Waterproofing in Commercial Buildings"
+        },
+        {
+          "line": 553,
+          "heading": "Building Management Systems (BMS)"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/contract-administration-guide.md",
+      "sha256": "315aa246ddab403a71e561291fc40ba197573d11d29286298e9c63c640f170e9",
+      "bytes": 143992,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Contract administration guide \u2014 NSW residential"
+        },
+        {
+          "line": 25,
+          "heading": "Contract families in NSW residential \u2014 at a glance"
+        },
+        {
+          "line": 43,
+          "heading": "HIA Lump Sum (NSW New Homes) \u2014 mechanism shape"
+        },
+        {
+          "line": 49,
+          "heading": "Deposit"
+        },
+        {
+          "line": 54,
+          "heading": "Stage payment schedule"
+        },
+        {
+          "line": 67,
+          "heading": "Owner-payment timing"
+        },
+        {
+          "line": 72,
+          "heading": "Variation mechanism"
+        },
+        {
+          "line": 79,
+          "heading": "EOT mechanism"
+        },
+        {
+          "line": 85,
+          "heading": "Latent conditions"
+        },
+        {
+          "line": 90,
+          "heading": "Practical completion (PC)"
+        },
+        {
+          "line": 96,
+          "heading": "Defects liability period (DLP)"
+        },
+        {
+          "line": 103,
+          "heading": "Insurance, HBCF, security"
+        },
+        {
+          "line": 109,
+          "heading": "Special conditions discipline"
+        },
+        {
+          "line": 118,
+          "heading": "HIA Cost Plus \u2014 mechanism shape"
+        },
+        {
+          "line": 133,
+          "heading": "HIA Renovation \u2014 mechanism shape"
+        },
+        {
+          "line": 146,
+          "heading": "HIA Trade Contract \u2014 subcontract mechanism"
+        },
+        {
+          "line": 157,
+          "heading": "MBA NSW equivalents"
+        },
+        {
+          "line": 163,
+          "heading": "NSW Fair Trading prescribed contract \u2014 small jobs"
+        },
+        {
+          "line": 176,
+          "heading": "AS 4000-1997 \u2014 general conditions of contract"
+        },
+        {
+          "line": 193,
+          "heading": "AS 4902-2000 \u2014 D&C variant"
+        },
+        {
+          "line": 203,
+          "heading": "ABIC \u2014 Australian Building Industry Contracts"
+        },
+        {
+          "line": 211,
+          "heading": "Cross-family administration discipline"
+        },
+        {
+          "line": 215,
+          "heading": "Clause citation"
+        },
+        {
+          "line": 230,
+          "heading": "Notice mechanics"
+        },
+        {
+          "line": 239,
+          "heading": "Time bars"
+        },
+        {
+          "line": 250,
+          "heading": "Variation discipline (cross-family)"
+        },
+        {
+          "line": 262,
+          "heading": "Progress claim discipline (cross-family)"
+        },
+        {
+          "line": 279,
+          "heading": "EOT discipline (cross-family)"
+        },
+        {
+          "line": 291,
+          "heading": "Practical completion discipline (cross-family)"
+        },
+        {
+          "line": 302,
+          "heading": "Defects liability \u2014 discipline"
+        },
+        {
+          "line": 312,
+          "heading": "Contract-family-by-role suitability"
+        },
+        {
+          "line": 325,
+          "heading": "Non-NSW callouts"
+        },
+        {
+          "line": 334,
+          "heading": "Common contract-administration failures"
+        },
+        {
+          "line": 344,
+          "heading": "Agent behaviour under this seed"
+        },
+        {
+          "line": 354,
+          "heading": "See also"
+        },
+        {
+          "line": 368,
+          "heading": "Commercial and Non-Residential Expansion"
+        },
+        {
+          "line": 370,
+          "heading": "Contract Selection and Risk Allocation"
+        },
+        {
+          "line": 391,
+          "heading": "Roles and Responsibilities Under Standard Form Contracts"
+        },
+        {
+          "line": 414,
+          "heading": "Contract Documentation Hierarchy"
+        },
+        {
+          "line": 435,
+          "heading": "Contract Correspondence and Notices"
+        },
+        {
+          "line": 455,
+          "heading": "Site Instructions and Directions"
+        },
+        {
+          "line": 475,
+          "heading": "Progress Claims and Payment Certification"
+        },
+        {
+          "line": 496,
+          "heading": "Security of Payment Legislation"
+        },
+        {
+          "line": 519,
+          "heading": "Variation Administration"
+        },
+        {
+          "line": 542,
+          "heading": "Variation Valuation Methods"
+        },
+        {
+          "line": 562,
+          "heading": "Constructive Variations and Scope Disputes"
+        },
+        {
+          "line": 582,
+          "heading": "Extensions of Time (EOT)"
+        },
+        {
+          "line": 603,
+          "heading": "Delay Analysis Methods"
+        },
+        {
+          "line": 625,
+          "heading": "Liquidated Damages"
+        },
+        {
+          "line": 645,
+          "heading": "Programming and Contractor's Program"
+        },
+        {
+          "line": 667,
+          "heading": "Practical Completion"
+        },
+        {
+          "line": 687,
+          "heading": "Defects Liability Period"
+        },
+        {
+          "line": 707,
+          "heading": "Final Completion and Final Account"
+        },
+        {
+          "line": 727,
+          "heading": "Delay and Disruption Claims"
+        },
+        {
+          "line": 747,
+          "heading": "Contractual Claims Process"
+        },
+        {
+          "line": 767,
+          "heading": "Dispute Resolution Mechanisms"
+        },
+        {
+          "line": 790,
+          "heading": "Insurance Requirements in Construction Contracts"
+        },
+        {
+          "line": 810,
+          "heading": "Bank Guarantees and Retention"
+        },
+        {
+          "line": 832,
+          "heading": "Work Health and Safety Obligations"
+        },
+        {
+          "line": 852,
+          "heading": "Termination and Suspension"
+        },
+        {
+          "line": 872,
+          "heading": "Building and Construction Industry Regulation"
+        },
+        {
+          "line": 895,
+          "heading": "Unfair Contract Terms in Construction"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/cost-management-principles.md",
+      "sha256": "c85afd734ce9bc6ca20d410779b2c49f0eaff8e8a328ad596094b61a76e5f56b",
+      "bytes": 92263,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Cost Management Principles \u2014 Residential"
+        },
+        {
+          "line": 35,
+          "heading": "1. The residential cost plan in HIA Schedule of Allowances format"
+        },
+        {
+          "line": 80,
+          "heading": "2. Total project cost vs construction cost"
+        },
+        {
+          "line": 101,
+          "heading": "3. PC sums (prime cost items)"
+        },
+        {
+          "line": 134,
+          "heading": "4. Owner-supplied items and allowances"
+        },
+        {
+          "line": 173,
+          "heading": "5. Contingency \u2014 the 5\u201310% band"
+        },
+        {
+          "line": 217,
+          "heading": "6. Variations under HIA Schedule of Variations"
+        },
+        {
+          "line": 240,
+          "heading": "7. Progress claim assessment against HIA stage-payment schedule"
+        },
+        {
+          "line": 277,
+          "heading": "8. GST in residential cost reporting"
+        },
+        {
+          "line": 294,
+          "heading": "9. Role-divergent cost responsibilities"
+        },
+        {
+          "line": 315,
+          "heading": "10. State callouts (graceful degradation per AGENTS.md \u00a78)"
+        },
+        {
+          "line": 327,
+          "heading": "11. Cost reporting cadence and structure"
+        },
+        {
+          "line": 354,
+          "heading": "12. Cashflow and the residential S-curve"
+        },
+        {
+          "line": 371,
+          "heading": "13. What this seed is and is not"
+        },
+        {
+          "line": 390,
+          "heading": "See also"
+        },
+        {
+          "line": 413,
+          "heading": "Commercial and Non-Residential Expansion"
+        },
+        {
+          "line": 415,
+          "heading": "Cost Planning Fundamentals"
+        },
+        {
+          "line": 432,
+          "heading": "Contingency Allowances by Project Type"
+        },
+        {
+          "line": 458,
+          "heading": "Design Contingency vs Construction Contingency"
+        },
+        {
+          "line": 474,
+          "heading": "Budget Structure and Trade Packages"
+        },
+        {
+          "line": 496,
+          "heading": "Cost Reporting and Forecast Management"
+        },
+        {
+          "line": 523,
+          "heading": "Progress Claims and Payment Assessment"
+        },
+        {
+          "line": 546,
+          "heading": "Variations \u2014 Types and Assessment"
+        },
+        {
+          "line": 570,
+          "heading": "Provisional Sums \u2014 Defined and Undefined"
+        },
+        {
+          "line": 591,
+          "heading": "Rise and Fall (Escalation)"
+        },
+        {
+          "line": 614,
+          "heading": "Cashflow Forecasting"
+        },
+        {
+          "line": 637,
+          "heading": "Value Engineering"
+        },
+        {
+          "line": 659,
+          "heading": "Quantity Surveying and Elemental Cost Plans"
+        },
+        {
+          "line": 685,
+          "heading": "Tender Budget vs Contract Sum Reconciliation"
+        },
+        {
+          "line": 706,
+          "heading": "Head Contract vs Subcontract Cost Management"
+        },
+        {
+          "line": 727,
+          "heading": "Insurance and Bonds in Construction"
+        },
+        {
+          "line": 747,
+          "heading": "GST and Tax Treatment in Cost Reporting"
+        },
+        {
+          "line": 766,
+          "heading": "Final Account Settlement"
+        },
+        {
+          "line": 788,
+          "heading": "Cost Benchmarking"
+        },
+        {
+          "line": 813,
+          "heading": "Feasibility Stage Estimates"
+        },
+        {
+          "line": 836,
+          "heading": "Risk-Adjusted Budgets"
+        },
+        {
+          "line": 861,
+          "heading": "Dispute Resolution Cost Implications"
+        },
+        {
+          "line": 885,
+          "heading": "Retention and Defects Liability"
+        },
+        {
+          "line": 914,
+          "heading": "Decision catalog (HITL)"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/defects-and-dlp-guide.md",
+      "sha256": "eaea7272a3f7ce4d406e25ff7be5f71525fd2ebf16f58dcae225bd5a517f55dc",
+      "bytes": 22215,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Defects, DLP, and warranty guide"
+        },
+        {
+          "line": 22,
+          "heading": "1. DLP overview"
+        },
+        {
+          "line": 46,
+          "heading": "2. Common residential defect types"
+        },
+        {
+          "line": 48,
+          "heading": "2.1 Efflorescence"
+        },
+        {
+          "line": 58,
+          "heading": "2.2 Cracks \u2014 hairline vs structural"
+        },
+        {
+          "line": 70,
+          "heading": "2.3 Balcony waterproofing failure"
+        },
+        {
+          "line": 82,
+          "heading": "2.4 Tile drumming (debonded tiles)"
+        },
+        {
+          "line": 92,
+          "heading": "2.5 Paint defects"
+        },
+        {
+          "line": 106,
+          "heading": "3. Defect tracking"
+        },
+        {
+          "line": 139,
+          "heading": "4. Role-aware warranty obligations"
+        },
+        {
+          "line": 141,
+          "heading": "4.1 Owner-builder"
+        },
+        {
+          "line": 153,
+          "heading": "4.2 Builder \u2014 HOW claim mechanics and warranty on sale"
+        },
+        {
+          "line": 173,
+          "heading": "5. State callouts"
+        },
+        {
+          "line": 183,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 197,
+          "heading": "Low-confidence flags"
+        },
+        {
+          "line": 206,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/electrical-services-guide.md",
+      "sha256": "1aae0429b093fd998ef4a2e811d38bc41fd26169286bf49e30aadd61953ef22d",
+      "bytes": 14860,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Electrical Services Guide"
+        },
+        {
+          "line": 18,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 36,
+          "heading": "Activation"
+        },
+        {
+          "line": 53,
+          "heading": "Electrical evidence sweep"
+        },
+        {
+          "line": 76,
+          "heading": "Supply, demand and resilience"
+        },
+        {
+          "line": 92,
+          "heading": "Distribution, protection and access"
+        },
+        {
+          "line": 106,
+          "heading": "Lighting and controls"
+        },
+        {
+          "line": 121,
+          "heading": "Generation, storage and EV infrastructure"
+        },
+        {
+          "line": 136,
+          "heading": "Life-safety and specialist interfaces"
+        },
+        {
+          "line": 149,
+          "heading": "Refurbishment and live work"
+        },
+        {
+          "line": 165,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 174,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 189,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 201,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 211,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 226,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 237,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 245,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 259,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 269,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 290,
+          "heading": "Construction, commissioning and handover"
+        },
+        {
+          "line": 302,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 309,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/finishes-residential.md",
+      "sha256": "e8cb5f9aa414aa9ef05ea150b0e10c20f5471264526f6dad0c128b3b0df11fd6",
+      "bytes": 25042,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Trade seed \u2014 Finishes (residential)"
+        },
+        {
+          "line": 24,
+          "heading": "External envelope"
+        },
+        {
+          "line": 26,
+          "heading": "Brick veneer"
+        },
+        {
+          "line": 45,
+          "heading": "Rendered masonry and texture coat"
+        },
+        {
+          "line": 54,
+          "heading": "Fibre cement sheet (FC sheet)"
+        },
+        {
+          "line": 64,
+          "heading": "Weatherboard / timber cladding"
+        },
+        {
+          "line": 74,
+          "heading": "Roofing"
+        },
+        {
+          "line": 76,
+          "heading": "Roof tile systems"
+        },
+        {
+          "line": 90,
+          "heading": "Metal sheet roofing (Colorbond / Zincalume)"
+        },
+        {
+          "line": 101,
+          "heading": "Flat roofs and membrane systems"
+        },
+        {
+          "line": 118,
+          "heading": "Internal linings"
+        },
+        {
+          "line": 120,
+          "heading": "Plasterboard (gypsum board)"
+        },
+        {
+          "line": 139,
+          "heading": "Wet area waterproofing"
+        },
+        {
+          "line": 141,
+          "heading": "Regulatory requirement"
+        },
+        {
+          "line": 155,
+          "heading": "Application requirements"
+        },
+        {
+          "line": 162,
+          "heading": "Inspection gate"
+        },
+        {
+          "line": 170,
+          "heading": "Tiling"
+        },
+        {
+          "line": 172,
+          "heading": "Substrate preparation"
+        },
+        {
+          "line": 180,
+          "heading": "Adhesive and grout selection"
+        },
+        {
+          "line": 185,
+          "heading": "Expansion and movement joints"
+        },
+        {
+          "line": 194,
+          "heading": "Common defects"
+        },
+        {
+          "line": 203,
+          "heading": "Joinery"
+        },
+        {
+          "line": 205,
+          "heading": "Kitchen cabinetry"
+        },
+        {
+          "line": 215,
+          "heading": "Wardrobes and built-in cabinetry"
+        },
+        {
+          "line": 219,
+          "heading": "Window and door joinery (aluminium and timber)"
+        },
+        {
+          "line": 229,
+          "heading": "Glazing"
+        },
+        {
+          "line": 231,
+          "heading": "Safety glazing requirements"
+        },
+        {
+          "line": 244,
+          "heading": "Double glazing and energy performance"
+        },
+        {
+          "line": 253,
+          "heading": "Flooring"
+        },
+        {
+          "line": 255,
+          "heading": "Timber flooring (solid and engineered)"
+        },
+        {
+          "line": 266,
+          "heading": "Luxury vinyl plank / tile (LVP / LVT)"
+        },
+        {
+          "line": 273,
+          "heading": "Carpet"
+        },
+        {
+          "line": 282,
+          "heading": "Polished concrete"
+        },
+        {
+          "line": 293,
+          "heading": "Common defects at key trade interfaces"
+        },
+        {
+          "line": 304,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 321,
+          "heading": "Low-confidence flags"
+        },
+        {
+          "line": 331,
+          "heading": "Decision catalog (HITL)"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/fire-life-safety-guide.md",
+      "sha256": "513a3ca7819aaf863f33463fdcdc0e7137c2634440cf39a309528e4cd895ca88",
+      "bytes": 14610,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Fire and Life-Safety Guide"
+        },
+        {
+          "line": 18,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 33,
+          "heading": "Activation"
+        },
+        {
+          "line": 48,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 69,
+          "heading": "Compliance strategy and responsibility"
+        },
+        {
+          "line": 87,
+          "heading": "Egress and occupant safety"
+        },
+        {
+          "line": 99,
+          "heading": "Passive fire protection"
+        },
+        {
+          "line": 114,
+          "heading": "Active systems and water supply"
+        },
+        {
+          "line": 125,
+          "heading": "Smoke control, controls and cause and effect"
+        },
+        {
+          "line": 141,
+          "heading": "Existing buildings, refurbishment and remediation"
+        },
+        {
+          "line": 156,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 167,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 179,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 191,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 202,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 215,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 226,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 234,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 247,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 257,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 277,
+          "heading": "Construction verification and integrated testing"
+        },
+        {
+          "line": 289,
+          "heading": "Handover and operations"
+        },
+        {
+          "line": 297,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 304,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/geotechnical-guide.md",
+      "sha256": "8f97f060f06efe86183d7931d55829693f2c1abadafc47b6ef7899ddcb46d1b6",
+      "bytes": 5446,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Geotechnical Engineering"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 30,
+          "heading": "Activation"
+        },
+        {
+          "line": 37,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 44,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 51,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 64,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 72,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 80,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 88,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 96,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 104,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 112,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 119,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 125,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/hydraulic-services-guide.md",
+      "sha256": "412ca04901e2ab7e0a39c08561f34f607940186fd25acdf0dc2d44350321253c",
+      "bytes": 18720,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 15,
+          "heading": "Hydraulic Services Guide"
+        },
+        {
+          "line": 17,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 33,
+          "heading": "When to activate this guide"
+        },
+        {
+          "line": 54,
+          "heading": "Source hierarchy and evidence discipline"
+        },
+        {
+          "line": 70,
+          "heading": "Hydraulic evidence sweep"
+        },
+        {
+          "line": 91,
+          "heading": "System map"
+        },
+        {
+          "line": 93,
+          "heading": "Potable and non-potable water"
+        },
+        {
+          "line": 102,
+          "heading": "Sanitary plumbing and sewer"
+        },
+        {
+          "line": 111,
+          "heading": "Hot water"
+        },
+        {
+          "line": 117,
+          "heading": "Trade waste"
+        },
+        {
+          "line": 126,
+          "heading": "Stormwater and roof drainage"
+        },
+        {
+          "line": 137,
+          "heading": "Gas"
+        },
+        {
+          "line": 143,
+          "heading": "Fire-water boundary"
+        },
+        {
+          "line": 156,
+          "heading": "Refurbishment and commercial fit-out overlay"
+        },
+        {
+          "line": 176,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 185,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 199,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 210,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 220,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 233,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 243,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 251,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 264,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 273,
+          "heading": "Consultant request for fee proposal"
+        },
+        {
+          "line": 299,
+          "heading": "Consultant deliverables"
+        },
+        {
+          "line": 318,
+          "heading": "Hydraulic trade tender"
+        },
+        {
+          "line": 330,
+          "heading": "Design review and coordination controls"
+        },
+        {
+          "line": 347,
+          "heading": "Construction, testing and handover"
+        },
+        {
+          "line": 358,
+          "heading": "Common failure modes"
+        },
+        {
+          "line": 372,
+          "heading": "Low-confidence and escalation flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/ict-av-security-guide.md",
+      "sha256": "e69d56fcc9a9725b5a8a1cfd417597234531018f60a780419163a58b197d6ec2",
+      "bytes": 13351,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "ICT, Audiovisual and Security Guide"
+        },
+        {
+          "line": 18,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 31,
+          "heading": "Activation and scope control"
+        },
+        {
+          "line": 47,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 66,
+          "heading": "Functional brief and responsibility matrix"
+        },
+        {
+          "line": 83,
+          "heading": "ICT rooms, pathways and cabling"
+        },
+        {
+          "line": 100,
+          "heading": "Audiovisual systems"
+        },
+        {
+          "line": 113,
+          "heading": "Electronic security"
+        },
+        {
+          "line": 129,
+          "heading": "Networks, integration and cybersecurity"
+        },
+        {
+          "line": 141,
+          "heading": "Refurbishment, migration and live cutover"
+        },
+        {
+          "line": 157,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 166,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 179,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 188,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 196,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 207,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 217,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 224,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 235,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 244,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 262,
+          "heading": "Construction, commissioning and handover"
+        },
+        {
+          "line": 283,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 290,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/industrial-construction-guide.md",
+      "sha256": "cf03c345ee0e3d53f490e56133cf6ac91a68cc66979253f63c012877607f34ba",
+      "bytes": 11616,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Industrial Construction Guide"
+        },
+        {
+          "line": 19,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 35,
+          "heading": "Activation and subtype control"
+        },
+        {
+          "line": 53,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 79,
+          "heading": "Operational brief and basis of design"
+        },
+        {
+          "line": 99,
+          "heading": "Site, planning and authority interfaces"
+        },
+        {
+          "line": 117,
+          "heading": "Building, process and services coordination"
+        },
+        {
+          "line": 137,
+          "heading": "Procurement and packaging"
+        },
+        {
+          "line": 158,
+          "heading": "Construction in operational environments"
+        },
+        {
+          "line": 175,
+          "heading": "Commissioning and operational readiness"
+        },
+        {
+          "line": 193,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 206,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 224,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/infrastructure-construction-guide.md",
+      "sha256": "c459f0b208cce7bc338b2b28bfd7cb5640f92697000eab6cd8a0b79bab7314b9",
+      "bytes": 13576,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Infrastructure Construction Guide"
+        },
+        {
+          "line": 19,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 44,
+          "heading": "Activation and subtype control"
+        },
+        {
+          "line": 66,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 88,
+          "heading": "Authority interfaces and network operators"
+        },
+        {
+          "line": 114,
+          "heading": "Possessions, outages and live-network access"
+        },
+        {
+          "line": 137,
+          "heading": "Safety accreditation and worker competency"
+        },
+        {
+          "line": 159,
+          "heading": "Linear works, land access and utilities"
+        },
+        {
+          "line": 182,
+          "heading": "Design, packaging and procurement"
+        },
+        {
+          "line": 206,
+          "heading": "Construction in a live network"
+        },
+        {
+          "line": 227,
+          "heading": "Commissioning into a live network"
+        },
+        {
+          "line": 250,
+          "heading": "Handover, operability and residual risk"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/institution-construction-guide.md",
+      "sha256": "fded43f22ca1cd89f21507e12b15078c9c58f7bb158d76b1779acd2278fa7578",
+      "bytes": 15355,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Institution Construction Guide"
+        },
+        {
+          "line": 19,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 43,
+          "heading": "Activation and subtype control"
+        },
+        {
+          "line": 70,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 93,
+          "heading": "Public procurement and probity"
+        },
+        {
+          "line": 119,
+          "heading": "Operating calendar and live-environment staging"
+        },
+        {
+          "line": 143,
+          "heading": "Child protection, security clearance and site separation"
+        },
+        {
+          "line": 166,
+          "heading": "Stakeholder governance"
+        },
+        {
+          "line": 189,
+          "heading": "Accessibility and inclusion beyond minimum"
+        },
+        {
+          "line": 210,
+          "heading": "Specialist facility standards"
+        },
+        {
+          "line": 253,
+          "heading": "Construction, commissioning and handover"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/landscape-architecture-guide.md",
+      "sha256": "f9236baa499db7d17889ad6ffe0fbdc5a531d719bc8a4d77116ee272f940c0dd",
+      "bytes": 4908,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Landscape Architecture"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 30,
+          "heading": "Activation"
+        },
+        {
+          "line": 36,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 42,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 49,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 57,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 64,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 72,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 79,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 87,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 94,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 102,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 109,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 114,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/mechanical-services-guide.md",
+      "sha256": "206eb986d93ba4dc64f2be00d6d3ea1374c89046b4c8ae08bfb7a21b19588d0f",
+      "bytes": 30833,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Mechanical Services Technical Guide"
+        },
+        {
+          "line": 18,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 37,
+          "heading": "When to activate this guide"
+        },
+        {
+          "line": 58,
+          "heading": "Source hierarchy and evidence discipline"
+        },
+        {
+          "line": 74,
+          "heading": "Mechanical evidence sweep"
+        },
+        {
+          "line": 105,
+          "heading": "System map"
+        },
+        {
+          "line": 110,
+          "heading": "Heating and cooling"
+        },
+        {
+          "line": 126,
+          "heading": "Outdoor air and indoor air quality"
+        },
+        {
+          "line": 143,
+          "heading": "Local exhaust"
+        },
+        {
+          "line": 159,
+          "heading": "Car-park and enclosed-vehicle areas"
+        },
+        {
+          "line": 173,
+          "heading": "Smoke control and fire interfaces"
+        },
+        {
+          "line": 191,
+          "heading": "Controls, BMS and metering"
+        },
+        {
+          "line": 208,
+          "heading": "Refrigerant, condensate and water interfaces"
+        },
+        {
+          "line": 221,
+          "heading": "Existing buildings and live environments"
+        },
+        {
+          "line": 236,
+          "heading": "Building-class and project overlays"
+        },
+        {
+          "line": 238,
+          "heading": "Class 1 and Class 10 residential work"
+        },
+        {
+          "line": 246,
+          "heading": "Class 2 and mixed-use residential work"
+        },
+        {
+          "line": 266,
+          "heading": "Commercial, industrial and institutional work"
+        },
+        {
+          "line": 275,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 293,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 302,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 317,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 330,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 341,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 355,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 369,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 379,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 394,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 405,
+          "heading": "Consultant request for fee proposal"
+        },
+        {
+          "line": 429,
+          "heading": "Mechanical contractor tender"
+        },
+        {
+          "line": 458,
+          "heading": "Mechanical design review"
+        },
+        {
+          "line": 464,
+          "heading": "Document control"
+        },
+        {
+          "line": 470,
+          "heading": "Brief and design basis"
+        },
+        {
+          "line": 481,
+          "heading": "System completeness"
+        },
+        {
+          "line": 494,
+          "heading": "Coordination"
+        },
+        {
+          "line": 509,
+          "heading": "Compliance and responsibility"
+        },
+        {
+          "line": 516,
+          "heading": "Constructability and commissioning readiness"
+        },
+        {
+          "line": 537,
+          "heading": "Construction and delivery controls"
+        },
+        {
+          "line": 556,
+          "heading": "Commissioning and handover"
+        },
+        {
+          "line": 578,
+          "heading": "Common failure modes"
+        },
+        {
+          "line": 601,
+          "heading": "Related platform knowledge"
+        },
+        {
+          "line": 620,
+          "heading": "Current authoritative verification points"
+        },
+        {
+          "line": 643,
+          "heading": "Low-confidence and escalation flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/mep-residential.md",
+      "sha256": "636390a8fc7a8b0275fcc744f31a4d05bc6f94da770c25257ac4d059ca57ea11",
+      "bytes": 14748,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 18,
+          "heading": "Trade seed \u2014 MEP (residential)"
+        },
+        {
+          "line": 26,
+          "heading": "Scope boundary and deep-guide handoffs"
+        },
+        {
+          "line": 48,
+          "heading": "Hot water systems"
+        },
+        {
+          "line": 50,
+          "heading": "System types"
+        },
+        {
+          "line": 63,
+          "heading": "Sizing"
+        },
+        {
+          "line": 72,
+          "heading": "Compliance points"
+        },
+        {
+          "line": 80,
+          "heading": "Inspection gate"
+        },
+        {
+          "line": 86,
+          "heading": "Gas"
+        },
+        {
+          "line": 88,
+          "heading": "System overview"
+        },
+        {
+          "line": 95,
+          "heading": "Type A vs Type B appliances"
+        },
+        {
+          "line": 100,
+          "heading": "Sizing and pressure"
+        },
+        {
+          "line": 106,
+          "heading": "Key compliance"
+        },
+        {
+          "line": 114,
+          "heading": "LPG specific"
+        },
+        {
+          "line": 120,
+          "heading": "Electrical"
+        },
+        {
+          "line": 122,
+          "heading": "Switchboard and supply"
+        },
+        {
+          "line": 132,
+          "heading": "Circuit layout for Class 1a"
+        },
+        {
+          "line": 140,
+          "heading": "Safety switches (RCDs)"
+        },
+        {
+          "line": 144,
+          "heading": "Key compliance"
+        },
+        {
+          "line": 151,
+          "heading": "EV charging provision"
+        },
+        {
+          "line": 157,
+          "heading": "NBN / communications"
+        },
+        {
+          "line": 159,
+          "heading": "Pit-and-pipe (conduit infrastructure)"
+        },
+        {
+          "line": 168,
+          "heading": "Technology types"
+        },
+        {
+          "line": 176,
+          "heading": "Internal cabling"
+        },
+        {
+          "line": 184,
+          "heading": "Mechanical ventilation"
+        },
+        {
+          "line": 186,
+          "heading": "Wet area exhaust"
+        },
+        {
+          "line": 197,
+          "heading": "Kitchen rangehood"
+        },
+        {
+          "line": 205,
+          "heading": "Whole-house ventilation"
+        },
+        {
+          "line": 213,
+          "heading": "Air conditioning"
+        },
+        {
+          "line": 224,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 238,
+          "heading": "Low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/mixed-use-construction-guide.md",
+      "sha256": "f58c552d3735b5a895cf77e09cebda8dd9998b68762b059c17d77348f6c4e06c",
+      "bytes": 14920,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Mixed-Use Construction Guide"
+        },
+        {
+          "line": 19,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 45,
+          "heading": "Activation and subtype control"
+        },
+        {
+          "line": 71,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 101,
+          "heading": "Multiple classifications in one structure"
+        },
+        {
+          "line": 128,
+          "heading": "Fire and acoustic separation between uses"
+        },
+        {
+          "line": 155,
+          "heading": "Stratification, cores and separate services"
+        },
+        {
+          "line": 182,
+          "heading": "Strata, ownership and tenancy interfaces"
+        },
+        {
+          "line": 207,
+          "heading": "Staged handover by use"
+        },
+        {
+          "line": 233,
+          "heading": "Heritage and change of use"
+        },
+        {
+          "line": 256,
+          "heading": "Construction, commissioning and residual risk"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/multi-dwelling-guide.md",
+      "sha256": "fba6d7ac47a52c2fc408354bb073ab4f4c52fd40422ef00ee20bb12669254b87",
+      "bytes": 19077,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Archetype seed - Multi-dwelling"
+        },
+        {
+          "line": 24,
+          "heading": "Scope of this archetype"
+        },
+        {
+          "line": 41,
+          "heading": "Classification gate - do this first"
+        },
+        {
+          "line": 67,
+          "heading": "Planning and approval posture"
+        },
+        {
+          "line": 87,
+          "heading": "Party-wall fire-rating"
+        },
+        {
+          "line": 114,
+          "heading": "Separate metering and services"
+        },
+        {
+          "line": 149,
+          "heading": "Infrastructure contributions and authorities"
+        },
+        {
+          "line": 168,
+          "heading": "Staging guidance"
+        },
+        {
+          "line": 196,
+          "heading": "Design and documentation posture"
+        },
+        {
+          "line": 216,
+          "heading": "Cost posture"
+        },
+        {
+          "line": 242,
+          "heading": "Programme posture"
+        },
+        {
+          "line": 259,
+          "heading": "Procurement posture"
+        },
+        {
+          "line": 276,
+          "heading": "Handover and defects posture"
+        },
+        {
+          "line": 293,
+          "heading": "Risk baseline"
+        },
+        {
+          "line": 311,
+          "heading": "Non-NSW callouts"
+        },
+        {
+          "line": 321,
+          "heading": "Agent behaviour under this archetype"
+        },
+        {
+          "line": 332,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/multi-residential-apartments-guide.md",
+      "sha256": "22a7f800f1c03285288e4af8daee94d56ee5937bab8548c418764bff50634643",
+      "bytes": 83336,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 12,
+          "heading": "Multi-Residential/Apartments Guide"
+        },
+        {
+          "line": 14,
+          "heading": "Building Classification for Multi-Residential Projects"
+        },
+        {
+          "line": 16,
+          "heading": "Class 2 \u2014 Apartment Buildings"
+        },
+        {
+          "line": 33,
+          "heading": "Class 3 \u2014 Residential Buildings (Transient/Communal)"
+        },
+        {
+          "line": 50,
+          "heading": "Class 4 \u2014 Dwelling Within Another Classification"
+        },
+        {
+          "line": 65,
+          "heading": "Fire Safety in Multi-Residential Buildings"
+        },
+        {
+          "line": 67,
+          "heading": "Type of Construction and Fire Resistance Levels"
+        },
+        {
+          "line": 84,
+          "heading": "SOU Separation \u2014 Fire and Acoustic"
+        },
+        {
+          "line": 107,
+          "heading": "Fire Detection and Alarm Systems"
+        },
+        {
+          "line": 127,
+          "heading": "Sprinkler Systems in Apartment Buildings"
+        },
+        {
+          "line": 145,
+          "heading": "Egress from Multi-Residential Buildings"
+        },
+        {
+          "line": 165,
+          "heading": "Accessibility and Universal Design"
+        },
+        {
+          "line": 167,
+          "heading": "NCC Accessibility Requirements for Class 2"
+        },
+        {
+          "line": 187,
+          "heading": "Adaptable Housing and Livable Housing Design Guidelines"
+        },
+        {
+          "line": 210,
+          "heading": "Waterproofing in Multi-Residential Buildings"
+        },
+        {
+          "line": 212,
+          "heading": "Wet Area Waterproofing"
+        },
+        {
+          "line": 235,
+          "heading": "Balcony and External Waterproofing"
+        },
+        {
+          "line": 261,
+          "heading": "Roof Waterproofing and Trafficable Roofs"
+        },
+        {
+          "line": 285,
+          "heading": "Facade and Cladding Systems"
+        },
+        {
+          "line": 287,
+          "heading": "Facade Selection for Multi-Residential Buildings"
+        },
+        {
+          "line": 316,
+          "heading": "Weatherproofing and Facade Defects"
+        },
+        {
+          "line": 337,
+          "heading": "Services Design for Apartments"
+        },
+        {
+          "line": 339,
+          "heading": "Vertical Risers and Service Distribution"
+        },
+        {
+          "line": 361,
+          "heading": "Metering and Utility Connections"
+        },
+        {
+          "line": 383,
+          "heading": "Mechanical Ventilation in Apartments"
+        },
+        {
+          "line": 408,
+          "heading": "Strata Title and Common Property"
+        },
+        {
+          "line": 410,
+          "heading": "Strata Title Overview"
+        },
+        {
+          "line": 437,
+          "heading": "Common Property Defects and Statutory Warranties"
+        },
+        {
+          "line": 462,
+          "heading": "Cost Planning for Multi-Residential Projects"
+        },
+        {
+          "line": 464,
+          "heading": "Feasibility Cost Benchmarks"
+        },
+        {
+          "line": 493,
+          "heading": "Trade Package Structure"
+        },
+        {
+          "line": 549,
+          "heading": "Quality and Defect Management"
+        },
+        {
+          "line": 551,
+          "heading": "Common Defect Categories in Apartment Buildings"
+        },
+        {
+          "line": 579,
+          "heading": "Quality Hold Points for Apartment Construction"
+        },
+        {
+          "line": 618,
+          "heading": "Energy Efficiency and Sustainability"
+        },
+        {
+          "line": 620,
+          "heading": "NCC Energy Efficiency Requirements for Class 2"
+        },
+        {
+          "line": 645,
+          "heading": "Embedded Energy and Sustainability Considerations"
+        },
+        {
+          "line": 665,
+          "heading": "Project Delivery Considerations"
+        },
+        {
+          "line": 667,
+          "heading": "Apartment-Specific Programming Considerations"
+        },
+        {
+          "line": 697,
+          "heading": "Design and Construct (D&C) Delivery for Apartments"
+        },
+        {
+          "line": 720,
+          "heading": "Handover and Defects Liability Period"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/ncc-reference-guide.md",
+      "sha256": "28df1518f9c6f0769133939a780fe07b79368be2dea6c284c743776e70a7bb27",
+      "bytes": 148396,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "NCC reference guide \u2014 Class 1 and Class 10"
+        },
+        {
+          "line": 22,
+          "heading": "1. What the NCC is"
+        },
+        {
+          "line": 33,
+          "heading": "2. Building classification \u2014 Class 1 and Class 10"
+        },
+        {
+          "line": 35,
+          "heading": "Class 1a \u2014 Detached dwelling"
+        },
+        {
+          "line": 46,
+          "heading": "Class 1b \u2014 Guest house or bed and breakfast"
+        },
+        {
+          "line": 54,
+          "heading": "Class 10a \u2014 Non-habitable structure"
+        },
+        {
+          "line": 68,
+          "heading": "Class 10b \u2014 Swimming pool, fence, mast, antenna, retaining wall"
+        },
+        {
+          "line": 75,
+          "heading": "Class 2\u20139 \u2014 Out of scope for SiteWise residential"
+        },
+        {
+          "line": 87,
+          "heading": "3. Compliance pathways \u2014 DTS and Performance Solution"
+        },
+        {
+          "line": 91,
+          "heading": "Deemed-to-Satisfy (DTS)"
+        },
+        {
+          "line": 101,
+          "heading": "Performance Solution (PS)"
+        },
+        {
+          "line": 115,
+          "heading": "4. Key NCC Volume Two provisions \u2014 Class 1a overview"
+        },
+        {
+          "line": 136,
+          "heading": "5. Class 10a overview \u2014 selected DTS provisions"
+        },
+        {
+          "line": 144,
+          "heading": "6. NCC 2022 in NSW \u2014 adoption context"
+        },
+        {
+          "line": 153,
+          "heading": "7. The certifier's role"
+        },
+        {
+          "line": 162,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 174,
+          "heading": "Low-confidence flags"
+        },
+        {
+          "line": 182,
+          "heading": "See also"
+        },
+        {
+          "line": 192,
+          "heading": "Commercial and Non-Residential Expansion"
+        },
+        {
+          "line": 194,
+          "heading": "NCC Overview and Regulatory Framework"
+        },
+        {
+          "line": 196,
+          "heading": "The NCC and State Adoption"
+        },
+        {
+          "line": 212,
+          "heading": "Hierarchical Compliance Framework (DTS and Performance Solutions)"
+        },
+        {
+          "line": 223,
+          "heading": "Building Classifications (Classes 1-10)"
+        },
+        {
+          "line": 225,
+          "heading": "Classification Definitions (Classes 1-10)"
+        },
+        {
+          "line": 240,
+          "heading": "Mixed-Use Buildings and Classification Boundaries"
+        },
+        {
+          "line": 252,
+          "heading": "Performance-Based Design and Alternative Solutions"
+        },
+        {
+          "line": 254,
+          "heading": "Assessment Methods for Performance Solutions"
+        },
+        {
+          "line": 268,
+          "heading": "Fire Engineering Performance Solutions"
+        },
+        {
+          "line": 279,
+          "heading": "Documentation and Peer Review of Performance Solutions"
+        },
+        {
+          "line": 291,
+          "heading": "Fire Resistance and Type of Construction"
+        },
+        {
+          "line": 293,
+          "heading": "Types of Construction (A, B, C)"
+        },
+        {
+          "line": 306,
+          "heading": "Fire Resistance Level (FRL) Requirements"
+        },
+        {
+          "line": 318,
+          "heading": "Sprinkler Concessions for Type of Construction"
+        },
+        {
+          "line": 329,
+          "heading": "Compartmentation and Fire Separation"
+        },
+        {
+          "line": 331,
+          "heading": "Fire Compartment Sizes and Classification Separation"
+        },
+        {
+          "line": 344,
+          "heading": "SOU Separation and Service Penetrations"
+        },
+        {
+          "line": 357,
+          "heading": "Protection of Openings in Fire-Resisting Construction"
+        },
+        {
+          "line": 368,
+          "heading": "Means of Egress"
+        },
+        {
+          "line": 370,
+          "heading": "Travel Distances and Number of Exits"
+        },
+        {
+          "line": 387,
+          "heading": "Fire-Isolated Exits, Emergency Lighting, and Accessible Egress"
+        },
+        {
+          "line": 399,
+          "heading": "Fire Detection, Warning, and Suppression Systems"
+        },
+        {
+          "line": 401,
+          "heading": "Smoke Detection and Alarm Requirements"
+        },
+        {
+          "line": 415,
+          "heading": "Automatic Fire Sprinkler Systems"
+        },
+        {
+          "line": 427,
+          "heading": "Fire Hydrant and Hose Reel Systems"
+        },
+        {
+          "line": 439,
+          "heading": "Facade and External Wall Fire Safety"
+        },
+        {
+          "line": 441,
+          "heading": "External Wall Fire Resistance and Boundary Distance"
+        },
+        {
+          "line": 455,
+          "heading": "Cladding Combustibility Requirements"
+        },
+        {
+          "line": 467,
+          "heading": "Spandrel and Slab Edge Fire Protection"
+        },
+        {
+          "line": 479,
+          "heading": "Structural Provisions and Loading"
+        },
+        {
+          "line": 481,
+          "heading": "Performance Requirements and Importance Levels"
+        },
+        {
+          "line": 495,
+          "heading": "Wind Actions"
+        },
+        {
+          "line": 507,
+          "heading": "Earthquake Actions"
+        },
+        {
+          "line": 519,
+          "heading": "Structural Material Standards"
+        },
+        {
+          "line": 521,
+          "heading": "Concrete and Steel Design Standards"
+        },
+        {
+          "line": 536,
+          "heading": "Timber, Masonry, and Fire Resistance of Structural Materials"
+        },
+        {
+          "line": 550,
+          "heading": "Accessibility Requirements"
+        },
+        {
+          "line": 552,
+          "heading": "Accessible Entrances and Paths of Travel"
+        },
+        {
+          "line": 567,
+          "heading": "Accessible Sanitary Facilities, Signage, and Hearing Augmentation"
+        },
+        {
+          "line": 579,
+          "heading": "Access and Egress General Requirements"
+        },
+        {
+          "line": 581,
+          "heading": "Stairways, Ramps, and Barriers"
+        },
+        {
+          "line": 598,
+          "heading": "Pool Barriers and Construction in Flood Hazard Areas"
+        },
+        {
+          "line": 612,
+          "heading": "Damp and Weatherproofing"
+        },
+        {
+          "line": 616,
+          "heading": "Rising Damp Protection and External Weatherproofing"
+        },
+        {
+          "line": 628,
+          "heading": "Wet Area Waterproofing (AS 3740)"
+        },
+        {
+          "line": 640,
+          "heading": "Condensation Management"
+        },
+        {
+          "line": 651,
+          "heading": "Natural Light and Ventilation"
+        },
+        {
+          "line": 655,
+          "heading": "Natural Light Requirements"
+        },
+        {
+          "line": 668,
+          "heading": "Ventilation Requirements and Ceiling Heights"
+        },
+        {
+          "line": 682,
+          "heading": "Sanitary and Other Facilities"
+        },
+        {
+          "line": 686,
+          "heading": "Facility Quantities by Building Classification"
+        },
+        {
+          "line": 699,
+          "heading": "Accessible Facilities and Microbial Control"
+        },
+        {
+          "line": 713,
+          "heading": "Commercial Building Energy Efficiency"
+        },
+        {
+          "line": 717,
+          "heading": "Section J DTS Provisions (J1-J6)"
+        },
+        {
+          "line": 730,
+          "heading": "JV3 Verification Method (Performance-Based Compliance)"
+        },
+        {
+          "line": 741,
+          "heading": "NCC 2022 New Provisions (J5, J6, Renewable and EV Readiness)"
+        },
+        {
+          "line": 752,
+          "heading": "Residential Energy Efficiency (NatHERS and Elemental)"
+        },
+        {
+          "line": 756,
+          "heading": "NatHERS 7-Star Envelope Requirement"
+        },
+        {
+          "line": 769,
+          "heading": "Whole-of-Home Energy Budget"
+        },
+        {
+          "line": 780,
+          "heading": "Elemental Provisions Pathway and EV Readiness"
+        },
+        {
+          "line": 791,
+          "heading": "Class 1 and 10 Building Requirements"
+        },
+        {
+          "line": 795,
+          "heading": "Site Preparation, Earthworks, and Footings"
+        },
+        {
+          "line": 806,
+          "heading": "Framing, Cladding, and Glazing"
+        },
+        {
+          "line": 818,
+          "heading": "Fire Safety, Smoke Alarms, and Bushfire Construction"
+        },
+        {
+          "line": 830,
+          "heading": "Bushfire Construction (AS 3959)"
+        },
+        {
+          "line": 832,
+          "heading": "Bushfire Attack Levels (BAL) Determination"
+        },
+        {
+          "line": 847,
+          "heading": "Construction Requirements by BAL Rating"
+        },
+        {
+          "line": 859,
+          "heading": "Livable Housing Design (NCC 2022)"
+        },
+        {
+          "line": 861,
+          "heading": "Mandatory Silver Level Provisions"
+        },
+        {
+          "line": 877,
+          "heading": "Higher Standards and Implementation Implications"
+        },
+        {
+          "line": 890,
+          "heading": "Plumbing Code of Australia Overview"
+        },
+        {
+          "line": 892,
+          "heading": "Water Supply and Sanitary Drainage Systems"
+        },
+        {
+          "line": 909,
+          "heading": "Stormwater, Heated Water, and Backflow Prevention"
+        },
+        {
+          "line": 923,
+          "heading": "State-Specific Variations and Appendices"
+        },
+        {
+          "line": 925,
+          "heading": "NSW, VIC, and QLD Variations"
+        },
+        {
+          "line": 943,
+          "heading": "WA, SA, TAS, ACT, NT Variations and Practical Implications"
+        },
+        {
+          "line": 956,
+          "heading": "Compliance Pathways and Documentation"
+        },
+        {
+          "line": 958,
+          "heading": "Deemed-to-Satisfy (DTS) Documentation"
+        },
+        {
+          "line": 972,
+          "heading": "Performance Solution Documentation"
+        },
+        {
+          "line": 983,
+          "heading": "Inspections and Occupation Certificates"
+        },
+        {
+          "line": 995,
+          "heading": "Essential Services and Ongoing Compliance"
+        },
+        {
+          "line": 997,
+          "heading": "Annual Fire Safety Statements and State Requirements"
+        },
+        {
+          "line": 1011,
+          "heading": "Maintenance Standards and Owner Responsibilities"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/new-dwelling-guide.md",
+      "sha256": "ff1e23272c7cedc128b7718067f4e598a4af1aa8ddfb600259e4428e720c5de4",
+      "bytes": 25503,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Archetype seed \u2014 New dwelling"
+        },
+        {
+          "line": 24,
+          "heading": "Scope of this archetype"
+        },
+        {
+          "line": 37,
+          "heading": "NCC class context"
+        },
+        {
+          "line": 50,
+          "heading": "The new-dwelling lifecycle \u2014 typical NSW sequence"
+        },
+        {
+          "line": 76,
+          "heading": "Site due diligence \u2014 what a new dwelling triggers"
+        },
+        {
+          "line": 95,
+          "heading": "Planning pathway"
+        },
+        {
+          "line": 119,
+          "heading": "BASIX \u2014 NSW energy and water compliance"
+        },
+        {
+          "line": 123,
+          "heading": "When BASIX applies and binds"
+        },
+        {
+          "line": 130,
+          "heading": "What gets committed"
+        },
+        {
+          "line": 142,
+          "heading": "Builder posture (cross-reference role overlay)"
+        },
+        {
+          "line": 152,
+          "heading": "Common BASIX failure modes"
+        },
+        {
+          "line": 162,
+          "heading": "Non-NSW callout \u2014 BASIX equivalent"
+        },
+        {
+          "line": 171,
+          "heading": "Structural posture \u2014 Class 1a new dwelling"
+        },
+        {
+          "line": 185,
+          "heading": "Structural inspection gates \u2014 Class 1a new dwelling"
+        },
+        {
+          "line": 204,
+          "heading": "Sequencing risks specific to new-dwelling"
+        },
+        {
+          "line": 217,
+          "heading": "Common failure modes \u2014 new-dwelling archetype"
+        },
+        {
+          "line": 230,
+          "heading": "Agent behaviour under this archetype"
+        },
+        {
+          "line": 240,
+          "heading": "See also"
+        },
+        {
+          "line": 262,
+          "heading": "Decision catalog (HITL)"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/non-residential-sustainability-energy-guide.md",
+      "sha256": "5f19731b2f72023dbb3f437874db337d2ac14b78b2b9372373d3e101b17edd1c",
+      "bytes": 13350,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Non-Residential Sustainability and Energy Guide"
+        },
+        {
+          "line": 18,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 34,
+          "heading": "Activation"
+        },
+        {
+          "line": 49,
+          "heading": "Evidence sweep and target register"
+        },
+        {
+          "line": 70,
+          "heading": "Performance brief and design basis"
+        },
+        {
+          "line": 87,
+          "heading": "NCC energy-efficiency coordination"
+        },
+        {
+          "line": 103,
+          "heading": "Voluntary ratings and commitments"
+        },
+        {
+          "line": 119,
+          "heading": "Electrification, generation and demand"
+        },
+        {
+          "line": 135,
+          "heading": "Metering, controls and operational performance"
+        },
+        {
+          "line": 150,
+          "heading": "Materials, embodied impacts and site practices"
+        },
+        {
+          "line": 165,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 174,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 187,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 196,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 205,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 215,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 224,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 232,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 242,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 249,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 268,
+          "heading": "Construction, commissioning and handover"
+        },
+        {
+          "line": 279,
+          "heading": "PMP contribution"
+        },
+        {
+          "line": 286,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/procurement-quoting-guide.md",
+      "sha256": "27aeaf98e2873455f302a27aa26febbb457ac26c3b65dbdc5d76bb8cc9197568",
+      "bytes": 44926,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Procurement & Quoting Guide \u2014 Residential"
+        },
+        {
+          "line": 34,
+          "heading": "1. Residential procurement reality \u2014 informal quoting vs formal tendering"
+        },
+        {
+          "line": 56,
+          "heading": "2. Informal subbie quote comparison \u2014 how the builder selects a trade"
+        },
+        {
+          "line": 92,
+          "heading": "3. Schedule of rates approach in residential"
+        },
+        {
+          "line": 118,
+          "heading": "4. Residential-typical trade scopes and scope traps"
+        },
+        {
+          "line": 150,
+          "heading": "5. Formal procurement pathway \u2014 EOI \u2192 RFT \u2192 tender period \u2192 evaluation \u2192 recommendation"
+        },
+        {
+          "line": 158,
+          "heading": "5.1 EOI (Expression of Interest)"
+        },
+        {
+          "line": 168,
+          "heading": "5.2 RFT (Request for Tender)"
+        },
+        {
+          "line": 185,
+          "heading": "5.3 Tender period \u2014 RFI and addenda"
+        },
+        {
+          "line": 195,
+          "heading": "5.4 Evaluation matrix"
+        },
+        {
+          "line": 235,
+          "heading": "5.5 Recommendation to owner"
+        },
+        {
+          "line": 261,
+          "heading": "6. Tender pack content \u2014 the RFT in detail"
+        },
+        {
+          "line": 291,
+          "heading": "7. Evaluation criteria with weighting discipline"
+        },
+        {
+          "line": 321,
+          "heading": "8. Recommendation discipline"
+        },
+        {
+          "line": 345,
+          "heading": "9. Probity and fairness \u2014 when it matters"
+        },
+        {
+          "line": 380,
+          "heading": "10. Role-divergent escalation routing"
+        },
+        {
+          "line": 404,
+          "heading": "11. State callouts (graceful degradation per AGENTS.md \u00a78)"
+        },
+        {
+          "line": 416,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/procurement-tendering-guide.md",
+      "sha256": "8d64f124f2ecaea3be6c33d985b149607685889ad68f97d0e8383a7e0350f4f9",
+      "bytes": 26935,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 11,
+          "heading": "Procurement & Tendering Guide"
+        },
+        {
+          "line": 13,
+          "heading": "1. Procurement Methods and Strategies"
+        },
+        {
+          "line": 15,
+          "heading": "Construct-Only (Traditional) Procurement"
+        },
+        {
+          "line": 29,
+          "heading": "Design and Construct (D&C) Procurement"
+        },
+        {
+          "line": 43,
+          "heading": "Construction Management (CM) Procurement"
+        },
+        {
+          "line": 57,
+          "heading": "Managing Contractor Procurement"
+        },
+        {
+          "line": 71,
+          "heading": "Early Contractor Involvement (ECI)"
+        },
+        {
+          "line": 85,
+          "heading": "Alliance Contracting"
+        },
+        {
+          "line": 99,
+          "heading": "2. Standard Forms of Contract in Australia"
+        },
+        {
+          "line": 101,
+          "heading": "Comparing AS 4000-1997 and AS 2124-1992"
+        },
+        {
+          "line": 116,
+          "heading": "AS 4902-2000 (Design and Construct) Structure"
+        },
+        {
+          "line": 130,
+          "heading": "ABIC Contracts (Architect Administered)"
+        },
+        {
+          "line": 144,
+          "heading": "3. The Tendering Process Flow"
+        },
+        {
+          "line": 146,
+          "heading": "Expression of Interest (EOI) Phase"
+        },
+        {
+          "line": 160,
+          "heading": "Open vs. Select Tendering"
+        },
+        {
+          "line": 174,
+          "heading": "Tender Period Administration and Probity"
+        },
+        {
+          "line": 190,
+          "heading": "4. Tender Documentation and Deliverables"
+        },
+        {
+          "line": 192,
+          "heading": "Structuring a Request for Tender (RFT) Package"
+        },
+        {
+          "line": 210,
+          "heading": "Essential Returnable Schedules"
+        },
+        {
+          "line": 228,
+          "heading": "Risk Allocation and Baseline Reports"
+        },
+        {
+          "line": 244,
+          "heading": "5. Tender Evaluation and Award"
+        },
+        {
+          "line": 246,
+          "heading": "The Tender Evaluation Matrix"
+        },
+        {
+          "line": 266,
+          "heading": "Normalizing Qualifications and Departures"
+        },
+        {
+          "line": 283,
+          "heading": "Letter of Award vs. Letter of Intent"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/program-scheduling-guide.md",
+      "sha256": "72494bc7f5e36925efb7e5050337520497ad2bb26dafb762abdfe30dd0d50c4f",
+      "bytes": 81608,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Programme scheduling guide - residential"
+        },
+        {
+          "line": 25,
+          "heading": "1. Purpose and scope"
+        },
+        {
+          "line": 39,
+          "heading": "2. Residential programme outputs"
+        },
+        {
+          "line": 64,
+          "heading": "3. Master programme shape"
+        },
+        {
+          "line": 112,
+          "heading": "4. Residential cycle-time examples"
+        },
+        {
+          "line": 135,
+          "heading": "5. Trade duration guidance"
+        },
+        {
+          "line": 163,
+          "heading": "6. Lead-time guidance"
+        },
+        {
+          "line": 187,
+          "heading": "7. Cycle-time annotation discipline"
+        },
+        {
+          "line": 208,
+          "heading": "8. Programme risk triggers"
+        },
+        {
+          "line": 229,
+          "heading": "9. Programme reporting and voice"
+        },
+        {
+          "line": 247,
+          "heading": "10. State callouts"
+        },
+        {
+          "line": 258,
+          "heading": "11. Agent behaviour"
+        },
+        {
+          "line": 271,
+          "heading": "12. See also"
+        },
+        {
+          "line": 296,
+          "heading": "Commercial and Non-Residential Expansion"
+        },
+        {
+          "line": 298,
+          "heading": "Construction Programming Fundamentals"
+        },
+        {
+          "line": 320,
+          "heading": "Types of Construction Programs"
+        },
+        {
+          "line": 344,
+          "heading": "Critical Path Method (CPM)"
+        },
+        {
+          "line": 369,
+          "heading": "Program Preparation and Baseline Setting"
+        },
+        {
+          "line": 398,
+          "heading": "Milestone Planning and Tracking"
+        },
+        {
+          "line": 447,
+          "heading": "Progress Monitoring and Reporting"
+        },
+        {
+          "line": 478,
+          "heading": "Delay Analysis Methods"
+        },
+        {
+          "line": 506,
+          "heading": "Extension of Time (EOT) \u2014 Program Perspective"
+        },
+        {
+          "line": 542,
+          "heading": "Float Ownership and Management"
+        },
+        {
+          "line": 566,
+          "heading": "Look-Ahead Programs and Short-Term Planning"
+        },
+        {
+          "line": 593,
+          "heading": "Construction Sequencing by Project Type"
+        },
+        {
+          "line": 624,
+          "heading": "Weather and Seasonal Planning"
+        },
+        {
+          "line": 655,
+          "heading": "Design Phase Programming"
+        },
+        {
+          "line": 706,
+          "heading": "Procurement Sequencing and the Program"
+        },
+        {
+          "line": 754,
+          "heading": "Program Risk Assessment"
+        },
+        {
+          "line": 795,
+          "heading": "Acceleration and Recovery Programs"
+        },
+        {
+          "line": 824,
+          "heading": "Sectional Completion and Staged Handover"
+        },
+        {
+          "line": 852,
+          "heading": "Commissioning and Handover Programming"
+        },
+        {
+          "line": 891,
+          "heading": "Practical Completion \u2014 Program Perspective"
+        },
+        {
+          "line": 918,
+          "heading": "Resource Loading and Levelling"
+        },
+        {
+          "line": 950,
+          "heading": "As-Built Program Records"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/remediation-due-diligence-guide.md",
+      "sha256": "7422835c2ee9a5589e64fff267e17dcd81e4a8493cb3d742f40d0c9456e8bf2d",
+      "bytes": 100561,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 12,
+          "heading": "Contaminated-Land Remediation and Due Diligence Guide"
+        },
+        {
+          "line": 19,
+          "heading": "Due Diligence Process Overview"
+        },
+        {
+          "line": 45,
+          "heading": "Preliminary Site Assessment (Phase 1)"
+        },
+        {
+          "line": 83,
+          "heading": "Detailed Site Investigation (Phase 2)"
+        },
+        {
+          "line": 127,
+          "heading": "Contamination Types in Australian Construction"
+        },
+        {
+          "line": 162,
+          "heading": "NEPM Framework and Investigation Levels"
+        },
+        {
+          "line": 200,
+          "heading": "State and Territory Regulatory Frameworks"
+        },
+        {
+          "line": 259,
+          "heading": "Remediation Action Plans (RAPs)"
+        },
+        {
+          "line": 313,
+          "heading": "Remediation Technologies and Approaches"
+        },
+        {
+          "line": 369,
+          "heading": "Validation and Verification"
+        },
+        {
+          "line": 407,
+          "heading": "Site Audit and the Auditor Role"
+        },
+        {
+          "line": 442,
+          "heading": "Asbestos Assessment and Management in Construction"
+        },
+        {
+          "line": 496,
+          "heading": "PFAS Contamination \u2014 Assessment and Management"
+        },
+        {
+          "line": 551,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 561,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 571,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 582,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 592,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 601,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 609,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 617,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 628,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 636,
+          "heading": "Cost Management for Remediation Projects"
+        },
+        {
+          "line": 680,
+          "heading": "Due Diligence Reporting for Property Transactions"
+        },
+        {
+          "line": 712,
+          "heading": "Environmental Management Plans"
+        },
+        {
+          "line": 749,
+          "heading": "Acid Sulfate Soils"
+        },
+        {
+          "line": 797,
+          "heading": "Stakeholder and Regulatory Engagement"
+        },
+        {
+          "line": 844,
+          "heading": "Common Remediation Scenarios in Australian Construction"
+        },
+        {
+          "line": 906,
+          "heading": "Regulatory Approvals and Planning Controls"
+        },
+        {
+          "line": 944,
+          "heading": "Long-Term Site Management and Monitoring"
+        },
+        {
+          "line": 995,
+          "heading": "Risk Assessment Approaches for Remediation Projects"
+        },
+        {
+          "line": 1033,
+          "heading": "Remediation in the Construction Program"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/renovation-guide.md",
+      "sha256": "bf5c966f17e52542913465672a4938fb32558133e70a22988be71deb55e0efaf",
+      "bytes": 17561,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 21,
+          "heading": "Archetype seed - Renovation"
+        },
+        {
+          "line": 29,
+          "heading": "Scope of this archetype"
+        },
+        {
+          "line": 47,
+          "heading": "Renovation posture"
+        },
+        {
+          "line": 59,
+          "heading": "Due diligence package"
+        },
+        {
+          "line": 77,
+          "heading": "Latent conditions"
+        },
+        {
+          "line": 103,
+          "heading": "Dilapidation and neighbour management"
+        },
+        {
+          "line": 117,
+          "heading": "Existing services investigation"
+        },
+        {
+          "line": 133,
+          "heading": "Structural intervention"
+        },
+        {
+          "line": 158,
+          "heading": "BASIX baseline for additions"
+        },
+        {
+          "line": 183,
+          "heading": "Heritage and character due diligence"
+        },
+        {
+          "line": 199,
+          "heading": "Live occupancy and staging"
+        },
+        {
+          "line": 212,
+          "heading": "Waterproofing and old-to-new tie-ins"
+        },
+        {
+          "line": 233,
+          "heading": "Procurement and pricing posture"
+        },
+        {
+          "line": 255,
+          "heading": "Renovation risk baseline"
+        },
+        {
+          "line": 275,
+          "heading": "Agent behaviour under this archetype"
+        },
+        {
+          "line": 286,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/residential-construction-guide.md",
+      "sha256": "4a584c5e0645afceae6b0c988b50a62b9a03ec1bc7481735d29b7c6db0c7cadb",
+      "bytes": 79919,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 12,
+          "heading": "Residential Construction Guide"
+        },
+        {
+          "line": 14,
+          "heading": "Residential Building Classifications and Scope"
+        },
+        {
+          "line": 39,
+          "heading": "Site Assessment and Due Diligence"
+        },
+        {
+          "line": 62,
+          "heading": "Residential Approvals and Regulatory Framework"
+        },
+        {
+          "line": 90,
+          "heading": "Residential Contract Selection"
+        },
+        {
+          "line": 114,
+          "heading": "Home Building Insurance and Warranties"
+        },
+        {
+          "line": 146,
+          "heading": "Foundations and Footing Systems"
+        },
+        {
+          "line": 177,
+          "heading": "Structural Framing Systems"
+        },
+        {
+          "line": 204,
+          "heading": "Building Envelope and Weatherproofing"
+        },
+        {
+          "line": 229,
+          "heading": "Energy Efficiency and Thermal Performance"
+        },
+        {
+          "line": 257,
+          "heading": "Wet Area Construction and Waterproofing"
+        },
+        {
+          "line": 283,
+          "heading": "Residential Services \u2014 Hydraulic, Electrical, and Mechanical"
+        },
+        {
+          "line": 317,
+          "heading": "Construction Sequence and Programming for Residential Projects"
+        },
+        {
+          "line": 355,
+          "heading": "Termite Management"
+        },
+        {
+          "line": 382,
+          "heading": "Residential Renovation and Extension Considerations"
+        },
+        {
+          "line": 410,
+          "heading": "Multi-dwelling and ancillary structures"
+        },
+        {
+          "line": 423,
+          "heading": "Party-wall fire rating"
+        },
+        {
+          "line": 446,
+          "heading": "Separate metering and services"
+        },
+        {
+          "line": 471,
+          "heading": "Infrastructure contributions and authorities"
+        },
+        {
+          "line": 491,
+          "heading": "NCC class of an ancillary structure"
+        },
+        {
+          "line": 511,
+          "heading": "Secondary dwelling approval pathway (NSW)"
+        },
+        {
+          "line": 536,
+          "heading": "Swimming Pools and Pool Safety"
+        },
+        {
+          "line": 566,
+          "heading": "Quality Assurance and Defect Management"
+        },
+        {
+          "line": 604,
+          "heading": "Bushfire Construction Requirements"
+        },
+        {
+          "line": 639,
+          "heading": "Handover and Practical Completion"
+        },
+        {
+          "line": 675,
+          "heading": "Residential Cost Benchmarking and Budget Planning"
+        },
+        {
+          "line": 706,
+          "heading": "Accessibility and Livable Housing Design"
+        },
+        {
+          "line": 740,
+          "heading": "Sustainability and Environmental Considerations"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/role-architect-pm.md",
+      "sha256": "d051ec5c94b8bbc0dd3c2b2ce116ebebc7c75726ad5898ae7c884238acb20875",
+      "bytes": 23450,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 14,
+          "heading": "Role overlay - Architect-PM"
+        },
+        {
+          "line": 28,
+          "heading": "What the architect-PM is - and is not"
+        },
+        {
+          "line": 47,
+          "heading": "Role declaration"
+        },
+        {
+          "line": 59,
+          "heading": "Engagement pack"
+        },
+        {
+          "line": 78,
+          "heading": "Two-brief discipline"
+        },
+        {
+          "line": 87,
+          "heading": "Statutory and professional posture - NSW deep default"
+        },
+        {
+          "line": 89,
+          "heading": "Architect registration"
+        },
+        {
+          "line": 95,
+          "heading": "Professional indemnity insurance"
+        },
+        {
+          "line": 109,
+          "heading": "Builder-side instruments verified, not held"
+        },
+        {
+          "line": 126,
+          "heading": "Certifier and authority path"
+        },
+        {
+          "line": 141,
+          "heading": "Architect-PM setup workflow"
+        },
+        {
+          "line": 159,
+          "heading": "Consultant coordination"
+        },
+        {
+          "line": 177,
+          "heading": "Procurement posture"
+        },
+        {
+          "line": 194,
+          "heading": "Progress claims, variations, and contract administration"
+        },
+        {
+          "line": 217,
+          "heading": "Escalation routing - architect-PM"
+        },
+        {
+          "line": 235,
+          "heading": "Voice register - architect-PM defaults"
+        },
+        {
+          "line": 254,
+          "heading": "Setup checklist - architect-PM mobilisation"
+        },
+        {
+          "line": 278,
+          "heading": "Failure modes specific to architect-PM"
+        },
+        {
+          "line": 291,
+          "heading": "Agent behaviour under this overlay"
+        },
+        {
+          "line": 305,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/role-builder.md",
+      "sha256": "cdcf1cd18aa1ff448137e502c977c062b50be7bfda06b1d4ff6560ee870fc174",
+      "bytes": 32774,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 15,
+          "heading": "Role overlay \u2014 Builder (head contractor)"
+        },
+        {
+          "line": 25,
+          "heading": "What the builder is \u2014 and is not"
+        },
+        {
+          "line": 44,
+          "heading": "Statutory instruments \u2014 NSW deep default"
+        },
+        {
+          "line": 48,
+          "heading": "Builder's licence"
+        },
+        {
+          "line": 55,
+          "heading": "HOW / HBCF (Home Building Compensation Fund) \u2014 owner protection insurance"
+        },
+        {
+          "line": 65,
+          "heading": "LSL \u2014 Long Service Levy"
+        },
+        {
+          "line": 72,
+          "heading": "Contract works insurance (CWI)"
+        },
+        {
+          "line": 80,
+          "heading": "Public liability insurance (PL)"
+        },
+        {
+          "line": 86,
+          "heading": "Workers compensation"
+        },
+        {
+          "line": 91,
+          "heading": "BASIX"
+        },
+        {
+          "line": 97,
+          "heading": "Head contract \u2014 issuance and administration obligations"
+        },
+        {
+          "line": 101,
+          "heading": "HIA Lump Sum (NSW New Homes)"
+        },
+        {
+          "line": 110,
+          "heading": "HIA Cost Plus (NSW)"
+        },
+        {
+          "line": 117,
+          "heading": "HIA Renovation (NSW)"
+        },
+        {
+          "line": 122,
+          "heading": "MBA equivalents"
+        },
+        {
+          "line": 126,
+          "heading": "NSW Fair Trading prescribed contract"
+        },
+        {
+          "line": 131,
+          "heading": "AS 4000 / AS 4902 (high-end residential)"
+        },
+        {
+          "line": 137,
+          "heading": "ABIC"
+        },
+        {
+          "line": 141,
+          "heading": "Progress claims \u2014 builder issuance side"
+        },
+        {
+          "line": 169,
+          "heading": "Variations \u2014 builder issuance side"
+        },
+        {
+          "line": 196,
+          "heading": "EOT \u2014 builder issuance side"
+        },
+        {
+          "line": 226,
+          "heading": "Escalation routing \u2014 builder"
+        },
+        {
+          "line": 248,
+          "heading": "Voice register \u2014 builder defaults"
+        },
+        {
+          "line": 257,
+          "heading": "Communications with the owner"
+        },
+        {
+          "line": 266,
+          "heading": "Subcontractor management \u2014 builder posture"
+        },
+        {
+          "line": 282,
+          "heading": "Setup checklist \u2014 builder mobilisation"
+        },
+        {
+          "line": 302,
+          "heading": "Failure modes specific to the builder role"
+        },
+        {
+          "line": 315,
+          "heading": "Agent behaviour under this overlay"
+        },
+        {
+          "line": 326,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/role-d-and-c.md",
+      "sha256": "4ac887916634ec75c8c875f5f6886f54425d4c83fe1df4161c0c2e7e37f0eb9a",
+      "bytes": 22622,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 15,
+          "heading": "Role overlay - D&C contractor"
+        },
+        {
+          "line": 25,
+          "heading": "Builder obligations inherited"
+        },
+        {
+          "line": 39,
+          "heading": "What the D&C contractor is - and is not"
+        },
+        {
+          "line": 57,
+          "heading": "Contract posture"
+        },
+        {
+          "line": 80,
+          "heading": "Design responsibility pack"
+        },
+        {
+          "line": 104,
+          "heading": "Design responsibility matrix"
+        },
+        {
+          "line": 137,
+          "heading": "Consultant procurement and coordination"
+        },
+        {
+          "line": 168,
+          "heading": "PI insurance and insurance stack"
+        },
+        {
+          "line": 191,
+          "heading": "Setup workflow - D&C contractor"
+        },
+        {
+          "line": 207,
+          "heading": "D&C setup checklist"
+        },
+        {
+          "line": 243,
+          "heading": "Progress claims and cost posture"
+        },
+        {
+          "line": 265,
+          "heading": "Variations and design development"
+        },
+        {
+          "line": 280,
+          "heading": "Escalation routing - D&C contractor"
+        },
+        {
+          "line": 297,
+          "heading": "Voice register - D&C defaults"
+        },
+        {
+          "line": 306,
+          "heading": "Multi-dwelling posture"
+        },
+        {
+          "line": 321,
+          "heading": "Failure modes specific to D&C"
+        },
+        {
+          "line": 334,
+          "heading": "Agent behaviour under this overlay"
+        },
+        {
+          "line": 347,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/role-owner-builder.md",
+      "sha256": "c239b0735beda4610d422ce82ce54c09ad84e75ff99c11ec3bc0147271dc042f",
+      "bytes": 19602,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 14,
+          "heading": "Role overlay - Owner-builder"
+        },
+        {
+          "line": 24,
+          "heading": "What the owner-builder is - and is not"
+        },
+        {
+          "line": 41,
+          "heading": "Statutory instruments - NSW deep default"
+        },
+        {
+          "line": 43,
+          "heading": "Owner-builder permit"
+        },
+        {
+          "line": 60,
+          "heading": "HOW / HBCF position"
+        },
+        {
+          "line": 79,
+          "heading": "Warranty and future-buyer disclosure"
+        },
+        {
+          "line": 92,
+          "heading": "Approvals and certifier path"
+        },
+        {
+          "line": 106,
+          "heading": "Insurance posture"
+        },
+        {
+          "line": 119,
+          "heading": "Owner-builder setup workflow"
+        },
+        {
+          "line": 136,
+          "heading": "Self-defined brief"
+        },
+        {
+          "line": 152,
+          "heading": "Subcontractor and trade management"
+        },
+        {
+          "line": 176,
+          "heading": "Claims, invoices, and payments"
+        },
+        {
+          "line": 192,
+          "heading": "Variations and self-directions"
+        },
+        {
+          "line": 209,
+          "heading": "Escalation routing - owner-builder"
+        },
+        {
+          "line": 228,
+          "heading": "Voice register - owner-builder defaults"
+        },
+        {
+          "line": 237,
+          "heading": "Renovation-specific overlay notes"
+        },
+        {
+          "line": 251,
+          "heading": "Setup checklist - owner-builder mobilisation"
+        },
+        {
+          "line": 270,
+          "heading": "Failure modes specific to owner-builder"
+        },
+        {
+          "line": 283,
+          "heading": "Agent behaviour under this overlay"
+        },
+        {
+          "line": 295,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/setup-and-commission-guide.md",
+      "sha256": "435dcce40be7e6a16225b94ea109030ffd97a2deb1e750454db7019ff36deabc",
+      "bytes": 43782,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 18,
+          "heading": "Setup and commission guide"
+        },
+        {
+          "line": 26,
+          "heading": "What \"commissioned\" means"
+        },
+        {
+          "line": 41,
+          "heading": "Shared setup workflow \u2014 all roles"
+        },
+        {
+          "line": 45,
+          "heading": "Step 1 \u2014 Declare overlays"
+        },
+        {
+          "line": 51,
+          "heading": "Step 2 \u2014 Open the project folder structure"
+        },
+        {
+          "line": 55,
+          "heading": "Step 3 \u2014 Capture the brief"
+        },
+        {
+          "line": 59,
+          "heading": "Step 4 \u2014 Establish statutory instruments"
+        },
+        {
+          "line": 63,
+          "heading": "Step 5 \u2014 Execute or document the head contract"
+        },
+        {
+          "line": 67,
+          "heading": "Step 6 \u2014 Procure insurances"
+        },
+        {
+          "line": 71,
+          "heading": "Step 7 \u2014 Baseline the programme"
+        },
+        {
+          "line": 87,
+          "heading": "Step 8 \u2014 Open registers"
+        },
+        {
+          "line": 91,
+          "heading": "Step 9 \u2014 Brief the owner / brief self"
+        },
+        {
+          "line": 95,
+          "heading": "Step 10 \u2014 Confirm commissioned"
+        },
+        {
+          "line": 99,
+          "heading": "Role-specific setup \u2014 Builder (deep)"
+        },
+        {
+          "line": 103,
+          "heading": "Brief / scope"
+        },
+        {
+          "line": 115,
+          "heading": "Statutory instrument pack \u2014 Builder (NSW)"
+        },
+        {
+          "line": 136,
+          "heading": "Head contract execution \u2014 Builder"
+        },
+        {
+          "line": 163,
+          "heading": "Pre-site mobilisation \u2014 Builder"
+        },
+        {
+          "line": 175,
+          "heading": "Ready-to-start checklist \u2014 Builder"
+        },
+        {
+          "line": 179,
+          "heading": "Common builder commissioning failures"
+        },
+        {
+          "line": 188,
+          "heading": "Role-specific setup - Owner-builder (deep - slice 07)"
+        },
+        {
+          "line": 192,
+          "heading": "Brief / scope - Owner-builder"
+        },
+        {
+          "line": 210,
+          "heading": "Statutory instrument pack - Owner-builder (NSW)"
+        },
+        {
+          "line": 227,
+          "heading": "Renovation due diligence - owner-builder primary cell"
+        },
+        {
+          "line": 243,
+          "heading": "Insurance posture - owner-builder"
+        },
+        {
+          "line": 255,
+          "heading": "Park-for-decision queue"
+        },
+        {
+          "line": 272,
+          "heading": "Ready-to-start checklist - owner-builder"
+        },
+        {
+          "line": 291,
+          "heading": "Role-specific setup - Architect-PM (deep - slice 08)"
+        },
+        {
+          "line": 297,
+          "heading": "Brief / scope - Architect-PM"
+        },
+        {
+          "line": 306,
+          "heading": "Role declaration - Architect-PM"
+        },
+        {
+          "line": 319,
+          "heading": "Statutory and professional pack - Architect-PM (NSW)"
+        },
+        {
+          "line": 334,
+          "heading": "Consultant coordination - Architect-PM"
+        },
+        {
+          "line": 348,
+          "heading": "Builder evidence verification"
+        },
+        {
+          "line": 362,
+          "heading": "Procurement / award readiness"
+        },
+        {
+          "line": 372,
+          "heading": "Owner briefing - Architect-PM"
+        },
+        {
+          "line": 386,
+          "heading": "Ready-to-start checklist - Architect-PM"
+        },
+        {
+          "line": 410,
+          "heading": "Role-specific setup - D&C contractor (deep - slice 09)"
+        },
+        {
+          "line": 416,
+          "heading": "Brief / scope - D&C"
+        },
+        {
+          "line": 438,
+          "heading": "Statutory and insurance pack - D&C (NSW)"
+        },
+        {
+          "line": 456,
+          "heading": "Design responsibility controls"
+        },
+        {
+          "line": 472,
+          "heading": "Multi-dwelling setup overlay"
+        },
+        {
+          "line": 488,
+          "heading": "Ready-to-start checklist - D&C"
+        },
+        {
+          "line": 522,
+          "heading": "D&C commissioning failures"
+        },
+        {
+          "line": 532,
+          "heading": "Cross-cutting registers opened at commissioning"
+        },
+        {
+          "line": 557,
+          "heading": "Commissioning escalations"
+        },
+        {
+          "line": 573,
+          "heading": "Agent behaviour during commissioning"
+        },
+        {
+          "line": 585,
+          "heading": "Stub-depth ledger"
+        },
+        {
+          "line": 595,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/small-commercial-guide.md",
+      "sha256": "1ca527c411f2b2ae3bcf2f3152848e11852707f4d337ef1a5e9a08fb37aaa6c3",
+      "bytes": 14014,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 17,
+          "heading": "Archetype seed \u2014 Small commercial (graceful degradation)"
+        },
+        {
+          "line": 26,
+          "heading": "Scope of this archetype"
+        },
+        {
+          "line": 41,
+          "heading": "Licence check \u2014 hard stop"
+        },
+        {
+          "line": 54,
+          "heading": "NCC class \u2014 Volume One applies"
+        },
+        {
+          "line": 74,
+          "heading": "Planning pathway (NSW)"
+        },
+        {
+          "line": 88,
+          "heading": "Construction Certificate"
+        },
+        {
+          "line": 99,
+          "heading": "HBCF / HOW \u2014 does not apply"
+        },
+        {
+          "line": 103,
+          "heading": "Programme \u2014 indicative commercial fitout shape"
+        },
+        {
+          "line": 118,
+          "heading": "Common failure modes \u2014 small commercial archetype"
+        },
+        {
+          "line": 128,
+          "heading": "Agent behaviour under this archetype"
+        },
+        {
+          "line": 141,
+          "heading": "Non-NSW \u2014 reduced-confidence callout"
+        },
+        {
+          "line": 150,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/structural-commercial-industrial-guide.md",
+      "sha256": "797fda3903d9f7e3d789d21e11fb16df33381ccc612ec46ebc05d60c2f3d8a1e",
+      "bytes": 7287,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Structural Engineering: Commercial and Industrial"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 30,
+          "heading": "Activation"
+        },
+        {
+          "line": 36,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 46,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 53,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 65,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 75,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 83,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 95,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 106,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 114,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 125,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 134,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 144,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/structural-residential.md",
+      "sha256": "4238f47481a0585a4489f05d94bb4018fb102f388d101b3cd04947efcd4a2767",
+      "bytes": 15466,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 18,
+          "heading": "Trade seed \u2014 Structural (residential)"
+        },
+        {
+          "line": 26,
+          "heading": "AS 2870 \u2014 Residential slabs and footings"
+        },
+        {
+          "line": 28,
+          "heading": "Site classification"
+        },
+        {
+          "line": 44,
+          "heading": "Slab and footing types"
+        },
+        {
+          "line": 54,
+          "heading": "Inspection and evidence gates"
+        },
+        {
+          "line": 65,
+          "heading": "AS 1684 \u2014 Residential timber framing"
+        },
+        {
+          "line": 67,
+          "heading": "Series structure"
+        },
+        {
+          "line": 78,
+          "heading": "Key elements and span tables"
+        },
+        {
+          "line": 90,
+          "heading": "Notching, drilling, and modification rules"
+        },
+        {
+          "line": 100,
+          "heading": "Connection and tie-down requirements"
+        },
+        {
+          "line": 110,
+          "heading": "Frame inspection gate"
+        },
+        {
+          "line": 121,
+          "heading": "AS 4055 \u2014 Wind loads for housing"
+        },
+        {
+          "line": 123,
+          "heading": "Wind speed regions"
+        },
+        {
+          "line": 136,
+          "heading": "Classification inputs"
+        },
+        {
+          "line": 144,
+          "heading": "Design wind class implications"
+        },
+        {
+          "line": 158,
+          "heading": "AS 1170 \u2014 Structural actions (loads)"
+        },
+        {
+          "line": 160,
+          "heading": "Relevant parts for residential"
+        },
+        {
+          "line": 169,
+          "heading": "Key residential load cases"
+        },
+        {
+          "line": 180,
+          "heading": "AS 3959 \u2014 Construction of buildings in bushfire-prone areas (BAL)"
+        },
+        {
+          "line": 182,
+          "heading": "BAL ratings and implications"
+        },
+        {
+          "line": 201,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 210,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 219,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 227,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 235,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 243,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 251,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 258,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 266,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 273,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 285,
+          "heading": "Low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/surveying-guide.md",
+      "sha256": "7b745a3a8ba9c7b535ece9653a84a7c5c9fb5e1fb9f119a9e449c2e2728a98cc",
+      "bytes": 4837,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Surveying"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 28,
+          "heading": "Activation"
+        },
+        {
+          "line": 34,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 40,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 47,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 56,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 63,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 71,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 79,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 86,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 93,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 102,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 109,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 116,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/sustainability-energy-guide.md",
+      "sha256": "ec4c3ec12f45cd767b4758a0187beacdba6cc9e3205e08b2ed723c91eaf5bbed",
+      "bytes": 20893,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Sustainability and energy guide \u2014 BASIX and NatHERS"
+        },
+        {
+          "line": 22,
+          "heading": "1. BASIX overview (NSW)"
+        },
+        {
+          "line": 48,
+          "heading": "2. BASIX application workflow (NSW)"
+        },
+        {
+          "line": 50,
+          "heading": "Step 1 \u2014 Certificate lodgement"
+        },
+        {
+          "line": 65,
+          "heading": "Step 2 \u2014 Conditions of consent"
+        },
+        {
+          "line": 69,
+          "heading": "Step 3 \u2014 CC documentation"
+        },
+        {
+          "line": 78,
+          "heading": "Step 4 \u2014 During construction"
+        },
+        {
+          "line": 86,
+          "heading": "Step 5 \u2014 BASIX final certificate (hold point before OC)"
+        },
+        {
+          "line": 101,
+          "heading": "3. NatHERS \u2014 thermal simulation method"
+        },
+        {
+          "line": 117,
+          "heading": "4. Common BASIX compliance failure points"
+        },
+        {
+          "line": 121,
+          "heading": "4.1 Window U-value and SHGC substitution"
+        },
+        {
+          "line": 129,
+          "heading": "4.2 Insulation R-value not installed as specified"
+        },
+        {
+          "line": 137,
+          "heading": "4.3 Hot water system substitution"
+        },
+        {
+          "line": 145,
+          "heading": "4.4 PV system not installed (when committed)"
+        },
+        {
+          "line": 153,
+          "heading": "4.5 Ventilation provisions not met"
+        },
+        {
+          "line": 161,
+          "heading": "4.6 Alterations and additions \u2014 existing vs new elements"
+        },
+        {
+          "line": 169,
+          "heading": "5. BASIX and procurement discipline"
+        },
+        {
+          "line": 178,
+          "heading": "6. BASIX certificate amendment"
+        },
+        {
+          "line": 188,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 199,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 209,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 217,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 226,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 234,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 242,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 250,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 258,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 266,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 279,
+          "heading": "Low-confidence flags"
+        },
+        {
+          "line": 287,
+          "heading": "See also"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/town-planning-guide.md",
+      "sha256": "5bf55b0d7673498fae21fb0126d468dc496a7796369671d7fb9c7ef669a55e97",
+      "bytes": 6437,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Town Planning"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 31,
+          "heading": "Activation"
+        },
+        {
+          "line": 38,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 48,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 55,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 68,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 77,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 90,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 99,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 107,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 113,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 120,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 127,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 135,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/trade-interfaces-coordination-guide.md",
+      "sha256": "73647bbe1d6da3b4c532c98941055805ec10e6afe5c59df9f8ff24d9308c49c6",
+      "bytes": 15659,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": [
+        {
+          "line": 16,
+          "heading": "Trade seed \u2014 Trade interfaces and coordination (residential)"
+        },
+        {
+          "line": 24,
+          "heading": "How to use this seed"
+        },
+        {
+          "line": 36,
+          "heading": "Interface 1: Frame to roof"
+        },
+        {
+          "line": 38,
+          "heading": "Sequence"
+        },
+        {
+          "line": 48,
+          "heading": "Hold point"
+        },
+        {
+          "line": 54,
+          "heading": "Common failure mode"
+        },
+        {
+          "line": 62,
+          "heading": "Interface 2: Wet area waterproofing to tiling"
+        },
+        {
+          "line": 64,
+          "heading": "Sequence"
+        },
+        {
+          "line": 74,
+          "heading": "Hold point"
+        },
+        {
+          "line": 80,
+          "heading": "Common failure modes"
+        },
+        {
+          "line": 89,
+          "heading": "Interface 3: Kitchen and bathroom services rough-in before wall lining"
+        },
+        {
+          "line": 91,
+          "heading": "Sequence"
+        },
+        {
+          "line": 102,
+          "heading": "Hold point"
+        },
+        {
+          "line": 108,
+          "heading": "Common failure modes"
+        },
+        {
+          "line": 116,
+          "heading": "Interface 4: External cladding \u2014 windows and doors before render or brickwork"
+        },
+        {
+          "line": 118,
+          "heading": "Sequence"
+        },
+        {
+          "line": 127,
+          "heading": "Hold point"
+        },
+        {
+          "line": 133,
+          "heading": "Common failure modes"
+        },
+        {
+          "line": 142,
+          "heading": "Interface 5: Wet area floor waste and tile falls"
+        },
+        {
+          "line": 144,
+          "heading": "Sequence"
+        },
+        {
+          "line": 152,
+          "heading": "Hold point"
+        },
+        {
+          "line": 158,
+          "heading": "Common failure modes"
+        },
+        {
+          "line": 165,
+          "heading": "Interface 6: Internal painting before flooring"
+        },
+        {
+          "line": 167,
+          "heading": "Sequence"
+        },
+        {
+          "line": 177,
+          "heading": "Hold point"
+        },
+        {
+          "line": 183,
+          "heading": "Common failure mode"
+        },
+        {
+          "line": 190,
+          "heading": "Interface 7: Roof framing to insulation and ceiling"
+        },
+        {
+          "line": 192,
+          "heading": "Sequence"
+        },
+        {
+          "line": 201,
+          "heading": "Hold point"
+        },
+        {
+          "line": 207,
+          "heading": "Common failure mode"
+        },
+        {
+          "line": 214,
+          "heading": "Interface 8: External landscaping, paths, and drainage before occupation"
+        },
+        {
+          "line": 216,
+          "heading": "Sequence"
+        },
+        {
+          "line": 224,
+          "heading": "Hold point"
+        },
+        {
+          "line": 230,
+          "heading": "Common failure mode"
+        },
+        {
+          "line": 237,
+          "heading": "Coverage depth"
+        },
+        {
+          "line": 252,
+          "heading": "Low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/traffic-transport-guide.md",
+      "sha256": "77a9489fd09723119e5227d19f75d3ab106bffa2c52010f3bdba86ac5542ac87",
+      "bytes": 5571,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Traffic and Transport"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 29,
+          "heading": "Activation"
+        },
+        {
+          "line": 35,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 44,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 51,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 60,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 69,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 80,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 88,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 96,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 103,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 112,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 119,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 125,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/seed/waste-management-guide.md",
+      "sha256": "a464067ded3fe2ec49c67bfadd0cd1d3d41803c050c63761736fd02bbe32a6d1",
+      "bytes": 4925,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": true,
+      "has_rfp_lead_lines": true,
+      "headings": [
+        {
+          "line": 19,
+          "heading": "Waste Management"
+        },
+        {
+          "line": 21,
+          "heading": "Purpose and professional boundary"
+        },
+        {
+          "line": 30,
+          "heading": "Activation"
+        },
+        {
+          "line": 36,
+          "heading": "Evidence sweep"
+        },
+        {
+          "line": 43,
+          "heading": "Services by stage"
+        },
+        {
+          "line": 50,
+          "heading": "Inception, site and existing information [inception]"
+        },
+        {
+          "line": 58,
+          "heading": "Concept and schematic design [concept]"
+        },
+        {
+          "line": 65,
+          "heading": "Pre-DA consultation and development application [development_application]"
+        },
+        {
+          "line": 74,
+          "heading": "Conditions of consent and design development [design_development]"
+        },
+        {
+          "line": 82,
+          "heading": "Documentation and tender [documentation_tender]"
+        },
+        {
+          "line": 89,
+          "heading": "Novation and post-contract design [post_contract_design]"
+        },
+        {
+          "line": 95,
+          "heading": "Construction and completion [construction_completion]"
+        },
+        {
+          "line": 103,
+          "heading": "Throughout the appointment [coordination]"
+        },
+        {
+          "line": 109,
+          "heading": "Consultant RFP minimum returnables"
+        },
+        {
+          "line": 114,
+          "heading": "Common failures and low-confidence flags"
+        }
+      ]
+    },
+    {
+      "path": "data/taxonomy/asset-register.json",
+      "sha256": "6b563fe1bd1d4bcbad6db05b5826d0bfce792a9926bb72ec1f45186fdede3e92",
+      "bytes": 2290,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/building-classes.json",
+      "sha256": "90cb09cbd93da02fdb0bba43c9312416d7bfc4b61fa1bed7b919943d5fc885cc",
+      "bytes": 35713,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/complexity-dimensions.json",
+      "sha256": "1fb63cfb9f92fc02a871b36f99f131aa3bc872a3b015ea036727b5a1b7ed3e96",
+      "bytes": 8965,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/consultant-rosters.json",
+      "sha256": "f218feea354b0b6a6ca57b8225e066fe0034ca786e0e65e1127d411bd995e5de",
+      "bytes": 2147,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/disciplines.json",
+      "sha256": "6e079e5e91ff479e147cf3244a7a80fd34d2011e9fe749d570201614120157fa",
+      "bytes": 14216,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/emphasis-profiles.json",
+      "sha256": "87688751089182d5dba631b208d43236c39df4beef01bb3d816d6775f0418347",
+      "bytes": 9072,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/pmp-section-seed-map.json",
+      "sha256": "3789ef7a8ea886ee45255dd6a4bae1d9ed98d506d2a70537e320de772e1d8744",
+      "bytes": 9538,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/risk-flags.json",
+      "sha256": "e72487756af87166791b53a503c8bce7490b6ac925d4becc86173bfc8f402754",
+      "bytes": 5526,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/typical-work-scopes.json",
+      "sha256": "308f1bf04bed242266107b5a45602cdbcf4751266b5b78f67440c6e2d8dcd910",
+      "bytes": 2268,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    },
+    {
+      "path": "data/taxonomy/work-scopes.json",
+      "sha256": "2128202310f23656e3af7fd4dabaa2656c5c2ef298dec83a170315fc37efc49a",
+      "bytes": 16753,
+      "status": "draft_source_not_owner_reviewed",
+      "inspection": "structural_inventory; priority passages separately reviewed",
+      "has_services_by_stage": false,
+      "has_rfp_lead_lines": false,
+      "headings": []
+    }
+  ]
+}

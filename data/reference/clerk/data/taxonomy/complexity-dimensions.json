@@ -1,0 +1,235 @@
+{
+  "_comment": "Source: docs/pmp2.0/pmp2.md Objective 3. Universal dimensions are applied to every class. The agricultural block in the source has no matching six-matrix building class, so water/power/remoteness/environment overlays are folded into industrial and infrastructure.",
+  "universal": [
+    {
+      "key": "planning",
+      "label": "Planning",
+      "options": [
+        {"value": "exempt", "label": "Exempt"},
+        {"value": "cdc", "label": "CDC"},
+        {"value": "da", "label": "DA"},
+        {"value": "ssd", "label": "State Significant Development (SSD)"}
+      ]
+    },
+    {
+      "key": "procurement_route",
+      "label": "Procurement route",
+      "options": [
+        {"value": "traditional", "label": "Traditional (Lump Sum)"},
+        {"value": "design_construct", "label": "Design & Construct"},
+        {"value": "eci", "label": "Early Contractor Involvement"},
+        {"value": "managing_contractor", "label": "Managing Contractor"},
+        {"value": "alliance", "label": "Alliance (+5-10%)"},
+        {"value": "ppp", "label": "PPP"}
+      ]
+    },
+    {
+      "key": "contamination_level",
+      "label": "Contamination level",
+      "options": [
+        {"value": "nil", "label": "Nil/Clean Site"},
+        {"value": "minor", "label": "Minor (Spot Treatment)"},
+        {"value": "significant", "label": "Significant (+10-20%)"},
+        {"value": "heavily_contaminated", "label": "Heavily Contaminated (+30-50%)"}
+      ]
+    },
+    {
+      "key": "access_constraints",
+      "label": "Access constraints",
+      "options": [
+        {"value": "unrestricted", "label": "Unrestricted Access"},
+        {"value": "urban_constrained", "label": "Urban/Constrained"},
+        {"value": "restricted_hours", "label": "Restricted Hours"},
+        {"value": "remote", "label": "Remote Site (+15-30%)"}
+      ]
+    },
+    {
+      "key": "operational_constraints",
+      "label": "Operational constraints",
+      "options": [
+        {"value": "vacant", "label": "Vacant/Unoccupied"},
+        {"value": "partial_occupation", "label": "Partial Occupation"},
+        {"value": "live_environment", "label": "Live Environment (+10-20%)"},
+        {"value": "24_7_occupied", "label": "24/7 Occupied (+20-30%)"}
+      ]
+    },
+    {
+      "key": "stakeholder_complexity",
+      "label": "Stakeholder complexity",
+      "options": [
+        {"value": "single_owner", "label": "Single Owner"},
+        {"value": "strata", "label": "Strata Ownership"},
+        {"value": "government", "label": "Government Client"},
+        {"value": "multiple_agencies", "label": "Multiple Agencies (+10-20%)"}
+      ]
+    },
+    {
+      "key": "environmental_sensitivity",
+      "label": "Environmental sensitivity",
+      "options": [
+        {"value": "standard", "label": "Standard"},
+        {"value": "sensitive", "label": "Environmentally Sensitive"},
+        {"value": "protected_habitat", "label": "Protected Habitat (+20%)"},
+        {"value": "aboriginal_heritage", "label": "Aboriginal Heritage (+15%)"}
+      ]
+    },
+    {
+      "key": "bushfire_exposure",
+      "label": "Bushfire exposure",
+      "options": [
+        {"value": "not_bushfire_prone", "label": "Not Bushfire Prone"},
+        {"value": "bal_low", "label": "Bushfire Prone - BAL-LOW"},
+        {"value": "bal_12_5", "label": "BAL-12.5 (+2-4%)"},
+        {"value": "bal_19", "label": "BAL-19 (+4-7%)"},
+        {"value": "bal_29", "label": "BAL-29 (+7-12%)"},
+        {"value": "bal_40", "label": "BAL-40 (+12-18%)"},
+        {"value": "bal_fz", "label": "BAL-FZ Flame Zone (+20-35%)"}
+      ]
+    },
+    {
+      "key": "flood_exposure",
+      "label": "Flood exposure",
+      "options": [
+        {"value": "not_flood_prone", "label": "Not Flood Prone"},
+        {"value": "above_fpl", "label": "Above Flood Planning Level"},
+        {"value": "flood_planning_area", "label": "Within Flood Planning Area (+5-10%)"},
+        {"value": "below_1pc_aep", "label": "Below 1% AEP Flood Level (+10-20%)"},
+        {"value": "floodway", "label": "Floodway / High Hazard (+20-35%)"}
+      ]
+    },
+    {
+      "key": "heritage_status",
+      "label": "Heritage status",
+      "options": [
+        {"value": "none", "label": "None"},
+        {"value": "conservation_area", "label": "Heritage conservation area"},
+        {"value": "local_heritage_item", "label": "Local heritage item"},
+        {"value": "state_heritage_register", "label": "State Heritage Register"}
+      ]
+    }
+  ],
+  "class_overlays": {
+    "industrial": [
+      {
+        "key": "water_source",
+        "label": "Water source",
+        "options": [
+          {"value": "town_water", "label": "Town Water"},
+          {"value": "bore", "label": "Bore/Groundwater"},
+          {"value": "dam_catchment", "label": "Dam/Catchment"},
+          {"value": "river_allocation", "label": "River Allocation"},
+          {"value": "recycled", "label": "Recycled Water"}
+        ]
+      },
+      {
+        "key": "power_source",
+        "label": "Power source",
+        "options": [
+          {"value": "grid", "label": "Grid Connected"},
+          {"value": "off_grid_solar", "label": "Off-Grid Solar"},
+          {"value": "hybrid", "label": "Hybrid (Grid + Solar)"},
+          {"value": "diesel_backup", "label": "Diesel Backup Required"}
+        ]
+      },
+      {
+        "key": "hazardous_process",
+        "label": "Hazardous process interface",
+        "options": [
+          {"value": "none", "label": "None"},
+          {"value": "dangerous_goods", "label": "Dangerous goods"},
+          {"value": "gmp", "label": "GMP manufacturing"},
+          {"value": "biosafety", "label": "Biosafety / containment"}
+        ]
+      }
+    ],
+    "infrastructure": [
+      {
+        "key": "remoteness",
+        "label": "Remoteness",
+        "options": [
+          {"value": "peri_urban", "label": "Peri-Urban"},
+          {"value": "regional", "label": "Regional"},
+          {"value": "remote", "label": "Remote (+20%)"},
+          {"value": "very_remote", "label": "Very Remote (+40%)"}
+        ]
+      },
+      {
+        "key": "authority_interfaces",
+        "label": "Authority interfaces",
+        "options": [
+          {"value": "single", "label": "Single Authority"},
+          {"value": "multiple", "label": "Multiple Authorities"},
+          {"value": "multi_jurisdictional", "label": "Multi-Jurisdictional"},
+          {"value": "critical_network", "label": "Critical Network"}
+        ]
+      }
+    ]
+  },
+  "subclass_overlays": {
+    "industrial": {
+      "cleanroom": [
+        {
+          "key": "iso_class",
+          "label": "ISO class",
+          "options": [
+            {"value": "iso_8", "label": "ISO 8 (100,000 particles)"},
+            {"value": "iso_7", "label": "ISO 7 (10,000 particles)"},
+            {"value": "iso_6", "label": "ISO 6 (1,000 particles) (+30%)"},
+            {"value": "iso_5", "label": "ISO 5 (100 particles) (+50%)"},
+            {"value": "iso_4", "label": "ISO 4 (10 particles) (+100%)"}
+          ]
+        }
+      ],
+      "pharmaceutical_gmp": [
+        {
+          "key": "gmp_validation",
+          "label": "GMP validation burden",
+          "options": [
+            {"value": "standard", "label": "Standard"},
+            {"value": "iq_oq_pq", "label": "IQ/OQ/PQ validation"},
+            {"value": "regulated_release", "label": "Regulated release"}
+          ]
+        }
+      ],
+      "food_processing": [
+        {
+          "key": "cold_chain",
+          "label": "Cold-chain intensity",
+          "options": [
+            {"value": "ambient", "label": "Ambient"},
+            {"value": "chilled", "label": "Chilled"},
+            {"value": "frozen", "label": "Frozen"},
+            {"value": "mixed_temperature", "label": "Mixed temperature"}
+          ]
+        }
+      ]
+    },
+    "infrastructure": {
+      "water_utilities": [
+        {
+          "key": "water_source",
+          "label": "Water source",
+          "options": [
+            {"value": "town_water", "label": "Town Water"},
+            {"value": "bore", "label": "Bore/Groundwater"},
+            {"value": "dam_catchment", "label": "Dam/Catchment"},
+            {"value": "river_allocation", "label": "River Allocation"},
+            {"value": "recycled", "label": "Recycled Water"}
+          ]
+        }
+      ],
+      "energy_renewables": [
+        {
+          "key": "power_source",
+          "label": "Power source / connection",
+          "options": [
+            {"value": "grid", "label": "Grid Connected"},
+            {"value": "off_grid_solar", "label": "Off-Grid Solar"},
+            {"value": "hybrid", "label": "Hybrid (Grid + Solar)"},
+            {"value": "diesel_backup", "label": "Diesel Backup Required"}
+          ]
+        }
+      ]
+    }
+  }
+}
