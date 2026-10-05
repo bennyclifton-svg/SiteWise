@@ -81,3 +81,45 @@ The live passage cache (`passage_calls`) uses the same whole-call fingerprint. T
 | jev_admission_request | 236 ms | 1,200 ms | 350 / 800 | p90 over (p90 is the stalled calls hitting the 1.2 s deadline) |
 
 User-facing filing stays within budget under background reading (NW-REQ-272, 330, locally). The component overruns concern filing code this wave has not changed. Release evidence still needs the VPS (WP-71).
+
+## M0: whole-file replay restored (AT-35), component gates reported
+
+Run under the review amendment (plan §1.1 M0, §8.6; package WP-00 follow-up). Commit `d7f6699`.
+
+**Change.** `internal/eval` now splits multi-page drawing sets into sheets exactly as `intake.ExpandDrawing` does, and records one Jev call per sheet. Each set's outcome is reported.
+
+**Live re-recording (owner's standing permission for Jev calls):**
+
+- 218 calls, 0 errors (129 before; the difference is 89 sheet calls).
+- Drawing sets: 10 published, 1 stopped on a page not confirmed as a drawing (reported, not dropped).
+- Scored metrics are unchanged field by field from the accepted baseline.
+- Held-out title accuracy remains **0.29, with 15 confident wrong titles**. That is a known defect, not a quality standard.
+- No new baseline was accepted. `intake-eval -replay` passes against the existing baseline.
+
+**Replayed bench (`cmd/intake-bench`), dev machine with 12 logical CPUs; 184 files × 2 rounds, concurrency 4, 2 background Jev callers, 10% stalled.** There were **0 unrecorded requests**, so AT-35 is met (52 before this change).
+
+| Path | p50 | p90 | Budget p50/p90 | Result |
+| - | - | - | - | - |
+| whole_intake | 331 ms | 700 ms | 1,000 / 2,000 | ok |
+| identity_text_extraction | 58 ms | 316 ms | 80 / 250 | **FAIL** p90 |
+| candidate_harvesting | 2.0 ms | 4.9 ms | 5 / 10 | ok |
+| deterministic_field_rules | 1.06 ms | 3.6 ms | 1 / 1 | **FAIL** |
+| jev_admission_request | 237 ms | 353 ms | 350 / 800 | ok |
+| commit_sse_enqueue | 3.0 ms | 4.0 ms | 5 / 15 | ok |
+| project_profile_read | 10.0 ms | 12.0 ms | 50 / 150 | ok |
+| profile_edit | 34.9 ms | 40.2 ms | 50 / 150 | ok |
+| other API paths | | | | ok |
+
+**The two failures are pre-existing, not regressions.** The first replayed bench (`5ac5e4d`, 1 October) already broke them, with extraction p90 553 ms and rules p90 3.0 ms. Filing code is unchanged by this wave.
+
+**Diagnosis, sequential and with no concurrency (throwaway tool, same 184 files):**
+
+- **Extraction:** p50 28 ms, **p90 155 ms**, within budget. The slowest files are 0.8-1.3 MB drawing PDFs (petersham-hyd-h-201: 379 ms). The bench overrun is contention under load on this laptop.
+- **Harvest plus rules:** p50 2.0 ms, p90 7.0 ms. The timings cluster on whole milliseconds (1.9994, 6.9998, 8.0137 ms…), which suggests this host's clock resolution is close to the 1 ms rules budget. That is a suspicion, not a proof.
+
+**Gate status.** The required bench gate is still red on these two component budgets. Under plan §1.1 and work-packages §2.4, that blocks new Lane A merges. WP-12 is implemented and tested on branch `nw/wp-12-values` but **not merged**. Resolving the gate is an owner decision:
+
+- (a) optimise extraction under load and the rule path to meet the current budgets; or
+- (b) state where the component budgets are measured (for example the target VPS, per §8.3), and how a dev-host bench result counts.
+
+Changing a budget is owner-only.

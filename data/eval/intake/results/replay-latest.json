@@ -3,13 +3,13 @@
   "mode": "replay",
   "model": "jev-1.13.0",
   "question_version": "intake-76",
-  "generated_at": "2026-10-05T00:36:27.0155895Z",
+  "generated_at": "2026-10-05T02:32:27.3850158Z",
   "inputs": {
     "key:hale-design-docs.yaml": "5586ea53b5f0306a957915f12c61d37a45218d6b8c5ec2de83fdc9e3a7af544c",
     "key:newham-design-docs.yaml": "25ff60caa7d01501febfee9319c84a695c6ca36688ee3d706923fab46b74cfa3",
     "key:petersham-design-docs.yaml": "5fb17c9e3d6b7a79bd385bafafa5188f138cf1c9fdd95ca54abc5a5f79e67b88",
     "manifest": "f29fe703c2dbee7af62d9e2ab0755dfdb6cfa661233e838818017df52ca60b9e",
-    "recordings": "45eb07d63ea7bbb9b0f7099f538b524156aa58a70ea7fd4b15af826dc09a263f",
+    "recordings": "69464768e0bacddaf4fc20beffb593b5a85a5e299f3404c1311cb7cdcf9621ac",
     "thresholds": "a0a90c1ad7e34cbec2812b9912432acbc882eac4928571905d586b0cc131f448"
   },
   "cases": {
@@ -25,6 +25,11 @@
     "not_filed": {
       "no_text_layer": 55
     },
+    "sheets": {
+      "page_not_drawing": 1,
+      "published": 10
+    },
+    "sheet_calls": 89,
     "excluded": {
       "duplicate_file": 1,
       "later_page": 76
@@ -106,14 +111,14 @@
         "discipline": {
           "scored": 126,
           "applied": 67,
-          "correct": 61,
+          "correct": 62,
           "amber": 67,
           "grey": 0,
           "false_confident": 0,
           "coverage": 0.5317460317460317,
-          "accuracy": 0.9104477611940298,
-          "accuracy_low": 0.8360415199849037,
-          "accuracy_high": 0.9529864012026837,
+          "accuracy": 0.9253731343283582,
+          "accuracy_low": 0.8545134169195526,
+          "accuracy_high": 0.9632064286748563,
           "amber_rate": 0.5317460317460317
         },
         "kind": {
@@ -350,12 +355,12 @@
     }
   },
   "jev": {
-    "calls": 129,
+    "calls": 218,
     "errors": 0,
     "grey_filings": 0,
     "replay_misses": 0,
-    "recorded_p50_us": 239255,
-    "recorded_p90_us": 273891,
+    "recorded_p50_us": 235190,
+    "recorded_p90_us": 268886,
     "recorded_over_interactive_deadline": 0,
     "interactive_deadline_us": 1200000
   },
