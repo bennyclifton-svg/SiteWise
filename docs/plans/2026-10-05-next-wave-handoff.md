@@ -2,6 +2,15 @@
 
 For the next implementing agent (Claude or Codex). Read `AGENTS.md`, then the plan's §0.2, §1.1, §5 and §8.6, and work packages §2.4. This note only covers what those documents do not.
 
+## Continuation update
+
+F31 is fixed in `codex/f31-profile-snapshot`, based on `6098fa5`, with the
+full local gate and independent review passed. See
+`docs/evidence/2026-10-05-f31-profile-snapshot.md`. Profile edits with stale
+statistics are back inside 50/150 ms. WP-14 remains next; its revision,
+fingerprint, staleness and atomic write/rebuild work has not started.
+The original baseline below is retained as history.
+
 ## Where things stand
 
 `main` is at `77ced4b`. Nothing is in progress, and every item below is merged with a green full gate and an independent review.
