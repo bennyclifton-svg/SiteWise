@@ -66,11 +66,11 @@ also passed a fresh `go test ./internal/store -count=1`.
 | `project_profile_read` | 2.120 / 17.704 | 50 / 150 |
 | `whole_intake` | 398.257 / 1232.835 | 1,000 / 2,000 |
 
-Aggregate results: `bench/results/latest.json`; accuracy aggregate:
+Stale-statistics aggregate: `bench/results/2026-10-05-f31-stale.json`; accuracy aggregate:
 `data/eval/intake/results/replay-latest.json`. Temporary table options and
 all three `auto_explain` settings were restored.
 
- The benchmark uses the
+The benchmark uses the
 existing 184-file corpus, two rounds, four upload workers, two simulated
 background Jev callers and 10% injected stalls. It is local replay timing,
 not target-VPS release evidence. Component overages remain reported under
@@ -116,3 +116,28 @@ WP-14 remains next: revision counters, fingerprints, startup knowledge hash,
 staleness and the `profile_rebuild` benchmark. Its write/rebuild transaction
 contract still needs to be closed. WP-15 follows WP-14. No new package or
 release requirement is marked Verified by this prerequisite fix.
+
+## Post-merge check
+
+Implementation commit `ceb6751`, merged to local main as `b1bb85b`.
+The complete gate above was repeated on the merged checkout and passed:
+knowledge, clean npm install/build, all Go tests, installed OCR runtime,
+11/11 browser tests, intake replay (0 misses), source 15/15 and Hale 12/12
+(0 forbidden), and the benchmark. The owned browser-test server again needed
+manual termination after every browser test had passed so teardown could
+finish. No application source changed after review.
+
+With normal database options restored, the benchmark wrote
+`bench/results/latest.json` (command used `-out .tools/f31-main-bench.json`
+and `-samples-out .tools/f31-main-bench-samples.json`, then copied the aggregate).
+
+| Post-merge path | p50 / p90 (ms) | Budget (ms) |
+| - | - | - |
+| `profile_edit` | 19.576 / 70.309 | 50 / 150 |
+| `project_profile_read` | 1.185 / 13.542 | 50 / 150 |
+| `whole_intake` | 400.975 / 1088.050 | 1,000 / 2,000 |
+
+The final intake replay aggregate records the main checkout's raw input
+hashes. Its manifest and thresholds JSON equal the worktree's exactly;
+the raw hashes differ because main uses CRLF and the worktree uses LF.
+Accuracy metrics are unchanged.
