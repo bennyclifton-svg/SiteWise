@@ -391,6 +391,7 @@ func printSummary(w io.Writer, r eval.Report) {
 		fmt.Fprintf(w, "supersession %s: asked %d, scored %d, automatic %d, incorrect %d, unverified %d\n", split, s.Asked, s.Scored, s.Automatic, s.Incorrect, s.Unverified)
 	}
 	fmt.Fprintf(w, "not filed %v\n", r.Cases.NotFiled)
+	fmt.Fprintf(w, "drawing sets %v, sheet calls %d\n", r.Cases.Sheets, r.Cases.SheetCalls)
 }
 
 // printLabels shows how many labels each split holds per field and tier, so

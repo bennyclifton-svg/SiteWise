@@ -31,10 +31,14 @@ type Report struct {
 
 // CaseCounts discloses sample sizes per split and what was left out.
 type CaseCounts struct {
-	Total        int            `json:"total"`
-	BySplit      map[string]int `json:"by_split"`
-	Families     map[string]int `json:"families"`
-	NotFiled     map[string]int `json:"not_filed"`
+	Total    int            `json:"total"`
+	BySplit  map[string]int `json:"by_split"`
+	Families map[string]int `json:"families"`
+	NotFiled map[string]int `json:"not_filed"`
+	// Sheets counts drawing sets by expansion outcome, and SheetCalls the
+	// per-sheet Jev calls, so multi-sheet work is reported, never dropped.
+	Sheets       map[string]int `json:"sheets"`
+	SheetCalls   int            `json:"sheet_calls"`
 	Excluded     map[string]int `json:"excluded"`
 	Adjudication map[string]int `json:"adjudication"`
 }
@@ -82,6 +86,7 @@ func NewReport(m Manifest, set CaseSet, run *RunResult, mode string) Report {
 			BySplit:      map[string]int{},
 			Families:     map[string]int{},
 			NotFiled:     map[string]int{},
+			Sheets:       map[string]int{},
 			Excluded:     set.Excluded,
 			Adjudication: map[string]int{},
 		},
@@ -105,6 +110,10 @@ func NewReport(m Manifest, set CaseSet, run *RunResult, mode string) Report {
 	for _, c := range run.Cases {
 		if c.NotFiled != "" {
 			r.Cases.NotFiled[c.NotFiled]++
+		}
+		if c.Sheets != nil {
+			r.Cases.Sheets[c.Sheets.Outcome]++
+			r.Cases.SheetCalls += c.Sheets.Asked
 		}
 		if c.Grey {
 			r.Jev.GreyFilings++
