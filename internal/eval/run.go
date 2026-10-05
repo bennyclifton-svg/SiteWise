@@ -47,6 +47,9 @@ type CaseResult struct {
 	Choices   []intake.Choice
 	Link      string
 	Truth     map[string]Label
+	// Sheets is set when the application would split the case into drawing
+	// sheets; its calls are part of the recording (AT-35).
+	Sheets *SheetRun
 }
 
 // RunResult is every case result and the Jev call counts.
@@ -138,6 +141,13 @@ func (e Evaluator) file(ctx context.Context, c Case, priors []filedPrior, run *R
 	}
 	res.Link = draft.Link(nil, c.ID)
 	res.Decisions = draft.Decisions()
+	if expands(c, text.PageCount, res.Decisions) {
+		sheets, err := e.expand(ctx, c, text.PageCount, docs, run)
+		if err != nil {
+			return res, err
+		}
+		res.Sheets = sheets
+	}
 	return res, nil
 }
 
