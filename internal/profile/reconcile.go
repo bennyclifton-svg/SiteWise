@@ -51,6 +51,24 @@ type UserValue struct {
 	Version         int64
 }
 
+// PlanningValue is an assumption or a calculated value on a registered
+// planning key (plan §4.3), shown as row "plan.<key>". It is never evidence
+// and never feeds a derivation (D-06).
+type PlanningValue struct {
+	PartID, Key string // Key without the "plan." prefix
+	// State is set or unknown; Value is nil when unknown.
+	State               string
+	Value               *string
+	RangeLow, RangeHigh *float64
+	Unit                string
+	Origin              string // user, assumption or calculation
+	ReviewStatus        string // proposed, accepted_for_planning or superseded
+	Meaning             string
+	Rationale           string
+	Limitations         string
+	Version             int64
+}
+
 // Source is where a row's evidence came from.
 // It is a snapshot (SourceRef, plan §4.1): the document's hash, revision and
 // location survive reprocessing, which replaces passage ids.
@@ -86,7 +104,7 @@ type Derived struct {
 // Row is one reconciled profile value.
 type Row struct {
 	PartID, Key, Value string
-	Band               string // green|amber|red|blank|suggested|user|unchecked
+	Band               string // green|amber|red|blank|suggested|user|planning|unchecked
 	Assertion          string
 	Note               string
 	Sources            []Source
@@ -119,6 +137,7 @@ type Input struct {
 	Parts      []Part
 	Facts      []Fact
 	User       []UserValue
+	Planning   []PlanningValue // live values only
 	Thresholds Thresholds
 	Suggested  []string // leaf ids typical for the chosen subclass and work type
 	// Read drops facts from documents the profile does not read. The zero
@@ -137,6 +156,7 @@ const (
 	bandRed      = "red"
 	bandBlank    = "blank"
 	bandSuggest  = "suggested"
+	bandPlanning = "planning"
 	valIncluded  = "included"
 	assertSuffix = ".assertion"
 )
@@ -188,6 +208,20 @@ func Reconcile(in Input, cat *knowledge.Catalog) []Row {
 			r.Value = *u.Value
 		}
 		r.Origin, r.Meaning, r.ValueState, r.UserVersion = orDefault(u.Origin, OriginUser), orDefault(u.Meaning, MeaningStated), userState(u), u.Version
+	}
+	// A planning value is shown as itself, an assumption or a calculation;
+	// the user's stated word on the same key wins (existing precedence).
+	for _, p := range in.Planning {
+		k := [2]string{p.PartID, knowledge.PlanningPrefix + p.Key}
+		if r, ok := rows[k]; ok && r.Band == bandUser {
+			continue
+		}
+		r := &Row{PartID: k[0], Key: k[1], Band: bandPlanning, Note: cut(p.Rationale, maxNote)}
+		if p.Value != nil {
+			r.Value = *p.Value
+		}
+		r.Origin, r.ReviewStatus, r.Meaning, r.ValueState, r.UserVersion = p.Origin, p.ReviewStatus, p.Meaning, p.State, p.Version
+		rows[k] = r
 	}
 	for _, leaf := range in.Suggested {
 		k := [2]string{parts.whole, "sys." + cat.Resolve(leaf) + ".presence"}

@@ -92,6 +92,7 @@ type Catalog struct {
 	tables     map[string]Table
 	evidence   []Question
 	profile    profileData
+	planning   planningData
 	works      worksData
 }
 

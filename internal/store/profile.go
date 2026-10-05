@@ -45,9 +45,10 @@ type ProfileView struct {
 // ProfileSnapshot is the input one rebuild reconciles, read under the
 // project's profile lock.
 type ProfileSnapshot struct {
-	Parts []profile.Part
-	Facts []profile.Fact
-	User  []profile.UserValue
+	Parts    []profile.Part
+	Facts    []profile.Fact
+	User     []profile.UserValue
+	Planning []profile.PlanningValue
 }
 
 // projectSiteSQL is the site of project $2 in org $1. Parts belong to the
@@ -488,7 +489,15 @@ ORDER BY part_id, key`, orgID, projectID)
 		}
 		snap.User = append(snap.User, u)
 	}
-	return snap, urows.Err()
+	if err := urows.Err(); err != nil {
+		return snap, err
+	}
+	urows.Close()
+	planning, err := readPlanning(ctx, q, orgID, projectID, false)
+	for _, p := range planning {
+		snap.Planning = append(snap.Planning, p.PlanningValue)
+	}
+	return snap, err
 }
 
 func readParts(ctx context.Context, q rowQuerier, orgID, projectID string) ([]profile.Part, error) {

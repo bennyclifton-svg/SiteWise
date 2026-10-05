@@ -627,15 +627,19 @@ complexity_additions:
 
 The registry of keys a `profile_planning_values` row may use.
 
-- `value` is `integer`, `number`, `boolean`, `choice` or `text`; `options` is required for `choice`.
+- `key` is lower-case words joined by underscores. The profile shows the value as row `plan.<key>`.
+- `value` is `integer`, `number`, `boolean`, `choice` or `text`; `options` (`{id, label}`) is required for `choice`.
 - `scope` is `site` or `project`.
-- Money totals belong to the cost plan, so `value: money` does not exist and a key may not start with `cost.`.
+- Money totals belong to the cost plan, so `value: money` does not exist and a key may not start with `cost`.
+- `favourable` (optional) lists values an assumption or a calculation may never record. Structural adequacy, ground conditions and compliance are not defaulted as favourable (PRG L276); only a person's stated word may say so. Boolean values are written as quoted text, `"true"` or `"false"`.
+- `starting_value` (optional) is a starting assumption code may propose. It is offered only once the owner marks the file `reviewed` (NW-REQ-185), and it may not be favourable.
 
 ```yaml
 version: 1
 status: draft
 keys:
   - {key: gross_floor_area, label: Gross floor area, value: number, unit: m2, scope: site}
+  - {key: existing_structure_adequate, label: Existing structure adequate, value: boolean, scope: site, favourable: ["true"]}
 ```
 
 ### Key scope (`profile/key_scope.yaml`)

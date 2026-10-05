@@ -219,6 +219,15 @@ class CatalogueTests(unittest.TestCase):
             {'key': 'budget', 'label': 'Budget', 'value': 'money', 'scope': 'project'}]}})
         self.assertEqual(sum('money totals' in e for e in report.errors), 2)
 
+    def test_planning_favourable_values_fit_the_key(self):
+        report = self.run_catalogues({'profile/planning_keys.yaml': {'version': 1, 'keys': [
+            {'key': 'site_classification', 'label': 'Site class', 'value': 'choice', 'scope': 'site',
+             'options': [{'id': 'A'}, {'id': 'P'}], 'favourable': ['A', 'Z'], 'starting_value': 'A'},
+            {'key': 'Bad.Key', 'label': 'Bad', 'value': 'text', 'scope': 'site'}]}})
+        self.assertTrue(any("'Z'" in e for e in report.errors))
+        self.assertTrue(any('starting value may not be favourable' in e for e in report.errors))
+        self.assertTrue(any('plan.<key>' in e for e in report.errors))
+
     def test_benchmark_amount_must_be_a_decimal_string(self):
         report = self.run_catalogues({'costs/benchmarks.yaml': {'version': 1, 'benchmarks': [
             {'id': 'bm.test', 'version': 1, 'basis': 'lump_sum', 'amount': 1250.5, 'currency': 'AUD',

@@ -287,6 +287,9 @@ func (c *Catalog) loadProfile(dir string) error {
 		}
 	}
 	c.profile.scope = scope
+	if err := c.loadPlanningKeys(dir); err != nil {
+		return err
+	}
 	return c.loadKeyScope(dir)
 }
 
