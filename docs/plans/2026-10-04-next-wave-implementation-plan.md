@@ -50,8 +50,8 @@ As recorded on 5 October 2026; this documentation revision ran no application ch
 | - | - | - |
 | WP-00 profile replay/workload | Implemented; source 15/15 and Hale 12/12 replays recorded | `docs/evidence/2026-10-05-evidence-workload.md`; does not prove all answer keys or filing quality |
 | Filing accuracy | Replay baseline accepted as a regression floor; quality remains inadequate | Same note: held-out title accuracy 0.29 and 15 confident wrong titles. Baseline acceptance is not quality approval. |
-| Filing latency | Local live whole_intake p50 377 / p90 1,245 ms against 1,000/2,000 ms | Same note: component budgets overrun; replay bench still fails because multi-sheet requests are missing. VPS evidence outstanding. |
-| WP-11 / WP-25 | Implemented and independently reviewed, not whole-wave Verified | Package handoffs/status history and register state updates; remaining dependent contracts still outstanding |
+| Filing latency | Local live whole_intake p50 377 / p90 1,245 ms against 1,000/2,000 ms | M0 (`e2eaa6d`) restored whole-file replay (AT-35): the replayed bench runs with 0 unrecorded requests. D-37 (`31681f9`): component budgets are judged on the target VPS and only reported elsewhere; user paths gate locally and pass. VPS evidence outstanding. |
+| WP-11 / WP-25 / WP-12 | Implemented and independently reviewed, not whole-wave Verified | Register state updates (WP-12 merged `ece0086`, full gate green); remaining dependent contracts still outstanding |
 | WP-K0 / WP-K4 | Shapes/catalogues and K4 drafts recorded as implemented; content review incomplete | Package history; no new reviewed knowledge is implied by format approval |
 | All other packages | Not demonstrated complete by the reviewed planning evidence | Treat as not verified; inspect actual handoffs before resuming |
 | M1/M2/M3 and new §8.6 gates | Planned; not run | Added by this documentation revision |
