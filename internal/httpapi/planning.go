@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -253,16 +254,19 @@ func planningValue(raw json.RawMessage) (*string, string) {
 	if len(raw) == 0 || string(raw) == "null" {
 		return nil, ""
 	}
+	// UseNumber keeps a number's digits exactly; float64 would round.
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.UseNumber()
 	var v any
-	if err := json.Unmarshal(raw, &v); err != nil {
+	if err := dec.Decode(&v); err != nil {
 		return nil, "invalid value"
 	}
 	var s string
 	switch t := v.(type) {
 	case string:
 		s = strings.TrimSpace(t)
-	case float64:
-		s = strconv.FormatFloat(t, 'f', -1, 64)
+	case json.Number:
+		s = t.String()
 	case bool:
 		s = strconv.FormatBool(t)
 	default:

@@ -89,6 +89,9 @@ func (s *Store) SetPlanningValue(ctx context.Context, orgID, projectID, userID s
 	if w.Version != current {
 		return current, ErrVersionConflict
 	}
+	if err := retireOtherScope(ctx, tx, orgID, projectID, siteID, w.PartID, w.Key, w.Scope); err != nil {
+		return 0, err
+	}
 	var text, numeric, boolean any
 	if w.State == "set" && w.Value != nil {
 		switch w.Kind {
@@ -135,6 +138,22 @@ WHERE org_id = $1::uuid AND id = $2::uuid`, orgID, prior, id); err != nil {
 		}
 	}
 	return latest + 1, tx.Commit(ctx)
+}
+
+// retireOtherScope supersedes a live value the registry has since moved to
+// the other scope, so a key keeps one live value (as SetUserValue does).
+func retireOtherScope(ctx context.Context, tx pgx.Tx, orgID, projectID, siteID, partID, key, scope string) error {
+	other := "project"
+	if scope == "project" {
+		other = "site"
+	}
+	where, err := planningOwner(other)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE profile_planning_values SET review_status = 'superseded', superseded_at = now() WHERE `+where,
+		ownerArgs(other, orgID, projectID, siteID, partID, key)...)
+	return err
 }
 
 // supersede retires a live row; next is the row that replaced it, if any.

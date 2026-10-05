@@ -462,9 +462,12 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, msg, http.StatusUnprocessableEntity)
 		return
 	}
+	// L276: a favourable value on a planning key is the user's stated word
+	// or nothing. An edit that omits origin keeps the stored one, which may
+	// be an assumption, so the origin must be sent as user.
 	if pk, ok := deps.Knowledge.PlanningKey(strings.TrimPrefix(key, knowledge.PlanningPrefix)); ok &&
-		strings.HasPrefix(key, knowledge.PlanningPrefix) && body.Origin == "assumption" && body.Value != nil && pk.IsFavourable(*body.Value) {
-		http.Error(w, favourableRefused(pk), http.StatusUnprocessableEntity)
+		strings.HasPrefix(key, knowledge.PlanningPrefix) && body.Origin != "user" && body.Value != nil && pk.IsFavourable(*body.Value) {
+		http.Error(w, favourableRefused(pk)+` (send origin "user")`, http.StatusUnprocessableEntity)
 		return
 	}
 	scope := deps.Knowledge.KeyScope(key)

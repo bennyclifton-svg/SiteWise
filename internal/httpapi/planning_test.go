@@ -119,7 +119,11 @@ func TestPlanningKeyStatedOnTheProfile(t *testing.T) {
 	put(t, m, project, "plan.construction_duration", map[string]any{"value": "52"}, http.StatusOK, nil)
 	put(t, m, project, "plan.construction_duration", map[string]any{"value": "soon"}, http.StatusUnprocessableEntity, nil)
 	put(t, m, project, "plan.existing_structure_adequate", map[string]any{"value": "true", "origin": "assumption"}, http.StatusUnprocessableEntity, nil)
-	put(t, m, project, "plan.existing_structure_adequate", map[string]any{"value": "true"}, http.StatusOK, nil)
+	// An edit that omits origin keeps a stored assumption, so it cannot
+	// turn that assumption favourable either (review finding, L276).
+	put(t, m, project, "plan.existing_structure_adequate", map[string]any{"value": "false", "origin": "assumption", "version": 0}, http.StatusOK, nil)
+	put(t, m, project, "plan.existing_structure_adequate", map[string]any{"value": "true", "version": 1}, http.StatusUnprocessableEntity, nil)
+	put(t, m, project, "plan.existing_structure_adequate", map[string]any{"value": "true", "origin": "user", "version": 1}, http.StatusOK, nil)
 }
 
 // AT-22: another org cannot read or write a project's planning values.
@@ -138,5 +142,23 @@ func TestPlanningIsOrgScoped(t *testing.T) {
 	}
 	if got := stranger.status(t, http.MethodDelete, base+"/site_area?version=1", nil); got != http.StatusNotFound {
 		t.Fatalf("DELETE %d", got)
+	}
+	// A part of another project's site is not found, by the API as well.
+	other := owner.createProject(t, "Other building")
+	var p struct {
+		Parts []struct {
+			ID string `json:"id"`
+		} `json:"parts"`
+	}
+	owner.getJSON(t, "/api/projects/"+other+"/profile", &p)
+	raw, _ = json.Marshal(map[string]any{"value": 100, "version": 0, "part_id": p.Parts[0].ID})
+	if got := owner.status(t, http.MethodPut, base+"/site_area", raw); got != http.StatusNotFound {
+		t.Fatalf("PUT with another site's part: %d", got)
+	}
+	// Large numbers keep every digit.
+	var body planningBody
+	putPlanning(t, owner, project, "site_area", map[string]any{"value": json.Number("9007199254740993"), "version": 0}, http.StatusOK, &body)
+	if *body.Values[0].Value != "9007199254740993" {
+		t.Fatalf("number rounded: %s", *body.Values[0].Value)
 	}
 }

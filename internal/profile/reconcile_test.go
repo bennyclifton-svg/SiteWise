@@ -324,7 +324,7 @@ func TestPlanningValuesShowAsAssumptions(t *testing.T) {
 	in.User = []profile.UserValue{{PartID: whole, Key: "plan.construction_duration", Value: str("52"), Version: 1}}
 	rows := profile.Build(in, cat)
 	if r := row(t, rows, whole, "plan.gross_floor_area"); r.Band != "planning" || r.Value != "1000" || r.Origin != "assumption" ||
-		r.ReviewStatus != "accepted_for_planning" || r.Scope != "site" || r.UserVersion != 2 || r.Note != "Area schedule" {
+		r.ReviewStatus != "accepted_for_planning" || r.Scope != "site" || r.UserVersion != 0 || r.Note != "Area schedule" {
 		t.Fatalf("assumption %+v", r)
 	}
 	if r := row(t, rows, whole, "plan.existing_structure_adequate"); r.Value != "" || r.ValueState != "unknown" || r.Origin != "assumption" {

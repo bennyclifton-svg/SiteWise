@@ -220,7 +220,9 @@ func Reconcile(in Input, cat *knowledge.Catalog) []Row {
 		if p.Value != nil {
 			r.Value = *p.Value
 		}
-		r.Origin, r.ReviewStatus, r.Meaning, r.ValueState, r.UserVersion = p.Origin, p.ReviewStatus, p.Meaning, p.State, p.Version
+		// UserVersion stays 0: the planning version belongs to the planning
+		// endpoint, and a profile edit of this key checks the user value's.
+		r.Origin, r.ReviewStatus, r.Meaning, r.ValueState = p.Origin, p.ReviewStatus, p.Meaning, p.State
 		rows[k] = r
 	}
 	for _, leaf := range in.Suggested {
