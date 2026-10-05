@@ -82,4 +82,4 @@ ALTER DATABASE sitewise_test SET auto_explain.log_min_duration = 100;   -- plans
 2. Run the full gate.
 3. Get an independent review (a fresh agent with the spec and the diff), fix the findings, then run the gate again.
 4. Commit the gate evidence and merge with `--no-ff`.
-5. Append the register state updates and update plan §0.2 when a status changes.
+5. Update all three status records: the work packages §6 table, plan §0.2 and the register state updates. Plan §0.2 is where to check where things are up to.

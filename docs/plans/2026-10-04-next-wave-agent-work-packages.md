@@ -1144,19 +1144,19 @@ Done: checker strict 0 errors, 0 pending; review packet; §4.2 handoff.
 
 ## 6. Status and evidence
 
-The implementation plan §0.2 is the single current evidence summary. §5 there owns decisions, §2.4 here owns future order, and the register state-update log owns detailed requirement evidence. The historical table below is retained for commit references only. M1/M2/M3 phases and NW-REQ-381–389 are Planned, not implemented or verified.
+The implementation plan §0.2 is the summary of where things are up to. §5 there owns decisions, §2.4 here owns future order, and the register state-update log owns detailed requirement evidence. The table below is the per-package status. **At every merge the integration lead updates all three: this table, plan §0.2 and the register state updates.** M1/M2/M3 phases and NW-REQ-381–389 are Planned, not implemented or verified.
 
-### Historical package record — before the review amendment
+### Package status (kept current at every merge)
 
-Frozen audit snapshot; its blockers and states are not current execution instructions.
+Blockers are as first planned; for future order use §2.4. Last updated 5 October 2026 at `8b96f33`.
 
 | WP | Stage | Lane | Blocked by | State |
 | - | - | - | - | - |
-| WP-00 | gate | A | none (D-17 resolved under A9) | **Implemented**, merged `a123dec`, `c0cb356`; profile replays green; intake and bench gates still red for pre-existing reasons (F28, F29) |
+| WP-00 | gate | A | none (D-17 resolved under A9) | **Implemented**, merged `a123dec`, `c0cb356`; profile replays green. Intake and bench gates restored by M0 (`e2eaa6d`, AT-35) and D-37 (`31681f9`) |
 | WP-11 | 1 | A | none | **Implemented**, merged `0a13afd`; reviewed; site-edit lock, revision and event deferred to WP-14 |
-| WP-12 | 1 | A | WP-11, WP-K0, D-04, D-06 | Not started |
-| WP-13 | 1 | A | WP-12, WP-K0, D-06 | Not started |
-| WP-14 | 1 | A | WP-12, WP-13, D-18 (bench) | Not started |
+| WP-12 | 1 | A | WP-11, WP-K0, D-04, D-06 | **Implemented**, merged `ece0086`; reviewed; full gate green |
+| WP-13 | 1 | A | WP-12, WP-K0, D-06 | **Implemented**, merged `77ced4b`; reviewed; full gate green. `planning_keys.yaml` awaits owner review |
+| WP-14 | 1 | A | WP-12, WP-13, D-18 (bench) | **Next.** Fix F31 first (plan §4) |
 | WP-15 | 1 | A | WP-14, D-04, D-06 | Not started |
 | WP-20 | 2 | A | WP-15, D-05 | Not started |
 | WP-21 | 2 | A | D-07 | Not started |
