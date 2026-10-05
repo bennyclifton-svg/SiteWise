@@ -52,6 +52,8 @@ determinants:
     value: choice
     status: draft
 `)
+	// Fixtures opt in to a catch-all scope; the real registry is tested on the repo.
+	mustWrite(t, filepath.Join(root, "profile", "key_scope.yaml"), "version: 1\nfamilies:\n  - {match: \"*\", scope: project}\n")
 	mustWrite(t, filepath.Join(root, "profile", "taxonomy.yaml"), `
 version: 1
 status: draft

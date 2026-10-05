@@ -28,6 +28,10 @@ const (
 	StateSet     = "set"
 	StateCleared = "cleared"
 	StateUnknown = "unknown"
+	// StateAbsent is a row with no value that nobody marked unknown: the
+	// documents did not settle it. Only a person (or a planning value) can
+	// record an explicit unknown (L274).
+	StateAbsent = "absent"
 )
 
 // eligibleUser is decision D-06: a value the user states as fact may feed a
@@ -78,7 +82,7 @@ func Annotate(rows []Row, cat *knowledge.Catalog) {
 		if r.ValueState == "" {
 			r.ValueState = StateSet
 			if strings.TrimSpace(r.Value) == "" {
-				r.ValueState = StateUnknown
+				r.ValueState = StateAbsent
 			}
 		}
 	}

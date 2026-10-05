@@ -48,6 +48,12 @@ func TestProfileEditVersionAndProvenance(t *testing.T) {
 	// Older clients that send no version still work.
 	put(t, m, project, "hdr.work_type", map[string]any{"value": "refurb"}, http.StatusOK, nil)
 
+	// A stale reset reports the real current version (3 after the edits above).
+	conflict.CurrentVersion = 0
+	put(t, m, project, "hdr.work_type", map[string]any{"reset": true, "version": 1}, http.StatusConflict, &conflict)
+	if conflict.CurrentVersion != 3 {
+		t.Fatalf("stale reset reported version %d", conflict.CurrentVersion)
+	}
 	put(t, m, project, "hdr.work_type", map[string]any{"value": "new", "origin": "guess"}, http.StatusUnprocessableEntity, nil)
 	put(t, m, project, "hdr.work_type", map[string]any{"value": "new", "meaning": "hope"}, http.StatusUnprocessableEntity, nil)
 	put(t, m, project, "hdr.work_type", map[string]any{"value": "new", "unknown": true}, http.StatusUnprocessableEntity, nil)

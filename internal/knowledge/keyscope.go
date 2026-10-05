@@ -34,11 +34,15 @@ func (c *Catalog) KeyScope(key string) string {
 }
 
 // loadKeyScope reads the registry and refuses a catalogue key it does not
-// classify, so no value is stored against the wrong owner. A missing file
-// leaves every key unclassified (fixtures and older layouts).
+// classify, so no value is stored against the wrong owner. A profile
+// catalogue without the registry is refused too; only a layout with no
+// profile taxonomy (small test fixtures) loads without one.
 func (c *Catalog) loadKeyScope(dir string) error {
 	p := filepath.Join(dir, "key_scope.yaml")
 	if _, err := os.Stat(p); os.IsNotExist(err) {
+		if _, terr := os.Stat(filepath.Join(dir, "taxonomy.yaml")); terr == nil {
+			return fmt.Errorf("%s is required: every profile key needs a site or project scope (D-04)", p)
+		}
 		return nil
 	}
 	var file struct {

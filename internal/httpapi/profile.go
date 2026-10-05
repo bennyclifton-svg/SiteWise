@@ -485,7 +485,7 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 	var err error
 	var current int64
 	if body.Reset {
-		err = deps.Store.DeleteUserValue(ctx, session.OrgID, projectID, part, key, scope, body.Version)
+		current, err = deps.Store.DeleteUserValue(ctx, session.OrgID, projectID, part, key, scope, body.Version)
 	} else {
 		state := "set"
 		switch {

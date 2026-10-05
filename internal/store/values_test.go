@@ -62,7 +62,24 @@ WHERE org_id = $1::uuid AND key = 'det.ncc_class'`, orgA); err == nil {
 		t.Fatal("database accepted a set value with no value")
 	}
 
-	if err := st.DeleteUserValue(ctx, orgA, projectA, whole.ID, "det.ncc_class", "site", nil); err != nil {
+	// An edit that does not restate provenance keeps it: an assumption stays one.
+	if _, err := st.SetUserValue(ctx, orgA, projectA, whole.ID, userA, "hdr.work_type",
+		store.UserWrite{Value: strPtr("refurb"), Scope: "project"}); err != nil {
+		t.Fatal(err)
+	}
+	snap, _ = st.ProfileInput(ctx, orgA, projectA)
+	for _, u := range snap.User {
+		if u.Key == "hdr.work_type" && (u.Origin != "assumption" || u.State != "set") {
+			t.Fatalf("edit without origin changed provenance: %+v", u)
+		}
+	}
+	if cur, err := st.DeleteUserValue(ctx, orgA, projectA, whole.ID, "det.ncc_class", "site", &stale); !errors.Is(err, store.ErrVersionConflict) || cur != 2 {
+		t.Fatalf("stale reset: %d %v", cur, err)
+	}
+	if _, err := st.SetUserValue(ctx, orgA, projectA, whole.ID, userA, "det.ncc_class", store.UserWrite{Value: strPtr("5")}); err == nil {
+		t.Fatal("a write with no scope was accepted")
+	}
+	if _, err := st.DeleteUserValue(ctx, orgA, projectA, whole.ID, "det.ncc_class", "site", nil); err != nil {
 		t.Fatal(err)
 	}
 	snap, _ = st.ProfileInput(ctx, orgA, projectA)

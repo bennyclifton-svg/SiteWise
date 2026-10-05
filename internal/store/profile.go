@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -187,7 +188,9 @@ type UserWrite struct {
 	Version *int64
 }
 
-// lockProject serialises writes to one project with its rebuilds.
+// lockProject serialises writes to one project with its rebuilds. A site
+// value is also guarded per project: version 1 has one project per site
+// (projects_one_per_site_v1); a shared site needs a site lock here too.
 func lockProject(ctx context.Context, tx pgx.Tx, orgID, projectID string) error {
 	_, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1 || '/' || $2, 0))`, orgID, projectID)
 	return err
@@ -206,14 +209,36 @@ WHERE p.org_id = $1::uuid AND p.id = $2::uuid`, orgID, projectID, partID).Scan(&
 	return siteID, err
 }
 
+// ownerSQL selects one key's row by its owner: $1 org, $2 the site or the
+// project, $3 part, $4 key. Each scope is its own literal query so the
+// matching partial unique index is used; ownerArgs gives its arguments.
+func ownerSQL(scope string) (string, error) {
+	switch scope {
+	case "site":
+		return `org_id = $1::uuid AND scope = 'site' AND site_id = $2::uuid AND part_id = $3::uuid AND key = $4`, nil
+	case "project":
+		return `org_id = $1::uuid AND scope = 'project' AND project_id = $2::uuid AND part_id = $3::uuid AND key = $4`, nil
+	}
+	return "", fmt.Errorf("user value scope %q", scope)
+}
+
+func ownerArgs(scope, orgID, projectID, siteID, partID, key string) []any {
+	owner := projectID
+	if scope == "site" {
+		owner = siteID
+	}
+	return []any{orgID, owner, partID, key}
+}
+
 // currentUserValue returns the stored version of a key (0 when absent).
 func currentUserValue(ctx context.Context, tx pgx.Tx, orgID, projectID, siteID, partID, key, scope string) (int64, error) {
+	where, err := ownerSQL(scope)
+	if err != nil {
+		return 0, err
+	}
 	var version int64
-	err := tx.QueryRow(ctx, `
-SELECT version FROM profile_user_values
-WHERE org_id = $1::uuid AND part_id = $4::uuid AND key = $5 AND scope = $6
-  AND ((scope = 'project' AND project_id = $2::uuid) OR (scope = 'site' AND site_id = $3::uuid))
-FOR UPDATE`, orgID, projectID, siteID, partID, key, scope).Scan(&version)
+	err = tx.QueryRow(ctx, `SELECT version FROM profile_user_values WHERE `+where+` FOR UPDATE`,
+		ownerArgs(scope, orgID, projectID, siteID, partID, key)...).Scan(&version)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return 0, nil
 	}
@@ -222,8 +247,13 @@ FOR UPDATE`, orgID, projectID, siteID, partID, key, scope).Scan(&version)
 
 // SetUserValue records the user's word for one key and returns its new
 // version. A stale expected version returns the current one with
-// ErrVersionConflict. The caller rebuilds the rows (RebuildProfile).
+// ErrVersionConflict. An omitted origin or meaning keeps the stored one, so
+// an edit never turns an assumption back into a stated fact (D-06). The
+// caller rebuilds the rows (RebuildProfile).
 func (s *Store) SetUserValue(ctx context.Context, orgID, projectID, partID, userID, key string, w UserWrite) (int64, error) {
+	if _, err := ownerSQL(w.Scope); err != nil {
+		return 0, err
+	}
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return 0, err
@@ -243,6 +273,16 @@ func (s *Store) SetUserValue(ctx context.Context, orgID, projectID, partID, user
 	if w.Version != nil && *w.Version != current {
 		return current, ErrVersionConflict
 	}
+	// A key the registry has moved to the other scope keeps one row only.
+	other := "project"
+	if w.Scope == "project" {
+		other = "site"
+	}
+	otherWhere, _ := ownerSQL(other)
+	if _, err := tx.Exec(ctx, `DELETE FROM profile_user_values WHERE `+otherWhere,
+		ownerArgs(other, orgID, projectID, siteID, partID, key)...); err != nil {
+		return 0, err
+	}
 	var project any = projectID
 	if w.Scope == "site" {
 		project = nil
@@ -251,14 +291,15 @@ func (s *Store) SetUserValue(ctx context.Context, orgID, projectID, partID, user
 	err = tx.QueryRow(ctx, `
 INSERT INTO profile_user_values (org_id, id, project_id, site_id, part_id, scope, key, value, value_state, note,
   origin, meaning, user_id)
-VALUES ($1::uuid, gen_random_uuid(), $2::uuid, $3::uuid, $4::uuid, $5, $6, $7, $8, $9, $10, $11, $12::uuid)
+VALUES ($1::uuid, gen_random_uuid(), $2::uuid, $3::uuid, $4::uuid, $5, $6, $7, $8, $9,
+  COALESCE($10::text, 'user'), COALESCE($11::text, 'stated'), $12::uuid)
 ON CONFLICT `+userValueConflict(w.Scope)+` DO UPDATE
 SET value = EXCLUDED.value, value_state = EXCLUDED.value_state, note = EXCLUDED.note,
-    origin = EXCLUDED.origin, meaning = EXCLUDED.meaning, user_id = EXCLUDED.user_id,
-    version = profile_user_values.version + 1, updated_at = now()
+    origin = COALESCE($10::text, profile_user_values.origin), meaning = COALESCE($11::text, profile_user_values.meaning),
+    user_id = EXCLUDED.user_id, version = profile_user_values.version + 1, updated_at = now()
 RETURNING version`,
 		orgID, project, siteID, partID, w.Scope, key, w.Value, orDefault(w.State, "set"), cutRunes(w.Note, 120),
-		orDefault(w.Origin, "user"), orDefault(w.Meaning, "stated"), userID).Scan(&version)
+		nilIfBlank(w.Origin), nilIfBlank(w.Meaning), userID).Scan(&version)
 	if err != nil {
 		return 0, err
 	}
@@ -279,37 +320,45 @@ func orDefault(v, d string) string {
 	return v
 }
 
+func nilIfBlank(v string) any {
+	if v == "" {
+		return nil
+	}
+	return v
+}
+
 // DeleteUserValue removes the user's word for one key, so evidence shows
-// again. A stale expected version returns ErrVersionConflict.
-func (s *Store) DeleteUserValue(ctx context.Context, orgID, projectID, partID, key, scope string, version *int64) error {
+// again. A stale expected version returns the current version with
+// ErrVersionConflict.
+func (s *Store) DeleteUserValue(ctx context.Context, orgID, projectID, partID, key, scope string, version *int64) (int64, error) {
+	where, err := ownerSQL(scope)
+	if err != nil {
+		return 0, err
+	}
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
-		return err
+		return 0, err
 	}
 	siteID, err := userValueOwner(ctx, tx, orgID, projectID, partID)
-	if errors.Is(err, ErrNotFound) {
-		return nil // nothing of this project's to reset
-	} else if err != nil {
-		return err
+	if err != nil {
+		return 0, err
 	}
 	current, err := currentUserValue(ctx, tx, orgID, projectID, siteID, partID, key, scope)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if version != nil && *version != current {
-		return ErrVersionConflict
+		return current, ErrVersionConflict
 	}
-	if _, err := tx.Exec(ctx, `DELETE FROM profile_user_values
-WHERE org_id = $1::uuid AND part_id = $4::uuid AND key = $5 AND scope = $6
-  AND ((scope = 'project' AND project_id = $2::uuid) OR (scope = 'site' AND site_id = $3::uuid))`,
-		orgID, projectID, siteID, partID, key, scope); err != nil {
-		return err
+	if _, err := tx.Exec(ctx, `DELETE FROM profile_user_values WHERE `+where,
+		ownerArgs(scope, orgID, projectID, siteID, partID, key)...); err != nil {
+		return 0, err
 	}
-	return tx.Commit(ctx)
+	return 0, tx.Commit(ctx)
 }
 
 // RebuildProfile reconciles one project under a per-project lock, writes
@@ -338,6 +387,10 @@ func (s *Store) RebuildProfile(ctx context.Context, orgID, projectID, thresholds
 		snap.Parts = []profile.Part{whole}
 	}
 	rows := compute(snap)
+	var siteID string
+	if err := tx.QueryRow(ctx, `SELECT site_id::text FROM projects WHERE org_id = $1::uuid AND id = $2::uuid`, orgID, projectID).Scan(&siteID); err != nil {
+		return err
+	}
 	if _, err := tx.Exec(ctx, `DELETE FROM profile_rows WHERE org_id = $1::uuid AND project_id = $2::uuid`, orgID, projectID); err != nil {
 		return err
 	}
@@ -352,10 +405,10 @@ func (s *Store) RebuildProfile(ctx context.Context, orgID, projectID, thresholds
 		batch.Queue(`
 INSERT INTO profile_rows (org_id, project_id, site_id, part_id, key, value, band, assertion, note, tenders, sources,
   alternatives, derived, scope, origin, review_status, meaning, value_state, user_version)
-VALUES ($1::uuid, $2::uuid, `+projectSiteSQL+`, $3::uuid, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+VALUES ($1::uuid, $2::uuid, $19::uuid, $3::uuid, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
 			orgID, projectID, r.PartID, r.Key, r.Value, r.Band, r.Assertion, cutRunes(r.Note, 120), r.Tenders, sources, alts, derived,
 			orDefault(r.Scope, "project"), orDefault(r.Origin, "document"), orDefault(r.ReviewStatus, "proposed"),
-			orDefault(r.Meaning, "stated"), orDefault(r.ValueState, "set"), r.UserVersion)
+			orDefault(r.Meaning, "stated"), orDefault(r.ValueState, "set"), r.UserVersion, siteID)
 	}
 	if batch.Len() > 0 {
 		if err := tx.SendBatch(ctx, batch).Close(); err != nil {
@@ -646,7 +699,7 @@ WHERE org_id = $1::uuid AND scope = 'project' AND project_id = $2::uuid AND part
 INSERT INTO profile_user_values (org_id, id, project_id, site_id, part_id, scope, key, value, note, user_id)
 VALUES ($1::uuid, gen_random_uuid(), $2::uuid, `+projectSiteSQL+`, $3::uuid, 'project', $4, $5, '', $6::uuid)
 ON CONFLICT (org_id, project_id, part_id, key) WHERE scope = 'project' DO UPDATE
-SET value = EXCLUDED.value, user_id = EXCLUDED.user_id, version = profile_user_values.version + 1, updated_at = now()`,
+SET value = EXCLUDED.value, value_state = 'set', user_id = EXCLUDED.user_id, version = profile_user_values.version + 1, updated_at = now()`,
 			orgID, projectID, partID, key, *value, userID); err != nil {
 			return err
 		}
