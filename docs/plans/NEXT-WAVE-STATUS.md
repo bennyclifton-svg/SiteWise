@@ -53,6 +53,12 @@ See [combined validation](../evidence/2026-10-07-m2-m3-validation.md) for exact
 commands and limitations. Independent review found no further confirmed bounded
 M2/M3 code omission. Knowledge remains draft.
 
+A subsequent deployment-artifact audit found and corrected missing runtime
+catalogue/policy files and service paths. The package now validates its staged
+assets; a static Linux cross-build and archive checks pass. See
+[release asset evidence](../evidence/2026-10-07-release-assets.md). This does not
+replace target-host startup or release proof.
+
 Automatic approval review rejected both the private source/Hale recording
 refresh and a separate five-excerpt Petersham run to TypeSafe. No transfer
 occurred for either rejected request. Local profile replay remains stale;

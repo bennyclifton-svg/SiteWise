@@ -17,6 +17,7 @@ issued until all of them pass.
 | What | Where | Owner, mode |
 |---|---|---|
 | Release (binary, intake vocabulary, deploy files, this doc) | `/opt/sitewise-releases/<commit>/` | root, 0755 |
+| Runtime building catalogue and profile policies | `/opt/sitewise/share/knowledge/`, `/opt/sitewise/share/profile/` | root, read-only for sitewise |
 | Current release | `/opt/sitewise` → symlink to one release | root |
 | Secrets and settings | `/etc/sitewise/sitewise.env` | root:root 0600 |
 | Backup credentials (rclone) | `/etc/sitewise/backup/rclone.conf` | root:root 0600 |
@@ -71,6 +72,11 @@ moves: no database, no Supabase backup, no old files.
    tar -C /opt/sitewise-releases -xzf sitewise-<commit>-linux-amd64.tar.gz
    ln -sfn /opt/sitewise-releases/sitewise-<commit>-linux-amd64 /opt/sitewise
    ```
+   The package includes intake data, the complete knowledge catalogue and all
+   three profile policies. Its build checks the staged files through the real
+   loaders and compares the catalogue fingerprint with the source tree. The
+   service passes absolute paths for these assets; it does not depend on its
+   working directory. Private evaluation corpora and recordings are not shipped.
 5. **PostgreSQL.** Socket only, archiving to pgBackRest.
    ```sh
    cp /opt/sitewise/deploy/postgresql-sitewise.conf /etc/postgresql/17/main/conf.d/sitewise.conf

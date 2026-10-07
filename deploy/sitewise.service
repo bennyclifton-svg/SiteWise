@@ -14,7 +14,7 @@ Group=sitewise
 # Root-owned, mode 0600. systemd reads it before dropping to the service
 # user, so the process gets the secrets without being able to read the file.
 EnvironmentFile=/etc/sitewise/sitewise.env
-ExecStart=/opt/sitewise/bin/sitewise serve -addr 127.0.0.1:8080 -data /opt/sitewise/share/intake
+ExecStart=/opt/sitewise/bin/sitewise serve -addr 127.0.0.1:8080 -data /opt/sitewise/share/intake -knowledge /opt/sitewise/share/knowledge -profile-thresholds /opt/sitewise/share/profile/thresholds.json -profile-reading /opt/sitewise/share/profile/reading.json -proposal-policy /opt/sitewise/share/profile/proposals.json
 Restart=on-failure
 RestartSec=2s
 # Shutdown ends event streams and waits up to 20 s for running filings.

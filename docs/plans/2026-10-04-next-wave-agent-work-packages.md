@@ -1187,7 +1187,7 @@ Blockers are as first planned; for execution order use §2.4 and the 7 October a
 | WP-51 | 5 | A | WP-50, D-13 | PMP implemented through shared assembler with explicit delivery/cost records and unavailable totals; checkpoint integration checks pass; final regression pending. |
 | WP-60 | 6 | A | WP-51 | Changes since issue and saved progress/date/authority reporting implemented; browser and recovery checkpoint checks pass; final regression pending. |
 | WP-70 | 7 | B+A | WP-60 | Summary/Systems projections, costs/dependencies/split/retire and report controls implemented; browser/rollback checkpoint checks pass, final regression pending. |
-| WP-71 | 7 | release | VPS | Not started |
+| WP-71 | 7 | release | VPS | Linux package assets/service paths corrected and staged-loader/static-build checks pass; target-VPS live measurement not started. `docs/evidence/2026-10-07-release-assets.md`. |
 | WP-X1 | 3/5/7 | C | stage ends | M2 API/FK checks, issue crash recovery and local dump/restore pass. Final schema/route checkpoint and populated upgrade pass; final regression and target-host release evidence remain; `docs/evidence/2026-10-07-restore.md`. |
 | WP-K0 | K | knowledge | owner approval of shapes; D-07, D-09, D-24, D-30 for the remaining shapes | K0 shapes implemented (approval pending); new catalogue shapes **Implemented**, merged `6e47383` (stages, package defaults, planning keys, key scope, clauses, benchmarks) |
 | WP-K1-K3 | K | knowledge | WP-K0 | **Implemented** bounded layout input and K1/K2/K3 source-backed draft review coverage. No confirmed bounded implementation gap remains; source/project-data limits and owner review remain. `docs/evidence/2026-10-07-final-knowledge-audit.md` supersedes earlier gap assessments. |

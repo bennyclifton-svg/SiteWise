@@ -95,6 +95,12 @@ The complete local 184×2 intake / 40-sample timing run passes all developer
 user-path budgets, including Spec Home p50/p90 47.6/49.9 ms against 50/150 ms.
 This is local evidence, not target-VPS certification; no budget was relaxed.
 
+Post-publication artifact audit: corrected omitted runtime knowledge/profile
+assets and default service paths in the Linux package. Staged loader checks,
+negative asset tests and static Linux cross-build pass; see
+[release asset evidence](../evidence/2026-10-07-release-assets.md). Actual VPS
+startup and release measurements remain outstanding.
+
 The [final knowledge audit](../evidence/2026-10-07-final-knowledge-audit.md)
 supersedes earlier missing-jurisdiction/layout assessments. Bounded K1–K4
 implementation and source-backed draft coverage are complete, with no remaining
