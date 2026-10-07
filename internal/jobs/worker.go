@@ -276,6 +276,13 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		if err != nil {
 			return err
 		}
+		if detail, ok := DetailCall(w.Catalog, passage.Passage, DetailLeaves(w.Catalog, passage.Passage, result, w.MinNoul)); ok {
+			more, err := w.cachedAsk(ctx, job, passage.ID, "evidence_detail", detail)
+			if err != nil {
+				return err
+			}
+			call, result = mergeCall(call, detail, result, more)
+		}
 		if err := w.Store.SetPassageEvidence(ctx, job.OrgID, passage.ID, evidenceStates(call.Questions, result, w.MinNoul)); err != nil {
 			return err
 		}
@@ -588,18 +595,14 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 	}
 	for _, id := range leafIDs {
 		child, _ := cat.System(id)
-		questions[knowledge.LabelQuestionID(id)] = jev.Question{Type: jev.TypeNoul, Instructions: "Using `excerpt`, does this clause concern any of " + child.Label + "?", Criteria: map[string]string{"true": knowledge.Describe(child, id), "false": "None of this category is discussed. Other systems can be discussed alongside it without making the answer false."}}
+		questions[knowledge.LabelQuestionID(id)] = jev.Question{Type: jev.TypeNoul, Instructions: "Using `excerpt`, does this clause concern any of " + child.Label + "? A clause that says it is excluded, not used or by others still concerns it; use `section` to identify the subject of a short clause.", Criteria: map[string]string{"true": knowledge.Describe(child, id) + " Includes a clause that excludes it or says it is not used.", "false": "None of this category is discussed, included or excluded. Other systems can be discussed alongside it without making the answer false."}}
 	}
 	// Signals follow the labelled passage runs_on contract; no extra model call.
 	for _, q := range cat.SignalQuestions(passage.Labels) {
 		questions[q.ID] = jev.Question{Type: jev.TypeNoul, Instructions: q.Instructions, Criteria: noulCriteria(q.Criteria)}
 	}
-	for id, q := range profile.EvidenceQuestions(leafIDs, cat) {
-		// Labeling resolves families; the same evidence fan-out resolves their
-		// leaves. Ask actions speculatively alongside leaf presence, otherwise
-		// the first reading could never capture an action without another call.
-		questions[id] = q
-	}
+	// Leaf detail (presence, provider, action) waits for DetailCall. Asking it
+	// for every leaf of several families exceeded the request budget.
 	if len(questions) == 0 {
 		return jev.Call{}, false
 	}
@@ -609,6 +612,60 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 		Priority:        jev.PriorityBackground,
 		QuestionVersion: questionVersion,
 	}, true
+}
+
+// DetailCall asks presence, provider and action only for the leaves the
+// first evidence pass found, so a clause spanning several families stays
+// within the request budget without dropping any family. It is a second,
+// background fan-out per passage; accuracy outranks reading time here.
+func DetailCall(cat *knowledge.Catalog, passage Passage, leaves []string) (jev.Call, bool) {
+	questions := profile.EvidenceQuestions(leaves, cat)
+	if len(questions) == 0 {
+		return jev.Call{}, false
+	}
+	return jev.Call{
+		State:           passageState(passage),
+		Questions:       questions,
+		Priority:        jev.PriorityBackground,
+		QuestionVersion: questionVersion,
+	}, true
+}
+
+// DetailLeaves are the leaves the passage was already labelled with plus
+// those the first evidence pass accepted, once each, in order.
+func DetailLeaves(cat *knowledge.Catalog, passage Passage, first jev.Result, minNoul float64) []string {
+	var out []string
+	seen := map[string]bool{}
+	for _, id := range append(append([]string{}, passage.Labels...), AcceptLabels(cat, first, minNoul)...) {
+		if sys, ok := cat.System(id); ok && sys.Parent != "" && !seen[id] {
+			seen[id] = true
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
+// mergeCall joins both evidence passes so the passage's readings, states and
+// unresolved keys are recorded exactly as one call's would be.
+func mergeCall(first, detail jev.Call, a, b jev.Result) (jev.Call, jev.Result) {
+	questions := make(map[string]jev.Question, len(first.Questions)+len(detail.Questions))
+	answers := make(map[string]jev.Answer, len(a.Answers)+len(b.Answers))
+	for id, q := range first.Questions {
+		questions[id] = q
+	}
+	for id, q := range detail.Questions {
+		questions[id] = q
+	}
+	for id, x := range a.Answers {
+		answers[id] = x
+	}
+	for id, x := range b.Answers {
+		answers[id] = x
+	}
+	first.Questions = questions
+	a.Answers = answers
+	a.Unresolved = append(append([]string{}, a.Unresolved...), b.Unresolved...)
+	return first, a
 }
 
 var explicitEvidenceRoutes = []struct {

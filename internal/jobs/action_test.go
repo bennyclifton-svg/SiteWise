@@ -11,17 +11,14 @@ import (
 	"testing"
 )
 
-type severalAsk struct{ calls int }
-
-func TestFamilyLabelAsksActionsInFirstEvidenceCall(t *testing.T) {
-	call, ok := jobs.EvidenceCall(loadKnowledge(t), jobs.Passage{Text: "Natural gas work.", Labels: []string{"hydraulic"}})
-	if !ok || call.Questions["sys.hydraulic.gas.action"].Type != jev.TypeChoice || call.Questions["sys.hydraulic.gas.presence"].Type != jev.TypeChoice {
-		t.Fatal("first read would require a second evidence call for the action")
-	}
+type severalAsk struct {
+	calls int
+	asked []map[string]jev.Question
 }
 
 func (a *severalAsk) Ask(_ context.Context, call jev.Call) (jev.Result, error) {
 	a.calls++
+	a.asked = append(a.asked, call.Questions)
 	c := .99
 	r := jev.Result{Answers: map[string]jev.Answer{}}
 	for id, q := range call.Questions {
@@ -31,6 +28,9 @@ func (a *severalAsk) Ask(_ context.Context, call jev.Call) (jev.Result, error) {
 		}
 		if id == "sys.hydraulic.gas.presence" {
 			answer.Choice = "included"
+		}
+		if id == "system.hydraulic.gas" {
+			answer.Noul = .99
 		}
 		r.Answers[id] = answer
 	}
@@ -50,7 +50,7 @@ func TestSeveralActionsUseExistingCallAndNeedMapping(t *testing.T) {
 	if err != nil || len(passages) != 1 {
 		t.Fatalf("passages %+v %v", passages, err)
 	}
-	if err := s.SetPassageSystems(ctx, org, passages[0].ID, []string{"hydraulic.gas"}); err != nil {
+	if err := s.SetPassageSystems(ctx, org, passages[0].ID, []string{"hydraulic"}); err != nil {
 		t.Fatal(err)
 	}
 	a := &severalAsk{}
@@ -58,8 +58,12 @@ func TestSeveralActionsUseExistingCallAndNeedMapping(t *testing.T) {
 	if err := w.Perform(ctx, store.ClaimedJob{OrgID: org, DocumentID: doc, Kind: store.JobKindEvidence}); err != nil {
 		t.Fatal(err)
 	}
-	if a.calls != 1 {
-		t.Fatalf("extra model round trip: %d", a.calls)
+	// Presence first, then detail for the found leaf only.
+	if a.calls != 2 {
+		t.Fatalf("want presence then detail calls, got %d", a.calls)
+	}
+	if _, asked := a.asked[1]["sys.hydraulic.hot-water.action"]; asked {
+		t.Fatal("detail asked for an unfound leaf")
 	}
 	records, err := s.SourceRecords(ctx, org, project, "", "needs_mapping", 0)
 	if err != nil || len(records.Records) != 1 {
@@ -72,11 +76,7 @@ func TestSeveralActionsUseExistingCallAndNeedMapping(t *testing.T) {
 	if !found {
 		t.Fatal("several action not recorded as unresolved")
 	}
-	call, ok := jobs.EvidenceCall(loadKnowledge(t), jobs.Passage{Text: "Gas", Labels: []string{"hydraulic.gas"}})
-	if !ok || call.Questions["sys.hydraulic.gas.action"].Type != "choice" {
-		t.Fatal("action outside evidence fan-out")
-	}
-	for id := range call.Questions {
+	for id := range a.asked[1] {
 		if strings.HasPrefix(id, "sys.") && strings.HasSuffix(id, ".action") && !strings.HasPrefix(id, "sys.hydraulic.") {
 			t.Fatalf("unlabelled family action %s", id)
 		}
@@ -91,7 +91,7 @@ func TestSeveralActionsUseExistingCallAndNeedMapping(t *testing.T) {
 		t.Fatal(err)
 	}
 	err = w.Perform(ctx, store.ClaimedJob{OrgID: org, DocumentID: doc, Kind: store.JobKindEvidence})
-	if !errors.Is(err, jev.ErrRequestLimit) || a.calls != 1 {
+	if !errors.Is(err, jev.ErrRequestLimit) || a.calls != 2 {
 		t.Fatalf("oversized call spent or hidden: calls=%d err=%v", a.calls, err)
 	}
 }

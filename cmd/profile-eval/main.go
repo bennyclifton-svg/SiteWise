@@ -31,7 +31,9 @@ type sample struct {
 type recorded struct {
 	Fingerprint         string
 	EvidenceFingerprint string
+	DetailFingerprint   string
 	Label, Evidence     jev.Result
+	Detail              jev.Result
 }
 
 func main() {
@@ -126,8 +128,31 @@ func run() error {
 				return fmt.Errorf("%s: evidence recording is stale", c.ID)
 			}
 		}
+		if *live && ok {
+			rec.Evidence, err = client.Ask(context.Background(), evidence)
+			if err != nil {
+				return fmt.Errorf("%s evidence: %w", c.ID, err)
+			}
+		}
+		// The second pass mirrors the worker: detail for found leaves only.
+		detail, detailOK := jobs.DetailCall(cat, p, jobs.DetailLeaves(cat, p, rec.Evidence, 0.5))
+		if detailOK {
+			detail.Deadline = 15 * time.Second
+			raw, _ := json.Marshal(detail)
+			sum := sha256.Sum256(raw)
+			fingerprint := hex.EncodeToString(sum[:])
+			if *live {
+				rec.DetailFingerprint = fingerprint
+				rec.Detail, err = client.Ask(context.Background(), detail)
+				if err != nil {
+					return fmt.Errorf("%s detail: %w", c.ID, err)
+				}
+			} else if !*measure && rec.DetailFingerprint != fingerprint {
+				return fmt.Errorf("%s: detail recording is stale", c.ID)
+			}
+		}
 		if *measure {
-			for stage, request := range map[string]jev.Call{"label": call, "evidence": evidence} {
+			for stage, request := range map[string]jev.Call{"label": call, "evidence": evidence, "detail": detail} {
 				if len(request.Questions) == 0 {
 					continue
 				}
@@ -148,17 +173,14 @@ func run() error {
 			}
 			continue
 		}
-		if *live && ok {
-			rec.Evidence, err = client.Ask(context.Background(), evidence)
-			if err != nil {
-				return fmt.Errorf("%s evidence: %w", c.ID, err)
-			}
-		}
 		saved[c.ID] = rec
 		cands, _ := call.State.(map[string]any)["candidates"].(map[string][]profile.Candidate)
 		values := profile.Readings(rec.Label, call.Questions, cands, p.Text)
 		if ok {
 			values = append(values, profile.Readings(rec.Evidence, evidence.Questions, nil, p.Text)...)
+		}
+		if detailOK {
+			values = append(values, profile.Readings(rec.Detail, detail.Questions, nil, p.Text)...)
 		}
 		got := map[string]string{}
 		applied := map[string]string{}
@@ -189,7 +211,7 @@ func run() error {
 				fmt.Printf("WRONG %s %s=%q\n", c.ID, key, v)
 			}
 		}
-		for _, r := range []jev.Result{rec.Label, rec.Evidence} {
+		for _, r := range []jev.Result{rec.Label, rec.Evidence, rec.Detail} {
 			if r.Latency > 0 {
 				durations = append(durations, r.Latency)
 			}

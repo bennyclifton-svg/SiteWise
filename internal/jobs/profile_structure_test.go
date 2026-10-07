@@ -69,7 +69,8 @@ func TestExplicitServiceExclusionIsAskedEvenWithoutFamilyLabel(t *testing.T) {
 	if !ok {
 		t.Fatal("explicit service skipped because family label absent")
 	}
-	if _, ok := call.Questions["sys.hydraulic.non-potable-water.presence"]; !ok {
+	// The leaf found here gets the presence (exclusion) question in DetailCall.
+	if _, ok := call.Questions["system.hydraulic.non-potable-water"]; !ok {
 		t.Fatal("exclusion question absent")
 	}
 }

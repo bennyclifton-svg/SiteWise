@@ -21,7 +21,7 @@ func TestSignalsShareEvidenceFanout(t *testing.T) {
 	if q, ok := call.Questions[key]; !ok || q.Type != jev.TypeNoul {
 		t.Fatalf("missing labelled signal: %+v", q)
 	}
-	if call.Questions["sys.fire-active.hydrants.action"].Type != jev.TypeChoice {
+	if call.Questions["system.fire-active.hydrants"].Type != jev.TypeNoul {
 		t.Fatal("signal displaced action")
 	}
 	other, _ := jobs.EvidenceCall(cat, jobs.Passage{Labels: []string{"interiors"}, Text: "Paint walls"})

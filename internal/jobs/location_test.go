@@ -36,7 +36,7 @@ func (a *locationAsk) Ask(_ context.Context, c jev.Call) (jev.Result, error) {
 	for id, q := range c.Questions {
 		v := jev.Answer{Type: q.Type, Choice: "not_stated", Confidence: &confidence}
 		switch id {
-		case "system.hydraulic":
+		case "system.hydraulic", "system.hydraulic.gas":
 			v.Noul = .99
 		case "source.category":
 			v.Choice = "requirement"
@@ -75,7 +75,8 @@ func TestLocationCarriesFromLabelToEvidenceWithoutAnotherCall(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if ask.calls != 2 {
+	// Label, evidence presence, then detail for the found gas leaf.
+	if ask.calls != 3 {
 		t.Fatalf("extra model call: %d", ask.calls)
 	}
 	snap, err := s.ProfileInput(ctx, org, project)

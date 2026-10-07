@@ -156,7 +156,8 @@ func TestStagesLeaseAndPriority(t *testing.T) {
 	if err := worker.Once(ctx, org); err != nil {
 		t.Fatal(err)
 	}
-	if len(asker.calls) != 2 {
+	// Label, evidence presence, then detail for the found sprinkler leaf.
+	if len(asker.calls) != 3 {
 		t.Fatalf("calls %d", len(asker.calls))
 	}
 	for _, call := range asker.calls {
