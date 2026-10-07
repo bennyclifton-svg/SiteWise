@@ -3,7 +3,7 @@
 Updated 7 October 2026. **M2/M3 code implemented; local performance passes.
 Milestone acceptance and release remain blocked by the evidence below.**
 
-M2/M3 implementation published on `main` and GitHub in [`7445288`](https://github.com/bennyclifton-svg/SiteWise/commit/74452883d545fec72e561184ecada8c7f3da6cf4). Validation below applies to that code; subsequent publication notes change documentation only.
+M2/M3 implementation published on `main` and GitHub in [`7445288`](https://github.com/bennyclifton-svg/SiteWise/commit/74452883d545fec72e561184ecada8c7f3da6cf4). Application validation below applies to that code. Release packaging was subsequently corrected and checked in `b470fae`; see release asset evidence below.
 
 This is the single owner-facing progress page. The original
 [implementation plan](2026-10-04-next-wave-implementation-plan.md) remains the

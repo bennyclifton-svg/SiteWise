@@ -24,7 +24,12 @@ directory and rejects symlink substitutions before any recursive removal.
 Validation: all `cmd/sitewise` tests pass (1.981 s); the local package build passes
 its staged-loader test. Inspection compares all 102 archived files byte-for-byte
 against staging, verifies the archive checksum, and confirms ELF64 x86-64 with no
-dynamic interpreter/dependency segment. The first trial is explicitly labelled
-dirty; a clean-commit build follows publication preparation. This Windows-host
+dynamic interpreter/dependency segment. The first trial was explicitly labelled dirty; the clean-commit result is below. This Windows-host
 cross-build does not prove that systemd, PostgreSQL, Caddy or off-site backups run
 on the intended Linux VPS. Those remain release gates requiring a target host.
+
+## Clean-commit artifact
+
+Commit: `b470fae3f8a83b2189267a2f176495ac053aca27`.
+
+`deploy/package.sh` succeeds without ALLOW_DIRTY. Artifact: `dist/sitewise-b470fae3f8a8-linux-amd64.tar.gz`; SHA-256: `b4914a13ca51de534dbef8beb6614921eb14514501a90c4bcf8ab0ae059e631f`. All 102 archived files match staging; the binary is static ELF64 x86-64; the staged real-loader check passes. The artifact remains local and ignored; no host deployment occurred. Log: `tmp/m2-m3-package-clean.log`.
