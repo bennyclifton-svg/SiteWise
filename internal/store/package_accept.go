@@ -42,7 +42,7 @@ func (s *Store) AcceptPackageProposal(ctx context.Context, org, project, key, ac
 		return p, tx.Commit(ctx)
 	}
 	var raw []byte
-	if err := tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM ranked_proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return p, ErrNotFound
 		}

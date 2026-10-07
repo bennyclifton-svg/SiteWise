@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "./api";
-import { deliveryApi, type DeliveryContent, type DeliveryRecord } from "./deliveryApi";
+import { deliveryApi, type DeliveryContent, type DeliveryRecord, type DeliveryDependency } from "./deliveryApi";
 import { packageApi, type PackageRecord, type ScopeWork } from "./packageApi";
 import "./reports.css";
 
@@ -24,6 +24,9 @@ function changes(editor: Editor): Partial<DeliveryContent> {
 }
 
 export function Delivery({ projectId, tick, onSignedOut }: { projectId: string; tick: number; onSignedOut: () => void }) {
+  const [dependencies, setDependencies] = useState<DeliveryDependency[]>([]);
+  const [predecessor, setPredecessor] = useState("");
+  const [lag, setLag] = useState("0");
   const [items, setItems] = useState<DeliveryRecord[]>([]);
   const [packages, setPackages] = useState<PackageRecord[]>([]);
   const [works, setWorks] = useState<ScopeWork[]>([]);
@@ -40,8 +43,8 @@ export function Delivery({ projectId, tick, onSignedOut }: { projectId: string; 
   }, [onSignedOut]);
   useEffect(() => {
     let stopped = false;
-    Promise.all([deliveryApi.list(projectId), packageApi.list(projectId), packageApi.works(projectId)]).then(([d, p, w]) => {
-      if (!stopped) { setItems(d.items); setPackages(p.items); setWorks(w.items); setLoaded(true); setLoadError(""); }
+    Promise.all([deliveryApi.list(projectId), packageApi.list(projectId), packageApi.works(projectId), deliveryApi.dependencies(projectId)]).then(([d, p, w, dependencies]) => {
+      if (!stopped) { setItems(d.items); setDependencies(dependencies.items); setPackages(p.items); setWorks(w.items); setLoaded(true); setLoadError(""); }
     }).catch(e => { if (!stopped) {
       if (e instanceof ApiError && e.status === 401) { onSignedOut(); return; }
       setLoadError("Could not load delivery records and their assignments. Reload to try again. Your unsaved entries are kept.");
@@ -72,6 +75,11 @@ export function Delivery({ projectId, tick, onSignedOut }: { projectId: string; 
     } catch (e) { fail(e); if (e instanceof ApiError && e.status === 409) setReload(n => n + 1); }
     finally { setBusy(false); }
   }
+  async function changeDependency(remove: boolean, dependency?: DeliveryDependency) {
+    if (!item) return; setBusy(true);setError("");
+    try {await deliveryApi.dependency(projectId,dependency??{predecessor_id:predecessor,successor_id:item.id,type:"finish_to_start",lag_days:Number(lag)},item.version,remove);setPredecessor("");setReload(n=>n+1);}
+    catch(e){if(e instanceof ApiError&&e.status===422)setError(items.reduce((message,row)=>message.replaceAll(row.id,row.title),e.message));else fail(e);} finally{setBusy(false);}
+  }
   const packageName = (id: string) => packages.find(p => p.id === id)?.title ?? (id ? "Unavailable package" : "Not assigned");
   const workName = (id: string) => works.find(w => w.id === id)?.title ?? (id ? "Unavailable work item" : "Not assigned");
   const kindName = (record: DeliveryRecord) => record.provenance.proposal?.kind === "hold_point" ? "Hold point" : words(record.kind);
@@ -89,6 +97,9 @@ export function Delivery({ projectId, tick, onSignedOut }: { projectId: string; 
           {item.stage_id && <p>Stage: {packages.find(p => p.id === item.package_id)?.stages.find(s => s.id === item.stage_id)?.label ?? "Unavailable stage"}</p>}
           {dateFields.map((key, i) => <p key={key}>{dateLabels[i]}: {item[key] || "Not recorded"}</p>)}
           <DeliveryDetails item={item} />
+          <h3>Finish-to-start dependencies</h3><p className="report-muted">Explicit sequence and calendar-day lag; dates are not rescheduled automatically.</p>
+          {dependencies.filter(d=>d.successor_id===item.id).map(d=><p key={d.predecessor_id}>{items.find(i=>i.id===d.predecessor_id)?.title??"Unavailable predecessor"} · {d.lag_days} day lag <button className="btn btn-small" disabled={busy||!!editor} onClick={()=>void changeDependency(true,d)}>Remove dependency</button></p>)}
+          <form className="package-scope-form" onSubmit={e=>{e.preventDefault();void changeDependency(false);}}><fieldset disabled={busy||!!editor}><label htmlFor="dependency-predecessor">Predecessor</label><select id="dependency-predecessor" required value={predecessor} onChange={e=>setPredecessor(e.target.value)}><option value="">Choose a delivery record</option>{items.filter(i=>i.id!==item.id).map(i=><option key={i.id} value={i.id}>{i.title}</option>)}</select><label htmlFor="dependency-lag">Lag in calendar days</label><input id="dependency-lag" type="number" min={-36500} max={36500} required value={lag} onChange={e=>setLag(e.target.value)}/><button className="btn" disabled={!predecessor}>Save dependency</button></fieldset></form>
           <details><summary>Source and latest correction</summary><p>Recorded by: {item.provenance.actor || "Not recorded"}</p>{item.provenance.at && <p>Recorded: {new Date(item.provenance.at).toLocaleString()}</p>}{item.provenance.last_edited_by && <p>Latest editor: {item.provenance.last_edited_by}</p>}{item.provenance.last_edited_at && <p>Last edited: {new Date(item.provenance.last_edited_at).toLocaleString()}</p>}
             {item.provenance.proposal && <p className="report-wording">Accepted proposal: {item.provenance.proposal.label}{item.provenance.proposal.draft ? " (draft knowledge)" : ""}.</p>}
             {item.provenance.sources?.length ? item.provenance.sources.map((s, i) => <p className="report-wording" key={i}>{s.filename || "Document source"}{s.page ? ` · page ${s.page}` : ""}{s.excerpt ? ` — ${s.excerpt}` : ""}</p>) : <p>No direct document excerpts recorded.</p>}
@@ -97,7 +108,7 @@ export function Delivery({ projectId, tick, onSignedOut }: { projectId: string; 
       {editor && input && <section className="report-section" aria-label="Delivery editor"><h3>{editor.base ? "Edit delivery record" : "Add delivery record"}</h3><p className="report-muted">Enter known dates and decisions. Leave unknown dates blank. Saving records the team's position; it does not verify an approval or release a hold point.</p>
         {stale && <div className="report-notice"><strong>Saved delivery record changed</strong><p>Your unsaved entries are below. Compare them with the saved record above.</p>{item && item.kind === input.kind ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => rebase(item)}>Keep my edits against this version</button> : <p>{item ? "The record type changed. Cancel these edits and reopen the saved record to edit its new fields." : "This record is no longer available. Cancel to leave the editor."}</p>}</div>}
         <form className="package-scope-form" onSubmit={e => { e.preventDefault(); void save(); }}><fieldset disabled={busy}>
-          {!editor.base && <><label htmlFor="delivery-kind">Record type</label><select id="delivery-kind" value={input.kind} onChange={e => update({ kind: e.target.value, status: statuses[e.target.value][0], details: {} })}><option value="milestone">Milestone</option><option value="risk">Risk</option><option value="approval">Approval</option></select></>}
+          {!editor.base && <><label htmlFor="delivery-kind">Record type</label><select id="delivery-kind" value={input.kind} onChange={e => update({ kind: e.target.value, status: statuses[e.target.value][0], details: {} })}>{Object.keys(statuses).map(k=><option key={k} value={k}>{words(k)}</option>)}</select></>}
           <label htmlFor="delivery-title">Record title</label><input id="delivery-title" required maxLength={200} value={input.title} onChange={e => update({ title: e.target.value })} />
           <label htmlFor="delivery-status">Status</label><select id="delivery-status" value={input.status} onChange={e => update({ status: e.target.value })}>{(statuses[input.kind] ?? []).map(s => <option key={s} value={s}>{words(s)}</option>)}</select>
           <label htmlFor="delivery-owner">Owner name or role</label><input id="delivery-owner" maxLength={200} value={input.owner_text} onChange={e => update({ owner_text: e.target.value })} />
@@ -105,6 +116,7 @@ export function Delivery({ projectId, tick, onSignedOut }: { projectId: string; 
           <label htmlFor="delivery-stage">Package stage</label><select id="delivery-stage" disabled={!input.package_id} value={input.stage_id} onChange={e => update({ stage_id: e.target.value })}><option value="">Not assigned</option>{input.stage_id && !pkg?.stages.some(s => s.id === input.stage_id) && <option value={input.stage_id}>Unavailable stage — select another</option>}{pkg?.stages.map(s => <option key={s.id} value={s.id}>{s.label}{s.novation_phase === "none" ? "" : s.novation_phase === "pre" ? " · before novation" : " · after novation"}</option>)}</select>
           <label htmlFor="delivery-work">Work item</label><select id="delivery-work" value={input.work_item_id} onChange={e => update({ work_item_id: e.target.value })}><option value="">Not assigned</option>{input.work_item_id && !works.some(w => w.id === input.work_item_id) && <option value={input.work_item_id}>Unavailable work item — select another</option>}{works.map(w => <option key={w.id} value={w.id}>{w.title} · {w.action}</option>)}</select>
           <details className="delivery-dates" open><summary>Dates</summary><p className="report-muted">Clear a date to remove it. Approval submission and determination dates are recorded separately below.</p>{dateFields.map((key, i) => <div key={key}><label htmlFor={`delivery-${key}`}>{dateLabels[i]}</label><input id={`delivery-${key}`} type="date" value={input[key] ?? ""} onChange={e => update({ [key]: e.target.value || null })} /></div>)}</details>
+          {input.kind === "decision" && <><label htmlFor="delivery-options">Decision options (one per line)</label><textarea id="delivery-options" value={Array.isArray(input.details.options)?input.details.options.join("\n"):""} onChange={e=>detail("options",e.target.value.split("\n").filter(Boolean))}/><label htmlFor="delivery-chosen">Chosen option</label><select id="delivery-chosen" value={String(input.details.chosen??"")} onChange={e=>detail("chosen",e.target.value)}><option value="">Not decided</option>{(Array.isArray(input.details.options)?input.details.options:[]).map((x,i)=><option key={i}>{String(x)}</option>)}</select></>}
           {input.kind === "risk" && <><label htmlFor="delivery-likelihood">Likelihood</label><input id="delivery-likelihood" maxLength={200} value={String(input.details.likelihood ?? "")} onChange={e => detail("likelihood", e.target.value)} /><label htmlFor="delivery-consequence">Consequence</label><textarea id="delivery-consequence" rows={3} maxLength={2000} value={String(input.details.consequence ?? "")} onChange={e => detail("consequence", e.target.value)} /></>}
           {input.kind === "approval" && <><label htmlFor="delivery-authority">Approval authority</label><input id="delivery-authority" maxLength={200} value={String(input.details.authority ?? "")} onChange={e => detail("authority", e.target.value)} /><label htmlFor="delivery-reference">Approval reference</label><input id="delivery-reference" maxLength={200} value={String(input.details.reference ?? "")} onChange={e => detail("reference", e.target.value)} />{["submitted_on", "determined_on"].map(key => <div key={key}><label htmlFor={`delivery-${key}`}>{key === "submitted_on" ? "Submitted on" : "Determined on"}</label><input id={`delivery-${key}`} type="date" value={String(input.details[key] ?? "")} onChange={e => detail(key, e.target.value || null)} /></div>)}</>}
           <div className="report-actions"><button className="btn" disabled={busy || stale || !input.title.trim()}>{busy ? "Saving…" : "Save delivery record"}</button><button type="button" className="btn" disabled={busy} onClick={() => { setEditor(null); setError(""); }}>Cancel edits</button></div>

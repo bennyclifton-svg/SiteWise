@@ -71,6 +71,19 @@ func (a *apiClient) proposals(ctx context.Context, st *store.Store, cat *knowled
 	}
 	for i := 0; i < n; i++ {
 		for _, decision := range []string{"dismiss", "accept"} {
+			// Ordinary writes now rebuild the real catalogue. Reapply this
+			// synthetic acceptance fixture outside the endpoint's timing sample.
+			if kind != "investigation" {
+				if err := st.WithProfile(build).RebuildProposals(ctx, benchOrg, project, evaluator); err != nil {
+					return err
+				}
+				current, err := read()
+				if err != nil {
+					return err
+				}
+				body, _ = json.Marshal(map[string]string{"inputs_fingerprint": current.InputsFingerprint})
+			}
+
 			path := "proposals_dismiss"
 			if decision == "accept" {
 				path = acceptPath

@@ -63,7 +63,14 @@ func (s *Store) PatchPackage(ctx context.Context, org, project, id, actor string
 	retire := patch.Retired != nil && *patch.Retired
 	var blocked bool
 	if retire {
-		used, err := openDeliveryReference(ctx, tx, org, project, "package_id", id)
+		used, err := liveCostReference(ctx, tx, org, project, "package_id", id)
+		if err != nil {
+			return p, err
+		}
+		if used {
+			return p, fmt.Errorf("%w: reassign live costs before retiring this package", ErrInvalidPackage)
+		}
+		used, err = openDeliveryReference(ctx, tx, org, project, "package_id", id)
 		if err != nil {
 			return p, err
 		}
@@ -160,7 +167,14 @@ func (s *Store) PatchPackageStage(ctx context.Context, org, project, id, stageID
 	}
 	retire := patch.Retired != nil && *patch.Retired
 	if retire {
-		used, err := openDeliveryReference(ctx, tx, org, project, "stage_id", stageID)
+		used, err := liveCostReference(ctx, tx, org, project, "package_stage_id", stageID)
+		if err != nil {
+			return stage, err
+		}
+		if used {
+			return stage, fmt.Errorf("%w: reassign live costs before retiring this stage", ErrInvalidPackage)
+		}
+		used, err = openDeliveryReference(ctx, tx, org, project, "stage_id", stageID)
 		if err != nil {
 			return stage, err
 		}

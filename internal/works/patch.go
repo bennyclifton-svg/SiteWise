@@ -10,6 +10,9 @@ import (
 // Patch corrects planning fields without changing the identity or physical owner.
 // A null quantity clears its unit too; omitted fields retain their saved values.
 type Patch struct {
+	PartID                *string         `json:"part_id,omitempty"`
+	SystemID              *string         `json:"system_id,omitempty"`
+	LayoutChange          *string         `json:"layout_change,omitempty"`
 	Version               int64           `json:"version"`
 	Action                *string         `json:"action,omitempty"`
 	Title                 *string         `json:"title,omitempty"`
@@ -21,10 +24,10 @@ type Patch struct {
 }
 
 func (p Patch) Apply(item *Item) error {
-	if p.Version < 1 || (p.Action == nil && p.Title == nil && p.Inclusion == nil && p.ExistingConditionNote == nil && p.Target == nil && len(p.Quantity) == 0 && p.Unit == nil) {
+	if p.Version < 1 || (p.LayoutChange == nil && p.PartID == nil && p.SystemID == nil && p.Action == nil && p.Title == nil && p.Inclusion == nil && p.ExistingConditionNote == nil && p.Target == nil && len(p.Quantity) == 0 && p.Unit == nil) {
 		return fmt.Errorf("version and a correction are required")
 	}
-	for dst, src := range map[*string]*string{&item.Action: p.Action, &item.Title: p.Title, &item.Inclusion: p.Inclusion, &item.ExistingConditionNote: p.ExistingConditionNote} {
+	for dst, src := range map[*string]*string{&item.LayoutChange: p.LayoutChange, &item.PartID: p.PartID, &item.SystemID: p.SystemID, &item.Action: p.Action, &item.Title: p.Title, &item.Inclusion: p.Inclusion, &item.ExistingConditionNote: p.ExistingConditionNote} {
 		if src != nil {
 			*dst = strings.TrimSpace(*src)
 		}

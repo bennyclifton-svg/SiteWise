@@ -152,6 +152,12 @@ func verifyBlobs(blobs *files.Store, hashes [][]byte) blobCheck {
 // restoreProblems are failures on their own, without a source report.
 func restoreProblems(r restoreReport) []string {
 	var p []string
+	if r.Facts.InvalidIssuedSnapshots > 0 {
+		p = append(p, fmt.Sprintf("%d invalid issued snapshots", r.Facts.InvalidIssuedSnapshots))
+	}
+	if r.Facts.MissingIssuedBlobLinks > 0 {
+		p = append(p, fmt.Sprintf("%d issued exports missing their tenant file record", r.Facts.MissingIssuedBlobLinks))
+	}
 	if r.Facts.Unvalidated > 0 {
 		p = append(p, fmt.Sprintf("%d unvalidated foreign keys", r.Facts.Unvalidated))
 	}
@@ -172,6 +178,25 @@ func restoreProblems(r restoreReport) []string {
 // compareRestore lists every way restored differs from the source report.
 func compareRestore(want, got restoreReport) []string {
 	var d []string
+	if len(want.Facts.Tables) == 0 || len(got.Facts.Tables) == 0 {
+		d = append(d, "tenant table digests missing; regenerate source and restored facts with this version")
+	} else {
+		have := map[string]store.RestoreTableFacts{}
+		for _, t := range got.Facts.Tables {
+			have[t.Table+"/"+t.OrgID] = t
+		}
+		for _, t := range want.Facts.Tables {
+			key := t.Table + "/" + t.OrgID
+			g, ok := have[key]
+			if !ok || g.Rows != t.Rows || g.SHA256 != t.SHA256 {
+				d = append(d, "tenant table content differs: "+key)
+			}
+			delete(have, key)
+		}
+		for key := range have {
+			d = append(d, "tenant table absent from source: "+key)
+		}
+	}
 	have := map[string]store.OrgCounts{}
 	for _, o := range got.Facts.Orgs {
 		have[o.OrgID] = o

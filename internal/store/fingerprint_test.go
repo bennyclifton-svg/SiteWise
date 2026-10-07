@@ -14,14 +14,14 @@ import (
 	"sitewise/internal/works"
 )
 
-func TestFingerprintPreservesCanonicalHash(t *testing.T) {
+func TestFingerprintVersionedCanonicalHash(t *testing.T) {
 	snap := ProfileSnapshot{
 		Facts:     []profile.Fact{{ID: "z", Excerpt: "Evidence <&>\n"}, {ID: "a", Value: "12.500"}},
 		Documents: []json.RawMessage{json.RawMessage(`{ "read": "auto" }`)},
 		WorkItems: []json.RawMessage{json.RawMessage(`{"action":"retain"}`)},
 	}
 	b := ProfileBuild{ReadKinds: []string{"specification"}, KnowledgeVersion: "k", QuestionVersion: "q", ThresholdsVersion: "t"}
-	var canonical []any
+	canonical := []any{"profile-input-v2"}
 	for _, component := range []any{snap.Parts, snap.Facts, snap.User, snap.Planning, snap.Documents, snap.WorkItems, b.ReadKinds} {
 		rows, err := sortedFingerprintRows(component)
 		if err != nil {
@@ -134,14 +134,14 @@ func TestWorkFingerprintIgnoresEditTimeButKeepsScopeAndActor(t *testing.T) {
 	}
 }
 
-func TestFingerprintRowsPreservePreviousCanonicalBytes(t *testing.T) {
+func TestFingerprintRowDigestsCoverPreviousCanonicalBytes(t *testing.T) {
 	for _, input := range []any{
-		[]profile.Fact(nil), []string{}, []string{"z", "<quoted>\n\u2028", "a"},
+		[]profile.Fact(nil), []string{}, []string{"z", "<quoted>\n\u2028", "a", "a"},
 		[]json.RawMessage{json.RawMessage(`{ "value" : 12.500, "text": "<evidence>" }`), json.RawMessage(`null`)},
 		[]profile.Fact{{ID: "b", Excerpt: "Long evidence <&>\n"}, {ID: "a", Value: "12.5"}},
 	} {
-		// The previous algorithm is the compatibility oracle, including raw JSON
-		// compaction, HTML escaping, null slices and lexicographic row ordering.
+		// Digest the previous whole-slice representation independently. Every
+		// byte, including escaping and duplicate rows, still affects the input.
 		raw, err := json.Marshal(input)
 		if err != nil {
 			t.Fatal(err)
@@ -152,7 +152,7 @@ func TestFingerprintRowsPreservePreviousCanonicalBytes(t *testing.T) {
 		}
 		want := make([]string, len(rows))
 		for i, row := range rows {
-			want[i] = string(row)
+			want[i] = fmt.Sprintf("%x", sha256.Sum256(row))
 		}
 		sort.Strings(want)
 		got, err := sortedFingerprintRows(input)

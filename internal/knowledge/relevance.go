@@ -30,12 +30,20 @@ const (
 // its systems covers or is covered by a scope system and its applies_when is
 // not false.
 func (c *Catalog) Relevant(scope []string, values map[string]string) Relevance {
+	// Scope is immutable during this calculation. Rules and determinants often
+	// ask about the same systems, so resolve each membership only once.
+	membership := map[string]bool{}
 	in := func(id string) bool {
+		if included, known := membership[id]; known {
+			return included
+		}
 		for _, s := range scope {
 			if c.covers(s, id) || c.covers(id, s) {
+				membership[id] = true
 				return true
 			}
 		}
+		membership[id] = false
 		return false
 	}
 	out := Relevance{Determinants: map[string]bool{}}

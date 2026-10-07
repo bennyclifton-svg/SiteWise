@@ -1,5 +1,7 @@
 # Next wave: handoff, 5 October 2026
 
+> **Current progress:** [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md). On 7 October the owner authorized completing M2/M3 unattended; earlier sequencing/permission holds are historical. Acceptance evidence remains explicit.
+
 For the next implementing agent (Claude or Codex). Read `AGENTS.md`, then the plan's §0.2, §1.1, §5 and §8.6, and work packages §2.4. This note only covers what those documents do not.
 
 ## Continuation update

@@ -1,6 +1,8 @@
 # Next wave: implementation plan
 
-Status: **Execution status reconciled, 6 October 2026.** The current owner request authorizes WP-20 and subsequent packages in dependency order, superseding the earlier documentation-only restriction. Owner quality, knowledge-review and release gates remain in force. Local implementation does not imply a merge or full verification.
+> **Current progress:** [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md). On 7 October the owner authorized completing M2/M3 unattended; earlier sequencing/permission holds are historical. Acceptance evidence remains explicit.
+
+Status: **M2/M3 implemented; final regression and acceptance gates remain, 7 October 2026.** Read [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md) for current progress. This document specifies the work and records decisions; it is not a second task list.
 Companion documents:
 
 - `docs/plans/2026-10-04-next-wave-requirements-register.md`: every PRG statement, requirement IDs (`NW-REQ-###`), the coverage ledger, traceability and status.
@@ -40,8 +42,7 @@ only where required evidence is absent from a standalone specification. Further
 drawings are selected for specific gaps or existing classification regressions.
 
 The existing profile manifest pins only the Petersham PPR and its unreviewed
-schema-v1 key; expanded work-item, critical-obligation and cross-document
-expectations still need drafting and owner review. No explicitly named BCA
+schema-v1 key; a separate private 13-PDF / 421-page packet now contains draft work-item, critical-obligation and cross-document expectations. These still require owner review; see [evaluation evidence](../evidence/2026-10-07-evaluation.md). No explicitly named BCA
 report was found by filename: locate it within the documents or ask the owner
 before assuming it is missing. Reconcile legacy `delivery-petersham` and current
 `Petersham` corpus roots when reusing intake fixtures. Existing classifier tests
@@ -78,9 +79,37 @@ The owner (Benny Clifton) granted these in conversation on 5 October 2026, while
 | A8 | Approval to commence (D-01, partial): the owner instructed implementation to start on 5 October 2026 with the first logical step (WP-00). | This approves starting work. It does not answer the Open product decisions in §5 (D-02 to D-07, D-09, D-11 to D-13, D-15, D-16, D-21 to D-24, D-29, D-30). Packages blocked on those stay blocked. Unblocked packages may proceed in plan order. |
 | A9 | D-17 is delegated to the implementing agent, because it turns on measured cost and the owner has authorised Jev spend (A1). Apply the recommendation in §5: measure first; choose (a) re-record if the enlarged call stays within TypeSafe's documented limits; otherwise (b), recorded with its calls-per-passage count. | The choice and its evidence are recorded in §5 and in the WP-00 handoff. |
 
-**Still owner-only:** product decisions marked Open in §5; marking anything `reviewed`; any VPS or production change; pushing to the remote; new third-party dependencies beyond what an approved decision names (`AGENTS.md`).
+**Historical limits:** the latest owner instructions supersede the earlier no-push and implementation holds. Marking knowledge/keys `reviewed`, actual owner lessons/usefulness judgments and unavailable target-host evidence cannot be supplied by agent authorization.
 
-## 0.2 Current evidence status — single authoritative summary
+## 0.2 Current implementation evidence
+
+The current owner-facing progress page is [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md).
+The previous checkpoint was committed and pushed as `d97e6ee` and `2edc077`.
+M2/M3 product behavior is implemented locally: split/retire, automatic proposals,
+evidence signals, exact-money costs and reviewed-benchmark selection, dependency
+cycles, frozen issue/export, RFT/PMP, changes since issue and the corresponding UI.
+The [validation checkpoint](../evidence/2026-10-07-m2-m3-validation.md) records
+passing full Go, 29 browser cases, OCR, intake replay, cost/report, populated
+upgrade and local restore checks. The final full regression rerun passes Go, all 29 browser cases, OCR and intake replay, then fails closed on stale source recordings; Hale separately fails stale. These are accuracy blockers, not unimplemented code.
+The complete local 184×2 intake / 40-sample timing run passes all developer
+user-path budgets, including Spec Home p50/p90 47.6/49.9 ms against 50/150 ms.
+This is local evidence, not target-VPS certification; no budget was relaxed.
+
+The [final knowledge audit](../evidence/2026-10-07-final-knowledge-audit.md)
+supersedes earlier missing-jurisdiction/layout assessments. Bounded K1–K4
+implementation and source-backed draft coverage are complete, with no remaining
+confirmed bounded implementation omission. Source/project-data limitations,
+owner knowledge review and live accuracy remain explicit. Implemented does not
+mean Verified against all standing acceptance gates.
+
+The owner’s latest instruction authorizes proceeding through M2/M3 unattended,
+including routine implementation choices and necessary tooling. Earlier
+sequence holds below are historical. Knowledge review, scored corpus quality,
+manual time savings and target-VPS release evidence remain distinct from code
+completion. The source/Hale private live refresh was rejected by automatic
+approval review; that rejection is not bypassed.
+
+### Historical checkpoint — 6 October 2026
 
 Reconciled on 6 October 2026 against local package handoffs and present implementation files. This reconciliation is not a fresh full gate or requirement-by-requirement verification. Requirements register state updates and package handoffs are the detailed audit trail; their recorded test scopes and limitations remain binding. Changes remain local and unmerged.
 
@@ -624,13 +653,13 @@ The status values mean:
 
 | ID | Decision (sources) | Options | Recommendation and consequences | Status | Affects |
 | - | - | - | - | - | - |
-| D-01 | Approve the PRG direction and this plan (L1, L399) | approve / amend | Earlier direction/start approval recorded; current request is plan-only. A later explicit request is required to resume. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | all WP |
-| D-02 | Primary user is the owner-side PM (L27, "assumed; owner to confirm") | confirm / change | Recorded owner change: owner-side PM and D&C contractor. D-33 adjusts design-role semantics; builder-side subcontract procurement remains excluded. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-40, WP-45, WP-30 |
-| D-03 | **Sequencing.** Stage 2 includes the gap check (L401), but packages arrive in Stage 3 (L403). First reports need dates, risks and approvals (L404-405) before Stage 6 (L406). | (a) Move the gap check and the accept path for `discipline`, `obligation`, `approval` and `hold_point` proposals into Stage 3, and add a minimal delivery-records package (WP-35) to Stage 3. (b) Create a skeleton packages table in Stage 2. | Historical option (a) selected; D-31 now brings minimal packages, gap check and delivery forward into M1. Non-investigation acceptance becomes available when its owning tables/routes exist. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-26, WP-30-32, WP-35, WP-45 |
-| D-04 | **Site and project value split and storage** (L136, L328; peer question L421) | (a) One `profile_user_values` table with `scope` and nullable `project_id`, plus a key-scope registry. (b) Separate `site_values` tables. | Recorded option (a). existing_building is a project key as an explicitly identified planning interpretation; no inferred owner approval of that classification. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-12, WP-15, WP-21 |
-| D-05 | **Existing condition ownership.** The PRG puts it on the work item (L148) and among site values (L136). | (a) Authoritative on the site (key `sys.<leaf>.condition` on the part); the work item shows it read-through, plus a project note. (b) A snapshot field on the work item. (c) Both, with the site value updated on accept. | Recorded option (a): site condition is authoritative; work items read it and add a project note. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-20, WP-24 |
+| D-01 | Approve the PRG direction and this plan (L1, L399) | approve / amend | Earlier direction/start approval recorded; the 7 October instruction authorizes completing M2/M3 unattended. | Recorded owner choice (§4.13); D-31 updates sequencing; 7 October instruction authorizes M2/M3 execution | all WP |
+| D-02 | Primary user is the owner-side PM (L27, "assumed; owner to confirm") | confirm / change | Recorded owner change: owner-side PM and D&C contractor. D-33 adjusts design-role semantics; builder-side subcontract procurement remains excluded. | Recorded owner choice (§4.13); D-31 updates sequencing; 7 October instruction authorizes M2/M3 execution | WP-40, WP-45, WP-30 |
+| D-03 | **Sequencing.** Stage 2 includes the gap check (L401), but packages arrive in Stage 3 (L403). First reports need dates, risks and approvals (L404-405) before Stage 6 (L406). | (a) Move the gap check and the accept path for `discipline`, `obligation`, `approval` and `hold_point` proposals into Stage 3, and add a minimal delivery-records package (WP-35) to Stage 3. (b) Create a skeleton packages table in Stage 2. | Historical option (a) selected; D-31 now brings minimal packages, gap check and delivery forward into M1. Non-investigation acceptance becomes available when its owning tables/routes exist. | Recorded owner choice (§4.13); D-31 updates sequencing; 7 October instruction authorizes M2/M3 execution | WP-26, WP-30-32, WP-35, WP-45 |
+| D-04 | **Site and project value split and storage** (L136, L328; peer question L421) | (a) One `profile_user_values` table with `scope` and nullable `project_id`, plus a key-scope registry. (b) Separate `site_values` tables. | Recorded option (a). existing_building is a project key as an explicitly identified planning interpretation; no inferred owner approval of that classification. | Recorded owner choice (§4.13); D-31 updates sequencing; 7 October instruction authorizes M2/M3 execution | WP-12, WP-15, WP-21 |
+| D-05 | **Existing condition ownership.** The PRG puts it on the work item (L148) and among site values (L136). | (a) Authoritative on the site (key `sys.<leaf>.condition` on the part); the work item shows it read-through, plus a project note. (b) A snapshot field on the work item. (c) Both, with the site value updated on accept. | Recorded option (a): site condition is authoritative; work items read it and add a project note. | Recorded owner choice (§4.13); D-31 updates sequencing; 7 October instruction authorizes M2/M3 execution | WP-20, WP-24 |
 | D-06 | **Eligibility for derivations** (L278: "accepting a planning assumption must not make it eligible…") | (a) User `stated` values stay eligible, as today in `usableFacts`; `origin=assumption`, `meaning` allowance or forecast, and planning values are never eligible. A derived value whose inputs include unverified user values is labelled `accepted_for_planning`, not `verified`. (b) Only `verified` inputs are eligible. | **(a).** It preserves current derivations and answer keys and adds the bar. (b) would blank most derived rows today. Current band outcome is D-32: amber and explicit planning-only text for unverified inputs. Existing values remain; this deliberately changes presentation, not eligibility or answer-key facts. | Superseded for presentation by D-32; planning eligibility retained | WP-13, WP-15 |
-| D-07 | **Mixed interventions** (L106, Hale) | (a) The project `hdr.work_type` stays singular (the primary type); an optional part-level `hdr.work_type` value overrides it for default actions; a `work_type` predicate (any part or project value) is added for knowledge. (b) Make `hdr.work_type` multi-choice. (c) Derive the work type from work items. | Recorded option (a): singular project type, optional part override, code-fed work_type determinant; factual answer keys unchanged. | Recorded owner choice (§4.13); D-31 updates sequencing; current execution paused by instruction | WP-20, WP-21, WP-25, WP-K0 |
+| D-07 | **Mixed interventions** (L106, Hale) | (a) The project `hdr.work_type` stays singular (the primary type); an optional part-level `hdr.work_type` value overrides it for default actions; a `work_type` predicate (any part or project value) is added for knowledge. (b) Make `hdr.work_type` multi-choice. (c) Derive the work type from work items. | Recorded option (a): singular project type, optional part override, code-fed work_type determinant; factual answer keys unchanged. | Recorded owner choice (§4.13); D-31 updates sequencing; 7 October instruction authorizes M2/M3 execution | WP-20, WP-21, WP-25, WP-K0 |
 | D-08 | **Where coarse proposed work items live** (L144, L150, L328 "rebuild projections rather than … authoritative") | (a) Rows in `work_items` with deterministic IDs, owned by the rebuild only while `proposed` and untouched. (b) A separate projection, materialised on accept. | **(a).** Stable IDs exist before acceptance (cost lines and reports can reference them), there is one table, and the ownership rule is explicit and tested. | Recommended | WP-20 |
 | D-09 | **Responsibility semantics and gap rules** (L343, user gap 2) | See the rule set below this table. | Apply rule set below with D-33: design may be held by one services or explicitly assigned works package. | Superseded for design allocation by D-33 | WP-31, WP-32, WP-K0 |
 | D-10 | **Which work items predicates see** (L262, L183) | (a) In-scope = `inclusion='included'`, not retired, not a group, any review status; a proposal from an unaccepted trigger is labelled. (b) Accepted only. | **(a).** Proposals appear on the first run (the adoption measure, L411); the labels keep them honest. `system_existing` is true iff the site records the system as existing **or** any live work item on it has an action other than `new`, **and** no live work item replaces or removes it. Treating `remove` as "not existing" is an interpretation. | Recommended | WP-25, WP-26 |
@@ -638,7 +667,7 @@ The status values mean:
 | D-12 | **Signals and the code-only rebuild** (L245 vs L179; user gap 6) | (a) Ask signals in the existing evidence fan-out by `runs_on` labels, like failure-mode detectors. Store the answers as facts `sig.<id>`. The rebuild reads them in code and marks a proposal `addressed_by_evidence` (still shown, never auto-dismissed). (b) Ask signals only for live proposals. | **(a).** It is deterministic and cache-friendly, and the rebuild stays Jev-free. (b) would make reading depend on work items and cause re-reads. This depends on the workload outcome of D-17. | Planning default below; not independently evidenced owner approval | WP-27 |
 | D-13 | **Forecast** (L316 "budget/forecast variance", L338 metrics exclude forecast; user gap 7) | (a) Compute the forecast: for each posting leaf, commitment if known, else estimate, else budget, with the basis shown; null if all are null. (b) Add a stored `forecast` metric. | **(a).** It adds no ledger value and is computed on read. The PMP shows variance = forecast − budget, with its basis. | Planning default below; not independently evidenced owner approval | WP-34, WP-51 |
 | D-14 | **Money** (L306) | numeric precision and rounding | Amounts `numeric(18,2)`, rates `numeric(18,4)`. A single Go function `costs.Round` rounds half away from zero to cents, applied once at the line amount (quantity × rate). Totals are SQL `numeric` sums of rounded lines. Go carries money as `big.Rat` or strings (no new dependency). Currency is AUD by default and explicit; GST basis is per plan version, with a per-value override not supported in v1. | Recommended | WP-33, WP-34 |
-| D-15 | **Export renderer** (L409 "after choosing its renderer"; L377) | (a) A pure-Go PDF library (a new dependency, Lane C, needs justification). (b) Headless Chromium (a heavy binary; arguably an "additional service"). (c) An external CLI typesetter binary. | No recommendation until a one-day spike measures fidelity, size and time against a fixed fixture. Report assembly does not depend on the renderer; only WP-44 is blocked. | Spike planned; renderer and dependency unresolved; blocks M2 export only | WP-44, WP-45 |
+| D-15 | **Export renderer** (L409 "after choosing its renderer"; L377) | (a) A pure-Go PDF library (a new dependency, Lane C, needs justification). (b) Headless Chromium (a heavy binary; arguably an "additional service"). (c) An external CLI typesetter binary. | Pure-Go gopdf0.38.1 with embedded Go fonts selected after local fidelity/determinism/timing spike. A4/10pt body/8.5pt minimum/15mm margins; overflow refuses issue. | Implemented under 7 October full-work authorization; `docs/evidence/2026-10-07-reports.md`; target-VPS evidence pending | WP-44, WP-45 |
 | D-16 | Minimum font size and page geometry (L15 "at a readable size", L377 "Set a minimum font size") | owner value | Propose A4, 10 pt body, 8.5 pt minimum in tables, 15 mm margins. | Planning default below; not independently evidenced owner approval | WP-44 |
 | D-17 | **Restore the regression gate** (F01, F02) | (a) Re-record the source and Hale recordings live against HEAD, with owner consent and spend, after measuring the new call size. (b) Route failure-mode detectors and signals out of the profile evidence call, into a separate background stage or cache stage, so presence and provider calls regain their fingerprints. (c) Cap questions per call. | Measure first (WP-00 step 1). Calls per labelled passage: (a) 1 evidence call (larger); (b) 2 (profile evidence + detector stage); (c) 1 or more, depending on the cap. Option (b) adds a second Jev call per passage in a **background** state. `AGENTS.md` rule 3 ("one Jev fan-out per state; never serial round trips on a hot path") permits that only if it is a separate state off any hot path, so the owner must accept that reading. Read the TypeSafe [API](https://docs.typesafe.ai/api) and [jev-1.13](https://docs.typesafe.ai/model-jaggedness/jev-1.13) pages for limits on questions per call before choosing. The 331 signals (WP-27) land in the same call, so this decision covers them too. Recommendation: (a) if the measured call stays within documented limits and acceptable tokens, otherwise (b). | Resolved: (a), recorded measurements; remaining gates §0.2 | WP-00, WP-22, WP-27 |
 | D-18 | **Budget conflicts** (L409 vs `bench/budgets.json`) | The PRG proposes "saved reads/writes p50 ≤100, p90 ≤250 ms"; existing `project_profile_read` and `profile_edit` are 50/150. `profile_rebuild` 100/300 is cited but not gated (F14). | Existing paths keep 50/150 (no loosening). New CRUD paths use 100/250. Add a `profile_rebuild` bench path at 100/300 on the larger Spec Home and 0991 fixtures. `profile_edit` keeps 50/150 on its existing bench project. These two can conflict: an edit on Spec Home includes a rebuild allowed 100 ms p50. The alternatives considered were: (i) `profile_edit` 50/150 applies on every project, so the rebuild must be well under 50 ms; or (ii) `profile_edit` is measured on the bench project only, and large projects are governed by `profile_rebuild`. Planning default is (ii), stated explicitly; report full edit timings on large fixtures as well so rebuild-only timings cannot hide a slow user path. **WP-26 step 0** measures evaluating the full ic/cq/uc set (~570 records) inside a rebuild before proposals join the edit path. If either budget breaks, stop and report the trade-off (`AGENTS.md`). | Planning default below; not independently evidenced owner approval | WP-14, WP-26, WP-71 |
@@ -743,6 +772,28 @@ Only uncreated migration reservations 019–021 change order: delivery, reports,
 
 
 ## 8. Verification strategy
+
+### 7 October implementation choices under delegated execution
+
+- **K1 partition context:** implement an unknown/yes/no, user-authored `layout_change`
+  value on an individual eligible wall/partition work item. Unknown stays
+  unknown, No suppresses the layout consequence, and Yes permits a draft
+  coordination review. Predicate matching binds this value to the same item
+  as its system/action; sibling items cannot supply it. Split children start
+  unknown. This lead implementation choice follows the owner’s full-completion
+  authorization and is not an owner knowledge-review claim. The scope, budgets
+  and cases are in [the layout input decision](../evidence/2026-10-07-k1-layout-input-proposal.md).
+
+- **Physical make-good acceptance:** require an explicit user-selected action
+  when a physical proposal lacks one. Preserve that choice in decision/work
+  provenance; validate catalogue action, stable target, fingerprint and retry.
+  Do not infer repair from the label. This closes the implementation gap while
+  leaving project-specific scope judgment with the user. Store regression covers
+  absent/invalid action, wrong org, stale input, retry, undo and reacceptance.
+- **Renderer/export budgets:** D-15 spike selected the pure-Go renderer described
+  above. Issue and export100/250 ms; assembly remains300/1,000 ms. This adds no
+  service and relaxes no existing budget. PDF reproduction is tied to renderer
+  version plus immutable snapshot/blob.
 
 ### 8.1 States
 

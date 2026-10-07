@@ -3,6 +3,7 @@ package reports
 import "sort"
 
 type SourceState struct {
+	CostPlanVersionID        string           `json:"cost_plan_version_id,omitempty"`
 	Domains                  map[string]int64 `json:"domains"`
 	ProfileRevision          int64            `json:"profile_revision"`
 	ProfileFingerprint       string           `json:"profile_fingerprint"`
@@ -17,10 +18,11 @@ type SourceState struct {
 	TemplateVersion          int              `json:"template_version"`
 }
 
-// M1 RFP assembly has no cost dependency or cost-table access. The M2 assembler
-// must add its pricing dependencies when those sections become available.
+// Every report shares explicit revision dependencies, including the cost plan.
 var draftDependencies = map[string][]string{
-	"rfp": {"profile_inputs", "works", "packages", "delivery"},
+	"rfp": {"profile_inputs", "works", "packages", "delivery", "costs"},
+	"rft": {"profile_inputs", "works", "packages", "delivery", "costs"},
+	"pmp": {"profile_inputs", "works", "packages", "delivery", "costs"},
 }
 
 func StaleReasons(kind string, saved, current SourceState) []string {

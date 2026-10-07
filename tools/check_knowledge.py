@@ -248,9 +248,11 @@ def check_question(where: str, q, report: Report, refs: list, runs_on_required: 
 
 def check_works_predicate(where: str, val, report: Report, refs: list) -> None:
     """`works`: an in-scope work item with one of these actions on one of these systems."""
-    if not isinstance(val, dict) or not val or not val.keys() <= {"action", "system"}:
+    if not isinstance(val, dict) or not val or not val.keys() <= {"action", "system", "layout_change"}:
         report.error(where, f"`works` needs action and/or system lists: {val}")
         return
+    if "layout_change" in val and val["layout_change"] not in ("yes", "no"):
+        report.error(where, "works.layout_change must be quoted yes or no")
     for field in ("action", "system"):
         if field in val and (not isinstance(val[field], list) or not val[field]):
             report.error(where, f"works.{field} must be a non-empty list")
@@ -288,6 +290,8 @@ def check_predicate(where: str, pred, report: Report, refs: list) -> None:
         elif key in PREDICATE_OPS:
             if "det" not in pred:
                 report.error(where, f"`{key}` without `det`: {pred}")
+            if key == "is" and not isinstance(val, bool):
+                report.error(where, "`is` requires a boolean; use any_of for choice values")
         else:
             report.error(where, f"unknown predicate key `{key}`")
 

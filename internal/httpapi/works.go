@@ -66,6 +66,7 @@ func postWork(w http.ResponseWriter, r *http.Request, deps Deps) {
 		PartID                string          `json:"part_id"`
 		SystemID              string          `json:"system_id"`
 		Action                string          `json:"action"`
+		LayoutChange          string          `json:"layout_change"`
 		Title                 string          `json:"title"`
 		ExistingCondition     string          `json:"existing_condition"`
 		ExistingConditionNote string          `json:"existing_condition_note"`
@@ -86,7 +87,7 @@ func postWork(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, msg, http.StatusUnprocessableEntity)
 		return
 	}
-	item := works.Item{PartID: body.PartID, SystemID: body.SystemID, Action: body.Action, Title: strings.TrimSpace(body.Title),
+	item := works.Item{LayoutChange: body.LayoutChange, PartID: body.PartID, SystemID: body.SystemID, Action: body.Action, Title: strings.TrimSpace(body.Title),
 		ExistingCondition: body.ExistingCondition, ExistingConditionNote: body.ExistingConditionNote, Target: body.Target, Quantity: quantity, Unit: body.Unit}
 	if err := works.Validate(item, deps.Knowledge); err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
@@ -137,11 +138,15 @@ func patchWork(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
+	if patch.PartID != nil && !uuidPattern.MatchString(*patch.PartID) {
+		http.Error(w, "invalid part", http.StatusUnprocessableEntity)
+		return
+	}
 	item, err := deps.Store.PatchWorkItem(r.Context(), session.OrgID, project, id, session.UserID, patch)
 	switch {
 	case errors.Is(err, store.ErrNotFound):
 		http.Error(w, "not found", http.StatusNotFound)
-	case errors.Is(err, store.ErrVersionConflict):
+	case errors.Is(err, store.ErrVersionConflict), errors.Is(err, store.ErrWorkConflict):
 		http.Error(w, "work item changed; reload before editing", http.StatusConflict)
 	case errors.Is(err, store.ErrInvalidWork):
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)

@@ -1,10 +1,20 @@
 # Current review handoff
 
+> **Current progress:** [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md). On 7 October the owner authorized completing M2/M3 unattended; earlier sequencing/permission holds are historical. Acceptance evidence remains explicit.
+
 > 7 October owner update: publish the current implementation checkpoint to main/GitHub; move broader acceptance testing beyond the thin 0991 project. See implementation plan "Current owner direction". Outstanding gates remain open; this is not acceptance or deployment approval.
 
-6 October 2026. Implementation remains local and unmerged. This is a request
-for the missing evidence/decisions, not a claim that M1 is ready to accept.
-Plan §0.2 and individual package handoffs describe the delivered portions.
+**Historical snapshot — 6 October 2026.** The body below records the implementation,
+decisions and evidence at that date, when the work was local and unmerged; it is
+not the current publication or completion status. Use [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md)
+for current progress and the [7 October publication checkpoint](../evidence/2026-10-07-publication-checkpoint.md)
+for publication evidence.
+
+The two direction questions below were resolved on 7 October: partition work
+uses [explicit per-work layout context](../evidence/2026-10-07-k1-layout-input-proposal.md),
+and actionless physical proposals require [an explicit action choice on acceptance](../evidence/2026-10-06-proposal-action-gap.md#follow-up--7-october-2026).
+Their historical pending/hold wording below no longer applies. Owner review and
+acceptance gates remain as recorded on the current progress page.
 
 ## Decisions already resolved
 

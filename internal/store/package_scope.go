@@ -147,6 +147,9 @@ func (s *Store) writePackageScope(ctx context.Context, org, project, pkg, id, ac
 		input = item.ScopeInput
 		patch.apply(&input)
 		retire = patch.Retired != nil && *patch.Retired
+		if err := costScopeChange(ctx, tx, org, project, pkg, id, item, input.ScopeContent, retire); err != nil {
+			return item, err
+		}
 	} else {
 		id = newID()
 	}

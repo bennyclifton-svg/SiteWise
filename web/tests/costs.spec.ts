@@ -1,0 +1,18 @@
+import { expect, test } from "@playwright/test";
+test("cost values preserve unknowns, failed edits, subdivisions and baselines", async ({ page }) => {
+  const {token}=await(await page.request.post('/__e2e/invite?org=a')).json(); await page.goto(`/#token=${token}`);
+  await page.getByLabel('New project').fill('Cost controls');await page.getByRole('button',{name:'Create project',exact:true}).click();
+  await page.getByRole('button',{name:'Costs',exact:true}).click();
+  await page.getByRole('button',{name:'Add cost line',exact:true}).click();await page.getByLabel('Cost label',{exact:true}).fill('Unallocated allowance');await page.getByRole('button',{name:'Save cost line',exact:true}).click();
+  await page.getByRole('button',{name:/Unallocated allowance/}).click();await expect(page.getByText('budget: Unknown',{exact:true})).toBeVisible();
+  await page.getByLabel('Benchmark geography').fill('Sydney');await page.getByLabel('Benchmark quality').fill('Standard');await page.getByRole('button',{name:'Find reviewed benchmarks',exact:true}).click();await expect(page.getByText(/Only reviewed benchmarks matching/)).toBeVisible();await expect(page.getByRole('button',{name:'Apply benchmark allowance',exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Edit budget',exact:true}).click();await page.getByLabel('Value state').selectOption('known');await page.getByLabel('amount',{exact:true}).fill('1000.00');
+  let fail=true;await page.route('**/cost-plan/items/*/values/budget',route=>fail?route.fulfill({status:500,body:'failure'}):route.continue());
+  await page.getByRole('button',{name:'Save value',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Could not save');await expect(page.getByLabel('amount',{exact:true})).toHaveValue('1000.00');fail=false;
+  await page.getByRole('button',{name:'Save value',exact:true}).click();await expect(page.getByRole('button',{name:'Edit budget',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Subdivide allowance',exact:true}).click();await page.getByLabel('Allocation 1 label').fill('First allocation');await page.getByLabel('Allocation 1 amount').fill('300');await page.getByLabel('Allocation 2 label').fill('Second allocation');await page.getByLabel('Allocation 2 amount').fill('400');await page.getByRole('button',{name:'Save subdivision',exact:true}).click();
+  await expect(page.getByRole('button',{name:/First allocation/})).toBeVisible();await expect(page.getByRole('button',{name:/Unallocated — Unallocated allowance/})).toBeVisible();
+  const project=new URL(page.url()).pathname.split('/').pop();const totals=await(await page.request.get(`/api/projects/${project}/cost-plan/totals`)).json();expect(totals.overall.budget.amount).toBe('1000.00');
+  await page.getByRole('button',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await expect(page.getByText('Revision 2 · draft',{exact:true})).toBeVisible();await page.getByRole('button',{name:'View frozen baseline',exact:true}).click();await expect(page.getByText('Revision 1 · baseline',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Add cost line',exact:true})).toBeDisabled();
+  await page.setViewportSize({width:1360,height:1000});await page.screenshot({path:'../.tools/next-wave-costs-desktop.png',fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:'../.tools/next-wave-costs-mobile.png',fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});

@@ -14,7 +14,7 @@ export interface ProposalRecord {
   };
   decision?: { decision: string; version: number; actor: string; decided_at: string; rationale: string; created_record_type?: string; created_record_id?: string };
 }
-export interface ProposalAssignment { package_id: string; work_item_id: string; stage_id: string; role: string }
+export interface ProposalAssignment { action?: string; package_id: string; work_item_id: string; stage_id: string; role: string }
 const path = (project: string, key: string) => `/projects/${project}/proposals/${encodeURIComponent(key)}`;
 export const proposalApi = {
   list: (project: string, all: boolean) => request<{ items: ProposalRecord[]; total: number }>("GET", `/projects/${project}/proposals${all ? "?show=all" : ""}`),

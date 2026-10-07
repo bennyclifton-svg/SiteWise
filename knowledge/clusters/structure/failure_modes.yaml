@@ -4017,3 +4017,20 @@ failure_modes:
     anchor: '## Egress and occupant safety'
   notes: Owner list cites AS 2890; not verified. Vehicle clearance is not a fire or egress matter strictly;
     placed in this cluster by the triage keyword pass.
+
+- id: fm.existing-pavement-load-capacity-failed
+  attaches_to: {system: site.vehicle-access}
+  severity: durability
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state that the existing pavement or subgrade has failed a load assessment or proof roll for the proposed traffic?"
+    criteria:
+      true: "It explicitly states that the existing pavement or subgrade has failed a load assessment or proof roll for the proposed traffic."
+      false: "It does not state this, states the opposite, or only gives a requirement or hypothetical risk. Do not calculate adequacy or infer a failure from silence."
+    runs_on: ["site.vehicle-access"]
+  flag_when: true
+  status: draft
+  sources:
+    - {dataset: batch2, row: B2-0599}
+    - {dataset: batch2, row: B2-0615}
+    - {design: docs/evidence/2026-10-07-k4-detector-coverage.md, anchor: "# K4 precise detector coverage corrections — 7 October 2026"}

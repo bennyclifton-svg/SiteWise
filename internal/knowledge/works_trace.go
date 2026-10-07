@@ -8,12 +8,13 @@ import (
 // WorksTrace captures predicate inputs, including unknowns, so proposals can
 // explain decisions without implementing a second predicate language.
 type WorksTrace struct {
-	Truth        Truth
-	Determinants []string
-	Existing     map[string]Truth
-	Present      map[string]Truth
-	ItemIndexes  []int
-	Specificity  int
+	Truth         Truth
+	Determinants  []string
+	Existing      map[string]Truth
+	Present       map[string]Truth
+	ItemIndexes   []int
+	Specificity   int
+	LayoutChanges map[int]string
 }
 
 func (c *Catalog) TraceWorks(p any, env WorksEnv) WorksTrace {
@@ -31,6 +32,7 @@ func (c *Catalog) traceWorks(p any, env WorksEnv, relevantOnly bool) WorksTrace 
 	if relevantOnly && out.Truth == False {
 		return out
 	}
+	out.LayoutChanges = map[int]string{}
 	out.Existing, out.Present = map[string]Truth{}, map[string]Truth{}
 	dets := map[string]bool{}
 	items := map[int]bool{}
@@ -61,31 +63,15 @@ func (c *Catalog) traceWorks(p any, env WorksEnv, relevantOnly bool) WorksTrace 
 			out.Present[system] = state
 		}
 		if cond, ok := asMap(m["works"]); ok {
-			for i, item := range env.Items {
-				if c.worksMatch(cond, []WorkItem{item}) == triFalse {
-					continue
-				}
+			matched := c.traceWorkClause(cond, env)
+			for _, i := range matched.indexes {
 				items[i] = true
-				specificity := 0
-				if item.Action != "" && len(asList(cond["action"])) > 0 {
-					specificity = 1
-					for _, system := range asList(cond["system"]) {
-						id := fmt.Sprint(system)
-						if !c.covers(item.System, id) && !c.covers(id, item.System) {
-							continue
-						}
-						score := 2
-						if item.System == id && len(c.Children(id)) == 0 {
-							score = 3
-						}
-						if score > specificity {
-							specificity = score
-						}
-					}
-				}
-				if specificity > out.Specificity {
-					out.Specificity = specificity
-				}
+			}
+			for i, value := range matched.layout {
+				out.LayoutChanges[i] = value
+			}
+			if matched.specificity > out.Specificity {
+				out.Specificity = matched.specificity
 			}
 		}
 	})

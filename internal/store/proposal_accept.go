@@ -13,6 +13,12 @@ import (
 // AcceptProposal creates planning scope, never verified evidence. The project
 // lock serialises acceptance with rebuilds and concurrent retries.
 func (s *Store) AcceptProposal(ctx context.Context, org, project, key, actor, fingerprint string) (works.Item, error) {
+	return s.AcceptProposalWithAction(ctx, org, project, key, actor, fingerprint, "")
+}
+
+// An actionless physical proposal requires the user's explicit selection.
+// The selection is preserved separately from the evidence fingerprint.
+func (s *Store) AcceptProposalWithAction(ctx context.Context, org, project, key, actor, fingerprint, chosenAction string) (works.Item, error) {
 	var item works.Item
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -49,10 +55,13 @@ func (s *Store) AcceptProposal(ctx context.Context, org, project, key, actor, fi
 		if err := json.Unmarshal(raw, &item); err != nil {
 			return item, err
 		}
+		if chosenAction != "" && chosenAction != item.Action {
+			return works.Item{}, ErrVersionConflict
+		}
 		return item, tx.Commit(ctx)
 	}
 	var raw []byte
-	if err := tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM ranked_proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return item, ErrNotFound
 		}
@@ -69,6 +78,21 @@ func (s *Store) AcceptProposal(ctx context.Context, org, project, key, actor, fi
 		return item, ErrProposalUnavailable
 	}
 	action := p.Action
+	if chosenAction != "" {
+		if p.Kind != "work_item" || !works.ValidAction(chosenAction) || chosenAction == "investigate" || action != "" && action != chosenAction {
+			return item, ErrInvalidWork
+		}
+		action = chosenAction
+		var inputs map[string]json.RawMessage
+		if err := json.Unmarshal(raw, &inputs); err != nil {
+			return item, err
+		}
+		inputs["user_selected_action"], _ = json.Marshal(chosenAction)
+		raw, err = json.Marshal(inputs)
+		if err != nil {
+			return item, err
+		}
+	}
 	if p.Kind == "investigation" {
 		action = "investigate"
 	}

@@ -18,9 +18,11 @@ func uncachedProposalFingerprint(_, _ string, record any, reason ProposalReason)
 // Project inputs and traces are not retained between calls, so edits remain
 // immediately visible and evaluations are safe to run concurrently.
 type Evaluator struct {
-	cat        *knowledge.Catalog
-	hashes     map[[2]string]string
-	predicates map[string]string
+	cat          *knowledge.Catalog
+	hashes       map[[2]string]string
+	predicates   map[string]string
+	inputVersion string
+	systems      []string
 }
 
 func (e *Evaluator) KnowledgeVersion() string { return e.cat.Version() }
@@ -89,6 +91,9 @@ func NewEvaluator(cat *knowledge.Catalog) (*Evaluator, error) {
 		if uses[key] < 2 {
 			delete(e.predicates, id)
 		}
+	}
+	if err := e.prepareInputFingerprint(); err != nil {
+		return nil, err
 	}
 	return e, nil
 }

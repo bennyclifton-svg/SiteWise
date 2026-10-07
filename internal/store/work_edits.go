@@ -43,8 +43,14 @@ func (s *Store) PatchWorkItem(ctx context.Context, org, project, id, actor strin
 	if err := patch.Apply(&item); err != nil {
 		return item, fmt.Errorf("%w: %v", ErrInvalidWork, err)
 	}
+	if item.LayoutChange == "" {
+		item.LayoutChange = "unknown"
+	}
 	if err := works.Validate(item, s.workCatalog()); err != nil {
 		return item, fmt.Errorf("%w: %v", ErrInvalidWork, err)
+	}
+	if _, err := userValueOwner(ctx, tx, org, project, item.PartID); err != nil {
+		return item, err
 	}
 	target, err := json.Marshal(item.Target)
 	if err != nil {
@@ -52,9 +58,9 @@ func (s *Store) PatchWorkItem(ctx context.Context, org, project, id, actor strin
 	}
 	// Keep original evidence and proposal provenance; record this correction
 	// separately. A corrected item is planning input, never owner verification.
-	err = tx.QueryRow(ctx, `UPDATE work_items SET action=$4,title=$5,inclusion=$6,existing_condition_note=$7,target=$8,quantity=$9::numeric,unit=$10,origin='user',review_status='accepted_for_planning',meaning='stated',user_touched=true,version=version+1,verified_by=NULL,verified_at=NULL,verification_basis=NULL,provenance=provenance||jsonb_build_object('last_edited_by',$11::text,'last_edited_at',now()) WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid RETURNING to_jsonb(work_items)||jsonb_build_object('quantity',quantity::text)`, org, project, id, item.Action, item.Title, item.Inclusion, item.ExistingConditionNote, target, item.Quantity, item.Unit, actor).Scan(&raw)
+	err = tx.QueryRow(ctx, `UPDATE work_items SET part_id=$12::uuid,system_id=$13,coarse_key=CASE WHEN coarse_key IS NULL THEN NULL ELSE $12||'|'||$13 END,layout_change=$14,action=$4,title=$5,inclusion=$6,existing_condition_note=$7,target=$8,quantity=$9::numeric,unit=$10,origin='user',review_status='accepted_for_planning',meaning='stated',user_touched=true,version=version+1,verified_by=NULL,verified_at=NULL,verification_basis=NULL,provenance=provenance||jsonb_build_object('last_edited_by',$11::text,'last_edited_at',now()) WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid RETURNING to_jsonb(work_items)||jsonb_build_object('quantity',quantity::text)`, org, project, id, item.Action, item.Title, item.Inclusion, item.ExistingConditionNote, target, item.Quantity, item.Unit, actor, item.PartID, item.SystemID, item.LayoutChange).Scan(&raw)
 	if err != nil {
-		return item, err
+		return item, workError(err)
 	}
 	if err := json.Unmarshal(raw, &item); err != nil {
 		return item, err

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 
 	"sitewise/internal/knowledge"
 )
@@ -19,9 +20,10 @@ type ProposalPart struct {
 }
 
 type ProposalInput struct {
-	Items    []Item
-	Parts    map[string]ProposalPart
-	Existing ExistingAt
+	Items        []Item
+	Parts        map[string]ProposalPart
+	Existing     ExistingAt
+	materialized bool
 }
 
 // EvaluateProposals evaluates all loaded ic/cq/uc records in code. It does not
@@ -31,10 +33,24 @@ func EvaluateProposals(cat *knowledge.Catalog, in ProposalInput) ([]Proposal, er
 }
 
 func evaluateProposals(cat *knowledge.Catalog, in ProposalInput, fingerprintRecord proposalFingerprinter, predicateKeys map[string]string) ([]Proposal, error) {
-	out, err := interfaceProposals(cat, in.Items, in.Existing, in.Parts, fingerprintRecord)
-	if err != nil {
-		return nil, err
+	var interfaces []Proposal
+	var interfaceErr error
+	var interfaceWork sync.WaitGroup
+	readInterfaces := func() {
+		interfaces, interfaceErr = interfaceProposals(cat, in.Items, in.Existing, in.Parts, fingerprintRecord)
 	}
+	// Only MaterializeInput replaces caller callbacks with immutable snapshots.
+	// Other callers retain sequential callback execution. Join before every exit.
+	if in.materialized && predicateKeys != nil {
+		interfaceWork.Go(readInterfaces)
+		defer interfaceWork.Wait()
+	} else {
+		readInterfaces()
+		if interfaceErr != nil {
+			return nil, interfaceErr
+		}
+	}
+	var out []Proposal
 	byPart := map[string][]Item{}
 	for _, item := range in.Items {
 		if item.IsGroup || item.RetiredAt != nil || item.Inclusion != "included" {
@@ -59,10 +75,13 @@ func evaluateProposals(cat *knowledge.Catalog, in ProposalInput, fingerprintReco
 			env.Values[key] = value.Value
 		}
 		for _, item := range items {
-			env.Items = append(env.Items, knowledge.WorkItem{System: item.SystemID, Action: item.Action})
+			env.Items = append(env.Items, knowledge.WorkItem{System: item.SystemID, Action: item.Action, LayoutChange: item.LayoutChange})
 		}
 		if in.Existing != nil {
 			env.Existing = func(system string) knowledge.Truth { return in.Existing(partID, system) }
+		}
+		if predicateKeys != nil {
+			env = cat.MemoizeWorks(env)
 		}
 		// Identical catalogue predicates read identical inputs within this part.
 		// Keep traces local: another part or evaluation has different evidence.
@@ -87,6 +106,12 @@ func evaluateProposals(cat *knowledge.Catalog, in ProposalInput, fingerprintReco
 					unaccepted = true
 				}
 				reason.Triggers = append(reason.Triggers, ProposalTrigger{item.ID, item.Action, item.SystemID, item.PartID})
+			}
+			for _, i := range trace.ItemIndexes {
+				if value, ok := trace.LayoutChanges[i]; ok {
+					item := items[i]
+					reason.Determinants = append(reason.Determinants, ProposalValue{Key: "work.layout_change:" + item.SystemID + "|" + item.Action + "|" + item.PartID, Value: value, Origin: "user"})
+				}
 			}
 			for _, key := range trace.Determinants {
 				value := part.Values[key]
@@ -129,7 +154,7 @@ func evaluateProposals(cat *knowledge.Catalog, in ProposalInput, fingerprintReco
 				if err != nil {
 					return err
 				}
-				out = append(out, Proposal{Key: key, RecordKind: kind, RecordID: id, InterfaceID: edge, ProposalIndex: index, TargetSystemID: target, TargetPartID: partID, Kind: p.Kind, Label: p.Label, Reason: reason, Severity: severity, Specificity: trace.Specificity, Draft: status != "reviewed", UnacceptedTriggers: unaccepted, InputsFingerprint: fingerprint, KnowledgeVersion: cat.Version(), State: "open"})
+				out = append(out, Proposal{Key: key, RecordKind: kind, RecordID: id, InterfaceID: edge, ProposalIndex: index, TargetSystemID: target, TargetPartID: partID, Kind: p.Kind, Label: p.Label, Reason: reason, Severity: severity, Specificity: trace.Specificity, Draft: status != "reviewed", UnacceptedTriggers: unaccepted, InputsFingerprint: fingerprint, KnowledgeVersion: cat.Version(), State: evidenceProposalState(reason)})
 			}
 			return nil
 		}
@@ -147,6 +172,11 @@ func evaluateProposals(cat *knowledge.Catalog, in ProposalInput, fingerprintReco
 			}
 		}
 	}
+	interfaceWork.Wait()
+	if interfaceErr != nil {
+		return nil, interfaceErr
+	}
+	out = append(interfaces, out...)
 	RankProposals(out)
 	return out, nil
 }

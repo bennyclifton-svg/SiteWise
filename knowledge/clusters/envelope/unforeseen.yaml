@@ -539,8 +539,8 @@ unforeseen:
   - sig.envelope-single-batch-supply-stated
   de_risk:
     kind: obligation
-    label: Order each continuous area from a single batch or dye lot
-  contract: Supplier to supply each area from a single batch.
+    label: Review batch consistency, samples and acceptance criteria for each continuous finish area
+  contract: "Review the actual tender conditions, risk allocation, notices and any priced allowance for this condition; no entitlement or responsible party is assumed."
   effect:
   - quality
   - cost
@@ -550,6 +550,7 @@ unforeseen:
   - handover_defects
   status: draft
   sources:
+  - {design: docs/evidence/2026-10-07-k4-bounded-merge-disposition.md, anchor: "### Public contract-practice source"}
   - dataset: batch1
     row: B1-0230
   - dataset: batch1
@@ -1825,13 +1826,14 @@ unforeseen:
   signals: ["sig.envelope-existing-window-performance-stated"]
   de_risk:
     kind: investigation
-    label: "Confirm how much of the envelope must be upgraded"
-  contract: "Principal carries the approval risk; separable portion for conditions imposed after tender."
+    label: "Review applicable safety and energy requirements before deciding the extent of any envelope upgrade"
+  contract: "Review the actual tender conditions, risk allocation, notices and any priced allowance for this condition; no entitlement or responsible party is assumed."
   effect: ["compliance", "cost"]
   severity: compliance
   discovered_at: ["design"]
   status: draft
   sources:
+  - {design: docs/evidence/2026-10-07-k4-bounded-merge-disposition.md, anchor: "### Public contract-practice source"}
   - dataset: batch2
     row: B2-0560
   - dataset: batch2
@@ -2072,13 +2074,14 @@ unforeseen:
   signals: ["sig.envelope-interior-heritage-fabric-identified-stated"]
   de_risk:
     kind: obligation
-    label: "Keep the fabric and route new work around it"
-  contract: "Principal carries the approval risk; separable portion for conditions imposed after tender."
+    label: "Review significant fabric, approvals and feasible routes before finalising the alterations"
+  contract: "Review the actual tender conditions, risk allocation, notices and any priced allowance for this condition; no entitlement or responsible party is assumed."
   effect: ["compliance", "cost", "programme"]
   severity: compliance
   discovered_at: ["design"]
   status: draft
   sources:
+  - {design: docs/evidence/2026-10-07-k4-bounded-merge-disposition.md, anchor: "### Public contract-practice source"}
   - dataset: batch2
     row: B2-0761
   - dataset: batch2
@@ -2146,7 +2149,7 @@ unforeseen:
   signals: []
   de_risk:
     kind: obligation
-    label: "Choose a hoist the materials fit"
+    label: "Check material-pack dimensions and confirm a suitable hoist or alternative movement method"
   contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
   effect: ["programme", "cost"]
   severity: programme
@@ -2170,7 +2173,7 @@ unforeseen:
   signals: []
   de_risk:
     kind: obligation
-    label: "Free a davit zone or choose another access method"
+    label: "Review roof-plant and davit clearances and confirm a feasible facade-access method"
   contract: "Approved-alternative clause; substitution by direction with adjustment of price and time."
   effect: ["cost", "safety"]
   severity: life-safety
@@ -2268,13 +2271,14 @@ unforeseen:
   signals: ["sig.envelope-tile-bond-to-substrate-stated"]
   de_risk:
     kind: obligation
-    label: "Allow to replace the membrane"
-  contract: "Provisional sum for make-good found on opening up; remeasure the affected work."
+    label: "Review finish and substrate reinstatement, including waterproofing where affected"
+  contract: "Review the actual tender conditions, risk allocation, notices and any priced allowance for this condition; no entitlement or responsible party is assumed."
   effect: ["cost", "programme", "quality"]
   severity: cost
   discovered_at: ["demolition_strip_out"]
   status: draft
   sources:
+  - {design: docs/evidence/2026-10-07-k4-bounded-merge-disposition.md, anchor: "### Public contract-practice source"}
   - dataset: batch2
     row: B2-0849
   - dataset: batch2

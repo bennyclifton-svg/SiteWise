@@ -175,7 +175,7 @@ func TestReadingProcessCrashRecovery(t *testing.T) {
 			child := startWorkerCrashProcess(t, org, app, "TestReadingCrashChild", "SITEWISE_READING_CRASH_KIND="+kind)
 			for {
 				var waiting bool
-				if err := pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name=$1 AND wait_event_type='Lock' AND query LIKE 'DELETE FROM profile_rows%')`, app).Scan(&waiting); err != nil {
+				if err := pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name=$1 AND wait_event_type='Lock' AND (query LIKE 'DELETE FROM profile_rows%' OR query LIKE 'INSERT INTO profile_rows%'))`, app).Scan(&waiting); err != nil {
 					t.Fatal(err)
 				}
 				if waiting {

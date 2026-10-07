@@ -61,6 +61,7 @@ func (s *Store) UndoProposalDecision(ctx context.Context, org, project, key, act
 			if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM work_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND parent_id=$3::uuid)
  OR EXISTS(SELECT 1 FROM package_scope_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND work_item_id=$3::uuid)
  OR EXISTS(SELECT 1 FROM project_delivery_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND work_item_id=$3::uuid)
+ OR EXISTS(SELECT 1 FROM cost_item_revisions WHERE org_id=$1::uuid AND project_id=$2::uuid AND work_item_id=$3::uuid)
  OR EXISTS(SELECT 1 FROM report_versions rv CROSS JOIN LATERAL jsonb_array_elements(rv.sections) section CROSS JOIN LATERAL jsonb_array_elements(section->'blocks') block WHERE rv.org_id=$1::uuid AND rv.project_id=$2::uuid AND (block->>'id'='work:'||$3::text OR block->'basis'->>'work_item_id'=$3::text))
  OR EXISTS(SELECT 1 FROM proposal_decisions WHERE org_id=$1::uuid AND project_id=$2::uuid AND proposal_key<>$4 AND
  (trigger_work_item_id=$3::uuid OR created_record_id=$3::uuid OR inputs_snapshot @> jsonb_build_object('reason',jsonb_build_object('triggers',jsonb_build_array(jsonb_build_object('work_item_id',$3::text))))
@@ -88,7 +89,14 @@ func (s *Store) UndoProposalDecision(ctx context.Context, org, project, key, act
 	if _, err := tx.Exec(ctx, `UPDATE proposal_decisions d SET undo_history=undo_history||jsonb_build_array((to_jsonb(d)-'undo_history')||jsonb_build_object('undone_by',$4::text,'undone_at',now())),undone_at=now(),version=version+1 WHERE org_id=$1::uuid AND project_id=$2::uuid AND proposal_key=$3`, org, project, key, actor); err != nil {
 		return err
 	}
-	if _, err := tx.Exec(ctx, `UPDATE proposals SET state='open',inputs_changed=false WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key); err != nil {
+	if _, err := tx.Exec(ctx, `UPDATE proposals SET state=CASE WHEN EXISTS (
+ SELECT 1 FROM jsonb_array_elements(COALESCE(reason->'signals','[]'::jsonb)) signal WHERE signal->>'state'='true'
+ ) THEN 'addressed_by_evidence' ELSE 'open' END,inputs_changed=false WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key); err != nil {
+		return err
+	}
+	// Decisions are not evaluator inputs. An undo must restore the underlying
+	// evidence state immediately and refresh it on the next profile rebuild.
+	if _, err := tx.Exec(ctx, `UPDATE profile_builds SET inputs=inputs-'proposal_fingerprint' WHERE org_id=$1::uuid AND project_id=$2::uuid`, org, project); err != nil {
 		return err
 	}
 	if d.Decision == "accepted" && d.CreatedRecordType == "delivery_item" {

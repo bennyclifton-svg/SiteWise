@@ -262,6 +262,12 @@ func TestBenchEndToEnd(t *testing.T) {
 			{"name": "proposals_undo", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "proposals_accept_delivery", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "proposals_undo_delivery", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "works_split", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "works_retire", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "costs_read", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "costs_write", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "report_issue", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "report_export", "p50_us": 30_000_000, "p90_us": 30_000_000},
 		},
 	})
 	out := filepath.Join(dir, "results.json")
@@ -288,7 +294,10 @@ func TestBenchEndToEnd(t *testing.T) {
 	if res.Paths["whole_intake"].N != 12 {
 		t.Fatalf("every upload of both rounds is a whole-intake sample: %+v", res.Paths["whole_intake"])
 	}
-	for path, count := range map[string]int{"proposals_read": 39, "proposals_accept": 3, "proposals_dismiss": 9, "proposals_undo": 6, "proposals_accept_delivery": 6, "proposals_undo_delivery": 12} {
+	// Synthetic approval/hold-point fixtures are restored after automatic
+	// rebuilds, then read again; those additional reads remain real samples.
+	for path, count := range map[string]int{"proposals_read": 51, "proposals_accept": 3, "proposals_dismiss": 9, "proposals_undo": 6, "proposals_accept_delivery": 6, "proposals_undo_delivery": 12,
+		"works_split": 3, "works_retire": 9, "costs_read": 3, "costs_write": 3, "report_issue": 3, "report_export": 3} {
 		if res.Paths[path].N != count {
 			t.Fatalf("%s samples: got %d, want %d", path, res.Paths[path].N, count)
 		}

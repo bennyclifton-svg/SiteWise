@@ -95,3 +95,14 @@ review inventory now records 82 corrections across the catalogue; this remains
 a bounded, unapproved wording pass. See
 `docs/evidence/2026-10-06-k4-investigation-labels.md` and
 `docs/unforeseen/k4-investigation-label-review.json`.
+
+## K2 draft structural review — 7 October 2026
+
+Added `cq.existing-structural-intervention-sequence-review` from renovation-guide
+`## Structural intervention`: existing structural/substructural alteration,
+replacement, upgrade or removal raises an undated planning review of load paths,
+sequence and applicable temporary support. No propping design or mandatory
+support inferred. Distinct from new-load capacity interface investigations.
+Existing hazardous-material illustrative CQ remains unchanged and unverified.
+Source coverage, exclusions and merge review: docs/evidence/2026-10-07-k2-seed-coverage.md.
+All content remains draft; owner usefulness review is pending.

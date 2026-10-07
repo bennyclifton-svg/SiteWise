@@ -1,8 +1,10 @@
 # Next wave: requirements register
 
+> **Current progress:** [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md). On 7 October the owner authorized completing M2/M3 unattended; earlier sequencing/permission holds are historical. Acceptance evidence remains explicit.
+
 > 7 October owner update: publish the current implementation checkpoint to main/GitHub; move broader acceptance testing beyond the thin 0991 project. See implementation plan "Current owner direction". Outstanding gates remain open; this is not acceptance or deployment approval.
 
-Status: revised planning register, 5 October 2026. **No implementation authorised by this revision.** Original rows preserve baseline traceability; section R explicitly overrides affected requirements. Current decision/evidence status is in the implementation plan §5/§0.2. Historical dispositions below are not a live status board.
+Status: historical planning baseline from 5 October 2026, with dated execution updates below. The owner authorized full M2/M3 implementation on 7 October. Original rows preserve baseline traceability; section R overrides affected requirements. Read NEXT-WAVE-STATUS.md for progress and implementation plan §5 for decisions; historical dispositions are not a live task list.
 
 | Item | Value |
 | - | - |
@@ -619,6 +621,40 @@ Retain these counts as history. The revised register has 389 unique requirement 
 Every requirement with disposition Planned, Keep or Blocked names at least one package or AT and one acceptance check. Each WP in the packages document lists the requirement IDs it serves; the integration lead checks this both ways at each merge (packages document §3).
 
 ## State updates
+
+### 7 October M2/M3 implementation (current)
+
+The owner authorized unattended completion and selected Petersham PPR as the
+principal residential acceptance set. M1 checkpoint commits `d97e6ee`/`2edc077`
+are on GitHub. M2/M3 product behavior is **Implemented** locally, including
+split/retire, automatic proposals and action choice, evidence signals, costs and
+reviewed-benchmark selection, delivery dependencies, frozen issue/export,
+RFP/RFT/PMP, changes since issue and the corresponding UI. This dated update
+supersedes older planned/partial implementation states for those delivered
+behaviors; it does not promote their quality/release acceptance to Verified.
+
+[Checkpoint validation](../evidence/2026-10-07-m2-m3-validation.md) records
+passing full Go, all 29 browser cases, OCR, intake replay, cost/report,
+populated upgrade, crash recovery and local dump/restore checks. Final full
+regression passed Go, all 29 browser cases, OCR and intake replay; source/Hale replay remains stale and blocks the full gate. The complete
+local 184×2 intake / 40-sample timing run passes every developer user-path
+budget, including Spec Home p50/p90 47.6/49.9 ms against 50/150 ms; this does not
+certify target-VPS timing. No standing budget or acceptance threshold changed.
+
+The [final knowledge audit](../evidence/2026-10-07-final-knowledge-audit.md)
+records **Implemented** bounded K1–K4 source-backed draft coverage, explicit
+layout input, six NSW review families, and K4 merge/contract/detector corrections.
+It supersedes earlier missing-jurisdiction/layout and bounded implementation-gap
+claims. All new knowledge remains draft; source/project-data limitations and
+owner review are distinct from implementation completion.
+
+Private source/Hale profile accuracy is stale and blocked: the live refresh was
+rejected by automatic approval review and is not bypassed. Offline size/routing
+preflights are not accuracy evidence. Owner content, usefulness and measured
+time-saving judgments, knowledge review and target-VPS/release acceptance
+(including NW-REQ-381–389) remain open. The [package table](2026-10-04-next-wave-agent-work-packages.md#6-status-and-evidence)
+and [progress page](NEXT-WAVE-STATUS.md) record publication and final gate status;
+this update grants no blanket Verified state.
 
 ### 6 October local implementation reconciliation
 

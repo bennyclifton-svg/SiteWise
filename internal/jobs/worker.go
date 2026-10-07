@@ -71,7 +71,9 @@ type Worker struct {
 	Profile profile.Thresholds
 	// Reading decides which documents' facts the profile uses. The zero
 	// policy uses every document.
-	Reading profile.ReadPolicy
+	Reading           profile.ReadPolicy
+	profileOnce       sync.Once
+	profileConfigured *store.Store
 }
 
 // Once leases and runs one full-text, label or evidence job.
@@ -299,7 +301,7 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		unresolved := append([]string{}, result.Unresolved...)
 		for _, r := range readings {
 			keys = append(keys, r.QuestionID)
-			if r.Confidence == nil || *r.Confidence < 0.6 || (strings.HasSuffix(r.QuestionID, ".action") && !w.Profile.ActionApplied(r)) {
+			if r.Confidence == nil || *r.Confidence < 0.6 || (strings.HasPrefix(r.QuestionID, "sig.") && *r.Confidence < .9) || (strings.HasSuffix(r.QuestionID, ".action") && !w.Profile.ActionApplied(r)) {
 				unresolved = append(unresolved, r.QuestionID)
 			}
 		}
@@ -313,7 +315,7 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		facts = append(facts, set...)
 	}
 
-	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"sys."}, profile.QuestionVersion, facts); err != nil {
+	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"sys.", "sig."}, profile.QuestionVersion, facts); err != nil {
 		return err
 	}
 	return nil
@@ -321,10 +323,16 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 
 // profileStore commits evidence and the code-only projection together.
 func (w *Worker) profileStore() *store.Store {
-	return w.Store.WithProfile(store.ProfileBuild{Catalog: w.Catalog, KnowledgeVersion: w.Catalog.Version(), QuestionVersion: profile.QuestionVersion,
-		ThresholdsVersion: w.Profile.Version, ReadKinds: w.Reading.Kinds(), Compute: func(s store.ProfileSnapshot) []profile.Row {
-			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: w.Profile, Read: w.Reading}, w.Catalog)
-		}})
+	// Worker configuration is fixed before processing jobs. Reuse its immutable
+	// evaluator rather than compiling the full catalogue for every document.
+	w.profileOnce.Do(func() {
+		cat, thresholds, reading := w.Catalog, w.Profile, w.Reading
+		w.profileConfigured = w.Store.WithProfile(store.ProfileBuild{Catalog: cat, KnowledgeVersion: cat.Version(), QuestionVersion: profile.QuestionVersion,
+			ThresholdsVersion: thresholds.Version, ReadKinds: reading.Kinds(), Compute: func(s store.ProfileSnapshot) []profile.Row {
+				return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: thresholds, Read: reading}, cat)
+			}})
+	})
+	return w.profileConfigured
 }
 
 func storedFacts(passageID string, readings []profile.Reading, partLabel string) []store.StoredFact {
@@ -582,6 +590,10 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 		child, _ := cat.System(id)
 		questions[knowledge.LabelQuestionID(id)] = jev.Question{Type: jev.TypeNoul, Instructions: "Using `excerpt`, does this clause concern any of " + child.Label + "?", Criteria: map[string]string{"true": knowledge.Describe(child, id), "false": "None of this category is discussed. Other systems can be discussed alongside it without making the answer false."}}
 	}
+	// Signals follow the labelled passage runs_on contract; no extra model call.
+	for _, q := range cat.SignalQuestions(passage.Labels) {
+		questions[q.ID] = jev.Question{Type: jev.TypeNoul, Instructions: q.Instructions, Criteria: noulCriteria(q.Criteria)}
+	}
 	for id, q := range profile.EvidenceQuestions(leafIDs, cat) {
 		// Labeling resolves families; the same evidence fan-out resolves their
 		// leaves. Ask actions speculatively alongside leaf presence, otherwise
@@ -693,8 +705,12 @@ func evidenceStates(questions map[string]jev.Question, result jev.Result, minNou
 		if question.Type != jev.TypeNoul || minNoul <= 0 {
 			continue
 		}
+		floor := minNoul
+		if strings.HasPrefix(id, "sig:") {
+			floor = .9
+		}
 		answer, ok := result.Answers[id]
-		if ok && answer.Type == jev.TypeNoul && answer.Noul >= minNoul {
+		if ok && answer.Type == jev.TypeNoul && answer.Noul >= floor {
 			out[id] = knowledge.StateAddressed
 		}
 	}

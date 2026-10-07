@@ -82,3 +82,44 @@ func orgFacts(t *testing.T, f store.RestoreFacts, orgID string) store.OrgCounts 
 	t.Fatalf("org %s missing", orgID)
 	return store.OrgCounts{}
 }
+
+func TestRestoreFactsDetectCostContentChanges(t *testing.T) {
+	ctx := context.Background()
+	s := profileStore(t)
+	p, e := s.CreateCostItem(ctx, orgA, projectA, userA, ci("Restore allowance"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	before, e := s.RestoreFacts(ctx)
+	if e != nil {
+		t.Fatal(e)
+	}
+	again, e := s.RestoreFacts(ctx)
+	if e != nil {
+		t.Fatal(e)
+	}
+	find := func(f store.RestoreFacts) store.RestoreTableFacts {
+		for _, r := range f.Tables {
+			if r.Table == "cost_values" && r.OrgID == orgA {
+				return r
+			}
+		}
+		t.Fatal("cost values omitted")
+		return store.RestoreTableFacts{}
+	}
+	if find(before) != find(again) {
+		t.Fatal("stable content changed digest")
+	}
+	pool := rawPool(t)
+	if _, e = pool.Exec(ctx, `UPDATE cost_values SET amount='123.45' WHERE org_id=$1::uuid AND plan_version_id=$2::uuid`, orgA, p.ID); e != nil {
+		t.Fatal(e)
+	}
+	after, e := s.RestoreFacts(ctx)
+	if e != nil {
+		t.Fatal(e)
+	}
+	a, b := find(before), find(after)
+	if a.Rows != b.Rows || a.SHA256 == b.SHA256 {
+		t.Fatal("same-count value corruption missed", a, b)
+	}
+}

@@ -7,9 +7,11 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strconv"
 	"testing"
 	"time"
 
+	"sitewise/internal/files"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/procurement"
 	"sitewise/internal/store"
@@ -41,6 +43,21 @@ func TestReportCrashChild(t *testing.T) {
 		t.Fatal(err)
 	}
 	s = s.WithProfile(store.ProfileBuild{Catalog: cat})
+	if os.Getenv("SITEWISE_REPORT_CRASH_MODE") == "issue" {
+		blobs, e := files.Open(os.Getenv("SITEWISE_REPORT_CRASH_BLOBS"), 20<<20)
+		if e != nil {
+			t.Fatal(e)
+		}
+		version, e := strconv.ParseInt(os.Getenv("SITEWISE_REPORT_CRASH_VERSION"), 10, 64)
+		if e != nil {
+			t.Fatal(e)
+		}
+		_, e = s.IssueReport(ctx, orgA, os.Getenv("SITEWISE_REPORT_CRASH_ID"), userA, "restart-test", store.IssueOptions{Version: version, ReportingDate: "2026-10-07", AcceptStale: true, StaleReason: "Crash recovery fixture"}, blobs)
+		if e != nil {
+			t.Fatal(e)
+		}
+		return
+	}
 	if _, err := s.RefreshReport(ctx, orgA, os.Getenv("SITEWISE_REPORT_CRASH_ID"), userA, "restart-test", true); err != nil {
 		t.Fatal(err)
 	}
@@ -53,11 +70,12 @@ type reportCrashProcess struct {
 	output bytes.Buffer
 }
 
-func startReportCrashProcess(t *testing.T, reportID, app string) *reportCrashProcess {
+func startReportCrashProcess(t *testing.T, reportID, app string, extraEnv ...string) *reportCrashProcess {
 	t.Helper()
 	// Execute and kill only the process we create, never a name or PID search.
 	p := &reportCrashProcess{cmd: exec.Command(os.Args[0], "-test.run=^TestReportCrashChild$", "-test.count=1"), done: make(chan struct{})}
 	p.cmd.Env = append(os.Environ(), "SITEWISE_REPORT_CRASH_CHILD=1", "SITEWISE_REPORT_CRASH_ID="+reportID, "SITEWISE_REPORT_CRASH_APP="+app)
+	p.cmd.Env = append(p.cmd.Env, extraEnv...)
 	p.cmd.Stdout, p.cmd.Stderr = &p.output, &p.output
 	if err := p.cmd.Start(); err != nil {
 		t.Fatal(err)

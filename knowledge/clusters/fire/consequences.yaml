@@ -28,3 +28,25 @@ consequences:
       Like-for-like repair, retained systems and new-building work are outside
       this bounded trigger. A stated certificate alone does not address the
       effect of these changes, so no generic document-existence signal suppresses it.
+
+  - id: cq.nsw-essential-measures-continuity-review
+    when:
+      all:
+        - {"det": "state", "any_of": ["NSW"]}
+        - {"det": "existing_building", "is": true}
+        - {"works": {"action": ["alter", "replace", "upgrade", "repair", "remove"], "system": ["fire-active", "fire-passive"]}}
+    propose:
+      - {"kind": "hold_point", "label": "Review the NSW fire safety schedule, affected measures, maintenance and certification responsibilities, and continuity during the work"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: life-safety
+    status: draft
+    sources:
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Primary source coverage"}
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Final three-topic runtime decision"}
+    notes: >-
+      Review-only milestone, not statutory eligibility or an instruction to
+      perform physical work. Confirm actual scope and applicable exceptions.
+      No approval, hazard, threshold, upgrade, coverage or responsible party
+      is inferred. Unknown jurisdiction and other inputs remain unresolved.

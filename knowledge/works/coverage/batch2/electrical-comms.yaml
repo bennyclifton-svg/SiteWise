@@ -6,7 +6,7 @@ rows:
   B2-0204: {records: [fm.emergency-lighting-spaced-to-shell-not-final-layout]}
   B2-0205: {records: [fm.emergency-light-battery-inside-fire-rated-void]}
   B2-0207: {records: [uc.existing-riser-has-no-path-for-warden-or-refuge-phone]}
-  B2-0219: {records: [fm.emergency-power-supplies-lifts]}
+  B2-0219: {records: [fm.lift-specified-essential-circuit-missing]}
   B2-0220: {records: [uc.existing-riser-has-no-path-for-warden-or-refuge-phone]}
   B2-0266: {records: [fm.rigid-conduit-or-tray-bridges-vibration-isolators]}
   B2-0301: {records: [uc.existing-board-has-no-spare-ways-or-rating-for-fit-out]}
@@ -96,7 +96,7 @@ rows:
   B2-0448: {records: [uc.lift-pit-sump-has-no-lawful-discharge]}
   B2-0449: {records: [fm.lift-pit-inserts-pierce-tanking]}
   B2-0450: {records: [uc.existing-lift-machine-floor-cannot-carry-replacement-machine]}
-  B2-0451: {records: [fm.emergency-power-supplies-lifts]}
+  B2-0451: {records: [fm.lift-specified-essential-circuit-missing]}
   B2-0452: {records: [fm.lift-shaft-structural-dimensions]}
   B2-0453: {records: [fm.goods-lift-door-clashes-with-dock-leveller]}
   B2-0454: {records: [fm.accessible-lift-landing-path]}

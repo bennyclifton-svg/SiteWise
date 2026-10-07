@@ -338,6 +338,8 @@ func enumeratedNone(qid string, cat *knowledge.Catalog) bool {
 
 func shapeOf(key string) string {
 	switch {
+	case strings.HasPrefix(key, "sig."):
+		return "signal"
 	case strings.HasSuffix(key, ".presence"):
 		return "presence"
 	case strings.HasSuffix(key, ".provider"):
@@ -355,6 +357,11 @@ func shapeOf(key string) string {
 func applied(f Fact, shape string, th Thresholds) bool {
 	if f.DecidedBy == "rule" {
 		return true
+	}
+	// Signals gate the selected Boolean probability, not choice confidence.
+	// Conservative provisional threshold: never claim addressed from ambiguity.
+	if shape == "signal" {
+		return f.Confidence != nil && *f.Confidence >= .9
 	}
 	floor, ok := th.Amber[shape]
 	return ok && f.Confidence != nil && *f.Confidence >= floor

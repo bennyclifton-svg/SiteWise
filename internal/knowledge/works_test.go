@@ -235,6 +235,12 @@ work_type_defaults: {new: new}
 		"unknown determinant": {
 			"clusters/fire/consequences.yaml": "version: 1\nconsequences:\n  - {id: cq.x, when: {det: no_such_det, is: true}}\n",
 		},
+		"choice incorrectly uses boolean is": {
+			"clusters/fire/consequences.yaml": "version: 1\nconsequences:\n  - {id: cq.x, when: {det: state, is: NSW}}\n",
+		},
+		"rule incorrectly uses boolean is": {
+			"clusters/fire/rules.yaml": "version: 1\nrules:\n  - {id: rule.x, applies_when: {det: state, is: NSW}}\n",
+		},
 		"malformed works map": {
 			"clusters/fire/unforeseen.yaml": "version: 1\nunforeseen:\n  - {id: uc.x, when: {works: {systems: [fire-passive]}}}\n",
 		},

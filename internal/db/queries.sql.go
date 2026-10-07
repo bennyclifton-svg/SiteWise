@@ -371,21 +371,23 @@ func (q *Queries) CreateOrg(ctx context.Context, arg CreateOrgParams) error {
 const createProject = `-- name: CreateProject :exec
 WITH site AS (
     INSERT INTO sites (org_id, id, label)
-    VALUES ($1::uuid, md5('site:' || $2::uuid::text)::uuid, COALESCE(NULLIF(left($3, 120), ''), 'Site'))
+    VALUES ($3::uuid, md5('site:' || $1::uuid::text)::uuid, COALESCE(NULLIF(left($2, 120), ''), 'Site'))
     RETURNING org_id, id
 )
 INSERT INTO projects (org_id, id, name, site_id)
-SELECT site.org_id, $2::uuid, $3, site.id FROM site
+SELECT site.org_id, $1::uuid, $2, site.id FROM site
 `
 
 type CreateProjectParams struct {
-	OrgID string
 	ID    string
 	Name  string
+	OrgID string
 }
 
+// Version 1 gives every project its own site, created in the same statement
+// (migration 011). The site id is derived from the project id.
 func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) error {
-	_, err := q.db.Exec(ctx, createProject, arg.OrgID, arg.ID, arg.Name)
+	_, err := q.db.Exec(ctx, createProject, arg.ID, arg.Name, arg.OrgID)
 	return err
 }
 

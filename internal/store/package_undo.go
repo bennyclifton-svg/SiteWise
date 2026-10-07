@@ -39,7 +39,7 @@ func undoCreatedPackage(ctx context.Context, tx pgx.Tx, org, project, key string
 		return ErrProposalUndoBlocked
 	}
 	var used bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM proposal_decisions WHERE org_id=$1::uuid AND project_id=$2::uuid AND proposal_key<>$3 AND created_package_id=$4::uuid) OR EXISTS(SELECT 1 FROM package_scope_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$4::uuid) OR EXISTS(SELECT 1 FROM project_delivery_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$4::uuid) OR EXISTS(SELECT 1 FROM reports WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$4::uuid)`, org, project, key, p.ID).Scan(&used); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM proposal_decisions WHERE org_id=$1::uuid AND project_id=$2::uuid AND proposal_key<>$3 AND created_package_id=$4::uuid) OR EXISTS(SELECT 1 FROM package_scope_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$4::uuid) OR EXISTS(SELECT 1 FROM project_delivery_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$4::uuid) OR EXISTS(SELECT 1 FROM reports WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$4::uuid) OR EXISTS(SELECT 1 FROM cost_item_revisions WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$4::uuid)`, org, project, key, p.ID).Scan(&used); err != nil {
 		return err
 	}
 	if used {

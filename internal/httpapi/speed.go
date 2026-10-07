@@ -11,6 +11,10 @@ import (
 // Budget paths recorded by the server itself; the names match
 // bench/budgets.json. Stage paths come from the intake Observer.
 const (
+	pathReportIssue       = "report_issue"
+	pathReportExport      = "report_export"
+	pathCostsRead         = "costs_read"
+	pathCostsWrite        = "costs_write"
 	pathWholeIntake       = "whole_intake"
 	pathDocumentList      = "project_document_list"
 	pathFieldCorrection   = "field_correction"

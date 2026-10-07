@@ -70,7 +70,7 @@ func (s *Store) AcceptDeliveryProposal(ctx context.Context, org, project, key, a
 		return item, tx.Commit(ctx)
 	}
 	var raw []byte
-	err = tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw)
+	err = tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM ranked_proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return item, ErrNotFound
 	}

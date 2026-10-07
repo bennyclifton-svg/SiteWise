@@ -42,13 +42,18 @@ func TestProtectedEditsSurviveChangedAndRemovedSources(t *testing.T) {
 	}
 }
 
-func TestReportDependenciesExcludeOwnWritesAndM2Costs(t *testing.T) {
-	saved := SourceState{Domains: map[string]int64{"profile_inputs": 1, "works": 2, "packages": 3, "delivery": 4}, ProfileRevision: 1, ProfileFingerprint: "fingerprint", KnowledgeVersion: "knowledge", QuestionVersion: "question", ThresholdsVersion: "thresholds", AppBuild: "build", TemplateID: "tpl.rfp-capex", TemplateVersion: 1}
+func TestReportDependenciesExcludeOwnWritesAndTrackCosts(t *testing.T) {
+	saved := SourceState{Domains: map[string]int64{"profile_inputs": 1, "works": 2, "packages": 3, "delivery": 4, "costs": 99}, ProfileRevision: 1, ProfileFingerprint: "fingerprint", KnowledgeVersion: "knowledge", QuestionVersion: "question", ThresholdsVersion: "thresholds", AppBuild: "build", TemplateID: "tpl.rfp-capex", TemplateVersion: 1}
 	current := saved
 	current.Domains = map[string]int64{"profile_inputs": 1, "works": 2, "packages": 3, "delivery": 4, "reports": 99, "costs": 99}
 	if got := StaleReasons("rfp", saved, current); len(got) != 0 {
 		t.Fatal(got)
 	}
+	current.Domains["costs"]++
+	if got := StaleReasons("rfp", saved, current); len(got) != 1 || got[0] != "costs" {
+		t.Fatal(got)
+	}
+	current.Domains["costs"]--
 	current.Domains["delivery"]++
 	current.TemplateVersion++
 	got := StaleReasons("rfp", saved, current)

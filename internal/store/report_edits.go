@@ -122,6 +122,11 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 		return view, err
 	}
 	r := view.Report
+	var prior []reports.Section
+	view.Issues, prior, err = reportHistory(ctx, tx, org, id)
+	if err != nil {
+		return view, err
+	}
 	if r.CurrentDraftVersionID == "" {
 		view.Stale = append(view.Stale, "not_assembled")
 		return view, tx.Commit(ctx)
@@ -131,6 +136,13 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 		return view, err
 	}
 	view.Draft = &d
+	if len(view.Issues) > 0 {
+		compared, _, compareErr := reports.IssueContent(d.Sections, r.Kind, view.Issues[0].BudgetDisclosed)
+		if compareErr != nil {
+			return view, compareErr
+		}
+		view.Changes = reports.ChangesSinceIssue(prior, compared)
+	}
 	view.Edits, err = readReportEdits(ctx, tx, org, d.ID)
 	if err != nil {
 		return view, err
@@ -156,12 +168,14 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if len(v.StaleFor(*s.profileBuild)) > 0 {
 		view.Stale = append(view.Stale, "saved_profile")
 	}
-	p, err := readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
-	if err != nil {
-		return view, err
-	}
-	if p.RetiredAt != nil {
-		view.Stale = append(view.Stale, "package_retired")
+	if r.Kind != "pmp" {
+		p, err := readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
+		if err != nil {
+			return view, err
+		}
+		if p.RetiredAt != nil {
+			view.Stale = append(view.Stale, "package_retired")
+		}
 	}
 	return view, tx.Commit(ctx)
 }

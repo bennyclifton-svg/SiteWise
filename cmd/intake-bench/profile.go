@@ -180,7 +180,7 @@ func (a *apiClient) profileRebuild(ctx context.Context, st *store.Store, dsn, fi
 		note += " Bounded two-drawing baseline, manually proposed work items and zero machine-read facts; not an extraction score or complete corpus replay."
 	}
 	if integrated {
-		note += fmt.Sprintf(" Integrated proposal diagnostic: %d loaded records, %d proposals on last rebuild. Profile rebuild samples include proposal evaluation and persistence in the same transaction, reusing inputs. Profile edits remain ordinary and do not establish the integrated edit budget. Not release evidence.", len(cat.InterfaceConsequences())+len(cat.Consequences())+len(cat.UnforeseenConditions()), proposalCount)
+		note += fmt.Sprintf(" Integrated proposal diagnostic: %d loaded records, %d proposals on last rebuild. Profile rebuilds and ordinary edits include automatic proposal evaluation and persistence in the same transaction, reusing unchanged complete proposal inputs. Not target-VPS release evidence.", len(cat.InterfaceConsequences())+len(cat.Consequences())+len(cat.UnforeseenConditions()), proposalCount)
 	} else if measureProposals {
 		note += fmt.Sprintf(" Proposal diagnostic: %d loaded records, %d proposals on last rebuild. Dryrun excludes writes; persisted timing adds explicit transactional projection replacement to the profile rebuild, with repeated input reads and reconciliation. Neither measures integrated edit wiring or constitutes step-0 completion or release evidence.", len(cat.InterfaceConsequences())+len(cat.Consequences())+len(cat.UnforeseenConditions()), proposalCount)
 	}

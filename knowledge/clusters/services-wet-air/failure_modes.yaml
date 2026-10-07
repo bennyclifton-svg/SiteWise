@@ -354,6 +354,11 @@ failure_modes:
       true: It explicitly states equipment inaccessible for routine maintenance.
       false: It does not state this; a general mention of the system is insufficient.
     runs_on:
+    - mechanical.air-conditioning
+    - mechanical.air-distribution
+    - hydraulic.cold-water
+    - hydraulic.hot-water
+    - hydraulic.non-potable-water
     - mechanical.central-plant
     - mechanical.cooling-towers
     - hydraulic.trade-waste

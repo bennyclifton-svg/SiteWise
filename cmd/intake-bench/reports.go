@@ -76,5 +76,42 @@ func (a *apiClient) reports(ctx context.Context, n int) error {
 			return err
 		}
 	}
+	// PMP has no catalogue clauses requiring owner review. This exercises the
+	// actual immutable issue and saved PDF download paths using synthetic data.
+	for i := 0; i < n; i++ {
+		raw, err := a.timed(ctx, "report_write", http.MethodPost, "/projects/"+project+"/reports", []byte(`{"kind":"pmp"}`), http.StatusCreated)
+		if err != nil {
+			return err
+		}
+		var r store.Report
+		if err := json.Unmarshal(raw, &r); err != nil {
+			return err
+		}
+		base := "/reports/" + r.ID
+		raw, err = a.timed(ctx, "report_assemble", http.MethodPost, base+"/draft", []byte(`{"use_last_completed":true}`), http.StatusOK)
+		if err != nil {
+			return err
+		}
+		var d store.ReportDraft
+		if err := json.Unmarshal(raw, &d); err != nil {
+			return err
+		}
+		body, _ := json.Marshal(store.IssueOptions{Version: d.Version, ReportingDate: "2026-10-07", AcceptStale: true, StaleReason: "Synthetic benchmark; missing profile disclosed"})
+		raw, err = a.timed(ctx, "report_issue", http.MethodPost, base+"/issue", body, http.StatusCreated)
+		if err != nil {
+			return err
+		}
+		var issue store.IssuedReport
+		if err := json.Unmarshal(raw, &issue); err != nil {
+			return err
+		}
+		raw, err = a.timed(ctx, "report_export", http.MethodGet, base+"/versions/"+issue.ID+"/file", nil, http.StatusOK)
+		if err != nil {
+			return err
+		}
+		if len(raw) < 5 || string(raw[:5]) != "%PDF-" {
+			return fmt.Errorf("issued export is not a PDF")
+		}
+	}
 	return nil
 }

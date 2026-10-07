@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"github.com/jackc/pgx/v5"
 )
 
 // OrgCounts is one org's row counts, compared before and after a restore.
@@ -26,30 +27,42 @@ type CrossOrg struct {
 // RestoreFacts is what a restore rehearsal compares and checks. It holds
 // counts and catalog state only, never row content.
 type RestoreFacts struct {
-	Orgs        []OrgCounts `json:"orgs"`
-	ForeignKeys int64       `json:"foreign_keys"`
-	Unvalidated int64       `json:"unvalidated_foreign_keys"`
-	Migrations  []string    `json:"migrations"`
-	CrossOrg    []CrossOrg  `json:"cross_org"`
+	Tables                 []RestoreTableFacts `json:"tables"`
+	InvalidIssuedSnapshots int64               `json:"invalid_issued_snapshots"`
+	MissingIssuedBlobLinks int64               `json:"missing_issued_blob_links"`
+	Orgs                   []OrgCounts         `json:"orgs"`
+	ForeignKeys            int64               `json:"foreign_keys"`
+	Unvalidated            int64               `json:"unvalidated_foreign_keys"`
+	Migrations             []string            `json:"migrations"`
+	CrossOrg               []CrossOrg          `json:"cross_org"`
 }
 
 // RestoreFacts reads the whole database. It is an operator check run on the
 // host, not a tenant read, and is never served over HTTP.
 func (s *Store) RestoreFacts(ctx context.Context) (RestoreFacts, error) {
 	var f RestoreFacts
-	orgs, err := s.q.OrgCounts(ctx)
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return f, err
+	}
+	defer tx.Rollback(ctx)
+	if _, err = tx.Exec(ctx, `SET LOCAL TIME ZONE 'UTC'`); err != nil {
+		return f, err
+	}
+	q := s.q.WithTx(tx)
+	orgs, err := q.OrgCounts(ctx)
 	if err != nil {
 		return f, err
 	}
 	for _, o := range orgs {
 		f.Orgs = append(f.Orgs, OrgCounts(o))
 	}
-	fk, err := s.q.ForeignKeyState(ctx)
+	fk, err := q.ForeignKeyState(ctx)
 	if err != nil {
 		return f, err
 	}
 	f.ForeignKeys, f.Unvalidated = fk.Total, fk.Unvalidated
-	cross, err := s.q.CrossOrgRows(ctx)
+	cross, err := q.CrossOrgRows(ctx)
 	if err != nil {
 		return f, err
 	}
@@ -57,7 +70,7 @@ func (s *Store) RestoreFacts(ctx context.Context) (RestoreFacts, error) {
 		f.CrossOrg = append(f.CrossOrg, CrossOrg(c))
 	}
 	// schema_migrations is created by the migrator, outside the sqlc schema.
-	rows, err := s.pool.Query(ctx, `SELECT version FROM schema_migrations ORDER BY version`)
+	rows, err := tx.Query(ctx, `SELECT version FROM schema_migrations ORDER BY version`)
 	if err != nil {
 		return f, err
 	}
@@ -69,5 +82,15 @@ func (s *Store) RestoreFacts(ctx context.Context) (RestoreFacts, error) {
 		}
 		f.Migrations = append(f.Migrations, v)
 	}
-	return f, rows.Err()
+	if err = rows.Err(); err != nil {
+		return f, err
+	}
+	rows.Close()
+	if f.Tables, err = restoreTables(ctx, tx); err != nil {
+		return f, err
+	}
+	if f.InvalidIssuedSnapshots, f.MissingIssuedBlobLinks, err = restoreIssued(ctx, tx); err != nil {
+		return f, err
+	}
+	return f, tx.Commit(ctx)
 }

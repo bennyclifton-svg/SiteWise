@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
@@ -68,6 +69,14 @@ func ProposalInputs(rows []Row, parts []Part, items []works.Item, cat *knowledge
 		sort.Strings(keys)
 		for _, key := range keys {
 			row := effective[key]
+			if strings.HasPrefix(key, "sig.") {
+				state := "unknown"
+				if appliedWorkRow(row) && (row.Value == "true" || row.Value == "false") {
+					state = row.Value
+				}
+				sources, _ := json.Marshal(row.Sources)
+				p.Signals[key] = works.ProposalSignal{ID: key, State: state, Sources: sources}
+			}
 			if determinant, ok := strings.CutPrefix(key, "det."); ok {
 				value := works.ProposalValue{Key: determinant, Origin: row.Origin}
 				if appliedWorkRow(row) {
@@ -112,7 +121,7 @@ func ProposalInputs(rows []Row, parts []Part, items []works.Item, cat *knowledge
 		if action == "new" || action == "replace" {
 			action = "retain"
 		} // those works leave a system in the completed building
-		completed[item.PartID] = append(completed[item.PartID], knowledge.WorkItem{System: item.SystemID, Action: action})
+		completed[item.PartID] = append(completed[item.PartID], knowledge.WorkItem{System: item.SystemID, Action: action, LayoutChange: item.LayoutChange})
 	}
 	out.Existing = func(part, system string) knowledge.Truth {
 		return cat.SystemExisting(system, knowledge.WorksEnv{Items: existing[part]})

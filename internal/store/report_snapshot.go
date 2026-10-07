@@ -29,9 +29,11 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 	if err != nil {
 		return snap, state, err
 	}
-	snap.Package, err = readPackage(ctx, tx, org, project, pkg)
-	if err != nil {
-		return snap, state, err
+	if pkg != "" {
+		snap.Package, err = readPackage(ctx, tx, org, project, pkg)
+		if err != nil {
+			return snap, state, err
+		}
 	}
 	v, err := readProfileTx(ctx, tx, org, project, s.profileBuild.ReadKinds)
 	if err != nil {
@@ -75,7 +77,7 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 	err = tx.QueryRow(ctx, `SELECT jsonb_build_object(
  'scope',COALESCE((SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM package_scope_items i WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL),'[]'::jsonb),
  'delivery',COALESCE((SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM project_delivery_items i WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL),'[]'::jsonb),
- 'proposals',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY rank,key) FROM proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid),'[]'::jsonb))`, org, project).Scan(&raw)
+ 'proposals',COALESCE((SELECT jsonb_agg(to_jsonb(p) ORDER BY rank,key) FROM ranked_proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid),'[]'::jsonb))`, org, project).Scan(&raw)
 	if err != nil {
 		return snap, state, err
 	}
@@ -83,6 +85,15 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 		return snap, state, err
 	}
 	packages, err := readPackages(ctx, tx, org, project)
+	if err != nil {
+		return snap, state, err
+	}
+	snap.DeliveryDependencies, err = readDependencies(ctx, tx, org, project)
+	if err != nil {
+		return snap, state, err
+	}
+	snap.Packages = packages
+	snap.Documents, err = reportDocumentSchedule(ctx, tx, org, project)
 	if err != nil {
 		return snap, state, err
 	}
@@ -95,12 +106,16 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 		return snap, state, err
 	}
 	state = s.reportSourceState(v, template, appBuild)
+	snap.Commercial, state.CostPlanVersionID, err = reportCommercial(ctx, tx, org, project, pkg, template.Kind)
+	if err != nil {
+		return snap, state, err
+	}
 	return snap, state, nil
 }
 
 func (s *Store) reportSourceState(v ProfileView, template knowledge.ReportTemplate, appBuild string) reports.SourceState {
 	r := v.CurrentInputs
-	return reports.SourceState{Domains: map[string]int64{"profile_inputs": r.ProfileInputs, "works": r.Works, "packages": r.Packages, "delivery": r.Delivery}, ProfileRevision: v.Revision, ProfileFingerprint: v.InputFingerprint, ProfileKnowledgeVersion: v.KnowledgeVersion, ProfileQuestionVersion: v.QuestionVersion, ProfileThresholdsVersion: v.ThresholdsVersion, KnowledgeVersion: s.profileBuild.KnowledgeVersion, QuestionVersion: s.profileBuild.QuestionVersion, ThresholdsVersion: s.profileBuild.ThresholdsVersion, AppBuild: appBuild, TemplateID: template.ID, TemplateVersion: template.Version}
+	return reports.SourceState{Domains: map[string]int64{"profile_inputs": r.ProfileInputs, "works": r.Works, "packages": r.Packages, "delivery": r.Delivery, "costs": r.Costs}, ProfileRevision: v.Revision, ProfileFingerprint: v.InputFingerprint, ProfileKnowledgeVersion: v.KnowledgeVersion, ProfileQuestionVersion: v.QuestionVersion, ProfileThresholdsVersion: v.ThresholdsVersion, KnowledgeVersion: s.profileBuild.KnowledgeVersion, QuestionVersion: s.profileBuild.QuestionVersion, ThresholdsVersion: s.profileBuild.ThresholdsVersion, AppBuild: appBuild, TemplateID: template.ID, TemplateVersion: template.Version}
 }
 
 func reportBriefLabels(cat *knowledge.Catalog) map[string]string {

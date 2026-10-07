@@ -376,6 +376,9 @@ func (c *Catalog) loadUnforeseen(path string) error {
 // action or system, or which cites an unknown signal. The checker catches
 // these first; this keeps a hand-edited file from loading half-understood.
 func (c *Catalog) checkWorksRefs(path, id string, when any, signals []string) error {
+	if err := checkBooleanIs(path, id, when); err != nil {
+		return err
+	}
 	for _, s := range signals {
 		if _, ok := c.works.signals[s]; !ok {
 			return fmt.Errorf("%s: %s cites unknown signal %s", path, id, s)
@@ -404,6 +407,12 @@ func (c *Catalog) checkWorksRefs(path, id string, when any, signals []string) er
 			return
 		}
 		for key, val := range w {
+			if key == "layout_change" {
+				if val != "yes" && val != "no" {
+					fail("works layout_change must be yes or no")
+				}
+				continue
+			}
 			if (key != "action" && key != "system") || len(asList(val)) == 0 {
 				fail("works key %q must be action or system with a non-empty list", key)
 			}
@@ -416,6 +425,23 @@ func (c *Catalog) checkWorksRefs(path, id string, when any, signals []string) er
 		for _, s := range asList(w["system"]) {
 			if _, ok := c.systems[fmt.Sprint(s)]; !ok {
 				fail("works names unknown system %v", s)
+			}
+		}
+	})
+	return bad
+}
+
+// `is` is the boolean predicate operator. Choice literals use any_of or eq;
+// accepting them here would silently evaluate unknown and widen relevance.
+func checkBooleanIs(path, id string, predicate any) error {
+	var bad error
+	walkPredicate(predicate, func(m map[string]any) {
+		if _, det := m["det"]; !det {
+			return
+		}
+		if value, has := m["is"]; has {
+			if _, ok := value.(bool); !ok {
+				bad = fmt.Errorf("%s: %s predicate is requires a boolean", path, id)
 			}
 		}
 	})

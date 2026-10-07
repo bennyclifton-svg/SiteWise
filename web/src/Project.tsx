@@ -21,6 +21,7 @@ import { Reports } from "./Reports";
 import { Packages } from "./Packages";
 import { Works } from "./Works";
 import { Delivery } from "./Delivery";
+import { Costs, CostSummary } from "./Costs";
 import { Proposals } from "./Proposals";
 import { ocrStage } from "./OCRStatus";
 
@@ -232,6 +233,9 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   const [showProposals, setShowProposals] = useState(false);
   const [proposalsOpened, setProposalsOpened] = useState(false);
   const [showDelivery, setShowDelivery] = useState(false);
+  const [showCosts, setShowCosts] = useState(false);
+  const [profileView, setProfileView] = useState<"all" | "summary" | "systems">("all");
+  const [costsOpened, setCostsOpened] = useState(false);
   const [deliveryOpened, setDeliveryOpened] = useState(false);
   const [showPackages, setShowPackages] = useState(false);
   const [packagesOpened, setPackagesOpened] = useState(false);
@@ -298,7 +302,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
           const ev = JSON.parse((msg as MessageEvent<string>).data) as StreamEvent;
           if (ev.id <= lastId.current) return;
           lastId.current = ev.id;
-		  if (ev.kind === "report" || ev.kind === "works" || ev.kind === "packages" || ev.kind === "delivery") {
+		  if (ev.kind === "report" || ev.kind === "works" || ev.kind === "packages" || ev.kind === "delivery" || ev.kind === "costs") {
 		    if (ev.payload?.project_id === projectId) setReportTick(n => n + 1);
 		    return;
 		  }
@@ -575,18 +579,22 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   return (
     <main className="workspace workspace-with-views" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <nav className="project-views" aria-label="Project views">
-        <button type="button" className="btn btn-small" aria-pressed={!showReports && !showPackages && !showWorks && !showDelivery && !showProposals} onClick={() => { setShowReports(false); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Filing</button>
-        <button type="button" className="btn btn-small" aria-pressed={showWorks} onClick={() => { setWorksOpened(true); setShowWorks(true); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Works</button>
-        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setProposalsOpened(true); setShowProposals(true); setShowWorks(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); }}>Proposals</button>
-        <button type="button" className="btn btn-small" aria-pressed={showPackages} onClick={() => { setPackagesOpened(true); setShowPackages(true); setShowWorks(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Packages</button>
-        <button type="button" className="btn btn-small" aria-pressed={showDelivery} onClick={() => { setShowProposals(false); setDeliveryOpened(true); setShowDelivery(true); setShowWorks(false); setShowReports(false); setShowPackages(false); }}>Delivery</button>
-        <button type="button" className="btn btn-small" aria-pressed={showReports} onClick={() => { setReportsOpened(true); setShowReports(true); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Reports</button>
+        <button type="button" className="btn btn-small" aria-pressed={!showReports && !showPackages && !showWorks && !showDelivery && !showProposals && !showCosts && profileView === "all"} onClick={() => { setProfileView("all"); setShowCosts(false); setShowReports(false); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Filing</button>
+        <button type="button" className="btn btn-small" aria-pressed={showWorks} onClick={() => { setShowCosts(false); setWorksOpened(true); setShowWorks(true); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Works</button>
+        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setShowCosts(false); setProposalsOpened(true); setShowProposals(true); setShowWorks(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); }}>Proposals</button>
+        <button type="button" className="btn btn-small" aria-pressed={showPackages} onClick={() => { setShowCosts(false); setPackagesOpened(true); setShowPackages(true); setShowWorks(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Packages</button>
+        <button type="button" className="btn btn-small" aria-pressed={showDelivery} onClick={() => { setShowCosts(false); setShowProposals(false); setDeliveryOpened(true); setShowDelivery(true); setShowWorks(false); setShowReports(false); setShowPackages(false); }}>Delivery</button>
+        <button type="button" className="btn btn-small" aria-pressed={showReports} onClick={() => { setShowCosts(false); setReportsOpened(true); setShowReports(true); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Reports</button>
+        <button type="button" className="btn btn-small" aria-pressed={showCosts} onClick={() => { setCostsOpened(true); setShowCosts(true); setShowWorks(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Costs</button>
+        <button type="button" className="btn btn-small" aria-pressed={profileView === "summary" && !showCosts && !showReports && !showPackages && !showWorks && !showDelivery && !showProposals} onClick={() => { setProfileView("summary"); setShowCosts(false); setShowReports(false); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Summary</button>
+        <button type="button" className="btn btn-small" aria-pressed={profileView === "systems" && !showCosts && !showReports && !showPackages && !showWorks && !showDelivery && !showProposals} onClick={() => { setProfileView("systems"); setShowCosts(false); setShowReports(false); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Systems</button>
       </nav>
-      <section className="profile-col" aria-label="Project profile" hidden={showReports || showPackages || showWorks || showDelivery || showProposals}>
+      <section className={`profile-col ${profileView !== "all" ? "profile-focused" : ""}`} aria-label="Project profile" hidden={showReports || showPackages || showWorks || showDelivery || showProposals || showCosts}>
         <h1 className="project-title">{state.projectName}</h1>
-        <Profile projectId={projectId} tick={profileTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} />
+        {profileView === "summary" && <CostSummary projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} />}
+        <Profile view={profileView} projectId={projectId} tick={profileTick} onJump={id => { setProfileView("all"); jump(id); }} onSignedOut={onSignedOut} onShowNotRead={() => { setProfileView("all"); setNotReadOnly(true); }} />
       </section>
-      <aside className="register-col" aria-label="Document register" hidden={showReports || showPackages || showWorks || showDelivery || showProposals}>
+      <aside className="register-col" aria-label="Document register" hidden={profileView !== "all" || showReports || showPackages || showWorks || showDelivery || showProposals || showCosts}>
         <Register
           rows={rows}
           catalog={catalog}
@@ -605,6 +613,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
       </aside>
       {worksOpened && <div className="project-reports" hidden={!showWorks}><Works projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Proposals projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Reports projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {packagesOpened && <div className="project-reports" hidden={!showPackages}><Packages projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}

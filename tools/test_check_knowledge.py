@@ -10,6 +10,19 @@ import check_knowledge as checker
 
 
 class TableValidationTests(unittest.TestCase):
+    def test_predicate_is_rejects_choice_strings_and_other_nonbooleans(self):
+        for value in ['NSW', 'true', 1, 0, None, [], {}]:
+            with self.subTest(value=value):
+                report = checker.Report()
+                checker.check_predicate('test', {'det': 'state', 'is': value}, report, [])
+                self.assertTrue(any('requires a boolean' in e for e in report.errors))
+        for pred in [{'det': 'existing_building', 'is': True},
+                     {'det': 'existing_building', 'is': False},
+                     {'det': 'state', 'any_of': ['NSW']}]:
+            report = checker.Report()
+            checker.check_predicate('test', pred, report, [])
+            self.assertEqual(report.errors, [])
+
     def test_proposal_flow_label_cannot_silently_truncate_at_comma(self):
         broken = yaml.safe_load('{kind: investigation, label: Supply (water, cooling)}')
         report = checker.Report()

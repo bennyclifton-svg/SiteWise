@@ -113,6 +113,7 @@ func TestVerifyBlobsFindsMissingAndCorrupt(t *testing.T) {
 func TestRestoreProblemsAndComparison(t *testing.T) {
 	src := restoreReport{
 		Facts: store.RestoreFacts{
+			Tables:      []store.RestoreTableFacts{{Table: "cost_values", OrgID: "a", Rows: 1, SHA256: "original"}},
 			Orgs:        []store.OrgCounts{{OrgID: "a", Documents: 4, Files: 3, Events: 9}},
 			ForeignKeys: 17,
 			Migrations:  []string{"001_init.sql", "002_invite_role.sql"},
@@ -153,5 +154,24 @@ func TestRestoreProblemsAndComparison(t *testing.T) {
 	restored.Facts.Orgs = nil
 	if d := compareRestore(src, restored); len(d) == 0 {
 		t.Fatal("lost org not reported")
+	}
+}
+
+func TestRestoreDetectsSameCountContentAndIssuedCorruption(t *testing.T) {
+	source := restoreReport{Facts: store.RestoreFacts{Tables: []store.RestoreTableFacts{{Table: "cost_values", OrgID: "a", Rows: 1, SHA256: "before"}}}}
+	changed := source
+	changed.Facts.Tables = []store.RestoreTableFacts{{Table: "cost_values", OrgID: "a", Rows: 1, SHA256: "after"}}
+	if len(compareRestore(source, changed)) == 0 {
+		t.Fatal("same-count cost corruption ignored")
+	}
+	changed.Facts.InvalidIssuedSnapshots = 1
+	changed.Facts.MissingIssuedBlobLinks = 1
+	if p := restoreProblems(changed); len(p) != 2 {
+		t.Fatal(p)
+	}
+	legacy := source
+	legacy.Facts.Tables = nil
+	if len(compareRestore(legacy, source)) == 0 {
+		t.Fatal("old incomplete facts silently accepted")
 	}
 }

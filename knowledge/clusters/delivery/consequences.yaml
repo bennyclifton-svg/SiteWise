@@ -1,0 +1,136 @@
+version: 1
+consequences:
+  - id: cq.building-remediation-investigation-basis-review
+    when:
+      all:
+        - {det: work_type, any_of: [remediation]}
+        - works:
+            action: [alter, replace, upgrade, repair]
+            system: [substructure, structure, envelope, interiors, fire-active, fire-passive, mechanical, hydraulic, electrical]
+    propose:
+      - {kind: hold_point, label: Review defect cause and extent before fixing the building-remediation solution}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {seed: building-remediation-rectification-guide.md, anchor: "## Investigation before solution"}
+      - {seed: building-remediation-rectification-guide.md, anchor: "## Design basis and option selection"}
+    notes: >-
+      Draft review of the symptoms, investigation evidence, confidence in cause
+      and extent, retained interfaces and performance outcomes before selecting
+      a permanent repair. Where uncertainty remains, record investigation and
+      commercial limitations rather than asserting a diagnosed defect. This
+      record requests a planning review, not destructive investigation or a
+      physical repair. Acceptance creates an undated review milestone without
+      inferring package, stage or owner. Contaminated land is deliberately outside
+      the building-system trigger; work_type remediation alone cannot identify it.
+
+  - id: cq.nsw-alteration-approval-basis-review
+    when:
+      all:
+        - {"det": "state", "any_of": ["NSW"]}
+        - {"det": "existing_building", "is": true}
+        - {"works": {"action": ["alter", "replace", "upgrade"], "system": ["structure", "envelope", "interiors", "fire-active", "fire-passive", "mechanical", "hydraulic", "electrical"]}}
+    propose:
+      - {"kind": "approval", "label": "Review NSW alteration approval basis, existing orders and certifier requirements; do not assume a whole-building upgrade"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Primary source coverage"}
+    notes: >-
+      Planning applicability review only; no approval, exemption, statutory
+      obligation or responsible practitioner is inferred. Read the current
+      instrument and project evidence before determining legal requirements.
+      Unknown inputs remain unresolved and cannot establish NSW applicability.
+
+  - id: cq.nsw-class2-remedial-design-applicability-review
+    when:
+      all:
+        - {"det": "state", "any_of": ["NSW"]}
+        - {"det": "ncc_class", "any_of": ["2"]}
+        - {"det": "work_type", "any_of": ["remediation"]}
+        - {"works": {"action": ["alter", "replace", "upgrade", "repair"], "system": ["structure", "envelope", "interiors", "fire-active", "fire-passive", "mechanical", "hydraulic", "electrical"]}}
+    propose:
+      - {"kind": "approval", "label": "Review NSW Class 2 remedial-design applicability, exclusions, emergency treatment and practitioner requirements"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Primary source coverage"}
+    notes: >-
+      Planning applicability review only; no approval, exemption, statutory
+      obligation or responsible practitioner is inferred. Read the current
+      instrument and project evidence before determining legal requirements.
+      Unknown inputs remain unresolved and cannot establish NSW applicability.
+
+  - id: cq.nsw-state-heritage-pathway-review
+    when:
+      all:
+        - {"det": "state", "any_of": ["NSW"]}
+        - {"det": "heritage_status", "any_of": ["state_register"]}
+        - {"works": {"action": ["new", "alter", "replace", "upgrade", "repair", "remove"], "system": ["site", "structure", "envelope", "interiors"]}}
+    propose:
+      - {"kind": "approval", "label": "Review State Heritage Register work against exemption conditions and required approvals"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Primary source coverage"}
+    notes: >-
+      Planning applicability review only; no approval, exemption, statutory
+      obligation or responsible practitioner is inferred. Read the current
+      instrument and project evidence before determining legal requirements.
+      Unknown inputs remain unresolved and cannot establish NSW applicability.
+
+  - id: cq.nsw-disturbance-information-review
+    when:
+      all:
+        - {"det": "state", "any_of": ["NSW"]}
+        - {"det": "existing_building", "is": true}
+        - {"works": {"action": ["alter", "replace", "remove"], "system": ["structure", "envelope", "interiors"]}}
+    propose:
+      - {"kind": "hold_point", "label": "Review potential material disturbance, asbestos information and inaccessible areas; identify any competent assessment needed before the work"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: life-safety
+    status: draft
+    sources:
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Primary source coverage"}
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Final three-topic runtime decision"}
+    notes: >-
+      Review-only milestone, not statutory eligibility or an instruction to
+      perform physical work. Confirm actual scope and applicable exceptions.
+      No approval, hazard, threshold, upgrade, coverage or responsible party
+      is inferred. Unknown jurisdiction and other inputs remain unresolved.
+
+  - id: cq.nsw-residential-contracting-applicability-review
+    when:
+      all:
+        - {"det": "state", "any_of": ["NSW"]}
+        - {"det": "ncc_class", "any_of": ["1a", "1b", "2", "4"]}
+        - {"works": {"action": ["new", "alter", "replace", "upgrade", "repair", "remove"], "system": ["substructure", "structure", "envelope", "interiors", "fire-active", "fire-passive", "mechanical", "hydraulic", "electrical"]}}
+    propose:
+      - {"kind": "hold_point", "label": "Review statutory work category, contract value and entity to establish NSW licensing, contract and insurance requirements and exemptions"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Primary source coverage"}
+      - {design: docs/evidence/2026-10-07-k3-source-coverage.md, anchor: "## Final three-topic runtime decision"}
+    notes: >-
+      Review-only milestone, not statutory eligibility or an instruction to
+      perform physical work. Confirm actual scope and applicable exceptions.
+      No approval, hazard, threshold, upgrade, coverage or responsible party
+      is inferred. Unknown jurisdiction and other inputs remain unresolved.

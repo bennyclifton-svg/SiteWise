@@ -11,6 +11,7 @@ import { profileApi, type Cell, type Profile as ProfileData, type ProfileField, 
 
 interface Props {
   projectId: string;
+  view?: "all" | "summary" | "systems";
   /** Changes when a profile event arrives; the panel refetches. */
   tick: number;
   onJump: (documentId: string) => void;
@@ -49,7 +50,7 @@ const KIND_LABELS: Record<string, string> = {
   unknown: "unclassified documents",
 };
 
-export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead }: Props) {
+export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, view = "all" }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
@@ -196,7 +197,7 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead }:
 
       <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
 
-      <section className="pf-section" aria-labelledby="pf-project">
+      <section className="pf-section" aria-labelledby="pf-project" hidden={view === "systems"}>
         <h2 id="pf-project">Project</h2>
         <div className="pf-grid">
           {data.header.map((f) => (
@@ -213,9 +214,9 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead }:
         </details>
       </section>
 
-      <ScopePicker data={data} onSet={setScope} />
+      <div hidden={view === "summary"}><ScopePicker data={data} onSet={setScope} /></div>
 
-      <section className="pf-section" aria-labelledby="pf-systems">
+      <section className="pf-section" aria-labelledby="pf-systems" hidden={view === "summary"}>
         <div className="pf-head">
           <h2 id="pf-systems">Systems</h2>
           <label className="pf-toggle">

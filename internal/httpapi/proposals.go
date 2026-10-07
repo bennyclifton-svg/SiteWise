@@ -127,11 +127,12 @@ func writeProposalDecision(w http.ResponseWriter, r *http.Request, deps Deps, ac
 		proposalError(w, err)
 		return
 	}
-	var fingerprint, rationale string
+	var fingerprint, rationale, chosenAction string
 	var scopeChoice store.ScopeAcceptance
 	if accept {
 		var body struct {
 			InputsFingerprint string `json:"inputs_fingerprint"`
+			Action            string `json:"action"`
 			store.ScopeAcceptance
 		}
 		if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
@@ -140,6 +141,7 @@ func writeProposalDecision(w http.ResponseWriter, r *http.Request, deps Deps, ac
 		}
 		fingerprint = body.InputsFingerprint
 		scopeChoice = body.ScopeAcceptance
+		chosenAction = body.Action
 	} else {
 		var body struct {
 			InputsFingerprint string `json:"inputs_fingerprint"`
@@ -156,7 +158,7 @@ func writeProposalDecision(w http.ResponseWriter, r *http.Request, deps Deps, ac
 		return
 	}
 	if accept {
-		if scopeChoice.Role == "" {
+		if chosenAction == "" && scopeChoice.Role == "" {
 			item, err := deps.Store.AcceptDeliveryProposal(r.Context(), session.OrgID, project, key, session.UserID, fingerprint, store.DeliveryAcceptance{PackageID: scopeChoice.PackageID, WorkItemID: scopeChoice.WorkItemID, StageID: scopeChoice.StageID})
 			if !errors.Is(err, store.ErrProposalUnavailable) {
 				if err != nil {
@@ -169,6 +171,10 @@ func writeProposalDecision(w http.ResponseWriter, r *http.Request, deps Deps, ac
 				writeJSON(w, http.StatusOK, item)
 				return
 			}
+		}
+		if chosenAction != "" && (scopeChoice.PackageID != "" || scopeChoice.Role != "" || scopeChoice.WorkItemID != "" || scopeChoice.StageID != "") {
+			http.Error(w, "action does not accept an assignment", http.StatusUnprocessableEntity)
+			return
 		}
 		if scopeChoice.PackageID != "" {
 			if !uuidPattern.MatchString(scopeChoice.PackageID) {
@@ -190,8 +196,8 @@ func writeProposalDecision(w http.ResponseWriter, r *http.Request, deps Deps, ac
 			http.Error(w, "package required for assignment", http.StatusUnprocessableEntity)
 			return
 		}
-		item, err := deps.Store.AcceptProposal(r.Context(), session.OrgID, project, key, session.UserID, fingerprint)
-		if errors.Is(err, store.ErrProposalUnavailable) {
+		item, err := deps.Store.AcceptProposalWithAction(r.Context(), session.OrgID, project, key, session.UserID, fingerprint, chosenAction)
+		if chosenAction == "" && errors.Is(err, store.ErrProposalUnavailable) {
 			p, err := deps.Store.AcceptPackageProposal(r.Context(), session.OrgID, project, key, session.UserID, fingerprint)
 			if err != nil {
 				proposalError(w, err)

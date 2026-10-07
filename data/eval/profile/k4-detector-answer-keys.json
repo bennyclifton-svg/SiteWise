@@ -1,0 +1,74 @@
+[
+  {
+    "question_id": "fm:fm.envelope-window-frame-thermal-bridge-stated",
+    "labels": [
+      "envelope.thermal-performance"
+    ],
+    "text": "The report states that the aluminium window frame forms a thermal bridge.",
+    "expected": true
+  },
+  {
+    "question_id": "fm:fm.envelope-window-frame-thermal-bridge-stated",
+    "labels": [
+      "envelope.thermal-performance"
+    ],
+    "text": "A thermal break must be provided to prevent bridging; no defect is reported.",
+    "expected": false
+  },
+  {
+    "question_id": "fm:fm.envelope-window-frame-thermal-bridge-stated",
+    "labels": [
+      "envelope.thermal-performance"
+    ],
+    "text": "No concern was found. The work complies with its stated design.",
+    "expected": false
+  },
+  {
+    "question_id": "fm:fm.existing-pavement-load-capacity-failed",
+    "labels": [
+      "site.vehicle-access"
+    ],
+    "text": "The existing driveway is stated to be too weak for the additional vehicle traffic.",
+    "expected": true
+  },
+  {
+    "question_id": "fm:fm.existing-pavement-load-capacity-failed",
+    "labels": [
+      "site.vehicle-access"
+    ],
+    "text": "The pavement design must include the proposed vehicle loads; no assessment failure is stated.",
+    "expected": false
+  },
+  {
+    "question_id": "fm:fm.existing-pavement-load-capacity-failed",
+    "labels": [
+      "site.vehicle-access"
+    ],
+    "text": "No concern was found. The work complies with its stated design.",
+    "expected": false
+  },
+  {
+    "question_id": "fm:fm.lift-specified-essential-circuit-missing",
+    "labels": [
+      "vertical-transport.lift-fire-service"
+    ],
+    "text": "The fire strategy requires this lift on the essential circuit, but the installed lift supply is on the normal circuit.",
+    "expected": true
+  },
+  {
+    "question_id": "fm:fm.lift-specified-essential-circuit-missing",
+    "labels": [
+      "vertical-transport.lift-fire-service"
+    ],
+    "text": "The fire strategy specifies an essential lift circuit; its installation has not been described.",
+    "expected": false
+  },
+  {
+    "question_id": "fm:fm.lift-specified-essential-circuit-missing",
+    "labels": [
+      "vertical-transport.lift-fire-service"
+    ],
+    "text": "No concern was found. The work complies with its stated design.",
+    "expected": false
+  }
+]

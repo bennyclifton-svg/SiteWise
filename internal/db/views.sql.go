@@ -94,6 +94,66 @@ func (q *Queries) LatestEventID(ctx context.Context, orgID string) (int64, error
 	return id, err
 }
 
+const listDocumentDecisionViews = `-- name: ListDocumentDecisionViews :many
+SELECT
+    dc.document_id::text AS document_id,
+    dc.field,
+    COALESCE(dc.value, '') AS value,
+    dc.band,
+    dc.decided_by,
+    COALESCE(dc.question_version, '') AS question_version,
+    dc.confidence
+FROM decisions dc
+WHERE dc.org_id = $1::uuid
+  AND dc.document_id = ANY($2::text[]::uuid[])
+ORDER BY dc.document_id, dc.field
+`
+
+type ListDocumentDecisionViewsParams struct {
+	OrgID       string
+	DocumentIds []string
+}
+
+type ListDocumentDecisionViewsRow struct {
+	DocumentID      string
+	Field           string
+	Value           string
+	Band            string
+	DecidedBy       string
+	QuestionVersion string
+	Confidence      pgtype.Float8
+}
+
+// The decisions of the listed documents, by id: no join, so a stale plan
+// cannot multiply every document by every decision in the org (F30).
+func (q *Queries) ListDocumentDecisionViews(ctx context.Context, arg ListDocumentDecisionViewsParams) ([]ListDocumentDecisionViewsRow, error) {
+	rows, err := q.db.Query(ctx, listDocumentDecisionViews, arg.OrgID, arg.DocumentIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListDocumentDecisionViewsRow
+	for rows.Next() {
+		var i ListDocumentDecisionViewsRow
+		if err := rows.Scan(
+			&i.DocumentID,
+			&i.Field,
+			&i.Value,
+			&i.Band,
+			&i.DecidedBy,
+			&i.QuestionVersion,
+			&i.Confidence,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listOrgProjects = `-- name: ListOrgProjects :many
 SELECT id::text AS id, name
 FROM projects
@@ -156,66 +216,6 @@ func (q *Queries) ListPendingIntake(ctx context.Context, rowLimit int32) ([]List
 	for rows.Next() {
 		var i ListPendingIntakeRow
 		if err := rows.Scan(&i.OrgID, &i.DocumentID); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listDocumentDecisionViews = `-- name: ListDocumentDecisionViews :many
-SELECT
-    dc.document_id::text AS document_id,
-    dc.field,
-    COALESCE(dc.value, '') AS value,
-    dc.band,
-    dc.decided_by,
-    COALESCE(dc.question_version, '') AS question_version,
-    dc.confidence
-FROM decisions dc
-WHERE dc.org_id = $1::uuid
-  AND dc.document_id = ANY($2::text[]::uuid[])
-ORDER BY dc.document_id, dc.field
-`
-
-type ListDocumentDecisionViewsParams struct {
-	OrgID       string
-	DocumentIds []string
-}
-
-type ListDocumentDecisionViewsRow struct {
-	DocumentID      string
-	Field           string
-	Value           string
-	Band            string
-	DecidedBy       string
-	QuestionVersion string
-	Confidence      pgtype.Float8
-}
-
-// The decisions of the listed documents, by id: no join, so a stale plan
-// cannot multiply every document by every decision in the org (F30).
-func (q *Queries) ListDocumentDecisionViews(ctx context.Context, arg ListDocumentDecisionViewsParams) ([]ListDocumentDecisionViewsRow, error) {
-	rows, err := q.db.Query(ctx, listDocumentDecisionViews, arg.OrgID, arg.DocumentIds)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListDocumentDecisionViewsRow
-	for rows.Next() {
-		var i ListDocumentDecisionViewsRow
-		if err := rows.Scan(
-			&i.DocumentID,
-			&i.Field,
-			&i.Value,
-			&i.Band,
-			&i.DecidedBy,
-			&i.QuestionVersion,
-			&i.Confidence,
-		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

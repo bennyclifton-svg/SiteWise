@@ -68,6 +68,7 @@ func TestProposalMigrationIsolationAndDecisionRetention(t *testing.T) {
 		run(tx, `INSERT INTO work_items(org_id,id,project_id,site_id,part_id,system_id,action,inclusion,title,origin,review_status) VALUES($1,$2,$3,$4,$5,'structure','alter','included','Work','user','accepted_for_planning')`, org, id(14+i), id(8+i), id(5+i), id(11+i))
 	}
 	key := "ic.test||structure|" + id(11) + "|0"
+	// This historical fixture stops at 016b; rank is still a required column.
 	projection := `INSERT INTO proposals(org_id,project_id,site_id,key,record_kind,record_id,proposal_index,target_system_id,target_part_id,kind,label,reason,specificity,rank,draft,unaccepted_triggers,inputs_fingerprint,knowledge_version,state) VALUES($1,$2,$3,$4,'ic','ic.test',0,'structure',$5,'investigation','Check','{}',3,1,true,false,repeat('a',64),'knowledge','open')`
 	run(tx, projection, id(1), id(8), id(5), key, id(11))
 	bad := func(name, sql string, args ...any) {

@@ -1,6 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const headers = { Origin: "http://127.0.0.1:4173" };
+const proposalLabel = (kind: string) => kind === "investigation"
+  ? "Capacity of the existing structure or ground for the new load"
+  : `Synthetic ${kind} proposal`;
 async function setup(page: Page, kind: string) {
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
   await page.goto(`/#token=${token}`);
@@ -18,7 +21,7 @@ async function setup(page: Page, kind: string) {
   await expect(page.getByText(/^Showing \d+ of \d+\./)).toBeVisible();
   const showAll = page.getByRole("button", { name: "Show all proposals", exact: true });
   if (await showAll.isVisible()) await showAll.click();
-  await page.getByRole("button", { name: new RegExp(`Synthetic ${kind} proposal`) }).first().click();
+  await page.getByRole("button", { name: new RegExp(proposalLabel(kind)) }).first().click();
   await expect(page.getByText(/Draft knowledge\. Acceptance/)).toBeVisible();
   return { project, work };
 }
@@ -48,7 +51,7 @@ for (const kind of ["investigation", "discipline", "obligation", "approval", "ho
     await page.getByRole("button", { name: "Accept for planning", exact: true }).click();
     await expect(page.getByRole("region", { name: "Saved decision", exact: true })).toBeVisible();
     const list = (await (await page.request.get(`/api/projects/${project}/proposals?show=all`)).json()).items;
-    const decision = list.find((p: { label: string; decision?: unknown }) => p.label === `Synthetic ${kind} proposal` && p.decision).decision;
+    const decision = list.find((p: { label: string; decision?: unknown }) => p.label === proposalLabel(kind) && p.decision).decision;
     expect(decision.decision).toBe("accepted");
     const expectedType = kind === "investigation" ? "work_item" : kind === "discipline" ? "package" : kind === "obligation" ? "package_scope_item" : "delivery_item";
     expect(decision.created_record_type).toBe(expectedType);

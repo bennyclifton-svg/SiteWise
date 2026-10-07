@@ -47,6 +47,7 @@ type Item struct {
 	ParentID              string     `json:"parent_id,omitempty"`
 	IsGroup               bool       `json:"is_group"`
 	Title                 string     `json:"title"`
+	LayoutChange          string     `json:"layout_change"`
 	ExistingConditionNote string     `json:"existing_condition_note,omitempty"`
 	Target                Target     `json:"target"`
 	Quantity              *string    `json:"quantity,omitempty"`
@@ -129,6 +130,14 @@ func Validate(item Item, cat *knowledge.Catalog) error {
 	}
 	if !ValidAction(item.Action) {
 		return fmt.Errorf("unknown action")
+	}
+	if item.LayoutChange != "" && item.LayoutChange != "unknown" && item.LayoutChange != "yes" && item.LayoutChange != "no" {
+		return fmt.Errorf("invalid layout change")
+	}
+	if item.LayoutChange == "yes" || item.LayoutChange == "no" {
+		if item.SystemID != "interiors.walls-linings" || (item.Action != "new" && item.Action != "alter" && item.Action != "remove") {
+			return fmt.Errorf("layout change requires new, altered or removed wall/partition work")
+		}
 	}
 	if item.ExistingCondition != "" {
 		valid := false

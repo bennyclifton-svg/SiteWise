@@ -25,8 +25,8 @@ func (s *Store) SourceCoverage(ctx context.Context, org, project string) ([]Sour
 }
 
 func sourceCoverage(ctx context.Context, q rowQuerier, org, project string) ([]SourceCoverage, error) {
-	// Batch the passage IDs per document so outcome/evidence counts need one
-	// lookup per document rather than a correlated lookup per passage. Replan
+	// Outcomes use their FK-validated document reference for one compact range
+	// scan. Evidence calls use the same scoped document lookup. Replan
 	// for the current upload size instead of retaining an empty-project plan.
 	rows, err := q.Query(ctx, `SELECT d.id::text,d.filename,COALESCE(ds.pages,0),COALESCE(ds.empty_pages,'{}'),COALESCE(ds.version=$3,false),
  p.units,c.labelled,e.evidence,c.needs_mapping,c.mapped,c.background
@@ -35,16 +35,16 @@ func sourceCoverage(ctx context.Context, q rowQuerier, org, project string) ([]S
  SELECT pages,empty_pages,version FROM document_sources WHERE org_id=d.org_id AND document_id=d.id OFFSET 0
  ) ds ON true
  CROSS JOIN LATERAL (
- SELECT count(*) AS units,array_agg(id) AS ids FROM passages WHERE org_id=d.org_id AND document_id=d.id
+ SELECT count(*) AS units FROM passages WHERE org_id=d.org_id AND document_id=d.id
  ) p
  CROSS JOIN LATERAL (
  SELECT count(*) FILTER(WHERE outcome<>'pending') AS labelled,
  count(*) FILTER(WHERE outcome='needs_mapping') AS needs_mapping,
  count(*) FILTER(WHERE outcome='mapped') AS mapped,count(*) FILTER(WHERE outcome='background') AS background
- FROM passage_sources WHERE org_id=d.org_id AND passage_id=ANY(p.ids) AND outcome<>'pending'
+ FROM passage_sources WHERE org_id=d.org_id AND document_id=d.id AND outcome<>'pending'
  ) c
  CROSS JOIN LATERAL (
- SELECT count(*) AS evidence FROM passage_calls WHERE org_id=d.org_id AND passage_id=ANY(p.ids) AND stage='evidence'
+ SELECT count(*) AS evidence FROM passage_calls WHERE org_id=d.org_id AND document_id=d.id AND stage='evidence'
  ) e
  WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid
  AND NOT EXISTS(SELECT 1 FROM supersessions ss WHERE ss.org_id=d.org_id AND ss.prior_document_id=d.id)

@@ -3076,3 +3076,20 @@ failure_modes:
     row: B2-0728
   - seed: ict-av-security-guide.md
     anchor: "## Networks, integration and cybersecurity"
+
+- id: fm.lift-specified-essential-circuit-missing
+  attaches_to: {system: vertical-transport.lift-fire-service}
+  severity: life-safety
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state that a lift is not connected to the essential power circuit specified by the fire strategy?"
+    criteria:
+      true: "It explicitly states that a lift is not connected to the essential power circuit specified by the fire strategy."
+      false: "It does not state this, states the opposite, or only gives a requirement or hypothetical risk. Do not calculate adequacy or infer a failure from silence."
+    runs_on: ["vertical-transport.lift-fire-service", "electrical.switchboards", "electrical.cabling-wiring"]
+  flag_when: true
+  status: draft
+  sources:
+    - {dataset: batch2, row: B2-0219}
+    - {dataset: batch2, row: B2-0451}
+    - {design: docs/evidence/2026-10-07-k4-detector-coverage.md, anchor: "# K4 precise detector coverage corrections — 7 October 2026"}

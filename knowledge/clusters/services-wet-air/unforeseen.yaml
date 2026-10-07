@@ -1871,15 +1871,16 @@ unforeseen:
   signals:
   - sig.existing-sewer-branch-above-new-fixture-outlets-stated
   de_risk:
-    kind: approval
+    kind: investigation
     label: "Survey the branch before fixtures are set"
-  contract: "Authority outcome is the principal's risk; extension of time for authority delay, and name who carries any design change."
+  contract: "Review the actual tender conditions, risk allocation, notices and any priced allowance for this condition; no entitlement or responsible party is assumed."
   effect: [cost, compliance]
   severity: compliance
   discovered_at: [design]
   status: draft
   notes: "Owner list cites AS 3500; not verified. Owner early warning: The branch invert is above the fixture outlets."
   sources:
+  - {design: docs/evidence/2026-10-07-k4-bounded-merge-disposition.md, anchor: "### Public contract-practice source"}
   - dataset: batch2
     row: B2-0376
   - dataset: batch2

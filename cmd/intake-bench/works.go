@@ -50,5 +50,8 @@ func (a *apiClient) workItems(ctx context.Context, st *store.Store, n int) error
 			return fmt.Errorf("gap benchmark expected %d gaps, got %d", i+1, len(gaps.Items))
 		}
 	}
-	return nil
+	if err := a.workTree(ctx, st, n); err != nil {
+		return err
+	}
+	return a.layoutWork(ctx, st, n)
 }

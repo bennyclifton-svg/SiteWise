@@ -1,0 +1,25 @@
+version: 1
+consequences:
+  - id: cq.existing-electrical-shutdown-plan-review
+    when:
+      all:
+        - works: {action: [alter, replace, upgrade, remove], system: [electrical]}
+        - {det: existing_building, is: true}
+    propose:
+      - {kind: hold_point, label: Review electrical isolation and restoration planning before alteration}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: life-safety
+    status: draft
+    sources:
+      - {seed: electrical-services-guide.md, anchor: "## Refurbishment and live work"}
+    notes: >-
+      Draft review of affected supplies, circuit identification, isolation points,
+      shutdown authority, notices, temporary power, testing and restoration or
+      rollback evidence. The review determines which controls apply; it is not
+      authorization to isolate, energise or perform live work. A circuit label
+      alone is not proof of isolation. Acceptance creates an undated review
+      milestone and assigns no responsible person, package or physical target.
+      Unlike the supplies-interface obligation this review does not depend on
+      a separately modelled downstream served system and creates no scope duty.

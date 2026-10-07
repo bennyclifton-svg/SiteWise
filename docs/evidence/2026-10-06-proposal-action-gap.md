@@ -31,3 +31,14 @@ behaviour remains until the direction is resolved.
 The existing 100/250 ms decision endpoint budget remains; there is no new
 dependency or Jev call. Separate missing physical targets in other proposal
 kinds and the integrated edit/owner quality gates are not resolved here.
+
+## Follow-up — 7 October 2026
+
+The later unattended-completion instruction authorizes the conservative explicit
+choice workflow. Actionless physical proposals now require the user to select a
+valid physical action during acceptance. Target IDs remain catalogue-derived;
+no title heuristic is used. The chosen action is recorded as `user_selected_action`
+in the saved decision/work provenance. A retry with a conflicting choice returns
+409; undo/reacceptance preserves identity and records the new explicit choice.
+The focused store regression passes; API/browser integration is in progress.
+This supersedes the earlier implementation hold, not owner knowledge review.

@@ -23,3 +23,95 @@ consequences:
       responsible party or physical work target is inferred. Repair, removal and
       retained scope are outside this bounded trigger. A generic commissioning
       document mention cannot prove that the changed scope has been covered.
+  - id: cq.hydraulic-testing-plan-review
+    when:
+      works: {action: [new, alter, replace, upgrade], system: [hydraulic]}
+    propose:
+      - {kind: hold_point, label: Review hydraulic concealed-work and testing requirements before installation}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {seed: hydraulic-services-guide.md, anchor: "## Construction, testing and handover"}
+    notes: >-
+      Draft review of applicable inspection points before concealment, testing
+      methods, acceptance evidence and handover records for the affected hydraulic
+      systems. Pressure, leakage, flow or other tests are selected by the
+      responsible designer for the actual scope; this record does not mandate
+      every test or a numeric criterion. Acceptance creates an undated review
+      milestone with no inferred package, stage, owner or physical work target.
+      A generic test-report mention does not close changed-scope requirements.
+  - id: cq.room-layout-air-distribution-review
+    when:
+      all:
+        - works:
+            action: [new, alter, remove]
+            system: [interiors.walls-linings]
+            layout_change: "yes"
+        - system_existing: mechanical.air-distribution
+    propose:
+      - {kind: hold_point, label: Review air distribution and zoning for the changed room layout}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {seed: mechanical-services-guide.md, anchor: "### Coordination"}
+      - {design: docs/evidence/2026-10-07-k1-layout-input-proposal.md, anchor: "## Source for bounded room-layout coordination"}
+    notes: >-
+      User-authored room-boundary change is checked on the same wall/partition
+      work item as action and system. Review how existing air distribution and
+      zoning serve the changed spaces; unknown layout or receiving-system
+      evidence stays unresolved, and an explicit no suppresses this review.
+      This is an undated planning milestone, not plant replacement, mechanical
+      design, smoke-control approval or a statutory energy requirement. No
+      package, stage, responsible party or physical work target is inferred.
+
+  - id: cq.room-layout-smoke-strategy-review
+    when:
+      all:
+        - works:
+            action: [new, alter, remove]
+            system: [interiors.walls-linings]
+            layout_change: "yes"
+        - {system_existing: mechanical.fire-mode-air-systems}
+    propose:
+      - {kind: hold_point, label: "Review changed room boundaries against the existing smoke-control strategy, air paths and cause-and-effect design"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: life-safety
+    status: draft
+    sources:
+      - {seed: mechanical-services-guide.md, anchor: "### Smoke control and fire interfaces"}
+      - {design: docs/evidence/2026-10-07-k1-layout-input-proposal.md, anchor: "## Bounded smoke and thermal review decision"}
+    notes: >-
+      Review-only planning milestone. Do not infer a legal upgrade, changed
+      smoke compartment, calculated load or equipment selection from layout.
+      Unknown layout or existing system evidence remains unresolved.
+
+  - id: cq.room-layout-thermal-zoning-review
+    when:
+      all:
+        - works:
+            action: [new, alter, remove]
+            system: [interiors.walls-linings]
+            layout_change: "yes"
+        - {system_existing: mechanical.air-conditioning}
+    propose:
+      - {kind: hold_point, label: "Review heat-load assumptions and thermal zoning for changed room boundaries with the responsible designer"}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: cost
+    status: draft
+    sources:
+      - {seed: mechanical-services-guide.md, anchor: "### Heating and cooling"}
+      - {design: docs/evidence/2026-10-07-k1-layout-input-proposal.md, anchor: "## Bounded smoke and thermal review decision"}
+    notes: >-
+      Review-only planning milestone. Do not infer a legal upgrade, changed
+      smoke compartment, calculated load or equipment selection from layout.
+      Unknown layout or existing system evidence remains unresolved.

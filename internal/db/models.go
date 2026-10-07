@@ -10,6 +10,85 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type CostItem struct {
+	OrgID              string
+	ProjectID          string
+	ID                 string
+	CreatedInVersionID string
+}
+
+type CostItemRevision struct {
+	OrgID          string
+	ProjectID      string
+	PlanVersionID  string
+	CostItemID     string
+	ParentItemID   pgtype.UUID
+	Code           string
+	Label          string
+	LineKind       string
+	Category       *string
+	WorkItemID     pgtype.UUID
+	PackageID      pgtype.UUID
+	PackageStageID pgtype.UUID
+	Posting        bool
+	Quantity       pgtype.Numeric
+	Unit           *string
+	Rate           pgtype.Numeric
+	RateBasis      *string
+	Excluded       bool
+	Origin         string
+	ReviewStatus   string
+	Meaning        string
+	Rationale      string
+	Provenance     []byte
+	SystemID       *string
+	PartID         pgtype.UUID
+	Version        int64
+}
+
+type CostPlan struct {
+	OrgID             string
+	ProjectID         string
+	DraftVersionID    string
+	BaselineVersionID pgtype.UUID
+}
+
+type CostPlanVersion struct {
+	OrgID                   string
+	ProjectID               string
+	ID                      string
+	Revision                int32
+	Status                  string
+	Currency                string
+	TaxBasis                string
+	TaxRate                 pgtype.Numeric
+	PriceDate               pgtype.Date
+	Coverage                string
+	FundingTarget           pgtype.Numeric
+	FundingTargetProvenance []byte
+	FrozenAt                pgtype.Timestamptz
+	Version                 int64
+}
+
+type CostValue struct {
+	OrgID         string
+	ProjectID     string
+	PlanVersionID string
+	CostItemID    string
+	Metric        string
+	ValueState    string
+	Amount        pgtype.Numeric
+	Low           pgtype.Numeric
+	High          pgtype.Numeric
+	AsOf          pgtype.Date
+	Origin        string
+	ReviewStatus  string
+	Meaning       string
+	Rationale     string
+	Provenance    []byte
+	Version       int64
+}
+
 type Decision struct {
 	OrgID           string
 	ID              string
@@ -22,6 +101,15 @@ type Decision struct {
 	Confidence      pgtype.Float8
 	Version         int64
 	CreatedAt       time.Time
+}
+
+type DeliveryDependency struct {
+	OrgID         string
+	ProjectID     string
+	PredecessorID string
+	SuccessorID   string
+	Type          string
+	LagDays       int32
 }
 
 type Document struct {
@@ -121,10 +209,79 @@ type Membership struct {
 	CreatedAt time.Time
 }
 
+type Migration012Before struct {
+	UserValues int64
+	Rows       int64
+}
+
 type Org struct {
 	ID        string
 	Name      string
 	CreatedAt time.Time
+}
+
+type Package struct {
+	OrgID             string
+	ID                string
+	ProjectID         string
+	Kind              string
+	WorksScope        *string
+	DisciplineID      *string
+	Title             string
+	Novation          bool
+	LifecycleStatus   string
+	Origin            string
+	ReviewStatus      string
+	Meaning           string
+	Provenance        []byte
+	VerifiedBy        pgtype.UUID
+	VerifiedAt        pgtype.Timestamptz
+	VerificationBasis *string
+	SourceProposalKey *string
+	RetiredAt         pgtype.Timestamptz
+	Version           int64
+}
+
+type PackageScopeItem struct {
+	OrgID             string
+	ID                string
+	ProjectID         string
+	PackageID         string
+	ItemKind          string
+	WorkItemID        pgtype.UUID
+	Role              *string
+	ClauseID          *string
+	ClauseVersion     pgtype.Int4
+	UserText          *string
+	StageID           pgtype.UUID
+	Inclusion         string
+	Deliverable       *string
+	InterfaceIds      []string
+	SourceRefs        []byte
+	Origin            string
+	ReviewStatus      string
+	Meaning           string
+	Provenance        []byte
+	VerifiedBy        pgtype.UUID
+	VerifiedAt        pgtype.Timestamptz
+	VerificationBasis *string
+	SourceProposalKey *string
+	RetiredAt         pgtype.Timestamptz
+	Version           int64
+}
+
+type PackageStage struct {
+	OrgID         string
+	ID            string
+	ProjectID     string
+	PackageID     string
+	StageID       string
+	Label         string
+	Ordinal       int32
+	NovationPhase string
+	Origin        string
+	RetiredAt     pgtype.Timestamptz
+	Version       int64
 }
 
 type Passage struct {
@@ -144,6 +301,7 @@ type PassageCall struct {
 	Fingerprint string
 	Result      []byte
 	CreatedAt   time.Time
+	DocumentID  string
 }
 
 type PassageEvidence struct {
@@ -169,6 +327,7 @@ type PassageSource struct {
 	Confidence  pgtype.Float8
 	MappedKeys  []string
 	Unresolved  []string
+	DocumentID  string
 }
 
 type PassageSystem struct {
@@ -182,6 +341,11 @@ type ProfileBuild struct {
 	ProjectID         string
 	BuiltAt           time.Time
 	ThresholdsVersion string
+	Revision          int64
+	InputFingerprint  string
+	KnowledgeVersion  string
+	QuestionVersion   string
+	Inputs            []byte
 }
 
 type ProfileFact struct {
@@ -202,31 +366,78 @@ type ProfileFact struct {
 	CreatedAt       time.Time
 }
 
-type ProfileRow struct {
+type ProfilePlanningValue struct {
 	OrgID        string
-	ProjectID    string
+	ID           string
+	SiteID       string
+	ProjectID    pgtype.UUID
+	Scope        string
 	PartID       string
 	Key          string
-	Value        string
-	Band         string
-	Assertion    string
-	Note         string
-	Tenders      string
-	Sources      []byte
-	Alternatives []byte
-	Derived      []byte
+	ValueState   string
+	ValueText    *string
+	ValueNumeric pgtype.Numeric
+	ValueBool    pgtype.Bool
+	RangeLow     pgtype.Numeric
+	RangeHigh    pgtype.Numeric
+	Unit         string
+	Origin       string
+	ReviewStatus string
+	Meaning      string
+	Rationale    string
+	Limitations  string
+	Provenance   []byte
+	UserID       pgtype.UUID
+	Version      int64
+	SupersededBy pgtype.UUID
+	SupersededAt pgtype.Timestamptz
+	CreatedAt    time.Time
+}
+
+type ProfileRow struct {
+	OrgID          string
+	ProjectID      string
+	PartID         string
+	Key            string
+	Value          string
+	Band           string
+	Assertion      string
+	Note           string
+	Tenders        string
+	Sources        []byte
+	Alternatives   []byte
+	Derived        []byte
+	SiteID         string
+	Scope          string
+	Origin         string
+	ReviewStatus   string
+	Meaning        string
+	ValueState     string
+	UserVersion    int64
+	ProjectionHash string
 }
 
 type ProfileUserValue struct {
-	OrgID     string
-	ProjectID string
-	PartID    string
-	Key       string
-	Value     *string
-	Note      string
-	UserID    string
-	Version   int64
-	UpdatedAt time.Time
+	OrgID             string
+	ProjectID         pgtype.UUID
+	PartID            string
+	Key               string
+	Value             *string
+	Note              string
+	UserID            string
+	Version           int64
+	UpdatedAt         time.Time
+	ID                string
+	SiteID            string
+	Scope             string
+	ValueState        string
+	Origin            string
+	ReviewStatus      string
+	Meaning           string
+	Provenance        []byte
+	VerifiedBy        pgtype.UUID
+	VerifiedAt        pgtype.Timestamptz
+	VerificationBasis string
 }
 
 type Project struct {
@@ -234,16 +445,217 @@ type Project struct {
 	ID        string
 	Name      string
 	CreatedAt time.Time
+	SiteID    string
+}
+
+type ProjectDeliveryItem struct {
+	OrgID             string
+	ID                string
+	ProjectID         string
+	Kind              string
+	Title             string
+	OwnerText         string
+	OwnerUserID       pgtype.UUID
+	BaselineDate      pgtype.Date
+	TargetDate        pgtype.Date
+	ForecastDate      pgtype.Date
+	ActualDate        pgtype.Date
+	Status            string
+	AsOf              pgtype.Date
+	PackageID         pgtype.UUID
+	WorkItemID        pgtype.UUID
+	StageID           pgtype.UUID
+	Details           []byte
+	Origin            string
+	ReviewStatus      string
+	Meaning           string
+	Provenance        []byte
+	VerifiedBy        pgtype.UUID
+	VerifiedAt        pgtype.Timestamptz
+	VerificationBasis *string
+	SourceProposalKey *string
+	RetiredAt         pgtype.Timestamptz
+	Version           int64
 }
 
 type ProjectPart struct {
-	OrgID     string
-	ID        string
-	ProjectID string
-	Label     string
-	Kind      string
-	NccClass  *string
-	CreatedAt time.Time
+	OrgID              string
+	ID                 string
+	CreatedByProjectID pgtype.UUID
+	Label              string
+	Kind               string
+	NccClass           *string
+	CreatedAt          time.Time
+	SiteID             string
+}
+
+type ProjectRevision struct {
+	OrgID         string
+	ProjectID     string
+	ProfileInputs int64
+	Works         int64
+	Packages      int64
+	Delivery      int64
+	Costs         int64
+	Reports       int64
+	Version       int64
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}
+
+type Proposal struct {
+	OrgID              string
+	ProjectID          string
+	SiteID             string
+	Key                string
+	RecordKind         string
+	RecordID           string
+	InterfaceID        *string
+	ProposalIndex      int32
+	TargetSystemID     *string
+	TargetPartID       pgtype.UUID
+	Kind               string
+	Label              string
+	Action             *string
+	Reason             []byte
+	Severity           string
+	Specificity        int32
+	Critical           bool
+	Draft              bool
+	UnacceptedTriggers bool
+	InputsFingerprint  string
+	KnowledgeVersion   string
+	State              string
+	InputsChanged      bool
+	ProjectionHash     string
+}
+
+type ProposalDecision struct {
+	OrgID                 string
+	ID                    string
+	ProjectID             string
+	ProposalKey           string
+	RecordID              string
+	TriggerWorkItemID     pgtype.UUID
+	Decision              string
+	InputsFingerprint     string
+	Rationale             string
+	Actor                 string
+	DecidedAt             time.Time
+	CreatedRecordType     *string
+	CreatedRecordID       pgtype.UUID
+	Version               int64
+	InputsSnapshot        []byte
+	CreatedRecordVersion  pgtype.Int8
+	UndoneAt              pgtype.Timestamptz
+	UndoHistory           []byte
+	CreatedWorkItemID     pgtype.UUID
+	CreatedPackageID      pgtype.UUID
+	CreatedScopeItemID    pgtype.UUID
+	CreatedDeliveryItemID pgtype.UUID
+}
+
+type ProposalTrigger struct {
+	OrgID       string
+	ProjectID   string
+	ProposalKey string
+	WorkItemID  string
+}
+
+type RankedProposal struct {
+	OrgID              string
+	ProjectID          string
+	SiteID             string
+	Key                string
+	RecordKind         string
+	RecordID           string
+	InterfaceID        *string
+	ProposalIndex      int32
+	TargetSystemID     *string
+	TargetPartID       pgtype.UUID
+	Kind               string
+	Label              string
+	Action             *string
+	Reason             []byte
+	Severity           string
+	Specificity        int32
+	Critical           bool
+	Draft              bool
+	UnacceptedTriggers bool
+	InputsFingerprint  string
+	KnowledgeVersion   string
+	State              string
+	InputsChanged      bool
+	ProjectionHash     string
+	Rank               int32
+}
+
+type Report struct {
+	OrgID                 string
+	ID                    string
+	ProjectID             string
+	Kind                  string
+	PackageID             pgtype.UUID
+	Title                 string
+	CurrentDraftVersionID pgtype.UUID
+	Version               int64
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
+}
+
+type ReportEdit struct {
+	OrgID             string
+	ReportVersionID   string
+	TargetID          string
+	Text              string
+	BaseContentSha256 string
+	UserID            string
+	Version           int64
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+}
+
+type ReportReference struct {
+	OrgID           string
+	ReportVersionID string
+	CitationID      string
+	Label           string
+	AnchorID        string
+	Basis           []byte
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+}
+
+type ReportVersion struct {
+	OrgID            string
+	ID               string
+	ReportID         string
+	ProjectID        string
+	Number           int32
+	Status           string
+	ReportingDate    pgtype.Date
+	PreviousIssueID  pgtype.UUID
+	SourceRevisions  []byte
+	TemplateID       string
+	TemplateVersion  int32
+	Sections         []byte
+	BudgetDisclosed  bool
+	Snapshot         []byte
+	SnapshotSha256   *string
+	ExportFileSha256 []byte
+	IssuedAt         pgtype.Timestamptz
+	IssuedBy         pgtype.UUID
+	Version          int64
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+}
+
+type ScopeCostLink struct {
+	OrgID              string
+	ProjectID          string
+	PlanVersionID      string
+	PackageScopeItemID string
+	CostItemID         string
 }
 
 type Session struct {
@@ -252,6 +664,17 @@ type Session struct {
 	UserID    string
 	CreatedAt time.Time
 	ExpiresAt time.Time
+}
+
+type Site struct {
+	OrgID     string
+	ID        string
+	Label     string
+	Address   string
+	Lot       string
+	Version   int64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Supersession struct {
@@ -266,4 +689,36 @@ type User struct {
 	ID        string
 	Email     string
 	CreatedAt time.Time
+}
+
+type WorkItem struct {
+	OrgID                 string
+	ID                    string
+	ProjectID             string
+	SiteID                string
+	PartID                string
+	SystemID              string
+	Action                string
+	Inclusion             string
+	ParentID              pgtype.UUID
+	IsGroup               bool
+	Title                 string
+	ExistingConditionNote string
+	Target                []byte
+	Quantity              pgtype.Numeric
+	Unit                  *string
+	Origin                string
+	ReviewStatus          string
+	Meaning               string
+	Provenance            []byte
+	VerifiedBy            pgtype.UUID
+	VerifiedAt            pgtype.Timestamptz
+	VerificationBasis     *string
+	UserTouched           bool
+	CoarseKey             *string
+	SourceProposalKey     *string
+	RetiredAt             pgtype.Timestamptz
+	RetiredBy             pgtype.UUID
+	Version               int64
+	LayoutChange          string
 }

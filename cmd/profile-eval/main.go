@@ -88,6 +88,7 @@ func run() error {
 	}
 	var durations []time.Duration
 	inputTokens, outputTokens := 0, 0
+	oversized := 0
 	for _, c := range cases {
 		p := jobs.Passage{Text: c.Text, Section: c.Section, Kind: "specification", Ordinal: 30}
 		p.Context = c.Context
@@ -142,7 +143,7 @@ func run() error {
 				prior, _ := jev.MeasureRequest(before)
 				fmt.Printf("%s %s %s allowed=%v action_questions=%d action_bytes=%d\n", c.ID, stage, data, sizeErr == nil, size.Questions-prior.Questions, size.Bytes-prior.Bytes)
 				if sizeErr != nil {
-					return sizeErr
+					oversized++
 				}
 			}
 			continue
@@ -197,6 +198,9 @@ func run() error {
 		}
 	}
 	if *measure {
+		if oversized > 0 {
+			return fmt.Errorf("%d requests exceed preflight size budget", oversized)
+		}
 		return nil
 	}
 	if *live {

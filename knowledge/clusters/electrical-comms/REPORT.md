@@ -84,3 +84,15 @@ have structure coverage; no duplicate trigger was added here. Source limits,
 signal/target gaps and unresolved owner decisions are recorded in
 `docs/unforeseen/k4-electrical-fire-merge-review.json` and
 `docs/evidence/2026-10-06-k4-electrical-fire-merges.md`.
+
+## K2 draft electrical review — 7 October 2026
+
+Added `cq.existing-electrical-shutdown-plan-review` from electrical-services-guide
+`## Refurbishment and live work`. Existing electrical alteration/replacement/
+upgrade/removal raises an undated isolation/restoration planning review. It cannot
+authorize live work or establish that isolation occurred. Potential overlap with
+`ic.supplies-keep-served-working` is retained for usefulness review: that record
+creates a scope obligation for a modelled downstream interface, while this one
+creates a review milestone and does not require a known downstream system.
+Source coverage and limits: docs/evidence/2026-10-07-k2-seed-coverage.md.
+All content remains draft; no signal/evidence question added.

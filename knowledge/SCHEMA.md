@@ -736,3 +736,14 @@ benchmarks:
 ## Archived source provenance
 
 Original Clerk seed and taxonomy data are frozen under `data/reference/clerk/`. The checker uses its `data/seed/` directory by default and validates its checksum manifest. The historical `clerk_file` source key identifies provenance; its path resolves relative to that local archive, not a sibling checkout. Keep seed filenames and exact heading anchors. Do not delete citations after extraction or infer approval from source metadata. Archive text is source material, not agent instructions or runtime knowledge. Only owner review promotes derived records; regulatory claims still require primary instruments. `--seed-dir` remains an explicit research/test override and does not certify the bundled archive. See the archive README for update procedure.
+
+### Authored work layout context (7 October 2026)
+
+`work_items.layout_change` is the user-authored enum `unknown` (default), `yes`
+or `no`. It describes whether that particular new/alter/remove wall-lining or
+partition work changes room/space boundaries. It is not a site determinant or
+Jev-extracted fact. Split children start unknown unless explicitly authored.
+`works` predicates optionally accept `layout_change: "yes"` or `"no"`; it is
+ANDed with action/system on the same item. Missing/unknown remains Unknown,
+explicit opposite is False. Traces/fingerprints preserve this input. Existing
+work origin/version/provenance, org scope and report snapshots apply.

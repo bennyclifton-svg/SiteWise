@@ -39,14 +39,15 @@ export function Proposals({ projectId, tick, onSignedOut }: { projectId: string;
     return () => { stopped = true; };
   }, [projectId, tick, all, reload, signedOut]);
   const item = items.find(p => p.key === selected);
-  const canAccept = !!item && (["discipline", "obligation", "approval", "hold_point"].includes(item.kind) || ["work_item", "investigation"].includes(item.kind) && !!item.target_system_id && !!item.target_part_id && (item.kind === "investigation" || !!item.action));
+  const canAccept = !!item && (["discipline", "obligation", "approval", "hold_point"].includes(item.kind) || ["work_item", "investigation"].includes(item.kind) && !!item.target_system_id && !!item.target_part_id);
   const stale = !!review && (!item || item.inputs_fingerprint !== review.base.inputs_fingerprint || item.decision?.version !== review.base.decision?.version);
   const pkg = packages.find(p => p.id === review?.assignment.package_id);
   const work = works.find(w => w.id === review?.assignment.work_item_id);
   const needsPackage = review?.base.kind === "obligation";
   const delivery = review?.base.kind === "approval" || review?.base.kind === "hold_point";
   const roles = pkg?.kind === "supply" ? ["supply"] : work?.action === "retain" ? ["maintain_operation", "protect"] : ["design", "document", "supply", "install", "test", "certify", "inspect", "maintain_operation", "protect"];
-  const invalidAssignment = !!review && (needsPackage && !pkg || !!review.assignment.package_id && !pkg || !!review.assignment.work_item_id && !work || !!review.assignment.stage_id && !pkg?.stages.some(s => s.id === review.assignment.stage_id) || !!review.assignment.role && !roles.includes(review.assignment.role) || needsPackage && work?.action === "retain" && (pkg?.kind !== "works" || !["maintain_operation", "protect"].includes(review.assignment.role)));
+  const needsAction = review?.base.kind === "work_item" && !review.base.action;
+  const invalidAssignment = !!review && (needsAction && !review.assignment.action || needsPackage && !pkg || !!review.assignment.package_id && !pkg || !!review.assignment.work_item_id && !work || !!review.assignment.stage_id && !pkg?.stages.some(s => s.id === review.assignment.stage_id) || !!review.assignment.role && !roles.includes(review.assignment.role) || needsPackage && work?.action === "retain" && (pkg?.kind !== "works" || !["maintain_operation", "protect"].includes(review.assignment.role)));
   function begin(mode: Review["mode"]) {
     if (!item) return;
     setReview({ base: item, mode, assignment: emptyAssignment(), rationale: "" }); setError(""); setMessage("");
@@ -56,7 +57,7 @@ export function Proposals({ projectId, tick, onSignedOut }: { projectId: string;
     setBusy(true); setError("");
     try {
       if (review.mode === "dismiss") await proposalApi.dismiss(projectId, review.base, review.rationale);
-      else await proposalApi.accept(projectId, review.base, needsPackage || delivery ? review.assignment : {});
+      else await proposalApi.accept(projectId, review.base, needsPackage || delivery || needsAction ? review.assignment : {});
       setMessage(review.mode === "accept" ? "Accepted for planning. The created record is available in its project view." : "Proposal dismissed. Your decision has been saved.");
       setReview(null); setReload(n => n + 1);
     } catch (e) {
@@ -106,6 +107,7 @@ export function Proposals({ projectId, tick, onSignedOut }: { projectId: string;
           <form className="package-scope-form" onSubmit={e => { e.preventDefault(); void decide(); }}><fieldset disabled={busy}>
             {review.mode === "dismiss" ? <><label htmlFor="proposal-rationale">Reason for dismissal (optional)</label><textarea id="proposal-rationale" rows={3} maxLength={200} value={review.rationale} onChange={e => setReview({ ...review, rationale: e.target.value })} /></> : <>
               <p>{review.base.kind === "discipline" ? "Creates a planned services package. It does not appoint a consultant." : needsPackage ? "Adds this obligation to the package you choose." : delivery ? "Creates an uncompleted delivery requirement. It does not grant approval or release a hold point." : "Creates an included work item accepted for planning. It does not verify compliance."}</p>
+              {needsAction && <><label htmlFor="proposal-action">Action for the new work item</label><select id="proposal-action" required value={review.assignment.action ?? ""} onChange={e => setReview({...review,assignment:{...review.assignment,action:e.target.value}})}><option value="">Choose the intended work</option>{["new","replace","upgrade","alter","repair","remove","retain"].map(action => <option key={action} value={action}>{words(action)}</option>)}</select><p>The proposal identifies the affected construction. Choose what the work must do; no action is inferred from its title.</p></>}
               {(needsPackage || delivery) && <>
                 <label htmlFor="proposal-package">Package{needsPackage ? " (required)" : " (optional)"}</label><select id="proposal-package" required={needsPackage} value={review.assignment.package_id} onChange={e => setReview({ ...review, assignment: { ...review.assignment, package_id: e.target.value, stage_id: "", role: "" } })}><option value="">{needsPackage ? "Choose a package" : "No package assignment"}</option>{packages.map(p => <option key={p.id} value={p.id}>{p.title} · {p.kind}</option>)}</select>
                 <label htmlFor="proposal-work">Work item (optional)</label><select id="proposal-work" value={review.assignment.work_item_id} onChange={e => setReview({ ...review, assignment: { ...review.assignment, work_item_id: e.target.value, role: "" } })}><option value="">No work assignment</option>{works.filter(w => w.inclusion === "included").map(w => <option key={w.id} value={w.id}>{w.title} · {w.action}</option>)}</select>

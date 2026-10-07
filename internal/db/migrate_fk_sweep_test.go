@@ -138,7 +138,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			"reports":                 {"org_id": org, "id": report, "project_id": p, "package_id": pkg, "kind": "rfp", "title": "Report"},
 			"report_versions":         {"org_id": org, "id": version, "project_id": p, "report_id": report, "number": 1, "status": "draft", "source_revisions": row{}, "reporting_date": "2026-10-06", "template_id": "rfp", "template_version": 1, "sections": []any{}},
 			"profile_planning_values": {"org_id": org, "id": planning, "project_id": p, "site_id": s, "part_id": part, "key": "seed", "scope": "project", "value_state": "unknown", "origin": "user", "review_status": "accepted_for_planning", "meaning": "stated", "version": 1},
-			"proposals":               {"org_id": org, "project_id": p, "site_id": s, "key": proposalKey, "record_kind": "ic", "record_id": recordID, "proposal_index": 0, "kind": "obligation", "label": "Proposal", "reason": row{}, "specificity": 0, "rank": 1, "draft": true, "unaccepted_triggers": false, "inputs_fingerprint": strings.Repeat("a", 64), "knowledge_version": "seed", "state": "open"},
+			"proposals":               {"org_id": org, "project_id": p, "site_id": s, "key": proposalKey, "record_kind": "ic", "record_id": recordID, "proposal_index": 0, "kind": "obligation", "label": "Proposal", "reason": row{}, "specificity": 0, "draft": true, "unaccepted_triggers": false, "inputs_fingerprint": strings.Repeat("a", 64), "knowledge_version": "seed", "state": "open"},
 			"proposal_decisions":      {"org_id": org, "id": id(1400 + n), "project_id": p, "proposal_key": proposalKey, "record_id": recordID, "decision": "dismissed", "inputs_fingerprint": strings.Repeat("a", 64), "actor": u},
 			"profile_user_values":     {"org_id": org, "id": id(1500 + n), "project_id": p, "site_id": s, "part_id": part, "key": "seed", "value": "yes", "user_id": u},
 			"profile_rows":            {"org_id": org, "project_id": p, "site_id": s, "part_id": part, "key": "seed", "band": "blank"},
@@ -148,10 +148,25 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			"report_edits":            {"org_id": org, "report_version_id": version, "target_id": "seed", "text": "Edit", "base_content_sha256": strings.Repeat("a", 64), "user_id": u},
 			"report_references":       {"org_id": org, "report_version_id": version, "citation_id": "U1", "label": "U", "anchor_id": "seed", "basis": row{}},
 		}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals"} {
+		f["passages"] = row{"org_id": org, "id": id(2400 + n), "document_id": id(1900 + n), "ordinal": 0, "body": "Source"}
+		f["passage_sources"] = row{"org_id": org, "passage_id": id(2400 + n), "document_id": id(1900 + n)}
+		f["passage_calls"] = row{"org_id": org, "passage_id": id(2400 + n), "document_id": id(1900 + n), "stage": "evidence", "fingerprint": "fixture", "result": map[string]any{}}
+		costVersion, costID, unusedCostID := id(2100+n), id(2200+n), id(2300+n)
+		f["cost_plan_versions"] = row{"org_id": org, "project_id": p, "id": costVersion, "revision": 1, "status": "draft", "currency": "AUD", "tax_basis": "ex_tax"}
+		f["cost_plans"] = row{"org_id": org, "project_id": p, "draft_version_id": costVersion}
+		f["cost_items"] = row{"org_id": org, "project_id": p, "id": costID, "created_in_version_id": costVersion}
+		f["cost_item_revisions"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "label": "Line", "line_kind": "works", "work_item_id": w, "posting": true, "origin": "user", "meaning": "allowance"}
+		f["cost_values"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "metric": "estimate", "value_state": "unknown", "origin": "user", "meaning": "allowance"}
+		f["scope_cost_links"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "package_scope_item_id": scope}
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
+		}
+		unusedCost := maps.Clone(f["cost_items"])
+		unusedCost["id"] = unusedCostID
+		if err := insert(tx, "cost_items", unusedCost); err != nil {
+			t.Fatal(err)
 		}
 		second := maps.Clone(f["project_delivery_items"])
 		second["id"] = id(950 + n)
@@ -201,6 +216,18 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 				base["id"] = id(9999)
 			}
 			switch f.table {
+			case "cost_plan_versions":
+				base["revision"] = 2
+				base["status"] = "baseline"
+				base["frozen_at"] = "2026-10-07T00:00:00Z"
+			case "cost_item_revisions":
+				base["cost_item_id"] = id(2301)
+				if strings.Contains(f.definition, "package_stage_id") {
+					base["line_kind"] = "fee"
+					base["work_item_id"] = nil
+					base["package_id"] = fixtures[0]["packages"]["id"]
+					base["package_stage_id"] = fixtures[0]["package_stages"]["id"]
+				}
 			case "projects":
 				base["site_id"] = id(9900)
 			case "project_parts":

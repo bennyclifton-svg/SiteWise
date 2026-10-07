@@ -13,8 +13,8 @@ import (
 type ExistingAt func(part, system string) knowledge.Truth
 
 // InterfaceProposals evaluates the loaded interface-consequence table. It is
-// pure and is not wired into rebuilds until the full engine passes step-0
-// measurements. Nonphysical rows never supply a trigger or existence evidence.
+// pure; configured profile rebuilds call it through the compiled evaluator.
+// Nonphysical rows never supply a trigger or existence evidence.
 func InterfaceProposals(cat *knowledge.Catalog, items []Item, existing ExistingAt) ([]Proposal, error) {
 	return interfaceProposals(cat, items, existing, nil, uncachedProposalFingerprint)
 }
@@ -39,7 +39,7 @@ func interfaceProposals(cat *knowledge.Catalog, items []Item, existing ExistingA
 			return nil, fmt.Errorf("invalid work action")
 		}
 		live = append(live, item)
-		byPart[item.PartID] = append(byPart[item.PartID], knowledge.WorkItem{System: item.SystemID, Action: item.Action})
+		byPart[item.PartID] = append(byPart[item.PartID], knowledge.WorkItem{System: item.SystemID, Action: item.Action, LayoutChange: item.LayoutChange})
 	}
 	sort.Slice(live, func(i, j int) bool { return live[i].ID < live[j].ID })
 	out := map[string]Proposal{}
@@ -202,17 +202,7 @@ func hasTrigger(values []ProposalTrigger, value ProposalTrigger) bool {
 }
 
 func coversSystem(cat *knowledge.Catalog, system, ancestor string) bool {
-	for system != "" {
-		if system == ancestor {
-			return true
-		}
-		s, ok := cat.System(system)
-		if !ok {
-			return false
-		}
-		system = s.Parent
-	}
-	return false
+	return cat.SystemWithin(system, ancestor)
 }
 
 func matchInterfaceSystem(cat *knowledge.Catalog, system string, endpoints []string, actionKnown bool) (bool, int) {

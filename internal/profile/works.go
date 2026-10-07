@@ -72,6 +72,7 @@ func ProjectWorkScope(rows []Row, items []works.Item) []Row {
 		out = append(out, r)
 		presence[[2]string{r.PartID, r.Key}] = r
 	}
+	scopeRows := map[[2]string]Row{}
 	for _, item := range items {
 		if item.RetiredAt != nil || item.IsGroup {
 			continue
@@ -98,6 +99,23 @@ func ProjectWorkScope(rows []Row, items []works.Item) []Row {
 		if p, ok := presence[[2]string{item.PartID, "sys." + item.SystemID + ".presence"}]; ok && value == scopeOut && p.Value == valIncluded && len(p.Sources) > 0 {
 			r.Note = cut("A document says it is included: "+firstExcerpt(p), maxNote)
 		}
+		key := [2]string{r.PartID, r.Key}
+		if prior, exists := scopeRows[key]; exists {
+			if prior.Value != r.Value {
+				r.Value = scopeIn
+				r.Note = "Work items have mixed inclusion; review individual work items."
+			} else if prior.Note != "" {
+				r.Note = prior.Note
+			}
+			if prior.Band == bandUser {
+				r.Band = bandUser
+			}
+			// A group summary cannot edit an individual child version.
+			r.UserVersion = 0
+		}
+		scopeRows[key] = r
+	}
+	for _, r := range scopeRows {
 		out = append(out, r)
 	}
 	sort.Slice(out, func(i, j int) bool {

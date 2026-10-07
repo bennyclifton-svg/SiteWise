@@ -447,3 +447,12 @@ The owner requested these recommendations be incorporated into the plan, **with 
 - **Evidence gates (D-36):** restore whole-file/multi-sheet replay coverage and report each component budget as well as whole filing. Existing title accuracy is a known defect, not an accepted quality standard. New action/location/signal calls need measured token limits, abstention cases and filing-under-background-load evidence. A preflight rejects an oversized call visibly rather than silently dropping questions or launching serial calls. Target-VPS and recovery evidence remain prerequisites to release.
 
 Only draft knowledge may be authored by agents; the owner reviews it. For M1 prioritise the relevant 0991 records, clauses and boundary cases, then 0777. Broad catalogue expansion must not delay the first test of usefulness. The implementation plan §1.1, §8.6 and work packages §2.4 specify the executable sequence, test definitions and migration reservations. No implementation is authorised by this review amendment.
+
+## Execution update — 7 October 2026
+
+Read [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md) for current progress. This file
+preserves the architectural baseline and its source-line references. The owner
+subsequently authorized full unattended M2/M3 implementation and selected
+Petersham PPR as the broader acceptance corpus; the earlier documentation-only
+and sequencing holds above are historical. This changes execution authority,
+not the requirement for honest quality, content-review and release evidence.

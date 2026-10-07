@@ -175,3 +175,12 @@ Only reviewer notes changed. Questions, routing, predicates, contract wording,
 severities and draft status are preserved. Exact rows and open decisions are in
 `docs/unforeseen/k4-envelope-merge-review.json`; evidence is in
 `docs/evidence/2026-10-06-k4-envelope-merge-review.md`.
+
+## K4 logistics label correction — 7 October 2026
+
+B2-0812 materials-hoist and B2-0813 facade-davit obligations now request checks
+of material movement/access suitability. The former labels selected a hoist
+or freed roof space before the broad trigger established those needs. Only the
+two labels changed; IDs, questions, predicates and source lineage are retained.
+See docs/evidence/2026-10-07-k4-bounded-merge-disposition.md for source/category
+review and open detector/contract/owner-review limits.

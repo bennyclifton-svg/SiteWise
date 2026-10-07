@@ -18,7 +18,7 @@ var ErrInvalidWork = errors.New("invalid work item")
 
 func readWorkItems(ctx context.Context, q rowQuerier, org, project string) ([]works.Item, error) {
 	rows, err := q.Query(ctx, `SELECT id::text,project_id::text,site_id::text,part_id::text,system_id,
- action,inclusion,COALESCE(parent_id::text,''),is_group,title,existing_condition_note,target,
+ action,inclusion,COALESCE(parent_id::text,''),is_group,title,layout_change,existing_condition_note,target,
  quantity::text,unit,origin,review_status,meaning,provenance,user_touched,
  COALESCE(coarse_key,''),COALESCE(source_proposal_key,''),retired_at,version
  FROM work_items WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY part_id,system_id,id`, org, project)
@@ -31,7 +31,7 @@ func readWorkItems(ctx context.Context, q rowQuerier, org, project string) ([]wo
 		var target, provenance []byte
 		var item works.Item
 		if err := rows.Scan(&item.ID, &item.ProjectID, &item.SiteID, &item.PartID, &item.SystemID,
-			&item.Action, &item.Inclusion, &item.ParentID, &item.IsGroup, &item.Title, &item.ExistingConditionNote, &target,
+			&item.Action, &item.Inclusion, &item.ParentID, &item.IsGroup, &item.Title, &item.LayoutChange, &item.ExistingConditionNote, &target,
 			&item.Quantity, &item.Unit, &item.Origin, &item.ReviewStatus, &item.Meaning, &provenance, &item.UserTouched,
 			&item.CoarseKey, &item.SourceProposalKey, &item.RetiredAt, &item.Version); err != nil {
 			return nil, err
@@ -109,6 +109,9 @@ func (s *Store) CreateWorkItem(ctx context.Context, org, project, actor string, 
 	if err != nil {
 		return item, err
 	}
+	if item.LayoutChange == "" {
+		item.LayoutChange = "unknown"
+	}
 	if err := works.Validate(item, s.workCatalog()); err != nil {
 		return item, fmt.Errorf("%w: %v", ErrInvalidWork, err)
 	}
@@ -169,9 +172,9 @@ func workError(err error) error {
 func insertWork(ctx context.Context, tx pgx.Tx, org string, item works.Item) error {
 	target, _ := json.Marshal(item.Target)
 	prov, _ := json.Marshal(item.Provenance)
-	_, err := tx.Exec(ctx, `INSERT INTO work_items(org_id,id,project_id,site_id,part_id,system_id,action,inclusion,title,existing_condition_note,target,quantity,unit,origin,review_status,meaning,provenance,user_touched,coarse_key)
- VALUES($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6,$7,$8,$9,$10,$11,$12::numeric,$13,$14,$15,$16,$17,$18,$19)`,
-		org, item.ID, item.ProjectID, item.SiteID, item.PartID, item.SystemID, item.Action, item.Inclusion, item.Title, item.ExistingConditionNote, target, item.Quantity, item.Unit, item.Origin, item.ReviewStatus, item.Meaning, prov, item.UserTouched, item.CoarseKey)
+	_, err := tx.Exec(ctx, `INSERT INTO work_items(org_id,id,project_id,site_id,part_id,system_id,action,inclusion,title,existing_condition_note,target,quantity,unit,origin,review_status,meaning,provenance,user_touched,coarse_key,layout_change)
+ VALUES($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6,$7,$8,$9,$10,$11,$12::numeric,$13,$14,$15,$16,$17,$18,$19,$20)`,
+		org, item.ID, item.ProjectID, item.SiteID, item.PartID, item.SystemID, item.Action, item.Inclusion, item.Title, item.ExistingConditionNote, target, item.Quantity, item.Unit, item.Origin, item.ReviewStatus, item.Meaning, prov, item.UserTouched, item.CoarseKey, item.LayoutChange)
 	return err
 }
 
@@ -230,6 +233,7 @@ func (s *Store) syncProposedWorks(ctx context.Context, tx pgx.Tx, org, project, 
 		batch.Queue(`INSERT INTO work_items(org_id,id,project_id,site_id,part_id,system_id,action,inclusion,title,origin,review_status,meaning,provenance,coarse_key)
  SELECT $1::uuid,p.id,$2::uuid,$3::uuid,p.part,p.system,p.action,'included',p.title,p.origin,'proposed','stated',p.provenance,p.coarse_key
  FROM jsonb_to_recordset($4::jsonb) AS p(id uuid,part uuid,system text,action text,title text,origin text,provenance jsonb,coarse_key text)
+ WHERE NOT EXISTS(SELECT 1 FROM work_items owned WHERE owned.org_id=$1::uuid AND owned.project_id=$2::uuid AND owned.coarse_key=p.coarse_key AND owned.retired_at IS NULL AND owned.id<>p.id AND (owned.user_touched OR owned.review_status<>'proposed'))
  ON CONFLICT(org_id,id) DO UPDATE SET action=EXCLUDED.action,title=EXCLUDED.title,origin=EXCLUDED.origin,provenance=EXCLUDED.provenance,retired_at=NULL,version=work_items.version+1
  WHERE work_items.review_status='proposed' AND NOT work_items.user_touched
  AND (work_items.action,work_items.title,work_items.origin,work_items.provenance,work_items.retired_at)
@@ -262,7 +266,8 @@ func (s *Store) syncProposedWorks(ctx context.Context, tx pgx.Tx, org, project, 
 		return err
 	}
 	if changed {
-		if err := BumpRevision(ctx, tx, org, project, "works"); err != nil {
+		// The profile projection caller holds the project advisory lock.
+		if err := bumpRevisionLocked(ctx, tx, org, project, "works"); err != nil {
 			return err
 		}
 		return workEvent(ctx, tx, s, org, project)
@@ -346,7 +351,31 @@ func (s *Store) setWorkScope(ctx context.Context, org, project, part, actor stri
 			title = sys.Label
 		}
 		id := works.CoarseID(project, part, system)
+		// Coarse IDs survive a user move. Resolve the semantic owner before
+		// using the historical deterministic ID, which may now own other scope.
+		var owner string
+		err = tx.QueryRow(ctx, `SELECT id::text FROM work_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND coarse_key=$3 AND parent_id IS NULL ORDER BY retired_at NULLS FIRST LIMIT 1`, org, project, part+"|"+system).Scan(&owner)
+		if err == nil {
+			id = owner
+		} else if errors.Is(err, pgx.ErrNoRows) {
+			var occupied bool
+			if err = tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM work_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid)`, org, project, id).Scan(&occupied); err != nil {
+				return err
+			}
+			if occupied {
+				id = newID()
+			}
+		} else {
+			return err
+		}
 		if value == nil {
+			var children bool
+			if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM work_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND parent_id=$3::uuid AND retired_at IS NULL)`, org, project, id).Scan(&children); err != nil {
+				return err
+			}
+			if children {
+				return fmt.Errorf("%w: resolve child work items before resetting this group", ErrInvalidWork)
+			}
 			deliveryUsed, err := openDeliveryReference(ctx, tx, org, project, "work_item_id", id)
 			if err != nil {
 				return err
@@ -376,6 +405,19 @@ func (s *Store) setWorkScope(ctx context.Context, org, project, part, actor stri
 		}
 		if err != nil {
 			return workError(err)
+		}
+		if value != nil {
+			inclusion := "included"
+			if *value == "out" {
+				inclusion = "excluded"
+			}
+			_, err = tx.Exec(ctx, `WITH RECURSIVE descendants AS (
+ SELECT id FROM work_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND parent_id=$3::uuid AND retired_at IS NULL
+ UNION ALL SELECT w.id FROM work_items w JOIN descendants d ON w.parent_id=d.id WHERE w.org_id=$1::uuid AND w.project_id=$2::uuid AND w.retired_at IS NULL
+ ) UPDATE work_items SET inclusion=$4,origin='user',user_touched=true,review_status='accepted_for_planning',verified_by=NULL,verified_at=NULL,verification_basis=NULL,version=version+1,provenance=provenance||jsonb_build_object('last_edited_by',$7::text,'last_edited_at',now()) WHERE org_id=$1::uuid AND project_id=$2::uuid AND id IN(SELECT id FROM descendants) AND part_id=$5::uuid AND system_id=$6`, org, project, id, inclusion, part, system, actor)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return s.finishWorksWrite(ctx, tx, org, project)

@@ -90,6 +90,8 @@ type Catalog struct {
 	loaded          map[string][]byte
 	version         string
 	systems         map[string]System
+	ancestors       map[[2]string]bool
+	children        map[string][]System
 	systemIDs       []string
 	Interfaces      []Interface
 	rules           map[string]Rule
@@ -102,6 +104,7 @@ type Catalog struct {
 	stages          []DeliveryStage
 	packageDefaults PackageDefaults
 	reportTemplates map[string]ReportTemplate
+	costBenchmarks  map[string]CostBenchmark
 }
 
 // Load reads knowledge/ (or a fixture with the same layout).
@@ -135,6 +138,23 @@ func Load(root string) (*Catalog, error) {
 	if err := c.checkSystems(); err != nil {
 		return nil, err
 	}
+	// The hierarchy is immutable after validation. Predicate evaluation asks
+	// these same ancestry questions thousands of times per rebuild.
+	c.ancestors = map[[2]string]bool{}
+	c.children = map[string][]System{}
+	for id := range c.systems {
+		system := c.systems[id]
+		if system.Status != statusDeprecated {
+			c.children[system.Parent] = append(c.children[system.Parent], system)
+		}
+		for at := id; at != ""; at = c.systems[at].Parent {
+			c.ancestors[[2]string{id, at}] = true
+		}
+	}
+	for parent := range c.children {
+		sort.Slice(c.children[parent], func(i, j int) bool { return c.children[parent][i].ID < c.children[parent][j].ID })
+	}
+
 	for _, entry := range entries {
 		if !entry.IsDir() {
 			continue
@@ -178,6 +198,9 @@ func Load(root string) (*Catalog, error) {
 		return nil, err
 	}
 	if err := c.loadReportTemplates(filepath.Join(root, "reports", "templates.yaml")); err != nil {
+		return nil, err
+	}
+	if err := c.loadCostBenchmarks(root); err != nil {
 		return nil, err
 	}
 	sort.Slice(c.evidence, func(i, j int) bool { return c.evidence[i].ID < c.evidence[j].ID })
@@ -274,6 +297,9 @@ func (c *Catalog) loadRules(path string) error {
 		return fmt.Errorf("%s: version %d", path, file.Version)
 	}
 	for _, rule := range file.Rules {
+		if err := checkBooleanIs(path, rule.ID, rule.AppliesWhen); err != nil {
+			return err
+		}
 		if rule.ID == "" {
 			return fmt.Errorf("%s: rule id is required", path)
 		}
@@ -311,6 +337,9 @@ func (c *Catalog) loadInterfaces(path string) error {
 		seen[existing.ID] = struct{}{}
 	}
 	for _, iface := range file.Interfaces {
+		if err := checkBooleanIs(path, iface.ID, iface.AppliesWhen); err != nil {
+			return err
+		}
 		if iface.ID == "" {
 			return fmt.Errorf("%s: interface id is required", path)
 		}
@@ -428,6 +457,12 @@ func (c *Catalog) System(id string) (System, bool) {
 	return sys, ok
 }
 
+// SystemWithin reports whether system is the ancestor itself or below it.
+// Loaded catalogue hierarchies are immutable and share the validated index.
+func (c *Catalog) SystemWithin(system, ancestor string) bool {
+	return c.covers(system, ancestor)
+}
+
 // TopSystems returns systems that have no parent, ordered by id.
 func (c *Catalog) TopSystems() []System {
 	var out []System
@@ -444,6 +479,9 @@ func (c *Catalog) TopSystems() []System {
 // Children returns the live direct children of parent, ordered by id.
 // Deprecated systems are never offered to Jev.
 func (c *Catalog) Children(parent string) []System {
+	if c.children != nil {
+		return append([]System(nil), c.children[parent]...)
+	}
 	var out []System
 	for _, id := range c.systemIDs {
 		sys := c.systems[id]
@@ -493,6 +531,10 @@ func (c *Catalog) runsOn(labels, targets []string) bool {
 
 // covers reports whether systemID is endpoint or a descendant of endpoint.
 func (c *Catalog) covers(systemID, endpoint string) bool {
+	if c.ancestors != nil {
+		return systemID == endpoint && systemID != "" || c.ancestors[[2]string{systemID, endpoint}]
+	}
+
 	seen := map[string]struct{}{}
 	cur := systemID
 	for cur != "" {

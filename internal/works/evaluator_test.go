@@ -126,6 +126,33 @@ func BenchmarkCompiledProposals(b *testing.B) {
 	}
 }
 
+func TestCompiledPrimitiveMemoPreservesLayoutAndUnknownTraces(t *testing.T) {
+	cat := proposalCatalogue(t)
+	e, err := NewEvaluator(cat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, layout := range []string{"unknown", "yes", "no"} {
+		for _, action := range []string{"alter", ""} {
+			in := capexProposalInput()
+			in.Items[0].SystemID = "interiors.walls-linings"
+			in.Items[0].Action = action
+			in.Items[0].LayoutChange = layout
+			expected, err := EvaluateProposals(cat, in)
+			if err != nil {
+				t.Fatal(err)
+			}
+			actual, err := e.Evaluate(in)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(expected, actual) {
+				t.Fatalf("memo changed full traces action=%q layout=%s", action, layout)
+			}
+		}
+	}
+}
+
 func BenchmarkProposalStartup(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		cat := proposalCatalogue(b)

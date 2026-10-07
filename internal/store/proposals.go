@@ -18,57 +18,58 @@ var ErrProposalUnavailable = errors.New("proposal evaluator is not configured")
 var ErrInvalidProposalDecision = errors.New("invalid proposal decision")
 
 func writeProposals(ctx context.Context, tx pgx.Tx, org, project, site string, proposals []works.Proposal) error {
-	decisions, err := readProposalDecisions(ctx, tx, org, project)
+	stored, err := readProposalPersistenceInput(ctx, tx, org, project)
 	if err != nil {
 		return err
 	}
-	projection := make([]map[string]any, 0, len(proposals))
-	type triggerRow struct {
-		Key        string `json:"proposal_key"`
-		WorkItemID string `json:"work_item_id"`
-	}
-	triggers := []triggerRow{}
-	keys := make([]string, 0, len(proposals))
+	return writePreparedProposals(ctx, tx, org, project, site, proposals, stored)
+}
+
+func writePreparedProposals(ctx context.Context, tx pgx.Tx, org, project, site string, proposals []works.Proposal, stored proposalPersistenceInput) error {
+	decisions, previous := stored.decisions, stored.previous
+	changedKeys := []string{}
+	projection := make([]proposalProjectionRow, 0, len(proposals))
+	triggers := []proposalTriggerRow{}
 	seenKeys := map[string]bool{}
-	null := func(value string) any {
-		if value == "" {
-			return nil
-		}
-		return value
-	}
 	for _, p := range proposals {
 		if seenKeys[p.Key] {
 			return fmt.Errorf("duplicate proposal key")
 		}
 		seenKeys[p.Key] = true
-		keys = append(keys, p.Key)
 		if d, ok := decisions[p.Key]; ok {
 			p = works.ApplyProposalDecision(p, &works.ProposalDecision{Decision: d.Decision, InputsFingerprint: d.InputsFingerprint})
 		}
-		projection = append(projection, map[string]any{
-			"key": p.Key, "record_kind": p.RecordKind, "record_id": p.RecordID, "interface_id": null(p.InterfaceID),
-			"proposal_index": p.ProposalIndex, "target_system_id": null(p.TargetSystemID), "target_part_id": null(p.TargetPartID),
-			"kind": p.Kind, "label": p.Label, "action": null(p.Action), "reason": p.Reason, "severity": p.Severity,
-			"specificity": p.Specificity, "rank": p.Rank, "critical": p.Critical, "draft": p.Draft,
-			"unaccepted_triggers": p.UnacceptedTriggers, "inputs_fingerprint": p.InputsFingerprint,
-			"knowledge_version": p.KnowledgeVersion, "state": p.State, "inputs_changed": p.InputsChanged,
-		})
+		hash, err := proposalProjectionHash(site, p)
+		if err != nil {
+			return err
+		}
+		// Accept/dismiss/undo also update these two columns directly.
+		if old, ok := previous[p.Key]; ok && old.hash == hash && old.state == p.State && old.inputsChanged == p.InputsChanged {
+			continue
+		}
+		changedKeys = append(changedKeys, p.Key)
+		projection = append(projection, proposalProjectionRow{Proposal: p, Hash: hash})
 		seen := map[string]bool{}
 		for _, trigger := range p.Reason.Triggers {
 			if trigger.WorkItemID == "" {
 				return fmt.Errorf("empty proposal trigger")
 			}
 			if !seen[trigger.WorkItemID] {
-				triggers = append(triggers, triggerRow{p.Key, trigger.WorkItemID})
+				triggers = append(triggers, proposalTriggerRow{p.Key, trigger.WorkItemID})
 				seen[trigger.WorkItemID] = true
 			}
 		}
 	}
-	raw, err := json.Marshal(projection)
-	if err != nil {
-		return err
+	stale := []string{}
+	for key := range previous {
+		if !seenKeys[key] {
+			stale = append(stale, key)
+		}
 	}
-	relations, err := json.Marshal(triggers)
+	if len(projection) == 0 && len(stale) == 0 {
+		return nil
+	}
+	raw, err := json.Marshal(projection)
 	if err != nil {
 		return err
 	}
@@ -76,39 +77,61 @@ func writeProposals(ctx context.Context, tx pgx.Tx, org, project, site string, p
 	// Compare every mutable column, including provenance and display metadata;
 	// semantic fingerprints alone intentionally ignore split work-item IDs.
 	batch := &pgx.Batch{}
-	batch.Queue(`INSERT INTO proposals(org_id,project_id,site_id,key,record_kind,record_id,interface_id,proposal_index,
- target_system_id,target_part_id,kind,label,action,reason,severity,specificity,rank,critical,draft,
- unaccepted_triggers,inputs_fingerprint,knowledge_version,state,inputs_changed)
+	if len(projection) > 0 {
+		batch.Queue(`INSERT INTO proposals(org_id,project_id,site_id,key,record_kind,record_id,interface_id,proposal_index,
+ target_system_id,target_part_id,kind,label,action,reason,severity,specificity,critical,draft,
+ unaccepted_triggers,inputs_fingerprint,knowledge_version,state,inputs_changed,projection_hash)
  SELECT $1::uuid,$2::uuid,$3::uuid,p.key,p.record_kind,p.record_id,p.interface_id,p.proposal_index,
- p.target_system_id,p.target_part_id,p.kind,p.label,p.action,p.reason,p.severity,p.specificity,p.rank,p.critical,p.draft,
- p.unaccepted_triggers,p.inputs_fingerprint,p.knowledge_version,p.state,p.inputs_changed
+ p.target_system_id,p.target_part_id,p.kind,p.label,p.action,p.reason,p.severity,p.specificity,p.critical,p.draft,
+ p.unaccepted_triggers,p.inputs_fingerprint,p.knowledge_version,p.state,p.inputs_changed,p.projection_hash
  FROM jsonb_to_recordset($4::jsonb) AS p(key text,record_kind text,record_id text,interface_id text,proposal_index integer,
  target_system_id text,target_part_id uuid,kind text,label text,action text,reason jsonb,severity text,specificity integer,
- rank integer,critical boolean,draft boolean,unaccepted_triggers boolean,inputs_fingerprint text,knowledge_version text,state text,inputs_changed boolean)
+ critical boolean,draft boolean,unaccepted_triggers boolean,inputs_fingerprint text,knowledge_version text,state text,inputs_changed boolean,projection_hash text)
  ON CONFLICT(org_id,project_id,key) DO UPDATE SET
  (site_id,record_kind,record_id,interface_id,proposal_index,target_system_id,target_part_id,kind,label,action,reason,
- severity,specificity,rank,critical,draft,unaccepted_triggers,inputs_fingerprint,knowledge_version,state,inputs_changed)=
+ severity,specificity,critical,draft,unaccepted_triggers,inputs_fingerprint,knowledge_version,state,inputs_changed,projection_hash)=
  (EXCLUDED.site_id,EXCLUDED.record_kind,EXCLUDED.record_id,EXCLUDED.interface_id,EXCLUDED.proposal_index,
  EXCLUDED.target_system_id,EXCLUDED.target_part_id,EXCLUDED.kind,EXCLUDED.label,EXCLUDED.action,EXCLUDED.reason,
- EXCLUDED.severity,EXCLUDED.specificity,EXCLUDED.rank,EXCLUDED.critical,EXCLUDED.draft,EXCLUDED.unaccepted_triggers,
- EXCLUDED.inputs_fingerprint,EXCLUDED.knowledge_version,EXCLUDED.state,EXCLUDED.inputs_changed)
- WHERE (proposals.site_id,proposals.record_kind,proposals.record_id,proposals.interface_id,proposals.proposal_index,
- proposals.target_system_id,proposals.target_part_id,proposals.kind,proposals.label,proposals.action,proposals.reason,
- proposals.severity,proposals.specificity,proposals.rank,proposals.critical,proposals.draft,proposals.unaccepted_triggers,
- proposals.inputs_fingerprint,proposals.knowledge_version,proposals.state,proposals.inputs_changed)
- IS DISTINCT FROM (EXCLUDED.site_id,EXCLUDED.record_kind,EXCLUDED.record_id,EXCLUDED.interface_id,EXCLUDED.proposal_index,
- EXCLUDED.target_system_id,EXCLUDED.target_part_id,EXCLUDED.kind,EXCLUDED.label,EXCLUDED.action,EXCLUDED.reason,
- EXCLUDED.severity,EXCLUDED.specificity,EXCLUDED.rank,EXCLUDED.critical,EXCLUDED.draft,EXCLUDED.unaccepted_triggers,
- EXCLUDED.inputs_fingerprint,EXCLUDED.knowledge_version,EXCLUDED.state,EXCLUDED.inputs_changed)`, org, project, site, string(raw))
-	batch.Queue(`WITH desired AS MATERIALIZED (
- SELECT * FROM jsonb_to_recordset($3::jsonb) AS r(proposal_key text,work_item_id uuid)
- ) DELETE FROM proposal_triggers t WHERE t.org_id=$1::uuid AND t.project_id=$2::uuid
- AND NOT EXISTS(SELECT 1 FROM desired d WHERE d.proposal_key=t.proposal_key AND d.work_item_id=t.work_item_id)`, org, project, string(relations))
-	batch.Queue(`INSERT INTO proposal_triggers(org_id,project_id,proposal_key,work_item_id)
+ EXCLUDED.severity,EXCLUDED.specificity,EXCLUDED.critical,EXCLUDED.draft,EXCLUDED.unaccepted_triggers,
+ EXCLUDED.inputs_fingerprint,EXCLUDED.knowledge_version,EXCLUDED.state,EXCLUDED.inputs_changed,EXCLUDED.projection_hash)
+ WHERE (proposals.projection_hash,proposals.state,proposals.inputs_changed)
+ IS DISTINCT FROM (EXCLUDED.projection_hash,EXCLUDED.state,EXCLUDED.inputs_changed)`, org, project, site, string(raw))
+		added, removed, err := proposalTriggerDelta(ctx, tx, org, project, changedKeys, triggers)
+		if err != nil {
+			return err
+		}
+		if len(removed) > 0 {
+			// Bound the candidate relation by the removed proposal keys before
+			// matching exact pairs; stale estimates otherwise scan every link.
+			removedKeys := []string{}
+			keySeen := map[string]bool{}
+			for _, relation := range removed {
+				if !keySeen[relation.Key] {
+					removedKeys = append(removedKeys, relation.Key)
+					keySeen[relation.Key] = true
+				}
+			}
+			raw, err := json.Marshal(removed)
+			if err != nil {
+				return err
+			}
+			batch.Queue(`DELETE FROM proposal_triggers t USING jsonb_to_recordset($3::jsonb) AS r(proposal_key text,work_item_id uuid) WHERE t.org_id=$1::uuid AND t.project_id=$2::uuid AND t.proposal_key=ANY($4::text[]) AND t.proposal_key=r.proposal_key AND t.work_item_id=r.work_item_id`, org, project, string(raw), removedKeys)
+		}
+		if len(added) > 0 {
+			relations, err := json.Marshal(added)
+			if err != nil {
+				return err
+			}
+			batch.Queue(`INSERT INTO proposal_triggers(org_id,project_id,proposal_key,work_item_id)
  SELECT $1::uuid,$2::uuid,r.proposal_key,r.work_item_id FROM jsonb_to_recordset($3::jsonb) AS r(proposal_key text,work_item_id uuid)
  ON CONFLICT(org_id,project_id,proposal_key,work_item_id) DO NOTHING`, org, project, string(relations))
-	batch.Queue(`DELETE FROM proposals WHERE org_id=$1::uuid AND project_id=$2::uuid AND NOT(key=ANY($3::text[]))`, org, project, keys)
-	return tx.SendBatch(ctx, batch).Close()
+		}
+	}
+	if len(stale) > 0 {
+		batch.Queue(`DELETE FROM proposals WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=ANY($3::text[])`, org, project, stale)
+	}
+	err = tx.SendBatch(ctx, batch).Close()
+	return err
 }
 
 type ProposalDecisionView struct {
@@ -156,7 +179,7 @@ func readProposalDecisions(ctx context.Context, q rowQuerier, org, project strin
 }
 
 func readProposals(ctx context.Context, q rowQuerier, org, project string) ([]ProposalView, error) {
-	rows, err := q.Query(ctx, `SELECT to_jsonb(p)||jsonb_build_object('trigger_work_item_ids',COALESCE((SELECT jsonb_agg(t.work_item_id ORDER BY t.work_item_id) FROM proposal_triggers t WHERE t.org_id=p.org_id AND t.project_id=p.project_id AND t.proposal_key=p.key),'[]'::jsonb)) FROM proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY rank,key`, org, project)
+	rows, err := q.Query(ctx, `SELECT to_jsonb(p)||jsonb_build_object('trigger_work_item_ids',COALESCE((SELECT jsonb_agg(t.work_item_id ORDER BY t.work_item_id) FROM proposal_triggers t WHERE t.org_id=p.org_id AND t.project_id=p.project_id AND t.proposal_key=p.key),'[]'::jsonb)) FROM ranked_proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY rank,key`, org, project)
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +238,8 @@ func (s *Store) ReadProposals(ctx context.Context, org, project string) ([]Propo
 }
 
 // RebuildProfileWithProposals measures the complete single-transaction rebuild.
-// It is explicit diagnostic wiring, not called by ordinary profile edits.
+// Ordinary profile edits use the same atomic projection implementation with
+// the evaluator configured by WithProfile; this accepts an explicit evaluator.
 func (s *Store) RebuildProfileWithProposals(ctx context.Context, org, project string, evaluator *works.Evaluator) error {
 	if s.profileBuild == nil || s.profileBuild.Catalog == nil || s.profileBuild.Compute == nil || evaluator == nil {
 		return ErrProposalUnavailable
@@ -235,7 +259,8 @@ func (s *Store) RebuildProfileWithProposals(ctx context.Context, org, project st
 }
 
 // RebuildProposals is an explicit code-only operation for measurement and
-// integration. Ordinary profile edits do not call it until timing gates pass.
+// integration. Ordinary profile edits rebuild proposals inside their existing
+// profile transaction instead of opening this separate transaction.
 func (s *Store) RebuildProposals(ctx context.Context, org, project string, evaluator *works.Evaluator) error {
 	if s.profileBuild == nil || s.profileBuild.Catalog == nil || s.profileBuild.Compute == nil || evaluator == nil {
 		return ErrProposalUnavailable
@@ -276,6 +301,11 @@ func (s *Store) RebuildProposals(ctx context.Context, org, project string, evalu
 	if err := writeProposals(ctx, tx, org, project, siteID, proposals); err != nil {
 		return err
 	}
+	// An explicit projection can use a diagnostic catalogue. The next ordinary
+	// rebuild must validate its own complete inputs before reusing anything.
+	if _, err := tx.Exec(ctx, `UPDATE profile_builds SET inputs=inputs-'proposal_fingerprint' WHERE org_id=$1::uuid AND project_id=$2::uuid`, org, project); err != nil {
+		return err
+	}
 	err = tx.Commit(ctx)
 	return err
 }
@@ -303,7 +333,7 @@ func (s *Store) DismissProposal(ctx context.Context, org, project, key, actor, f
 		return result, ErrNotFound
 	}
 	var raw []byte
-	if err := tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT to_jsonb(p) FROM ranked_proposals p WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=$3`, org, project, key).Scan(&raw); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return result, ErrNotFound
 		}

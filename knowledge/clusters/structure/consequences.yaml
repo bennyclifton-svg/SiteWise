@@ -18,3 +18,25 @@ consequences:
       Illustrative record fixing the shape (K0). The year threshold comes from
       the seed and the plan's example, not the instrument; it stays unverified
       until K3 reads the source.
+  - id: cq.existing-structural-intervention-sequence-review
+    when:
+      all:
+        - works: {action: [alter, replace, upgrade, remove], system: [structure, substructure]}
+        - {det: existing_building, is: true}
+    propose:
+      - {kind: hold_point, label: Review load paths and temporary support before existing structural intervention}
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: life-safety
+    status: draft
+    sources:
+      - {seed: renovation-guide.md, anchor: "## Structural intervention"}
+    notes: >-
+      Draft planning review of load paths, sequencing, temporary support and
+      inspection evidence with the responsible designer before affected work.
+      It does not design propping, prescribe structural changes, certify adequacy
+      or assert that temporary support is always required. Acceptance creates
+      an undated review milestone, not physical works or statutory approval.
+      New structure, retained scope and repair-only work are outside this bounded
+      trigger. Document titles alone do not establish that the review is complete.

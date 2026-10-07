@@ -8,6 +8,7 @@ import (
 )
 
 type Block struct {
+	Table         *Table          `json:"table,omitempty"`
 	GeneratedText *string         `json:"generated_text,omitempty"`
 	ID            string          `json:"id"`
 	Label         string          `json:"label"`
@@ -24,6 +25,12 @@ type Block struct {
 	EditUserID    string          `json:"edit_user_id,omitempty"`
 	EditUpdatedAt time.Time       `json:"edit_updated_at,omitzero"`
 	CitationIDs   []string        `json:"citation_ids,omitempty"`
+}
+
+// Table is saved source data, displayed separately from editable prose.
+type Table struct {
+	Columns []string   `json:"columns"`
+	Rows    [][]string `json:"rows"`
 }
 
 type Section struct {

@@ -136,3 +136,21 @@ physical interface covers them. Every other field is unchanged, including
 the detector and draft status. Strict validation and knowledge tests pass.
 See `docs/evidence/2026-10-06-k4-fire-services-overlap.md` for source limits and
 `docs/unforeseen/k4-hydraulic-attachment-correction.json` for the exact change.
+
+## K2 draft hydraulic review — 7 October 2026
+
+Added `cq.hydraulic-testing-plan-review` from hydraulic-services-guide
+`## Construction, testing and handover`. New/altered/replaced/upgraded hydraulic
+work raises a review of applicable checks before concealment and testing evidence.
+No universal test or numeric criterion inferred. Existing mechanical commissioning
+review remains separate: distinct physical systems and source coverage.
+Source coverage and limits: docs/evidence/2026-10-07-k2-seed-coverage.md.
+All content remains draft; no signal/evidence question added.
+
+## K1 explicit room-layout context — 7 October 2026
+
+Added draft `cq.room-layout-air-distribution-review`, guarded by a same-item
+user-authored layout-change answer and existing air-distribution evidence.
+No document question or generic lining-work inference was added. Sources,
+accepted enum design, validation and remaining graph limitations are in
+`docs/evidence/2026-10-07-k1-layout-input-proposal.md`.

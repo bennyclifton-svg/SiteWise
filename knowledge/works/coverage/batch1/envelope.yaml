@@ -117,7 +117,7 @@ rows:
     - fm.envelope-glass-weight-exceeds-frame-capacity
   B1-0239:
     records:
-    - fm.envelope-thermal-break-missing
+    - fm.envelope-window-frame-thermal-bridge-stated
   B1-0240:
     records:
     - fm.envelope-frame-out-of-square

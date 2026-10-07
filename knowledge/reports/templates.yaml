@@ -35,3 +35,75 @@ templates:
         title: Proposal requirements
         essential: true
         clauses: [{id: cl.rfp-proposal-response, version: 1}]
+
+  - id: tpl.rft
+    version: 1
+    kind: rft
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+    sections:
+      - id: brief
+        title: Project brief and work scope
+        essential: true
+        clauses: []
+      - id: services
+        title: Inclusions, exclusions and responsibilities
+        essential: true
+        clauses: []
+      - id: investigations
+        title: Investigations and latent conditions
+        essential: true
+        clauses: []
+      - id: interfaces
+        title: Interfaces and retained systems
+        essential: true
+        clauses: []
+      - id: dates
+        title: Access, sequencing and dates
+        essential: true
+        clauses: []
+      - id: fee_return
+        title: Tender pricing schedule
+        essential: true
+        clauses: []
+      - id: proposal_requirements
+        title: Tender return and document revisions
+        essential: true
+        clauses: []
+
+  - id: tpl.pmp
+    version: 1
+    kind: pmp
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+    sections:
+      - id: brief
+        title: Project definition and quality
+        essential: true
+        clauses: []
+      - id: services
+        title: Appointments and responsibilities
+        essential: true
+        clauses: []
+      - id: investigations
+        title: Risks, issues and investigations
+        essential: true
+        clauses: []
+      - id: interfaces
+        title: Coordination and allocation gaps
+        essential: true
+        clauses: []
+      - id: dates
+        title: Delivery, authorities and next actions
+        essential: true
+        clauses: []
+      - id: fee_return
+        title: Cost plan and variance
+        essential: true
+        clauses: []
+      - id: proposal_requirements
+        title: Changes and project evidence
+        essential: true
+        clauses: []

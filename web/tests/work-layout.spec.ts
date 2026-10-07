@@ -1,0 +1,30 @@
+import { expect, test } from "@playwright/test";
+
+test("room layout answer is explicit and survives a work correction", async ({ page }) => {
+  const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
+  await page.goto(`/#token=${token}`);
+  await page.getByLabel("New project").fill("Layout review");
+  await page.getByRole("button", { name: "Create project", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Works", exact: true })).toBeVisible();
+  const project = new URL(page.url()).pathname.split("/").pop();
+  const profile = await (await page.request.get(`/api/projects/${project}/profile`)).json();
+  const base = `/api/projects/${project}/works`;
+  const response = await page.request.post(base, { headers: { Origin: "http://127.0.0.1:4173" }, data: { part_id: profile.parts[0].id, system_id: "interiors.walls-linings", action: "alter", title: "Partition layout" } });
+  expect(response.ok()).toBeTruthy();
+  await page.getByRole("button", { name: "Works", exact: true }).click();
+  await page.getByRole("button", { name: /Partition layout/ }).click();
+  await page.getByRole("button", { name: "Correct work item", exact: true }).click();
+  const answer = page.getByLabel("Does this work change room or space boundaries?");
+  await expect(answer).toHaveValue("unknown");
+  await answer.selectOption("yes");
+  await page.getByRole("button", { name: "Save correction", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Saved work" })).toContainText("Room or space boundaries change: Yes");
+  expect((await (await page.request.get(base)).json()).items[0].layout_change).toBe("yes");
+  await page.getByRole("button", { name: "Correct work item", exact: true }).click();
+  await page.getByLabel("Action", { exact: true }).selectOption("repair");
+  await expect(answer).toHaveCount(0);
+  await page.getByRole("button", { name: "Save correction", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Saved work" })).toContainText("Action: repair");
+  await expect(page.getByRole("region", { name: "Saved work" })).not.toContainText("Room or space boundaries change:");
+  expect((await (await page.request.get(base)).json()).items[0].layout_change).toBe("unknown");
+});

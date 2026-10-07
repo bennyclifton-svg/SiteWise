@@ -28,6 +28,7 @@ func (t Truth) String() string {
 // Which items are in scope is the caller's rule (D-10), not this package's.
 type WorkItem struct {
 	System, Action string
+	LayoutChange   string
 }
 
 // WorksEnv is everything a works-layer predicate may read.
@@ -50,6 +51,7 @@ type WorksEnv struct {
 	// Existing reports the site evidence only. Live items below can establish
 	// existence or override it with removal/replacement (D-10).
 	Existing func(system string) Truth
+	memo     *worksMemo
 }
 
 // Holds evaluates a works-layer predicate (consequence or unforeseen `when`,
@@ -57,9 +59,14 @@ type WorksEnv struct {
 func (c *Catalog) Holds(p any, env WorksEnv) Truth {
 	// Override only the code-fed work type; copying every determinant for
 	// every catalogue predicate creates avoidable work on profile edits.
-	workType := c.workTypeValue(env.WorkTypes)
+	workType := ""
+	if env.memo != nil {
+		workType = env.memo.workType
+	} else {
+		workType = c.workTypeValue(env.WorkTypes)
+	}
 	e := predEnv{values: env.Values, workType: &workType, present: env.Present,
-		works: func(cond map[string]any) tri { return c.worksMatch(cond, env.Items) }}
+		works: func(cond map[string]any) tri { return c.matchInEnv(cond, env) }}
 	if env.PresentState != nil {
 		e.presentState = func(system string) tri { return toTri(env.PresentState(system)) }
 	}
@@ -84,6 +91,18 @@ func (c *Catalog) workTypeValue(types []string) string {
 // An ancestor item is only possible evidence about a particular child.
 // Removing a child cannot prove that its entire family has disappeared.
 func (c *Catalog) SystemExisting(system string, env WorksEnv) Truth {
+	if env.memo != nil {
+		if state, ok := env.memo.existing[system]; ok {
+			return state
+		}
+		state := c.systemExisting(system, env)
+		env.memo.existing[system] = state
+		return state
+	}
+	return c.systemExisting(system, env)
+}
+
+func (c *Catalog) systemExisting(system string, env WorksEnv) Truth {
 	result := Unknown
 	if env.Existing != nil {
 		result = env.Existing(system)
@@ -133,8 +152,18 @@ func (c *Catalog) worksMatch(cond map[string]any, items []WorkItem) tri {
 		if len(actions) > 0 && actionKnown && !listHas(actions, it.Action) {
 			continue
 		}
+		layoutKnown := true
+		if required, ok := cond["layout_change"]; ok {
+			if it.LayoutChange == "yes" || it.LayoutChange == "no" {
+				if it.LayoutChange != predicateText(required) {
+					continue
+				}
+			} else {
+				layoutKnown = false
+			}
+		}
 		match := triUnknown
-		if actionKnown || len(actions) == 0 {
+		if (actionKnown || len(actions) == 0) && layoutKnown {
 			match = triTrue
 		}
 		if len(systems) == 0 {
@@ -145,7 +174,7 @@ func (c *Catalog) worksMatch(cond map[string]any, items []WorkItem) tri {
 			continue
 		}
 		for _, s := range systems {
-			listed := fmt.Sprint(s)
+			listed := predicateText(s)
 			switch {
 			case c.covers(it.System, listed) && match == triTrue:
 				return triTrue
@@ -159,11 +188,20 @@ func (c *Catalog) worksMatch(cond map[string]any, items []WorkItem) tri {
 
 func listHas(list []any, v string) bool {
 	for _, x := range list {
-		if fmt.Sprint(x) == v {
+		if predicateText(x) == v {
 			return true
 		}
 	}
 	return false
+}
+
+// Loaded predicates contain strings. Retain the permissive evaluator behavior
+// for hand-built inputs without formatting every catalogue string per item.
+func predicateText(value any) string {
+	if text, ok := value.(string); ok {
+		return text
+	}
+	return fmt.Sprint(value)
 }
 
 func toTri(t Truth) tri {

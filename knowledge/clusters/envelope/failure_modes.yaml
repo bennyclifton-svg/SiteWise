@@ -4665,3 +4665,19 @@ failure_modes:
   - dataset: batch2
     row: B2-0941
   notes: "Hold point or inspection: Seal every penetration to the barrier. Owner list cites ABCB Condensation in Buildings handbook; not verified."
+
+- id: fm.envelope-window-frame-thermal-bridge-stated
+  attaches_to: {system: envelope.thermal-performance}
+  severity: compliance
+  detector:
+    type: noul
+    instructions: "Using `text`, does this passage explicitly state that a window frame is a thermal bridge?"
+    criteria:
+      true: "It explicitly states that a window frame is a thermal bridge."
+      false: "It does not state this, states the opposite, or only gives a requirement or hypothetical risk. Do not calculate adequacy or infer a failure from silence."
+    runs_on: ["envelope.thermal-performance", "envelope.windows-doors"]
+  flag_when: true
+  status: draft
+  sources:
+    - {dataset: batch1, row: B1-0239}
+    - {design: docs/evidence/2026-10-07-k4-detector-coverage.md, anchor: "# K4 precise detector coverage corrections — 7 October 2026"}

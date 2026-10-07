@@ -10,6 +10,12 @@ $env:PATH = (Join-Path $Root '.tools\go\bin') + [IO.Path]::PathSeparator + $env:
 $env:GOCACHE = Join-Path $Root '.tools\go-cache'
 $env:GOPATH = Join-Path $Root '.tools\go-path'
 $env:GOTOOLCHAIN = 'local'
+# Keep test files beneath the checkout: restricted Windows runners may not
+# permit helper processes to reopen files in the account's default temp root.
+$TestTemp = Join-Path $Root 'tmp'
+New-Item -ItemType Directory -Force $TestTemp | Out-Null
+$env:TEMP = $TestTemp
+$env:TMP = $TestTemp
 
 function Require-Command([string]$Name) {
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
@@ -20,7 +26,8 @@ function Require-Command([string]$Name) {
 
 Require-Command python
 Require-Command go
-Require-Command npm
+$Npm = if ($env:OS -eq 'Windows_NT') { 'npm.cmd' } else { 'npm' }
+Require-Command $Npm
 
 # Dedicated test database. Never point this at any other database.
 $env:SITEWISE_TEST_DATABASE_URL = 'postgres://sitewise@127.0.0.1:5433/sitewise_test?sslmode=disable'
@@ -29,18 +36,20 @@ $env:SITEWISE_TEST_DATABASE_URL = 'postgres://sitewise@127.0.0.1:5433/sitewise_t
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 # The Go binary embeds web/dist, so the SPA is built before Go is tested.
-& npm --prefix web ci
+& $Npm --prefix web ci
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-& npm --prefix web run build
+& $Npm --prefix web run build
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-& go test ./...
+# Integration packages share the dedicated database and deterministic fixture
+# IDs. Serialize packages so cleanup in one cannot remove another's fixtures.
+& go test -p 1 ./...
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 & "$PSScriptRoot/check-ocr.ps1"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-& npm --prefix web run test:e2e
+& $Npm --prefix web run test:e2e
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 # Accuracy: deterministic replay of the recorded live Jev run over the private

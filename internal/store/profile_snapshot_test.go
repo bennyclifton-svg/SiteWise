@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/jackc/pgx/v5"
 	"os"
 	"sort"
@@ -75,15 +76,15 @@ func TestProfileSnapshotAfterUploadWithStaleStatistics(t *testing.T) {
  SELECT $1,md5('passage'||n)::uuid,md5('doc1')::uuid,n,'Source text' FROM generate_series(1,1000) n`, org)
 	run(`INSERT INTO passages(org_id,id,document_id,ordinal,body)
  SELECT $1,md5('passage'||n)::uuid,md5('doc2')::uuid,n,'Other source text' FROM generate_series(2001,8000) n`, org)
-	run(`INSERT INTO passage_sources(org_id,passage_id,page,location,section,start_offset,end_offset)
- SELECT $1,md5('passage'||n)::uuid,7,'Sheet A','Fire',10,20 FROM generate_series(1,999) n`, org)
-	run(`INSERT INTO passage_sources(org_id,passage_id,page,location,section,start_offset,end_offset)
- SELECT $1,md5('passage'||n)::uuid,7,'Sheet A','Fire',10,20 FROM generate_series(2001,8000) n`, org)
+	run(`INSERT INTO passage_sources(org_id,document_id,passage_id,page,location,section,start_offset,end_offset)
+ SELECT $1,md5('doc1')::uuid,md5('passage'||n)::uuid,7,'Sheet A','Fire',10,20 FROM generate_series(1,999) n`, org)
+	run(`INSERT INTO passage_sources(org_id,document_id,passage_id,page,location,section,start_offset,end_offset)
+ SELECT $1,md5('doc2')::uuid,md5('passage'||n)::uuid,7,'Sheet A','Fire',10,20 FROM generate_series(2001,8000) n`, org)
 	run(`INSERT INTO decisions(org_id,id,document_id,field,value,band,decided_by) VALUES ($1,gen_random_uuid(),md5('doc1')::uuid,'kind','drawing','green','rule')`, org)
 	run(`INSERT INTO supersessions(org_id,document_id,prior_document_id) VALUES ($1,md5('doc2')::uuid,md5('doc1')::uuid)`, org)
 	// The same source IDs may exist in another org; ID alone is not authority.
-	run(`INSERT INTO passage_sources(org_id,passage_id,page,section)
-SELECT 'f3100000-0000-4000-8000-000000000099',passage_id,99,'Foreign' FROM passage_sources`)
+	run(`INSERT INTO passage_sources(org_id,document_id,passage_id,page,section)
+SELECT 'f3100000-0000-4000-8000-000000000099',document_id,passage_id,99,'Foreign' FROM passage_sources`)
 	// Autovacuum can refresh location statistics before passage statistics.
 	// The ownership join must remain bounded in that mixed-statistics state.
 	run("ANALYZE passage_sources")
@@ -139,8 +140,53 @@ VALUES ($1,gen_random_uuid(),$2,md5('doc2')::uuid,'det.no_passage','unknown','ru
 	if !found {
 		t.Fatal("fact without passage was dropped")
 	}
+	// Compare the consolidated metadata byte-for-byte with the former query,
+	// including skipped/superseded documents and 998 documents without facts.
+	legacyRows, err := tx.Query(ctx, `SELECT jsonb_build_object('id',d.id,'read',d.profile_read,
+'filename',d.filename,'number',d.document_number,'revision',d.revision,
+'kind',COALESCE((SELECT value FROM decisions WHERE org_id=d.org_id AND document_id=d.id AND field='kind'),''),
+'superseded',EXISTS(SELECT 1 FROM supersessions WHERE org_id=d.org_id AND prior_document_id=d.id),
+'sha256',(SELECT encode(sha256,'hex') FROM files WHERE org_id=d.org_id AND id=d.file_id))
+FROM documents d WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid ORDER BY d.id`, org, project)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var legacyDocuments []json.RawMessage
+	for legacyRows.Next() {
+		var raw json.RawMessage
+		if err := legacyRows.Scan(&raw); err != nil {
+			legacyRows.Close()
+			t.Fatal(err)
+		}
+		legacyDocuments = append(legacyDocuments, raw)
+	}
+	legacyRows.Close()
+	if err := legacyRows.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if len(snap.Documents) != 1000 || len(legacyDocuments) != len(snap.Documents) {
+		t.Fatal("no-fact documents lost")
+	}
+	newDocuments := append([]json.RawMessage(nil), snap.Documents...)
+	sort.Slice(newDocuments, func(i, j int) bool { return string(newDocuments[i]) < string(newDocuments[j]) })
+	sort.Slice(legacyDocuments, func(i, j int) bool { return string(legacyDocuments[i]) < string(legacyDocuments[j]) })
+	for i := range legacyDocuments {
+		if string(legacyDocuments[i]) != string(newDocuments[i]) {
+			t.Fatal("document fingerprint representation changed")
+		}
+	}
+	legacySnapshot := snap
+	legacySnapshot.Documents = legacyDocuments
+	beforeFingerprint, err := profileFingerprint(legacySnapshot, ProfileBuild{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	afterFingerprint, err := profileFingerprint(snap, ProfileBuild{})
+	if err != nil || beforeFingerprint != afterFingerprint {
+		t.Fatal("consolidation changed input fingerprint", err)
+	}
 	snap, err = readSnapshot(ctx, tx, "f3100000-0000-4000-8000-000000000099", project)
-	if err != nil || len(snap.Facts) != 0 || len(snap.Parts) != 0 {
+	if err != nil || len(snap.Facts) != 0 || len(snap.Parts) != 0 || len(snap.Documents) != 0 {
 		t.Fatalf("wrong-org snapshot: %+v %v", snap, err)
 	}
 	// Model a replacement becoming visible immediately after the fact query.

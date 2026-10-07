@@ -23,7 +23,7 @@ type Reading struct {
 // IsProfileQuestion reports whether a question id belongs to the profile.
 func IsProfileQuestion(id string) bool {
 	return strings.HasPrefix(id, "det.") || strings.HasPrefix(id, "fact.") ||
-		strings.HasPrefix(id, "hdr.") || strings.HasPrefix(id, "sys.")
+		strings.HasPrefix(id, "hdr.") || strings.HasPrefix(id, "sys.") || strings.HasPrefix(id, "sig:")
 }
 
 // Readings turns one call's profile answers into readings. A pre-parsed pick
@@ -38,6 +38,16 @@ func Readings(result jev.Result, questions map[string]jev.Question, cands map[st
 			continue
 		}
 		a, ok := result.Answers[id]
+		if strings.HasPrefix(id, "sig:") {
+			if ok && a.Type == jev.TypeNoul && a.Noul >= 0 && a.Noul <= 1 {
+				value, probability := "false", 1-a.Noul
+				if a.Noul >= .5 {
+					value, probability = "true", a.Noul
+				}
+				out = append(out, Reading{QuestionID: strings.TrimPrefix(id, "sig:"), Value: value, Excerpt: excerpt, Confidence: &probability, Basis: "noul_probability"})
+			}
+			continue
+		}
 		if !ok || a.Type != jev.TypeChoice || a.Choice == "" || a.Choice == "not_stated" {
 			continue
 		}
@@ -87,7 +97,9 @@ func pick(list []Candidate, id string) (Candidate, bool) {
 // default, the evidence band for a document, user for the user.
 func Build(in Input, cat *knowledge.Catalog) []Row {
 	in.Facts = readFacts(in.Facts, in.Read)
-	rows := Reconcile(in, cat)
+	// Defaults depend only on headers. Derivations produce determinant rows,
+	// so reconciling every source twice cannot change these header choices.
+	rows := Reconcile(scopeHeaders(in), cat)
 	whole := wholePart(in.Parts)
 	category, class, work := headerValue(rows, whole, "hdr.building_class"), headerValue(rows, whole, "hdr.subclass"), headerValue(rows, whole, "hdr.work_type")
 	defaults := cat.ScopeDefaults(category, class, work)
@@ -105,13 +117,28 @@ func Build(in Input, cat *knowledge.Catalog) []Row {
 	}
 	if len(suggested) > 0 {
 		in.Suggested = suggested
-		rows = Reconcile(in, cat)
 	}
+	rows = Reconcile(in, cat)
 	rows = withExistingSystems(rows, whole)
 	rows = withScope(rows, whole, suggested)
 	// Scope suggestions are added after reconciliation and need provenance too.
 	Annotate(rows, cat)
 	return rows
+}
+
+func scopeHeaders(in Input) Input {
+	out := Input{Parts: in.Parts, Thresholds: in.Thresholds}
+	for _, f := range in.Facts {
+		if strings.HasPrefix(f.QuestionID, "hdr.") {
+			out.Facts = append(out.Facts, f)
+		}
+	}
+	for _, u := range in.User {
+		if strings.HasPrefix(u.Key, "hdr.") {
+			out.User = append(out.User, u)
+		}
+	}
+	return out
 }
 
 const (

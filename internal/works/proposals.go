@@ -175,10 +175,19 @@ type ProposalDecision struct {
 	InputsFingerprint string `json:"inputs_fingerprint"`
 }
 
+func evidenceProposalState(reason ProposalReason) string {
+	for _, signal := range reason.Signals {
+		if signal.State == "true" {
+			return "addressed_by_evidence"
+		}
+	}
+	return "open"
+}
+
 // ApplyProposalDecision never mutates authoritative decisions or creates work.
 // Acceptance remains visible after changes; only dismissal reopens (plan 4.7).
 func ApplyProposalDecision(p Proposal, decision *ProposalDecision) Proposal {
-	p.State = "open"
+	p.State = evidenceProposalState(p.Reason)
 	p.InputsChanged = false
 	if decision == nil {
 		return p

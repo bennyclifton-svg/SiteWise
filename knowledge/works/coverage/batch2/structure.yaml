@@ -123,7 +123,7 @@ rows:
   B2-0596: {records: [fm.overland-flow-path-drawn-on-neighbour-land]}
   B2-0597: {records: [uc.flood-planning-level-raised-after-design]}
   B2-0598: {records: [uc.existing-drain-or-interceptor-undersized-for-added-catchment]}
-  B2-0599: {records: [fm.pavement-not-designed-for-heavy-vehicle-loads]}
+  B2-0599: {records: [fm.existing-pavement-load-capacity-failed]}
   B2-0600: {records: [uc.existing-column-blocks-vehicle-swept-path]}
   B2-0602: {records: [uc.stormwater-treatment-does-not-fit-the-land-available]}
   B2-0603: {records: [uc.trench-or-batter-collapses-in-saturated-or-loose-ground]}
@@ -137,7 +137,7 @@ rows:
   B2-0612: {records: [fm.buried-tank-buoyancy-not-checked]}
   B2-0613: {records: [uc.existing-drain-or-interceptor-undersized-for-added-catchment]}
   B2-0614: {records: [uc.council-changes-driveway-or-footpath-levels]}
-  B2-0615: {records: [fm.pavement-not-designed-for-heavy-vehicle-loads]}
+  B2-0615: {records: [fm.existing-pavement-load-capacity-failed]}
   B2-0616: {records: [uc.existing-crossover-or-footpath-grade-prevents-compliant-entry]}
   B2-0617: {records: [uc.construction-controls-block-overland-flow-path]}
   B2-0618: {records: [uc.stormwater-outlet-grade-or-tailwater-prevents-gravity-drainage]}

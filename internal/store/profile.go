@@ -328,16 +328,17 @@ func (s *Store) SetUserValue(ctx context.Context, orgID, projectID, partID, user
 		other = "site"
 	}
 	otherWhere, _ := ownerSQL(other)
-	if _, err := tx.Exec(ctx, `DELETE FROM profile_user_values WHERE `+otherWhere,
-		ownerArgs(other, orgID, projectID, siteID, partID, key)...); err != nil {
-		return 0, err
-	}
+	// Version validation has completed under the project lock. These two
+	// mutations are independent of their results, so share one round trip.
+	batch := &pgx.Batch{}
+	batch.Queue(`DELETE FROM profile_user_values WHERE `+otherWhere,
+		ownerArgs(other, orgID, projectID, siteID, partID, key)...)
 	var project any = projectID
 	if w.Scope == "site" {
 		project = nil
 	}
 	var version int64
-	err = tx.QueryRow(ctx, `
+	batch.Queue(`
 INSERT INTO profile_user_values (org_id, id, project_id, site_id, part_id, scope, key, value, value_state, note,
   origin, meaning, user_id)
 VALUES ($1::uuid, gen_random_uuid(), $2::uuid, $3::uuid, $4::uuid, $5, $6, $7, $8, $9,
@@ -348,11 +349,20 @@ SET value = EXCLUDED.value, value_state = EXCLUDED.value_state, note = EXCLUDED.
     user_id = EXCLUDED.user_id, version = profile_user_values.version + 1, updated_at = now()
 RETURNING version`,
 		orgID, project, siteID, partID, w.Scope, key, w.Value, orDefault(w.State, "set"), cutRunes(w.Note, 120),
-		nilIfBlank(w.Origin), nilIfBlank(w.Meaning), userID).Scan(&version)
+		nilIfBlank(w.Origin), nilIfBlank(w.Meaning), userID)
+	results := tx.SendBatch(ctx, batch)
+	defer results.Close()
+	if _, err = results.Exec(); err != nil {
+		return 0, err
+	}
+	err = results.QueryRow().Scan(&version)
 	if err != nil {
 		return 0, err
 	}
-	return version, s.finishProfileWrite(ctx, tx, orgID, projectID)
+	if err = results.Close(); err != nil {
+		return 0, err
+	}
+	return version, s.finishProfileWriteLocked(ctx, tx, orgID, projectID)
 }
 
 func userValueConflict(scope string) string {
@@ -407,7 +417,7 @@ func (s *Store) DeleteUserValue(ctx context.Context, orgID, projectID, partID, k
 		ownerArgs(scope, orgID, projectID, siteID, partID, key)...); err != nil {
 		return 0, err
 	}
-	return 0, s.finishProfileWrite(ctx, tx, orgID, projectID)
+	return 0, s.finishProfileWriteLocked(ctx, tx, orgID, projectID)
 }
 
 // RebuildProfile reconciles one project under a per-project lock, writes
@@ -434,7 +444,10 @@ func (s *Store) RebuildProfile(ctx context.Context, orgID, projectID, thresholds
 }
 
 func (s *Store) rebuildProfileTx(ctx context.Context, tx pgx.Tx, orgID, projectID string, b ProfileBuild) error {
-	return s.rebuildProfileProjectionTx(ctx, tx, orgID, projectID, b, nil)
+	if b.proposalError != nil {
+		return b.proposalError
+	}
+	return s.rebuildProfileProjectionTx(ctx, tx, orgID, projectID, b, b.proposalEvaluator)
 }
 
 func (s *Store) rebuildProfileProjectionTx(ctx context.Context, tx pgx.Tx, orgID, projectID string, b ProfileBuild, evaluator *works.Evaluator) error {
@@ -444,17 +457,31 @@ func (s *Store) rebuildProfileProjectionTx(ctx context.Context, tx pgx.Tx, orgID
 	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
 		return err
 	}
-	whole, err := ensureWholePart(ctx, tx, orgID, projectID)
-	if err != nil {
-		return err
+	return s.rebuildProfileProjectionLocked(ctx, tx, orgID, projectID, b, evaluator)
+}
+
+// rebuildProfileProjectionLocked requires the project's transaction advisory lock.
+// Keep the locking entry point for standalone rebuilds and unaudited callers.
+func (s *Store) rebuildProfileProjectionLocked(ctx context.Context, tx pgx.Tx, orgID, projectID string, b ProfileBuild, evaluator *works.Evaluator) error {
+
+	if b.Compute == nil {
+		return errors.New("profile compute is not configured")
 	}
 	snap, err := readSnapshot(ctx, tx, orgID, projectID)
 	if err != nil {
 		return err
 	}
 
-	if len(snap.Parts) == 0 {
-		snap.Parts = []profile.Part{whole}
+	hasWhole := false
+	for _, part := range snap.Parts {
+		hasWhole = hasWhole || part.Kind == "whole"
+	}
+	if !hasWhole {
+		whole, err := ensureWholePart(ctx, tx, orgID, projectID)
+		if err != nil {
+			return err
+		}
+		snap.Parts = append([]profile.Part{whole}, snap.Parts...)
 	}
 	if err := readFingerprintInputs(ctx, tx, orgID, projectID, &snap); err != nil {
 		return err
@@ -470,11 +497,22 @@ func (s *Store) rebuildProfileProjectionTx(ctx context.Context, tx pgx.Tx, orgID
 		return err
 	}
 	var proposalInputs works.ProposalInput
+	proposalFingerprint, previousProposalFingerprint := "", ""
+	rebuildProposals := evaluator != nil
 	if evaluator != nil {
 		proposalInputs, err = profile.ProposalInputs(rows, snap.Parts, items, b.Catalog)
 		if err != nil {
 			return err
 		}
+		proposalInputs, proposalFingerprint, err = evaluator.MaterializeInput(proposalInputs)
+		if err != nil {
+			return err
+		}
+		if err = tx.QueryRow(ctx, `SELECT COALESCE((SELECT inputs->>'proposal_fingerprint' FROM profile_builds WHERE org_id=$1::uuid AND project_id=$2::uuid),'')`, orgID, projectID).Scan(&previousProposalFingerprint); err != nil {
+			return err
+		}
+		rebuildProposals = proposalFingerprint != previousProposalFingerprint
+
 	}
 	snap.WorkItems = workFingerprint(items)
 	rows = profile.ProjectWorkScope(rows, items)
@@ -487,10 +525,21 @@ func (s *Store) rebuildProfileProjectionTx(ctx context.Context, tx pgx.Tx, orgID
 	var proposalErr error
 	var computing sync.WaitGroup
 	computing.Go(func() { fingerprint, fingerprintErr = profileFingerprint(snap, b) })
-	if evaluator != nil {
-		computing.Go(func() { proposals, proposalErr = evaluator.Evaluate(proposalInputs) })
+	if rebuildProposals {
+		computing.Go(func() {
+			proposals, proposalErr = evaluator.Evaluate(proposalInputs)
+		})
 	}
 	defer computing.Wait()
+	// The project lock freezes decisions and projections. Read their small
+	// indexes while the evaluator runs; only this goroutine uses the transaction.
+	var proposalStored proposalPersistenceInput
+	if rebuildProposals {
+		proposalStored, err = readProposalPersistenceInput(ctx, tx, orgID, projectID)
+		if err != nil {
+			return err
+		}
+	}
 
 	inputs, err := readRevisions(ctx, tx, orgID, projectID)
 	if err != nil {
@@ -498,48 +547,26 @@ func (s *Store) rebuildProfileProjectionTx(ctx context.Context, tx pgx.Tx, orgID
 	}
 	rawInputs, err := json.Marshal(struct {
 		Revisions
-		ReadKinds []string `json:"read_kinds"`
-	}{inputs, b.ReadKinds})
+		ReadKinds           []string `json:"read_kinds"`
+		ProposalFingerprint string   `json:"proposal_fingerprint,omitempty"`
+	}{inputs, b.ReadKinds, proposalFingerprint})
 	if err != nil {
 		return err
 	}
 
-	if _, err := tx.Exec(ctx, `DELETE FROM profile_rows WHERE org_id = $1::uuid AND project_id = $2::uuid`, orgID, projectID); err != nil {
+	if err := writeProfileProjection(ctx, tx, orgID, projectID, snap.Site.ID, rows); err != nil {
 		return err
-	}
-	values := make([][]any, 0, len(rows))
-	for _, r := range rows {
-		sources, _ := json.Marshal(nonNil(r.Sources))
-		alts, _ := json.Marshal(nonNilAlts(r.Alternatives))
-		var derived []byte
-		if r.Derived != nil {
-			derived, _ = json.Marshal(r.Derived)
-		}
-		values = append(values, []any{
-			orgID, projectID, snap.Site.ID, r.PartID, r.Key, r.Value, r.Band, r.Assertion, cutRunes(r.Note, 120), r.Tenders, sources, alts, derived,
-			orDefault(r.Scope, "project"), orDefault(r.Origin, "document"), orDefault(r.ReviewStatus, "proposed"),
-			orDefault(r.Meaning, "stated"), orDefault(r.ValueState, "set"), r.UserVersion})
-	}
-	if len(values) > 0 {
-		// The projection is replaced atomically. COPY retains database
-		// constraints while avoiding a separate INSERT per derived row.
-		if _, err := tx.CopyFrom(ctx, pgx.Identifier{"profile_rows"}, []string{
-			"org_id", "project_id", "site_id", "part_id", "key", "value", "band", "assertion", "note", "tenders", "sources",
-			"alternatives", "derived", "scope", "origin", "review_status", "meaning", "value_state", "user_version",
-		}, pgx.CopyFromRows(values)); err != nil {
-			return err
-		}
 	}
 
 	computing.Wait()
 	if fingerprintErr != nil {
 		return fingerprintErr
 	}
-	if evaluator != nil {
+	if rebuildProposals {
 		if proposalErr != nil {
 			return proposalErr
 		}
-		if err := writeProposals(ctx, tx, orgID, projectID, snap.Site.ID, proposals); err != nil {
+		if err := writePreparedProposals(ctx, tx, orgID, projectID, snap.Site.ID, proposals, proposalStored); err != nil {
 			return err
 		}
 	}
@@ -566,6 +593,9 @@ type rowQuerier interface {
 
 func readSnapshot(ctx context.Context, q rowQuerier, orgID, projectID string) (ProfileSnapshot, error) {
 	var snap ProfileSnapshot
+	// Non-nil marks a complete all-document fingerprint read, even for an empty
+	// project. The provenance rows and fingerprint metadata share this statement.
+	snap.Documents = []json.RawMessage{}
 	parts, err := readParts(ctx, q, orgID, projectID)
 	if err != nil {
 		return snap, err
@@ -588,7 +618,7 @@ WITH facts AS MATERIALIZED (
  SELECT ids.document_id, doc.profile_read, doc.filename, doc.document_number, doc.revision, fl.sha256,
  COALESCE((SELECT value FROM decisions WHERE org_id=$1::uuid AND document_id=ids.document_id AND field='kind'),'') AS kind,
  EXISTS(SELECT 1 FROM supersessions WHERE org_id=$1::uuid AND prior_document_id=ids.document_id) AS superseded
- FROM (SELECT DISTINCT document_id FROM facts) ids
+ FROM (SELECT id AS document_id FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid) ids
  LEFT JOIN LATERAL (
  SELECT profile_read,filename,document_number,revision,file_id FROM documents WHERE org_id=$1::uuid AND id=ids.document_id OFFSET 0
  ) doc ON true
@@ -599,22 +629,22 @@ WITH facts AS MATERIALIZED (
 -- Row tags let one statement carry facts and each distinct source once.
 SELECT 'fact',f.id::text,f.question_version,f.question_id,f.value,f.unit,f.basis,f.part_label,f.excerpt,f.confidence,f.decided_by,
        f.document_id::text,COALESCE(f.passage_id::text, ''),
-       ''::text,'auto'::text,false,''::text,''::text,''::text,''::text,0::integer,''::text,''::text,0::integer,0::integer
+       ''::text,'auto'::text,false,''::text,''::text,''::text,''::text,0::integer,''::text,''::text,0::integer,0::integer,NULL::jsonb
 FROM facts f
 UNION ALL
 SELECT 'document',''::text,''::text,''::text,''::text,''::text,''::text,''::text,''::text,NULL::double precision,''::text,
        doc.document_id::text,''::text,
        COALESCE(doc.kind,''),COALESCE(doc.profile_read,'auto'),COALESCE(doc.superseded,false),
-       COALESCE(encode(doc.sha256,'hex'),''),COALESCE(doc.filename,''),COALESCE(doc.document_number,''),COALESCE(doc.revision,''),0::integer,''::text,''::text,0::integer,0::integer
+       COALESCE(encode(doc.sha256,'hex'),''),COALESCE(doc.filename,''),COALESCE(doc.document_number,''),COALESCE(doc.revision,''),0::integer,''::text,''::text,0::integer,0::integer,
+       jsonb_build_object('id',doc.document_id,'read',doc.profile_read,
+       'filename',doc.filename,'number',doc.document_number,'revision',doc.revision,
+       'kind',doc.kind,'superseded',doc.superseded,'sha256',encode(doc.sha256,'hex'))
 FROM source_documents doc
 UNION ALL
-SELECT 'passage',''::text,''::text,''::text,''::text,''::text,''::text,''::text,''::text,NULL::double precision,''::text,p.document_id::text,
+SELECT 'passage',''::text,''::text,''::text,''::text,''::text,''::text,''::text,''::text,NULL::double precision,''::text,ps.document_id::text,
        ps.passage_id::text,''::text,'auto'::text,false,''::text,''::text,''::text,''::text,
-       ps.page,ps.location,ps.section,ps.start_offset,ps.end_offset
+       ps.page,ps.location,ps.section,ps.start_offset,ps.end_offset,NULL::jsonb
 FROM passage_sources ps
-JOIN LATERAL (
- SELECT document_id FROM passages WHERE org_id=$1::uuid AND id=ps.passage_id OFFSET 0
-) p ON true
 WHERE ps.org_id=$1::uuid AND ps.passage_id=ANY(ARRAY(SELECT DISTINCT passage_id FROM facts WHERE passage_id IS NOT NULL))`
 	rows, err := q.Query(ctx, snapshotSQL, pgx.QueryExecModeExec, orgID, projectID)
 	if err != nil {
@@ -628,10 +658,11 @@ WHERE ps.org_id=$1::uuid AND ps.passage_id=ANY(ARRAY(SELECT DISTINCT passage_id 
 	for rows.Next() {
 		var f profile.Fact
 		var kind string
+		var documentJSON json.RawMessage
 		if err := rows.Scan(&kind, &f.ID, &f.QuestionVersion, &f.QuestionID, &f.Value, &f.Unit, &f.Basis, &f.PartLabel, &f.Excerpt, &f.Confidence,
 			&f.DecidedBy, &f.DocumentID, &f.PassageID, &f.DocumentKind, &f.ReadSetting, &f.Superseded,
 			&f.FileSHA256, &f.Filename, &f.DocumentNumber, &f.Revision, &f.Page, &f.Location, &f.Section,
-			&f.StartOffset, &f.EndOffset); err != nil {
+			&f.StartOffset, &f.EndOffset, &documentJSON); err != nil {
 			rows.Close()
 			return snap, err
 		}
@@ -640,6 +671,7 @@ WHERE ps.org_id=$1::uuid AND ps.passage_id=ANY(ARRAY(SELECT DISTINCT passage_id 
 			snap.Facts = append(snap.Facts, f)
 		case "document":
 			documents[f.DocumentID] = f
+			snap.Documents = append(snap.Documents, documentJSON)
 		case "passage":
 			passages[sourceKey{f.DocumentID, f.PassageID}] = f
 		}
@@ -738,6 +770,7 @@ func (s *Store) ReadProfile(ctx context.Context, orgID, projectID string, readKi
 
 // Report assembly shares this read inside its own consistent snapshot.
 func readProfileTx(ctx context.Context, tx pgx.Tx, orgID, projectID string, readKinds []string) (ProfileView, error) {
+
 	var v ProfileView
 	var err error
 	// Resolve document IDs before reading jobs/decisions: stale statistics must
@@ -768,17 +801,19 @@ SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)
 		return v, ErrNotFound
 	}
 	if err = tx.QueryRow(ctx, `
-SELECT count(*) FILTER (WHERE `+readableSQL("$3")+`),
-       count(*) FILTER (WHERE NOT `+readableSQL("$3")+`),
+WITH readable_documents AS MATERIALIZED (
+ SELECT d.id, `+readableSQL("$3")+` AS readable
+ FROM documents d WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid
+)
+SELECT count(*) FILTER (WHERE readable), count(*) FILTER (WHERE NOT readable),
        COALESCE((SELECT k.value FROM decisions k WHERE k.org_id=$1::uuid AND k.field='kind'
-                 AND k.document_id = ANY(ARRAY(SELECT d.id FROM documents d
-                   WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND NOT `+readableSQL("$3")+`))
+                 AND k.document_id = ANY(ARRAY(SELECT id FROM readable_documents WHERE NOT readable))
                  GROUP BY k.value ORDER BY count(*) DESC, k.value LIMIT 1), '')
-FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid`,
+FROM readable_documents`,
 		orgID, projectID, nilIfEmpty(readKinds)).Scan(&v.ReadDocuments, &v.SkippedDocuments, &v.SkippedKind); err != nil {
 		return v, err
 	}
-	if err := readBuildState(ctx, tx, orgID, projectID, &v); err != nil {
+	if err = readBuildState(ctx, tx, orgID, projectID, &v); err != nil {
 		return v, err
 	}
 	if v.Coverage, err = sourceCoverage(ctx, tx, orgID, projectID); err != nil {

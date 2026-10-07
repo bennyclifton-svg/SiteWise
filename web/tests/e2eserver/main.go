@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -60,6 +61,10 @@ func main() {
 }
 
 func run(addr, data string) error {
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() {
+		return errors.New("e2e server must bind a loopback address")
+	}
 	dsn := os.Getenv("SITEWISE_TEST_DATABASE_URL")
 	u, err := url.Parse(dsn)
 	if err != nil || strings.TrimPrefix(u.Path, "/") != "sitewise_test" {
@@ -142,6 +147,10 @@ func run(addr, data string) error {
 	}
 	cut := &streamCutter{cancels: map[int]context.CancelFunc{}}
 	mux := http.NewServeMux()
+	mux.HandleFunc("POST /__e2e/shutdown", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+		stop()
+	})
 	mux.HandleFunc("POST /__e2e/invite", func(w http.ResponseWriter, r *http.Request) {
 		invite(w, r, st)
 	})
@@ -150,7 +159,8 @@ func run(addr, data string) error {
 		w.WriteHeader(http.StatusNoContent)
 	})
 	// Only the dedicated, non-deployed browser test server exposes this explicit
-	// diagnostic rebuild. Production profile edits keep their timing gate.
+	// diagnostic rebuild. Investigation uses the unchanged runtime catalogue so
+	// automatic refresh is exercised through acceptance and undo as in production.
 	mux.HandleFunc("POST /__e2e/proposals", func(w http.ResponseWriter, r *http.Request) {
 		fixture, err := knowledge.Load("knowledge")
 		if err != nil {
@@ -166,7 +176,7 @@ func run(addr, data string) error {
 		}
 		for i := range fixture.InterfaceConsequences() {
 			record := &fixture.InterfaceConsequences()[i]
-			if record.ID == "ic.loads-investigate-supported" {
+			if record.ID == "ic.loads-investigate-supported" && kind != "investigation" {
 				record.Propose.Kind = kind
 				record.Propose.Label = "Synthetic " + kind + " proposal"
 			}
