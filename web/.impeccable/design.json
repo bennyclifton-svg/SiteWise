@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T12:48:09.309421+00:00",
+  "title": "Design System: SiteWise workbench",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "shadow-xs",
+        "value": "0 1px 2px oklch(0.2 0.01 86 / 0.06)",
+        "purpose": "Controls and title blocks."
+      },
+      {
+        "name": "shadow-sm",
+        "value": "0 2px 6px -2px oklch(0.2 0.01 86 / 0.14)",
+        "purpose": "Entry panels, disclosures and confirmation dialogs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Shared control and drop-zone state transitions (150ms)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "filing-workspace-stack",
+        "value": "1100px"
+      },
+      {
+        "name": "shell-and-workbench-stack",
+        "value": "760px"
+      },
+      {
+        "name": "title-block-narrow",
+        "value": "720px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Neutral button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Standard workbench action.",
+      "html": "<button class=\"ds-button\">Refresh draft</button>",
+      "css": ".ds-button{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;color:var(--ink, oklch(0.196 0.006 86));display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border:1px solid var(--line-strong, oklch(0.852 0.007 92));border-radius:var(--radius-control, 0.4375rem);background:var(--paper, oklch(0.993 0.003 92));font-weight:500;cursor:pointer;box-shadow:var(--shadow-xs, 0 1px 2px oklch(0.2 0.01 86 / 0.06));transition:background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));}.ds-button:hover{background:var(--ground, oklch(0.955 0.005 92))}.ds-button:active{background:var(--line, oklch(0.908 0.006 92))}.ds-button:focus-visible{outline:2px solid var(--ember, oklch(0.55 0.12 52));outline-offset:2px;}.ds-button:disabled{cursor:not-allowed;opacity:.55}"
+    },
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ember primary action.",
+      "html": "<button class=\"ds-primary\">Save changes</button>",
+      "css": ".ds-primary{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;color:var(--ink, oklch(0.196 0.006 86));display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border:1px solid var(--line-strong, oklch(0.852 0.007 92));border-radius:var(--radius-control, 0.4375rem);background:var(--paper, oklch(0.993 0.003 92));font-weight:500;cursor:pointer;box-shadow:var(--shadow-xs, 0 1px 2px oklch(0.2 0.01 86 / 0.06));transition:background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));background:var(--ember, oklch(0.55 0.12 52));border-color:var(--ember, oklch(0.55 0.12 52));color:var(--paper, oklch(0.993 0.003 92))}.ds-primary:hover,.ds-primary:active{background:var(--ember-hot, oklch(0.48 0.11 51.5));border-color:var(--ember-hot, oklch(0.48 0.11 51.5))}.ds-primary:focus-visible{outline:2px solid var(--ember, oklch(0.55 0.12 52));outline-offset:2px;}.ds-primary:disabled{cursor:not-allowed;opacity:.55}"
+    },
+    {
+      "name": "Text input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard labelled field with focus and invalid border.",
+      "html": "<label class=\"ds-label\">Project name <input class=\"ds-input\" value=\"Project\"></label>",
+      "css": ".ds-label{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;color:var(--ink, oklch(0.196 0.006 86));}.ds-input{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;color:var(--ink, oklch(0.196 0.006 86));height:36px;padding:0 10px;border:1px solid var(--line-strong, oklch(0.852 0.007 92));border-radius:var(--radius-control, 0.4375rem);background:var(--paper, oklch(0.993 0.003 92));box-shadow:var(--shadow-xs, 0 1px 2px oklch(0.2 0.01 86 / 0.06))}.ds-input:focus-visible{outline:2px solid var(--ember, oklch(0.55 0.12 52));outline-offset:2px;outline-offset:0;border-color:var(--ember, oklch(0.55 0.12 52))}.ds-input[aria-invalid=\"true\"]{border-color:var(--alert, oklch(0.5 0.15 28))}"
+    },
+    {
+      "name": "Assertion label",
+      "kind": "chip",
+      "refersTo": "assertion",
+      "description": "Small noninteractive assertion pill.",
+      "html": "<span class=\"ds-assertion\">Required</span>",
+      "css": ".ds-assertion{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;color:var(--ink, oklch(0.196 0.006 86));padding:1px 6px;border:1px solid var(--warn, oklch(0.47 0.1 65));border-radius:999px;font-size:11px;color:var(--warn, oklch(0.47 0.1 65))}"
+    },
+    {
+      "name": "Title block",
+      "kind": "card",
+      "refersTo": "title-block",
+      "description": "Ruled paper container for a filed document.",
+      "html": "<article class=\"ds-block\"><header class=\"ds-block-head\">A-101.pdf</header></article>",
+      "css": ".ds-block{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;color:var(--ink, oklch(0.196 0.006 86));background:var(--paper, oklch(0.993 0.003 92));border:1.5px solid var(--frame, oklch(0.33 0.007 86));border-radius:var(--radius-sm, 3px);box-shadow:var(--shadow-xs, 0 1px 2px oklch(0.2 0.01 86 / 0.06));overflow:hidden}.ds-block-head{padding:6px 12px;min-height:38px;border-bottom:1px solid var(--line-strong, oklch(0.852 0.007 92));background:var(--canvas, oklch(0.977 0.004 92));font-family:var(--mono, \"IBM Plex Mono\", ui-monospace, \"Cascadia Mono\", monospace);font-size:12px;font-weight:500}"
+    },
+    {
+      "name": "Project views",
+      "kind": "nav",
+      "refersTo": "button",
+      "description": "Wrapping small shared buttons identify the active project view; opened views retain local edits while hidden within the project.",
+      "html": "<nav class=\"ds-views\" aria-label=\"Project views\"><button class=\"ds-view\" aria-pressed=\"false\">Filing</button><button class=\"ds-view\" aria-pressed=\"true\">Works</button><button class=\"ds-view\" aria-pressed=\"false\">Proposals</button><button class=\"ds-view\" aria-pressed=\"false\">Packages</button><button class=\"ds-view\" aria-pressed=\"false\">Delivery</button><button class=\"ds-view\" aria-pressed=\"false\">Reports</button></nav>",
+      "css": ".ds-views{display:flex;flex-wrap:wrap;gap:8px;padding:10px 20px;border-bottom:1px solid var(--line, oklch(0.908 0.006 92));background:var(--paper, oklch(0.993 0.003 92))}.ds-view{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;color:var(--ink, oklch(0.196 0.006 86));display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border:1px solid var(--line-strong, oklch(0.852 0.007 92));border-radius:var(--radius-control, 0.4375rem);background:var(--paper, oklch(0.993 0.003 92));font-weight:500;cursor:pointer;box-shadow:var(--shadow-xs, 0 1px 2px oklch(0.2 0.01 86 / 0.06));transition:background-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),border-color 150ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));height:28px;padding:0 10px;font-size:12.5px}.ds-view:hover,.ds-view[aria-pressed=\"true\"]{background:var(--ground, oklch(0.955 0.005 92))}.ds-view:active{background:var(--line, oklch(0.908 0.006 92))}.ds-view:focus-visible{outline:2px solid var(--ember, oklch(0.55 0.12 52));outline-offset:2px;}"
+    },
+    {
+      "name": "Saved record list",
+      "kind": "nav",
+      "description": "Reports, Works, Packages, Delivery and Proposals share full-width selection rows with a ground surface and heavier selected text; the list stacks above the reader on narrow screens.",
+      "html": "<ul class=\"ds-records\"><li><button aria-current=\"true\">Selected record</button></li><li><button>Another record</button></li></ul>",
+      "css": ".ds-records{list-style:none;padding:0;margin:0;font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif)}.ds-records li+li{border-top:1px solid var(--line, oklch(0.908 0.006 92))}.ds-records button{font:inherit;color:var(--ink, oklch(0.196 0.006 86));width:100%;padding:12px 8px;text-align:left;border:0;background:transparent;cursor:pointer;overflow-wrap:anywhere}.ds-records button:hover,.ds-records [aria-current=\"true\"]{background:var(--ground, oklch(0.955 0.005 92))}.ds-records [aria-current=\"true\"]{font-weight:600}.ds-records button:focus-visible{outline:2px solid var(--ember, oklch(0.55 0.12 52));outline-offset:2px}.ds-records button:disabled{cursor:default;opacity:.55}"
+    },
+    {
+      "name": "Saved-version comparison",
+      "kind": "custom",
+      "description": "A warm notice separates a newly loaded saved version from retained local wording. Works, Packages and Delivery provide an explicit action to keep the correction against that version; this documents UI behaviour only.",
+      "html": "<div class=\"ds-notice\"><strong>Saved scope changed</strong><p>Latest saved wording</p><p>Compare the latest wording above with your unsaved wording below.</p><button class=\"ds-keep\">Keep my wording against this version</button></div>",
+      "css": ".ds-notice{font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif);font-size:13.5px;line-height:1.5;margin:20px 0;padding:16px;background:var(--warn-soft, oklch(0.962 0.035 82));color:var(--ink-body, oklch(0.278 0.007 86))}.ds-keep{font:inherit;font-size:12.5px;font-weight:500;height:28px;padding:0 10px;border:1px solid var(--line-strong, oklch(0.852 0.007 92));border-radius:var(--radius-control, 0.4375rem);background:var(--paper, oklch(0.993 0.003 92));color:var(--ink, oklch(0.196 0.006 86));cursor:pointer;box-shadow:var(--shadow-xs, 0 1px 2px oklch(0.2 0.01 86 / 0.06))}.ds-keep:hover{background:var(--ground, oklch(0.955 0.005 92))}.ds-keep:active{background:var(--line, oklch(0.908 0.006 92))}.ds-keep:focus-visible{outline:2px solid var(--ember, oklch(0.55 0.12 52));outline-offset:2px}.ds-keep:disabled{opacity:.55;cursor:default}"
+    },
+    {
+      "name": "Bounded proposal list",
+      "kind": "nav",
+      "description": "Proposal selection reuses saved-record rows with text for critical, draft and decision states. Its scroll height is bounded to 55vh, then 240px at the shared narrow breakpoint.",
+      "html": "<ul class=\"ds-proposals\"><li><button aria-current=\"true\">Review delivery requirement<br>Critical · approval · proposed · draft knowledge</button></li><li><button>Review package obligation<br>obligation · proposed</button></li></ul>",
+      "css": ".ds-proposals{list-style:none;padding:0;margin:0;font-family:var(--sans, \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif)}.ds-proposals li+li{border-top:1px solid var(--line, oklch(0.908 0.006 92))}.ds-proposals button{font:inherit;color:var(--ink, oklch(0.196 0.006 86));width:100%;padding:12px 8px;text-align:left;border:0;background:transparent;cursor:pointer;overflow-wrap:anywhere}.ds-proposals button:hover,.ds-proposals [aria-current=\"true\"]{background:var(--ground, oklch(0.955 0.005 92))}.ds-proposals [aria-current=\"true\"]{font-weight:600}.ds-proposals button:focus-visible{outline:2px solid var(--ember, oklch(0.55 0.12 52));outline-offset:2px}.ds-proposals button:disabled{cursor:default;opacity:.55}.ds-proposals{max-height:55vh;overflow-y:auto}@media(max-width:760px){.ds-proposals{max-height:240px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The warm paper workbench",
+    "overview": "The owner-confirmed product register is a working surface for construction documents: warm paper, IBM Plex, tight controls and clear rules between records. Keep the blue S mark and Sitewise wordmark. Density serves comparison and correction; decoration does not compete with the work.\n\nProvenance stays beside the value it qualifies. Reports, Works, Packages, Delivery and Proposals extend this incumbent world with readable wording, inspectable sources and visible handling of user edits. This is a source-derived record of the current app, not a redesign or a claim that all accessibility targets have been verified.",
+    "keyCharacteristics": [
+      "Warm tonal surfaces with explicit borders.",
+      "IBM Plex Sans for reading and controls; IBM Plex Mono for identifiers.",
+      "Compact controls and locally inspectable provenance.",
+      "User wording and changed sources remain visibly distinct."
+    ],
+    "rules": [
+      {
+        "name": "The Scoped Semantics Rule",
+        "body": "Preserve ember/azure ownership meanings in the workbench; the E/U/C/A citation palette belongs specifically to report references.",
+        "section": "colors"
+      },
+      {
+        "name": "The Reading-and-Identity Rule",
+        "body": "Use Sans for prose and controls; use Mono where the content is an identifier or a structured value.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper-and-Rule Rule",
+        "body": "Establish grouping with surface tone and separators before adding elevation.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Planning-Decision Rule",
+        "body": "Keep the reason and provisional status visible beside an explicit acceptance or dismissal; a planning decision does not imply verification.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** preserve the paper workbench, IBM Plex and established logo assets.",
+      "**Do** keep provenance, uncertainty and protected wording next to the affected value.",
+      "**Do** retain report citation letters and names alongside colour.",
+      "**Do** reuse existing compact controls and inspectable disclosures."
+    ],
+    "donts": [
+      "**Don't** swap the workbench's ember and azure ownership meanings.",
+      "**Don't** spread the report citation palette into unrelated filing states.",
+      "**Don't** hide uncertainty or present an assumption as evidence.",
+      "**Don't** treat this source inspection as verified contrast, keyboard or screen-reader compliance."
+    ]
+  }
+}

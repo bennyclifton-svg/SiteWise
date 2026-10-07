@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T09:01:58.1074978Z",
+  "target": "dev",
+  "release": false,
+  "host": {
+    "os": "windows",
+    "arch": "amd64",
+    "cpus": 12,
+    "gomaxprocs": 12,
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "go": "go1.27.1"
+  },
+  "jev": "replayed-recorded-latency",
+  "model": "jev-1.13.0",
+  "workload": {
+    "files_per_round": 184,
+    "rounds": 2,
+    "concurrency": 4,
+    "background_jev_callers": 2,
+    "background_jev_calls": 172,
+    "degrade_percent": 10,
+    "stalled_jev_requests": 55,
+    "cold_round": "1"
+  },
+  "outcomes": {
+    "filing": 258,
+    "grey_filings": 23,
+    "not_filed": 110
+  },
+  "paths": {
+    "0991_profile_edit": {
+      "n": 40,
+      "p50_us": 10506,
+      "p90_us": 12001,
+      "max_us": 13001,
+      "pass": true
+    },
+    "0991_profile_rebuild": {
+      "n": 40,
+      "p50_us": 5003,
+      "p90_us": 6042,
+      "max_us": 6601,
+      "pass": true
+    },
+    "0991_proposal_compute": {
+      "n": 40,
+      "p50_us": 3127,
+      "p90_us": 3796,
+      "max_us": 5000
+    },
+    "0991_proposal_rebuild_dryrun": {
+      "n": 40,
+      "p50_us": 10078,
+      "p90_us": 11058,
+      "max_us": 12453
+    },
+    "candidate_harvesting": {
+      "n": 258,
+      "p50_us": 1998,
+      "p90_us": 4535,
+      "max_us": 69520,
+      "pass": true
+    },
+    "commit_sse_enqueue": {
+      "n": 258,
+      "p50_us": 4001,
+      "p90_us": 5475,
+      "max_us": 60908,
+      "pass": true
+    },
+    "deterministic_field_rules": {
+      "n": 258,
+      "p50_us": 1001,
+      "p90_us": 3043,
+      "max_us": 91011,
+      "pass": false
+    },
+    "document_delete": {
+      "n": 40,
+      "p50_us": 11353,
+      "p90_us": 12334,
+      "max_us": 21396,
+      "pass": true
+    },
+    "field_correction": {
+      "n": 40,
+      "p50_us": 8029,
+      "p90_us": 9209,
+      "max_us": 26842,
+      "pass": true
+    },
+    "health_speed": {
+      "n": 40,
+      "p50_us": 532,
+      "p90_us": 1099,
+      "max_us": 1575,
+      "pass": true
+    },
+    "identity_text_extraction": {
+      "n": 368,
+      "p50_us": 54600,
+      "p90_us": 357407,
+      "max_us": 1108941,
+      "pass": false
+    },
+    "jev_admission_request": {
+      "n": 258,
+      "p50_us": 236525,
+      "p90_us": 352769,
+      "max_us": 1201773,
+      "pass": true
+    },
+    "profile_edit": {
+      "n": 160,
+      "p50_us": 37984,
+      "p90_us": 64111,
+      "max_us": 101060,
+      "pass": true
+    },
+    "profile_rebuild": {
+      "n": 40,
+      "p50_us": 44485,
+      "p90_us": 46994,
+      "max_us": 49707,
+      "pass": true
+    },
+    "project_document_list": {
+      "n": 40,
+      "p50_us": 7000,
+      "p90_us": 8001,
+      "max_us": 110024,
+      "pass": true
+    },
+    "project_invite_auth": {
+      "n": 45,
+      "p50_us": 1067,
+      "p90_us": 1686,
+      "max_us": 7023,
+      "pass": true
+    },
+    "project_profile_read": {
+      "n": 80,
+      "p50_us": 1510,
+      "p90_us": 19000,
+      "max_us": 22516,
+      "pass": true
+    },
+    "proposal_compute": {
+      "n": 40,
+      "p50_us": 24182,
+      "p90_us": 29584,
+      "max_us": 31212
+    },
+    "proposal_rebuild_dryrun": {
+      "n": 40,
+      "p50_us": 92415,
+      "p90_us": 96602,
+      "max_us": 97278
+    },
+    "spec_home_profile_edit": {
+      "n": 40,
+      "p50_us": 90167,
+      "p90_us": 93025,
+      "max_us": 94347
+    },
+    "sse_reconnect": {
+      "n": 40,
+      "p50_us": 1091,
+      "p90_us": 1607,
+      "max_us": 1731,
+      "pass": true
+    },
+    "whole_intake": {
+      "n": 368,
+      "p50_us": 328720,
+      "p90_us": 792455,
+      "max_us": 1960582,
+      "pass": true
+    },
+    "works_read": {
+      "n": 40,
+      "p50_us": 1180,
+      "p90_us": 1998,
+      "max_us": 2887,
+      "pass": true
+    },
+    "works_write": {
+      "n": 40,
+      "p50_us": 7767,
+      "p90_us": 9211,
+      "max_us": 11053,
+      "pass": true
+    }
+  },
+  "whole_intake_by_round": {
+    "1": {
+      "n": 184,
+      "p50_us": 328096,
+      "p90_us": 634350,
+      "max_us": 1899244
+    },
+    "2": {
+      "n": 184,
+      "p50_us": 336665,
+      "p90_us": 903117,
+      "max_us": 1960582
+    }
+  },
+  "missing_paths": null,
+  "gate": {
+    "code": 0,
+    "report": "identity_text_extraction: p50 54600us p90 357407us over 80000/250000us (reported; judged on the target VPS)\ndeterministic_field_rules: p50 1001us p90 3043us over 1000/1000us (reported; judged on the target VPS)\n"
+  },
+  "notes": [
+    "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
+    "Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
+    "Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
+    "health_speed alternates the owner-only /api/health and /api/speed views after the filings, with the background queue still holding their stages.",
+    "Jev latency is the recorded provider latency replayed per document, not a live measurement. Release evidence is a -live run on the intended VPS.",
+    "Spec Home fixture SHA-256 858ce589eeea6cf3dde011d9e393f4cb2428e1dc8f512bc15fed0c67800ee61e: 38 documents, 1153 facts, 6742 passages; 40 full rebuilds and edits. Proposal diagnostic: 570 loaded records, 388 proposals on last rebuild; includes additional input reads and reconciliation, excludes projection writes. Not step-0 completion or release evidence. 0991 manual source timing fixture SHA-256 c719582a3fbdaa20d40aa4278df74951082fc72c44ef4517fe236dc759714f63: 2 documents, 0 facts, 2 passages; 40 full rebuilds and edits. Bounded two-drawing baseline, manually proposed work items and zero machine-read facts; not an extraction score or complete corpus replay. Proposal diagnostic: 570 loaded records, 242 proposals on last rebuild; includes additional input reads and reconciliation, excludes projection writes. Not step-0 completion or release evidence."
+  ]
+}

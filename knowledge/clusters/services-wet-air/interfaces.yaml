@@ -453,13 +453,13 @@ interfaces:
   - seed: civil-residential.md
     anchor: '### Pump-out systems'
 - id: if.tenant-fitout-base-building-hvac
-  type: loads
+  type: supplies
   from:
-  - mechanical.air-distribution
-  - mechanical.air-conditioning
-  to:
   - mechanical.central-plant
   - mechanical.ventilation
+  to:
+  - mechanical.air-distribution
+  - mechanical.air-conditioning
   applies_when:
     det: existing_building
     is: true

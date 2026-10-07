@@ -5,12 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 
 	"sitewise/internal/profile"
+	"sitewise/internal/works"
 )
 
 // Profile queries use pgx directly: JSONB rows and per-project batches are
@@ -21,12 +24,18 @@ const wholePartLabel = "Whole project"
 // ProfileView is what the profile page reads: parts, precomputed rows and
 // how fresh they are.
 type ProfileView struct {
-	Coverage          []SourceCoverage
-	Parts             []profile.Part
-	Rows              []profile.Row
-	BuiltAt           *time.Time
-	ThresholdsVersion string
-	PendingDocuments  int
+	Revision              int64
+	InputFingerprint      string
+	KnowledgeVersion      string
+	QuestionVersion       string
+	ReadKinds             []string
+	Inputs, CurrentInputs Revisions
+	Coverage              []SourceCoverage
+	Parts                 []profile.Part
+	Rows                  []profile.Row
+	BuiltAt               *time.Time
+	ThresholdsVersion     string
+	PendingDocuments      int
 	// ActiveDocuments counts live leases, never merely queued or expired work.
 	ActiveDocuments int
 	// UnreadDocuments have their text split but have not been asked for
@@ -45,10 +54,13 @@ type ProfileView struct {
 // ProfileSnapshot is the input one rebuild reconciles, read under the
 // project's profile lock.
 type ProfileSnapshot struct {
-	Parts    []profile.Part
-	Facts    []profile.Fact
-	User     []profile.UserValue
-	Planning []profile.PlanningValue
+	Site      Site
+	Documents []json.RawMessage
+	WorkItems []json.RawMessage // WP-20 populates this with its authoritative set.
+	Parts     []profile.Part
+	Facts     []profile.Fact
+	User      []profile.UserValue
+	Planning  []profile.PlanningValue
 }
 
 // projectSiteSQL is the site of project $2 in org $1. Parts belong to the
@@ -64,18 +76,26 @@ func ensureWholePart(ctx context.Context, q interface {
 	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 }, orgID, projectID string) (profile.Part, error) {
 	var p profile.Part
+	read := func() error {
+		return q.QueryRow(ctx, `SELECT id::text,label,kind,COALESCE(ncc_class,'') FROM project_parts
+WHERE org_id=$1::uuid AND site_id=`+projectSiteSQL+` AND kind='whole'`, orgID, projectID).
+			Scan(&p.ID, &p.Label, &p.Kind, &p.NCCClass)
+	}
+	// Existing parts need no insert attempt on every edit and rebuild.
+	if err := read(); !errors.Is(err, pgx.ErrNoRows) {
+		return p, err
+	}
 	err := q.QueryRow(ctx, `
-WITH ins AS (
   INSERT INTO project_parts (org_id, id, site_id, created_by_project_id, label, kind)
   SELECT $1::uuid, $3::uuid, p.site_id, p.id, $4, 'whole'
   FROM projects p WHERE p.org_id = $1::uuid AND p.id = $2::uuid
   ON CONFLICT (org_id, site_id) WHERE kind = 'whole' DO NOTHING
-  RETURNING id::text, label, kind, COALESCE(ncc_class, ''))
-SELECT * FROM ins
-UNION ALL
-SELECT id::text, label, kind, COALESCE(ncc_class, '') FROM project_parts
-WHERE org_id = $1::uuid AND site_id = `+projectSiteSQL+` AND kind = 'whole'
-LIMIT 1`, orgID, projectID, newID(), wholePartLabel).Scan(&p.ID, &p.Label, &p.Kind, &p.NCCClass)
+  RETURNING id::text, label, kind, COALESCE(ncc_class, '')`, orgID, projectID, newID(), wholePartLabel).Scan(&p.ID, &p.Label, &p.Kind, &p.NCCClass)
+	if errors.Is(err, pgx.ErrNoRows) {
+		// A concurrent insert can win after our INSERT's snapshot was taken.
+		// Read again in a new statement to see the committed winner.
+		err = read()
+	}
 	if errors.Is(err, pgx.ErrNoRows) {
 		return profile.Part{}, ErrNotFound
 	}
@@ -84,8 +104,17 @@ LIMIT 1`, orgID, projectID, newID(), wholePartLabel).Scan(&p.ID, &p.Label, &p.Ki
 
 // CreatePart adds a part to the site of a project in the org.
 func (s *Store) CreatePart(ctx context.Context, orgID, projectID, label, kind, nccClass string) (profile.Part, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return profile.Part{}, err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
+		return profile.Part{}, err
+	}
+
 	p := profile.Part{ID: newID(), Label: label, Kind: kind, NCCClass: nccClass}
-	tag, err := s.pool.Exec(ctx, `
+	tag, err := tx.Exec(ctx, `
 INSERT INTO project_parts (org_id, id, site_id, created_by_project_id, label, kind, ncc_class)
 SELECT $1::uuid, $3::uuid, p.site_id, p.id, $4, $5, NULLIF($6, '')
 FROM projects p WHERE p.org_id = $1::uuid AND p.id = $2::uuid`,
@@ -96,13 +125,22 @@ FROM projects p WHERE p.org_id = $1::uuid AND p.id = $2::uuid`,
 	if tag.RowsAffected() == 0 {
 		return profile.Part{}, ErrNotFound
 	}
-	return p, nil
+	return p, s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // UpdatePart renames a part or changes its kind or class. Nil leaves a field.
 func (s *Store) UpdatePart(ctx context.Context, orgID, projectID, partID string, label, kind, nccClass *string) (profile.Part, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return profile.Part{}, err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
+		return profile.Part{}, err
+	}
+
 	var p profile.Part
-	err := s.pool.QueryRow(ctx, `
+	err = tx.QueryRow(ctx, `
 UPDATE project_parts SET
   label = COALESCE($4, label),
   kind = CASE WHEN kind = 'whole' THEN kind ELSE COALESCE($5, kind) END,
@@ -113,7 +151,10 @@ RETURNING id::text, label, kind, COALESCE(ncc_class, '')`,
 	if errors.Is(err, pgx.ErrNoRows) {
 		return profile.Part{}, ErrNotFound
 	}
-	return p, err
+	if err != nil {
+		return p, err
+	}
+	return p, s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // StoredFact is a profile reading to store for one document.
@@ -145,6 +186,9 @@ func (s *Store) ReplaceDocumentFacts(ctx context.Context, orgID, documentID stri
 		}
 		return err
 	}
+	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
+		return err
+	}
 	for _, prefix := range prefixes {
 		if _, err := tx.Exec(ctx, `DELETE FROM profile_facts WHERE org_id = $1::uuid AND document_id = $2::uuid AND starts_with(question_id, $3)`,
 			orgID, documentID, prefix); err != nil {
@@ -168,7 +212,7 @@ VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, NULLIF($5, '')::uuid, $6, $7, $8
 			return err
 		}
 	}
-	return tx.Commit(ctx)
+	return s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // UserWrite is one edit of the user's word on a profile key (plan §4.1, §4.3).
@@ -250,7 +294,8 @@ func currentUserValue(ctx context.Context, tx pgx.Tx, orgID, projectID, siteID, 
 // version. A stale expected version returns the current one with
 // ErrVersionConflict. An omitted origin or meaning keeps the stored one, so
 // an edit never turns an assumption back into a stated fact (D-06). The
-// caller rebuilds the rows (RebuildProfile).
+// configured store rebuilds the rows in this transaction; an unconfigured
+// store leaves the projection explicitly stale.
 func (s *Store) SetUserValue(ctx context.Context, orgID, projectID, partID, userID, key string, w UserWrite) (int64, error) {
 	if _, err := ownerSQL(w.Scope); err != nil {
 		return 0, err
@@ -261,6 +306,9 @@ func (s *Store) SetUserValue(ctx context.Context, orgID, projectID, partID, user
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
+		return 0, err
+	}
+	if err := packageActor(ctx, tx, orgID, userID); err != nil {
 		return 0, err
 	}
 	siteID, err := userValueOwner(ctx, tx, orgID, projectID, partID)
@@ -304,7 +352,7 @@ RETURNING version`,
 	if err != nil {
 		return 0, err
 	}
-	return version, tx.Commit(ctx)
+	return version, s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 func userValueConflict(scope string) string {
@@ -359,7 +407,7 @@ func (s *Store) DeleteUserValue(ctx context.Context, orgID, projectID, partID, k
 		ownerArgs(scope, orgID, projectID, siteID, partID, key)...); err != nil {
 		return 0, err
 	}
-	return 0, tx.Commit(ctx)
+	return 0, s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // RebuildProfile reconciles one project under a per-project lock, writes
@@ -373,7 +421,27 @@ func (s *Store) RebuildProfile(ctx context.Context, orgID, projectID, thresholds
 		return err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
-	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1 || '/' || $2, 0))`, orgID, projectID); err != nil {
+	b := ProfileBuild{ThresholdsVersion: thresholdsVersion, QuestionVersion: profile.QuestionVersion, Compute: compute}
+	if s.profileBuild != nil {
+		b = *s.profileBuild
+		b.ThresholdsVersion = thresholdsVersion
+		b.Compute = compute
+	}
+	if err := s.rebuildProfileTx(ctx, tx, orgID, projectID, b); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}
+
+func (s *Store) rebuildProfileTx(ctx context.Context, tx pgx.Tx, orgID, projectID string, b ProfileBuild) error {
+	return s.rebuildProfileProjectionTx(ctx, tx, orgID, projectID, b, nil)
+}
+
+func (s *Store) rebuildProfileProjectionTx(ctx context.Context, tx pgx.Tx, orgID, projectID string, b ProfileBuild, evaluator *works.Evaluator) error {
+	if b.Compute == nil {
+		return errors.New("profile compute is not configured")
+	}
+	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
 		return err
 	}
 	whole, err := ensureWholePart(ctx, tx, orgID, projectID)
@@ -384,18 +452,62 @@ func (s *Store) RebuildProfile(ctx context.Context, orgID, projectID, thresholds
 	if err != nil {
 		return err
 	}
+
 	if len(snap.Parts) == 0 {
 		snap.Parts = []profile.Part{whole}
 	}
-	rows := compute(snap)
-	var siteID string
-	if err := tx.QueryRow(ctx, `SELECT site_id::text FROM projects WHERE org_id = $1::uuid AND id = $2::uuid`, orgID, projectID).Scan(&siteID); err != nil {
+	if err := readFingerprintInputs(ctx, tx, orgID, projectID, &snap); err != nil {
 		return err
 	}
+	rows := b.Compute(snap)
+	if b.Catalog != nil {
+		if err := s.syncProposedWorks(ctx, tx, orgID, projectID, snap.Site.ID, profile.ProposedWorks(projectID, rows, snap.Parts, b.Catalog), b.Catalog); err != nil {
+			return err
+		}
+	}
+	items, err := readWorkItems(ctx, tx, orgID, projectID)
+	if err != nil {
+		return err
+	}
+	var proposalInputs works.ProposalInput
+	if evaluator != nil {
+		proposalInputs, err = profile.ProposalInputs(rows, snap.Parts, items, b.Catalog)
+		if err != nil {
+			return err
+		}
+	}
+	snap.WorkItems = workFingerprint(items)
+	rows = profile.ProjectWorkScope(rows, items)
+	// Compute from immutable inputs while this goroutine writes the projection.
+	// Only this goroutine touches the transaction. Join on every exit so a
+	// failed write cannot leave background work beyond the rebuild's lifetime.
+	var fingerprint string
+	var fingerprintErr error
+	var proposals []works.Proposal
+	var proposalErr error
+	var computing sync.WaitGroup
+	computing.Go(func() { fingerprint, fingerprintErr = profileFingerprint(snap, b) })
+	if evaluator != nil {
+		computing.Go(func() { proposals, proposalErr = evaluator.Evaluate(proposalInputs) })
+	}
+	defer computing.Wait()
+
+	inputs, err := readRevisions(ctx, tx, orgID, projectID)
+	if err != nil {
+		return err
+	}
+	rawInputs, err := json.Marshal(struct {
+		Revisions
+		ReadKinds []string `json:"read_kinds"`
+	}{inputs, b.ReadKinds})
+	if err != nil {
+		return err
+	}
+
 	if _, err := tx.Exec(ctx, `DELETE FROM profile_rows WHERE org_id = $1::uuid AND project_id = $2::uuid`, orgID, projectID); err != nil {
 		return err
 	}
-	batch := &pgx.Batch{}
+	values := make([][]any, 0, len(rows))
 	for _, r := range rows {
 		sources, _ := json.Marshal(nonNil(r.Sources))
 		alts, _ := json.Marshal(nonNilAlts(r.Alternatives))
@@ -403,30 +515,49 @@ func (s *Store) RebuildProfile(ctx context.Context, orgID, projectID, thresholds
 		if r.Derived != nil {
 			derived, _ = json.Marshal(r.Derived)
 		}
-		batch.Queue(`
-INSERT INTO profile_rows (org_id, project_id, site_id, part_id, key, value, band, assertion, note, tenders, sources,
-  alternatives, derived, scope, origin, review_status, meaning, value_state, user_version)
-VALUES ($1::uuid, $2::uuid, $19::uuid, $3::uuid, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
-			orgID, projectID, r.PartID, r.Key, r.Value, r.Band, r.Assertion, cutRunes(r.Note, 120), r.Tenders, sources, alts, derived,
+		values = append(values, []any{
+			orgID, projectID, snap.Site.ID, r.PartID, r.Key, r.Value, r.Band, r.Assertion, cutRunes(r.Note, 120), r.Tenders, sources, alts, derived,
 			orDefault(r.Scope, "project"), orDefault(r.Origin, "document"), orDefault(r.ReviewStatus, "proposed"),
-			orDefault(r.Meaning, "stated"), orDefault(r.ValueState, "set"), r.UserVersion, siteID)
+			orDefault(r.Meaning, "stated"), orDefault(r.ValueState, "set"), r.UserVersion})
 	}
-	if batch.Len() > 0 {
-		if err := tx.SendBatch(ctx, batch).Close(); err != nil {
+	if len(values) > 0 {
+		// The projection is replaced atomically. COPY retains database
+		// constraints while avoiding a separate INSERT per derived row.
+		if _, err := tx.CopyFrom(ctx, pgx.Identifier{"profile_rows"}, []string{
+			"org_id", "project_id", "site_id", "part_id", "key", "value", "band", "assertion", "note", "tenders", "sources",
+			"alternatives", "derived", "scope", "origin", "review_status", "meaning", "value_state", "user_version",
+		}, pgx.CopyFromRows(values)); err != nil {
 			return err
 		}
 	}
-	if _, err := tx.Exec(ctx, `
-INSERT INTO profile_builds (org_id, project_id, built_at, thresholds_version) VALUES ($1::uuid, $2::uuid, now(), $3)
-ON CONFLICT (org_id, project_id) DO UPDATE SET built_at = now(), thresholds_version = EXCLUDED.thresholds_version`,
-		orgID, projectID, thresholdsVersion); err != nil {
+
+	computing.Wait()
+	if fingerprintErr != nil {
+		return fingerprintErr
+	}
+	if evaluator != nil {
+		if proposalErr != nil {
+			return proposalErr
+		}
+		if err := writeProposals(ctx, tx, orgID, projectID, snap.Site.ID, proposals); err != nil {
+			return err
+		}
+	}
+	var revision int64
+	err = tx.QueryRow(ctx, `
+INSERT INTO profile_builds (org_id, project_id, built_at, thresholds_version, revision, input_fingerprint, knowledge_version, question_version, inputs)
+VALUES ($1::uuid,$2::uuid,now(),$3,1,$4,$5,$6,$7)
+ON CONFLICT (org_id,project_id) DO UPDATE SET built_at=now(), thresholds_version=EXCLUDED.thresholds_version,
+ revision=profile_builds.revision+1, input_fingerprint=EXCLUDED.input_fingerprint, knowledge_version=EXCLUDED.knowledge_version,
+ question_version=EXCLUDED.question_version, inputs=EXCLUDED.inputs RETURNING revision`,
+		orgID, projectID, b.ThresholdsVersion, fingerprint, b.KnowledgeVersion, b.QuestionVersion, rawInputs).Scan(&revision)
+	if err != nil {
 		return err
 	}
-	payload, _ := json.Marshal(map[string]string{"project_id": projectID})
-	if _, err := appendEvent(ctx, s.q.WithTx(tx), orgID, "profile", "", string(payload)); err != nil {
-		return err
-	}
-	return tx.Commit(ctx)
+	payload, _ := json.Marshal(map[string]any{"project_id": projectID, "revision": revision})
+	_, err = appendEvent(ctx, s.q.WithTx(tx), orgID, "profile", "", string(payload))
+
+	return err
 }
 
 type rowQuerier interface {
@@ -442,51 +573,108 @@ func readSnapshot(ctx context.Context, q rowQuerier, orgID, projectID string) (P
 	snap.Parts = parts
 	// OFFSET 0 keeps each lateral lookup parameterised by its exact ID instead
 	// of flattening into joins that multiply scans under stale statistics (F31).
+	// Return each fact, document and passage metadata record once. Match them
+	// in Go so stale estimates cannot turn the joins into repeated scans.
 	// One statement also keeps facts and source metadata on the same snapshot
 	// when a background extraction replaces passages during a rebuild.
-	rows, err := q.Query(ctx, `
-SELECT f.question_id, f.value, f.unit, f.basis, f.part_label, f.excerpt, f.confidence, f.decided_by,
-       f.document_id::text, COALESCE(f.passage_id::text, ''),
-       COALESCE((SELECT d.value FROM decisions d WHERE d.org_id = f.org_id AND d.document_id = f.document_id AND d.field = 'kind'), ''),
-       COALESCE(doc.profile_read, 'auto'),
-       EXISTS (SELECT 1 FROM supersessions s WHERE s.org_id = f.org_id AND s.prior_document_id = f.document_id),
-       COALESCE(encode(fl.sha256, 'hex'), ''), COALESCE(doc.filename, ''), COALESCE(doc.document_number, ''),
-       COALESCE(doc.revision, ''), COALESCE(ps.page, 0), COALESCE(ps.location, ''), COALESCE(ps.section, ''),
-       COALESCE(ps.start_offset, 0), COALESCE(ps.end_offset, 0)
-FROM profile_facts f
-LEFT JOIN LATERAL (
-  SELECT profile_read, filename, document_number, revision, org_id, file_id
-  FROM documents WHERE org_id = f.org_id AND id = f.document_id OFFSET 0
-) doc ON true
-LEFT JOIN LATERAL (
-  SELECT sha256 FROM files WHERE org_id = doc.org_id AND id = doc.file_id OFFSET 0
-) fl ON true
-LEFT JOIN LATERAL (
-  SELECT page, location, section, start_offset, end_offset
-  FROM passage_sources WHERE org_id = f.org_id AND passage_id = f.passage_id OFFSET 0
-) ps ON true
-WHERE f.org_id = $1::uuid AND f.project_id = $2::uuid
-ORDER BY f.document_id, f.passage_id, f.question_id`, orgID, projectID)
+	// Replan this size-sensitive query for each execution: a generic plan
+	// cached before upload can retain a full source-table scan per fact.
+	// Exec uses bound parameters in one round trip, without changing the
+	// connection's statement-cache policy for other queries.
+	snapshotSQL := `
+WITH facts AS MATERIALIZED (
+ SELECT * FROM profile_facts WHERE org_id=$1::uuid AND project_id=$2::uuid
+), source_documents AS MATERIALIZED (
+ SELECT ids.document_id, doc.profile_read, doc.filename, doc.document_number, doc.revision, fl.sha256,
+ COALESCE((SELECT value FROM decisions WHERE org_id=$1::uuid AND document_id=ids.document_id AND field='kind'),'') AS kind,
+ EXISTS(SELECT 1 FROM supersessions WHERE org_id=$1::uuid AND prior_document_id=ids.document_id) AS superseded
+ FROM (SELECT DISTINCT document_id FROM facts) ids
+ LEFT JOIN LATERAL (
+ SELECT profile_read,filename,document_number,revision,file_id FROM documents WHERE org_id=$1::uuid AND id=ids.document_id OFFSET 0
+ ) doc ON true
+ LEFT JOIN LATERAL (
+ SELECT sha256 FROM files WHERE org_id=$1::uuid AND id=doc.file_id OFFSET 0
+ ) fl ON true
+)
+-- Row tags let one statement carry facts and each distinct source once.
+SELECT 'fact',f.id::text,f.question_version,f.question_id,f.value,f.unit,f.basis,f.part_label,f.excerpt,f.confidence,f.decided_by,
+       f.document_id::text,COALESCE(f.passage_id::text, ''),
+       ''::text,'auto'::text,false,''::text,''::text,''::text,''::text,0::integer,''::text,''::text,0::integer,0::integer
+FROM facts f
+UNION ALL
+SELECT 'document',''::text,''::text,''::text,''::text,''::text,''::text,''::text,''::text,NULL::double precision,''::text,
+       doc.document_id::text,''::text,
+       COALESCE(doc.kind,''),COALESCE(doc.profile_read,'auto'),COALESCE(doc.superseded,false),
+       COALESCE(encode(doc.sha256,'hex'),''),COALESCE(doc.filename,''),COALESCE(doc.document_number,''),COALESCE(doc.revision,''),0::integer,''::text,''::text,0::integer,0::integer
+FROM source_documents doc
+UNION ALL
+SELECT 'passage',''::text,''::text,''::text,''::text,''::text,''::text,''::text,''::text,NULL::double precision,''::text,p.document_id::text,
+       ps.passage_id::text,''::text,'auto'::text,false,''::text,''::text,''::text,''::text,
+       ps.page,ps.location,ps.section,ps.start_offset,ps.end_offset
+FROM passage_sources ps
+JOIN LATERAL (
+ SELECT document_id FROM passages WHERE org_id=$1::uuid AND id=ps.passage_id OFFSET 0
+) p ON true
+WHERE ps.org_id=$1::uuid AND ps.passage_id=ANY(ARRAY(SELECT DISTINCT passage_id FROM facts WHERE passage_id IS NOT NULL))`
+	rows, err := q.Query(ctx, snapshotSQL, pgx.QueryExecModeExec, orgID, projectID)
 	if err != nil {
 		return snap, err
 	}
+	documents := map[string]profile.Fact{}
+	// Historical passage IDs may no longer resolve. Even when an ID exists,
+	// its location belongs only to facts from that same source document.
+	type sourceKey struct{ document, passage string }
+	passages := map[sourceKey]profile.Fact{}
 	for rows.Next() {
 		var f profile.Fact
-		if err := rows.Scan(&f.QuestionID, &f.Value, &f.Unit, &f.Basis, &f.PartLabel, &f.Excerpt, &f.Confidence,
+		var kind string
+		if err := rows.Scan(&kind, &f.ID, &f.QuestionVersion, &f.QuestionID, &f.Value, &f.Unit, &f.Basis, &f.PartLabel, &f.Excerpt, &f.Confidence,
 			&f.DecidedBy, &f.DocumentID, &f.PassageID, &f.DocumentKind, &f.ReadSetting, &f.Superseded,
 			&f.FileSHA256, &f.Filename, &f.DocumentNumber, &f.Revision, &f.Page, &f.Location, &f.Section,
 			&f.StartOffset, &f.EndOffset); err != nil {
 			rows.Close()
 			return snap, err
 		}
-		snap.Facts = append(snap.Facts, f)
+		switch kind {
+		case "fact":
+			snap.Facts = append(snap.Facts, f)
+		case "document":
+			documents[f.DocumentID] = f
+		case "passage":
+			passages[sourceKey{f.DocumentID, f.PassageID}] = f
+		}
 	}
 	rows.Close()
 	if err := rows.Err(); err != nil {
 		return snap, err
 	}
+	for i := range snap.Facts {
+		f := &snap.Facts[i]
+		d := documents[f.DocumentID]
+		f.DocumentKind, f.ReadSetting, f.Superseded = d.DocumentKind, orDefault(d.ReadSetting, "auto"), d.Superseded
+		f.FileSHA256, f.Filename, f.DocumentNumber, f.Revision = d.FileSHA256, d.Filename, d.DocumentNumber, d.Revision
+		p := passages[sourceKey{f.DocumentID, f.PassageID}]
+		f.Page, f.Location, f.Section, f.StartOffset, f.EndOffset = p.Page, p.Location, p.Section, p.StartOffset, p.EndOffset
+	}
+	sort.SliceStable(snap.Facts, func(i, j int) bool {
+		a, b := snap.Facts[i], snap.Facts[j]
+		if a.DocumentID != b.DocumentID {
+			return a.DocumentID < b.DocumentID
+		}
+		if a.PassageID != b.PassageID {
+			// Match PostgreSQL's ascending UUID order, including NULLS LAST.
+			if a.PassageID == "" {
+				return false
+			}
+			if b.PassageID == "" {
+				return true
+			}
+			return a.PassageID < b.PassageID
+		}
+		return a.QuestionID < b.QuestionID
+	})
 	urows, err := q.Query(ctx, `
-SELECT part_id::text, key, value, note, value_state, origin, meaning, version FROM profile_user_values
+SELECT part_id::text, key, value, note, value_state, origin, meaning, version, scope, review_status FROM profile_user_values
 WHERE org_id = $1::uuid AND ((scope = 'project' AND project_id = $2::uuid)
    OR (scope = 'site' AND site_id = `+projectSiteSQL+`))
 ORDER BY part_id, key`, orgID, projectID)
@@ -496,7 +684,7 @@ ORDER BY part_id, key`, orgID, projectID)
 	defer urows.Close()
 	for urows.Next() {
 		var u profile.UserValue
-		if err := urows.Scan(&u.PartID, &u.Key, &u.Value, &u.Note, &u.State, &u.Origin, &u.Meaning, &u.Version); err != nil {
+		if err := urows.Scan(&u.PartID, &u.Key, &u.Value, &u.Note, &u.State, &u.Origin, &u.Meaning, &u.Version, &u.Scope, &u.ReviewStatus); err != nil {
 			return snap, err
 		}
 		snap.User = append(snap.User, u)
@@ -540,10 +728,22 @@ func (s *Store) ProfileInput(ctx context.Context, orgID, projectID string) (Prof
 // readKinds are the automatically read kinds; nil applies no kind filter.
 func (s *Store) ReadProfile(ctx context.Context, orgID, projectID string, readKinds []string) (ProfileView, error) {
 	var v ProfileView
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return v, err
+	}
+	defer tx.Rollback(ctx)
+	return readProfileTx(ctx, tx, orgID, projectID, readKinds)
+}
+
+// Report assembly shares this read inside its own consistent snapshot.
+func readProfileTx(ctx context.Context, tx pgx.Tx, orgID, projectID string, readKinds []string) (ProfileView, error) {
+	var v ProfileView
+	var err error
 	// Resolve document IDs before reading jobs/decisions: stale statistics must
 	// not turn the edit response into repeated project-wide scans (F31).
 	var exists bool
-	err := s.pool.QueryRow(ctx, `
+	err = tx.QueryRow(ctx, `
 SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid),
        (SELECT built_at FROM profile_builds WHERE org_id = $1::uuid AND project_id = $2::uuid),
        COALESCE((SELECT thresholds_version FROM profile_builds WHERE org_id = $1::uuid AND project_id = $2::uuid), ''),
@@ -567,7 +767,7 @@ SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)
 	if !exists {
 		return v, ErrNotFound
 	}
-	if err := s.pool.QueryRow(ctx, `
+	if err = tx.QueryRow(ctx, `
 SELECT count(*) FILTER (WHERE `+readableSQL("$3")+`),
        count(*) FILTER (WHERE NOT `+readableSQL("$3")+`),
        COALESCE((SELECT k.value FROM decisions k WHERE k.org_id=$1::uuid AND k.field='kind'
@@ -578,13 +778,16 @@ FROM documents d WHERE d.org_id = $1::uuid AND d.project_id = $2::uuid`,
 		orgID, projectID, nilIfEmpty(readKinds)).Scan(&v.ReadDocuments, &v.SkippedDocuments, &v.SkippedKind); err != nil {
 		return v, err
 	}
-	if v.Coverage, err = s.SourceCoverage(ctx, orgID, projectID); err != nil {
+	if err := readBuildState(ctx, tx, orgID, projectID, &v); err != nil {
 		return v, err
 	}
-	if v.Parts, err = readParts(ctx, s.pool, orgID, projectID); err != nil {
+	if v.Coverage, err = sourceCoverage(ctx, tx, orgID, projectID); err != nil {
 		return v, err
 	}
-	rows, err := s.pool.Query(ctx, `
+	if v.Parts, err = readParts(ctx, tx, orgID, projectID); err != nil {
+		return v, err
+	}
+	rows, err := tx.Query(ctx, `
 SELECT part_id::text, key, value, band, assertion, note, tenders, sources, alternatives, derived,
        scope, origin, review_status, meaning, value_state, user_version
 FROM profile_rows WHERE org_id = $1::uuid AND project_id = $2::uuid ORDER BY part_id, key`, orgID, projectID)
@@ -656,6 +859,9 @@ func (s *Store) RequestProfileRead(ctx context.Context, orgID, projectID string,
 		return 0, err
 	}
 	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
+		return 0, err
+	}
 	// Upgrade old extractions only on an explicit update. Never race a live reader.
 	if _, err := tx.Exec(ctx, `WITH stale AS MATERIALIZED (
  SELECT d.id FROM documents d LEFT JOIN document_sources ds ON ds.org_id=d.org_id AND ds.document_id=d.id
@@ -696,37 +902,8 @@ ON CONFLICT (org_id, document_id, kind) DO NOTHING`, orgID, projectID, kinds)
 
 // SetScope records the user's scope choices on the whole project in one
 // transaction: "in" or "out" per system key, or nil to remove the choice so
-// defaults and documents decide again. The caller rebuilds the profile.
+// defaults and documents decide again. A configured store rebuilds in the
+// same transaction.
 func (s *Store) SetScope(ctx context.Context, orgID, projectID, partID, userID string, choices map[string]*string) error {
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	var ok bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM project_parts WHERE org_id = $1::uuid AND site_id = `+projectSiteSQL+` AND id = $3::uuid)`,
-		orgID, projectID, partID).Scan(&ok); err != nil {
-		return err
-	}
-	if !ok {
-		return ErrNotFound
-	}
-	for key, value := range choices {
-		if value == nil {
-			if _, err := tx.Exec(ctx, `DELETE FROM profile_user_values
-WHERE org_id = $1::uuid AND scope = 'project' AND project_id = $2::uuid AND part_id = $3::uuid AND key = $4`, orgID, projectID, partID, key); err != nil {
-				return err
-			}
-			continue
-		}
-		if _, err := tx.Exec(ctx, `
-INSERT INTO profile_user_values (org_id, id, project_id, site_id, part_id, scope, key, value, note, user_id)
-VALUES ($1::uuid, gen_random_uuid(), $2::uuid, `+projectSiteSQL+`, $3::uuid, 'project', $4, $5, '', $6::uuid)
-ON CONFLICT (org_id, project_id, part_id, key) WHERE scope = 'project' DO UPDATE
-SET value = EXCLUDED.value, value_state = 'set', user_id = EXCLUDED.user_id, version = profile_user_values.version + 1, updated_at = now()`,
-			orgID, projectID, partID, key, *value, userID); err != nil {
-			return err
-		}
-	}
-	return tx.Commit(ctx)
+	return s.setWorkScope(ctx, orgID, projectID, partID, userID, choices)
 }

@@ -1,5 +1,14 @@
 # Fire, life safety and access extraction
 
+## K4 vehicle-clearance ownership correction, 6 October 2026
+
+Moved `fm.vehicle-clearance-lost-under-structural-beam` and coverage entries
+B2-0916/B2-0917 to structure. The complete record is unchanged; its note about
+keyword-based fire placement is retained as historical provenance. Detector
+routing remains explicit and independent of its file location. This resolves
+the flagged file ownership issue without approving its engineering content.
+See `docs/evidence/2026-10-06-k4-vehicle-clearance.md` for validation.
+
 Full relevant-seed reading is complete for the source set below. The cluster now contains 28 systems, 30 rules, 21 interfaces and 23 failure modes. This is draft extraction coverage, not a claim that all regulatory requirements or specialist designs have been verified.
 
 The follow-up added six rules for lining reaction-to-fire evidence, hose reels, livable/adaptable design basis, impairments/restoration, integrated testing and specialist suppression hazards. Four edges cover lining selection, party-wall roof continuity, staged occupation of shared fire systems and brigade access. Seven explicit failure detectors support those gaps. The existing late fire-water assessment detector now requires an explicit dependency by issued design, tender or installation; an early plan with a future flow test is insufficient.
@@ -87,3 +96,50 @@ No live Jev evaluation or threshold calibration was performed. Seed-derived reco
 ## Validation and ownership
 
 `python tools/check_knowledge.py --only knowledge/clusters/fire --strict` passes with zero errors and zero warnings. No git writes were made. Parent-owned global determinants, primary tables and verification reports were not edited. Only current owned files were loaded for append/update; merged lead corrections were preserved.
+
+## WP-K2 draft consequence, 6 October 2026
+
+Added `cq.existing-fire-measures-approval-basis-review` from the frozen fire
+guide's compliance-strategy and inception sections. Alteration, replacement,
+upgrade or removal of included active/passive fire measures in an existing
+building raises a draft review of the strategy and approval implications.
+This is a planning review, not a statutory approval determination or an
+automatic whole-building-upgrade requirement. There is no verified clause,
+numeric rule, new signal or Jev question.
+
+The proposal uses the existing approval-record path. Acceptance retains the
+user's explicit delivery assignments; no system, package, authority or stage
+is guessed from the label. Existing generic delivery risk
+`uc.authority-requires-design-change-after-approval` is retained: it concerns
+an authority-driven design change and has a different, broad work-type trigger.
+This new consequence names affected fire work and its existing-building basis.
+Potential overlap and usefulness still need the owner-scored K6 review.
+
+Physical-investigation consequences remain outside this slice because the
+current consequence shape cannot encode their target system. No shared schema
+was extended. Content remains draft; this is partial WP-K2 progress, not closure
+of the fire research, M1 quality gate or broader catalogue work.
+
+## K4 investigation wording, 6 October 2026
+
+Recast 1 draft investigation labels from physical-work instructions into
+checks or assessments of their cited source constraints. All other record
+fields are preserved, including predicates, signals, sources and draft status.
+See `docs/evidence/2026-10-06-k4-investigation-labels.md` and the exact
+before/after inventory `docs/unforeseen/k4-investigation-label-review.json`.
+This bounded wording pass does not approve content or close owner review.
+
+K4 follow-up: recast 1 further investigation labels that selected remedies
+or design solutions before the investigation. Only labels changed. The shared
+review inventory now records 82 corrections across the catalogue; this remains
+a bounded, unapproved wording pass. See
+`docs/evidence/2026-10-06-k4-investigation-labels.md` and
+`docs/unforeseen/k4-investigation-label-review.json`.
+
+K4 source assessment, 6 October 2026: B2-0559's layout assumptions and B2-0770's
+occupant-management assumptions share a performance-solution applicability
+review. The retained predicate remains broader than evidence of an actual
+solution or breach; contract allocation and usefulness are still unapproved.
+No fire record or question changed. See
+`docs/unforeseen/k4-electrical-fire-merge-review.json` and
+`docs/evidence/2026-10-06-k4-electrical-fire-merges.md`.

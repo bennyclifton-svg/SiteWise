@@ -1,5 +1,7 @@
 # Next wave: requirements register
 
+> 7 October owner update: publish the current implementation checkpoint to main/GitHub; move broader acceptance testing beyond the thin 0991 project. See implementation plan "Current owner direction". Outstanding gates remain open; this is not acceptance or deployment approval.
+
 Status: revised planning register, 5 October 2026. **No implementation authorised by this revision.** Original rows preserve baseline traceability; section R explicitly overrides affected requirements. Current decision/evidence status is in the implementation plan §5/§0.2. Historical dispositions below are not a live status board.
 
 | Item | Value |
@@ -617,6 +619,27 @@ Retain these counts as history. The revised register has 389 unique requirement 
 Every requirement with disposition Planned, Keep or Blocked names at least one package or AT and one acceptance check. Each WP in the packages document lists the requirement IDs it serves; the integration lead checks this both ways at each merge (packages document §3).
 
 ## State updates
+
+### 6 October local implementation reconciliation
+
+The plan §0.2 and package status table now distinguish the local WP-14/15,
+WP-20–23, WP-25/26/28, WP-30–32/35a, WP-40a–42a/45a and WP-X1 work from the
+older planning baseline below. Named package handoffs in `docs/evidence/`
+record implementation and bounded validation. This update does not mark all
+requirements assigned to those packages Implemented or Verified: partial
+phases, changed-question live evaluation, automatic proposal generation,
+owner-reviewed quality, later cost/issue/export/delivery work and release
+evidence remain outstanding. No merge or full green gate is claimed.
+
+The intermittent profile latency failure remains open, despite passing
+diagnostic runs. The owner's confirmed proposal-undo behaviour includes
+historical-use references; its narrow store/API and endpoint timing evidence
+is `docs/evidence/2026-10-06-proposal-undo-history.md`. Current K4 source and
+attachment corrections are indexed in
+`docs/unforeseen/k4-current-review-status.md`; none grants owner review.
+
+Historical state updates follow unchanged. Their pre-change replay results
+must not be treated as evidence for newly changed action/location questions.
 
 The integration lead appends evidence updates here; the newest dated evidence overrides historical baseline cells. The current cross-package summary is plan §0.2. This review amendment leaves historical evidence intact.
 

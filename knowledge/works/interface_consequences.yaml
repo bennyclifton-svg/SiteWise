@@ -18,14 +18,14 @@ interface_consequences:
     type: supplies
     touches: to
     actions: [new, upgrade, alter]
-    propose: {kind: investigation, label: Capacity of the existing supply (flow and pressure, electrical, cooling)}
+    propose: {kind: investigation, label: "Capacity of the existing supply (flow and pressure, electrical, cooling)"}
     status: draft
     sources: *plan
   - id: ic.supplies-keep-served-working
     type: supplies
     touches: from
     actions: [replace, upgrade, alter, remove]
-    propose: {kind: obligation, label: Keep the served system working during the works (changeover, temporary supply or shutdown window)}
+    propose: {kind: obligation, label: "Keep the served system working during the works (changeover, temporary supply or shutdown window)"}
     status: draft
     sources: *plan
   - id: ic.penetrates-make-good

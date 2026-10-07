@@ -691,6 +691,9 @@ def load_actions(report: Report) -> dict | None:
 
 
 def check_actions(rel: str, doc: dict, seed_dir: Path, report: Report, cache: dict) -> None:
+    for action in doc.get("actions") or []:
+        if isinstance(action, dict) and type(action.get("needs_design")) is not bool:
+            report.error(rel, f"action {action.get('id')} needs explicit boolean needs_design")
     if doc.get("status") not in STATUSES:
         report.error(rel, "actions file needs a status")
     check_sources(rel, doc.get("sources"), seed_dir, report, cache)
@@ -728,6 +731,8 @@ def check_actions(rel: str, doc: dict, seed_dir: Path, report: Report, cache: di
 def check_proposal(where: str, prop, kinds: set, report: Report, field: str = "propose") -> None:
     if not isinstance(prop, dict) or prop.get("kind") not in kinds or not str(prop.get("label", "")).strip():
         report.error(where, f"{field} needs a kind from {sorted(kinds)} and a label: {prop}")
+    if isinstance(prop, dict) and set(prop) - {"kind", "label"}:
+        report.error(where, f"{field} has unknown fields {sorted(set(prop) - {'kind', 'label'}, key=str)}; quote labels containing commas in flow mappings")
 
 
 def check_common(where: str, kind: str, item: dict, required: set, seed_dir: Path, report: Report, cache: dict) -> None:
@@ -1024,7 +1029,7 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
         taxonomy = yaml.safe_load(tax_path.read_text(encoding="utf-8")) or {}
     classes = {c.get("id") for c in taxonomy.get("building_classes") or []}
     work_types = {w.get("id") for w in taxonomy.get("work_types") or []}
-    conditions = {c.get("key") for c in taxonomy.get("conditions") or []}
+    conditions = {c.get("key"): c for c in taxonomy.get("conditions") or []}
 
     rel, doc = load_catalogue(KNOWLEDGE / WORKS_DIR / "stages.yaml", "stages", report)
     if doc is not None:
@@ -1069,11 +1074,23 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
                     report.error(where, f"unknown work type {w}")
         for i, a in enumerate(doc.get("complexity_additions") or []):
             where = f"{rel} [complexity_additions {i}]"
-            if not isinstance(a, dict) or not a.get("field") or not a.get("values") or not a.get("consultants"):
+            if not isinstance(a, dict) or not isinstance(a.get("field"), str) or not a["field"].strip() \
+                    or not isinstance(a.get("values"), list) or not a["values"] \
+                    or any(not isinstance(v, str) or not v.strip() for v in a["values"]) \
+                    or not a.get("consultants"):
                 report.error(where, "addition needs field, values and consultants")
                 continue
             if a["field"] not in determinants and a["field"] not in conditions:
                 report.warn(where, f"field {a['field']} is not a SiteWise determinant or condition; map it before use")
+                continue
+            field = determinants.get(a["field"]) or conditions[a["field"]]
+            options = {o["id"] for o in field.get("options") or [] if isinstance(o, dict) and "id" in o}
+            if field.get("value") == "boolean":
+                options = {"true", "false"}
+            if options:
+                for value in a["values"]:
+                    if value not in options:
+                        report.warn(where, f"value {value!r} is not an option of {a['field']}; map it before use")
 
     rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "planning_keys.yaml", "keys", report)
     if doc is not None:
@@ -1112,6 +1129,7 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             patterns.add(f["match"])
 
     rel, doc = load_catalogue(KNOWLEDGE / "reports" / "clauses.yaml", "clauses", report)
+    clauses_by_id = {}
     if doc is not None:
         seen = set()
         for c in doc.get("clauses") or []:
@@ -1133,6 +1151,57 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             if c.get("id") in seen:
                 report.error(where, "duplicate clause id")
             seen.add(c.get("id"))
+            clauses_by_id[c.get("id")] = c
+
+    rel, doc = load_catalogue(KNOWLEDGE / "reports" / "templates.yaml", "templates", report)
+    if doc is not None:
+        seen = set()
+        for template in doc.get("templates") or []:
+            where = f"{rel} [{template.get('id', '?') if isinstance(template, dict) else '?'}]"
+            if not isinstance(template, dict):
+                report.error(rel, "template must be a mapping")
+                continue
+            template_id = str(template.get("id", ""))
+            if not re.fullmatch(r"tpl\.[a-z0-9-]+", template_id) or template_id in seen:
+                report.error(where, "invalid or duplicate template id")
+            seen.add(template_id)
+            if type(template.get("version")) is not int or template["version"] < 1:
+                report.error(where, "template version must be a positive integer")
+            if template.get("kind") not in REPORT_OUTPUTS or template.get("status") not in STATUSES:
+                report.error(where, "invalid template kind or status")
+            check_sources(where, template.get("sources"), seed_dir, report, cache)
+            sections = template.get("sections")
+            if not isinstance(sections, list) or not sections:
+                report.error(where, "template needs non-empty sections")
+                continue
+            section_ids = set()
+            for section in sections:
+                if not isinstance(section, dict):
+                    report.error(where, "section must be a mapping")
+                    continue
+                section_id = str(section.get("id", ""))
+                if not re.fullmatch(r"[a-z][a-z0-9_]*", section_id) or section_id in section_ids:
+                    report.error(where, "invalid or duplicate section id")
+                section_ids.add(section_id)
+                if not str(section.get("title", "")).strip() or type(section.get("essential")) is not bool:
+                    report.error(where, "section requires title and essential boolean")
+                refs = section.get("clauses")
+                if not isinstance(refs, list):
+                    report.error(where, "section clauses must be a list")
+                    continue
+                used = set()
+                for ref in refs:
+                    if not isinstance(ref, dict):
+                        report.error(where, "clause reference must be a mapping")
+                        continue
+                    ref_id = str(ref.get("id", ""))
+                    clause = clauses_by_id.get(ref_id)
+                    if (clause is None or ref_id in used or type(ref.get("version")) is not int
+                            or ref.get("version") != clause.get("version")
+                            or clause.get("section") != section_id
+                            or template.get("kind") not in (clause.get("outputs") or [])):
+                        report.error(where, f"incompatible clause reference {ref_id}")
+                    used.add(ref_id)
 
     rel, doc = load_catalogue(KNOWLEDGE / "costs" / "benchmarks.yaml", "benchmarks", report)
     if doc is not None:

@@ -39,6 +39,10 @@ func (s *Store) ReplaceSource(ctx context.Context, orgID, docID string, src Docu
 		return err
 	}
 	defer tx.Rollback(ctx)
+	projectID, err := lockDocumentProject(ctx, tx, orgID, docID)
+	if err != nil {
+		return err
+	}
 	raw, err := json.Marshal(src.Source)
 	if err != nil {
 		return err
@@ -66,6 +70,9 @@ func (s *Store) ReplaceSource(ctx context.Context, orgID, docID string, src Docu
 	_, err = tx.Exec(ctx, `INSERT INTO document_sources(org_id,document_id,version,pages,empty_pages,source) VALUES($1::uuid,$2::uuid,$3,$4,$5,$6)
  ON CONFLICT(org_id,document_id) DO UPDATE SET version=EXCLUDED.version,pages=EXCLUDED.pages,empty_pages=EXCLUDED.empty_pages,source=EXCLUDED.source,created_at=now()`, orgID, docID, SourceVersion, src.Pages, src.EmptyPages, raw)
 	if err != nil {
+		return err
+	}
+	if err := BumpRevision(ctx, tx, orgID, projectID, "profile_inputs"); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)

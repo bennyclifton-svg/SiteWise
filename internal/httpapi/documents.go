@@ -468,10 +468,5 @@ func deleteDocuments(w http.ResponseWriter, r *http.Request, deps Deps) {
 			deps.Log.Printf("delete: stored file kept: %v", err)
 		}
 	}
-	if deps.Knowledge != nil {
-		if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
-			deps.Log.Printf("delete: profile rebuild failed: %v", err)
-		}
-	}
 	writeJSON(w, http.StatusOK, map[string][]string{"deleted": res.Deleted})
 }

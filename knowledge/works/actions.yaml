@@ -7,35 +7,43 @@ sources:
   - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "### Actions"}
 actions:
   - id: new
+    needs_design: true
     describes: The works install it where none exists now, or in a new building or extension.
     excludes: Adding capacity to an existing system is upgrade.
   - id: replace
+    needs_design: true
     describes: The works remove an existing one and install an equivalent of similar capacity or performance.
     excludes: A stated increase in capacity or performance is upgrade.
   - id: upgrade
+    needs_design: true
     describes: >-
       The works increase the capacity or performance of an existing one, or
       bring it to a newer standard, including by adding components.
     excludes: Like-for-like renewal is replace.
   - id: alter
+    needs_design: true
     describes: >-
       The works relocate, extend or modify an existing one to suit a new
       layout, without a stated change in capacity or performance.
     excludes: Restoring a defect is repair.
   - id: repair
+    needs_design: true
     describes: >-
       The works repair, remediate or rectify a defective or deteriorated
       existing one so it performs as intended.
     excludes: Renewing the whole of it is replace.
   - id: remove
+    needs_design: false
     describes: The works remove or decommission an existing one without replacing it.
     excludes: Removal followed by an equivalent is replace.
   - id: retain
+    needs_design: false
     describes: >-
       An existing one stays in place unchanged, or must stay in operation or
       be protected during the works.
     excludes: Any physical change is another action.
   - id: investigate
+    needs_design: false
     describes: >-
       The works inspect, test, survey or audit an existing one to establish
       condition or compliance, without stated physical work.

@@ -57,7 +57,7 @@ func (c *Catalog) loadKeyScope(dir string) error {
 		Version  int             `yaml:"version"`
 		Families []keyScopeEntry `yaml:"families"`
 	}
-	if err := unmarshal(p, &file); err != nil {
+	if err := c.unmarshal(p, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {

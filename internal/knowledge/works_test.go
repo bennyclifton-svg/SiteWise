@@ -8,6 +8,15 @@ import (
 	"sitewise/internal/knowledge"
 )
 
+// The total load bounds the added works-layer startup cost from above.
+func BenchmarkWorksCatalogueLoad(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		if _, err := knowledge.Load(filepath.Join("..", "..", "knowledge")); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 // The repository's works layer loads, and loading it adds no Jev question:
 // signals are data until D-12 decides how they are asked.
 func TestWorksLayerLoadsWithoutChangingEvidenceQuestions(t *testing.T) {
@@ -47,6 +56,16 @@ func TestDefaultActionFollowsWorkType(t *testing.T) {
 	}
 	if got := len(cat.ExistingConditions()); got != 7 {
 		t.Fatalf("existing conditions %d", got)
+	}
+}
+
+func TestActionsRequireExplicitDesignRule(t *testing.T) {
+	for _, field := range []string{"", "needs_design: null", "needs_design: 'false'"} {
+		root := writeFixture(t)
+		mustWrite(t, filepath.Join(root, "works", "actions.yaml"), "version: 1\nactions:\n  - id: new\n    describes: New works\n    excludes: Existing works\n    "+field+"\n")
+		if _, err := knowledge.Load(root); err == nil || !strings.Contains(err.Error(), "needs_design") {
+			t.Fatalf("accepted %q: %v", field, err)
+		}
 	}
 }
 
@@ -90,15 +109,66 @@ func TestWorksPredicateOnARealRecord(t *testing.T) {
 	}
 }
 
-// Until D-07 feeds work_type from the part or project, a record that tests
-// it stays unknown whatever value the caller passes.
-func TestWorkTypeStaysUnknownUntilDecided(t *testing.T) {
+func TestWorkTypeUsesCodeFedProjectAndPartTypes(t *testing.T) {
 	cat := loadRepo(t)
 	pred := map[string]any{"det": "work_type", "any_of": []any{"extend"}}
 	for _, v := range []string{"extend", "refurb"} {
 		if got := cat.Holds(pred, knowledge.WorksEnv{Values: map[string]string{"work_type": v}}); got != knowledge.Unknown {
 			t.Fatalf("work_type %s: %s", v, got)
 		}
+	}
+	for _, tc := range []struct {
+		types []string
+		want  knowledge.Truth
+	}{
+		{nil, knowledge.Unknown},
+		{[]string{"extend"}, knowledge.True},
+		{[]string{"refurb", "extend"}, knowledge.True},
+		{[]string{"refurb", "advisory"}, knowledge.False},
+		{[]string{"refurb", "invented"}, knowledge.Unknown},
+	} {
+		values := map[string]string{"work_type": "extend"}
+		if got := cat.Holds(pred, knowledge.WorksEnv{Values: values, WorkTypes: tc.types}); got != tc.want {
+			t.Errorf("types %v: %s, want %s", tc.types, got, tc.want)
+		}
+		if values["work_type"] != "extend" {
+			t.Fatal("mutated caller input")
+		}
+	}
+}
+
+func TestExistingSystemWorkActions(t *testing.T) {
+	cat := loadRepo(t)
+	const sys = "fire-active.sprinklers"
+	for _, tc := range []struct {
+		name   string
+		system string
+		site   knowledge.Truth
+		items  []knowledge.WorkItem
+		want   knowledge.Truth
+	}{
+		{"unknown", sys, knowledge.Unknown, nil, knowledge.Unknown},
+		{"site absent", sys, knowledge.False, nil, knowledge.False},
+		{"new is not existing", sys, knowledge.False, []knowledge.WorkItem{{System: sys, Action: "new"}}, knowledge.False},
+		{"alter establishes existence", sys, knowledge.False, []knowledge.WorkItem{{System: sys, Action: "alter"}}, knowledge.True},
+		{"remove overrides site", sys, knowledge.True, []knowledge.WorkItem{{System: sys, Action: "remove"}}, knowledge.False},
+		{"replace overrides retain", sys, knowledge.True, []knowledge.WorkItem{{System: sys, Action: "retain"}, {System: sys, Action: "replace"}}, knowledge.False},
+		{"reverse item order", sys, knowledge.True, []knowledge.WorkItem{{System: sys, Action: "replace"}, {System: sys, Action: "retain"}}, knowledge.False},
+		{"other system", sys, knowledge.True, []knowledge.WorkItem{{System: "electrical", Action: "remove"}}, knowledge.True},
+		{"coarse removal", sys, knowledge.True, []knowledge.WorkItem{{System: "fire-active", Action: "remove"}}, knowledge.False},
+		{"coarse repair is possible", sys, knowledge.False, []knowledge.WorkItem{{System: "fire-active", Action: "repair"}}, knowledge.Unknown},
+		{"child removal is partial", "fire-active", knowledge.True, []knowledge.WorkItem{{System: sys, Action: "remove"}}, knowledge.Unknown},
+		{"unknown action could remove", sys, knowledge.True, []knowledge.WorkItem{{System: sys}}, knowledge.Unknown},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			env := knowledge.WorksEnv{Items: tc.items, Existing: func(string) knowledge.Truth { return tc.site }, Present: func(string) bool { return true }}
+			if got := cat.Holds(map[string]any{"system_existing": tc.system}, env); got != tc.want {
+				t.Fatalf("%s, want %s", got, tc.want)
+			}
+			if got := cat.Holds(map[string]any{"system_present": tc.system}, env); got != knowledge.True {
+				t.Fatalf("system_present changed: %s", got)
+			}
+		})
 	}
 }
 
@@ -148,8 +218,8 @@ func TestLoaderRejectsUnknownWorksReferences(t *testing.T) {
 	actions := `
 version: 1
 actions:
-  - {id: new, describes: d, excludes: e}
-  - {id: alter, describes: d, excludes: e}
+  - {id: new, describes: d, excludes: e, needs_design: true}
+  - {id: alter, describes: d, excludes: e, needs_design: true}
 work_type_defaults: {new: new}
 `
 	for name, files := range map[string]map[string]string{
@@ -172,7 +242,7 @@ work_type_defaults: {new: new}
 			"works/interface_consequences.yaml": "version: 1\ninterface_consequences:\n  - {id: ic.x, type: supplies, touches: from, propose: {kind: investigation, label: x}}\n",
 		},
 		"default action is not an action": {
-			"works/actions.yaml": "version: 1\nactions:\n  - {id: new, describes: d, excludes: e}\nwork_type_defaults: {refurb: alter}\n",
+			"works/actions.yaml": "version: 1\nactions:\n  - {id: new, describes: d, excludes: e, needs_design: true}\nwork_type_defaults: {refurb: alter}\n",
 		},
 	} {
 		root := writeFixture(t)

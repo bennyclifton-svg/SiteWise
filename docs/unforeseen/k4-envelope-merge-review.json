@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "reviewed": false,
+  "source_status": "AI-generated unverified leads",
+  "runtime_questions_changed": false,
+  "records": [
+    {
+      "id": "fm.envelope-thermal-break-missing",
+      "assessment": "partial_coverage",
+      "reason": "B1-0239 does not necessarily explicitly identify a missing thermal break.",
+      "owner_review_pending": true,
+      "followup": "Resolve frame-thermal-bridge coverage with a bounded detector decision and evaluation; do not infer a missing break from conductivity alone.",
+      "source_rows": [
+        {
+          "row_id": "B1-0232",
+          "#": "232",
+          "Theme": "3. Building Envelope & Waterproofing",
+          "Unforeseen circumstance": "Façade bracket thermal break missing",
+          "Systems impacted": "Façade bracket ↔ Insulation",
+          "Foundational relationship": "Brackets bridge the insulation layer.",
+          "Building category": "Com",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0239",
+          "#": "239",
+          "Theme": "3. Building Envelope & Waterproofing",
+          "Unforeseen circumstance": "Window frames thermally bridged",
+          "Systems impacted": "Window frame ↔ Energy rating",
+          "Foundational relationship": "Aluminium conducts heat through the frame.",
+          "Building category": "Res",
+          "Project type": "New build"
+        }
+      ]
+    },
+    {
+      "id": "fm.envelope-glass-weight-exceeds-frame-capacity",
+      "assessment": "retain_common_mechanism",
+      "reason": "Only an explicit project statement of inadequate frame capacity is a positive defect; a glass specification change or heritage designation alone is not.",
+      "owner_review_pending": true,
+      "followup": "Owner review of retained merge and severity; acoustic performance and heritage consent are separate concerns.",
+      "source_rows": [
+        {
+          "row_id": "B1-0238",
+          "#": "238",
+          "Theme": "3. Building Envelope & Waterproofing",
+          "Unforeseen circumstance": "Glass spec changed to improve acoustics",
+          "Systems impacted": "Glass ↔ Frame design",
+          "Foundational relationship": "Thicker glass is heavier and needs stronger frames.",
+          "Building category": "Com",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0270",
+          "#": "270",
+          "Theme": "3. Building Envelope & Waterproofing",
+          "Unforeseen circumstance": "Single glazing replaced with double and frames cannot carry it",
+          "Systems impacted": "Window frames ↔ Glass weight",
+          "Foundational relationship": "Heavier glass needs new frames.",
+          "Building category": "Res",
+          "Project type": "Refurb/Upgrade"
+        },
+        {
+          "row_id": "B1-0300",
+          "#": "300",
+          "Theme": "3. Building Envelope & Waterproofing",
+          "Unforeseen circumstance": "Retrofit double glazing in heritage frames",
+          "Systems impacted": "Heritage windows ↔ Energy upgrade",
+          "Foundational relationship": "Heritage frames cannot carry heavy glass.",
+          "Building category": "Res",
+          "Project type": "Refurb/Upgrade"
+        }
+      ]
+    },
+    {
+      "id": "uc.colour-or-dye-batch-variation",
+      "assessment": "retain_common_mechanism",
+      "reason": "Batch-related appearance variation is shared across cladding, tiles and carpet; the generated single-batch contract is not source-verified.",
+      "owner_review_pending": true,
+      "followup": "Owner review of procurement control, feasibility, contract wording and severity.",
+      "source_rows": [
+        {
+          "row_id": "B1-0230",
+          "#": "230",
+          "Theme": "3. Building Envelope & Waterproofing",
+          "Unforeseen circumstance": "Cladding panels differ in colour batch",
+          "Systems impacted": "Cladding ↔ Appearance",
+          "Foundational relationship": "Batch variation shows on large façades.",
+          "Building category": "Com",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0717",
+          "#": "717",
+          "Theme": "8. Finishes, Joinery & Fit-out",
+          "Unforeseen circumstance": "Tile colour batch mismatch",
+          "Systems impacted": "Tiles ↔ Appearance",
+          "Foundational relationship": "Batch variation appears on large areas.",
+          "Building category": "Res/Com",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0727",
+          "#": "727",
+          "Theme": "8. Finishes, Joinery & Fit-out",
+          "Unforeseen circumstance": "Carpet tile colour dye lots vary",
+          "Systems impacted": "Carpet ↔ Appearance",
+          "Foundational relationship": "Dye lots vary.",
+          "Building category": "Com",
+          "Project type": "New build"
+        }
+      ]
+    }
+  ]
+}

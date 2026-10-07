@@ -8,11 +8,12 @@ interface Props {
   message: string;
   confirmLabel: string;
   busy?: boolean;
+	busyLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-export function ConfirmDialog({ title, message, confirmLabel, busy, onConfirm, onCancel }: Props) {
+export function ConfirmDialog({ title, message, confirmLabel, busy, busyLabel = "Deleting…", onConfirm, onCancel }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -39,7 +40,7 @@ export function ConfirmDialog({ title, message, confirmLabel, busy, onConfirm, o
           Cancel
         </button>
         <button type="button" className="btn btn-small btn-danger" onClick={onConfirm} disabled={busy}>
-          {busy ? "Deleting…" : confirmLabel}
+          {busy ? busyLabel : confirmLabel}
         </button>
       </div>
     </dialog>

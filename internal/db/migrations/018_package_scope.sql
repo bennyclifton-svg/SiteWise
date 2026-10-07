@@ -1,0 +1,43 @@
+CREATE TABLE package_scope_items (
+ org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+ id uuid NOT NULL,
+ project_id uuid NOT NULL,
+ package_id uuid NOT NULL,
+ item_kind text NOT NULL CHECK (item_kind IN ('responsibility','obligation')),
+ work_item_id uuid,
+ role text CHECK (role IN ('design','document','supply','install','test','certify','inspect','maintain_operation','protect')),
+ clause_id text CHECK (length(trim(clause_id)) BETWEEN 1 AND 200),
+ clause_version integer CHECK (clause_version>0),
+ user_text text CHECK (length(trim(user_text)) BETWEEN 1 AND 10000),
+ stage_id uuid,
+ inclusion text NOT NULL CHECK (inclusion IN ('included','excluded')),
+ deliverable text CHECK (length(deliverable)<=2000),
+ interface_ids text[] NOT NULL DEFAULT '{}',
+ source_refs jsonb NOT NULL DEFAULT '[]' CHECK (jsonb_typeof(source_refs)='array'),
+ origin text NOT NULL CHECK (origin IN ('document','user','calculation','assumption')),
+ review_status text NOT NULL CHECK (review_status IN ('proposed','accepted_for_planning','verified','superseded')),
+ meaning text NOT NULL DEFAULT 'stated' CHECK (meaning IN ('stated','requirement','allowance','forecast')),
+ provenance jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(provenance)='object'),
+ verified_by uuid,
+ verified_at timestamptz,
+ verification_basis text,
+ source_proposal_key text,
+ retired_at timestamptz,
+ version bigint NOT NULL DEFAULT 1 CHECK (version>0),
+ PRIMARY KEY (org_id,id),
+ UNIQUE (org_id,project_id,id),
+ FOREIGN KEY (org_id,project_id) REFERENCES projects(org_id,id) ON DELETE CASCADE,
+ FOREIGN KEY (org_id,project_id,package_id) REFERENCES packages(org_id,project_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,project_id,work_item_id) REFERENCES work_items(org_id,project_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,project_id,package_id,stage_id) REFERENCES package_stages(org_id,project_id,package_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,verified_by) REFERENCES users(org_id,id) DEFERRABLE INITIALLY DEFERRED,
+ CHECK (item_kind='obligation' OR (work_item_id IS NOT NULL AND role IS NOT NULL)),
+ CHECK ((clause_id IS NULL)<>(user_text IS NULL)),
+ CHECK ((clause_id IS NULL)=(clause_version IS NULL)),
+ CHECK (cardinality(interface_ids)<=100 AND array_position(interface_ids,NULL) IS NULL),
+ CHECK (review_status<>'verified' OR (verified_by IS NOT NULL AND verified_at IS NOT NULL AND COALESCE(length(trim(verification_basis)),0)>0))
+);
+CREATE UNIQUE INDEX package_scope_role_uq ON package_scope_items(org_id,package_id,work_item_id,role) WHERE retired_at IS NULL AND inclusion='included';
+CREATE UNIQUE INDEX package_scope_proposal_uq ON package_scope_items(org_id,project_id,source_proposal_key) WHERE source_proposal_key IS NOT NULL;
+CREATE INDEX package_scope_work_idx ON package_scope_items(org_id,project_id,work_item_id);
+CREATE INDEX package_scope_stage_idx ON package_scope_items(org_id,project_id,package_id,stage_id);

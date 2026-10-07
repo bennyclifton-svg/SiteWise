@@ -34,6 +34,7 @@ import (
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
 	"sitewise/internal/store"
+	"sitewise/internal/works"
 	"sitewise/web"
 )
 
@@ -146,6 +147,42 @@ func run(addr, data string) error {
 	})
 	mux.HandleFunc("POST /__e2e/drop-streams", func(w http.ResponseWriter, r *http.Request) {
 		cut.dropAll()
+		w.WriteHeader(http.StatusNoContent)
+	})
+	// Only the dedicated, non-deployed browser test server exposes this explicit
+	// diagnostic rebuild. Production profile edits keep their timing gate.
+	mux.HandleFunc("POST /__e2e/proposals", func(w http.ResponseWriter, r *http.Request) {
+		fixture, err := knowledge.Load("knowledge")
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		kind := r.URL.Query().Get("kind")
+		switch kind {
+		case "investigation", "work_item", "discipline", "obligation", "approval", "hold_point":
+		default:
+			http.Error(w, "invalid fixture kind", 400)
+			return
+		}
+		for i := range fixture.InterfaceConsequences() {
+			record := &fixture.InterfaceConsequences()[i]
+			if record.ID == "ic.loads-investigate-supported" {
+				record.Propose.Kind = kind
+				record.Propose.Label = "Synthetic " + kind + " proposal"
+			}
+		}
+		evaluator, err := works.NewEvaluator(fixture)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		build := store.ProfileBuild{Catalog: fixture, KnowledgeVersion: fixture.Version(), Compute: func(s store.ProfileSnapshot) []profile.Row {
+			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: profileTh, Read: reading}, fixture)
+		}}
+		if err := st.WithProfile(build).RebuildProposals(r.Context(), orgs["a"], r.URL.Query().Get("project"), evaluator); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
 		w.WriteHeader(http.StatusNoContent)
 	})
 	mux.Handle("/", cut.wrap(srv))

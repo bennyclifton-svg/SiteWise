@@ -19,3 +19,9 @@ owner changes that. Scoring rules for the harness (plan task P16):
 
 Gates: no wrong green; report the share correct without user action against
 the 80% target.
+
+Version-2 work-item keys use exact system/action/part matching instead. See
+[work extraction evaluation](WORKS.md) for the offline command, source and
+version pins, precision/recall rules and owner-review gate. The 0991 key is a
+bounded draft for two drawings; 0777 awaits correction of a mismatched design
+set. Neither is an approved quality result.

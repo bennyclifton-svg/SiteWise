@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T07:53:40.1645567Z",
+  "target": "dev",
+  "release": false,
+  "host": {
+    "os": "windows",
+    "arch": "amd64",
+    "cpus": 12,
+    "gomaxprocs": 12,
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "go": "go1.27.1"
+  },
+  "jev": "replayed-recorded-latency",
+  "model": "jev-1.13.0",
+  "workload": {
+    "files_per_round": 20,
+    "rounds": 1,
+    "concurrency": 4,
+    "background_jev_callers": 2,
+    "background_jev_calls": 24,
+    "degrade_percent": 10,
+    "stalled_jev_requests": 6,
+    "cold_round": "1"
+  },
+  "outcomes": {
+    "filing": 19,
+    "grey_filings": 2,
+    "not_filed": 1
+  },
+  "paths": {
+    "candidate_harvesting": {
+      "n": 19,
+      "p50_us": 506,
+      "p90_us": 1999,
+      "max_us": 15623,
+      "pass": false
+    },
+    "commit_sse_enqueue": {
+      "n": 19,
+      "p50_us": 4514,
+      "p90_us": 9680,
+      "max_us": 10001,
+      "pass": false
+    },
+    "deterministic_field_rules": {
+      "n": 19,
+      "p50_us": 0,
+      "p90_us": 1997,
+      "max_us": 2003,
+      "pass": false
+    },
+    "document_delete": {
+      "n": 10,
+      "p50_us": 35923,
+      "p90_us": 36701,
+      "max_us": 37699,
+      "pass": false
+    },
+    "field_correction": {
+      "n": 10,
+      "p50_us": 6828,
+      "p90_us": 7994,
+      "max_us": 28469,
+      "pass": false
+    },
+    "health_speed": {
+      "n": 10,
+      "p50_us": 531,
+      "p90_us": 1169,
+      "max_us": 1171,
+      "pass": false
+    },
+    "identity_text_extraction": {
+      "n": 20,
+      "p50_us": 112669,
+      "p90_us": 357567,
+      "max_us": 366409,
+      "pass": false
+    },
+    "jev_admission_request": {
+      "n": 19,
+      "p50_us": 244967,
+      "p90_us": 1200353,
+      "max_us": 1200552,
+      "pass": false
+    },
+    "profile_edit": {
+      "n": 40,
+      "p50_us": 29633,
+      "p90_us": 51965,
+      "max_us": 54598,
+      "pass": true
+    },
+    "profile_rebuild": {
+      "n": 10,
+      "p50_us": 44539,
+      "p90_us": 57122,
+      "max_us": 57714,
+      "pass": false
+    },
+    "project_document_list": {
+      "n": 10,
+      "p50_us": 2254,
+      "p90_us": 2797,
+      "max_us": 4001,
+      "pass": false
+    },
+    "project_invite_auth": {
+      "n": 13,
+      "p50_us": 1164,
+      "p90_us": 6819,
+      "max_us": 8000,
+      "pass": false
+    },
+    "project_profile_read": {
+      "n": 20,
+      "p50_us": 1062,
+      "p90_us": 11172,
+      "max_us": 11192,
+      "pass": true
+    },
+    "spec_home_profile_edit": {
+      "n": 10,
+      "p50_us": 88436,
+      "p90_us": 92061,
+      "max_us": 95158
+    },
+    "sse_reconnect": {
+      "n": 10,
+      "p50_us": 1047,
+      "p90_us": 1101,
+      "max_us": 1690,
+      "pass": false
+    },
+    "whole_intake": {
+      "n": 20,
+      "p50_us": 580521,
+      "p90_us": 1455810,
+      "max_us": 1971184,
+      "pass": true
+    },
+    "works_read": {
+      "n": 10,
+      "p50_us": 757,
+      "p90_us": 1176,
+      "max_us": 1256,
+      "pass": false
+    },
+    "works_write": {
+      "n": 10,
+      "p50_us": 6486,
+      "p90_us": 6816,
+      "max_us": 7329,
+      "pass": false
+    }
+  },
+  "whole_intake_by_round": {
+    "1": {
+      "n": 20,
+      "p50_us": 580521,
+      "p90_us": 1455810,
+      "max_us": 1971184
+    }
+  },
+  "missing_paths": null,
+  "gate": {
+    "code": 2,
+    "report": "identity_text_extraction: p50 112669us p90 357567us over 80000/250000us (reported; judged on the target VPS)\ncandidate_harvesting: 19 samples (reported; judged on the target VPS)\ndeterministic_field_rules: 19 samples (reported; judged on the target VPS)\njev_admission_request: 19 samples (reported; judged on the target VPS)\ncommit_sse_enqueue: 19 samples (reported; judged on the target VPS)\nproject_document_list: insufficient samples: got 10 need 20\nfield_correction: insufficient samples: got 10 need 20\nproject_invite_auth: insufficient samples: got 13 need 20\nhealth_speed: insufficient samples: got 10 need 20\nsse_reconnect: insufficient samples: got 10 need 20\ndocument_delete: insufficient samples: got 10 need 20\nprofile_rebuild: insufficient samples: got 10 need 20\nworks_read: insufficient samples: got 10 need 20\nworks_write: insufficient samples: got 10 need 20\n"
+  },
+  "notes": [
+    "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
+    "Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
+    "Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
+    "health_speed alternates the owner-only /api/health and /api/speed views after the filings, with the background queue still holding their stages.",
+    "Jev latency is the recorded provider latency replayed per document, not a live measurement. Release evidence is a -live run on the intended VPS.",
+    "Spec Home fixture SHA-256 858ce589eeea6cf3dde011d9e393f4cb2428e1dc8f512bc15fed0c67800ee61e: 38 documents, 1153 facts, 6742 passages; 10 full rebuilds and edits. 0991 is WP-28."
+  ]
+}

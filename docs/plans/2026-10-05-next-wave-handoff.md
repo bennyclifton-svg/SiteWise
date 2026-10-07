@@ -4,6 +4,16 @@ For the next implementing agent (Claude or Codex). Read `AGENTS.md`, then the pl
 
 ## Continuation update
 
+6 October: the local continuation has implemented substantial M1 code beyond
+WP-14, without committing or merging it. The current package/phase summary is
+now reconciled in the implementation plan §0.2 and package status table. Read
+those and the named handoffs before using the historical baseline below.
+Automatic proposal generation remains off; intermittent profile latency,
+changed-question evaluation and owner-reviewed 0991 quality remain open.
+M2/M3 have not been cleared. Preserve the current dirty worktree.
+
+The following 5 October continuation note is historical:
+
 F31 is fixed in `codex/f31-profile-snapshot`, based on `6098fa5`, with the
 full local gate and independent review passed. See
 `docs/evidence/2026-10-05-f31-profile-snapshot.md`. Profile edits with stale

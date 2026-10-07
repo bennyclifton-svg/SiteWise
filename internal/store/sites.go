@@ -40,7 +40,24 @@ WHERE p.org_id = $1::uuid AND p.id = $2::uuid`, orgID, projectID).
 // site with ErrVersionConflict; another org's site is ErrNotFound.
 func (s *Store) UpdateSite(ctx context.Context, orgID, siteID string, version int64, label, address, lot *string) (Site, error) {
 	var site Site
-	err := s.pool.QueryRow(ctx, `
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return site, err
+	}
+	defer tx.Rollback(ctx)
+	var projectID string
+	err = tx.QueryRow(ctx, `SELECT id::text FROM projects WHERE org_id=$1::uuid AND site_id=$2::uuid`, orgID, siteID).Scan(&projectID)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		return site, err
+	}
+	lockID := projectID
+	if lockID == "" {
+		lockID = "site/" + siteID
+	}
+	if err := lockProject(ctx, tx, orgID, lockID); err != nil {
+		return site, err
+	}
+	err = tx.QueryRow(ctx, `
 UPDATE sites SET
   label = COALESCE($4, label),
   address = COALESCE($5, address),
@@ -51,12 +68,15 @@ WHERE org_id = $1::uuid AND id = $2::uuid AND version = $3
 RETURNING id::text, label, address, lot, version`, orgID, siteID, version, label, address, lot).
 		Scan(&site.ID, &site.Label, &site.Address, &site.Lot, &site.Version)
 	if err == nil {
-		return site, nil
+		if projectID == "" {
+			return site, tx.Commit(ctx)
+		}
+		return site, s.finishProfileWrite(ctx, tx, orgID, projectID)
 	}
 	if !errors.Is(err, pgx.ErrNoRows) {
 		return Site{}, err
 	}
-	err = s.pool.QueryRow(ctx, `
+	err = tx.QueryRow(ctx, `
 SELECT id::text, label, address, lot, version FROM sites WHERE org_id = $1::uuid AND id = $2::uuid`, orgID, siteID).
 		Scan(&site.ID, &site.Label, &site.Address, &site.Lot, &site.Version)
 	if errors.Is(err, pgx.ErrNoRows) {

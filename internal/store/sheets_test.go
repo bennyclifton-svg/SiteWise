@@ -41,7 +41,18 @@ func TestDrawingSheetsAtomicPublicationAndIsolation(t *testing.T) {
 		t.Fatal("cross-org expansion", err)
 	}
 	pending, err := st.PendingDrawingExpansions(ctx)
-	if err != nil || len(pending) != 1 {
+	owned := 0
+	for _, p := range pending {
+		if p.OrgID == orgA || p.OrgID == orgB {
+			owned++
+			if p.DocumentID != up.DocumentID {
+				t.Fatalf("unexpected tenant expansion: %+v", p)
+			}
+		}
+	}
+	// The global worker scan may include other fixtures, including the
+	// workload benchmark. Assert isolation against this test's own tenants.
+	if err != nil || owned != 1 {
 		t.Fatalf("durable work: %+v %v", pending, err)
 	}
 	sheets := []store.SheetWrite{{SHA256: bytes32(32), ByteSize: 40, Decisions: []store.DecisionWrite{kind}}, {SHA256: bytes32(33), ByteSize: 50, Decisions: []store.DecisionWrite{kind}}}
@@ -110,7 +121,13 @@ func TestDrawingSheetsAtomicPublicationAndIsolation(t *testing.T) {
 		t.Fatalf("%+v %v", exp, err)
 	}
 	pending, err = st.PendingDrawingExpansions(ctx)
-	if err != nil || len(pending) != 0 {
+	owned = 0
+	for _, p := range pending {
+		if p.OrgID == orgA || p.OrgID == orgB {
+			owned++
+		}
+	}
+	if err != nil || owned != 0 {
 		t.Fatal("completed work still pending", pending, err)
 	}
 	var child string

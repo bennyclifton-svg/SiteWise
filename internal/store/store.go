@@ -134,8 +134,9 @@ type Job struct {
 // Store is the tenant-scoped repository. orgID arguments come from the
 // authenticated session, and every query predicates on that org.
 type Store struct {
-	pool *pgxpool.Pool
-	q    *db.Queries
+	profileBuild *ProfileBuild
+	pool         *pgxpool.Pool
+	q            *db.Queries
 }
 
 // Open connects to PostgreSQL. It does not migrate.
@@ -242,7 +243,18 @@ func (s *Store) GetSession(ctx context.Context, orgID, sessionID string) (string
 
 // CreateProject inserts a project owned by orgID.
 func (s *Store) CreateProject(ctx context.Context, orgID, projectID, name string) error {
-	return s.q.CreateProject(ctx, db.CreateProjectParams{OrgID: orgID, ID: projectID, Name: name})
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if err := s.q.WithTx(tx).CreateProject(ctx, db.CreateProjectParams{OrgID: orgID, ID: projectID, Name: name}); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, `INSERT INTO project_revisions(org_id,project_id) VALUES($1::uuid,$2::uuid)`, orgID, projectID); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
 
 // CreateFile associates a blob with a project in orgID.
@@ -288,7 +300,16 @@ func (s *Store) FindFileByHash(ctx context.Context, orgID, projectID string, sha
 
 // CreateDocument files a document in orgID.
 func (s *Store) CreateDocument(ctx context.Context, orgID string, doc Document) error {
-	return s.q.CreateDocument(ctx, db.CreateDocumentParams{
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, orgID, doc.ProjectID); err != nil {
+		return err
+	}
+
+	err = s.q.WithTx(tx).CreateDocument(ctx, db.CreateDocumentParams{
 		OrgID:          orgID,
 		ID:             doc.ID,
 		ProjectID:      doc.ProjectID,
@@ -299,6 +320,10 @@ func (s *Store) CreateDocument(ctx context.Context, orgID string, doc Document) 
 		Revision:       strPtr(doc.Revision),
 		Reason:         doc.Reason,
 	})
+	if err != nil {
+		return err
+	}
+	return s.finishProfileWrite(ctx, tx, orgID, doc.ProjectID)
 }
 
 // GetDocument loads a document visible to orgID.
@@ -347,7 +372,17 @@ func (s *Store) UpdateDocumentStatus(ctx context.Context, orgID, documentID, sta
 
 // Supersede links a document to an earlier document in the same org.
 func (s *Store) Supersede(ctx context.Context, orgID, documentID, priorID string) error {
-	n, err := s.q.SupersedeDocument(ctx, db.SupersedeDocumentParams{
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	projectID, err := lockDocumentProject(ctx, tx, orgID, documentID)
+	if err != nil {
+		return err
+	}
+
+	n, err := s.q.WithTx(tx).SupersedeDocument(ctx, db.SupersedeDocumentParams{
 		OrgID:           orgID,
 		DocumentID:      documentID,
 		PriorDocumentID: priorID,
@@ -358,12 +393,22 @@ func (s *Store) Supersede(ctx context.Context, orgID, documentID, priorID string
 	if n == 0 {
 		return ErrNotFound
 	}
-	return nil
+	return s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // CreateDecision records one field decision.
 func (s *Store) CreateDecision(ctx context.Context, orgID string, decision Decision) error {
-	return s.q.CreateDecision(ctx, db.CreateDecisionParams{
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	projectID, err := lockDocumentProject(ctx, tx, orgID, decision.DocumentID)
+	if err != nil {
+		return err
+	}
+
+	err = s.q.WithTx(tx).CreateDecision(ctx, db.CreateDecisionParams{
 		OrgID:      orgID,
 		ID:         decision.ID,
 		DocumentID: decision.DocumentID,
@@ -372,6 +417,10 @@ func (s *Store) CreateDecision(ctx context.Context, orgID string, decision Decis
 		Band:       decision.Band,
 		DecidedBy:  decision.DecidedBy,
 	})
+	if err != nil {
+		return err
+	}
+	return s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // ListStream returns decision events for a project in orgID.
@@ -587,6 +636,9 @@ func (s *Store) CommitIntake(ctx context.Context, orgID string, in CommitIntake)
 		return CommittedIntake{}, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if err := lockProject(ctx, tx, orgID, in.ProjectID); err != nil {
+		return CommittedIntake{}, err
+	}
 	q := s.q.WithTx(tx)
 
 	if _, err := q.GetProject(ctx, db.GetProjectParams{OrgID: orgID, ID: in.ProjectID}); err != nil {
@@ -621,6 +673,9 @@ func (s *Store) CommitIntake(ctx context.Context, orgID string, in CommitIntake)
 
 	filed, err := insertFiling(ctx, q, orgID, insertedID, in)
 	if err != nil {
+		return CommittedIntake{}, err
+	}
+	if err := BumpRevision(ctx, tx, orgID, in.ProjectID, "profile_inputs"); err != nil {
 		return CommittedIntake{}, err
 	}
 	if err := tx.Commit(ctx); err != nil {

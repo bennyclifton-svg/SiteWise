@@ -1008,3 +1008,32 @@ func TestProbeIsAnUnauthenticatedHead(t *testing.T) {
 		t.Fatal("probe did not record reach")
 	}
 }
+
+// A caller that gives up is not evidence Jev is unhealthy. Counting it would
+// let a cancelled half-open probe reopen the circuit forever.
+func TestCallerCancellationDoesNotOpenCircuit(t *testing.T) {
+	entered := make(chan struct{}, 4)
+	release, stopRelease := newRelease()
+	c := startClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		entered <- struct{}{}
+		select {
+		case <-release:
+		case <-r.Context().Done():
+		}
+	}), jev.Options{BreakerThreshold: 1, BreakerCooldown: time.Hour})
+	t.Cleanup(stopRelease)
+	ctx, cancel := context.WithCancel(context.Background())
+	errCh := make(chan error, 1)
+	go func() {
+		_, err := c.Ask(ctx, sampleCall())
+		errCh <- err
+	}()
+	<-entered
+	cancel()
+	if err := <-errCh; !errors.Is(err, context.Canceled) {
+		t.Fatalf("cancelled err %v", err)
+	}
+	if got := c.Status().Circuit; got != "closed" {
+		t.Fatalf("circuit %q after caller cancel", got)
+	}
+}

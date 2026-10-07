@@ -1,0 +1,45 @@
+-- Scope backfill and assertions run in migrate_work_items.go in this same
+-- transaction. UUID v5 uses Go's standard library, avoiding a DB extension.
+CREATE TABLE work_items (
+ org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+ id uuid NOT NULL,
+ project_id uuid NOT NULL,
+ site_id uuid NOT NULL,
+ part_id uuid NOT NULL,
+ system_id text NOT NULL CHECK (length(system_id) BETWEEN 1 AND 200),
+ action text NOT NULL CHECK (action IN ('new','replace','upgrade','alter','repair','remove','retain','investigate')),
+ inclusion text NOT NULL CHECK (inclusion IN ('included','excluded')),
+ parent_id uuid,
+ is_group boolean NOT NULL DEFAULT false,
+ title text NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
+ existing_condition_note text NOT NULL DEFAULT '' CHECK (length(existing_condition_note)<=120),
+ target jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(target)='object'),
+ quantity numeric,
+ unit text,
+ origin text NOT NULL CHECK (origin IN ('document','user','calculation','assumption')),
+ review_status text NOT NULL CHECK (review_status IN ('proposed','accepted_for_planning','verified','superseded')),
+ meaning text NOT NULL DEFAULT 'stated' CHECK (meaning IN ('stated','requirement','allowance','forecast')),
+ provenance jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(provenance)='object'),
+ verified_by uuid,
+ verified_at timestamptz,
+ verification_basis text,
+ user_touched boolean NOT NULL DEFAULT false,
+ coarse_key text,
+ source_proposal_key text,
+ retired_at timestamptz,
+ retired_by uuid,
+ version bigint NOT NULL DEFAULT 1 CHECK (version>0),
+ PRIMARY KEY (org_id,id),
+ UNIQUE (org_id,project_id,id),
+ FOREIGN KEY (org_id,project_id,site_id) REFERENCES projects(org_id,id,site_id) ON DELETE CASCADE,
+ FOREIGN KEY (org_id,site_id,part_id) REFERENCES project_parts(org_id,site_id,id),
+ FOREIGN KEY (org_id,project_id,parent_id) REFERENCES work_items(org_id,project_id,id),
+ CHECK (inclusion='included' OR origin='user'),
+ CHECK ((quantity IS NULL AND unit IS NULL) OR (quantity IS NOT NULL AND quantity>=0 AND unit IS NOT NULL AND length(trim(unit)) BETWEEN 1 AND 32)),
+ CHECK (review_status<>'verified' OR (verified_by IS NOT NULL AND verified_at IS NOT NULL AND COALESCE(length(trim(verification_basis)),0)>0)),
+ CHECK (coarse_key IS NULL OR coarse_key=part_id::text||'|'||system_id),
+ CHECK (parent_id IS NULL OR parent_id<>id)
+);
+CREATE UNIQUE INDEX work_items_coarse_uq ON work_items(org_id,project_id,coarse_key) WHERE parent_id IS NULL AND retired_at IS NULL;
+CREATE UNIQUE INDEX work_items_proposal_uq ON work_items(org_id,project_id,source_proposal_key) WHERE source_proposal_key IS NOT NULL;
+CREATE INDEX work_items_system_idx ON work_items(org_id,project_id,system_id);

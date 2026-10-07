@@ -135,6 +135,9 @@ func (s *Store) PublishDrawingSheets(ctx context.Context, orgID, sourceID string
 		return err
 	}
 	defer tx.Rollback(ctx)
+	if _, err := lockDocumentProject(ctx, tx, orgID, sourceID); err != nil {
+		return err
+	}
 	q := db.New(tx)
 	doc, err := q.LockFilingDocument(ctx, db.LockFilingDocumentParams{OrgID: orgID, ID: sourceID})
 	if errors.Is(err, pgx.ErrNoRows) {

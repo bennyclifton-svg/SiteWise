@@ -1,6 +1,6 @@
 # Next wave: implementation plan
 
-Status: **Revised plan, 5 October 2026. This turn is documentation-only: do not start or resume implementation.** Previous implementation evidence is retained; a later explicit implementation request is needed to resume work.
+Status: **Execution status reconciled, 6 October 2026.** The current owner request authorizes WP-20 and subsequent packages in dependency order, superseding the earlier documentation-only restriction. Owner quality, knowledge-review and release gates remain in force. Local implementation does not imply a merge or full verification.
 Companion documents:
 
 - `docs/plans/2026-10-04-next-wave-requirements-register.md`: every PRG statement, requirement IDs (`NW-REQ-###`), the coverage ledger, traceability and status.
@@ -8,6 +8,44 @@ Companion documents:
 
 Authoritative source (PRG): `docs/plans/2026-10-04-next-wave-architecture-schema.md`, original 435-line baseline plus the review amendment. Baseline line citations remain valid.
 Decisions are recorded **once**, in §5 of this document (`D-##`). The register and packages refer to them by ID.
+
+## Current owner direction — 7 October 2026
+
+The owner explicitly requested committing all publishable local changes to main
+and pushing to GitHub as a checkpoint, despite the recorded outstanding gates.
+This supersedes the earlier no-merge/no-push restriction for this checkpoint;
+it does not establish milestone acceptance or authorize deployment.
+
+0991 is too thin to remain the main acceptance project. Retain its existing
+limited regression fixture and evidence, but stop expanding project-specific
+0991 testing. The owner selected Petersham, folder `03 ANX Q PPR`, for the next scored
+quality run. Prioritize its PPR, services specifications, reports (including
+BCA and Section J compliance), and design certificates. Certificates provide
+evidence of stated design requirements and codes, not independent verification
+of compliance. Reuse existing drawing-classification regression coverage; read
+further design drawings only where needed to resolve a specific evidence gap.
+The private corpus stays outside the public repository. Freeze the selected
+documents and owner-reviewed expected outcomes before scoring. Apply the existing
+quality and timing criteria to this replacement corpus; do not mark the draft 0991 key reviewed or infer that M1
+has passed. Historical 0991-specific milestone wording below is superseded by
+this direction where it requires further investment in that project.
+
+### Petersham validation scope
+
+Read-only inventory on 7 October found 349 files, including 342 PDFs, across
+28 discipline folders plus root documents. Begin with the PPR, electrical
+specification, mechanical design/specification, Section J and other compliance
+reports, then discipline design certificates. Use hydraulic/fire notes sheets
+only where required evidence is absent from a standalone specification. Further
+drawings are selected for specific gaps or existing classification regressions.
+
+The existing profile manifest pins only the Petersham PPR and its unreviewed
+schema-v1 key; expanded work-item, critical-obligation and cross-document
+expectations still need drafting and owner review. No explicitly named BCA
+report was found by filename: locate it within the documents or ask the owner
+before assuming it is missing. Reconcile legacy `delivery-petersham` and current
+`Petersham` corpus roots when reusing intake fixtures. Existing classifier tests
+are regression coverage, not proof that every document is classified correctly.
 
 ## 0. Planning baseline
 
@@ -24,7 +62,7 @@ Decisions are recorded **once**, in §5 of this document (`D-##`). The register 
 
 ## 0.1 Historical implementation authorisations (5 October 2026)
 
-These permissions describe the earlier run. They do not override the current instruction to modify the plan only. No implementation, live Jev calls, database operations, merges or deployment are part of this revision.
+These permissions describe the earlier run. The later implementation request is recorded above; this historical table does not itself resolve pending private-data transmission approval, authorise production changes, or establish milestone acceptance. Current execution limits and actual evidence take precedence over historical permissions.
 
 The owner (Benny Clifton) granted these in conversation on 5 October 2026, while away from the keyboard for most of the implementation. Agents working this plan **do not need to ask again** for anything in this list. Each use is recorded in the package handoff (work-package document §4.2).
 
@@ -44,7 +82,7 @@ The owner (Benny Clifton) granted these in conversation on 5 October 2026, while
 
 ## 0.2 Current evidence status — single authoritative summary
 
-As recorded on 5 October 2026; this documentation revision ran no application checks. Evidence references are historical results, not re-verification of today's HEAD. Requirements register state updates and package handoffs are the detailed audit trail; other status tables link here rather than claiming independent current truth.
+Reconciled on 6 October 2026 against local package handoffs and present implementation files. This reconciliation is not a fresh full gate or requirement-by-requirement verification. Requirements register state updates and package handoffs are the detailed audit trail; their recorded test scopes and limitations remain binding. Changes remain local and unmerged.
 
 | Item | Current recorded status | Evidence / remaining gate |
 | - | - | - |
@@ -53,8 +91,15 @@ As recorded on 5 October 2026; this documentation revision ran no application ch
 | Filing latency | Local live whole_intake p50 377 / p90 1,245 ms against 1,000/2,000 ms | M0 (`e2eaa6d`) restored whole-file replay (AT-35): the replayed bench runs with 0 unrecorded requests. D-37 (`31681f9`): component budgets are judged on the target VPS and only reported elsewhere; user paths gate locally and pass. VPS evidence outstanding. |
 | WP-11 / WP-25 / WP-12 / WP-13 | Implemented and independently reviewed, not whole-wave Verified | Register state updates (WP-12 `ece0086`; WP-13 merged after F30 `3e55ca1`, full gate green); remaining dependent contracts still outstanding; F31 fixed (evidence below) |
 | WP-K0 / WP-K4 | Shapes/catalogues and K4 drafts recorded as implemented; content review incomplete | Package history; no new reviewed knowledge is implied by format approval |
-| All other packages | Not demonstrated complete by the reviewed planning evidence | Treat as not verified; inspect actual handoffs before resuming |
-| M1/M2/M3 and new §8.6 gates | Planned; not run | Added by this documentation revision |
+| WP-14–15 / WP-20–23 | Local implementation recorded; not full verification | `docs/evidence/2026-10-05-wp14-revisions.md` through the named WP-23 handoffs. Changed-question recordings/quality evidence remain pending; profile latency is intermittent. |
+| WP-25–26 / WP-28 | Predicate/evaluator/decision and evaluation-harness work local; partial | Automatic proposal generation on edits is OFF. Integrated edit budget, missing proposal semantics and owner-reviewed keys/usefulness remain open. `docs/evidence/2026-10-05-wp26-proposals.md`; WP-28 handoff. |
+| WP-30–32 / WP-35a | Local packages, scope, gaps and minimal delivery controls | Individual WP handoffs record validation; M2 delivery dependencies and broader gates remain. |
+| WP-40a–42a / WP-45a | Draft catalogue, report assembly/citations and review controls local | Individual WP handoffs; no report issue/export or cost ledger. Draft content is not an approved obligation. |
+| WP-X1 | Partial M1 access/recovery evidence | `docs/evidence/2026-10-05-wpx1-access-sweep.md` and follow-ups; later sweeps/release proof remain. |
+| WP-K1–K4 | Partial draft research, source reviews and bounded corrections | `docs/unforeseen/k4-current-review-status.md`; knowledge remains draft. K5 owner interview and K6 quality review outstanding. |
+| Current latency limitation | Full gate not consistently green | `2026-10-06-proposal-undo-history.json` records edit 682.045/688.426 ms and rebuild 719.407/726.238 ms. Later delayed-trace diagnostic passes at 49.971/52.166 and 84.613/92.607 ms; intermittent failure is not fixed. Files under `bench/results/`. |
+| M1/M2/M3 and §8.6 gates | Not accepted or complete | M1 local draft workflow does not establish owner-reviewed 0991 quality. M2 waits for M1; M3 additionally needs 0777 and target-host/release evidence. |
+| Remaining M2/M3 packages | Not implemented by the above partial M1 deliveries | Follow package §2.4; do not use a local draft or timing fixture as permission to bypass milestone gates. |
 
 §5 is the sole current decision table. §4.13 and the owner packet retain historical evidence; unedited recommendations are not owner approval. A technical planning default may guide a future authorised implementation, but cannot approve knowledge, answer keys, a new dependency or production changes.
 

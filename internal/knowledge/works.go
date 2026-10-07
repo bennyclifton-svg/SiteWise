@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+
+	"gopkg.in/yaml.v3"
 )
 
 // The works layer (SCHEMA.md "Works layer"): what a kind of work does to a
@@ -15,9 +17,30 @@ import (
 
 // Action is one of the eight things works do to a system.
 type Action struct {
-	ID        string `yaml:"id"`
-	Describes string `yaml:"describes"`
-	Excludes  string `yaml:"excludes"`
+	ID          string `yaml:"id"`
+	Describes   string `yaml:"describes"`
+	Excludes    string `yaml:"excludes"`
+	NeedsDesign bool   `yaml:"needs_design"`
+}
+
+func (a *Action) UnmarshalYAML(node *yaml.Node) error {
+	type plain Action
+	// Decode the required field separately so omission cannot silently disable
+	// design checks for a newly added action.
+	var fields map[string]yaml.Node
+	if err := node.Decode(&fields); err != nil {
+		return err
+	}
+	field, ok := fields["needs_design"]
+	if !ok || field.Tag != "!!bool" {
+		return fmt.Errorf("action requires boolean needs_design")
+	}
+	var value plain
+	if err := node.Decode(&value); err != nil {
+		return err
+	}
+	*a = Action(value)
+	return nil
 }
 
 // Proposal is what a knowledge record proposes when it applies.
@@ -87,6 +110,7 @@ func (s Signal) Question() Question {
 
 type worksData struct {
 	actions          []Action
+	actionAnswers    map[string]string
 	workTypeDefaults map[string]string
 	conditions       []string
 	interfaceCQ      []InterfaceConsequence
@@ -97,6 +121,15 @@ type worksData struct {
 
 // Actions returns the eight works actions in file order.
 func (c *Catalog) Actions() []Action { return c.works.actions }
+
+// ActionAnswers returns a copy of the extra choice criteria from actions.yaml.
+func (c *Catalog) ActionAnswers() map[string]string {
+	out := map[string]string{}
+	for id, text := range c.works.actionAnswers {
+		out[id] = text
+	}
+	return out
+}
 
 // DefaultAction is the action a coarse work item starts with for a work type
 // (actions.yaml work_type_defaults), or "".
@@ -163,6 +196,7 @@ func (c *Catalog) loadActions(path string) error {
 	var file struct {
 		Version            int               `yaml:"version"`
 		Actions            []Action          `yaml:"actions"`
+		Answers            map[string]string `yaml:"answers"`
 		WorkTypeDefaults   map[string]string `yaml:"work_type_defaults"`
 		ExistingConditions struct {
 			Values []struct {
@@ -170,13 +204,14 @@ func (c *Catalog) loadActions(path string) error {
 			} `yaml:"values"`
 		} `yaml:"existing_conditions"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
 		return fmt.Errorf("%s: version %d", path, file.Version)
 	}
 	c.works.actions = file.Actions
+	c.works.actionAnswers = file.Answers
 	c.works.workTypeDefaults = file.WorkTypeDefaults
 	for _, v := range file.ExistingConditions.Values {
 		c.works.conditions = append(c.works.conditions, v.ID)
@@ -206,7 +241,7 @@ func (c *Catalog) loadSignals(path string) error {
 		Version int      `yaml:"version"`
 		Signals []Signal `yaml:"signals"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
@@ -240,7 +275,7 @@ func (c *Catalog) loadInterfaceConsequences(path string) error {
 			Actions              any `yaml:"actions"`
 		} `yaml:"interface_consequences"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
@@ -291,7 +326,7 @@ func (c *Catalog) loadConsequences(path string) error {
 		Version      int           `yaml:"version"`
 		Consequences []Consequence `yaml:"consequences"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
@@ -314,7 +349,7 @@ func (c *Catalog) loadUnforeseen(path string) error {
 		Version    int          `yaml:"version"`
 		Unforeseen []Unforeseen `yaml:"unforeseen"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {

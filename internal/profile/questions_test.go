@@ -78,7 +78,7 @@ func TestHeaderQuestionsOnlyOnRoutedPassages(t *testing.T) {
 func TestEvidenceQuestionsForLabelledLeavesOnly(t *testing.T) {
 	cat := repoCatalog(t)
 	qs := profile.EvidenceQuestions([]string{"hydraulic", "hydraulic.gas", "fire-passive.bushfire-construction"}, cat)
-	if len(qs) != 2 || qs["sys.hydraulic.gas.presence"].Type != "choice" || qs["sys.hydraulic.gas.provider"].Type != "choice" {
+	if len(qs) != 3 || qs["sys.hydraulic.gas.presence"].Type != "choice" || qs["sys.hydraulic.gas.provider"].Type != "choice" || qs["sys.hydraulic.gas.action"].Type != "choice" {
 		t.Fatalf("questions %v", keys(qs))
 	}
 }

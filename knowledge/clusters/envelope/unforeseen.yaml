@@ -516,6 +516,12 @@ unforeseen:
   - dataset: batch1
     row: B1-0236
 - id: uc.colour-or-dye-batch-variation
+  notes: 'K4 source review, 6 October 2026: B1-0230, B1-0717 and B1-0727 describe batch-related
+    appearance variation in cladding, tiles and carpet. Retain the common supply mechanism.
+    Single-batch ordering is a draft proposed procurement control, not a source-verified universal
+    requirement or a guarantee of matching appearance. Project-specific acceptance, feasibility
+    and the generated contract wording still need owner review. See
+    docs/unforeseen/k4-envelope-merge-review.json.'
   kind: process_authority_supply_weather
   category: supply_and_site_operations
   attaches_to:
@@ -1690,7 +1696,7 @@ unforeseen:
   signals: ["sig.envelope-ceiling-void-condition-stated"]
   de_risk:
     kind: investigation
-    label: "Clean the void before services are run"
+    label: "Assess ceiling-void dust, debris and loose insulation and the controls needed before access or services work"
   contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
   effect: ["safety", "cost", "quality"]
   severity: life-safety
@@ -1718,7 +1724,7 @@ unforeseen:
   signals: ["sig.envelope-ceiling-void-condition-stated"]
   de_risk:
     kind: investigation
-    label: "Clean the void before the new ceiling"
+    label: "Assess biological contamination in the ceiling or roof void and the controls needed before access or lining work"
   contract: "Provisional sum for licensed removal and disposal; the survey is the principal's risk before the contract."
   effect: ["safety", "cost"]
   severity: life-safety

@@ -1,5 +1,16 @@
 # Mechanical and hydraulic extraction
 
+## K4 services placement review, 6 October 2026
+
+Retained `uc.old-oil-tank-occupies-plant-room-for-new-boilers` here. Source row
+B2-0870 concerns replacement boilers, and `mechanical.central-plant` explicitly
+includes their plant rooms. Changed only its investigation label to ask for a
+check of the tank and any removal needed, rather than instructing removal.
+The existing predicate, suppression signal, sources and draft status remain.
+The crane-runway record B2-0854 remains an open taxonomy/routing issue; merely
+moving its file would leave the broad mechanical trigger unchanged. See
+`docs/evidence/2026-10-06-k4-services-placement.md` for the review and limits.
+
 Full relevant-seed reading is complete for the source set below. The cluster now contains 20 systems, 54 rules, 16 interfaces and 23 failure modes. Existing detailed contributions and merged edges were preserved.
 
 The follow-up added four project-specific rules for functional/seasonal commissioning, specialist operator acceptance, occupied services cutover and sewage pump-out operation. Three physical edges cover tower water/treatment/drainage, vendor process utility boundaries and sewage pump supply/alarm. Seven failure detectors cover these and clinical verification, occupied-stage service isolation, start-up substituted for testing and air-conditioning substituted for outdoor air.
@@ -82,3 +93,46 @@ No live Jev evaluation or threshold calibration was performed. Seed-derived reco
 ## Validation and ownership
 
 `python tools/check_knowledge.py --only knowledge/clusters/services-wet-air --strict` passes with zero errors and zero warnings. No git writes were made. Parent-owned global determinants, primary tables and verification reports were not edited. Only current owned files were loaded for append/update; merged lead corrections were preserved.
+
+## K4 investigation wording, 6 October 2026
+
+Recast 28 draft investigation labels from physical-work instructions into
+checks or assessments of their cited source constraints. All other record
+fields are preserved, including predicates, signals, sources and draft status.
+See `docs/evidence/2026-10-06-k4-investigation-labels.md` and the exact
+before/after inventory `docs/unforeseen/k4-investigation-label-review.json`.
+This bounded wording pass does not approve content or close owner review.
+
+K4 follow-up: recast 9 further investigation labels that selected remedies
+or design solutions before the investigation. Only labels changed. The shared
+review inventory now records 82 corrections across the catalogue; this remains
+a bounded, unapproved wording pass. See
+`docs/evidence/2026-10-06-k4-investigation-labels.md` and
+`docs/unforeseen/k4-investigation-label-review.json`.
+
+## Tenant-fitout capacity direction, 6 October 2026
+
+Retyped `if.tenant-fitout-base-building-hvac` as `supplies`, with base plant and
+ventilation supplying tenancy distribution/conditioning, following D-29's
+planning recommendation. Existing sources, question and draft status remain.
+The synthetic WP-26 case covers alteration, upgrade, existence and replacement
+suppression. Determinant applicability and owner project review remain open;
+see `docs/evidence/2026-10-06-tenant-fitout-capacity.md`.
+# K2 mechanical commissioning review, 6 October 2026
+
+Added draft `cq.mechanical-commissioning-plan-review`, sourced to the mechanical
+guide's commissioning/handover section. New/alter/replace/upgrade mechanical
+work raises a review hold point; no completion, date, package or statutory
+obligation is inferred. Other actions and unrelated/excluded work do not
+trigger it. Strict checks and works/knowledge/store/API tests pass. See
+`docs/evidence/2026-10-06-k2-mechanical-commissioning.md` for scope and timing.
+
+# K4 hydraulic attachment follow-up, 6 October 2026
+
+`fm.hydraulic-penetration-of-fire-rated-construction-unsealed` now attaches to
+`if.services-penetrate-fire-rated-construction` rather than `hydraulic.gas`.
+The existing record includes gas, vents and sanitary risers; the shared
+physical interface covers them. Every other field is unchanged, including
+the detector and draft status. Strict validation and knowledge tests pass.
+See `docs/evidence/2026-10-06-k4-fire-services-overlap.md` for source limits and
+`docs/unforeseen/k4-hydraulic-attachment-correction.json` for the exact change.

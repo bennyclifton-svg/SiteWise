@@ -2653,7 +2653,7 @@ unforeseen:
   - sig.existing-structural-drawings-stated
   de_risk:
     kind: investigation
-    label: 'Set the frame out clear of anchorages before fabrication'
+    label: 'Locate post-tension anchorages and prestress zones against proposed fixing positions'
   contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
   effect:
   - cost
@@ -3310,7 +3310,7 @@ unforeseen:
   - sig.existing-levels-surveyed-stated
   de_risk:
     kind: investigation
-    label: 'Form falls the slab can accept or design the coating for the ponds'
+    label: 'Survey existing pavement or deck falls against the proposed coating and drainage design'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - quality
@@ -3431,7 +3431,7 @@ unforeseen:
   - sig.existing-structural-drawings-stated
   de_risk:
     kind: investigation
-    label: 'Set aisles off the joints or detail the joints for the wheels'
+    label: 'Survey existing slab joints and pits against the proposed forklift routes and wheel loads'
   contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
   effect:
   - quality
@@ -3462,7 +3462,7 @@ unforeseen:
   - sig.vibration-limit-stated
   de_risk:
     kind: investigation
-    label: 'Isolate the slab if the use needs it'
+    label: 'Assess street vibration transmission through the slab against the proposed use'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - quality
@@ -3495,7 +3495,7 @@ unforeseen:
   - sig.adjoining-structure-details-stated
   de_risk:
     kind: investigation
-    label: 'Do not add load to a wall that is already moving'
+    label: 'Assess existing boundary-wall movement and stability before relying on the wall for added load'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - safety
@@ -3563,7 +3563,7 @@ unforeseen:
   - sig.neighbour-consent-stated
   de_risk:
     kind: investigation
-    label: 'Design a negative-side system if the soil face cannot be reached'
+    label: 'Confirm access to the retaining wall and assess feasible waterproofing approaches'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - cost
@@ -3597,7 +3597,7 @@ unforeseen:
   - sig.existing-structural-drawings-stated
   de_risk:
     kind: investigation
-    label: 'Form a fillet the sheet can turn'
+    label: 'Check slab-step geometry and available space against the proposed membrane detail'
   contract: 'Design allowance for the condition found; variation mechanism for scope change.'
   effect:
   - quality
@@ -3632,7 +3632,7 @@ unforeseen:
   - sig.existing-structural-drawings-stated
   de_risk:
     kind: investigation
-    label: 'Select a system the joists can accept'
+    label: 'Assess the existing timber floor against the proposed lining build-up and required fire or acoustic performance'
   contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
   effect:
   - cost
@@ -3770,7 +3770,7 @@ unforeseen:
   - sig.dewatering-discharge-approval-stated
   de_risk:
     kind: investigation
-    label: 'Keep the discharge inside the permit or amend it'
+    label: 'Check anticipated dewatering volume against the permitted discharge'
   contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
   effect:
   - compliance
@@ -3804,7 +3804,7 @@ unforeseen:
   - sig.contamination-investigation-results-stated
   de_risk:
     kind: investigation
-    label: 'Remove or validate the tank before the slab locks it in'
+    label: 'Investigate the underground fuel tank and assess its implications for the proposed building footprint'
   contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
   effect:
   - safety
@@ -3837,7 +3837,7 @@ unforeseen:
   - sig.contamination-investigation-results-stated
   de_risk:
     kind: investigation
-    label: 'Clear and classify the waste before the footing is poured'
+    label: 'Investigate and classify buried drums or waste in the proposed footing excavation'
   contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
   effect:
   - safety
@@ -3910,7 +3910,7 @@ unforeseen:
   - sig.contamination-investigation-results-stated
   de_risk:
     kind: investigation
-    label: 'Detail the footing so the cap remains continuous'
+    label: 'Assess the proposed footing detail against contamination-cap continuity requirements'
   contract: 'Provisional sum and separable portion for testing, handling and disposal of the material.'
   effect:
   - compliance
@@ -4084,7 +4084,7 @@ unforeseen:
   - sig.buried-services-location-stated
   de_risk:
     kind: investigation
-    label: 'Replace pipes before the slab covers them'
+    label: 'Investigate existing buried drains and trenches beneath the proposed slab'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - cost
@@ -4118,7 +4118,7 @@ unforeseen:
   - sig.groundwater-level-stated
   de_risk:
     kind: investigation
-    label: 'Shore the trench'
+    label: 'Assess ground stability and temporary-support requirements for the proposed trench or batter'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - safety
@@ -4152,7 +4152,7 @@ unforeseen:
   - sig.buried-services-location-stated
   de_risk:
     kind: investigation
-    label: 'Lower the pipe or protect it'
+    label: 'Check pipe cover against the driveway wheel loads and assess any protection needed'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - cost
@@ -4184,7 +4184,7 @@ unforeseen:
   - sig.existing-stormwater-drain-capacity-stated
   de_risk:
     kind: investigation
-    label: 'Upgrade the pipe or reduce the catchment'
+    label: 'Check existing drainage and interceptor capacity against the added catchment'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - cost
@@ -4216,7 +4216,7 @@ unforeseen:
   - sig.soil-permeability-test-stated
   de_risk:
     kind: investigation
-    label: 'Redesign disposal for the soil and the new area'
+    label: 'Assess soil permeability and the proposed on-site disposal demand'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - compliance
@@ -4248,7 +4248,7 @@ unforeseen:
   - sig.stormwater-discharge-point-confirmed-stated
   de_risk:
     kind: investigation
-    label: 'Fit the treatment to the land available or change the strategy'
+    label: 'Check stormwater-treatment space and performance requirements against available land'
   contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
   effect:
   - compliance
@@ -4277,7 +4277,7 @@ unforeseen:
   - sig.stormwater-discharge-point-confirmed-stated
   de_risk:
     kind: investigation
-    label: 'Resize the storage to the outlet that will be accepted'
+    label: 'Confirm the accepted detention outlet limit and assess its effect on storage requirements'
   contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
   effect:
   - compliance
@@ -4310,7 +4310,7 @@ unforeseen:
   - sig.flood-planning-level-advice-stated
   de_risk:
     kind: investigation
-    label: 'Set the floor above the flow or redirect the flow on land the project controls'
+    label: 'Assess overland-flow levels and routes against the proposed extension floor level'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - compliance
@@ -4345,7 +4345,7 @@ unforeseen:
   - sig.erosion-sediment-control-plan-stated
   de_risk:
     kind: investigation
-    label: 'Keep the flow path open'
+    label: 'Assess the effect of proposed construction controls on the overland-flow path'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - safety
@@ -4371,7 +4371,7 @@ unforeseen:
   - sig.boundary-survey-stated
   de_risk:
     kind: investigation
-    label: 'Keep the flow area'
+    label: 'Confirm the boundary channel function and assess the effect of proposed changes on neighbouring flow'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - compliance
@@ -4405,7 +4405,7 @@ unforeseen:
   - sig.groundwater-level-stated
   de_risk:
     kind: investigation
-    label: 'Keep a path for water that already arrives'
+    label: 'Investigate existing incoming roof drainage and seepage and the effect of the proposed work on their routes'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - cost
@@ -4442,7 +4442,7 @@ unforeseen:
   - sig.kerb-and-footpath-levels-surveyed-stated
   de_risk:
     kind: investigation
-    label: 'Redesign the ramp from the crossover that exists'
+    label: 'Survey crossover and footpath geometry, sight distance and the proposed entry connection'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - cost
@@ -4476,7 +4476,7 @@ unforeseen:
   - sig.pavement-subgrade-test-stated
   de_risk:
     kind: investigation
-    label: 'Do not pour on a subgrade that fails'
+    label: 'Review proof-roll results and assess subgrade suitability before the slab pour'
   contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
   effect:
   - quality
@@ -4510,7 +4510,7 @@ unforeseen:
   - sig.vehicle-swept-path-stated
   de_risk:
     kind: investigation
-    label: 'Clear the path of the columns that exist'
+    label: 'Survey existing columns and check the proposed vehicle swept path'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - cost
@@ -4538,7 +4538,7 @@ unforeseen:
   - sig.delivery-logistics-plan-stated
   de_risk:
     kind: investigation
-    label: 'Form a ramp the vehicles can use'
+    label: 'Survey site-ramp gradients against the proposed delivery vehicles'
   contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
   effect:
   - programme
@@ -4571,7 +4571,7 @@ unforeseen:
   - sig.delivery-logistics-plan-stated
   de_risk:
     kind: investigation
-    label: 'Size the bay to the delivery'
+    label: 'Check loading-bay dimensions against the proposed delivery vehicle'
   contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
   effect:
   - programme
@@ -4602,7 +4602,7 @@ unforeseen:
   - sig.existing-levels-surveyed-stated
   de_risk:
     kind: investigation
-    label: 'Match the yard to the leveller or replace the leveller'
+    label: 'Survey yard levels against the available dock-leveller range'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - cost
@@ -4634,7 +4634,7 @@ unforeseen:
   - sig.delivery-logistics-plan-stated
   de_risk:
     kind: investigation
-    label: 'Plan a method that reaches the corner'
+    label: 'Check permitted crane reach against the work locations and assess alternative access methods'
   contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
   effect:
   - programme
@@ -4665,7 +4665,7 @@ unforeseen:
   - sig.existing-structural-drawings-stated
   de_risk:
     kind: investigation
-    label: 'Land ties on structure'
+    label: 'Survey structural fixing locations for the proposed scaffold ties'
   contract: 'Contractor method and programme allow for the stated limits; extension of time for a limit imposed later.'
   effect:
   - safety
@@ -4734,7 +4734,7 @@ unforeseen:
   - sig.boundary-survey-stated
   de_risk:
     kind: investigation
-    label: 'Redesign the levels around it'
+    label: 'Confirm water-body retention requirements and assess the proposed earthworks levels'
   contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
   effect:
   - cost
@@ -4766,7 +4766,7 @@ unforeseen:
   - sig.boundary-survey-stated
   de_risk:
     kind: investigation
-    label: 'Resolve the encroachment before the extension builds on it'
+    label: 'Investigate existing encroachments and their implications for the extension or title'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - compliance
@@ -4797,7 +4797,7 @@ unforeseen:
   - sig.buried-services-location-stated
   de_risk:
     kind: investigation
-    label: 'Redesign the levels or the protection'
+    label: 'Check available sewer cover against the proposed protection-slab thickness'
   contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
   effect:
   - cost
@@ -4824,7 +4824,7 @@ unforeseen:
   - sig.authority-excavation-conditions-stated
   de_risk:
     kind: investigation
-    label: 'Design the retention to that limit'
+    label: 'Confirm rail-corridor excavation constraints and assess the proposed retention design'
   contract: 'Authority approval as a condition precedent; time allowance if the authority changes its requirement.'
   effect:
   - cost
@@ -4858,7 +4858,7 @@ unforeseen:
   - sig.neighbour-consent-stated
   de_risk:
     kind: investigation
-    label: 'Do not programme the wall work until access is agreed'
+    label: 'Confirm access arrangements for the proposed party-wall work'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - programme
@@ -4889,7 +4889,7 @@ unforeseen:
   - sig.existing-structural-drawings-stated
   de_risk:
     kind: investigation
-    label: 'Plan a pour sequence the floor below can accept'
+    label: 'Assess back-propping access and feasible pour sequences above the occupied floor'
   contract: 'Access and consent obligations stated in the contract; extension of time for third-party refusal.'
   effect:
   - programme
@@ -4918,7 +4918,7 @@ unforeseen:
   - sig.site-classification-stated
   de_risk:
     kind: investigation
-    label: 'Articulate the slab for the difference'
+    label: 'Assess differential founding conditions and the adequacy of the proposed slab articulation'
   contract: 'Provisional quantities and rates for variation in site conditions; investigation before the design is frozen.'
   effect:
   - quality
@@ -4985,7 +4985,7 @@ unforeseen:
   - sig.existing-structure-condition-testing-stated
   de_risk:
     kind: investigation
-    label: 'Agree which posts stay before the membrane repair is tendered'
+    label: 'Investigate embedded balcony posts and reinforcement before defining the membrane-repair scope'
   contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
   effect:
   - cost
@@ -5153,7 +5153,7 @@ unforeseen:
   - sig.existing-structure-condition-testing-stated
   de_risk:
     kind: investigation
-    label: 'Provide a path that is not the ceiling'
+    label: 'Assess safe access routes through the existing roof space'
   contract: 'Design allowance for as-found conditions; provisional sum for strengthening, reinstatement or redesign once the element is exposed.'
   effect:
   - safety

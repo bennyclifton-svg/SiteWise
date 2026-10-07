@@ -43,6 +43,8 @@ type Passage struct {
 	Discipline string
 	Title      string
 	Labels     []string
+	Parts      []profile.Part
+	PartLabel  string // applied location from the label stage
 }
 
 // Worker leases background jobs for one org at a time. MinNoul is an explicit
@@ -108,7 +110,7 @@ func (w *Worker) Once(ctx context.Context, orgID string) error {
 	cancel()
 	<-stopped
 	if err := runErr; err != nil {
-		_ = w.Store.FailJob(ctx, job.OrgID, job.ID, job.Token, err.Error(), w.backoff(), store.EventWrite{
+		_ = w.Store.FailJob(ctx, job.OrgID, job.ID, job.Token, err.Error(), w.retryAfter(err), store.EventWrite{
 			Kind:       "job",
 			DocumentID: job.DocumentID,
 			Payload:    jobPayload(job.Kind, store.JobStatusFailed),
@@ -127,6 +129,16 @@ func (w *Worker) backoff() time.Duration {
 		return 0
 	}
 	return w.Backoff
+}
+
+// retryAfter spaces retries. An open Jev circuit fails every call until its
+// cooldown passes, so an immediate retry would only spend the attempt budget.
+func (w *Worker) retryAfter(err error) time.Duration {
+	d := w.backoff()
+	if errors.Is(err, jev.ErrCircuitOpen) && d < jev.BreakerCooldown {
+		return jev.BreakerCooldown
+	}
+	return d
 }
 
 // Perform runs the stage without completing the lease. A second delivery of
@@ -197,8 +209,9 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 			return err
 		}
 		readings := profile.Readings(result, call.Questions, cands, passage.Text)
-		factSets[i] = storedFacts(passage.ID, readings)
-		return w.Store.SetSourceReading(ctx, job.OrgID, passage.ID, sourceReading(result, labels, readings))
+		_, partLabel := w.Profile.AppliedLocation(result.Answers["source.scope"], passage.Parts)
+		factSets[i] = storedFacts(passage.ID, readings, partLabel)
+		return w.Store.SetSourceReading(ctx, job.OrgID, passage.ID, sourceReading(result, labels, readings, passage.Parts, w.Profile))
 	})
 	if err != nil {
 		return err
@@ -208,13 +221,10 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		facts = append(facts, set...)
 	}
 
-	if err := w.Store.ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr."}, profile.QuestionVersion, facts); err != nil {
+	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr."}, profile.QuestionVersion, facts); err != nil {
 		return err
 	}
 	// Header and compliance readings show now; systems follow evidence.
-	if err := w.rebuildProfile(ctx, job.OrgID, job.DocumentID); err != nil {
-		return err
-	}
 	return w.Store.EnqueueStage(ctx, job.OrgID, job.DocumentID, store.JobKindEvidence)
 }
 
@@ -237,6 +247,25 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 			return err
 		}
 		passage.Labels = labels
+		// Reuse the label-stage location decision only if its complete current
+		// question fingerprint still matches. This is a cache read, never a
+		// second model call, and avoids reinterpreting an old option after a rename.
+		labelRequest, _ := labelCall(w.Catalog, passage.Passage)
+		labelFingerprint, err := passageFingerprint(labelRequest)
+		if err != nil {
+			return err
+		}
+		located, found, err := w.Store.CachedPassageCall(ctx, job.OrgID, passage.ID, "label", labelFingerprint)
+		if err != nil {
+			return err
+		}
+		if found {
+			_, passage.PartLabel = w.Profile.AppliedLocation(located.Answers["source.scope"], passage.Parts)
+			// Evidence enriches the persisted labels before the profile commits.
+			// Retrying from those outputs would change this request and miss its
+			// cache. Reuse the matching label-stage input, like its location above.
+			passage.Labels = AcceptLabels(w.Catalog, located, w.MinNoul)
+		}
 		call, ok := EvidenceCall(w.Catalog, passage.Passage)
 		if !ok {
 			return nil
@@ -251,7 +280,11 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		readings := profile.Readings(result, call.Questions, nil, passage.Text)
 		labels = append(labels, AcceptLabels(w.Catalog, result, w.MinNoul)...)
 		for _, r := range readings {
-			if strings.HasPrefix(r.QuestionID, "sys.") && r.Confidence != nil && *r.Confidence >= 0.6 {
+			accepted := r.Confidence != nil && *r.Confidence >= 0.6
+			if strings.HasSuffix(r.QuestionID, ".action") {
+				accepted = w.Profile.ActionApplied(r)
+			}
+			if strings.HasPrefix(r.QuestionID, "sys.") && accepted {
 				id := strings.TrimPrefix(r.QuestionID, "sys.")
 				if at := strings.LastIndex(id, "."); at > 0 {
 					labels = append(labels, id[:at])
@@ -261,12 +294,12 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		if err := w.Store.SetPassageSystems(ctx, job.OrgID, passage.ID, labels); err != nil {
 			return err
 		}
-		factSets[i] = storedFacts(passage.ID, readings)
+		factSets[i] = storedFacts(passage.ID, readings, passage.PartLabel)
 		var keys []string
 		unresolved := append([]string{}, result.Unresolved...)
 		for _, r := range readings {
 			keys = append(keys, r.QuestionID)
-			if r.Confidence == nil || *r.Confidence < 0.6 {
+			if r.Confidence == nil || *r.Confidence < 0.6 || (strings.HasSuffix(r.QuestionID, ".action") && !w.Profile.ActionApplied(r)) {
 				unresolved = append(unresolved, r.QuestionID)
 			}
 		}
@@ -280,34 +313,34 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		facts = append(facts, set...)
 	}
 
-	if err := w.Store.ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"sys."}, profile.QuestionVersion, facts); err != nil {
+	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"sys."}, profile.QuestionVersion, facts); err != nil {
 		return err
 	}
-	return w.rebuildProfile(ctx, job.OrgID, job.DocumentID)
+	return nil
 }
 
-// rebuildProfile reconciles the document's project in code after its
-// evidence stage. It never calls Jev.
-func (w *Worker) rebuildProfile(ctx context.Context, orgID, documentID string) error {
-	doc, err := w.Store.GetDocument(ctx, orgID, documentID)
-	if err != nil {
-		return err
-	}
-	return w.Store.RebuildProfile(ctx, orgID, doc.ProjectID, w.Profile.Version, func(s store.ProfileSnapshot) []profile.Row {
-		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: w.Profile, Read: w.Reading}, w.Catalog)
-	})
+// profileStore commits evidence and the code-only projection together.
+func (w *Worker) profileStore() *store.Store {
+	return w.Store.WithProfile(store.ProfileBuild{Catalog: w.Catalog, KnowledgeVersion: w.Catalog.Version(), QuestionVersion: profile.QuestionVersion,
+		ThresholdsVersion: w.Profile.Version, ReadKinds: w.Reading.Kinds(), Compute: func(s store.ProfileSnapshot) []profile.Row {
+			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: w.Profile, Read: w.Reading}, w.Catalog)
+		}})
 }
 
-func storedFacts(passageID string, readings []profile.Reading) []store.StoredFact {
+func storedFacts(passageID string, readings []profile.Reading, partLabel string) []store.StoredFact {
 	out := make([]store.StoredFact, 0, len(readings))
 	for _, r := range readings {
 		out = append(out, store.StoredFact{PassageID: passageID, QuestionID: r.QuestionID, Value: r.Value, Unit: r.Unit,
-			Basis: r.Basis, Excerpt: r.Excerpt, Confidence: r.Confidence, DecidedBy: "jev"})
+			Basis: r.Basis, Excerpt: r.Excerpt, Confidence: r.Confidence, DecidedBy: "jev", PartLabel: partLabel})
 	}
 	return out
 }
 
 func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPassage, error) {
+	parts, err := w.Store.DocumentParts(ctx, job.OrgID, job.DocumentID)
+	if err != nil {
+		return nil, err
+	}
 	rows, err := w.Store.DocumentPassages(ctx, job.OrgID, job.DocumentID)
 	if err != nil {
 		return nil, err
@@ -338,6 +371,7 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 			ID:           row.ID,
 			SkipEvidence: meta.Category == "reference" || meta.Category == "background",
 			Passage: Passage{
+				Parts:   parts,
 				Ordinal: int(row.Ordinal),
 				Text:    row.Body,
 				Section: section,
@@ -449,6 +483,8 @@ func LabelCall(cat *knowledge.Catalog, passage Passage) jev.Call {
 // labelCall also returns the profile candidates offered in the call, so the
 // answers can be mapped back to verbatim values.
 func labelCall(cat *knowledge.Catalog, passage Passage) (jev.Call, map[string][]profile.Candidate) {
+	passage.Labels = nil
+	passage.PartLabel = ""
 	questions := map[string]jev.Question{}
 	if cat == nil {
 		return jev.Call{}, nil
@@ -468,7 +504,7 @@ func labelCall(cat *knowledge.Catalog, passage Passage) (jev.Call, map[string][]
 		}
 	}
 
-	for id, q := range sourceQuestions() {
+	for id, q := range sourceQuestions(passage.Parts) {
 		questions[id] = q
 	}
 	// Profile questions read the same passage, so they join this request
@@ -547,6 +583,9 @@ func EvidenceCall(cat *knowledge.Catalog, passage Passage) (jev.Call, bool) {
 		questions[knowledge.LabelQuestionID(id)] = jev.Question{Type: jev.TypeNoul, Instructions: "Using `excerpt`, does this clause concern any of " + child.Label + "?", Criteria: map[string]string{"true": knowledge.Describe(child, id), "false": "None of this category is discussed. Other systems can be discussed alongside it without making the answer false."}}
 	}
 	for id, q := range profile.EvidenceQuestions(leafIDs, cat) {
+		// Labeling resolves families; the same evidence fan-out resolves their
+		// leaves. Ask actions speculatively alongside leaf presence, otherwise
+		// the first reading could never capture an action without another call.
 		questions[id] = q
 	}
 	if len(questions) == 0 {
@@ -607,6 +646,8 @@ func passageState(p Passage) map[string]any {
 		"page":            p.Page,
 		"system_families": p.Labels,
 		"text":            p.Text,
+		"site_parts":      profile.OrderedLocationParts(p.Parts),
+		"applied_part":    p.PartLabel,
 	}
 }
 
@@ -662,8 +703,11 @@ func evidenceStates(questions map[string]jev.Question, result jev.Result, minNou
 
 // Eight background requests leave the client's foreground reserve untouched.
 // Checkpoints make cancellation and process restarts cheap to resume.
+// A failure stops dispatch but lets calls in flight finish: cancelling them
+// would discard paid answers, and a cancelled half-open probe would keep the
+// Jev circuit open on every retry.
 func eachPassage(ctx context.Context, n int, fn func(context.Context, int) error) error {
-	ctx, cancel := context.WithCancel(ctx)
+	stop, cancel := context.WithCancel(ctx)
 	defer cancel()
 	queue := make(chan int)
 	var wg sync.WaitGroup
@@ -674,7 +718,7 @@ func eachPassage(ctx context.Context, n int, fn func(context.Context, int) error
 		go func() {
 			defer wg.Done()
 			for i := range queue {
-				if ctx.Err() != nil {
+				if stop.Err() != nil {
 					return
 				}
 				if err := fn(ctx, i); err != nil {
@@ -687,7 +731,7 @@ func eachPassage(ctx context.Context, n int, fn func(context.Context, int) error
 dispatch:
 	for i := 0; i < n; i++ {
 		select {
-		case <-ctx.Done():
+		case <-stop.Done():
 			break dispatch
 		case queue <- i:
 		}

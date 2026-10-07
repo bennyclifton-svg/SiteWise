@@ -1,6 +1,9 @@
 package knowledge
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Truth is a three-valued predicate result: unknown never hides a record.
 type Truth int
@@ -32,35 +35,89 @@ type WorksEnv struct {
 	// Values are known determinant values by id (comma-separated for
 	// multi-choice), as in Relevant.
 	Values map[string]string
+	// WorkTypes contains the applied project and part types, supplied by code
+	// (D-07). A stray determinant value cannot supply this input.
+	WorkTypes []string
 	// Present reports system_present: the system is in the completed building.
 	// Nil makes it unknown.
 	Present func(system string) bool
+	// PresentState preserves unknown completed-building presence. When supplied
+	// it takes precedence over the legacy boolean callback.
+	PresentState func(system string) Truth
 	// Items are the in-scope work items. An empty list makes every `works`
 	// condition false: no works touch anything.
 	Items []WorkItem
-	// Existing reports system_existing: on the site and not being replaced.
-	// Nil makes it unknown.
+	// Existing reports the site evidence only. Live items below can establish
+	// existence or override it with removal/replacement (D-10).
 	Existing func(system string) Truth
 }
 
 // Holds evaluates a works-layer predicate (consequence or unforeseen `when`,
 // or an applies_when) in code. It never calls Jev.
 func (c *Catalog) Holds(p any, env WorksEnv) Truth {
-	// The work_type determinant has no options yet and will be fed by code
-	// from the part or project work type (D-07). Until then a record that
-	// tests it stays unknown rather than being hidden by a stray value.
-	values := make(map[string]string, len(env.Values))
-	for k, v := range env.Values {
-		if k != "work_type" {
-			values[k] = v
+	// Override only the code-fed work type; copying every determinant for
+	// every catalogue predicate creates avoidable work on profile edits.
+	workType := c.workTypeValue(env.WorkTypes)
+	e := predEnv{values: env.Values, workType: &workType, present: env.Present,
+		works: func(cond map[string]any) tri { return c.worksMatch(cond, env.Items) }}
+	if env.PresentState != nil {
+		e.presentState = func(system string) tri { return toTri(env.PresentState(system)) }
+	}
+	e.existing = func(sys string) tri { return toTri(c.SystemExisting(sys, env)) }
+	return fromTri(evalPredicate(p, e))
+}
+
+func (c *Catalog) workTypeValue(types []string) string {
+	for _, value := range types {
+		known := false
+		for _, option := range c.profile.taxonomy.WorkTypes {
+			known = known || value == option.ID
+		}
+		if !known {
+			return "" // malformed code input must not hide a relevant record
 		}
 	}
-	e := predEnv{values: values, present: env.Present,
-		works: func(cond map[string]any) tri { return c.worksMatch(cond, env.Items) }}
+	return strings.Join(types, ",")
+}
+
+// SystemExisting evaluates D-10 for already-filtered live, included items.
+// An ancestor item is only possible evidence about a particular child.
+// Removing a child cannot prove that its entire family has disappeared.
+func (c *Catalog) SystemExisting(system string, env WorksEnv) Truth {
+	result := Unknown
 	if env.Existing != nil {
-		e.existing = func(sys string) tri { return toTri(env.Existing(sys)) }
+		result = env.Existing(system)
 	}
-	return fromTri(evalPredicate(p, e))
+	ambiguous := false
+	possible := false
+	for _, item := range env.Items {
+		descendant := c.covers(item.System, system)
+		ancestor := c.covers(system, item.System)
+		if !descendant && !ancestor {
+			continue
+		}
+		switch item.Action {
+		case "remove", "replace":
+			if ancestor {
+				return False
+			}
+			ambiguous = true
+		case "new":
+			// New work says nothing about an existing installation.
+		case "alter", "upgrade", "repair", "investigate", "retain":
+			if descendant {
+				result = True
+			} else {
+				possible = true
+			}
+		default:
+			ambiguous = true // an unresolved action could remove the system
+		}
+	}
+	if ambiguous || (possible && result != True) {
+		return Unknown
+	}
+	return result
 }
 
 // worksMatch is true when an item has one of the actions (if listed) on one

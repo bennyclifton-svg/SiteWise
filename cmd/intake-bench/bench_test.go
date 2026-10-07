@@ -24,6 +24,36 @@ import (
 
 type stubTransport struct{ calls int }
 
+func TestIntegratedProposalsRequiresNonReleaseDiagnostic(t *testing.T) {
+	for _, args := range [][]string{
+		{"-integrated-proposals"},
+		{"-integrated-proposals", "-measure-proposals", "-release"},
+	} {
+		var stdout, stderr bytes.Buffer
+		if code := run(args, func(string) string { return "" }, &stdout, &stderr); code != 2 {
+			t.Fatalf("args %v: code=%d stderr=%s", args, code, stderr.String())
+		}
+	}
+}
+
+func TestProposalDiagnosticCannotClaimReleaseEvidence(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"-measure-proposals", "-release"}, func(string) string { return "" }, &stdout, &stderr)
+	if code != 2 || !strings.Contains(stderr.String(), "not release evidence") {
+		t.Fatalf("code=%d stderr=%s", code, stderr.String())
+	}
+	stderr.Reset()
+	code = run([]string{"-measure-proposals"}, func(key string) string {
+		if key == "SITEWISE_RELEASE_BENCH" {
+			return "1"
+		}
+		return ""
+	}, &stdout, &stderr)
+	if code != 2 || !strings.Contains(stderr.String(), "not release evidence") {
+		t.Fatalf("environment release bypass: %d %s", code, stderr.String())
+	}
+}
+
 func (s *stubTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	s.calls++
 	return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader("{}")), Request: req}, nil
@@ -217,6 +247,7 @@ func TestBenchEndToEnd(t *testing.T) {
 	writeTestJSON(t, budgets, map[string]any{
 		"min_samples": 2,
 		"paths": []map[string]any{
+			{"name": "profile_rebuild", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "whole_intake", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "identity_text_extraction", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "jev_admission_request", "p50_us": 30_000_000, "p90_us": 30_000_000},
@@ -225,6 +256,12 @@ func TestBenchEndToEnd(t *testing.T) {
 			{"name": "field_correction", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "project_invite_auth", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "sse_reconnect", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "proposals_read", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "proposals_accept", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "proposals_dismiss", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "proposals_undo", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "proposals_accept_delivery", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "proposals_undo_delivery", "p50_us": 30_000_000, "p90_us": 30_000_000},
 		},
 	})
 	out := filepath.Join(dir, "results.json")
@@ -232,6 +269,7 @@ func TestBenchEndToEnd(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := run([]string{
 		"-manifest", manifestPath, "-budgets", budgets, "-data", filepath.Join("..", "..", "data", "intake"),
+		"-profile-fixture", syntheticProfileFixture(t),
 		"-recordings", recordings, "-out", out, "-samples-out", samplesOut,
 		"-rounds", "2", "-concurrency", "3", "-background", "1", "-degrade", "50", "-api-samples", "3",
 	}, os.Getenv, &stdout, &stderr)
@@ -249,6 +287,11 @@ func TestBenchEndToEnd(t *testing.T) {
 	}
 	if res.Paths["whole_intake"].N != 12 {
 		t.Fatalf("every upload of both rounds is a whole-intake sample: %+v", res.Paths["whole_intake"])
+	}
+	for path, count := range map[string]int{"proposals_read": 39, "proposals_accept": 3, "proposals_dismiss": 9, "proposals_undo": 6, "proposals_accept_delivery": 6, "proposals_undo_delivery": 12} {
+		if res.Paths[path].N != count {
+			t.Fatalf("%s samples: got %d, want %d", path, res.Paths[path].N, count)
+		}
 	}
 	if res.Workload.StalledRequests == 0 || res.Outcomes["grey_filings"] == 0 {
 		t.Fatalf("degraded filings must be in the samples: %+v %+v", res.Workload, res.Outcomes)

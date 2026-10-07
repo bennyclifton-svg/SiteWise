@@ -44,7 +44,11 @@ func run() error {
 	fixtures := flag.String("cases", "data/eval/profile/private/source-cases.json", "checked source cases")
 	recording := flag.String("recording", "data/eval/profile/private/source-recording.json", "Jev recording")
 	live := flag.Bool("live", false, "make paid Jev requests and save responses")
+	measure := flag.Bool("measure", false, "measure current requests using recorded labels; no calls or accuracy claim")
 	flag.Parse()
+	if *live && *measure {
+		return fmt.Errorf("measure and live are separate runs")
+	}
 	raw, err := os.ReadFile(*fixtures)
 	if err != nil {
 		return err
@@ -78,6 +82,10 @@ func run() error {
 		}
 	}
 	correct, total, wrong, automatic := 0, 0, 0, 0
+	thresholds, err := profile.LoadThresholds("data/profile/thresholds.json")
+	if err != nil {
+		return err
+	}
 	var durations []time.Duration
 	inputTokens, outputTokens := 0, 0
 	for _, c := range cases {
@@ -101,7 +109,7 @@ func run() error {
 			if err != nil {
 				return fmt.Errorf("%s: %w", c.ID, err)
 			}
-		} else if rec.Fingerprint != fingerprint {
+		} else if !*measure && rec.Fingerprint != fingerprint {
 			return fmt.Errorf("%s: recording is stale", c.ID)
 		}
 		p.Labels = jobs.AcceptLabels(cat, rec.Label, 0.5)
@@ -113,9 +121,31 @@ func run() error {
 			fingerprint := hex.EncodeToString(sum[:])
 			if *live {
 				rec.EvidenceFingerprint = fingerprint
-			} else if rec.EvidenceFingerprint != fingerprint {
+			} else if !*measure && rec.EvidenceFingerprint != fingerprint {
 				return fmt.Errorf("%s: evidence recording is stale", c.ID)
 			}
+		}
+		if *measure {
+			for stage, request := range map[string]jev.Call{"label": call, "evidence": evidence} {
+				if len(request.Questions) == 0 {
+					continue
+				}
+				size, sizeErr := jev.CheckRequestSize(request)
+				data, _ := json.Marshal(size)
+				before := request
+				before.Questions = map[string]jev.Question{}
+				for id, q := range request.Questions {
+					if !strings.HasSuffix(id, ".action") {
+						before.Questions[id] = q
+					}
+				}
+				prior, _ := jev.MeasureRequest(before)
+				fmt.Printf("%s %s %s allowed=%v action_questions=%d action_bytes=%d\n", c.ID, stage, data, sizeErr == nil, size.Questions-prior.Questions, size.Bytes-prior.Bytes)
+				if sizeErr != nil {
+					return sizeErr
+				}
+			}
+			continue
 		}
 		if *live && ok {
 			rec.Evidence, err = client.Ask(context.Background(), evidence)
@@ -133,7 +163,11 @@ func run() error {
 		applied := map[string]string{}
 		for _, v := range values {
 			got[v.QuestionID] = v.Value
-			if v.Confidence != nil && *v.Confidence >= 0.6 {
+			accepted := v.Confidence != nil && *v.Confidence >= 0.6
+			if strings.HasSuffix(v.QuestionID, ".action") {
+				accepted = thresholds.ActionApplied(v)
+			}
+			if accepted {
 				applied[v.QuestionID] = v.Value
 			}
 		}
@@ -161,6 +195,9 @@ func run() error {
 			inputTokens += r.Usage.InputTokens
 			outputTokens += r.Usage.OutputTokens
 		}
+	}
+	if *measure {
+		return nil
 	}
 	if *live {
 		b, _ := json.MarshalIndent(saved, "", "  ")

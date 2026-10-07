@@ -43,6 +43,7 @@ type Interface struct {
 	To           []string   `yaml:"to"`
 	Summary      string     `yaml:"summary"`
 	Status       string     `yaml:"status"`
+	AppliesWhen  any        `yaml:"applies_when,omitempty"`
 	ResolvedWhen []Question `yaml:"resolved_when"`
 }
 
@@ -85,15 +86,22 @@ type Table struct {
 // apply. Draft records stay in the catalog; evaluation refuses to treat them
 // as a determination.
 type Catalog struct {
-	systems    map[string]System
-	systemIDs  []string
-	Interfaces []Interface
-	rules      map[string]Rule
-	tables     map[string]Table
-	evidence   []Question
-	profile    profileData
-	planning   planningData
-	works      worksData
+	root            string
+	loaded          map[string][]byte
+	version         string
+	systems         map[string]System
+	systemIDs       []string
+	Interfaces      []Interface
+	rules           map[string]Rule
+	tables          map[string]Table
+	evidence        []Question
+	profile         profileData
+	planning        planningData
+	works           worksData
+	clauses         map[string]Clause
+	stages          []DeliveryStage
+	packageDefaults PackageDefaults
+	reportTemplates map[string]ReportTemplate
 }
 
 // Load reads knowledge/ (or a fixture with the same layout).
@@ -101,6 +109,7 @@ type Catalog struct {
 // nested maps, which is more than a line-oriented reader can take on safely.
 func Load(root string) (*Catalog, error) {
 	c := &Catalog{
+		root: root, loaded: map[string][]byte{},
 		systems: map[string]System{},
 		rules:   map[string]Rule{},
 		tables:  map[string]Table{},
@@ -159,7 +168,21 @@ func Load(root string) (*Catalog, error) {
 	if err := c.loadWorks(root, clusterDirs); err != nil {
 		return nil, err
 	}
+	if err := c.loadClauses(root); err != nil {
+		return nil, err
+	}
+	if err := c.loadDeliveryStages(filepath.Join(root, "works", "stages.yaml")); err != nil {
+		return nil, err
+	}
+	if err := c.loadPackageDefaults(filepath.Join(root, "works", "package_defaults.yaml")); err != nil {
+		return nil, err
+	}
+	if err := c.loadReportTemplates(filepath.Join(root, "reports", "templates.yaml")); err != nil {
+		return nil, err
+	}
 	sort.Slice(c.evidence, func(i, j int) bool { return c.evidence[i].ID < c.evidence[j].ID })
+	c.version = c.hashLoaded()
+	c.loaded = nil
 	return c, nil
 }
 
@@ -168,7 +191,7 @@ func (c *Catalog) loadSystems(path string) error {
 		Version int      `yaml:"version"`
 		Systems []System `yaml:"systems"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
@@ -244,7 +267,7 @@ func (c *Catalog) loadRules(path string) error {
 		Version int    `yaml:"version"`
 		Rules   []Rule `yaml:"rules"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
@@ -277,7 +300,7 @@ func (c *Catalog) loadInterfaces(path string) error {
 		Version    int         `yaml:"version"`
 		Interfaces []Interface `yaml:"interfaces"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
@@ -322,7 +345,7 @@ func (c *Catalog) loadFailures(path string) error {
 			Detector Question `yaml:"detector"`
 		} `yaml:"failure_modes"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {
@@ -364,7 +387,7 @@ func (c *Catalog) loadTables(dir string) error {
 			Version int `yaml:"version"`
 			Table   `yaml:",inline"`
 		}{}
-		if err := unmarshal(path, &raw); err != nil {
+		if err := c.unmarshal(path, &raw); err != nil {
 			return err
 		}
 		if raw.Version != 1 {
@@ -385,9 +408,12 @@ func (c *Catalog) loadTables(dir string) error {
 	return nil
 }
 
-func unmarshal(path string, dest any) error {
+func (c *Catalog) unmarshal(path string, dest any) error {
 	body, err := os.ReadFile(path)
 	if err != nil {
+		return err
+	}
+	if err := c.remember(path, body); err != nil {
 		return err
 	}
 	if err := yaml.Unmarshal(body, dest); err != nil {

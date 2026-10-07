@@ -142,7 +142,7 @@ func TestDerivationUsesStatedAndUserOnly(t *testing.T) {
 	}
 	cat := reviewedCatalog(t)
 	rows := profile.Reconcile(in, cat)
-	if r := row(t, rows, whole, "det.type_of_construction"); r.Value != "C" || r.Band != "green" || r.Derived == nil {
+	if r := row(t, rows, whole, "det.type_of_construction"); r.Value != "C" || r.Band != "amber" || r.Derived == nil || r.Note != "Planning only — inputs not verified" {
 		t.Fatalf("toc %+v", r)
 	}
 	if r := row(t, rows, whole, "det.max_floor_area_m2"); r.Value != "2000" {

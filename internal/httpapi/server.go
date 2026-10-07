@@ -56,7 +56,8 @@ type Options struct {
 	Knowledge         *knowledge.Catalog
 	ProfileThresholds profile.Thresholds
 	// ProfileReading decides which documents the profile reads.
-	ProfileReading profile.ReadPolicy
+	ProfileReading    profile.ReadPolicy
+	ProposalShowCount int
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -82,6 +83,9 @@ func New(opts Options) (*Server, error) {
 	}
 	if opts.FilingTimeout <= 0 {
 		opts.FilingTimeout = defaultFilingTimeout
+	}
+	if opts.Knowledge != nil {
+		opts.Store = opts.Store.WithProfile(profileBuild(Deps{Knowledge: opts.Knowledge, ProfileThresholds: opts.ProfileThresholds, ProfileReading: opts.ProfileReading}))
 	}
 	svc, err := intake.NewService(opts.Store, opts.Jev, opts.Catalog, opts.Thresholds)
 	if err != nil {
@@ -148,6 +152,7 @@ func New(opts Options) (*Server, error) {
 		Knowledge:         opts.Knowledge,
 		ProfileThresholds: opts.ProfileThresholds,
 		ProfileReading:    opts.ProfileReading,
+		ProposalShowCount: opts.ProposalShowCount,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})

@@ -3,11 +3,63 @@ package store_test
 import (
 	"context"
 	"errors"
+	"reflect"
 	"testing"
+	"time"
 
 	"sitewise/internal/profile"
 	"sitewise/internal/store"
 )
+
+func TestFailedProfileProjectionPreservesSavedBuild(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	s, build, part := workStore(t)
+	if err := s.RebuildProfile(ctx, orgA, projectA, "", build.Compute); err != nil {
+		t.Fatal(err)
+	}
+	before, err := s.ReadProfile(ctx, orgA, projectA, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	eventCount := func() int {
+		var n int
+		if err := rawPool(t).QueryRow(ctx, `SELECT count(*) FROM events WHERE org_id=$1::uuid AND kind='profile' AND payload::jsonb->>'project_id'=$2`, orgA, projectA).Scan(&n); err != nil {
+			t.Fatal(err)
+		}
+		return n
+	}
+	beforeEvents := eventCount()
+	// COPY fails after the old projection was deleted and hashing started.
+	// Neither the partial replacement nor its build/event may become visible.
+	err = s.RebuildProfile(ctx, orgA, projectA, "", func(snapshot store.ProfileSnapshot) []profile.Row {
+		rows := build.Compute(snapshot)
+		return append(rows, profile.Row{PartID: part, Key: "hdr.invalid-test", Band: "invalid"})
+	})
+	if err == nil {
+		t.Fatal("invalid projection was accepted")
+	}
+	after, err := s.ReadProfile(ctx, orgA, projectA, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if before.Revision != after.Revision || before.InputFingerprint != after.InputFingerprint || !reflect.DeepEqual(before.Rows, after.Rows) || !reflect.DeepEqual(before.BuiltAt, after.BuiltAt) {
+		t.Fatal("failed rebuild changed the saved projection")
+	}
+	if eventCount() != beforeEvents {
+		t.Fatal("failed rebuild published an event")
+	}
+	if err := s.RebuildProfile(ctx, orgA, projectA, "", build.Compute); err != nil {
+		t.Fatalf("rebuild did not recover: %v", err)
+	}
+	final, err := s.ReadProfile(ctx, orgA, projectA, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if final.Revision != before.Revision+1 || final.InputFingerprint != before.InputFingerprint {
+		t.Fatal("retry changed evidence identity or advanced an extra revision")
+	}
+}
 
 func profileStore(t *testing.T) *store.Store {
 	t.Helper()

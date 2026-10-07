@@ -87,10 +87,12 @@ func (c *Catalog) Relevant(scope []string, values map[string]string) Relevance {
 // means that input is not available here (for example scope relevance before
 // work items exist), so those operators are unknown, never false.
 type predEnv struct {
-	values   map[string]string
-	present  func(string) bool
-	works    func(cond map[string]any) tri
-	existing func(system string) tri
+	values       map[string]string
+	workType     *string
+	present      func(string) bool
+	presentState func(string) tri
+	works        func(cond map[string]any) tri
+	existing     func(system string) tri
 }
 
 // evalPredicate evaluates an applies_when mapping. Missing values and
@@ -104,7 +106,11 @@ func evalPredicate(p any, env predEnv) tri {
 		return triUnknown
 	}
 	if det, ok := m["det"]; ok {
-		return evalCondition(fmt.Sprint(det), m, env.values)
+		id := fmt.Sprint(det)
+		if id == "work_type" && env.workType != nil {
+			return evalConditionValue(*env.workType, m)
+		}
+		return evalCondition(id, m, env.values)
 	}
 	result := triTrue
 	for key, val := range m {
@@ -124,6 +130,8 @@ func evalPredicate(p any, env predEnv) tri {
 			t = not(evalPredicate(val, env))
 		case "system_present":
 			switch {
+			case env.presentState != nil:
+				t = env.presentState(fmt.Sprint(val))
 			case env.present == nil:
 				t = triUnknown
 			case env.present(fmt.Sprint(val)):
@@ -152,7 +160,11 @@ func evalPredicate(p any, env predEnv) tri {
 // evalCondition compares one determinant's known value. A multi-choice
 // value is stored comma-separated; any_of and eq match any of its parts.
 func evalCondition(det string, cond map[string]any, values map[string]string) tri {
-	raw := strings.TrimSpace(values[det])
+	return evalConditionValue(values[det], cond)
+}
+
+func evalConditionValue(value string, cond map[string]any) tri {
+	raw := strings.TrimSpace(value)
 	if raw == "" {
 		return triUnknown
 	}

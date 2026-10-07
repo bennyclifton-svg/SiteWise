@@ -1,5 +1,16 @@
 # Structure cluster extraction report
 
+## K4 vehicle-clearance ownership correction, 6 October 2026
+
+`fm.vehicle-clearance-lost-under-structural-beam` now lives in this cluster.
+Batch 2 rows B2-0916 and B2-0917 describe clearance lost below structural beams;
+the previous fire placement was explicitly attributed to keyword triage.
+The complete draft record, including its ID, attachment, question, routing,
+sources and unverified-standard note, is preserved. The two coverage entries
+move with it. Its note about placement in fire records historical provenance.
+This is an ownership correction, not engineering verification or owner approval.
+See `docs/evidence/2026-10-06-k4-vehicle-clearance.md` for validation.
+
 Status: draft; completed missing graph files on 2026-09-29. This is a draft extraction checkpoint, not an exhaustive or instrument-verified knowledge base. Existing child systems were preserved. No seed numerical claim was promoted to verified.
 
 ## Coverage
@@ -68,3 +79,19 @@ Reviewed TypeSafe [Jev 1.13 limitations](https://docs.typesafe.ai/model-jaggedne
 Validation: python tools/check_knowledge.py --only knowledge/clusters/structure: 0 errors, 0 warnings after the full-file sweep and seven cross-cluster additions across these two folders. This validates schema and references, not engineering correctness or extraction completeness.
 
 Additional source conflicts from the full sweep: civil fill-density examples differ from AS-reference compaction examples; no percentage is selected as a universal acceptance criterion. Remediation prose sometimes treats screening levels as cleanup/pass-fail criteria but elsewhere correctly calls them investigation screens. HIL-A is not inferred solely from a residential label. The remediation guide gives inconsistent site-audit statement descriptions and speculative PFAS vapour wording; neither was adopted. Defects-guide crack widths do not classify structural safety, and its balcony AS 3740 reference conflicts with external-waterproofing coverage. No repair prescription was extracted from those claims.
+
+## K4 investigation wording, 6 October 2026
+
+Recast 16 draft investigation labels from physical-work instructions into
+checks or assessments of their cited source constraints. All other record
+fields are preserved, including predicates, signals, sources and draft status.
+See `docs/evidence/2026-10-06-k4-investigation-labels.md` and the exact
+before/after inventory `docs/unforeseen/k4-investigation-label-review.json`.
+This bounded wording pass does not approve content or close owner review.
+
+K4 follow-up: recast 24 further investigation labels that selected remedies
+or design solutions before the investigation. Only labels changed. The shared
+review inventory now records 82 corrections across the catalogue; this remains
+a bounded, unapproved wording pass. See
+`docs/evidence/2026-10-06-k4-investigation-labels.md` and
+`docs/unforeseen/k4-investigation-label-review.json`.

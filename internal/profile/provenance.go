@@ -70,12 +70,12 @@ func Annotate(rows []Row, cat *knowledge.Catalog) {
 		}
 		switch {
 		case r.Band == bandUser:
-			r.ReviewStatus = ReviewAccepted
+			r.ReviewStatus = orDefault(r.ReviewStatus, ReviewAccepted)
 			// Origin, meaning and state were copied from the user value.
 		case r.Band == bandPlanning:
 			// Copied from the planning value; never eligible (D-06).
 		case r.Derived != nil:
-			r.Origin, r.ReviewStatus, r.Meaning = OriginCalculation, ReviewAccepted, MeaningStated
+			r.Origin, r.ReviewStatus, r.Meaning = OriginCalculation, orDefault(r.ReviewStatus, ReviewAccepted), MeaningStated
 		case r.Band == bandSuggest:
 			r.Origin, r.ReviewStatus, r.Meaning = OriginCalculation, ReviewProposed, MeaningStated
 		default:

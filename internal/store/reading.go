@@ -35,6 +35,9 @@ func (s *Store) SetProfileReading(ctx context.Context, orgID, projectID string, 
 		return 0, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
+		return 0, err
+	}
 	var found int
 	if err := tx.QueryRow(ctx, `
 SELECT count(*) FROM documents
@@ -63,7 +66,7 @@ WHERE j.org_id = $1::uuid AND d.org_id = j.org_id AND d.id = j.document_id AND d
   AND NOT `+readableSQL("$3"), orgID, projectID, nilIfEmpty(readKinds)); err != nil {
 		return 0, err
 	}
-	return int(tag.RowsAffected()), tx.Commit(ctx)
+	return int(tag.RowsAffected()), s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 func unique(ids []string) []string {

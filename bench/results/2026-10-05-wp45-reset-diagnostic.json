@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T11:19:11.9772012Z",
+  "target": "dev",
+  "release": false,
+  "host": {
+    "os": "windows",
+    "arch": "amd64",
+    "cpus": 12,
+    "gomaxprocs": 12,
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "go": "go1.27.1"
+  },
+  "jev": "replayed-recorded-latency",
+  "model": "jev-1.13.0",
+  "workload": {
+    "files_per_round": 20,
+    "rounds": 2,
+    "concurrency": 4,
+    "background_jev_callers": 2,
+    "background_jev_calls": 29,
+    "degrade_percent": 10,
+    "stalled_jev_requests": 11,
+    "cold_round": "1"
+  },
+  "outcomes": {
+    "filing": 38,
+    "grey_filings": 4,
+    "not_filed": 2
+  },
+  "paths": {
+    "candidate_harvesting": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 1003,
+      "max_us": 2998,
+      "pass": true
+    },
+    "commit_sse_enqueue": {
+      "n": 38,
+      "p50_us": 3767,
+      "p90_us": 10611,
+      "max_us": 21451,
+      "pass": true
+    },
+    "delivery_read": {
+      "n": 40,
+      "p50_us": 1098,
+      "p90_us": 1781,
+      "max_us": 1946,
+      "pass": true
+    },
+    "delivery_write": {
+      "n": 80,
+      "p50_us": 1744,
+      "p90_us": 2122,
+      "max_us": 2711,
+      "pass": true
+    },
+    "deterministic_field_rules": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 1998,
+      "max_us": 2000,
+      "pass": false
+    },
+    "document_delete": {
+      "n": 40,
+      "p50_us": 11015,
+      "p90_us": 35235,
+      "max_us": 39572,
+      "pass": true
+    },
+    "field_correction": {
+      "n": 40,
+      "p50_us": 5407,
+      "p90_us": 6668,
+      "max_us": 28342,
+      "pass": true
+    },
+    "gap_check": {
+      "n": 40,
+      "p50_us": 1232,
+      "p90_us": 2078,
+      "max_us": 2280,
+      "pass": true
+    },
+    "health_speed": {
+      "n": 40,
+      "p50_us": 532,
+      "p90_us": 609,
+      "max_us": 1726,
+      "pass": true
+    },
+    "identity_text_extraction": {
+      "n": 40,
+      "p50_us": 132538,
+      "p90_us": 292759,
+      "max_us": 361574,
+      "pass": false
+    },
+    "jev_admission_request": {
+      "n": 38,
+      "p50_us": 246024,
+      "p90_us": 1200244,
+      "max_us": 1201006,
+      "pass": false
+    },
+    "package_scope_read": {
+      "n": 40,
+      "p50_us": 619,
+      "p90_us": 1070,
+      "max_us": 1102,
+      "pass": true
+    },
+    "package_scope_write": {
+      "n": 120,
+      "p50_us": 2160,
+      "p90_us": 2325,
+      "max_us": 2950,
+      "pass": true
+    },
+    "packages_read": {
+      "n": 40,
+      "p50_us": 2947,
+      "p90_us": 5192,
+      "max_us": 5815,
+      "pass": true
+    },
+    "packages_write": {
+      "n": 161,
+      "p50_us": 1812,
+      "p90_us": 2365,
+      "max_us": 6999,
+      "pass": true
+    },
+    "profile_edit": {
+      "n": 162,
+      "p50_us": 25001,
+      "p90_us": 51230,
+      "max_us": 56696,
+      "pass": true
+    },
+    "profile_rebuild": {
+      "n": 40,
+      "p50_us": 44516,
+      "p90_us": 46500,
+      "max_us": 48015,
+      "pass": true
+    },
+    "project_document_list": {
+      "n": 40,
+      "p50_us": 2098,
+      "p90_us": 3000,
+      "max_us": 4818,
+      "pass": true
+    },
+    "project_invite_auth": {
+      "n": 47,
+      "p50_us": 1090,
+      "p90_us": 1655,
+      "max_us": 5999,
+      "pass": true
+    },
+    "project_profile_read": {
+      "n": 80,
+      "p50_us": 2999,
+      "p90_us": 10002,
+      "max_us": 15001,
+      "pass": true
+    },
+    "report_assemble": {
+      "n": 40,
+      "p50_us": 7582,
+      "p90_us": 7948,
+      "max_us": 17077,
+      "pass": true
+    },
+    "report_read": {
+      "n": 80,
+      "p50_us": 1159,
+      "p90_us": 3920,
+      "max_us": 5001,
+      "pass": true
+    },
+    "report_write": {
+      "n": 120,
+      "p50_us": 5277,
+      "p90_us": 5702,
+      "max_us": 7075,
+      "pass": true
+    },
+    "spec_home_profile_edit": {
+      "n": 40,
+      "p50_us": 70334,
+      "p90_us": 72575,
+      "max_us": 116016
+    },
+    "sse_reconnect": {
+      "n": 40,
+      "p50_us": 2588,
+      "p90_us": 3011,
+      "max_us": 3380,
+      "pass": true
+    },
+    "whole_intake": {
+      "n": 40,
+      "p50_us": 447917,
+      "p90_us": 670051,
+      "max_us": 1489835,
+      "pass": true
+    },
+    "works_read": {
+      "n": 40,
+      "p50_us": 1042,
+      "p90_us": 1214,
+      "max_us": 1543,
+      "pass": true
+    },
+    "works_write": {
+      "n": 40,
+      "p50_us": 6362,
+      "p90_us": 7590,
+      "max_us": 9485,
+      "pass": true
+    }
+  },
+  "whole_intake_by_round": {
+    "1": {
+      "n": 20,
+      "p50_us": 425822,
+      "p90_us": 634297,
+      "max_us": 1280423
+    },
+    "2": {
+      "n": 20,
+      "p50_us": 447917,
+      "p90_us": 1233375,
+      "max_us": 1489835
+    }
+  },
+  "missing_paths": null,
+  "gate": {
+    "code": 0,
+    "report": "identity_text_extraction: p50 132538us p90 292759us over 80000/250000us (reported; judged on the target VPS)\ndeterministic_field_rules: p50 0us p90 1998us over 1000/1000us (reported; judged on the target VPS)\njev_admission_request: p50 246024us p90 1200244us over 350000/800000us (reported; judged on the target VPS)\n"
+  },
+  "notes": [
+    "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
+    "Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
+    "Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
+    "health_speed alternates the owner-only /api/health and /api/speed views after the filings, with the background queue still holding their stages.",
+    "Jev latency is the recorded provider latency replayed per document, not a live measurement. Release evidence is a -live run on the intended VPS.",
+    "Spec Home fixture SHA-256 858ce589eeea6cf3dde011d9e393f4cb2428e1dc8f512bc15fed0c67800ee61e: 38 documents, 1153 facts, 6742 passages; 40 full rebuilds and edits."
+  ]
+}

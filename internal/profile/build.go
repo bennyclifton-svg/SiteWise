@@ -88,7 +88,8 @@ func pick(list []Candidate, id string) (Candidate, bool) {
 func Build(in Input, cat *knowledge.Catalog) []Row {
 	in.Facts = readFacts(in.Facts, in.Read)
 	rows := Reconcile(in, cat)
-	category, class, work := headerValue(rows, "hdr.building_class"), headerValue(rows, "hdr.subclass"), headerValue(rows, "hdr.work_type")
+	whole := wholePart(in.Parts)
+	category, class, work := headerValue(rows, whole, "hdr.building_class"), headerValue(rows, whole, "hdr.subclass"), headerValue(rows, whole, "hdr.work_type")
 	defaults := cat.ScopeDefaults(category, class, work)
 	removed := map[string]bool{}
 	for _, u := range in.User {
@@ -106,7 +107,9 @@ func Build(in Input, cat *knowledge.Catalog) []Row {
 		in.Suggested = suggested
 		rows = Reconcile(in, cat)
 	}
-	rows = withScope(rows, wholePart(in.Parts), suggested)
+	rows = withExistingSystems(rows, whole)
+	rows = withScope(rows, whole, suggested)
+	// Scope suggestions are added after reconciliation and need provenance too.
 	Annotate(rows, cat)
 	return rows
 }
@@ -125,6 +128,7 @@ func withScope(rows []Row, whole string, defaults []string) []Row {
 	if whole == "" {
 		return rows
 	}
+	work := workContextFor(rows, whole)
 	byKey := map[string]int{}
 	for i, r := range rows {
 		if r.PartID == whole {
@@ -146,6 +150,9 @@ func withScope(rows []Row, whole string, defaults []string) []Row {
 		add(leaf, bandSuggest)
 	}
 	for _, r := range rows {
+		if work.existingPresence(r) || work.severalActions(r) {
+			continue
+		}
 		leaf, ok := strings.CutPrefix(r.Key, "sys.")
 		if !ok || r.PartID != whole || !strings.HasSuffix(leaf, ".presence") || r.Value != valIncluded {
 			continue
@@ -201,9 +208,9 @@ func readFacts(facts []Fact, p ReadPolicy) []Fact {
 	return out
 }
 
-func headerValue(rows []Row, key string) string {
+func headerValue(rows []Row, part, key string) string {
 	for _, r := range rows {
-		if r.Key == key && (r.Band == bandUser || r.Band == bandGreen || r.Band == bandAmber) {
+		if r.PartID == part && r.Key == key && appliedWorkRow(r) {
 			return r.Value
 		}
 	}

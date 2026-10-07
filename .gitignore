@@ -20,3 +20,7 @@ web/.*-playwright.config.ts
 
 # Profile source cases and Jev responses contain private PPR text.
 data/eval/profile/private/
+
+# Local agent worktrees and raw diagnostic samples.
+.claude/
+bench/samples-*.json

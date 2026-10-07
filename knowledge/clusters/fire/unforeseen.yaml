@@ -588,7 +588,7 @@ unforeseen:
   - sig.valve-set-room-dimensions-stated
   de_risk:
     kind: investigation
-    label: Size the valve room to the valve set before tender
+    label: Check the allocated room dimensions against the sprinkler valve set before tender
   contract: Provisional sum for room enlargement.
   effect:
   - cost
@@ -831,7 +831,7 @@ unforeseen:
   - sig.purlin-section-for-hangers-stated
   de_risk:
     kind: investigation
-    label: Match hangers to the surveyed purlin profile before they are ordered
+    label: Check proposed sprinkler hangers against the surveyed purlin profile before ordering
   contract: Provisional sum for alternative hangers or supports.
   effect:
   - cost

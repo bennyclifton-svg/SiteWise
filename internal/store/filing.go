@@ -122,6 +122,10 @@ func (s *Store) CorrectDecision(ctx context.Context, orgID, documentID, field, v
 		return err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	projectID, err := lockDocumentProject(ctx, tx, orgID, documentID)
+	if err != nil {
+		return err
+	}
 	q := s.q.WithTx(tx)
 	doc, err := q.LockFilingDocument(ctx, db.LockFilingDocumentParams{OrgID: orgID, ID: documentID})
 	if err != nil {
@@ -158,7 +162,7 @@ func (s *Store) CorrectDecision(ctx context.Context, orgID, documentID, field, v
 	if _, err := appendEvent(ctx, q, orgID, EventCorrection, documentID, payload); err != nil {
 		return err
 	}
-	return tx.Commit(ctx)
+	return s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // CommitFiling stores decisions, document identity, a supersession link and
@@ -180,6 +184,10 @@ func (s *Store) CommitFiling(ctx context.Context, orgID, documentID string, in C
 }
 
 func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in CommitFiling) (FilingOutcome, error) {
+	projectID, err := lockDocumentProject(ctx, tx, orgID, documentID)
+	if err != nil {
+		return FilingOutcome{}, err
+	}
 	q := db.New(tx)
 
 	doc, err := q.LockFilingDocument(ctx, db.LockFilingDocumentParams{OrgID: orgID, ID: documentID})
@@ -314,6 +322,9 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 				return FilingOutcome{}, err
 			}
 		}
+	}
+	if err := BumpRevision(ctx, tx, orgID, projectID, "profile_inputs"); err != nil {
+		return FilingOutcome{}, err
 	}
 	out, err := readOutcome(ctx, q, orgID, documentID)
 	if err != nil {

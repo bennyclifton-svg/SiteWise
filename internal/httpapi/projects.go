@@ -47,7 +47,9 @@ type Deps struct {
 	ProfileThresholds profile.Thresholds
 	// ProfileReading decides which documents the profile reads. The zero
 	// policy applies no kind filter.
-	ProfileReading profile.ReadPolicy
+	ProfileReading    profile.ReadPolicy
+	ProposalShowCount int
+	ReportBuild       string
 }
 
 // Filer starts a foreground filing that outlives the upload request.
@@ -57,6 +59,12 @@ type Filer interface {
 
 // Handler serves session consumption and project routes.
 func Handler(deps Deps) http.Handler {
+	if deps.ReportBuild == "" {
+		deps.ReportBuild = reportBuildVersion()
+	}
+	if deps.Knowledge != nil {
+		deps.Store = deps.Store.WithProfile(profileBuild(deps))
+	}
 	if deps.MaxBodyBytes <= 0 {
 		deps.MaxBodyBytes = 1 << 20
 	}
@@ -68,36 +76,61 @@ func Handler(deps Deps) http.Handler {
 	}
 	mux := http.NewServeMux()
 	routes := map[string]func(http.ResponseWriter, *http.Request, Deps){
-		"POST /session":                             consumeSession,
-		"POST /projects":                            createProject,
-		"GET /projects/{id}":                        getProject,
-		"GET /session":                              checkSession,
-		"GET /projects":                             listProjects,
-		"GET /projects/{id}/documents":              listDocuments,
-		"POST /projects/{id}/files":                 uploadFile,
-		"GET /documents/{id}":                       getDocument,
-		"GET /documents/{id}/file":                  downloadDocument,
-		"POST /documents/{id}/filing":               retryFiling,
-		"POST /documents/{id}/details/reprocess":    reprocessDetails,
-		"PUT /documents/{id}/fields/{field}":        correctField,
-		"GET /catalog":                              getCatalog,
-		"GET /events":                               streamEvents,
-		"GET /health":                               getHealth,
-		"GET /speed":                                getSpeed,
-		"GET /projects/{id}/profile":                getProfile,
-		"GET /projects/{id}/profile/sources":        getProfileSources,
-		"PUT /projects/{id}/profile/{key}":          putProfileValue,
-		"PUT /projects/{id}/profile/scope":          setScope,
-		"POST /projects/{id}/profile/read":          requestProfileRead,
-		"PUT /projects/{id}/documents/profile-read": setProfileReading,
-		"POST /projects/{id}/documents/delete":      deleteDocuments,
-		"POST /projects/{id}/parts":                 createPart,
-		"PATCH /projects/{id}/parts/{part}":         updatePart,
-		"GET /projects/{id}/site":                   getProjectSite,
-		"PATCH /sites/{site}":                       patchSite,
-		"GET /projects/{id}/planning":               getPlanning,
-		"PUT /projects/{id}/planning/{key}":         putPlanning,
-		"DELETE /projects/{id}/planning/{key}":      deletePlanning,
+		"POST /session":                                      consumeSession,
+		"POST /projects":                                     createProject,
+		"GET /projects/{id}":                                 getProject,
+		"GET /session":                                       checkSession,
+		"GET /projects":                                      listProjects,
+		"GET /projects/{id}/documents":                       listDocuments,
+		"POST /projects/{id}/files":                          uploadFile,
+		"GET /documents/{id}":                                getDocument,
+		"GET /documents/{id}/file":                           downloadDocument,
+		"POST /documents/{id}/filing":                        retryFiling,
+		"POST /documents/{id}/details/reprocess":             reprocessDetails,
+		"PUT /documents/{id}/fields/{field}":                 correctField,
+		"GET /catalog":                                       getCatalog,
+		"GET /events":                                        streamEvents,
+		"GET /health":                                        getHealth,
+		"GET /speed":                                         getSpeed,
+		"GET /projects/{id}/profile":                         getProfile,
+		"GET /projects/{id}/works":                           getWorks,
+		"GET /projects/{id}/gaps":                            getGaps,
+		"POST /projects/{id}/reports":                        postReport,
+		"GET /projects/{id}/reports":                         getReports,
+		"GET /reports/{r}":                                   getReport,
+		"POST /reports/{r}/draft":                            refreshReport,
+		"PUT /reports/{r}/edits/{target}":                    editReport,
+		"DELETE /reports/{r}/edits/{target}":                 resetReportEdit,
+		"GET /projects/{id}/delivery":                        getDelivery,
+		"POST /projects/{id}/delivery":                       postDelivery,
+		"PATCH /projects/{id}/delivery/{item}":               patchDelivery,
+		"GET /projects/{id}/packages":                        getPackages,
+		"PATCH /projects/{id}/packages/{pkg}":                patchPackage,
+		"POST /projects/{id}/packages/{pkg}/stages":          postPackageStage,
+		"PATCH /projects/{id}/packages/{pkg}/stages/{stage}": patchPackageStage,
+		"POST /projects/{id}/packages":                       postPackage,
+		"GET /projects/{id}/packages/{pkg}/scope":            getPackageScope,
+		"POST /projects/{id}/packages/{pkg}/scope":           postPackageScope,
+		"PATCH /projects/{id}/packages/{pkg}/scope/{scope}":  patchPackageScope,
+		"POST /projects/{id}/works":                          postWork,
+		"PATCH /projects/{id}/works/{wi}":                    patchWork,
+		"POST /projects/{id}/proposals/{key}/accept":         acceptProposal,
+		"GET /projects/{id}/proposals":                       getProposals,
+		"DELETE /projects/{id}/proposals/{key}/decision":     undoProposalDecision,
+		"POST /projects/{id}/proposals/{key}/dismiss":        dismissProposal,
+		"GET /projects/{id}/profile/sources":                 getProfileSources,
+		"PUT /projects/{id}/profile/{key}":                   putProfileValue,
+		"PUT /projects/{id}/profile/scope":                   setScope,
+		"POST /projects/{id}/profile/read":                   requestProfileRead,
+		"PUT /projects/{id}/documents/profile-read":          setProfileReading,
+		"POST /projects/{id}/documents/delete":               deleteDocuments,
+		"POST /projects/{id}/parts":                          createPart,
+		"PATCH /projects/{id}/parts/{part}":                  updatePart,
+		"GET /projects/{id}/site":                            getProjectSite,
+		"PATCH /sites/{site}":                                patchSite,
+		"GET /projects/{id}/planning":                        getPlanning,
+		"PUT /projects/{id}/planning/{key}":                  putPlanning,
+		"DELETE /projects/{id}/planning/{key}":               deletePlanning,
 	}
 	for pattern, h := range routes {
 		path, timed := routePaths[pattern]
@@ -118,24 +151,45 @@ func Handler(deps Deps) http.Handler {
 // view. Failed requests are timed too. Uploads are not: their duration is
 // the client's network.
 var routePaths = map[string]string{
-	"POST /session":                             pathInviteAuth,
-	"POST /projects":                            pathInviteAuth,
-	"GET /projects":                             pathDocumentList,
-	"GET /projects/{id}/documents":              pathDocumentList,
-	"PUT /documents/{id}/fields/{field}":        pathFieldCorrection,
-	"GET /health":                               pathHealthSpeed,
-	"GET /speed":                                pathHealthSpeed,
-	"GET /projects/{id}/profile":                pathProfileRead,
-	"GET /projects/{id}/profile/sources":        pathProfileRead,
-	"PUT /projects/{id}/profile/{key}":          pathProfileEdit,
-	"PUT /projects/{id}/profile/scope":          pathProfileEdit,
-	"POST /projects/{id}/profile/read":          pathProfileEdit,
-	"PUT /projects/{id}/documents/profile-read": pathProfileEdit,
-	"POST /projects/{id}/documents/delete":      pathDocumentDelete,
-	"POST /projects/{id}/parts":                 pathProfileEdit,
-	"PATCH /projects/{id}/parts/{part}":         pathProfileEdit,
-	"GET /projects/{id}/site":                   pathProfileRead,
-	"PATCH /sites/{site}":                       pathProfileEdit,
+	"GET /projects/{id}/packages":                        pathPackagesRead,
+	"POST /projects/{id}/packages":                       pathPackagesWrite,
+	"PATCH /projects/{id}/packages/{pkg}":                pathPackagesWrite,
+	"POST /projects/{id}/packages/{pkg}/stages":          pathPackagesWrite,
+	"PATCH /projects/{id}/packages/{pkg}/stages/{stage}": pathPackagesWrite,
+	"GET /projects/{id}/packages/{pkg}/scope":            pathPackageScopeRead,
+	"POST /projects/{id}/packages/{pkg}/scope":           pathPackageScopeWrite,
+	"PATCH /projects/{id}/packages/{pkg}/scope/{scope}":  pathPackageScopeWrite,
+	"GET /projects/{id}/works":                           pathWorksRead,
+	"GET /projects/{id}/gaps":                            pathGapCheck,
+	"POST /projects/{id}/reports":                        pathReportWrite,
+	"GET /projects/{id}/reports":                         pathReportRead,
+	"GET /reports/{r}":                                   pathReportRead,
+	"POST /reports/{r}/draft":                            pathReportAssemble,
+	"PUT /reports/{r}/edits/{target}":                    pathReportWrite,
+	"DELETE /reports/{r}/edits/{target}":                 pathReportWrite,
+	"GET /projects/{id}/delivery":                        pathDeliveryRead,
+	"POST /projects/{id}/delivery":                       pathDeliveryWrite,
+	"PATCH /projects/{id}/delivery/{item}":               pathDeliveryWrite,
+	"POST /projects/{id}/works":                          pathWorksWrite,
+	"PATCH /projects/{id}/works/{wi}":                    pathWorksWrite,
+	"POST /session":                                      pathInviteAuth,
+	"POST /projects":                                     pathInviteAuth,
+	"GET /projects":                                      pathDocumentList,
+	"GET /projects/{id}/documents":                       pathDocumentList,
+	"PUT /documents/{id}/fields/{field}":                 pathFieldCorrection,
+	"GET /health":                                        pathHealthSpeed,
+	"GET /speed":                                         pathHealthSpeed,
+	"GET /projects/{id}/profile":                         pathProfileRead,
+	"GET /projects/{id}/profile/sources":                 pathProfileRead,
+	"PUT /projects/{id}/profile/{key}":                   pathProfileEdit,
+	"PUT /projects/{id}/profile/scope":                   pathProfileEdit,
+	"POST /projects/{id}/profile/read":                   pathProfileEdit,
+	"PUT /projects/{id}/documents/profile-read":          pathProfileEdit,
+	"POST /projects/{id}/documents/delete":               pathDocumentDelete,
+	"POST /projects/{id}/parts":                          pathProfileEdit,
+	"PATCH /projects/{id}/parts/{part}":                  pathProfileEdit,
+	"GET /projects/{id}/site":                            pathProfileRead,
+	"PATCH /sites/{site}":                                pathProfileEdit,
 	// A planning write rebuilds the profile in code, so it is a profile edit.
 	"GET /projects/{id}/planning":          pathProfileRead,
 	"PUT /projects/{id}/planning/{key}":    pathProfileEdit,

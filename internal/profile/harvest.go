@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"sitewise/internal/knowledge"
 )
@@ -118,6 +119,8 @@ func candidatesFor(id, value, extraction, text string) []Candidate {
 		return nil
 	}
 	switch {
+	case id == "existing_building_year":
+		return buildingYearCandidates(text, time.Now().Year())
 	case id == "consent_number":
 		return verbatim(consentRe, text, func(m []string) string { return strings.TrimRight(m[0], ".") })
 	case strings.HasSuffix(id, "_date"):
@@ -135,6 +138,20 @@ func candidatesFor(id, value, extraction, text string) []Candidate {
 		return nil
 	}
 	return nil
+}
+
+// Code bounds plausible years; Jev picks the stated construction year from
+// verbatim spans, with none available:
+// https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook.
+func buildingYearCandidates(text string, currentYear int) []Candidate {
+	var out []Candidate
+	for _, idx := range integerRe.FindAllStringIndex(text, -1) {
+		year := atoi(text[idx[0]:idx[1]])
+		if year >= 1800 && year <= currentYear {
+			out = append(out, candidate(len(out), text, idx[0], idx[1], text[idx[0]:idx[1]], "year", ""))
+		}
+	}
+	return capped(out)
 }
 
 var unitCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+(?:sole\s+occupancy\s+)?(?:units|apartments|dwellings)\b`)

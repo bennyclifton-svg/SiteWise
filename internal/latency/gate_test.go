@@ -131,6 +131,24 @@ func TestCommittedBudgets(t *testing.T) {
 		t.Fatalf("min_samples = %d", budgets.MinSamples)
 	}
 	want := map[string][2]int64{
+		"works_read":                {100_000, 250_000},
+		"packages_read":             {100_000, 250_000},
+		"package_scope_read":        {100_000, 250_000},
+		"gap_check":                 {50_000, 150_000},
+		"delivery_read":             {100_000, 250_000},
+		"report_read":               {100_000, 250_000},
+		"report_write":              {100_000, 250_000},
+		"report_assemble":           {300_000, 1_000_000},
+		"delivery_write":            {100_000, 250_000},
+		"package_scope_write":       {100_000, 250_000},
+		"packages_write":            {100_000, 250_000},
+		"works_write":               {100_000, 250_000},
+		"proposals_read":            {100_000, 250_000},
+		"proposals_accept":          {100_000, 250_000},
+		"proposals_dismiss":         {100_000, 250_000},
+		"proposals_undo":            {100_000, 250_000},
+		"proposals_accept_delivery": {100_000, 250_000},
+		"proposals_undo_delivery":   {100_000, 250_000},
 		"identity_text_extraction":  {80_000, 250_000},
 		"candidate_harvesting":      {5_000, 10_000},
 		"deterministic_field_rules": {1_000, 1_000},
@@ -143,7 +161,9 @@ func TestCommittedBudgets(t *testing.T) {
 		"health_speed":              {25_000, 100_000},
 		"sse_reconnect":             {100_000, 250_000},
 		"project_profile_read":      {50_000, 150_000},
+		"profile_rebuild":           {100_000, 300_000},
 		"profile_edit":              {50_000, 150_000},
+		"spec_home_profile_edit":    {50_000, 150_000},
 		"document_delete":           {500_000, 1_000_000},
 	}
 	if len(budgets.Paths) != len(want) {
@@ -162,6 +182,28 @@ func TestCommittedBudgets(t *testing.T) {
 		if pathBudget.P50US != limits[0] || pathBudget.P90US != limits[1] {
 			t.Fatalf("%s = %d/%d", pathBudget.Name, pathBudget.P50US, pathBudget.P90US)
 		}
+	}
+}
+
+func TestSpecHomeEditsCannotHideBehindFasterAggregate(t *testing.T) {
+	budgets, err := LoadBudgets(filepath.Join("..", "..", "bench", "budgets.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	samples := map[string][]int64{}
+	for _, path := range budgets.Paths {
+		for range budgets.MinSamples {
+			samples[path.Name] = append(samples[path.Name], 1_000)
+		}
+	}
+	// The pooled edit path is fast, while the complete saved workload is slow.
+	samples["spec_home_profile_edit"] = make([]int64, budgets.MinSamples)
+	for i := range samples["spec_home_profile_edit"] {
+		samples["spec_home_profile_edit"][i] = 88_000
+	}
+	code, report := Gate(budgets, samples, false)
+	if code != 1 || !strings.Contains(report, "spec_home_profile_edit: p50 88000us exceeds 50000us") {
+		t.Fatalf("large workload escaped gate: code=%d %s", code, report)
 	}
 }
 

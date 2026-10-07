@@ -12,6 +12,10 @@ func TestProfileActiveWorkExcludesQueuedAndExpiredLeases(t *testing.T) {
 	ctx := context.Background()
 	st := profileStore(t)
 	pool := rawPool(t)
+	// Multiple queued stages still represent one pending document.
+	if err := st.EnqueueStage(ctx, orgA, docA, store.JobKindFullText); err != nil {
+		t.Fatal(err)
+	}
 	if err := st.EnqueueStage(ctx, orgA, docA, store.JobKindLabel); err != nil {
 		t.Fatal(err)
 	}

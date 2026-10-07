@@ -1,6 +1,8 @@
 # Next wave: agent work packages
 
-Status: revised plan, 5 October 2026. **Documentation-only; do not start or resume implementation.** The implementation plan §0.2 is the current evidence summary and §5 is the current decision table. Historical package states are not fresh verification. M1/M2/M3 replace the original stage-only execution order.
+> 7 October owner update: publish the current implementation checkpoint to main/GitHub; move broader acceptance testing beyond the thin 0991 project. See implementation plan "Current owner direction". Outstanding gates remain open; this is not acceptance or deployment approval.
+
+Status: execution status reconciled 6 October 2026. The current owner request authorizes WP-20 and subsequent packages in dependency order; the earlier documentation-only restriction is superseded. Owner quality, knowledge-review and release gates remain in force. The implementation plan §0.2 is the current evidence summary and §5 is the current decision table. Historical package states are not fresh verification. M1/M2/M3 replace the original stage-only execution order.
 
 Read with:
 
@@ -1144,11 +1146,11 @@ Done: checker strict 0 errors, 0 pending; review packet; §4.2 handoff.
 
 ## 6. Status and evidence
 
-The implementation plan §0.2 is the summary of where things are up to. §5 there owns decisions, §2.4 here owns future order, and the register state-update log owns detailed requirement evidence. The table below is the per-package status. **At every merge the integration lead updates all three: this table, plan §0.2 and the register state updates.** M1/M2/M3 phases and NW-REQ-381–389 are Planned, not implemented or verified.
+The implementation plan §0.2 is the summary of where things are up to. §5 there owns decisions, §2.4 here owns future order, and the register state-update log owns detailed requirement evidence. The table below is the per-package status. **At every merge the integration lead updates all three: this table, plan §0.2 and the register state updates.** M1 has local partial implementation; M1/M2/M3 acceptance and NW-REQ-381–389 are not established by that implementation.
 
 ### Package status (kept current at every merge)
 
-Blockers are as first planned; for future order use §2.4. Last updated 5 October 2026 at `8b96f33`.
+Blockers are as first planned; for future order use §2.4. Local evidence reconciled 6 October 2026. Local implementation is unmerged and does not imply independent review, a full green gate, or owner acceptance. The linked handoffs delimit each partial delivery.
 
 | WP | Stage | Lane | Blocked by | State |
 | - | - | - | - | - |
@@ -1156,37 +1158,37 @@ Blockers are as first planned; for future order use §2.4. Last updated 5 Octobe
 | WP-11 | 1 | A | none | **Implemented**, merged `0a13afd`; reviewed; site-edit lock, revision and event deferred to WP-14 |
 | WP-12 | 1 | A | WP-11, WP-K0, D-04, D-06 | **Implemented**, merged `ece0086`; reviewed; full gate green |
 | WP-13 | 1 | A | WP-12, WP-K0, D-06 | **Implemented**, merged `77ced4b`; reviewed; full gate green. `planning_keys.yaml` awaits owner review |
-| WP-14 | 1 | A | WP-12, WP-13, D-18 (bench) | **Next.** F31 prerequisite fixed; full gate and independent review passed (`docs/evidence/2026-10-05-f31-profile-snapshot.md`). WP-14 implementation not started |
-| WP-15 | 1 | A | WP-14, D-04, D-06 | Not started |
-| WP-20 | 2 | A | WP-15, D-05 | Not started |
-| WP-21 | 2 | A | D-07 | Not started |
-| WP-22 | 2 | A | D-17 | Not started |
-| WP-23 | 2 | A | WP-22 | Not started |
-| WP-24 | 2 | A | WP-20 | Not started |
+| WP-14 | 1 | A | WP-12, WP-13, D-18 (bench) | Local implementation; revisions, fingerprints, atomic rebuild and staleness. `docs/evidence/2026-10-05-wp14-revisions.md`; intermittent profile latency remains open. |
+| WP-15 | 1 | A | WP-14, D-04, D-06 | Local implementation; site routing and derivation eligibility. `docs/evidence/2026-10-05-wp15-site-readings.md`; not whole-wave Verified. |
+| WP-20 | 2 | A | WP-15, D-05 | Local implementation; canonical work items and scope-picker cut-over. `docs/evidence/2026-10-05-wp20-work-items.md`. |
+| WP-21 | 2 | A | D-07 | Local implementation; existing systems and part work types. `docs/evidence/2026-10-05-wp21-existing-systems.md`. |
+| WP-22 | 2 | A | D-17 | Local code; changed-question live recording/quality evidence pending. `docs/evidence/2026-10-05-wp22-action-question.md`. |
+| WP-23 | 2 | A | WP-22 | Local code; part location mapping. `docs/evidence/2026-10-05-wp23-part-location.md`; changed-question quality evidence pending. |
+| WP-24 | 2 | A | WP-20 | M2 subdivision/retirement not implemented; minimum M1 corrections delivered through WP-45a. |
 | WP-25 | 2 | A | D-07 for the work_type operator | **Implemented**, merged `b3a1048`; reviewed; findings fixed |
-| WP-26 | 2 | A | WP-20, WP-25, WP-14 (D-03 for some accept kinds; D-29 for AT-15) | Not started |
+| WP-26 | 2 | A | WP-20, WP-25, WP-14 (D-03 for some accept kinds; D-29 for AT-15) | Partial local evaluator/projection/decision implementation; automatic edit generation OFF, integrated edit budget and owner quality gates open. `docs/evidence/2026-10-05-wp26-proposals.md`. |
 | WP-27 | 2 | A | D-12, D-17 | Not started |
-| WP-28 | 2 | A | D-23 | Not started |
-| WP-30 | 3 | A | WP-20 (D-22 for defaults) | Not started |
-| WP-31 | 3 | A | WP-30, WP-24, WP-40 | Not started |
-| WP-32 | 3 | A | D-03, D-09 | Not started |
+| WP-28 | 2 | A | D-23 | Partial local evaluation harness and draft fixture; owner-reviewed keys/quality gate outstanding. `docs/evidence/2026-10-05-wp28-work-evaluation.md`. |
+| WP-30 | 3 | A | WP-20 (D-22 for defaults) | Local packages/stages and draft baseline/complexity suggestions. `docs/evidence/2026-10-05-wp30-packages.md`; owner content gates remain. |
+| WP-31 | 3 | A | WP-30, WP-24, WP-40 | Local M1 responsibilities/obligations; M2 dependencies remain. `docs/evidence/2026-10-05-wp31-package-scope.md`. |
+| WP-32 | 3 | A | D-03, D-09 | Local gap-check implementation. `docs/evidence/2026-10-05-wp32-gap-check.md`; not full milestone acceptance. |
 | WP-33 | 3 | A | WP-31 | Not started |
 | WP-34 | 3 | A | WP-33, WP-31 (D-13; benchmarks) | Not started |
-| WP-35 | 3 | A | WP-20, WP-30, D-03 | Not started |
-| WP-40 | W1 | A | WP-K0 | Not started |
-| WP-41 | 4 | A | WP-14, WP-30-35, WP-40 | Not started |
-| WP-42 | 4 | A | WP-41 | Not started |
+| WP-35 | 3 | A | WP-20, WP-30, D-03 | M1 minimal delivery CRUD local; M2 dependencies/cycles remain. `docs/evidence/2026-10-05-wp35-delivery.md`. |
+| WP-40 | W1 | A | WP-K0 | M1 draft RFP catalogue local; owner content review and later catalogues remain. `docs/evidence/2026-10-05-wp40a-rfp-catalogue.md`. |
+| WP-41 | 4 | A | WP-14, WP-30-35, WP-40 | M1 draft schema/assembler local; issue/export/cost integration deferred. `docs/evidence/2026-10-05-wp41-report-drafts.md`. |
+| WP-42 | 4 | A | WP-41 | M1 citations local; later phase outstanding. `docs/evidence/2026-10-05-wp42-report-citations.md`. |
 | WP-43 | 4 | A | WP-42 | Not started |
 | WP-44 | 4 | C+A | D-15, D-16 | Not started |
-| WP-45 | 4 | A | WP-44, WP-28, D-02, D-21 | Not started |
+| WP-45 | 4 | A | WP-44, WP-28, D-02, D-21 | M1 correction/proposal/report controls local; 0991 owner quality/time gate outstanding. Three `2026-10-05-wp45-*` handoffs. |
 | WP-50 | 5 | A | WP-45 | Not started |
 | WP-51 | 5 | A | WP-50, D-13 | Not started |
 | WP-60 | 6 | A | WP-51 | Not started |
 | WP-70 | 7 | B+A | WP-60 | Not started |
 | WP-71 | 7 | release | VPS | Not started |
-| WP-X1 | 3/5/7 | C | stage ends | Not started |
+| WP-X1 | 3/5/7 | C | stage ends | Partial local M1 access/recovery evidence; M2/release sweeps remain. `docs/evidence/2026-10-05-wpx1-access-sweep.md`. |
 | WP-K0 | K | knowledge | owner approval of shapes; D-07, D-09, D-24, D-30 for the remaining shapes | K0 shapes implemented (approval pending); new catalogue shapes **Implemented**, merged `6e47383` (stages, package defaults, planning keys, key scope, clauses, benchmarks) |
-| WP-K1-K3 | K | knowledge | WP-K0 | Not started |
-| WP-K4 | K | knowledge | owner review | Pass A/B implemented; owner review packet merged `f665501` (`docs/unforeseen/k4-owner-review-packet.md`); merge-pass edits not started |
+| WP-K1-K3 | K | knowledge | WP-K0 | Partial draft interface/consequence/source work; not complete or owner reviewed. See 6 October tenant-fitout, interface-applicability and knowledge evidence. |
+| WP-K4 | K | knowledge | owner review | Pass A/B drafts plus partial source/merge corrections; owner review incomplete. `docs/unforeseen/k4-current-review-status.md`. |
 | WP-K5 | K | owner | owner time | Not started |
-| WP-K6 | K | knowledge | WP-26, WP-28, WP-K1-K3 | Not started |
+| WP-K6 | K | knowledge | WP-26, WP-28, WP-K1-K3 | Owner-reviewed 0991/0777 usefulness and quality gates outstanding; draft timing fixtures are not acceptance. |

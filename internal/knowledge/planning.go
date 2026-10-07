@@ -122,7 +122,7 @@ func (c *Catalog) loadPlanningKeys(dir string) error {
 		Status  string        `yaml:"status"`
 		Keys    []PlanningKey `yaml:"keys"`
 	}
-	if err := unmarshal(p, &file); err != nil {
+	if err := c.unmarshal(p, &file); err != nil {
 		return err
 	}
 	if file.Version != 1 {

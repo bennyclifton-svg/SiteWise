@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T13:33:28.6237057Z",
+  "target": "dev",
+  "release": false,
+  "host": {
+    "os": "windows",
+    "arch": "amd64",
+    "cpus": 12,
+    "gomaxprocs": 12,
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "go": "go1.27.1"
+  },
+  "jev": "replayed-recorded-latency",
+  "model": "jev-1.13.0",
+  "workload": {
+    "files_per_round": 20,
+    "rounds": 2,
+    "concurrency": 4,
+    "background_jev_callers": 2,
+    "background_jev_calls": 30,
+    "degrade_percent": 10,
+    "stalled_jev_requests": 11,
+    "cold_round": "1"
+  },
+  "outcomes": {
+    "filing": 38,
+    "grey_filings": 4,
+    "not_filed": 2
+  },
+  "paths": {
+    "candidate_harvesting": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 1003,
+      "max_us": 2001,
+      "pass": true
+    },
+    "commit_sse_enqueue": {
+      "n": 38,
+      "p50_us": 3791,
+      "p90_us": 8000,
+      "max_us": 14540,
+      "pass": true
+    },
+    "delivery_read": {
+      "n": 40,
+      "p50_us": 1112,
+      "p90_us": 1802,
+      "max_us": 1957,
+      "pass": true
+    },
+    "delivery_write": {
+      "n": 80,
+      "p50_us": 1801,
+      "p90_us": 2291,
+      "max_us": 2834,
+      "pass": true
+    },
+    "deterministic_field_rules": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 1581,
+      "max_us": 2000,
+      "pass": false
+    },
+    "document_delete": {
+      "n": 40,
+      "p50_us": 11328,
+      "p90_us": 31389,
+      "max_us": 35869,
+      "pass": true
+    },
+    "field_correction": {
+      "n": 40,
+      "p50_us": 5748,
+      "p90_us": 7056,
+      "max_us": 30138,
+      "pass": true
+    },
+    "gap_check": {
+      "n": 40,
+      "p50_us": 1100,
+      "p90_us": 1158,
+      "max_us": 1743,
+      "pass": true
+    },
+    "health_speed": {
+      "n": 40,
+      "p50_us": 536,
+      "p90_us": 1049,
+      "max_us": 1218,
+      "pass": true
+    },
+    "identity_text_extraction": {
+      "n": 40,
+      "p50_us": 143072,
+      "p90_us": 318641,
+      "max_us": 444122,
+      "pass": false
+    },
+    "jev_admission_request": {
+      "n": 38,
+      "p50_us": 236580,
+      "p90_us": 1200221,
+      "max_us": 1201043,
+      "pass": false
+    },
+    "package_scope_read": {
+      "n": 40,
+      "p50_us": 1060,
+      "p90_us": 1127,
+      "max_us": 1199,
+      "pass": true
+    },
+    "package_scope_write": {
+      "n": 120,
+      "p50_us": 2131,
+      "p90_us": 2394,
+      "max_us": 3007,
+      "pass": true
+    },
+    "packages_read": {
+      "n": 40,
+      "p50_us": 3058,
+      "p90_us": 5184,
+      "max_us": 5864,
+      "pass": true
+    },
+    "packages_write": {
+      "n": 161,
+      "p50_us": 1979,
+      "p90_us": 2497,
+      "max_us": 6415,
+      "pass": true
+    },
+    "profile_edit": {
+      "n": 162,
+      "p50_us": 21938,
+      "p90_us": 43379,
+      "max_us": 48036,
+      "pass": true
+    },
+    "profile_rebuild": {
+      "n": 40,
+      "p50_us": 27897,
+      "p90_us": 30072,
+      "max_us": 68665,
+      "pass": true
+    },
+    "project_document_list": {
+      "n": 40,
+      "p50_us": 12959,
+      "p90_us": 18192,
+      "max_us": 31683,
+      "pass": true
+    },
+    "project_invite_auth": {
+      "n": 50,
+      "p50_us": 1073,
+      "p90_us": 2001,
+      "max_us": 6647,
+      "pass": true
+    },
+    "project_profile_read": {
+      "n": 80,
+      "p50_us": 1069,
+      "p90_us": 10730,
+      "max_us": 11266,
+      "pass": true
+    },
+    "proposals_accept": {
+      "n": 40,
+      "p50_us": 7465,
+      "p90_us": 9037,
+      "max_us": 9614,
+      "pass": true
+    },
+    "proposals_accept_delivery": {
+      "n": 80,
+      "p50_us": 3642,
+      "p90_us": 4113,
+      "max_us": 4534,
+      "pass": true
+    },
+    "proposals_dismiss": {
+      "n": 120,
+      "p50_us": 7698,
+      "p90_us": 8963,
+      "max_us": 14358,
+      "pass": true
+    },
+    "proposals_read": {
+      "n": 483,
+      "p50_us": 5001,
+      "p90_us": 6300,
+      "max_us": 8198,
+      "pass": true
+    },
+    "proposals_undo": {
+      "n": 80,
+      "p50_us": 9724,
+      "p90_us": 12055,
+      "max_us": 18110,
+      "pass": true
+    },
+    "proposals_undo_delivery": {
+      "n": 160,
+      "p50_us": 7098,
+      "p90_us": 9883,
+      "max_us": 12419,
+      "pass": true
+    },
+    "report_assemble": {
+      "n": 40,
+      "p50_us": 7883,
+      "p90_us": 8846,
+      "max_us": 18281,
+      "pass": true
+    },
+    "report_read": {
+      "n": 80,
+      "p50_us": 1129,
+      "p90_us": 4181,
+      "max_us": 5106,
+      "pass": true
+    },
+    "report_write": {
+      "n": 120,
+      "p50_us": 5243,
+      "p90_us": 5623,
+      "max_us": 7297,
+      "pass": true
+    },
+    "spec_home_profile_edit": {
+      "n": 40,
+      "p50_us": 50391,
+      "p90_us": 52787,
+      "max_us": 121319,
+      "pass": false
+    },
+    "sse_reconnect": {
+      "n": 40,
+      "p50_us": 574,
+      "p90_us": 1153,
+      "max_us": 1215,
+      "pass": true
+    },
+    "whole_intake": {
+      "n": 40,
+      "p50_us": 447668,
+      "p90_us": 789433,
+      "max_us": 1530274,
+      "pass": true
+    },
+    "works_read": {
+      "n": 40,
+      "p50_us": 726,
+      "p90_us": 827,
+      "max_us": 1564,
+      "pass": true
+    },
+    "works_write": {
+      "n": 83,
+      "p50_us": 6614,
+      "p90_us": 7685,
+      "max_us": 8589,
+      "pass": true
+    }
+  },
+  "whole_intake_by_round": {
+    "1": {
+      "n": 20,
+      "p50_us": 409220,
+      "p90_us": 704846,
+      "max_us": 1530274
+    },
+    "2": {
+      "n": 20,
+      "p50_us": 450694,
+      "p90_us": 1217072,
+      "max_us": 1507541
+    }
+  },
+  "missing_paths": null,
+  "gate": {
+    "code": 1,
+    "report": "identity_text_extraction: p50 143072us p90 318641us over 80000/250000us (reported; judged on the target VPS)\ndeterministic_field_rules: p50 0us p90 1581us over 1000/1000us (reported; judged on the target VPS)\njev_admission_request: p50 236580us p90 1200221us over 350000/800000us (reported; judged on the target VPS)\nspec_home_profile_edit: p50 50391us exceeds 50000us\n"
+  },
+  "notes": [
+    "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
+    "Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
+    "Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
+    "health_speed alternates the owner-only /api/health and /api/speed views after the filings, with the background queue still holding their stages.",
+    "Jev latency is the recorded provider latency replayed per document, not a live measurement. Release evidence is a -live run on the intended VPS.",
+    "Spec Home fixture SHA-256 858ce589eeea6cf3dde011d9e393f4cb2428e1dc8f512bc15fed0c67800ee61e: 38 documents, 1153 facts, 6742 passages; 40 full rebuilds and edits."
+  ]
+}

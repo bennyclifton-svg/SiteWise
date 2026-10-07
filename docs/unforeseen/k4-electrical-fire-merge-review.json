@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "reviewed": false,
+  "source_status": "AI-generated unverified leads; instrument names are not verification",
+  "runtime_questions_changed": false,
+  "records": [
+    {
+      "id": "fm.emergency-power-supplies-lifts",
+      "assessment": "partial_coverage",
+      "reason": "The cited rows require the circuit kept live by the project fire strategy. That is not automatically identical to the detector wording about a specified standby supply.",
+      "followup": "Owner review of essential-versus-standby terminology; preserve pre-K4 detector wording until separately evaluated.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0219",
+          "id": "C-0219",
+          "theme": "Passive fire",
+          "circumstance": "The firefighter lift is not on the power circuit that the fire strategy keeps alive.",
+          "kind": "design or coordination error",
+          "system_a": "Vertical transport",
+          "system_b": "Electrical services",
+          "specific_element": "firefighter lift supply",
+          "trigger": "connecting a lift to essential power",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial; institution",
+          "when_discovered": "testing/commissioning",
+          "early_warning": "The lift feeder is on the general board.",
+          "derisk": "Feed the lift from the supply the strategy names.",
+          "effect": "compliance; safety",
+          "source": "NCC"
+        },
+        {
+          "row_id": "B2-0451",
+          "id": "C-0451",
+          "theme": "Vertical transport",
+          "circumstance": "The lift supply is not on the essential circuit the fire strategy requires.",
+          "kind": "design or coordination error",
+          "system_a": "Vertical transport",
+          "system_b": "Electrical services",
+          "specific_element": "lift supply",
+          "trigger": "connecting a lift",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial; institution",
+          "when_discovered": "testing/commissioning",
+          "early_warning": "The feeder is on the general board.",
+          "derisk": "Feed the lift from the essential supply.",
+          "effect": "compliance; safety",
+          "source": "NCC"
+        }
+      ]
+    },
+    {
+      "id": "fm.protective-devices-do-not-discriminate-or-coordinate",
+      "assessment": "retain_with_distinction",
+      "reason": "An explicitly stated device/study mismatch is detected separately in the wording from actual non-coordination. A different device list alone does not establish failed coordination.",
+      "followup": "Owner review of combined flag meaning and severity; no numerical curve assessment by Jev.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0307",
+          "id": "C-0307",
+          "theme": "Electrical",
+          "circumstance": "The breakers supplied do not discriminate with the upstream device.",
+          "kind": "process, authority, supply or weather",
+          "system_a": "Electrical services",
+          "system_b": "Electrical services",
+          "specific_element": "circuit breaker",
+          "trigger": "installing a new board",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial; industrial",
+          "when_discovered": "testing/commissioning",
+          "early_warning": "The curves overlap.",
+          "derisk": "Select devices that discriminate before they are ordered.",
+          "effect": "compliance; quality",
+          "source": "AS/NZS 3000"
+        },
+        {
+          "row_id": "B2-0349",
+          "id": "C-0349",
+          "theme": "Electrical",
+          "circumstance": "A new breaker does not coordinate with the existing fuses upstream.",
+          "kind": "design or coordination error",
+          "system_a": "Electrical services",
+          "system_b": "Electrical services",
+          "specific_element": "fuse and breaker",
+          "trigger": "adding a breaker downstream of fuses",
+          "project_types": "extension",
+          "building_categories": "industrial",
+          "when_discovered": "testing/commissioning",
+          "early_warning": "The curves do not coordinate.",
+          "derisk": "Select a device that coordinates.",
+          "effect": "compliance; quality",
+          "source": "AS/NZS 3000"
+        },
+        {
+          "row_id": "B2-0375",
+          "id": "C-0375",
+          "theme": "Electrical",
+          "circumstance": "A new switchboard manufactured overseas arrives with devices that are not the ones the discrimination study used.",
+          "kind": "process, authority, supply or weather",
+          "system_a": "Electrical services",
+          "system_b": "contract",
+          "specific_element": "switchboard devices",
+          "trigger": "delivering a custom board",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial; industrial",
+          "when_discovered": "construction",
+          "early_warning": "The device list does not match the study.",
+          "derisk": "Hold the study devices in the order.",
+          "effect": "cost; programme; compliance",
+          "source": "AS/NZS 3000"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-supply-or-main-capacity-below-added-load",
+      "assessment": "retain_and_correct_trigger",
+      "reason": "Supply, rising-main and equipment-load cases share a capacity investigation. B2-0360 explicitly concerns EV chargers; their work system was absent from the predicate and is now included.",
+      "followup": "Kitchen-equipment-only triggering remains a separate coverage question. Confirmed supply capacity alone does not establish adequacy for added demand; no automatic three-phase prescription.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0302",
+          "id": "C-0302",
+          "theme": "Electrical",
+          "circumstance": "The consumer mains cannot carry the maximum demand of the new equipment.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "utility",
+          "specific_element": "consumer mains",
+          "trigger": "adding equipment load",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial; industrial",
+          "when_discovered": "design",
+          "early_warning": "The mains size is below the new demand.",
+          "derisk": "Check the mains before equipment is ordered.",
+          "effect": "cost; compliance",
+          "source": "AS/NZS 3000"
+        },
+        {
+          "row_id": "B2-0360",
+          "id": "C-0360",
+          "theme": "Electrical",
+          "circumstance": "Vehicle chargers push the existing supply over its limit.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "utility",
+          "specific_element": "vehicle charger",
+          "trigger": "adding chargers",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "residential; commercial",
+          "when_discovered": "design",
+          "early_warning": "The demand with the chargers exceeds the supply.",
+          "derisk": "Upgrade the supply or manage the charge load.",
+          "effect": "cost; compliance",
+          "source": "AS/NZS 3000"
+        },
+        {
+          "row_id": "B2-0366",
+          "id": "C-0366",
+          "theme": "Electrical",
+          "circumstance": "Kitchen equipment load exceeds the diversity the base-building board was sized on.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "Mechanical services",
+          "specific_element": "kitchen supply",
+          "trigger": "fitting out a kitchen",
+          "project_types": "refurbishment/fit-out",
+          "building_categories": "commercial",
+          "when_discovered": "design",
+          "early_warning": "The equipment schedule exceeds the allowance.",
+          "derisk": "Size the supply to the equipment.",
+          "effect": "cost; compliance",
+          "source": "AS/NZS 3000"
+        },
+        {
+          "row_id": "B1-0679",
+          "#": "679",
+          "Theme": "7. Electrical, Communications & Controls",
+          "Unforeseen circumstance": "Single phase supply cannot support the extension",
+          "Systems impacted": "Existing supply ↔ New load",
+          "Foundational relationship": "Larger loads need three phase.",
+          "Building category": "Res",
+          "Project type": "Extension"
+        },
+        {
+          "row_id": "B1-0684",
+          "#": "684",
+          "Theme": "7. Electrical, Communications & Controls",
+          "Unforeseen circumstance": "Tenant fit-out exceeds the electrical rising main capacity",
+          "Systems impacted": "Rising main ↔ Tenant load",
+          "Foundational relationship": "Mains were sized for typical loads.",
+          "Building category": "Com",
+          "Project type": "Refurb/Upgrade"
+        }
+      ]
+    },
+    {
+      "id": "uc.overhead-power-lines-restrict-crane-and-delivery",
+      "assessment": "retain_with_predicate_gap",
+      "reason": "Crane reach and delivery access share an overhead-conductor constraint. Existing utility supply does not prove overhead lines or lifting work, and absent on-site supply does not prove nearby overhead lines absent.",
+      "followup": "Owner review of applicability precision and current stage attachment; no line-isolation procedure or unverified legal obligation is established.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B1-0808",
+          "#": "808",
+          "Theme": "9. Site, Logistics & Temporary Works",
+          "Unforeseen circumstance": "Overhead power lines near the crane",
+          "Systems impacted": "Electrical network ↔ Lifting",
+          "Foundational relationship": "Crane reach and live conductors must stay apart.",
+          "Building category": "All",
+          "Project type": "All"
+        },
+        {
+          "row_id": "B1-0899",
+          "#": "899",
+          "Theme": "9. Site, Logistics & Temporary Works",
+          "Unforeseen circumstance": "Delivery crane cannot reach due to overhead lines",
+          "Systems impacted": "Delivery ↔ Overhead lines",
+          "Foundational relationship": "Lines restrict crane reach.",
+          "Building category": "Res",
+          "Project type": "New build"
+        }
+      ]
+    },
+    {
+      "id": "uc.switchboard-fault-rating-below-or-unproven-against-fault-level",
+      "assessment": "retain_with_signal_gap",
+      "reason": "Known inadequate rating and unproved rating are distinct evidence states but both justify checking the project rating. The signal accepts phases OR fault level, so a positive signal cannot close the investigation.",
+      "followup": "Preserve unresolved versus inadequate states in review; refine signals only under a separate measured question change. Contract and severity remain unapproved.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0347",
+          "id": "C-0347",
+          "theme": "Electrical",
+          "circumstance": "The board's fault rating is below the fault level the authority now quotes.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "utility",
+          "specific_element": "switchboard fault rating",
+          "trigger": "connecting to the existing network",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial; industrial",
+          "when_discovered": "design",
+          "early_warning": "The quoted fault level exceeds the board label.",
+          "derisk": "Confirm fault level before the board is reused or ordered.",
+          "effect": "safety; compliance",
+          "source": "AS/NZS 3000"
+        },
+        {
+          "row_id": "B2-0348",
+          "id": "C-0348",
+          "theme": "Electrical",
+          "circumstance": "The existing board's fault rating cannot be proved from the label or the records.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "Electrical services",
+          "specific_element": "existing switchboard",
+          "trigger": "adding load to an old board",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial",
+          "when_discovered": "design",
+          "early_warning": "There is no rating on the board.",
+          "derisk": "Prove the rating or replace the board.",
+          "effect": "safety; cost",
+          "source": "AS/NZS 3000"
+        }
+      ]
+    },
+    {
+      "id": "uc.in-ground-supply-asset-clashes-with-new-works",
+      "assessment": "retain_and_correct_trigger",
+      "reason": "Pole bases, supply pits and crossing excavation share a buried-asset location investigation. Vehicle-access work was absent from this predicate and is now included. Footing work already raises the structure record.",
+      "followup": "Review cross-cluster overlap before adding duplicate footing triggers; the coarse vehicle-access system includes work that may not excavate, so project usefulness remains to be scored.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0333",
+          "id": "C-0333",
+          "theme": "Electrical",
+          "circumstance": "A lighting-pole footing clashes with an existing in-ground service.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "Site and external works",
+          "specific_element": "pole footing",
+          "trigger": "excavating a pole base",
+          "project_types": "new build; extension",
+          "building_categories": "commercial",
+          "when_discovered": "excavation",
+          "early_warning": "The service is in the footing on the utility plan.",
+          "derisk": "Locate services before pole positions are fixed.",
+          "effect": "cost; safety",
+          "source": "AS 5488"
+        },
+        {
+          "row_id": "B2-0354",
+          "id": "C-0354",
+          "theme": "Electrical",
+          "circumstance": "An in-ground supply pit clashes with a new footing.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "Substructure",
+          "specific_element": "supply pit",
+          "trigger": "excavating a footing",
+          "project_types": "new build",
+          "building_categories": "commercial",
+          "when_discovered": "excavation",
+          "early_warning": "The pit is on the footing line.",
+          "derisk": "Locate the pit before footings are set out.",
+          "effect": "cost; programme",
+          "source": "AS 5488"
+        },
+        {
+          "row_id": "B2-0370",
+          "id": "C-0370",
+          "theme": "Electrical",
+          "circumstance": "A street-light cable is cut by a new vehicle crossing.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "Site and external works",
+          "specific_element": "street-light cable",
+          "trigger": "excavating a crossover",
+          "project_types": "new build; extension",
+          "building_categories": "residential; commercial",
+          "when_discovered": "excavation",
+          "early_warning": "The cable is in the crossing on the utility plan.",
+          "derisk": "Locate the cable before the crossing is excavated.",
+          "effect": "cost; safety",
+          "source": "Before You Dig Australia"
+        }
+      ]
+    },
+    {
+      "id": "uc.pcb-in-old-fitting-capacitors-or-transformer-oil",
+      "assessment": "retain_with_target_and_signal_gap",
+      "reason": "A known contaminated capacitor and untested transformer oil are distinct evidence states. The common investigation must not infer contamination from age or a generic survey signal.",
+      "followup": "Review switchboard-only target for lighting-triggered work and material-specific evidence; handling/disposal language and severity remain unverified owner-review items.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0472",
+          "id": "C-0472",
+          "theme": "Hazardous materials",
+          "circumstance": "Capacitors in light fittings being removed contain PCBs.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "occupant",
+          "specific_element": "light-fitting capacitor",
+          "trigger": "removing old fittings",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "commercial; institution",
+          "when_discovered": "demolition/strip-out",
+          "early_warning": "The capacitor type is a known PCB item.",
+          "derisk": "Dispose of the fittings as the capacitors require.",
+          "effect": "safety; compliance",
+          "source": "general knowledge"
+        },
+        {
+          "row_id": "B2-0480",
+          "id": "C-0480",
+          "theme": "Hazardous materials",
+          "circumstance": "An old oil-filled transformer may contain PCBs and blocks the switchroom rebuild.",
+          "kind": "latent condition",
+          "system_a": "Electrical services",
+          "system_b": "occupant",
+          "specific_element": "oil-filled transformer",
+          "trigger": "rebuilding a switchroom",
+          "project_types": "replacement/upgrade of an existing system",
+          "building_categories": "industrial",
+          "when_discovered": "demolition/strip-out",
+          "early_warning": "The oil has not been tested.",
+          "derisk": "Test and remove the oil before the room is rebuilt.",
+          "effect": "safety; cost",
+          "source": "general knowledge"
+        }
+      ]
+    },
+    {
+      "id": "uc.performance-solution-assumptions-do-not-match-new-tenancy",
+      "assessment": "retain_with_predicate_gap",
+      "reason": "Layout assumptions and occupant-management assumptions both concern whether a project performance solution applies. The broad predicate does not establish that such a solution exists or that its assumptions are breached.",
+      "followup": "Owner usefulness review of broad existing-building triggers and generated design-risk allocation; an approval review is not a statutory conclusion.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0559",
+          "id": "C-0559",
+          "theme": "Change of use",
+          "circumstance": "A performance solution for the old use is no longer valid for the new tenancy layout.",
+          "kind": "latent condition",
+          "system_a": "Passive fire protection",
+          "system_b": "occupant",
+          "specific_element": "performance solution",
+          "trigger": "changing a tenancy layout",
+          "project_types": "refurbishment/fit-out",
+          "building_categories": "commercial",
+          "when_discovered": "design",
+          "early_warning": "The solution's assumptions are not the new layout.",
+          "derisk": "Revise the solution before the layout is built.",
+          "effect": "compliance; cost",
+          "source": "NCC"
+        },
+        {
+          "row_id": "B2-0770",
+          "id": "C-0770",
+          "theme": "Authority and contract",
+          "circumstance": "A fire engineering report assumes a management rule the tenant will not keep.",
+          "kind": "latent condition",
+          "system_a": "Passive fire protection",
+          "system_b": "occupant",
+          "specific_element": "fire engineering report",
+          "trigger": "relying on management",
+          "project_types": "refurbishment/fit-out",
+          "building_categories": "commercial",
+          "when_discovered": "design",
+          "early_warning": "The tenant's use breaks the assumption.",
+          "derisk": "Do not rely on a rule the occupant will not keep.",
+          "effect": "compliance; safety",
+          "source": "NCC"
+        }
+      ]
+    }
+  ],
+  "probe": {
+    "scope": "Synthetic new work, existing_building=true, unknown existing systems; only three named UC records inspected, not a full recall score",
+    "before": {
+      "electrical.utility-supply": [
+        "uc.existing-supply-or-main-capacity-below-added-load",
+        "uc.in-ground-supply-asset-clashes-with-new-works"
+      ],
+      "electrical.lighting": [
+        "uc.in-ground-supply-asset-clashes-with-new-works"
+      ],
+      "substructure.footings": [
+        "uc.unmapped-service-or-main-in-footing-line-or-excavation"
+      ],
+      "site.vehicle-access": [],
+      "electrical.ev-charging": []
+    },
+    "after": [
+      {
+        "system": "electrical.utility-supply",
+        "records": [
+          "uc.existing-supply-or-main-capacity-below-added-load",
+          "uc.in-ground-supply-asset-clashes-with-new-works"
+        ]
+      },
+      {
+        "system": "electrical.lighting",
+        "records": [
+          "uc.in-ground-supply-asset-clashes-with-new-works"
+        ]
+      },
+      {
+        "system": "substructure.footings",
+        "records": [
+          "uc.unmapped-service-or-main-in-footing-line-or-excavation"
+        ]
+      },
+      {
+        "system": "site.vehicle-access",
+        "records": [
+          "uc.in-ground-supply-asset-clashes-with-new-works"
+        ]
+      },
+      {
+        "system": "electrical.ev-charging",
+        "records": [
+          "uc.existing-supply-or-main-capacity-below-added-load"
+        ]
+      }
+    ]
+  }
+}

@@ -1348,7 +1348,7 @@ failure_modes:
     anchor: '## Construction, testing and handover'
 - id: fm.hydraulic-penetration-of-fire-rated-construction-unsealed
   attaches_to:
-    system: hydraulic.gas
+    interface: if.services-penetrate-fire-rated-construction
   severity: life-safety
   detector:
     type: noul

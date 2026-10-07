@@ -1,0 +1,58 @@
+version: 1
+clauses:
+  - id: cl.rfp-draft-status
+    version: 1
+    outputs: [rfp]
+    section: brief
+    text: Draft for scope review only. Not for issue or appointment.
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+  - id: cl.rfp-services-response
+    version: 1
+    outputs: [rfp]
+    section: services
+    text: Identify the services and deliverables included at each stage, with the exclusions and assumptions used in your proposal.
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+  - id: cl.rfp-investigation-response
+    version: 1
+    outputs: [rfp]
+    section: investigations
+    text: Identify the investigations needed to confirm the proposed scope and the deliverable for each investigation.
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+  - id: cl.rfp-interface-response
+    version: 1
+    outputs: [rfp]
+    section: interfaces
+    text: Identify information and coordination required from other packages to deliver the proposed services.
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+  - id: cl.rfp-dates-response
+    version: 1
+    outputs: [rfp]
+    section: dates
+    text: State the proposed timing for each stage and the client inputs needed to achieve it.
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+  - id: cl.rfp-fee-return
+    version: 1
+    outputs: [rfp]
+    section: fee_return
+    text: Return a lump-sum fee for each stage listed in the schedule.
+    status: draft
+    sources:
+      - {design: knowledge/SCHEMA.md, anchor: "### Clauses (`reports/clauses.yaml`)"}
+  - id: cl.rfp-proposal-response
+    version: 1
+    outputs: [rfp]
+    section: proposal_requirements
+    text: Clearly identify qualifications, exclusions and assumptions in the returned proposal.
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}

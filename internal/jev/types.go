@@ -42,6 +42,10 @@ const (
 	backgroundBackoff  = 200 * time.Millisecond
 )
 
+// BreakerCooldown is how long an open circuit fails calls before a probe.
+// Background work that hit an open circuit waits at least this long.
+const BreakerCooldown = breakerCooldown
+
 var (
 	ErrCircuitOpen  = errors.New("jev circuit open")
 	ErrRateLimited  = errors.New("jev rate limited")
@@ -49,6 +53,7 @@ var (
 	ErrBadResponse  = errors.New("jev response rejected")
 	ErrBodyLimit    = errors.New("jev response exceeds size limit")
 	ErrRequest      = errors.New("jev request rejected")
+	ErrRequestLimit = errors.New("jev request exceeds preflight size budget")
 	ErrUnauthorized = errors.New("jev unauthorized")
 )
 

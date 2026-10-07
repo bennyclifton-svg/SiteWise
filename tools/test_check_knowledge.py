@@ -10,6 +10,53 @@ import check_knowledge as checker
 
 
 class TableValidationTests(unittest.TestCase):
+    def test_proposal_flow_label_cannot_silently_truncate_at_comma(self):
+        broken = yaml.safe_load('{kind: investigation, label: Supply (water, cooling)}')
+        report = checker.Report()
+        checker.check_proposal('test', broken, {'investigation'}, report)
+        self.assertTrue(any('unknown fields' in e for e in report.errors))
+        correct = yaml.safe_load('{kind: investigation, label: "Supply (water, cooling)"}')
+        report = checker.Report()
+        checker.check_proposal('test', correct, {'investigation'}, report)
+        self.assertEqual(report.errors, [])
+        self.assertEqual(correct['label'], 'Supply (water, cooling)')
+
+    def test_package_complexity_values_use_catalogue_options(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            knowledge = root / 'knowledge'
+            (knowledge / 'works').mkdir(parents=True)
+            (knowledge / 'profile').mkdir()
+            (root / 'seed.md').write_text('# Test\n', encoding='utf-8')
+            (knowledge / 'profile/taxonomy.yaml').write_text(yaml.safe_dump({
+                'conditions': [{'key': 'planning', 'options': [{'id': 'da'}]}]}), encoding='utf-8')
+            path = knowledge / 'works/package_defaults.yaml'
+            def check(additions):
+                path.write_text(yaml.safe_dump({'version': 1, 'status': 'draft', 'baselines': [],
+                    'source': {'seed': 'seed.md', 'anchor': '# Test'},
+                    'complexity_additions': additions}), encoding='utf-8')
+                report = checker.Report()
+                with patch.object(checker, 'ROOT', root), patch.object(checker, 'KNOWLEDGE', knowledge):
+                    checker.check_catalogues(report, root, {}, {
+                        'heritage_status': {'value': 'choice', 'options': [{'id': 'local_item'}]},
+                        'existing_building': {'value': 'boolean'}})
+                return report
+            def addition(field, values):
+                return {'field': field, 'values': values, 'consultants': ['Consultant']}
+            valid = check([addition('heritage_status', ['local_item']), addition('planning', ['da']),
+                           addition('existing_building', ['true', 'false'])])
+            self.assertEqual(valid.errors, [])
+            self.assertEqual(valid.warnings, [])
+            invalid = check([addition('heritage_status', ['local_heritage_item']),
+                             addition('planning', ['legacy_da']), addition('existing_building', ['yes']),
+                             addition('legacy_field', ['legacy_value'])])
+            self.assertEqual(invalid.errors, [])
+            self.assertEqual(len(invalid.warnings), 4)
+            self.assertTrue(any('local_heritage_item' in w and 'heritage_status' in w for w in invalid.warnings))
+            self.assertTrue(any('legacy_field' in w for w in invalid.warnings))
+            malformed = check([addition('planning', 'da'), addition('planning', [{}]), addition({}, ['da'])])
+            self.assertEqual(len(malformed.errors), 3)
+
     def test_computed_requirement_cannot_overwrite_observed_fact(self):
         rule = {'id': 'rule.ncc.fixtures', 'derives': {'gives': 'fixture_count'}}
         report = checker.Report()
@@ -251,3 +298,22 @@ class CatalogueTests(unittest.TestCase):
         report = checker.Report()
         checker.check_catalogues(report, checker.DEFAULT_SEED_DIR, {}, {})
         self.assertEqual(report.errors, [])
+
+    def test_template_rejects_duplicate_sections_and_missing_essential(self):
+        report = self.run_catalogues({'reports/templates.yaml': {'version': 1, 'templates': [
+            {'id': 'tpl.test', 'version': 1, 'kind': 'rfp', 'status': 'draft', 'sources': [],
+             'sections': [{'id': 'brief', 'title': 'Brief', 'clauses': []},
+                          {'id': 'brief', 'title': 'Duplicate', 'essential': True, 'clauses': []}]}]}})
+        self.assertTrue(any('essential boolean' in e for e in report.errors))
+        self.assertTrue(any('duplicate section' in e for e in report.errors))
+
+    def test_template_rejects_wrong_clause_version_and_output(self):
+        report = self.run_catalogues({
+            'reports/clauses.yaml': {'version': 1, 'clauses': [
+                {'id': 'cl.test', 'version': 1, 'outputs': ['rft'], 'section': 'brief',
+                 'text': 'Fixture', 'status': 'draft', 'sources': []}]},
+            'reports/templates.yaml': {'version': 1, 'templates': [
+                {'id': 'tpl.test', 'version': 1, 'kind': 'rfp', 'status': 'draft', 'sources': [],
+                 'sections': [{'id': 'brief', 'title': 'Brief', 'essential': True,
+                               'clauses': [{'id': 'cl.test', 'version': 2}]}]}]}})
+        self.assertTrue(any('incompatible clause reference' in e for e in report.errors))

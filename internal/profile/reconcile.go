@@ -9,16 +9,17 @@ import (
 
 // Fact is one stored reading of one question in one passage.
 type Fact struct {
-	QuestionID   string
-	Value        string
-	Unit, Basis  string
-	PartLabel    string
-	Excerpt      string
-	Confidence   *float64
-	DecidedBy    string // jev | rule
-	DocumentID   string
-	PassageID    string
-	DocumentKind string
+	ID, QuestionVersion string
+	QuestionID          string
+	Value               string
+	Unit, Basis         string
+	PartLabel           string
+	Excerpt             string
+	Confidence          *float64
+	DecidedBy           string // jev | rule
+	DocumentID          string
+	PassageID           string
+	DocumentKind        string
 	// ReadSetting is the document's profile reading setting (auto, read, skip).
 	ReadSetting string
 	Superseded  bool
@@ -40,9 +41,10 @@ type Part struct{ ID, Label, Kind, NCCClass string }
 
 // UserValue is the user's word for one key on one part. It is final.
 type UserValue struct {
-	PartID, Key string
-	Value       *string // nil means cleared by the user, or unknown (State)
-	Note        string
+	Scope, ReviewStatus string
+	PartID, Key         string
+	Value               *string // nil means cleared by the user, or unknown (State)
+	Note                string
 	// State is set, cleared or unknown; empty reads as set or cleared from Value.
 	State string
 	// Origin is user or assumption; Meaning is stated, requirement, allowance
@@ -55,6 +57,7 @@ type UserValue struct {
 // planning key (plan §4.3), shown as row "plan.<key>". It is never evidence
 // and never feeds a derivation (D-06).
 type PlanningValue struct {
+	Scope       string
 	PartID, Key string // Key without the "plan." prefix
 	// State is set or unknown; Value is nil when unknown.
 	State               string
@@ -96,9 +99,22 @@ type Alternative struct {
 
 // Derived records a code table lookup and why it is unknown when it is.
 type Derived struct {
-	Rule   string `json:"rule"`
-	State  string `json:"state"`
-	Reason string `json:"reason,omitempty"`
+	Rule       string               `json:"rule"`
+	State      string               `json:"state"`
+	Reason     string               `json:"reason,omitempty"`
+	Provenance DerivationProvenance `json:"provenance"`
+}
+
+// DerivationProvenance snapshots the inputs actually considered by a rule.
+// Ref identifies a part/key in this profile, including an intermediate result.
+type DerivationProvenance struct {
+	Inputs []DerivationInput `json:"inputs"`
+}
+
+type DerivationInput struct {
+	Ref          string `json:"ref"`
+	Origin       string `json:"origin"`
+	ReviewStatus string `json:"review_status"`
 }
 
 // Row is one reconciled profile value.
@@ -208,6 +224,7 @@ func Reconcile(in Input, cat *knowledge.Catalog) []Row {
 			r.Value = *u.Value
 		}
 		r.Origin, r.Meaning, r.ValueState, r.UserVersion = orDefault(u.Origin, OriginUser), orDefault(u.Meaning, MeaningStated), userState(u), u.Version
+		r.ReviewStatus = orDefault(u.ReviewStatus, ReviewAccepted)
 	}
 	// A planning value is shown as itself, an assumption or a calculation;
 	// the user's stated word on the same key wins (existing precedence).
@@ -243,6 +260,9 @@ func Reconcile(in Input, cat *knowledge.Catalog) []Row {
 	for _, r := range rows {
 		out = append(out, *r)
 	}
+	// Scope comes from the registry, never from which project supplied the
+	// document. The store persists these rows against the part's site.
+	Annotate(out, cat)
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].PartID != out[j].PartID {
 			return out[i].PartID < out[j].PartID
@@ -322,6 +342,8 @@ func shapeOf(key string) string {
 		return "presence"
 	case strings.HasSuffix(key, ".provider"):
 		return "provider"
+	case strings.HasSuffix(key, ".action"):
+		return "action"
 	case strings.HasSuffix(key, assertSuffix):
 		return "assertion"
 	case strings.HasPrefix(key, "hdr."):
@@ -339,7 +361,7 @@ func applied(f Fact, shape string, th Thresholds) bool {
 }
 
 func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, th Thresholds, cat *knowledge.Catalog) Row {
-	r := Row{PartID: part, Key: key, Band: bandBlank}
+	r := Row{PartID: part, Key: key, Band: bandBlank, Origin: OriginDocument, ReviewStatus: ReviewProposed}
 	shape := shapeOf(key)
 	byValue := map[string][]Fact{}
 	var order []string
@@ -356,6 +378,9 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 		byValue[f.Value] = append(byValue[f.Value], f)
 	}
 	if len(order) == 0 {
+		if shape == "action" && len(r.Sources) > 0 {
+			r.Note = "Needs mapping — action has not passed its own confidence threshold"
+		}
 		return r
 	}
 	multi := false
@@ -388,6 +413,9 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 		if shape == "presence" && r.Value == valIncluded {
 			r.Note = cut(supporting[0].Excerpt, maxNote)
 		}
+		if shape == "action" && r.Value == "several" {
+			r.Note = "Needs mapping — several actions; choose or split the work"
+		}
 	default:
 		r.Band = bandRed
 		sort.SliceStable(order, func(i, j int) bool {
@@ -412,6 +440,13 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 }
 
 func isGreen(facts []Fact, shape string, th Thresholds) bool {
+	// Location application is provisional even if the value itself is certain.
+	// A person's explicit value may override this later; evidence cannot.
+	for _, f := range facts {
+		if f.PartLabel != "" {
+			return false
+		}
+	}
 	for _, f := range facts {
 		if f.DecidedBy == "rule" {
 			return true
@@ -499,9 +534,9 @@ func partIndex(parts []Part) partsIdx {
 	return idx
 }
 
-// derive runs every derived profile determinant from rows a derivation may
-// use: user values, green rule values and values asserted as stated.
-// Derived values feed later derivations (Type of Construction, then limits).
+// derive runs table lookups from eligible stated facts. Planning-only results
+// can feed later lookups (Type of Construction, then limits), but their
+// unverified status must follow the whole chain.
 func derive(rows map[[2]string]*Row, parts partsIdx, cat *knowledge.Catalog) {
 	var derived []knowledge.Determinant
 	for _, d := range cat.ProfileDeterminants() {
@@ -524,10 +559,30 @@ func derive(rows map[[2]string]*Row, parts partsIdx, cat *knowledge.Catalog) {
 				if old, ok := rows[k]; ok && old.Band == bandUser {
 					continue // the user's word is final, even over a table lookup
 				}
-				r := &Row{PartID: part, Key: k[1], Band: bandBlank,
+				r := &Row{PartID: part, Key: k[1], Band: bandBlank, Origin: OriginCalculation,
 					Derived: &Derived{Rule: d.By, State: res.State, Reason: res.Reason}}
+				rule, _ := cat.Rule(d.By)
+				verified := true
+				if rule.Derives != nil {
+					for _, input := range rule.Derives.Inputs {
+						inputKey := "det." + input
+						if source := rows[[2]string{part, inputKey}]; source != nil {
+							r.Derived.Provenance.Inputs = append(r.Derived.Provenance.Inputs, DerivationInput{
+								Ref: part + "/" + inputKey, Origin: source.Origin, ReviewStatus: orDefault(source.ReviewStatus, ReviewAccepted),
+							})
+							verified = verified && source.ReviewStatus == ReviewVerified
+						} else {
+							verified = false
+						}
+					}
+				}
 				if res.State == knowledge.StateDetermined {
 					r.Value, r.Band = res.Value, bandGreen
+					r.ReviewStatus = ReviewVerified
+					if !verified {
+						r.Band, r.ReviewStatus = bandAmber, ReviewAccepted
+						r.Note = "Planning only — inputs not verified"
+					}
 				}
 				rows[k] = r
 			}
@@ -546,7 +601,11 @@ func usableFacts(rows map[[2]string]*Row, part string) []knowledge.Fact {
 		if k[0] != part || !strings.HasPrefix(k[1], "det.") || r.Value == "" {
 			continue
 		}
-		usable := eligibleUser(r) || (r.Band == bandGreen && r.Derived != nil) ||
+		if r.ValueState == StateUnknown || r.ValueState == StateCleared || r.ReviewStatus == ReviewSupersede ||
+			r.Origin == OriginAssumption || (r.Meaning != "" && r.Meaning != MeaningStated) {
+			continue
+		}
+		usable := eligibleUser(r) || ((r.Band == bandGreen || r.Band == bandAmber) && r.Derived != nil && r.Derived.State == knowledge.StateDetermined) ||
 			((r.Band == bandGreen || r.Band == bandAmber) && r.Assertion == "stated")
 		if !usable {
 			continue

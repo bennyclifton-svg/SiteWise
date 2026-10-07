@@ -673,6 +673,7 @@ unforeseen:
         system:
         - electrical.switchboards
         - electrical.utility-supply
+        - electrical.ev-charging
     - *id002
   signals:
   - sig.existing-supply-capacity-confirmed
@@ -1565,7 +1566,7 @@ unforeseen:
   - sig.earthing-arrangement-stated
   de_risk:
     kind: investigation
-    label: "Agree a continuous earthing conductor route before an electrode is relocated"
+    label: "Survey a continuous earthing-conductor route to the proposed electrode position"
   contract: "Allowance for an alternative electrode position or route."
   effect:
   - compliance
@@ -1794,6 +1795,7 @@ unforeseen:
         system:
         - electrical.utility-supply
         - electrical.lighting
+        - site.vehicle-access
   signals:
   - sig.in-ground-services-located-stated
   de_risk:

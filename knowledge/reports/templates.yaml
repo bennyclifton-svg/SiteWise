@@ -1,0 +1,37 @@
+version: 1
+templates:
+  - id: tpl.rfp-capex
+    version: 1
+    kind: rfp
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Reports and eventual profile tabs"}
+    sections:
+      - id: brief
+        title: Project brief
+        essential: true
+        clauses: [{id: cl.rfp-draft-status, version: 1}]
+      - id: services
+        title: Stages, services and deliverables
+        essential: true
+        clauses: [{id: cl.rfp-services-response, version: 1}]
+      - id: investigations
+        title: Investigations
+        essential: true
+        clauses: [{id: cl.rfp-investigation-response, version: 1}]
+      - id: interfaces
+        title: Interfaces and coordination
+        essential: true
+        clauses: [{id: cl.rfp-interface-response, version: 1}]
+      - id: dates
+        title: Dates and required inputs
+        essential: true
+        clauses: [{id: cl.rfp-dates-response, version: 1}]
+      - id: fee_return
+        title: Fee return
+        essential: true
+        clauses: [{id: cl.rfp-fee-return, version: 1}]
+      - id: proposal_requirements
+        title: Proposal requirements
+        essential: true
+        clauses: [{id: cl.rfp-proposal-response, version: 1}]

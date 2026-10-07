@@ -64,6 +64,7 @@ export interface Catalog {
 
 /** Event payload for filing, correction and not_filed. */
 export interface DocEvent {
+	project_id?: string;
   document_id: string;
   status: Status;
   reason?: string;
@@ -79,7 +80,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+export async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`/api${path}`, {
@@ -154,7 +155,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted"] as const;
+export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted", "report", "works", "packages", "delivery"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {

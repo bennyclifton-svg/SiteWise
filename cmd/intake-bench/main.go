@@ -62,23 +62,27 @@ const (
 )
 
 type options struct {
-	manifest    string
-	budgets     string
-	data        string
-	recordings  string
-	samplesOut  string
-	out         string
-	target      string
-	release     bool
-	live        bool
-	rounds      int
-	concurrency int
-	background  int
-	degradePct  int
-	apiSamples  int
-	maxFiles    int
-	corpusRoot  string
-	keysRoot    string
+	profileFixture      string
+	measureProposals    bool
+	integratedProposals bool
+	worksFixture        string
+	manifest            string
+	budgets             string
+	data                string
+	recordings          string
+	samplesOut          string
+	out                 string
+	target              string
+	release             bool
+	live                bool
+	rounds              int
+	concurrency         int
+	background          int
+	degradePct          int
+	apiSamples          int
+	maxFiles            int
+	corpusRoot          string
+	keysRoot            string
 }
 
 func main() {
@@ -89,6 +93,10 @@ func run(args []string, getenv func(string) string, stdout, stderr io.Writer) in
 	var o options
 	fs := flag.NewFlagSet("intake-bench", flag.ContinueOnError)
 	fs.SetOutput(stderr)
+	fs.StringVar(&o.profileFixture, "profile-fixture", "data/eval/profile/private/spec-home-bench.json", "private saved Spec Home profile workload")
+	fs.BoolVar(&o.measureProposals, "measure-proposals", false, "diagnose full proposal evaluation after saved Spec Home rebuilds; not release evidence")
+	fs.BoolVar(&o.integratedProposals, "integrated-proposals", false, "measure one transaction for profile and proposals; requires -measure-proposals; edits remain ordinary")
+	fs.StringVar(&o.worksFixture, "works-fixture", "", "optional private manually annotated 0991 timing fixture (requires -measure-proposals)")
 	fs.StringVar(&o.manifest, "manifest", "data/eval/intake/manifest.json", "evaluation manifest naming the corpus")
 	fs.StringVar(&o.budgets, "budgets", "bench/budgets.json", "latency budgets")
 	fs.StringVar(&o.data, "data", "data/intake", "intake vocabulary and thresholds directory")
@@ -111,6 +119,18 @@ func run(args []string, getenv func(string) string, stdout, stderr io.Writer) in
 	}
 	if o.rounds < 1 || o.concurrency < 1 || o.background < 0 || o.degradePct < 0 || o.degradePct > 50 || o.apiSamples < 1 {
 		fmt.Fprintln(stderr, "rounds, concurrency and api-samples must be positive; background >= 0; degrade 0-50")
+		return 2
+	}
+	if o.integratedProposals && !o.measureProposals {
+		fmt.Fprintln(stderr, "integrated-proposals requires -measure-proposals")
+		return 2
+	}
+	if o.measureProposals && (o.release || getenv("SITEWISE_RELEASE_BENCH") == "1") {
+		fmt.Fprintln(stderr, "proposal diagnostic is not release evidence")
+		return 2
+	}
+	if o.worksFixture != "" && !o.measureProposals {
+		fmt.Fprintln(stderr, "works-fixture requires the proposal diagnostic")
 		return 2
 	}
 	code, err := bench(context.Background(), o, getenv, stdout)
@@ -195,6 +215,14 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err != nil {
 		return 0, err
 	}
+	if o.worksFixture != "" {
+		for _, b := range append([]latency.PathBudget{}, budgets.Paths...) {
+			if b.Name == "profile_rebuild" || b.Name == "profile_edit" {
+				b.Name = "0991_" + b.Name
+				budgets.Paths = append(budgets.Paths, b)
+			}
+		}
+	}
 	set, err := eval.BuildCases(m)
 	if err != nil {
 		return 0, fmt.Errorf("corpus failed verification:\n%w", err)
@@ -256,6 +284,7 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	}
 
 	samples := newCollector()
+	defer func() { _ = writeJSON(o.samplesOut, samples.Snapshot()) }()
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		return 0, err
@@ -343,7 +372,51 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		return 0, err
 	}
 	if err := api.profileReadEdit(ctx, st, building, documents, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench profile edits: %w", err)
+	}
+	fixtureNote, err := api.profileRebuild(ctx, st, dsn, o.profileFixture, building, profileTh, reading, o.apiSamples, o.measureProposals, false, o.integratedProposals)
+	if err != nil {
 		return 0, err
+	}
+	if o.worksFixture != "" {
+		note, err := api.profileRebuild(ctx, st, dsn, o.worksFixture, building, profileTh, reading, o.apiSamples, true, true, o.integratedProposals)
+		if err != nil {
+			return 0, err
+		}
+		fixtureNote += " " + note
+	}
+	if err := api.packages(ctx, o.apiSamples); err != nil {
+		return 0, err
+	}
+	if err := api.delivery(ctx, o.apiSamples); err != nil {
+		return 0, err
+	}
+	if err := api.reports(ctx, o.apiSamples); err != nil {
+		return 0, err
+	}
+	if err := api.workItems(ctx, st, o.apiSamples); err != nil {
+		return 0, err
+	}
+	if err := api.proposals(ctx, st, building, profileTh, reading, "investigation", o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench proposal decisions: %w", err)
+	}
+	// Independent synthetic catalogues exercise the other acceptance targets.
+	// Never mutate the catalogue used by the runtime or the accuracy fixtures.
+	for _, kind := range []string{"approval", "hold_point"} {
+		fixture, err := knowledge.Load(filepath.Join(repo, "knowledge"))
+		if err != nil {
+			return 0, err
+		}
+		for i := range fixture.InterfaceConsequences() {
+			r := &fixture.InterfaceConsequences()[i]
+			if r.ID == "ic.loads-investigate-supported" {
+				r.Propose.Kind = kind
+				r.Propose.Label = "Review before installation"
+			}
+		}
+		if err := api.proposals(ctx, st, fixture, profileTh, reading, kind, o.apiSamples); err != nil {
+			return 0, fmt.Errorf("bench %s decisions: %w", kind, err)
+		}
 	}
 	if err := api.reconnect(ctx, arrived.cursor(), o.apiSamples); err != nil {
 		return 0, err
@@ -414,6 +487,23 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		pass := pr.N >= budgets.MinSamples && pr.P50US <= b.P50US && pr.P90US <= b.P90US
 		pr.Pass = &pass
 		res.Paths[b.Name] = pr
+	}
+	res.Notes = append(res.Notes, fixtureNote)
+	if o.integratedProposals {
+		res.Paths["proposal_rebuild_integrated"] = summarize(snapshot["proposal_rebuild_integrated"])
+	} else if o.measureProposals {
+		res.Paths["proposal_rebuild_dryrun"] = summarize(snapshot["proposal_rebuild_dryrun"])
+		res.Paths["proposal_compute"] = summarize(snapshot["proposal_compute"])
+		res.Paths["proposal_rebuild_persisted"] = summarize(snapshot["proposal_rebuild_persisted"])
+	}
+	if o.worksFixture != "" {
+		if o.integratedProposals {
+			res.Paths["0991_proposal_rebuild_integrated"] = summarize(snapshot["0991_proposal_rebuild_integrated"])
+		} else {
+			res.Paths["0991_proposal_rebuild_dryrun"] = summarize(snapshot["0991_proposal_rebuild_dryrun"])
+			res.Paths["0991_proposal_compute"] = summarize(snapshot["0991_proposal_compute"])
+			res.Paths["0991_proposal_rebuild_persisted"] = summarize(snapshot["0991_proposal_rebuild_persisted"])
+		}
 	}
 	for round, rc := range byRound {
 		if got := rc.Snapshot()[pathWhole]; len(got) > 0 {

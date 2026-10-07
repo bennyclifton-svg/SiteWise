@@ -154,3 +154,24 @@ Ran python tools/check_knowledge.py --only knowledge/clusters/envelope --strict:
 - 11 original determinant proposals folded into knowledge/determinants.yaml by the lead; no unmerged proposals
 - 7 pending derivation contracts / 5 unique missing tables
 - 0 verified numeric claims and 0 verified clause locators in this extraction
+
+## K4 investigation wording, 6 October 2026
+
+Recast 2 draft investigation labels from physical-work instructions into
+checks or assessments of their cited source constraints. All other record
+fields are preserved, including predicates, signals, sources and draft status.
+See `docs/evidence/2026-10-06-k4-investigation-labels.md` and the exact
+before/after inventory `docs/unforeseen/k4-investigation-label-review.json`.
+This bounded wording pass does not approve content or close owner review.
+
+## K4 flagged batch-1 merges, 6 October 2026
+
+Read all eight source rows for thermal-break, glass-weight and colour/dye-batch
+merges. Retained the shared mechanisms for glass capacity and batch appearance,
+with reviewer notes limiting what the sources establish. The thermal-break
+detector does not cover every interpretation of B1-0239's thermally bridged
+window frame; this is an explicit coverage gap despite its ledger association.
+Only reviewer notes changed. Questions, routing, predicates, contract wording,
+severities and draft status are preserved. Exact rows and open decisions are in
+`docs/unforeseen/k4-envelope-merge-review.json`; evidence is in
+`docs/evidence/2026-10-06-k4-envelope-merge-review.md`.

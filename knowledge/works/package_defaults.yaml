@@ -1,8 +1,9 @@
 # Default consultant packages, copied as data from Clerk (never code).
 # Baselines suggest consultants by building class and work type; complexity
-# additions add one when a profile field has a listed value. Field names are
-# Clerk's; the checker warns where SiteWise has no field of that name, for the
-# owner to map. Suggestions are proposals, never appointments. Draft (D-22).
+# additions describe draft suggestions when a profile field has a listed value.
+# Exact heritage/BAL identifiers are mapped to SiteWise's existing catalogue;
+# unresolved contamination/flood fields retain the source vocabulary for review.
+# Suggestions are proposals, never appointments. Draft (D-22).
 version: 1
 status: draft
 source:
@@ -92,8 +93,8 @@ complexity_additions:
 - field: heritage_status
   values:
   - conservation_area
-  - local_heritage_item
-  - state_heritage_register
+  - local_item
+  - state_register
   consultants:
   - Heritage
 - field: contamination_level
@@ -114,14 +115,14 @@ complexity_additions:
   - aboriginal_heritage
   consultants:
   - Archaeology
-- field: bushfire_exposure
+- field: bal
   values:
-  - bal_low
-  - bal_12_5
-  - bal_19
-  - bal_29
-  - bal_40
-  - bal_fz
+  - BAL-LOW
+  - BAL-12.5
+  - BAL-19
+  - BAL-29
+  - BAL-40
+  - BAL-FZ
   consultants:
   - Bushfire
 - field: flood_exposure

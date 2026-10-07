@@ -1066,7 +1066,7 @@ unforeseen:
   - sig.existing-bath-lip-below-wall-membrane-line-stated
   de_risk:
     kind: investigation
-    label: "Choose a bath whose lip can take the membrane"
+    label: "Check bath-lip geometry against the required membrane connection"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality, cost]
   severity: durability
@@ -1193,7 +1193,7 @@ unforeseen:
   - sig.existing-smoke-damper-has-no-access-panel-stated
   de_risk:
     kind: investigation
-    label: "Provide access before the damper is accepted"
+    label: "Inspect maintenance access to the existing smoke damper before acceptance"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [compliance, quality]
   severity: compliance
@@ -1522,7 +1522,7 @@ unforeseen:
   - sig.existing-warm-water-system-cannot-be-disinfected-for-new-use-stated
   de_risk:
     kind: investigation
-    label: "Replace or alter the system so it can be disinfected"
+    label: "Assess whether the existing warm-water system can meet the disinfection needs of the new use"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [safety, compliance]
   severity: life-safety
@@ -1572,7 +1572,7 @@ unforeseen:
   - sig.pneumatic-controls-have-no-points-for-new-bms-stated
   de_risk:
     kind: investigation
-    label: "Provide an interface or replace the controls"
+    label: "Check compatibility of the existing pneumatic controls with the proposed BMS"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, programme]
   severity: cost
@@ -1647,7 +1647,7 @@ unforeseen:
   - sig.removed-return-air-heater-leaves-return-unheated-stated
   de_risk:
     kind: investigation
-    label: "Replace the heating the removal takes away"
+    label: "Assess the heating provision remaining after removal of the return-air heater"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, quality]
   severity: durability
@@ -1697,7 +1697,7 @@ unforeseen:
   - sig.combustion-air-for-reused-plant-room-drawn-from-loading-area-stated
   de_risk:
     kind: investigation
-    label: "Provide clean combustion air"
+    label: "Assess the combustion-air source for the reused plant room"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [safety, quality]
   severity: life-safety
@@ -1747,7 +1747,7 @@ unforeseen:
   - sig.energy-recovery-wheel-leaks-exhaust-into-outside-air-stated
   de_risk:
     kind: investigation
-    label: "Select a wheel arrangement that suits the exhaust"
+    label: "Assess exhaust carryover through the energy-recovery wheel against the proposed use"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [quality, safety]
   severity: life-safety
@@ -1772,7 +1772,7 @@ unforeseen:
   - sig.reused-outside-air-intake-has-no-screen-stated
   de_risk:
     kind: investigation
-    label: "Fit a screen that can be cleaned"
+    label: "Inspect the reused outside-air intake for debris protection and cleaning access"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality]
   severity: durability
@@ -1797,7 +1797,7 @@ unforeseen:
   - sig.underfloor-air-plenum-obstructed-by-later-cabling-stated
   de_risk:
     kind: investigation
-    label: "Clear a path for the air or duct it"
+    label: "Survey the underfloor plenum and assess the effect of cabling on the proposed airflow"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality, cost]
   severity: durability
@@ -1847,7 +1847,7 @@ unforeseen:
   - sig.new-refrigerant-unsuitable-for-existing-pipework-stated
   de_risk:
     kind: investigation
-    label: "Replace the pipe or choose a compatible refrigerant path"
+    label: "Check compatibility of the proposed refrigerant with the existing pipework"
   contract: "Hold the coordinated size or selection in the order; a late supply change sits with the party that ordered."
   effect: [cost, compliance]
   severity: compliance
@@ -2101,7 +2101,7 @@ unforeseen:
   - sig.plant-room-floor-waste-has-no-fall-in-existing-slab-stated
   de_risk:
     kind: investigation
-    label: "Form falls or move the waste"
+    label: "Survey plant-room slab falls and assess the floor-waste location"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality]
   severity: durability
@@ -2176,7 +2176,7 @@ unforeseen:
   - sig.existing-grease-arrestor-undersized-for-new-kitchen-stated
   de_risk:
     kind: investigation
-    label: "Size the arrestor to the kitchen"
+    label: "Check the existing grease arrestor capacity against the proposed kitchen"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [compliance, cost]
   severity: compliance
@@ -2276,7 +2276,7 @@ unforeseen:
   - sig.in-wall-cistern-clashes-with-existing-stud-stated
   de_risk:
     kind: investigation
-    label: "Open the wall and set the cistern to the framing"
+    label: "Survey existing wall framing against the proposed in-wall cistern location"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, programme]
   severity: cost
@@ -2351,7 +2351,7 @@ unforeseen:
   - sig.no-serviceable-position-for-reflux-valve-stated
   de_risk:
     kind: investigation
-    label: "Provide an accessible valve"
+    label: "Survey the existing drainage for a serviceable reflux-valve position"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [compliance, cost]
   severity: compliance
@@ -2478,7 +2478,7 @@ unforeseen:
   - sig.existing-galvanised-stack-sheds-rust-into-new-fixtures-stated
   de_risk:
     kind: investigation
-    label: "Replace the stack or line it before the fixtures are connected"
+    label: "Assess the condition of the existing galvanised stack before connecting new fixtures"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, quality]
   severity: durability
@@ -2553,7 +2553,7 @@ unforeseen:
   - sig.chemical-drain-material-wrong-for-process-chemical-stated
   de_risk:
     kind: investigation
-    label: "Match the pipe to the chemical"
+    label: "Check chemical-drain material compatibility with the process chemicals"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [safety, cost]
   severity: life-safety
@@ -2602,7 +2602,7 @@ unforeseen:
   - sig.stack-in-shaft-has-no-access-to-joints-stated
   de_risk:
     kind: investigation
-    label: "Provide access to the joints"
+    label: "Survey access to the existing stack joints within the shaft"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality]
   severity: durability
@@ -2627,7 +2627,7 @@ unforeseen:
   - sig.hospital-pan-room-flush-overloads-existing-stack-stated
   de_risk:
     kind: investigation
-    label: "Size the stack for the simultaneous flush"
+    label: "Check the existing stack capacity against simultaneous pan-room flushing"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [quality, cost]
   severity: durability
@@ -2652,7 +2652,7 @@ unforeseen:
   - sig.trade-waste-pit-or-line-under-new-paving-lacks-cover-stated
   de_risk:
     kind: investigation
-    label: "Replace the cover for the vehicle load"
+    label: "Assess trade-waste pit covers and pipe cover against the proposed driveway wheel loads"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [safety, cost]
   severity: life-safety
@@ -2679,7 +2679,7 @@ unforeseen:
   - sig.asbestos-cement-flue-on-heater-being-replaced-stated
   de_risk:
     kind: investigation
-    label: "Remove the flue under an asbestos method, not as ordinary demolition"
+    label: "Assess the existing flue for asbestos and confirm the management requirements before heater replacement"
   contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
   effect: [safety, cost]
   severity: life-safety
@@ -2756,7 +2756,7 @@ unforeseen:
   - sig.old-laboratory-extract-duct-contaminated-stated
   de_risk:
     kind: investigation
-    label: "Clean or replace the duct before it is opened"
+    label: "Assess contamination in the existing laboratory extract duct before opening or reuse"
   contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
   effect: [safety, cost]
   severity: life-safety
@@ -2781,7 +2781,7 @@ unforeseen:
   - sig.asbestos-lagging-in-riser-new-pipe-must-enter-stated
   de_risk:
     kind: investigation
-    label: "Remove it or work so it is not disturbed, under an asbestos method"
+    label: "Assess riser lagging for asbestos and confirm the management requirements before pipework enters the riser"
   contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
   effect: [safety, cost, programme]
   severity: life-safety
@@ -2831,7 +2831,7 @@ unforeseen:
   - sig.mould-in-air-handler-and-ducts-before-reuse-stated
   de_risk:
     kind: investigation
-    label: "Clean or replace the air path"
+    label: "Assess mould contamination in the air handler and ducts before reuse"
   contract: "Removal is a separable portion by a licensed contractor; a hazardous material found late is a variation, not a head contractor risk."
   effect: [safety, cost]
   severity: life-safety
@@ -2931,7 +2931,7 @@ unforeseen:
   - sig.aged-care-conversion-rooms-too-small-for-accessible-bathroom-stated
   de_risk:
     kind: investigation
-    label: "Select rooms that can fit the bathroom or enlarge them"
+    label: "Survey existing rooms against the proposed accessible-bathroom layout"
   contract: "Settle feasibility before the brief is fixed; later change is a variation."
   effect: [compliance, cost]
   severity: compliance
@@ -2956,7 +2956,7 @@ unforeseen:
   - sig.laboratory-conversion-has-no-fume-exhaust-shaft-stated
   de_risk:
     kind: investigation
-    label: "Provide an exhaust path before the laboratory is documented"
+    label: "Survey available fume-exhaust routes for the proposed laboratory conversion"
   contract: "Settle feasibility before the brief is fixed; later change is a variation."
   effect: [cost, compliance, safety]
   severity: life-safety
@@ -3005,7 +3005,7 @@ unforeseen:
   - sig.shared-downpipe-serves-neighbour-and-cannot-be-moved-stated
   de_risk:
     kind: investigation
-    label: "Keep the neighbour's roof connected"
+    label: "Trace the shared downpipe and assess the effect of the proposed work on the neighbour's roof drainage"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [cost, quality]
   severity: durability
@@ -3030,7 +3030,7 @@ unforeseen:
   - sig.roof-plant-over-quiet-room-on-flexible-roof-stated
   de_risk:
     kind: investigation
-    label: "Isolate the plant or stiffen the roof"
+    label: "Assess roof stiffness and vibration transmission from plant above the quiet room"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality, cost]
   severity: durability
@@ -3055,7 +3055,7 @@ unforeseen:
   - sig.cross-talk-attenuator-will-not-fit-duct-branch-stated
   de_risk:
     kind: investigation
-    label: "Size the branch for the attenuator"
+    label: "Check duct-branch dimensions against the proposed cross-talk attenuator"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, quality]
   severity: durability
@@ -3080,7 +3080,7 @@ unforeseen:
   - sig.laboratory-gas-cabinet-has-no-exhaust-connection-stated
   de_risk:
     kind: investigation
-    label: "Provide the exhaust before the cabinet is installed"
+    label: "Check the building exhaust provision against the proposed laboratory gas cabinet"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [safety, cost]
   severity: life-safety
@@ -3105,7 +3105,7 @@ unforeseen:
   - sig.cool-room-condenser-in-ceiling-cannot-reject-heat-stated
   de_risk:
     kind: investigation
-    label: "Reject the heat to a place that can take it"
+    label: "Assess the heat-rejection route for the cool-room condenser"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality, cost]
   severity: durability
@@ -3280,7 +3280,7 @@ unforeseen:
   - sig.existing-plant-has-no-isolation-for-live-cutover-stated
   de_risk:
     kind: investigation
-    label: "Provide isolation before the cutover is planned"
+    label: "Survey existing plant isolation and assess the proposed live cutover"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [programme, safety]
   severity: life-safety
@@ -3305,7 +3305,7 @@ unforeseen:
   - sig.subfloor-clearance-too-small-for-new-services-stated
   de_risk:
     kind: investigation
-    label: "Choose a route the subfloor can take"
+    label: "Survey subfloor clearances against the proposed services routes"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, programme]
   severity: cost
@@ -3330,7 +3330,7 @@ unforeseen:
   - sig.roof-insulation-fills-space-for-new-unit-stated
   de_risk:
     kind: investigation
-    label: "Clear a space or locate the unit elsewhere"
+    label: "Survey roof-space insulation and clearances against the proposed unit location"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, quality]
   severity: durability
@@ -3380,7 +3380,7 @@ unforeseen:
   - sig.only-sump-discharges-to-blocked-line-stated
   de_risk:
     kind: investigation
-    label: "Clear or replace the outfall"
+    label: "Inspect and test the sump outfall to establish its condition and any remediation needed"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [quality, cost]
   severity: durability
@@ -3405,7 +3405,7 @@ unforeseen:
   - sig.old-oil-tank-occupies-plant-room-for-new-boilers-stated
   de_risk:
     kind: investigation
-    label: "Remove the tank before the boilers are planned into the room"
+    label: "Check for an old oil tank in the proposed boiler room and confirm any removal needed"
   contract: "Provisional sum or separable portion for rework found on opening up; the investigation before design sets the allowance."
   effect: [cost, programme]
   severity: cost
@@ -3430,7 +3430,7 @@ unforeseen:
   - sig.medical-gas-cannot-be-isolated-to-one-wing-stated
   de_risk:
     kind: investigation
-    label: "Provide isolation that does not shut the adjoining wing"
+    label: "Assess medical-gas isolation boundaries and the effect of the proposed work on the adjoining wing"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [safety, programme]
   severity: life-safety
@@ -3480,7 +3480,7 @@ unforeseen:
   - sig.negative-pressure-room-loses-pressure-when-adjacent-ceiling-opened-stated
   de_risk:
     kind: investigation
-    label: "Keep the room's air path intact while adjacent work proceeds"
+    label: "Assess the effect of adjacent ceiling work on the negative-pressure room's air path"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [safety, quality]
   severity: life-safety
@@ -3505,7 +3505,7 @@ unforeseen:
   - sig.steam-main-has-no-isolation-for-altered-wing-stated
   de_risk:
     kind: investigation
-    label: "Provide isolation before the wing is altered"
+    label: "Survey steam-line isolation for the wing to be altered"
   contract: "Name who owns access, outages and the occupant's constraints in the contract; staging is a programme obligation."
   effect: [safety, programme]
   severity: life-safety

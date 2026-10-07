@@ -1794,6 +1794,11 @@ failure_modes:
   - dataset: batch1
     row: B1-0231
 - id: fm.envelope-thermal-break-missing
+  notes: 'K4 source review, 6 October 2026: B1-0232 directly describes a missing bracket thermal break.
+    B1-0239 describes a thermally bridged window frame, which is broader than this detector:
+    conductivity or a stated thermal bridge alone must not be interpreted as an explicitly missing
+    break. That row remains a coverage gap for owner review; the source association is not proof
+    of complete detector coverage. See docs/unforeseen/k4-envelope-merge-review.json.'
   attaches_to:
     system: envelope.thermal-performance
   severity: compliance
@@ -3355,6 +3360,12 @@ failure_modes:
   - dataset: batch1
     row: B1-0271
 - id: fm.envelope-glass-weight-exceeds-frame-capacity
+  notes: 'K4 source review, 6 October 2026: retain the shared glass-weight/frame-capacity mechanism.
+    B1-0238 describes a changed acoustic glass specification, not an established frame failure;
+    B1-0270 explicitly states insufficient frame capacity. B1-0300 is a heritage-frame lead, not
+    proof that every heritage frame is inadequate. Flag only an explicit project statement of
+    insufficient capacity. Heritage consent and acoustic performance are outside this detector.
+    See docs/unforeseen/k4-envelope-merge-review.json.'
   attaches_to:
     system: envelope.windows-doors
   severity: durability

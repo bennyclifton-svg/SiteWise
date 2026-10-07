@@ -97,7 +97,7 @@ RETURNING f.sha256`, orgID, projectID, fileIDs)
 			return res, err
 		}
 	}
-	return res, tx.Commit(ctx)
+	return res, s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // BlobReferenced reports whether any file row in any org has this content

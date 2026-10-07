@@ -242,10 +242,6 @@ func finishPlanning(w http.ResponseWriter, r *http.Request, deps Deps, orgID, pr
 		http.Error(w, "write failed", http.StatusInternalServerError)
 		return
 	}
-	if err := rebuildProfile(r, deps, orgID, projectID); err != nil {
-		http.Error(w, "rebuild failed", http.StatusInternalServerError)
-		return
-	}
 	writePlanning(w, r, deps, orgID, projectID, false)
 }
 

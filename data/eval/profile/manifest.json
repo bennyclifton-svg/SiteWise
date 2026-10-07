@@ -4,6 +4,10 @@
   "note": "Private corpus. Never copy these documents into the repo or record personal details from them.",
   "projects": [
     {
+      "id": "0991",
+      "documents": ["0991-hydrants-a", "0991-sprinklers-a"]
+    },
+    {
       "id": "newham",
       "documents": [
         "newham-spec"
@@ -37,6 +41,16 @@
     }
   ],
   "documents": [
+    {
+      "id": "0991-hydrants-a",
+      "path": "0991-hydrant-sprinkler-head-upgrade/03-design/03-detail/FS-01-HYD UPGRADE [A].pdf",
+      "sha256": "82e16d00e838528f0da532369ca6ae4ab78ed220f1c8316036838b8284ccaf18"
+    },
+    {
+      "id": "0991-sprinklers-a",
+      "path": "0991-hydrant-sprinkler-head-upgrade/03-design/03-detail/FS-02-HEAD UPGRADE [A].pdf",
+      "sha256": "4f4f9b346d6edce99cf79dd1bc46da233f472fbd1970637e55fee97466f7b9e0"
+    },
     {
       "id": "newham-spec",
       "path": "Newham Kit/Specification.docx",

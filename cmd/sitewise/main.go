@@ -27,6 +27,7 @@ import (
 	"sitewise/internal/latency"
 	"sitewise/internal/profile"
 	"sitewise/internal/store"
+	"sitewise/internal/works"
 	"sitewise/web"
 )
 
@@ -73,6 +74,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	knowledgeDir := fs.String("knowledge", "knowledge", "building knowledge directory")
 	profileThresholds := fs.String("profile-thresholds", "data/profile/thresholds.json", "project profile thresholds")
 	profileReading := fs.String("profile-reading", "data/profile/reading.json", "document kinds the project profile reads automatically")
+	proposalPolicy := fs.String("proposal-policy", "data/profile/proposals.json", "proposal visibility policy")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
@@ -133,6 +135,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		fmt.Fprintln(stderr, "profile reading policy: "+err.Error())
 		return 1
 	}
+	proposals, err := works.LoadProposalPolicy(*proposalPolicy)
+	if err != nil {
+		fmt.Fprintln(stderr, "proposal policy: "+err.Error())
+		return 1
+	}
 	client, err := jev.New(jev.Options{APIKey: cfg.JevAPIKey, Model: cfg.JevModel, Logger: slog.New(slog.NewJSONHandler(stderr, nil))})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -183,6 +190,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		Knowledge:         building,
 		ProfileThresholds: profileTh,
 		ProfileReading:    reading,
+		ProposalShowCount: proposals.ShowCount,
 	})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())

@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T09:30:04.5127643Z",
+  "target": "dev",
+  "release": false,
+  "host": {
+    "os": "windows",
+    "arch": "amd64",
+    "cpus": 12,
+    "gomaxprocs": 12,
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "go": "go1.27.1"
+  },
+  "jev": "replayed-recorded-latency",
+  "model": "jev-1.13.0",
+  "workload": {
+    "files_per_round": 20,
+    "rounds": 2,
+    "concurrency": 4,
+    "background_jev_callers": 2,
+    "background_jev_calls": 30,
+    "degrade_percent": 10,
+    "stalled_jev_requests": 11,
+    "cold_round": "1"
+  },
+  "outcomes": {
+    "filing": 38,
+    "grey_filings": 4,
+    "not_filed": 2
+  },
+  "paths": {
+    "0991_profile_edit": {
+      "n": 40,
+      "p50_us": 11017,
+      "p90_us": 12260,
+      "max_us": 17782,
+      "pass": true
+    },
+    "0991_profile_rebuild": {
+      "n": 40,
+      "p50_us": 5845,
+      "p90_us": 6724,
+      "max_us": 8546,
+      "pass": true
+    },
+    "0991_proposal_compute": {
+      "n": 40,
+      "p50_us": 3156,
+      "p90_us": 3805,
+      "max_us": 4376
+    },
+    "0991_proposal_rebuild_dryrun": {
+      "n": 40,
+      "p50_us": 10904,
+      "p90_us": 12337,
+      "max_us": 15006
+    },
+    "0991_proposal_rebuild_persisted": {
+      "n": 40,
+      "p50_us": 31735,
+      "p90_us": 34722,
+      "max_us": 40268
+    },
+    "candidate_harvesting": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 1003,
+      "max_us": 2998,
+      "pass": true
+    },
+    "commit_sse_enqueue": {
+      "n": 38,
+      "p50_us": 3900,
+      "p90_us": 5764,
+      "max_us": 7183,
+      "pass": true
+    },
+    "deterministic_field_rules": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 1996,
+      "max_us": 2013,
+      "pass": false
+    },
+    "document_delete": {
+      "n": 40,
+      "p50_us": 19753,
+      "p90_us": 41937,
+      "max_us": 78373,
+      "pass": true
+    },
+    "field_correction": {
+      "n": 40,
+      "p50_us": 5681,
+      "p90_us": 6954,
+      "max_us": 59823,
+      "pass": true
+    },
+    "health_speed": {
+      "n": 40,
+      "p50_us": 529,
+      "p90_us": 1072,
+      "max_us": 1332,
+      "pass": true
+    },
+    "identity_text_extraction": {
+      "n": 40,
+      "p50_us": 151313,
+      "p90_us": 316419,
+      "max_us": 356168,
+      "pass": false
+    },
+    "jev_admission_request": {
+      "n": 38,
+      "p50_us": 235954,
+      "p90_us": 1200036,
+      "max_us": 1200777,
+      "pass": false
+    },
+    "profile_edit": {
+      "n": 160,
+      "p50_us": 31544,
+      "p90_us": 54184,
+      "max_us": 73011,
+      "pass": true
+    },
+    "profile_rebuild": {
+      "n": 40,
+      "p50_us": 46534,
+      "p90_us": 50952,
+      "max_us": 70414,
+      "pass": true
+    },
+    "project_document_list": {
+      "n": 40,
+      "p50_us": 2106,
+      "p90_us": 2650,
+      "max_us": 3885,
+      "pass": true
+    },
+    "project_invite_auth": {
+      "n": 45,
+      "p50_us": 1001,
+      "p90_us": 1927,
+      "max_us": 3458,
+      "pass": true
+    },
+    "project_profile_read": {
+      "n": 80,
+      "p50_us": 1298,
+      "p90_us": 11155,
+      "max_us": 12191,
+      "pass": true
+    },
+    "proposal_compute": {
+      "n": 40,
+      "p50_us": 28448,
+      "p90_us": 32826,
+      "max_us": 55647
+    },
+    "proposal_rebuild_dryrun": {
+      "n": 40,
+      "p50_us": 97406,
+      "p90_us": 104270,
+      "max_us": 165882
+    },
+    "proposal_rebuild_persisted": {
+      "n": 40,
+      "p50_us": 155970,
+      "p90_us": 171739,
+      "max_us": 226039
+    },
+    "spec_home_profile_edit": {
+      "n": 40,
+      "p50_us": 73268,
+      "p90_us": 81608,
+      "max_us": 115243
+    },
+    "sse_reconnect": {
+      "n": 40,
+      "p50_us": 1052,
+      "p90_us": 1156,
+      "max_us": 1632,
+      "pass": true
+    },
+    "whole_intake": {
+      "n": 40,
+      "p50_us": 459254,
+      "p90_us": 703292,
+      "max_us": 1546501,
+      "pass": true
+    },
+    "works_read": {
+      "n": 40,
+      "p50_us": 1102,
+      "p90_us": 1811,
+      "max_us": 2054,
+      "pass": true
+    },
+    "works_write": {
+      "n": 40,
+      "p50_us": 7921,
+      "p90_us": 9530,
+      "max_us": 10157,
+      "pass": true
+    }
+  },
+  "whole_intake_by_round": {
+    "1": {
+      "n": 20,
+      "p50_us": 408776,
+      "p90_us": 646553,
+      "max_us": 1546501
+    },
+    "2": {
+      "n": 20,
+      "p50_us": 459254,
+      "p90_us": 1216087,
+      "max_us": 1511752
+    }
+  },
+  "missing_paths": null,
+  "gate": {
+    "code": 0,
+    "report": "identity_text_extraction: p50 151313us p90 316419us over 80000/250000us (reported; judged on the target VPS)\ndeterministic_field_rules: p50 0us p90 1996us over 1000/1000us (reported; judged on the target VPS)\njev_admission_request: p50 235954us p90 1200036us over 350000/800000us (reported; judged on the target VPS)\n"
+  },
+  "notes": [
+    "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
+    "Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
+    "Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
+    "health_speed alternates the owner-only /api/health and /api/speed views after the filings, with the background queue still holding their stages.",
+    "Jev latency is the recorded provider latency replayed per document, not a live measurement. Release evidence is a -live run on the intended VPS.",
+    "Spec Home fixture SHA-256 858ce589eeea6cf3dde011d9e393f4cb2428e1dc8f512bc15fed0c67800ee61e: 38 documents, 1153 facts, 6742 passages; 40 full rebuilds and edits. Proposal diagnostic: 570 loaded records, 388 proposals on last rebuild. Dryrun excludes writes; persisted timing adds explicit transactional projection replacement to the profile rebuild, with repeated input reads and reconciliation. Neither measures integrated edit wiring or constitutes step-0 completion or release evidence. 0991 manual source timing fixture SHA-256 c719582a3fbdaa20d40aa4278df74951082fc72c44ef4517fe236dc759714f63: 2 documents, 0 facts, 2 passages; 40 full rebuilds and edits. Bounded two-drawing baseline, manually proposed work items and zero machine-read facts; not an extraction score or complete corpus replay. Proposal diagnostic: 570 loaded records, 242 proposals on last rebuild. Dryrun excludes writes; persisted timing adds explicit transactional projection replacement to the profile rebuild, with repeated input reads and reconciliation. Neither measures integrated edit wiring or constitutes step-0 completion or release evidence."
+  ]
+}

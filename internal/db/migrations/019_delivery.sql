@@ -1,0 +1,56 @@
+CREATE TABLE project_delivery_items (
+ org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+ id uuid NOT NULL,
+ project_id uuid NOT NULL,
+ kind text NOT NULL CHECK (kind IN ('activity','milestone','action','risk','issue','decision','approval')),
+ title text NOT NULL CHECK (length(trim(title)) BETWEEN 1 AND 200),
+ owner_text text NOT NULL DEFAULT '' CHECK (length(owner_text)<=200),
+ owner_user_id uuid,
+ baseline_date date,
+ target_date date,
+ forecast_date date,
+ actual_date date,
+ status text NOT NULL CHECK (status IN ('not_started','in_progress','blocked','complete','cancelled','planned','achieved','open','mitigating','closed','resolved','decided','superseded','not_submitted','submitted','approved','rejected','withdrawn')),
+ as_of date,
+ package_id uuid,
+ work_item_id uuid,
+ stage_id uuid,
+ details jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(details)='object'),
+ origin text NOT NULL CHECK (origin IN ('document','user','calculation','assumption')),
+ review_status text NOT NULL CHECK (review_status IN ('proposed','accepted_for_planning','verified','superseded')),
+ meaning text NOT NULL DEFAULT 'stated' CHECK (meaning IN ('stated','requirement','allowance','forecast')),
+ provenance jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(provenance)='object'),
+ verified_by uuid,
+ verified_at timestamptz,
+ verification_basis text,
+ source_proposal_key text,
+ retired_at timestamptz,
+ version bigint NOT NULL DEFAULT 1 CHECK (version>0),
+ PRIMARY KEY (org_id,id),
+ UNIQUE (org_id,project_id,id),
+ FOREIGN KEY (org_id,project_id) REFERENCES projects(org_id,id) ON DELETE CASCADE,
+ FOREIGN KEY (org_id,owner_user_id) REFERENCES users(org_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,verified_by) REFERENCES users(org_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,project_id,package_id) REFERENCES packages(org_id,project_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,project_id,work_item_id) REFERENCES work_items(org_id,project_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,project_id,package_id,stage_id) REFERENCES package_stages(org_id,project_id,package_id,id) DEFERRABLE INITIALLY DEFERRED,
+ CHECK (stage_id IS NULL OR package_id IS NOT NULL),
+ CHECK (review_status<>'verified' OR (verified_by IS NOT NULL AND verified_at IS NOT NULL AND COALESCE(length(trim(verification_basis)),0)>0))
+);
+CREATE UNIQUE INDEX delivery_proposal_uq ON project_delivery_items(org_id,project_id,source_proposal_key) WHERE source_proposal_key IS NOT NULL;
+CREATE INDEX delivery_work_idx ON project_delivery_items(org_id,project_id,work_item_id);
+CREATE INDEX delivery_package_idx ON project_delivery_items(org_id,project_id,package_id,stage_id);
+
+CREATE TABLE delivery_dependencies (
+ org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+ project_id uuid NOT NULL,
+ predecessor_id uuid NOT NULL,
+ successor_id uuid NOT NULL,
+ type text NOT NULL DEFAULT 'finish_to_start' CHECK (type='finish_to_start'),
+ lag_days integer NOT NULL DEFAULT 0,
+ PRIMARY KEY (org_id,project_id,predecessor_id,successor_id),
+ FOREIGN KEY (org_id,project_id) REFERENCES projects(org_id,id) ON DELETE CASCADE,
+ FOREIGN KEY (org_id,project_id,predecessor_id) REFERENCES project_delivery_items(org_id,project_id,id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id,project_id,successor_id) REFERENCES project_delivery_items(org_id,project_id,id) DEFERRABLE INITIALLY DEFERRED,
+ CHECK (predecessor_id<>successor_id)
+);

@@ -240,3 +240,5 @@ rows:
   B2-0971: {records: [fm.concrete-cover-and-surface-not-suited-to-membrane-bond]}
   B2-0972: {records: [fm.movement-joint-between-new-and-existing-frame-built-solid]}
   B2-0989: {records: [fm.structural-steel-fire-protection-thickness-short]}
+  B2-0916: {records: [fm.vehicle-clearance-lost-under-structural-beam]}
+  B2-0917: {records: [fm.vehicle-clearance-lost-under-structural-beam]}

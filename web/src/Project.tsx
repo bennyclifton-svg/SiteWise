@@ -17,6 +17,11 @@ import {
 import { type RowModel } from "./DocumentRow";
 import { Profile } from "./Profile";
 import { Register } from "./Register";
+import { Reports } from "./Reports";
+import { Packages } from "./Packages";
+import { Works } from "./Works";
+import { Delivery } from "./Delivery";
+import { Proposals } from "./Proposals";
 import { ocrStage } from "./OCRStatus";
 
 const STALE_MS = 8000;
@@ -221,6 +226,17 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   const [flash, setFlash] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [profileTick, setProfileTick] = useState(0);
+  const [showReports, setShowReports] = useState(false);
+  const [showWorks, setShowWorks] = useState(false);
+  const [worksOpened, setWorksOpened] = useState(false);
+  const [showProposals, setShowProposals] = useState(false);
+  const [proposalsOpened, setProposalsOpened] = useState(false);
+  const [showDelivery, setShowDelivery] = useState(false);
+  const [deliveryOpened, setDeliveryOpened] = useState(false);
+  const [showPackages, setShowPackages] = useState(false);
+  const [packagesOpened, setPackagesOpened] = useState(false);
+  const [reportsOpened, setReportsOpened] = useState(false);
+	const [reportTick, setReportTick] = useState(0);
   const [notReadOnly, setNotReadOnly] = useState(false);
   const lastId = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -282,6 +298,10 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
           const ev = JSON.parse((msg as MessageEvent<string>).data) as StreamEvent;
           if (ev.id <= lastId.current) return;
           lastId.current = ev.id;
+		  if (ev.kind === "report" || ev.kind === "works" || ev.kind === "packages" || ev.kind === "delivery") {
+		    if (ev.payload?.project_id === projectId) setReportTick(n => n + 1);
+		    return;
+		  }
           if (ev.kind === "sheets") {
             api.documents(projectId).then((list) => {
               if (!stopped) dispatch({ type: "loaded", list });
@@ -553,12 +573,20 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   }
 
   return (
-    <main className="workspace" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-      <section className="profile-col" aria-label="Project profile">
+    <main className="workspace workspace-with-views" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <nav className="project-views" aria-label="Project views">
+        <button type="button" className="btn btn-small" aria-pressed={!showReports && !showPackages && !showWorks && !showDelivery && !showProposals} onClick={() => { setShowReports(false); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Filing</button>
+        <button type="button" className="btn btn-small" aria-pressed={showWorks} onClick={() => { setWorksOpened(true); setShowWorks(true); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Works</button>
+        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setProposalsOpened(true); setShowProposals(true); setShowWorks(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); }}>Proposals</button>
+        <button type="button" className="btn btn-small" aria-pressed={showPackages} onClick={() => { setPackagesOpened(true); setShowPackages(true); setShowWorks(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Packages</button>
+        <button type="button" className="btn btn-small" aria-pressed={showDelivery} onClick={() => { setShowProposals(false); setDeliveryOpened(true); setShowDelivery(true); setShowWorks(false); setShowReports(false); setShowPackages(false); }}>Delivery</button>
+        <button type="button" className="btn btn-small" aria-pressed={showReports} onClick={() => { setReportsOpened(true); setShowReports(true); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Reports</button>
+      </nav>
+      <section className="profile-col" aria-label="Project profile" hidden={showReports || showPackages || showWorks || showDelivery || showProposals}>
         <h1 className="project-title">{state.projectName}</h1>
         <Profile projectId={projectId} tick={profileTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} />
       </section>
-      <aside className="register-col" aria-label="Document register">
+      <aside className="register-col" aria-label="Document register" hidden={showReports || showPackages || showWorks || showDelivery || showProposals}>
         <Register
           rows={rows}
           catalog={catalog}
@@ -575,6 +603,11 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
           onDelete={remove}
         />
       </aside>
+      {worksOpened && <div className="project-reports" hidden={!showWorks}><Works projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Proposals projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={!showReports}><Reports projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {packagesOpened && <div className="project-reports" hidden={!showPackages}><Packages projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {/* Drop overlay: invisible until files are dragged over the page. */}
       <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>
         <p className="drop-title">Release to file into {state.projectName}</p>

@@ -1,0 +1,818 @@
+{
+  "baseline_commit": "02094dbde0d9bd90f02d82c6ccc5bea2933a620c",
+  "baseline_failure_modes": 172,
+  "failure_mode_deltas": [
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.accessible-lift-landing-path",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.battery-ventilation-environment",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.brigade-access-obstructed",
+      "moved": false,
+      "path": "knowledge/clusters/fire/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.carrier-entry-civil-route",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.cooling-tower-stagnant-dead-leg",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.crane-outrigger-ground-bearing",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.damper-access-maintained",
+      "moved": false,
+      "path": "knowledge/clusters/fire/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.downlights-insulation-interface",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.drainage-moisture-affects-footings",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.electrical-rough-in-before-lining",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.emergency-power-supplies-lifts",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-adhesive-membrane-compatibility",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-basix-glazing-substitution",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-ceiling-floor-acoustic-flanking",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-cladding-drainage-cavity",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-clinical-finish-cleaning",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-facade-frame-movement",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-floor-cupping",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-floor-finish-impact-sound",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-insulated-glass-seal",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-insulation-gaps",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-joinery-service-positions",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-landscaped-roof-protection",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-lining-sag",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-old-new-weather-barrier",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-paint-adhesion",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-paint-before-flooring",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-room-acoustic-finishes",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-rough-in-before-linings",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-safety-glass-substitution",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-sarking-before-roof",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-sealed-envelope-ventilation",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-services-acoustic-penetrations",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-services-ceiling-space",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-vapour-barrier-position",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-waterproofing-before-tiles",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-wet-membrane-puncture",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.envelope-wet-substrate-membrane",
+      "moved": false,
+      "path": "knowledge/clusters/envelope/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.excavation-affects-adjoining-foundations",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.exhaust-intake-separation",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.exhaust-penetrates-envelope",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.fire-alarm-controls-lift-recall",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.fire-alarm-controls-security-release",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.groundwater-loads-basement",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.hydraulic-rough-in-before-linings",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.ict-room-power-cooling",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "detector.runs_on",
+        "notes",
+        "sources"
+      ],
+      "id": "fm.integrated-fire-test-failed",
+      "moved": false,
+      "path": "knowledge/clusters/fire/failure_modes.yaml",
+      "runs_on_after": [
+        "fire-active.fire-control",
+        "fire-active.smoke-control"
+      ],
+      "runs_on_before": [
+        "fire-active.fire-control"
+      ],
+      "sources_only": false
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.kitchen-exhaust-makeup-air",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.lift-shaft-fire-separation",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.lift-shaft-structural-dimensions",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.occupied-stage-services-isolated",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.plant-loads-structure",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.plant-noise-vibration",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.plastic-pipe-without-fire-collar",
+      "moved": false,
+      "path": "knowledge/clusters/fire/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.podium-landscape-waterproofing",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.podium-soil-loads-structure",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.potable-nonpotable-separation",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.power-data-cable-segregation",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.process-vendor-utility-mismatch",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.pv-array-loads-roof",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.pv-supports-penetrate-roof",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.retaining-drainage-protects-wall",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.roof-drainage-waterproofing",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.services-modify-structural-framing",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.services-plant-maintenance-access",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.services-share-ceiling-space",
+      "moved": false,
+      "path": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.sprinklers-share-ceiling-services",
+      "moved": false,
+      "path": "knowledge/clusters/fire/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.suppression-hazard-changed",
+      "moved": false,
+      "path": "knowledge/clusters/fire/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.survey-datum-controls-structural-setout",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.switchrooms-depend-on-ventilation",
+      "moved": false,
+      "path": "knowledge/clusters/electrical-comms/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.temporary-works-load-new-concrete",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    },
+    {
+      "changed_fields": [
+        "sources"
+      ],
+      "id": "fm.termite-barrier-service-penetrations",
+      "moved": false,
+      "path": "knowledge/clusters/structure/failure_modes.yaml",
+      "sources_only": true
+    }
+  ],
+  "knowledge_sha256": {
+    "knowledge/clusters/delivery/signals.yaml": "3820e664fa948dd0fdabd89235e72d8411959955ea9cdc92e960d172c5f79461",
+    "knowledge/clusters/delivery/unforeseen.yaml": "2778231f95233246c130e0816a4bf375139ab025d5fa260f2738a56748d810c1",
+    "knowledge/clusters/electrical-comms/failure_modes.yaml": "153393e114166f3172e87d176b3ff80a89d4b7f8fcb6ff4422501059ce532f05",
+    "knowledge/clusters/electrical-comms/interfaces.yaml": "4dd43a40745f9016492286b3f2ba8864a32508a9c2aaaeeb86fd0763c70c1fe4",
+    "knowledge/clusters/electrical-comms/proposed_determinants.yaml": "b8aa335f6462096974d5317b4fe0fda27739805a3047095e73bb4479f4c24160",
+    "knowledge/clusters/electrical-comms/rules.yaml": "a2c04ab410199aa9676d606ccc7be523debf229486a84f0b5e02a16b2a31e150",
+    "knowledge/clusters/electrical-comms/signals.yaml": "c1fcd38272de7d8d894b5136ec88570f3cfe4e3a232e96cd07a261ae689f5b35",
+    "knowledge/clusters/electrical-comms/systems.yaml": "b2d0b981d19c86b7332b476a70243be36e71ef24a41172f3013c4127d590e455",
+    "knowledge/clusters/electrical-comms/unforeseen.yaml": "2cb29e44bf826fa27718200e351331d32d5f7c80fc9755c7a269d78cd9ff2dfc",
+    "knowledge/clusters/envelope/failure_modes.yaml": "83b70f5e334030c2f1ef4e6b74a8a85da7a8577105fecc1c3111f0f3315bd1d4",
+    "knowledge/clusters/envelope/interfaces.yaml": "e58b968a676286a8fd64ace9262988121ece94bcfc2d4c09061d6d38a6ca75b5",
+    "knowledge/clusters/envelope/proposed_determinants.yaml": "b8aa335f6462096974d5317b4fe0fda27739805a3047095e73bb4479f4c24160",
+    "knowledge/clusters/envelope/rules.yaml": "15f1887048e45a78f50905e770e1ac11f725f5e335e61666680fce9eb4e6afd2",
+    "knowledge/clusters/envelope/signals.yaml": "c5cee0a7b1cd55328e9643ccc7aa942a38e92ae6d3291ae2a7d6f09c415b10e3",
+    "knowledge/clusters/envelope/systems.yaml": "e8a788c304611239242e8984d37746e30387e06da0558975e1b2b277a136bb87",
+    "knowledge/clusters/envelope/unforeseen.yaml": "4ef4df428371818804e282e3511baa81c073955fcfd3a4acf49ce21bcb1329dc",
+    "knowledge/clusters/fire/consequences.yaml": "cfbdb1f183b3ef64f34dca630818e0b0509f578be7e22997a3f898c15d2df748",
+    "knowledge/clusters/fire/failure_modes.yaml": "af0fb5a9f3f08d7c6d02d5f5e2ee90c6b52c06e9ae9f3ff3b17d2a30b8462526",
+    "knowledge/clusters/fire/interfaces.yaml": "aa18b95f18fd14eaf498bfa7baa1e0ac908605f811a215f3daa148de7c6aa324",
+    "knowledge/clusters/fire/rules.yaml": "4504d7fa58f834167a343c02f3c095cd23a7b3786258298b92864ec94f0eb5d1",
+    "knowledge/clusters/fire/signals.yaml": "20621c85b664cb59be93981db6875e1cef79fc2816cc292c9580f0db266f2769",
+    "knowledge/clusters/fire/systems.yaml": "0e11ccb4d714166ecea8e2204cef753d1d3e7fa9c35de29ac31a4c38eb36fab4",
+    "knowledge/clusters/fire/unforeseen.yaml": "350e3867f16d7623f73fe3adefe221f14f467c37f8b4c80eb08cc0412a76b5b8",
+    "knowledge/clusters/services-wet-air/consequences.yaml": "cbdf90f43619a847d850b3397a3daa95ed902abd2ce82cd4e00e2b8c52ee7053",
+    "knowledge/clusters/services-wet-air/failure_modes.yaml": "4afffba5a16cd47c477cfab064040cea025f056f7a59e7e78b18c8ae8a285c18",
+    "knowledge/clusters/services-wet-air/interfaces.yaml": "540b2f79d173ddff65e2615b5131f9bfd746b69db2c72169e1032e86ee134cfe",
+    "knowledge/clusters/services-wet-air/proposed_determinants.yaml": "b8aa335f6462096974d5317b4fe0fda27739805a3047095e73bb4479f4c24160",
+    "knowledge/clusters/services-wet-air/rules.yaml": "0348dd0d9413337618a9bf64a62bbcb1851bc0ae950d46268117f543d8888f9d",
+    "knowledge/clusters/services-wet-air/signals.yaml": "ef1e9ffdc275f097aaa42937ba3c3cc6e3c7af56ffef0a05d498055f883d2223",
+    "knowledge/clusters/services-wet-air/systems.yaml": "12fc5728fdea7e1ed3c5e1aeabc5d0c244c4018ab9052a0e8dfc33a51123d084",
+    "knowledge/clusters/services-wet-air/unforeseen.yaml": "90ed3ea37e722de144a2c9be66c5b3d9b4232caa43ec6cd288bc9956d73bb5a9",
+    "knowledge/clusters/structure/consequences.yaml": "750881b0f450225bc7311b3e20f9ae8e6665f8e7ddc5851d4084166f2a1015d1",
+    "knowledge/clusters/structure/failure_modes.yaml": "0f2f3b7aece80411075087860fe63c4a30c466a4bb81d576310db64828f44011",
+    "knowledge/clusters/structure/interfaces.yaml": "bb59242d5b187086b4a86fed3f2063e14aaf3ee8cbac0f13fa1268f4eeac74b0",
+    "knowledge/clusters/structure/proposed_determinants.yaml": "b8aa335f6462096974d5317b4fe0fda27739805a3047095e73bb4479f4c24160",
+    "knowledge/clusters/structure/rules.yaml": "d945d4a18c3657393a6f0847929f4decbbf313a4429572212b9267508da4a817",
+    "knowledge/clusters/structure/signals.yaml": "2ee489151868c5950f2f97d1c876f7d112911140daa162b94ee30c06a2da41a5",
+    "knowledge/clusters/structure/systems.yaml": "1cdbc513f6f4ee6249119c9a2425793e10ddecf45aadd0a6452371a2b18fd8db",
+    "knowledge/clusters/structure/unforeseen.yaml": "8b713f97668ef205423b7b3583ba3d52066283b67c60968837ad23d5ecdf1fcb",
+    "knowledge/determinants.yaml": "84f91e8bf9fbf6bcf91cb199af5d899a86a641e3d202ccdb1729698bb718f1c0",
+    "knowledge/profile/key_scope.yaml": "3ddc2b9218118ee2d32247b42e023b2635d27da95e615d7a499c4d46217d86ec",
+    "knowledge/profile/planning_keys.yaml": "7fdc303e5aff430f3caafe056c9b63cc7bdb56abd03ae467414ea9dfe3bb79b0",
+    "knowledge/profile/project_facts.yaml": "6b3655da78ee725408083734b58e426a6c521a446a10ff8adf3ad53c2e364c0f",
+    "knowledge/profile/scope_defaults.yaml": "5ff5ef97eaf59aa0295de4cf60c1fb42e9a685007d10eae57120f02461798914",
+    "knowledge/profile/taxonomy.yaml": "5e465e209bc2124bbbf9242349a4747b23fb6bf4c6e7d52bcc2f3360f47504fa",
+    "knowledge/reports/clauses.yaml": "3e42e2e3dcff1d57c02390a774a8222b798113def778800261f65a356f7f5b78",
+    "knowledge/reports/templates.yaml": "c3face204f501867440fd2e6b50be3090643442f276351ddd3b887aabcf48756",
+    "knowledge/systems.yaml": "65c5ab459306c5ec1c33a42d42069bbbf11e78167e7bce602e52b9351bc01b1f",
+    "knowledge/tables/compartment_limits.yaml": "a8e6b01657b0c26817194992676a9e94dc41aa0faa8c2e4c9316e3a6be6ca95a",
+    "knowledge/tables/type_of_construction.yaml": "bc036a4539ae82a0c24cdb65b2fb738e2cc091c70730cdcc40cf0f2c9c9b217e",
+    "knowledge/works/actions.yaml": "72172c653e7696f84fbf774639578a17856872f5ecb24b5ab69d19d6ae23f03f",
+    "knowledge/works/coverage/batch1.yaml": "9f666f0b431de2c61f85d463408ef23fa36cc6fbbb30b905ac07a660184e0b75",
+    "knowledge/works/coverage/batch1/delivery.yaml": "3331fa8f261e16ffe89180b4b087086adb5c101b8f09c18756f0d46b0b2087d1",
+    "knowledge/works/coverage/batch1/electrical-comms.yaml": "9655fb6952156390c5d819dbf56fae303c3669b4c0c5a4b5ef2ee388c96a2334",
+    "knowledge/works/coverage/batch1/envelope.yaml": "d84882b35b31c29754f06637e76db29892644ebf470ad940d87180e9aef29d20",
+    "knowledge/works/coverage/batch1/fire.yaml": "c80aabbf9787800e33c871450139e12b047d89b071f0e8d333fd17aa71201f2c",
+    "knowledge/works/coverage/batch1/services-wet-air.yaml": "d6d0cd04208a4e88620c1cb37e3d3d926d9fb74f712e4007788280db526c8b57",
+    "knowledge/works/coverage/batch1/structure.yaml": "2367acb67e09d8c3fb18357850c71087a26b094d1652379f0f697ee7bab8208d",
+    "knowledge/works/coverage/batch2.yaml": "ee0eed8fb1474bea2727260569bff958533e095b883d31a0f7c6a757c435d71a",
+    "knowledge/works/coverage/batch2/delivery.yaml": "0d3b853df51dc636ddc22be00432c0dbdc6ef83798c31726cdd47227db32ea05",
+    "knowledge/works/coverage/batch2/electrical-comms.yaml": "e3807e997672d229e686f4669b09be61f268eecb104236ba4b66d2887b567828",
+    "knowledge/works/coverage/batch2/envelope.yaml": "62660c2a96c8f9249220bc2b30ec122a753ab1a7fab3c576cbeb10daadc220e0",
+    "knowledge/works/coverage/batch2/fire.yaml": "afbf28d7d14ad3f060a3fbb9e45a3e43c65f475009de48db622cac6434e0d041",
+    "knowledge/works/coverage/batch2/services-wet-air.yaml": "ba457c1217ccac727d631e0ce4df300df585b82403e6cd5fbb45df9bb2d9406f",
+    "knowledge/works/coverage/batch2/structure.yaml": "ea5783d7cf7af98830c3dd5157229e146ccae5a868e8a940c4fd703d5c507dfd",
+    "knowledge/works/interface_consequences.yaml": "b19387c09d34b7a978d364420c1bf75be3b1798dd8842bcfcd77adb81ed67acc",
+    "knowledge/works/package_defaults.yaml": "f2e7260ea350b07df2df9a89d5d3946c24616bbb2465aab3ba04324894efff3d",
+    "knowledge/works/signals.yaml": "3fc411e0f2c0194f568b2c35f957f28f817ff7492c8d1ecba452c71d6a59eb31",
+    "knowledge/works/stages.yaml": "fc72f11f9b3626a9680e2be756ea5b2fa60d2a68d4b844b9fa6fe8d9f92abf11",
+    "knowledge/works/system_terms.yaml": "deaff50acfa68d27dd18f9f0ed807b6d7f0318145e9904061edbeac420852a6b"
+  },
+  "non_draft_records": [],
+  "record_counts": {
+    "cq.": 3,
+    "fm.": 859,
+    "sig.": 331,
+    "uc.": 560
+  },
+  "schema_version": 1,
+  "unforeseen_attachment_counts": {
+    "interface": 1,
+    "package_kind": 14,
+    "stage": 96,
+    "system": 449
+  },
+  "work_type_predicate_records": [
+    "uc.agreed-shutdown-or-cutover-window-shorter-than-changeover",
+    "uc.authority-requires-design-change-after-approval",
+    "uc.building-height-triggers-additional-fire-measures",
+    "uc.change-of-use-or-alteration-triggers-whole-building-upgrade",
+    "uc.client-supplied-items-late-or-approvals-slow",
+    "uc.commissioning-squeezed-or-started-early",
+    "uc.contractor-or-key-trade-insolvency",
+    "uc.crane-permit-or-airspace-approval-limits-crane",
+    "uc.defect-rectification-disrupts-occupants",
+    "uc.defects-emerge-in-defects-period",
+    "uc.defects-found-after-payment-and-retention-disputed",
+    "uc.delay-notice-extension-of-time-and-liquidated-damages",
+    "uc.delivery-wrong-or-damaged",
+    "uc.design-responsibility-gap-on-novation-or-design-and-construct",
+    "uc.development-consent-lapses-before-start",
+    "uc.easement-or-utility-asset-restricts-footprint",
+    "uc.existing-building-or-addition-has-no-approval",
+    "uc.extension-approval-slow-or-objected",
+    "uc.fixed-price-contract-on-unresolved-design",
+    "uc.flammable-liquids-store-non-compliant",
+    "uc.handover-documentation-and-training-incomplete",
+    "uc.haulage-or-delivery-route-blocked",
+    "uc.heritage-materials-and-trades-scarce",
+    "uc.heritage-status-found-late",
+    "uc.hoarding-or-site-permit-delays-start",
+    "uc.hospital-refurbishment-needs-infection-control-barriers",
+    "uc.inspection-missed-or-failed-holds-next-trade",
+    "uc.late-design-information-or-brief-change",
+    "uc.latent-condition-clause-does-not-cover-asbestos-tender-said-absent",
+    "uc.material-shortage-or-discontinued-product",
+    "uc.neighbour-boundary-risks-from-crane-and-falling-objects",
+    "uc.noisy-work-refused-outside-approved-hours-beside-neighbour",
+    "uc.non-conforming-or-recalled-product-found",
+    "uc.occupancy-window-constrains-programme",
+    "uc.occupation-certificate-withheld",
+    "uc.occupied-building-works-restrict-hours-and-methods",
+    "uc.office-mezzanine-acoustic-separation-missed",
+    "uc.outdoor-kitchen-clearance-to-structures",
+    "uc.overhead-power-lines-clash-with-extension",
+    "uc.overhead-power-lines-restrict-crane-and-delivery",
+    "uc.owners-corporation-or-insurer-defect-claims",
+    "uc.payment-claim-and-adjudication-disputes",
+    "uc.planning-control-limit-reached-after-design",
+    "uc.plant-cannot-access-or-operate-on-site",
+    "uc.practical-completion-disputed-or-defect-list-long",
+    "uc.product-lacks-certification-or-test-evidence",
+    "uc.protected-vegetation-or-species-on-site",
+    "uc.provisional-sum-allowance-too-low",
+    "uc.rain-heat-smoke-or-storm-halts-site-work",
+    "uc.regulator-stops-work-after-complaint-or-incident",
+    "uc.road-opening-permit-hours-too-short-for-service-tie-in",
+    "uc.seasonal-testing-not-possible-before-handover",
+    "uc.secondary-dwelling-fire-separation",
+    "uc.shop-drawing-approval-delays-fabrication",
+    "uc.site-establishment-conflicts-with-staging",
+    "uc.special-conditions-not-read",
+    "uc.specification-conflicts-with-drawings",
+    "uc.strata-consent-for-common-property-works-withheld",
+    "uc.strata-or-subdivision-registration-delayed",
+    "uc.temporary-works-fail-in-wind",
+    "uc.trade-availability-breaks-sequence",
+    "uc.trades-clash-and-damage-work",
+    "uc.truck-swept-paths-fail-site-layout",
+    "uc.vacant-possession-delayed-by-tenant-holdover",
+    "uc.value-engineering-removes-function-or-fails-compliance",
+    "uc.wind-or-lightning-stops-crane-operations",
+    "uc.work-hours-restriction-limits-pours"
+  ]
+}

@@ -100,6 +100,11 @@ type partJSON struct {
 }
 
 type profileJSON struct {
+	Revision         int64                  `json:"revision"`
+	InputFingerprint string                 `json:"input_fingerprint"`
+	KnowledgeVersion string                 `json:"knowledge_version"`
+	QuestionVersion  string                 `json:"question_version"`
+	StaleFor         []string               `json:"stale_for"`
 	Coverage         []store.SourceCoverage `json:"coverage"`
 	ProjectID        string                 `json:"project_id"`
 	BuiltAt          *time.Time             `json:"built_at"`
@@ -166,14 +171,21 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}
-	if _, err := deps.Store.EnsureWholePart(r.Context(), orgID, projectID); errors.Is(err, store.ErrNotFound) {
-		http.Error(w, "not found", http.StatusNotFound)
-		return
-	} else if err != nil {
-		http.Error(w, "read failed", http.StatusInternalServerError)
-		return
-	}
 	view, err := deps.Store.ReadProfile(r.Context(), orgID, projectID, deps.ProfileReading.Kinds())
+	if err == nil {
+		hasWhole := false
+		for _, part := range view.Parts {
+			hasWhole = hasWhole || part.Kind == "whole"
+		}
+		// Most reads follow an edit/rebuild and already have this part. Only
+		// a project's first profile view needs to create it and read again.
+		if !hasWhole {
+			_, err = deps.Store.EnsureWholePart(r.Context(), orgID, projectID)
+			if err == nil {
+				view, err = deps.Store.ReadProfile(r.Context(), orgID, projectID, deps.ProfileReading.Kinds())
+			}
+		}
+	}
 	if errors.Is(err, store.ErrNotFound) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -190,7 +202,7 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSON {
 	cat := deps.Knowledge
 	whole := ""
-	out := profileJSON{Coverage: view.Coverage, ProjectID: projectID, BuiltAt: view.BuiltAt, PendingDocuments: view.PendingDocuments, UnreadDocuments: view.UnreadDocuments,
+	out := profileJSON{Revision: view.Revision, InputFingerprint: view.InputFingerprint, KnowledgeVersion: view.KnowledgeVersion, QuestionVersion: view.QuestionVersion, StaleFor: view.StaleFor(profileBuild(deps)), Coverage: view.Coverage, ProjectID: projectID, BuiltAt: view.BuiltAt, PendingDocuments: view.PendingDocuments, UnreadDocuments: view.UnreadDocuments,
 		ActiveDocuments: view.ActiveDocuments, FailedDocuments: view.FailedDocuments, PaymentRequired: view.PaymentRequired,
 		ReadDocuments: view.ReadDocuments, SkippedDocuments: view.SkippedDocuments, SkippedKind: view.SkippedKind,
 		Thresholds: map[string]any{"version": deps.ProfileThresholds.Version, "provisional": !deps.ProfileThresholds.Approved,
@@ -518,18 +530,14 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "write failed", http.StatusInternalServerError)
 		return
 	}
-	if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
-		http.Error(w, "rebuild failed", http.StatusInternalServerError)
-		return
-	}
 	writeProfile(w, r, deps, session.OrgID, projectID)
 }
 
-func rebuildProfile(r *http.Request, deps Deps, orgID, projectID string) error {
-	return deps.Store.RebuildProfile(r.Context(), orgID, projectID, deps.ProfileThresholds.Version,
-		func(s store.ProfileSnapshot) []profile.Row {
+func profileBuild(deps Deps) store.ProfileBuild {
+	return store.ProfileBuild{Catalog: deps.Knowledge, KnowledgeVersion: deps.Knowledge.Version(), QuestionVersion: profile.QuestionVersion,
+		ThresholdsVersion: deps.ProfileThresholds.Version, ReadKinds: deps.ProfileReading.Kinds(), Compute: func(s store.ProfileSnapshot) []profile.Row {
 			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: deps.ProfileThresholds, Read: deps.ProfileReading}, deps.Knowledge)
-		})
+		}}
 }
 
 // validProvenance checks the optional provenance of a user edit.
@@ -675,10 +683,14 @@ func validProfileValue(cat *knowledge.Catalog, key string, value *string, note s
 			break
 		}
 		sys, ok := cat.System(rest[:dot])
-		if !ok || sys.Parent == "" || sys.Status == "deprecated" {
+		if !ok || (sys.Parent == "" && rest[dot+1:] != "condition") || sys.Status == "deprecated" {
 			break
 		}
 		switch rest[dot+1:] {
+		case "existing":
+			return oneOf("present", "absent")
+		case "condition":
+			return oneOf(cat.ExistingConditions()...)
 		case "presence":
 			return oneOf("included", "not_included")
 		case "provider":
@@ -750,7 +762,6 @@ func createPart(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "a part with that label exists", http.StatusConflict)
 		return
 	}
-	_ = rebuildProfile(r, deps, session.OrgID, projectID)
 	writeJSON(w, http.StatusCreated, partJSON{ID: p.ID, Label: p.Label, Kind: p.Kind, NCCClass: p.NCCClass})
 }
 
@@ -786,7 +797,6 @@ func updatePart(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "a part with that label exists", http.StatusConflict)
 		return
 	}
-	_ = rebuildProfile(r, deps, session.OrgID, projectID)
 	writeJSON(w, http.StatusOK, partJSON{ID: p.ID, Label: p.Label, Kind: p.Kind, NCCClass: p.NCCClass})
 }
 
@@ -834,10 +844,6 @@ func setProfileReading(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	if err != nil {
 		http.Error(w, "update failed", http.StatusInternalServerError)
-		return
-	}
-	if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
-		http.Error(w, "rebuild failed", http.StatusInternalServerError)
 		return
 	}
 	writeProfile(w, r, deps, session.OrgID, projectID)
@@ -896,10 +902,6 @@ func setScope(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	if err := deps.Store.SetScope(r.Context(), session.OrgID, projectID, whole.ID, session.UserID, choices); err != nil {
 		http.Error(w, "write failed", http.StatusInternalServerError)
-		return
-	}
-	if err := rebuildProfile(r, deps, session.OrgID, projectID); err != nil {
-		http.Error(w, "rebuild failed", http.StatusInternalServerError)
 		return
 	}
 	writeProfile(w, r, deps, session.OrgID, projectID)

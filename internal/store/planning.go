@@ -15,7 +15,7 @@ import (
 // its row id, owner and when it last changed (superseded or created).
 type PlanningValue struct {
 	profile.PlanningValue
-	ID, Scope string
+	ID        string
 	UpdatedAt time.Time
 }
 
@@ -68,7 +68,7 @@ func livePlanning(ctx context.Context, tx pgx.Tx, orgID, projectID, siteID, part
 // SetPlanningValue supersedes the live value of a key, if any, with a new
 // row and returns its version. Superseded rows are kept as history. A stale
 // expected version returns the live version with ErrVersionConflict. The
-// caller rebuilds the profile.
+// configured store rebuilds the profile in the same transaction.
 func (s *Store) SetPlanningValue(ctx context.Context, orgID, projectID, userID string, w PlanningWrite) (int64, error) {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -77,6 +77,13 @@ func (s *Store) SetPlanningValue(ctx context.Context, orgID, projectID, userID s
 	defer func() { _ = tx.Rollback(ctx) }()
 	if err := lockProject(ctx, tx, orgID, projectID); err != nil {
 		return 0, err
+	}
+	// Calculations can have no human author; any supplied author must belong
+	// to this organisation, just like a directly entered planning value.
+	if userID != "" || w.Origin != "calculation" {
+		if err := packageActor(ctx, tx, orgID, userID); err != nil {
+			return 0, err
+		}
 	}
 	siteID, err := userValueOwner(ctx, tx, orgID, projectID, w.PartID)
 	if err != nil {
@@ -137,7 +144,7 @@ WHERE org_id = $1::uuid AND id = $2::uuid`, orgID, prior, id); err != nil {
 			return 0, err
 		}
 	}
-	return latest + 1, tx.Commit(ctx)
+	return latest + 1, s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // retireOtherScope supersedes a live value the registry has since moved to
@@ -194,7 +201,7 @@ func (s *Store) WithdrawPlanningValue(ctx context.Context, orgID, projectID, par
 	if err := supersede(ctx, tx, orgID, prior, nil); err != nil {
 		return 0, err
 	}
-	return 0, tx.Commit(ctx)
+	return 0, s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
 // PlanningValues lists a project's planning values: its own and its site's.

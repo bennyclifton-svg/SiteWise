@@ -65,3 +65,22 @@ Reviewed TypeSafe [Jev 1.13 limitations](https://docs.typesafe.ai/model-jaggedne
 Validation: python tools/check_knowledge.py --only knowledge/clusters/electrical-comms: 0 errors, 0 warnings after the full-file sweep (missing tables are explicitly pending). Checker success establishes structural validity only.
 
 Additional source conflicts from the full sweep: residential/energy seeds disagree on six versus seven star requirements and conflate residential provisions with Section J; no new star-rating rule was created. Apartment/commercial guides overgeneralise individual metering, lift provision, classification and state obligations. Domestic MEP circuit counts and ratings are examples, not cable design defaults. The new staged energisation edge is a physical design dependency rather than a claim that every building legally requires staged handover.
+
+K4 follow-up: recast 1 further investigation labels that selected remedies
+or design solutions before the investigation. Only labels changed. The shared
+review inventory now records 82 corrections across the catalogue; this remains
+a bounded, unapproved wording pass. See
+`docs/evidence/2026-10-06-k4-investigation-labels.md` and
+`docs/unforeseen/k4-investigation-label-review.json`.
+
+## K4 flagged merge assessment, 6 October 2026
+
+Reviewed the flagged electrical merges and related fire case against all 21
+dataset rows cited by eight records. Added the missing EV-charging trigger to
+the existing supply-capacity investigation and the vehicle-access trigger to
+the existing in-ground-asset investigation. Existing actions, guards, targets,
+questions, wording and draft status remain. Footing investigations already
+have structure coverage; no duplicate trigger was added here. Source limits,
+signal/target gaps and unresolved owner decisions are recorded in
+`docs/unforeseen/k4-electrical-fire-merge-review.json` and
+`docs/evidence/2026-10-06-k4-electrical-fire-merges.md`.

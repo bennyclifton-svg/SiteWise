@@ -1,0 +1,36 @@
+schema_version: 2
+project: "0991"
+reviewed: false
+label_source: manual-source-review-draft
+documents:
+  - 0991-hydrants-a
+  - 0991-sprinklers-a
+parts:
+  - Warehouse A
+  - Warehouse B
+  - Warehouse C
+work_items:
+  - id: 0991-hydrant-ring
+    system: fire-active.hydrants
+    action: upgrade
+    part: Warehouse C
+    document: 0991-hydrants-a
+    page: 1
+  - id: 0991-sprinkler-heads-a
+    system: fire-active.sprinklers
+    action: replace
+    part: Warehouse A
+    document: 0991-sprinklers-a
+    page: 1
+  - id: 0991-sprinkler-heads-b
+    system: fire-active.sprinklers
+    action: replace
+    part: Warehouse B
+    document: 0991-sprinklers-a
+    page: 1
+notes:
+  - Draft extraction key for the two pinned revision-A drawings only; not a complete current project scope or an owner-reviewed key.
+  - The sprinkler drawing excludes Warehouse C and a marked area within Warehouse A. The Warehouse A match does not authorise work in that excluded area.
+  - Existing hydrant infrastructure in Warehouses A and B is not evidence of proposed work there.
+  - Replacement is keyed as replace, even when the drawing title describes an upgrade.
+  - No obligation completeness, rule-number verification or proposal usefulness claim is made by this extraction key.

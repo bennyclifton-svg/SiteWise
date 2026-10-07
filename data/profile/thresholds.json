@@ -1,10 +1,18 @@
 {
-  "question_version": "profile-3",
+  "question_version": "profile-5",
   "status": "provisional",
   "approved_by_owner": false,
-  "note": "Provisional floors for profile-3. Questions now retain clause context and system boundaries. Source regression suites are not threshold calibration: green remains withheld until representative keyed evaluations and owner approval. Only -profile-provisional applies these floors before approval.",
+  "note": "Existing provisional floors are retained. Action and location questions have no calibrated floor and remain unresolved until their own keyed evaluations; location floors are specific to the option count, and an absent count applies nothing. No other question's threshold is transferred. Green remains withheld until representative keyed evaluations and owner approval. Only -profile-provisional applies provisional floors before approval.",
   "label_min_noul": 0.5,
   "shapes": {
+    "location.n4": {"options": 4, "amber": null, "green": null},
+    "location.n5": {"options": 5, "amber": null, "green": null},
+    "location.n6": {"options": 6, "amber": null, "green": null},
+    "action": {
+      "options": 10,
+      "amber": null,
+      "green": null
+    },
     "presence": {
       "options": 4,
       "amber": 0.6,

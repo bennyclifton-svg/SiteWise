@@ -1,0 +1,1078 @@
+{
+  "reviewed": false,
+  "selection": "Bounded investigation-label review of physical-action instructions and premature design choices; not whole-catalogue approval",
+  "changes": [
+    {
+      "id": "uc.ceiling-void-dust-or-loose-insulation-contaminates-work-area",
+      "path": "knowledge/clusters/envelope/unforeseen.yaml",
+      "before": "Clean the void before services are run",
+      "after": "Assess ceiling-void dust, debris and loose insulation and the controls needed before access or services work",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0471"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0473"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0490"
+        }
+      ]
+    },
+    {
+      "id": "uc.ceiling-void-or-roof-space-biologically-contaminated",
+      "path": "knowledge/clusters/envelope/unforeseen.yaml",
+      "before": "Clean the void before the new ceiling",
+      "after": "Assess biological contamination in the ceiling or roof void and the controls needed before access or lining work",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0475"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0484"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0485"
+        }
+      ]
+    },
+    {
+      "id": "uc.sprinkler-valve-set-does-not-fit-allocated-room",
+      "path": "knowledge/clusters/fire/unforeseen.yaml",
+      "before": "Size the valve room to the valve set before tender",
+      "after": "Check the allocated room dimensions against the sprinkler valve set before tender",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0199"
+        },
+        {
+          "seed": "as-standards-reference.md",
+          "anchor": "## AS 2118 Series — Automatic Fire Sprinkler Systems"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-smoke-damper-has-no-access-panel",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide access before the damper is accepted",
+      "after": "Inspect maintenance access to the existing smoke damper before acceptance",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0190"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-warm-water-system-cannot-be-disinfected-for-new-use",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Replace or alter the system so it can be disinfected",
+      "after": "Assess whether the existing warm-water system can meet the disinfection needs of the new use",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0255"
+        }
+      ]
+    },
+    {
+      "id": "uc.pneumatic-controls-have-no-points-for-new-bms",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide an interface or replace the controls",
+      "after": "Check compatibility of the existing pneumatic controls with the proposed BMS",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0267"
+        }
+      ]
+    },
+    {
+      "id": "uc.removed-return-air-heater-leaves-return-unheated",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Replace the heating the removal takes away",
+      "after": "Assess the heating provision remaining after removal of the return-air heater",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0273"
+        }
+      ]
+    },
+    {
+      "id": "uc.combustion-air-for-reused-plant-room-drawn-from-loading-area",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide clean combustion air",
+      "after": "Assess the combustion-air source for the reused plant room",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0279"
+        }
+      ]
+    },
+    {
+      "id": "uc.underfloor-air-plenum-obstructed-by-later-cabling",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Clear a path for the air or duct it",
+      "after": "Survey the underfloor plenum and assess the effect of cabling on the proposed airflow",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0294"
+        }
+      ]
+    },
+    {
+      "id": "uc.new-refrigerant-unsuitable-for-existing-pipework",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Replace the pipe or choose a compatible refrigerant path",
+      "after": "Check compatibility of the proposed refrigerant with the existing pipework",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0298"
+        }
+      ]
+    },
+    {
+      "id": "uc.plant-room-floor-waste-has-no-fall-in-existing-slab",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Form falls or move the waste",
+      "after": "Survey plant-room slab falls and assess the floor-waste location",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0389"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-grease-arrestor-undersized-for-new-kitchen",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Size the arrestor to the kitchen",
+      "after": "Check the existing grease arrestor capacity against the proposed kitchen",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0395"
+        }
+      ]
+    },
+    {
+      "id": "uc.no-serviceable-position-for-reflux-valve",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide an accessible valve",
+      "after": "Survey the existing drainage for a serviceable reflux-valve position",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0407"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-galvanised-stack-sheds-rust-into-new-fixtures",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Replace the stack or line it before the fixtures are connected",
+      "after": "Assess the condition of the existing galvanised stack before connecting new fixtures",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0422"
+        }
+      ]
+    },
+    {
+      "id": "uc.stack-in-shaft-has-no-access-to-joints",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide access to the joints",
+      "after": "Survey access to the existing stack joints within the shaft",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0434"
+        }
+      ]
+    },
+    {
+      "id": "uc.hospital-pan-room-flush-overloads-existing-stack",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Size the stack for the simultaneous flush",
+      "after": "Check the existing stack capacity against simultaneous pan-room flushing",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0436"
+        }
+      ]
+    },
+    {
+      "id": "uc.trade-waste-pit-or-line-under-new-paving-lacks-cover",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Replace the cover for the vehicle load",
+      "after": "Assess trade-waste pit covers and pipe cover against the proposed driveway wheel loads",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0437"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0607"
+        }
+      ]
+    },
+    {
+      "id": "uc.asbestos-cement-flue-on-heater-being-replaced",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Remove the flue under an asbestos method, not as ordinary demolition",
+      "after": "Assess the existing flue for asbestos and confirm the management requirements before heater replacement",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0468"
+        }
+      ]
+    },
+    {
+      "id": "uc.old-laboratory-extract-duct-contaminated",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Clean or replace the duct before it is opened",
+      "after": "Assess contamination in the existing laboratory extract duct before opening or reuse",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0483"
+        }
+      ]
+    },
+    {
+      "id": "uc.asbestos-lagging-in-riser-new-pipe-must-enter",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Remove it or work so it is not disturbed, under an asbestos method",
+      "after": "Assess riser lagging for asbestos and confirm the management requirements before pipework enters the riser",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0489"
+        }
+      ]
+    },
+    {
+      "id": "uc.mould-in-air-handler-and-ducts-before-reuse",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Clean or replace the air path",
+      "after": "Assess mould contamination in the air handler and ducts before reuse",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0497"
+        }
+      ]
+    },
+    {
+      "id": "uc.laboratory-conversion-has-no-fume-exhaust-shaft",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide an exhaust path before the laboratory is documented",
+      "after": "Survey available fume-exhaust routes for the proposed laboratory conversion",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0567"
+        }
+      ]
+    },
+    {
+      "id": "uc.roof-plant-over-quiet-room-on-flexible-roof",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Isolate the plant or stiffen the roof",
+      "after": "Assess roof stiffness and vibration transmission from plant above the quiet room",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0695"
+        }
+      ]
+    },
+    {
+      "id": "uc.cross-talk-attenuator-will-not-fit-duct-branch",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Size the branch for the attenuator",
+      "after": "Check duct-branch dimensions against the proposed cross-talk attenuator",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0710"
+        }
+      ]
+    },
+    {
+      "id": "uc.laboratory-gas-cabinet-has-no-exhaust-connection",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide the exhaust before the cabinet is installed",
+      "after": "Check the building exhaust provision against the proposed laboratory gas cabinet",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0729"
+        }
+      ]
+    },
+    {
+      "id": "uc.cool-room-condenser-in-ceiling-cannot-reject-heat",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Reject the heat to a place that can take it",
+      "after": "Assess the heat-rejection route for the cool-room condenser",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0732"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-plant-has-no-isolation-for-live-cutover",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide isolation before the cutover is planned",
+      "after": "Survey existing plant isolation and assess the proposed live cutover",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0829"
+        }
+      ]
+    },
+    {
+      "id": "uc.roof-insulation-fills-space-for-new-unit",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Clear a space or locate the unit elsewhere",
+      "after": "Survey roof-space insulation and clearances against the proposed unit location",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0844"
+        }
+      ]
+    },
+    {
+      "id": "uc.only-sump-discharges-to-blocked-line",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Clear or replace the outfall",
+      "after": "Inspect and test the sump outfall to establish its condition and any remediation needed",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0869"
+        }
+      ]
+    },
+    {
+      "id": "uc.medical-gas-cannot-be-isolated-to-one-wing",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide isolation that does not shut the adjoining wing",
+      "after": "Assess medical-gas isolation boundaries and the effect of the proposed work on the adjoining wing",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0886"
+        }
+      ]
+    },
+    {
+      "id": "uc.steam-main-has-no-isolation-for-altered-wing",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Provide isolation before the wing is altered",
+      "after": "Survey steam-line isolation for the wing to be altered",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0895"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-pavement-or-deck-lacks-falls-for-new-coating-or-drainage",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Form falls the slab can accept or design the coating for the ponds",
+      "after": "Survey existing pavement or deck falls against the proposed coating and drainage design",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0581"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0587"
+        }
+      ]
+    },
+    {
+      "id": "uc.slab-on-grade-picks-up-street-vibration",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Isolate the slab if the use needs it",
+      "after": "Assess street vibration transmission through the slab against the proposed use",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0703"
+        }
+      ]
+    },
+    {
+      "id": "uc.slab-step-too-sharp-for-membrane-to-turn",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Form a fillet the sheet can turn",
+      "after": "Check slab-step geometry and available space against the proposed membrane detail",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0160"
+        }
+      ]
+    },
+    {
+      "id": "uc.underground-fuel-tank-found-under-building-footprint",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Remove or validate the tank before the slab locks it in",
+      "after": "Investigate the underground fuel tank and assess its implications for the proposed building footprint",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0478"
+        }
+      ]
+    },
+    {
+      "id": "uc.buried-drums-or-waste-in-footing-excavation",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Clear and classify the waste before the footing is poured",
+      "after": "Investigate and classify buried drums or waste in the proposed footing excavation",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0499"
+        }
+      ]
+    },
+    {
+      "id": "uc.old-buried-drain-or-trench-collapses-under-new-slab",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Replace pipes before the slab covers them",
+      "after": "Investigate existing buried drains and trenches beneath the proposed slab",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0577"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0630"
+        }
+      ]
+    },
+    {
+      "id": "uc.trench-or-batter-collapses-in-saturated-or-loose-ground",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Shore the trench",
+      "after": "Assess ground stability and temporary-support requirements for the proposed trench or batter",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0603"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0968"
+        }
+      ]
+    },
+    {
+      "id": "uc.pipe-cover-below-wheel-load-minimum-under-existing-driveway",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Lower the pipe or protect it",
+      "after": "Check pipe cover against the driveway wheel loads and assess any protection needed",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0604"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-drain-or-interceptor-undersized-for-added-catchment",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Upgrade the pipe or reduce the catchment",
+      "after": "Check existing drainage and interceptor capacity against the added catchment",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0598"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0613"
+        }
+      ]
+    },
+    {
+      "id": "uc.detention-outlet-limit-tighter-than-design",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Resize the storage to the outlet that will be accepted",
+      "after": "Confirm the accepted detention outlet limit and assess its effect on storage requirements",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0776"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-column-blocks-vehicle-swept-path",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Clear the path of the columns that exist",
+      "after": "Survey existing columns and check the proposed vehicle swept path",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0600"
+        }
+      ]
+    },
+    {
+      "id": "uc.site-ramp-too-steep-for-delivery-vehicles",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Form a ramp the vehicles can use",
+      "after": "Survey site-ramp gradients against the proposed delivery vehicles",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0810"
+        }
+      ]
+    },
+    {
+      "id": "uc.loading-bay-too-small-for-delivery-vehicle",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Size the bay to the delivery",
+      "after": "Check loading-bay dimensions against the proposed delivery vehicle",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0805"
+        }
+      ]
+    },
+    {
+      "id": "uc.scaffold-ties-cannot-land-on-structure",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Land ties on structure",
+      "after": "Survey structural fixing locations for the proposed scaffold ties",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0816"
+        }
+      ]
+    },
+    {
+      "id": "uc.differential-founding-from-rock-to-deep-soil-under-one-slab",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Articulate the slab for the difference",
+      "after": "Assess differential founding conditions and the adequacy of the proposed slab articulation",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0931"
+        }
+      ]
+    },
+    {
+      "id": "uc.no-safe-walkway-in-existing-roof-space",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Provide a path that is not the ceiling",
+      "after": "Assess safe access routes through the existing roof space",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0843"
+        }
+      ]
+    },
+    {
+      "id": "uc.main-earthing-conductor-route-blocked-to-new-electrode",
+      "path": "knowledge/clusters/electrical-comms/unforeseen.yaml",
+      "before": "Agree a continuous earthing conductor route before an electrode is relocated",
+      "after": "Survey a continuous earthing-conductor route to the proposed electrode position",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0338"
+        },
+        {
+          "seed": "electrical-services-guide.md",
+          "anchor": "## Distribution, protection and access"
+        }
+      ]
+    },
+    {
+      "id": "uc.sprinkler-hangers-do-not-fit-existing-purlins",
+      "path": "knowledge/clusters/fire/unforeseen.yaml",
+      "before": "Match hangers to the surveyed purlin profile before they are ordered",
+      "after": "Check proposed sprinkler hangers against the surveyed purlin profile before ordering",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0222"
+        },
+        {
+          "seed": "as-standards-reference.md",
+          "anchor": "## AS 2118 Series — Automatic Fire Sprinkler Systems"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-bath-lip-below-wall-membrane-line",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Choose a bath whose lip can take the membrane",
+      "after": "Check bath-lip geometry against the required membrane connection",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0146"
+        }
+      ]
+    },
+    {
+      "id": "uc.energy-recovery-wheel-leaks-exhaust-into-outside-air",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Select a wheel arrangement that suits the exhaust",
+      "after": "Assess exhaust carryover through the energy-recovery wheel against the proposed use",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0289"
+        }
+      ]
+    },
+    {
+      "id": "uc.reused-outside-air-intake-has-no-screen",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Fit a screen that can be cleaned",
+      "after": "Inspect the reused outside-air intake for debris protection and cleaning access",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0292"
+        }
+      ]
+    },
+    {
+      "id": "uc.in-wall-cistern-clashes-with-existing-stud",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Open the wall and set the cistern to the framing",
+      "after": "Survey existing wall framing against the proposed in-wall cistern location",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0399"
+        }
+      ]
+    },
+    {
+      "id": "uc.chemical-drain-material-wrong-for-process-chemical",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Match the pipe to the chemical",
+      "after": "Check chemical-drain material compatibility with the process chemicals",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0428"
+        }
+      ]
+    },
+    {
+      "id": "uc.aged-care-conversion-rooms-too-small-for-accessible-bathroom",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Select rooms that can fit the bathroom or enlarge them",
+      "after": "Survey existing rooms against the proposed accessible-bathroom layout",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0566"
+        }
+      ]
+    },
+    {
+      "id": "uc.shared-downpipe-serves-neighbour-and-cannot-be-moved",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Keep the neighbour's roof connected",
+      "after": "Trace the shared downpipe and assess the effect of the proposed work on the neighbour's roof drainage",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0634"
+        }
+      ]
+    },
+    {
+      "id": "uc.subfloor-clearance-too-small-for-new-services",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Choose a route the subfloor can take",
+      "after": "Survey subfloor clearances against the proposed services routes",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0841"
+        }
+      ]
+    },
+    {
+      "id": "uc.negative-pressure-room-loses-pressure-when-adjacent-ceiling-opened",
+      "path": "knowledge/clusters/services-wet-air/unforeseen.yaml",
+      "before": "Keep the room's air path intact while adjacent work proceeds",
+      "after": "Assess the effect of adjacent ceiling work on the negative-pressure room's air path",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0894"
+        }
+      ]
+    },
+    {
+      "id": "uc.post-tension-anchorage-or-prestress-zone-clashes-with-new-fixing",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Set the frame out clear of anchorages before fabrication",
+      "after": "Locate post-tension anchorages and prestress zones against proposed fixing positions",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0022"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0041"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-slab-joints-or-pits-conflict-with-new-forklift-layout",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Set aisles off the joints or detail the joints for the wheels",
+      "after": "Survey existing slab joints and pits against the proposed forklift routes and wheel loads",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0856"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0858"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-boundary-wall-already-moving",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Do not add load to a wall that is already moving",
+      "after": "Assess existing boundary-wall movement and stability before relying on the wall for added load",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0609"
+        }
+      ]
+    },
+    {
+      "id": "uc.neighbour-access-for-positive-side-waterproofing-refused",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Design a negative-side system if the soil face cannot be reached",
+      "after": "Confirm access to the retaining wall and assess feasible waterproofing approaches",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0137"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-timber-floor-cannot-take-added-rated-lining",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Select a system the joists can accept",
+      "after": "Assess the existing timber floor against the proposed lining build-up and required fire or acoustic performance",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0189"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0699"
+        }
+      ]
+    },
+    {
+      "id": "uc.dewatering-volume-exceeds-discharge-permit",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Keep the discharge inside the permit or amend it",
+      "after": "Check anticipated dewatering volume against the permitted discharge",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0820"
+        }
+      ]
+    },
+    {
+      "id": "uc.footing-design-cuts-continuous-contamination-cap",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Detail the footing so the cap remains continuous",
+      "after": "Assess the proposed footing detail against contamination-cap continuity requirements",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0785"
+        }
+      ]
+    },
+    {
+      "id": "uc.soil-permeability-fails-for-on-site-disposal",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Redesign disposal for the soil and the new area",
+      "after": "Assess soil permeability and the proposed on-site disposal demand",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0627"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0632"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0932"
+        }
+      ]
+    },
+    {
+      "id": "uc.stormwater-treatment-does-not-fit-the-land-available",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Fit the treatment to the land available or change the strategy",
+      "after": "Check stormwater-treatment space and performance requirements against available land",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0602"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0775"
+        }
+      ]
+    },
+    {
+      "id": "uc.overland-flow-deeper-than-extension-floor-level",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Set the floor above the flow or redirect the flow on land the project controls",
+      "after": "Assess overland-flow levels and routes against the proposed extension floor level",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0575"
+        }
+      ]
+    },
+    {
+      "id": "uc.construction-controls-block-overland-flow-path",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Keep the flow path open",
+      "after": "Assess the effect of proposed construction controls on the overland-flow path",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0617"
+        }
+      ]
+    },
+    {
+      "id": "uc.neighbour-open-channel-cannot-be-piped",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Keep the flow area",
+      "after": "Confirm the boundary channel function and assess the effect of proposed changes on neighbouring flow",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0620"
+        }
+      ]
+    },
+    {
+      "id": "uc.neighbour-water-arrives-at-boundary-and-must-be-passed",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Keep a path for water that already arrives",
+      "after": "Investigate existing incoming roof drainage and seepage and the effect of the proposed work on their routes",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0576"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0595"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-crossover-or-footpath-grade-prevents-compliant-entry",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Redesign the ramp from the crossover that exists",
+      "after": "Survey crossover and footpath geometry, sight distance and the proposed entry connection",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0591"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0592"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0616"
+        }
+      ]
+    },
+    {
+      "id": "uc.subgrade-proof-roll-fails-before-slab-pour",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Do not pour on a subgrade that fails",
+      "after": "Review proof-roll results and assess subgrade suitability before the slab pour",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0930"
+        }
+      ]
+    },
+    {
+      "id": "uc.dock-yard-level-outside-leveller-range",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Match the yard to the leveller or replace the leveller",
+      "after": "Survey yard levels against the available dock-leveller range",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0606"
+        }
+      ]
+    },
+    {
+      "id": "uc.permitted-crane-cannot-reach-far-corner",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Plan a method that reaches the corner",
+      "after": "Check permitted crane reach against the work locations and assess alternative access methods",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0804"
+        }
+      ]
+    },
+    {
+      "id": "uc.required-pond-or-water-body-cannot-be-filled",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Redesign the levels around it",
+      "after": "Confirm water-body retention requirements and assess the proposed earthworks levels",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0622"
+        }
+      ]
+    },
+    {
+      "id": "uc.existing-building-encroaches-over-boundary",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Resolve the encroachment before the extension builds on it",
+      "after": "Investigate existing encroachments and their implications for the extension or title",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0633"
+        },
+        {
+          "dataset": "batch2",
+          "row": "B2-0790"
+        }
+      ]
+    },
+    {
+      "id": "uc.sewer-protection-slab-does-not-fit-cover",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Redesign the levels or the protection",
+      "after": "Check available sewer cover against the proposed protection-slab thickness",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0778"
+        }
+      ]
+    },
+    {
+      "id": "uc.rail-corridor-owner-restricts-excavation-and-retention",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Design the retention to that limit",
+      "after": "Confirm rail-corridor excavation constraints and assess the proposed retention design",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0783"
+        }
+      ]
+    },
+    {
+      "id": "uc.neighbour-dispute-withdraws-access-to-party-wall",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Do not programme the wall work until access is agreed",
+      "after": "Confirm access arrangements for the proposed party-wall work",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0789"
+        }
+      ]
+    },
+    {
+      "id": "uc.back-propping-through-occupied-floor-refused",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Plan a pour sequence the floor below can accept",
+      "after": "Assess back-propping access and feasible pour sequences above the occupied floor",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0808"
+        }
+      ]
+    },
+    {
+      "id": "uc.balcony-posts-embedded-in-slab-edge-block-membrane-repair",
+      "path": "knowledge/clusters/structure/unforeseen.yaml",
+      "before": "Agree which posts stay before the membrane repair is tendered",
+      "after": "Investigate embedded balcony posts and reinforcement before defining the membrane-repair scope",
+      "sources": [
+        {
+          "dataset": "batch2",
+          "row": "B2-0040"
+        }
+      ]
+    }
+  ]
+}

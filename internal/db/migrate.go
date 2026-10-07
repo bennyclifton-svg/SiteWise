@@ -57,8 +57,13 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		if err != nil {
 			return err
 		}
-		for _, stmt := range splitSQL(string(body)) {
-			if _, err := tx.Exec(ctx, stmt); err != nil {
+		// With no bind arguments pgx uses PostgreSQL's simple protocol. Let the
+		// database parse function bodies, quoted semicolons and comments.
+		if _, err := tx.Exec(ctx, string(body)); err != nil {
+			return fmt.Errorf("%s: %w", version, err)
+		}
+		if version == "015_work_items.sql" {
+			if err := backfillWorkItems(ctx, tx); err != nil {
 				return fmt.Errorf("%s: %w", version, err)
 			}
 		}
@@ -67,22 +72,4 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool) error {
 		}
 	}
 	return tx.Commit(ctx)
-}
-
-func splitSQL(sql string) []string {
-	var lines []string
-	for _, line := range strings.Split(sql, "\n") {
-		if strings.HasPrefix(strings.TrimSpace(line), "--") {
-			continue
-		}
-		lines = append(lines, line)
-	}
-	var out []string
-	for _, part := range strings.Split(strings.Join(lines, "\n"), ";") {
-		stmt := strings.TrimSpace(part)
-		if stmt != "" {
-			out = append(out, stmt)
-		}
-	}
-	return out
 }

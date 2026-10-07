@@ -424,6 +424,9 @@ determinants:
     - site
 - id: existing_building
   label: Work to an existing building
+  profile_group: classification
+  triggers:
+  - '\bexisting building\b'
   value: boolean
   extraction: choice
   status: draft
@@ -1506,6 +1509,8 @@ determinants:
     anchor: '### Batter slopes and retention'
 - id: existing_building_year
   label: Year the existing building was constructed
+  profile_group: site
+  systems: [site.demolition, structure.alterations, structure]
   value: integer
   unit: year
   extraction: pre_parsed
@@ -1520,7 +1525,7 @@ determinants:
     - structure
   triggers:
   - '\byear (?:built|of construction|constructed)\b'
-  - '\b(?:built|constructed) in (?:19|20)\d\d\b'
+  - '\b(?:built|constructed) in \d{4}\b'
   notes: Code compares it with the asbestos (2003) and lead paint (1970) thresholds; Jev never compares
     years. Also read by works consequences (cq.*) and unforeseen conditions (uc.*). Absorbed the K0
     construction_year determinant (owner decision, 4 October 2026).

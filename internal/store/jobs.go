@@ -213,6 +213,10 @@ func (s *Store) ReplacePassages(ctx context.Context, orgID, documentID string, b
 		return err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	projectID, err := lockDocumentProject(ctx, tx, orgID, documentID)
+	if err != nil {
+		return err
+	}
 	q := s.q.WithTx(tx)
 	if err := q.DeleteDocumentPassages(ctx, db.DeleteDocumentPassagesParams{OrgID: orgID, DocumentID: documentID}); err != nil {
 		return err
@@ -227,6 +231,9 @@ func (s *Store) ReplacePassages(ctx context.Context, orgID, documentID string, b
 		}); err != nil {
 			return err
 		}
+	}
+	if err := BumpRevision(ctx, tx, orgID, projectID, "profile_inputs"); err != nil {
+		return err
 	}
 	return tx.Commit(ctx)
 }

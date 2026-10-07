@@ -11,14 +11,26 @@ import (
 // Budget paths recorded by the server itself; the names match
 // bench/budgets.json. Stage paths come from the intake Observer.
 const (
-	pathWholeIntake     = "whole_intake"
-	pathDocumentList    = "project_document_list"
-	pathFieldCorrection = "field_correction"
-	pathInviteAuth      = "project_invite_auth"
-	pathHealthSpeed     = "health_speed"
-	pathProfileRead     = "project_profile_read"
-	pathProfileEdit     = "profile_edit"
-	pathDocumentDelete  = "document_delete"
+	pathWholeIntake       = "whole_intake"
+	pathDocumentList      = "project_document_list"
+	pathFieldCorrection   = "field_correction"
+	pathInviteAuth        = "project_invite_auth"
+	pathHealthSpeed       = "health_speed"
+	pathProfileRead       = "project_profile_read"
+	pathProfileEdit       = "profile_edit"
+	pathWorksRead         = "works_read"
+	pathWorksWrite        = "works_write"
+	pathPackagesRead      = "packages_read"
+	pathGapCheck          = "gap_check"
+	pathDeliveryRead      = "delivery_read"
+	pathDeliveryWrite     = "delivery_write"
+	pathReportRead        = "report_read"
+	pathReportWrite       = "report_write"
+	pathReportAssemble    = "report_assemble"
+	pathPackagesWrite     = "packages_write"
+	pathPackageScopeRead  = "package_scope_read"
+	pathPackageScopeWrite = "package_scope_write"
+	pathDocumentDelete    = "document_delete"
 )
 
 // speedWindow is how many recent observations each path keeps. The speed

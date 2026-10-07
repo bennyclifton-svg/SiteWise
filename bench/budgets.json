@@ -72,9 +72,109 @@
       "p90_us": 150000
     },
     {
+      "name": "spec_home_profile_edit",
+      "p50_us": 50000,
+      "p90_us": 150000
+    },
+    {
       "name": "document_delete",
       "p50_us": 500000,
       "p90_us": 1000000
+    },
+    {
+      "name": "profile_rebuild",
+      "p50_us": 100000,
+      "p90_us": 300000
+    },
+    {
+      "name": "packages_read",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "package_scope_read",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "gap_check",
+      "p50_us": 50000,
+      "p90_us": 150000
+    },
+    {
+      "name": "delivery_read",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "report_read",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "report_write",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "report_assemble",
+      "p50_us": 300000,
+      "p90_us": 1000000
+    },
+    {
+      "name": "delivery_write",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "package_scope_write",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "packages_write",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "works_read",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "proposals_read",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "proposals_accept",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "proposals_dismiss",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "proposals_undo",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "proposals_accept_delivery",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "proposals_undo_delivery",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "works_write",
+      "p50_us": 100000,
+      "p90_us": 250000
     }
   ],
   "note": "Budgets marked where=release are component budgets, judged only on the target VPS (owner decision D-37, 5 October 2026): elsewhere they are measured and reported, not gated. User paths gate everywhere."

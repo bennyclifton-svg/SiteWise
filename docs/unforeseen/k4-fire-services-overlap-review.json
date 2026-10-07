@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "reviewed": false,
+  "source_status": "AI-generated unverified leads; seed guidance is not instrument verification",
+  "runtime_questions_changed": false,
+  "records": [
+    {
+      "id": "fm.plastic-pipe-without-fire-collar",
+      "file": "knowledge/clusters/fire/failure_modes.yaml",
+      "file_sha256": "af0fb5a9f3f08d7c6d02d5f5e2ee90c6b52c06e9ae9f3ff3b17d2a30b8462526",
+      "assessment": "retain_distinct_with_review_limits",
+      "reason": "Retain separately: plastic-pipe protection is narrower than generic hydraulic or duct penetration. B1-0301 does not identify pipe material; source citation does not prove literal plastic-pipe detector coverage.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B1-0301",
+          "#": "301",
+          "Theme": "4. Fire, Life Safety & Compliance",
+          "Unforeseen circumstance": "Fire collar missing at a pipe penetration",
+          "Systems impacted": "Fire compartments ↔ Services",
+          "Foundational relationship": "Every service hole must preserve compartment integrity.",
+          "Building category": "All",
+          "Project type": "All"
+        }
+      ],
+      "current_record": {
+        "id": "fm.plastic-pipe-without-fire-collar",
+        "attaches_to": {
+          "interface": "if.services-penetrate-fire-rated-construction"
+        },
+        "severity": "life-safety",
+        "detector": {
+          "type": "noul",
+          "instructions": "Using `text`, does this passage show or describe a plastic pipe passing through a fire-resisting wall or floor without a fire collar or other tested penetration protection?",
+          "criteria": {
+            "true": "It describes a plastic pipe through fire-rated construction and states or shows no collar or tested protection at that penetration.",
+            "false": "It does not describe such a penetration, or the penetration it describes is protected."
+          },
+          "runs_on": [
+            "fire-passive.penetrations",
+            "hydraulic"
+          ]
+        },
+        "flag_when": true,
+        "status": "draft",
+        "sources": [
+          {
+            "seed": "ncc-reference-guide.md",
+            "anchor": "### SOU Separation and Service Penetrations"
+          },
+          {
+            "dataset": "batch1",
+            "row": "B1-0301"
+          }
+        ]
+      }
+    },
+    {
+      "id": "fm.hydraulic-penetration-of-fire-rated-construction-unsealed",
+      "file": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "file_sha256": "1380c6800731d1a276f51ee6db248b56b805f32726f1e458448446765a837257",
+      "assessment": "retain_distinct_with_review_limits",
+      "reason": "Overlap with plastic-pipe protection is conditional, not identity. B1-0443 and B1-0498 describe crossings without explicitly reporting absent protection. B2-0167 states missing collar and an open penetration, but does not establish plastic pipe material. Attachment to hydraulic.gas is narrower than the detector and its sanitary-riser sources; review attachment separately without changing routing or approved obligations.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B1-0443",
+          "#": "443",
+          "Theme": "5. Hydraulics, Drainage & Gas",
+          "Unforeseen circumstance": "Gas pipe through a fire-rated wall",
+          "Systems impacted": "Gas ↔ Fire compartment",
+          "Foundational relationship": "Gas lines need sealed sleeves.",
+          "Building category": "Com/Res",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0474",
+          "#": "474",
+          "Theme": "5. Hydraulics, Drainage & Gas",
+          "Unforeseen circumstance": "Hydraulic riser lacks fire stopping",
+          "Systems impacted": "Riser ↔ Fire rating",
+          "Foundational relationship": "Risers connect floors and spread fire.",
+          "Building category": "Res/Com",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0498",
+          "#": "498",
+          "Theme": "5. Hydraulics, Drainage & Gas",
+          "Unforeseen circumstance": "Plumbing vents penetrate fire-rated roof spaces",
+          "Systems impacted": "Plumbing ↔ Fire",
+          "Foundational relationship": "Penetrations must be sealed.",
+          "Building category": "Res",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B2-0167",
+          "id": "C-0167",
+          "theme": "Passive fire",
+          "circumstance": "A new hydraulic stack through an existing sole-occupancy wall has no fire collar.",
+          "kind": "workmanship defect",
+          "system_a": "Hydraulic services",
+          "system_b": "Passive fire protection",
+          "specific_element": "fire collar",
+          "trigger": "penetrating a rated wall",
+          "project_types": "refurbishment/fit-out",
+          "building_categories": "residential; commercial",
+          "when_discovered": "handover/defects",
+          "early_warning": "The penetration is open around the pipe.",
+          "derisk": "Collar every service before linings close.",
+          "effect": "compliance; safety",
+          "source": "AS 4072.1"
+        }
+      ],
+      "current_record": {
+        "id": "fm.hydraulic-penetration-of-fire-rated-construction-unsealed",
+        "attaches_to": {
+          "system": "hydraulic.gas"
+        },
+        "severity": "life-safety",
+        "detector": {
+          "type": "noul",
+          "instructions": "Using `text`, does this passage explicitly state a gas pipe, drain vent or hydraulic riser passing through fire-rated construction without a sealed sleeve or fire stopping?",
+          "criteria": {
+            "true": "It explicitly states a gas pipe, drain vent or hydraulic riser passing through fire-rated construction without a sealed sleeve or fire stopping.",
+            "false": "It does not state this; a general mention of the system is insufficient."
+          },
+          "runs_on": [
+            "hydraulic.gas",
+            "hydraulic.sanitary",
+            "fire-passive.penetrations"
+          ]
+        },
+        "flag_when": true,
+        "status": "draft",
+        "sources": [
+          {
+            "dataset": "batch1",
+            "row": "B1-0443"
+          },
+          {
+            "dataset": "batch1",
+            "row": "B1-0474"
+          },
+          {
+            "dataset": "batch1",
+            "row": "B1-0498"
+          },
+          {
+            "seed": "hydraulic-services-guide.md",
+            "anchor": "## Construction, testing and handover"
+          },
+          {
+            "dataset": "batch2",
+            "row": "B2-0167"
+          }
+        ]
+      }
+    },
+    {
+      "id": "fm.duct-through-fire-wall-without-damper",
+      "file": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "file_sha256": "1380c6800731d1a276f51ee6db248b56b805f32726f1e458448446765a837257",
+      "assessment": "retain_distinct_with_review_limits",
+      "reason": "Retain separately from pipe protection. B1-0364 states an exhaust crossing but not absence of protection. B1-0313 states missing damper in a rated duct; source text alone does not resolve whether another tested arrangement applies. Do not treat every crossing or absent damper as a verified breach.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B1-0313",
+          "#": "313",
+          "Theme": "4. Fire, Life Safety & Compliance",
+          "Unforeseen circumstance": "Fire damper missing in a rated duct",
+          "Systems impacted": "HVAC ↔ Fire compartment",
+          "Foundational relationship": "Dampers close ducts at fire walls.",
+          "Building category": "Com",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0364",
+          "#": "364",
+          "Theme": "4. Fire, Life Safety & Compliance",
+          "Unforeseen circumstance": "Exhaust fan duct through a fire wall",
+          "Systems impacted": "Ventilation ↔ Fire wall",
+          "Foundational relationship": "Ducts need rated enclosures.",
+          "Building category": "Res",
+          "Project type": "New build"
+        },
+        {
+          "row_id": "B1-0512",
+          "#": "512",
+          "Theme": "6. Mechanical, Vertical Transport & Acoustics",
+          "Unforeseen circumstance": "Duct crosses a fire wall without a damper",
+          "Systems impacted": "Ductwork ↔ Fire compartment",
+          "Foundational relationship": "Ducts breach compartmentation.",
+          "Building category": "Com",
+          "Project type": "New build"
+        }
+      ],
+      "current_record": {
+        "id": "fm.duct-through-fire-wall-without-damper",
+        "attaches_to": {
+          "system": "mechanical.air-distribution"
+        },
+        "severity": "life-safety",
+        "detector": {
+          "type": "noul",
+          "instructions": "Using `text`, does this passage explicitly state a duct passing through a fire-rated wall or floor without a fire damper or rated enclosure?",
+          "criteria": {
+            "true": "It explicitly states a duct passing through a fire-rated wall or floor without a fire damper or rated enclosure.",
+            "false": "It does not state this; a general mention of the system is insufficient."
+          },
+          "runs_on": [
+            "mechanical.air-distribution",
+            "mechanical.local-exhaust",
+            "fire-passive.penetrations"
+          ]
+        },
+        "flag_when": true,
+        "status": "draft",
+        "sources": [
+          {
+            "dataset": "batch1",
+            "row": "B1-0313"
+          },
+          {
+            "dataset": "batch1",
+            "row": "B1-0364"
+          },
+          {
+            "dataset": "batch1",
+            "row": "B1-0512"
+          },
+          {
+            "seed": "mechanical-services-guide.md",
+            "anchor": "## Construction and delivery controls"
+          }
+        ]
+      }
+    },
+    {
+      "id": "fm.kitchen-exhaust-duct-not-fire-rated",
+      "file": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "file_sha256": "1380c6800731d1a276f51ee6db248b56b805f32726f1e458448446765a837257",
+      "assessment": "retain_distinct_with_review_limits",
+      "reason": "Retain separately: explicit absence of a duct rating differs from missing protection at a compartment crossing. Applicability of a required rating is not established by this unverified source row.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B1-0349",
+          "#": "349",
+          "Theme": "4. Fire, Life Safety & Compliance",
+          "Unforeseen circumstance": "Kitchen exhaust duct not fire-rated",
+          "Systems impacted": "Kitchen ventilation ↔ Fire safety",
+          "Foundational relationship": "Grease fires travel in ducts.",
+          "Building category": "Com",
+          "Project type": "New build/Refurb"
+        }
+      ],
+      "current_record": {
+        "id": "fm.kitchen-exhaust-duct-not-fire-rated",
+        "attaches_to": {
+          "system": "mechanical.local-exhaust"
+        },
+        "severity": "life-safety",
+        "detector": {
+          "type": "noul",
+          "instructions": "Using `text`, does this passage explicitly state a kitchen exhaust duct that is not fire-rated?",
+          "criteria": {
+            "true": "It explicitly states a kitchen exhaust duct that is not fire-rated.",
+            "false": "It does not state this; a general mention of the system is insufficient."
+          },
+          "runs_on": [
+            "mechanical.local-exhaust",
+            "fire-passive.penetrations"
+          ]
+        },
+        "flag_when": true,
+        "status": "draft",
+        "sources": [
+          {
+            "dataset": "batch1",
+            "row": "B1-0349"
+          },
+          {
+            "seed": "mechanical-services-guide.md",
+            "anchor": "### Coordination"
+          }
+        ]
+      }
+    },
+    {
+      "id": "fm.fire-rated-duct-run-longer-than-tested-length",
+      "file": "knowledge/clusters/services-wet-air/failure_modes.yaml",
+      "file_sha256": "1380c6800731d1a276f51ee6db248b56b805f32726f1e458448446765a837257",
+      "assessment": "retain_distinct_with_review_limits",
+      "reason": "Retain separately: a nominally rated duct outside its tested configuration differs from an unrated duct or a bare crossing. Do not adopt the source suggestion to add a damper as a universal kitchen-exhaust remedy; the cited instrument has not been verified.",
+      "owner_review_pending": true,
+      "source_rows": [
+        {
+          "row_id": "B2-0201",
+          "id": "C-0201",
+          "theme": "Passive fire",
+          "circumstance": "A fire-rated duct runs further between compartments than the tested unprotected length allows, and there is no damper.",
+          "kind": "design or coordination error",
+          "system_a": "Mechanical services",
+          "system_b": "Passive fire protection",
+          "specific_element": "fire-rated duct",
+          "trigger": "routing a kitchen exhaust",
+          "project_types": "refurbishment/fit-out",
+          "building_categories": "commercial",
+          "when_discovered": "design",
+          "early_warning": "The duct length between walls exceeds the test.",
+          "derisk": "Add a damper or shorten the run.",
+          "effect": "compliance; cost",
+          "source": "AS 1668"
+        }
+      ],
+      "current_record": {
+        "id": "fm.fire-rated-duct-run-longer-than-tested-length",
+        "attaches_to": {
+          "system": "mechanical.fire-mode-air-systems"
+        },
+        "severity": "compliance",
+        "detector": {
+          "type": "noul",
+          "instructions": "Using `text`, does this passage explicitly state a fire-rated duct run between compartments with no damper, shown longer than the tested unprotected length?",
+          "criteria": {
+            "true": "It explicitly states a fire-rated duct run between compartments with no damper, shown longer than the tested unprotected length.",
+            "false": "It does not state this; a general mention of the system is insufficient."
+          },
+          "runs_on": [
+            "mechanical.fire-mode-air-systems",
+            "fire-passive.penetrations"
+          ]
+        },
+        "flag_when": true,
+        "status": "draft",
+        "notes": "Owner list cites AS 1668; not verified. Owner early warning: The duct length between walls exceeds the test.",
+        "sources": [
+          {
+            "dataset": "batch2",
+            "row": "B2-0201"
+          }
+        ]
+      }
+    }
+  ]
+}

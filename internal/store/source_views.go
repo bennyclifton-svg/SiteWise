@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type SourceCoverage struct {
@@ -19,16 +21,34 @@ type SourceCoverage struct {
 }
 
 func (s *Store) SourceCoverage(ctx context.Context, org, project string) ([]SourceCoverage, error) {
-	rows, err := s.pool.Query(ctx, `SELECT d.id::text,d.filename,COALESCE(ds.pages,0),COALESCE(ds.empty_pages,'{}'),COALESCE(ds.version=$3,false),
- count(p.id),count(p.id) FILTER(WHERE ps.outcome<>'pending'),
- count(p.id) FILTER(WHERE EXISTS(SELECT 1 FROM passage_calls pc WHERE pc.org_id=p.org_id AND pc.passage_id=p.id AND pc.stage='evidence')),
- count(p.id) FILTER(WHERE ps.outcome='needs_mapping'),count(p.id) FILTER(WHERE ps.outcome='mapped'),count(p.id) FILTER(WHERE ps.outcome='background')
- FROM documents d LEFT JOIN document_sources ds ON ds.org_id=d.org_id AND ds.document_id=d.id
- LEFT JOIN passages p ON p.org_id=d.org_id AND p.document_id=d.id
- LEFT JOIN passage_sources ps ON ps.org_id=p.org_id AND ps.passage_id=p.id
+	return sourceCoverage(ctx, s.pool, org, project)
+}
+
+func sourceCoverage(ctx context.Context, q rowQuerier, org, project string) ([]SourceCoverage, error) {
+	// Batch the passage IDs per document so outcome/evidence counts need one
+	// lookup per document rather than a correlated lookup per passage. Replan
+	// for the current upload size instead of retaining an empty-project plan.
+	rows, err := q.Query(ctx, `SELECT d.id::text,d.filename,COALESCE(ds.pages,0),COALESCE(ds.empty_pages,'{}'),COALESCE(ds.version=$3,false),
+ p.units,c.labelled,e.evidence,c.needs_mapping,c.mapped,c.background
+ FROM documents d
+ LEFT JOIN LATERAL (
+ SELECT pages,empty_pages,version FROM document_sources WHERE org_id=d.org_id AND document_id=d.id OFFSET 0
+ ) ds ON true
+ CROSS JOIN LATERAL (
+ SELECT count(*) AS units,array_agg(id) AS ids FROM passages WHERE org_id=d.org_id AND document_id=d.id
+ ) p
+ CROSS JOIN LATERAL (
+ SELECT count(*) FILTER(WHERE outcome<>'pending') AS labelled,
+ count(*) FILTER(WHERE outcome='needs_mapping') AS needs_mapping,
+ count(*) FILTER(WHERE outcome='mapped') AS mapped,count(*) FILTER(WHERE outcome='background') AS background
+ FROM passage_sources WHERE org_id=d.org_id AND passage_id=ANY(p.ids) AND outcome<>'pending'
+ ) c
+ CROSS JOIN LATERAL (
+ SELECT count(*) AS evidence FROM passage_calls WHERE org_id=d.org_id AND passage_id=ANY(p.ids) AND stage='evidence'
+ ) e
  WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid
  AND NOT EXISTS(SELECT 1 FROM supersessions ss WHERE ss.org_id=d.org_id AND ss.prior_document_id=d.id)
- GROUP BY d.id,d.filename,ds.pages,ds.empty_pages,ds.version ORDER BY d.filename,d.id`, org, project, SourceVersion)
+ ORDER BY d.filename,d.id`, pgx.QueryExecModeExec, org, project, SourceVersion)
 	if err != nil {
 		return nil, err
 	}

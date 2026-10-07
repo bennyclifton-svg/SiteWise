@@ -1,5 +1,10 @@
 # K4 owner review packet
 
+Current implementation details and a reproducible inventory are recorded in
+[the 6 October supplement](k4-current-review-status.md). The original review
+questions below remain historical evidence; the supplement does not approve
+their content.
+
 Date: 5 October 2026. Package WP-K4 (`docs/plans/2026-10-04-next-wave-agent-work-packages.md`). This packet supports your review of the unforeseen-conditions work (K4 Pass A and B, batches 1 and 2). It changes no knowledge. The agents' own reports are in `docs/unforeseen/pass-b-reports.md`.
 
 ## 1. Did K4 change existing failure modes? (PRG L260: "Existing `fm.*` records stay as they are")

@@ -1,0 +1,25 @@
+version: 1
+consequences:
+  - id: cq.mechanical-commissioning-plan-review
+    when:
+      works:
+        action: [new, alter, replace, upgrade]
+        system: [mechanical]
+    propose:
+      - kind: hold_point
+        label: Review mechanical commissioning requirements before tender
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: programme
+    status: draft
+    sources:
+      - {seed: mechanical-services-guide.md, anchor: "## Commissioning and handover"}
+    notes: >-
+      A draft planning review of the affected systems, prerequisites, witnessing,
+      acceptance criteria, integrated tests and handover evidence. It does not
+      establish that commissioning is complete or a statutory hold point applies.
+      Acceptance creates an undated delivery milestone; no package, stage,
+      responsible party or physical work target is inferred. Repair, removal and
+      retained scope are outside this bounded trigger. A generic commissioning
+      document mention cannot prove that the changed scope has been covered.

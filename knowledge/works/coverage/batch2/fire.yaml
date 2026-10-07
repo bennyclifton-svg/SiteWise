@@ -95,8 +95,6 @@ rows:
   B2-0902: {records: [fm.livable-housing-path-steeper-than-site-fall]}
   B2-0911: {records: [fm.stair-headroom-lost-under-deepened-beam]}
   B2-0912: {records: [fm.external-accessible-path-grade-exceeds-limit]}
-  B2-0916: {records: [fm.vehicle-clearance-lost-under-structural-beam]}
-  B2-0917: {records: [fm.vehicle-clearance-lost-under-structural-beam]}
   B2-0919: {records: [fm.refuge-undersized-for-final-occupant-load]}
   B2-0934: {records: [uc.street-main-below-fire-flow-demand]}
   B2-0935: {records: [fm.sprinkler-spray-blocked-by-fixed-construction]}

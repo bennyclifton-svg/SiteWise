@@ -3990,3 +3990,30 @@ failure_modes:
   sources:
   - dataset: batch2
     row: B2-0134
+- id: fm.vehicle-clearance-lost-under-structural-beam
+  attaches_to:
+    system: access-egress
+  severity: compliance
+  detector:
+    type: noul
+    instructions: Using `text`, does this passage explicitly report a car-park or loading-dock clearance
+      lost under a beam or transfer beam?
+    criteria:
+      'true': It explicitly reports a car-park or loading-dock clearance lost under a beam or transfer
+        beam.
+      'false': It does not report this defect; silence, a design requirement or a planned test alone is
+        insufficient.
+    runs_on:
+    - access-egress
+    - structure
+  flag_when: true
+  status: draft
+  sources:
+  - dataset: batch2
+    row: B2-0916
+  - dataset: batch2
+    row: B2-0917
+  - seed: fire-life-safety-guide.md
+    anchor: '## Egress and occupant safety'
+  notes: Owner list cites AS 2890; not verified. Vehicle clearance is not a fire or egress matter strictly;
+    placed in this cluster by the triage keyword pass.

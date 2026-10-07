@@ -49,13 +49,20 @@ func TestProfileSnapshotAfterUploadWithStaleStatistics(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	for _, table := range []string{"projects", "project_parts", "profile_facts", "documents", "files", "decisions", "supersessions", "passage_sources", "profile_user_values", "profile_planning_values"} {
+	for _, table := range []string{"projects", "project_parts", "profile_facts", "documents", "files", "decisions", "supersessions", "passages", "passage_sources", "profile_user_values", "profile_planning_values"} {
 		name := pgx.Identifier{table}.Sanitize()
 		run("CREATE TEMP TABLE " + name + " (LIKE public." + name + " INCLUDING ALL) ON COMMIT DROP; ANALYZE " + name)
 	}
+	// A pooled connection may cache its generic plan before any upload.
+	// Empty-table statistics made the old per-fact lateral lookup choose a
+	// full passage_sources scan for every fact after a large import.
+	run("SET LOCAL plan_cache_mode = force_generic_plan")
 	const org = "f3100000-0000-4000-8000-000000000001"
 	const project = "f3100000-0000-4000-8000-000000000002"
 	const site = "f3100000-0000-4000-8000-000000000003"
+	if _, err := readSnapshot(ctx, tx, org, project); err != nil {
+		t.Fatal(err)
+	}
 	run(`INSERT INTO projects(org_id,id,name,site_id) VALUES ($1,$2,'Snapshot fixture',$3)`, org, project, site)
 	run(`INSERT INTO project_parts(org_id,id,site_id,created_by_project_id,label,kind) VALUES ($1,gen_random_uuid(),$3,$2,'Whole project','whole')`, org, project, site)
 	run(`INSERT INTO files(org_id,id,project_id,sha256,byte_size,media_type)
@@ -64,13 +71,22 @@ func TestProfileSnapshotAfterUploadWithStaleStatistics(t *testing.T) {
  SELECT $1,md5('doc'||n)::uuid,$2,md5('file'||n)::uuid,'plan.pdf','filed','A-'||n,'P1','skip' FROM generate_series(1,1000) n`, org, project)
 	run(`INSERT INTO profile_facts(org_id,id,project_id,document_id,passage_id,question_id,value,decided_by,question_version)
  SELECT $1,gen_random_uuid(),$2,md5('doc1')::uuid,md5('passage'||n)::uuid,'det.test.'||n,'included','rule','test' FROM generate_series(1,1000) n`, org, project)
+	run(`INSERT INTO passages(org_id,id,document_id,ordinal,body)
+ SELECT $1,md5('passage'||n)::uuid,md5('doc1')::uuid,n,'Source text' FROM generate_series(1,1000) n`, org)
+	run(`INSERT INTO passages(org_id,id,document_id,ordinal,body)
+ SELECT $1,md5('passage'||n)::uuid,md5('doc2')::uuid,n,'Other source text' FROM generate_series(2001,8000) n`, org)
 	run(`INSERT INTO passage_sources(org_id,passage_id,page,location,section,start_offset,end_offset)
  SELECT $1,md5('passage'||n)::uuid,7,'Sheet A','Fire',10,20 FROM generate_series(1,999) n`, org)
+	run(`INSERT INTO passage_sources(org_id,passage_id,page,location,section,start_offset,end_offset)
+ SELECT $1,md5('passage'||n)::uuid,7,'Sheet A','Fire',10,20 FROM generate_series(2001,8000) n`, org)
 	run(`INSERT INTO decisions(org_id,id,document_id,field,value,band,decided_by) VALUES ($1,gen_random_uuid(),md5('doc1')::uuid,'kind','drawing','green','rule')`, org)
 	run(`INSERT INTO supersessions(org_id,document_id,prior_document_id) VALUES ($1,md5('doc2')::uuid,md5('doc1')::uuid)`, org)
 	// The same source IDs may exist in another org; ID alone is not authority.
 	run(`INSERT INTO passage_sources(org_id,passage_id,page,section)
 SELECT 'f3100000-0000-4000-8000-000000000099',passage_id,99,'Foreign' FROM passage_sources`)
+	// Autovacuum can refresh location statistics before passage statistics.
+	// The ownership join must remain bounded in that mixed-statistics state.
+	run("ANALYZE passage_sources")
 	var samples []time.Duration
 	for i := 0; i < 20; i++ {
 		start := time.Now()

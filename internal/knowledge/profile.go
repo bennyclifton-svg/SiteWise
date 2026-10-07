@@ -204,7 +204,7 @@ func (c *Catalog) loadDeterminants(path string) error {
 		Version      int           `yaml:"version"`
 		Determinants []Determinant `yaml:"determinants"`
 	}
-	if err := unmarshal(path, &file); err != nil {
+	if err := c.unmarshal(path, &file); err != nil {
 		return err
 	}
 	for i := range file.Determinants {
@@ -228,7 +228,7 @@ func (c *Catalog) loadProfile(dir string) error {
 	var tax struct {
 		Taxonomy `yaml:",inline"`
 	}
-	if err := unmarshal(filepath.Join(dir, "taxonomy.yaml"), &tax); err != nil {
+	if err := c.unmarshal(filepath.Join(dir, "taxonomy.yaml"), &tax); err != nil {
 		return err
 	}
 	for ci := range tax.BuildingClasses {
@@ -249,7 +249,7 @@ func (c *Catalog) loadProfile(dir string) error {
 	var facts struct {
 		Facts []Determinant `yaml:"facts"`
 	}
-	if err := unmarshal(filepath.Join(dir, "project_facts.yaml"), &facts); err != nil {
+	if err := c.unmarshal(filepath.Join(dir, "project_facts.yaml"), &facts); err != nil {
 		return err
 	}
 	for i := range facts.Facts {
@@ -260,7 +260,7 @@ func (c *Catalog) loadProfile(dir string) error {
 	c.profile.facts = facts.Facts
 
 	var scope scopeDefaults
-	if err := unmarshal(filepath.Join(dir, "scope_defaults.yaml"), &scope); err != nil {
+	if err := c.unmarshal(filepath.Join(dir, "scope_defaults.yaml"), &scope); err != nil {
 		return err
 	}
 	check := func(where string, ids []string) error {

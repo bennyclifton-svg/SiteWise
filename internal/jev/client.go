@@ -311,6 +311,9 @@ func (c *Client) Ask(ctx context.Context, call Call) (Result, error) {
 	if err := validateCall(&call); err != nil {
 		return Result{}, err
 	}
+	if _, err := CheckRequestSize(call); err != nil {
+		return Result{}, err
+	}
 	payload, err := json.Marshal(outbound{
 		State:     call.State,
 		Model:     c.model,
@@ -373,12 +376,14 @@ func (c *Client) attempt(parent context.Context, payload []byte, call Call) (Res
 			c.logCall(slog.LevelWarn, call, status, latency, Usage{}, nil, nil, errorClass(err))
 			return Result{}, err, false
 		}
-		settled = true
-		c.breaker.Fail(c.now())
 		c.logCall(slog.LevelWarn, call, status, latency, Usage{}, nil, nil, errorClass(err))
 		if parent.Err() != nil {
+			// The caller gave up; that says nothing about Jev's health.
+			// The deferred Abandon frees a half-open probe slot.
 			return Result{}, err, false
 		}
+		settled = true
+		c.breaker.Fail(c.now())
 		return Result{}, err, call.Priority == PriorityBackground
 	}
 	settled = true
@@ -798,6 +803,8 @@ func errorClass(err error) string {
 		return "body_limit"
 	case errors.Is(err, ErrUnauthorized):
 		return "unauthorized"
+	case errors.Is(err, ErrRequestLimit):
+		return "request_limit"
 	case errors.Is(err, ErrRequest):
 		return "request"
 	case errors.Is(err, ErrBadResponse):

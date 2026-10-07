@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T11:55:23.5168375Z",
+  "target": "dev",
+  "release": false,
+  "host": {
+    "os": "windows",
+    "arch": "amd64",
+    "cpus": 12,
+    "gomaxprocs": 12,
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "go": "go1.27.1"
+  },
+  "jev": "replayed-recorded-latency",
+  "model": "jev-1.13.0",
+  "workload": {
+    "files_per_round": 20,
+    "rounds": 2,
+    "concurrency": 4,
+    "background_jev_callers": 2,
+    "background_jev_calls": 32,
+    "degrade_percent": 10,
+    "stalled_jev_requests": 11,
+    "cold_round": "1"
+  },
+  "outcomes": {
+    "filing": 38,
+    "grey_filings": 4,
+    "not_filed": 2
+  },
+  "paths": {
+    "candidate_harvesting": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 999,
+      "max_us": 2000,
+      "pass": true
+    },
+    "commit_sse_enqueue": {
+      "n": 38,
+      "p50_us": 3732,
+      "p90_us": 11696,
+      "max_us": 29337,
+      "pass": true
+    },
+    "delivery_read": {
+      "n": 40,
+      "p50_us": 1129,
+      "p90_us": 1797,
+      "max_us": 2163,
+      "pass": true
+    },
+    "delivery_write": {
+      "n": 80,
+      "p50_us": 1888,
+      "p90_us": 2306,
+      "max_us": 9168,
+      "pass": true
+    },
+    "deterministic_field_rules": {
+      "n": 38,
+      "p50_us": 0,
+      "p90_us": 1999,
+      "max_us": 2003,
+      "pass": false
+    },
+    "document_delete": {
+      "n": 40,
+      "p50_us": 13344,
+      "p90_us": 37483,
+      "max_us": 42161,
+      "pass": true
+    },
+    "field_correction": {
+      "n": 40,
+      "p50_us": 5999,
+      "p90_us": 8001,
+      "max_us": 31517,
+      "pass": true
+    },
+    "gap_check": {
+      "n": 40,
+      "p50_us": 1588,
+      "p90_us": 2019,
+      "max_us": 2311,
+      "pass": true
+    },
+    "health_speed": {
+      "n": 40,
+      "p50_us": 528,
+      "p90_us": 659,
+      "max_us": 1721,
+      "pass": true
+    },
+    "identity_text_extraction": {
+      "n": 40,
+      "p50_us": 113951,
+      "p90_us": 307363,
+      "max_us": 384007,
+      "pass": false
+    },
+    "jev_admission_request": {
+      "n": 38,
+      "p50_us": 246043,
+      "p90_us": 1200086,
+      "max_us": 1200903,
+      "pass": false
+    },
+    "package_scope_read": {
+      "n": 40,
+      "p50_us": 1047,
+      "p90_us": 1108,
+      "max_us": 1667,
+      "pass": true
+    },
+    "package_scope_write": {
+      "n": 120,
+      "p50_us": 2201,
+      "p90_us": 2361,
+      "max_us": 3454,
+      "pass": true
+    },
+    "packages_read": {
+      "n": 40,
+      "p50_us": 3282,
+      "p90_us": 5036,
+      "max_us": 5873,
+      "pass": true
+    },
+    "packages_write": {
+      "n": 161,
+      "p50_us": 2115,
+      "p90_us": 2415,
+      "max_us": 12224,
+      "pass": true
+    },
+    "profile_edit": {
+      "n": 162,
+      "p50_us": 27953,
+      "p90_us": 51444,
+      "max_us": 58919,
+      "pass": true
+    },
+    "profile_rebuild": {
+      "n": 40,
+      "p50_us": 42314,
+      "p90_us": 44317,
+      "max_us": 45679,
+      "pass": true
+    },
+    "project_document_list": {
+      "n": 40,
+      "p50_us": 2219,
+      "p90_us": 2910,
+      "max_us": 5565,
+      "pass": true
+    },
+    "project_invite_auth": {
+      "n": 47,
+      "p50_us": 1083,
+      "p90_us": 3318,
+      "max_us": 6162,
+      "pass": true
+    },
+    "project_profile_read": {
+      "n": 80,
+      "p50_us": 1257,
+      "p90_us": 10685,
+      "max_us": 12369,
+      "pass": true
+    },
+    "report_assemble": {
+      "n": 40,
+      "p50_us": 8441,
+      "p90_us": 9931,
+      "max_us": 30238,
+      "pass": true
+    },
+    "report_read": {
+      "n": 80,
+      "p50_us": 1162,
+      "p90_us": 4484,
+      "max_us": 5658,
+      "pass": true
+    },
+    "report_write": {
+      "n": 120,
+      "p50_us": 5222,
+      "p90_us": 5732,
+      "max_us": 12888,
+      "pass": true
+    },
+    "spec_home_profile_edit": {
+      "n": 40,
+      "p50_us": 65185,
+      "p90_us": 67167,
+      "max_us": 132272,
+      "pass": false
+    },
+    "sse_reconnect": {
+      "n": 40,
+      "p50_us": 531,
+      "p90_us": 1060,
+      "max_us": 1194,
+      "pass": true
+    },
+    "whole_intake": {
+      "n": 40,
+      "p50_us": 478002,
+      "p90_us": 740784,
+      "max_us": 1521096,
+      "pass": true
+    },
+    "works_read": {
+      "n": 40,
+      "p50_us": 1043,
+      "p90_us": 1940,
+      "max_us": 2402,
+      "pass": true
+    },
+    "works_write": {
+      "n": 80,
+      "p50_us": 7385,
+      "p90_us": 8715,
+      "max_us": 19677,
+      "pass": true
+    }
+  },
+  "whole_intake_by_round": {
+    "1": {
+      "n": 20,
+      "p50_us": 460077,
+      "p90_us": 660643,
+      "max_us": 1521096
+    },
+    "2": {
+      "n": 20,
+      "p50_us": 485665,
+      "p90_us": 1316258,
+      "max_us": 1493816
+    }
+  },
+  "missing_paths": null,
+  "gate": {
+    "code": 1,
+    "report": "identity_text_extraction: p50 113951us p90 307363us over 80000/250000us (reported; judged on the target VPS)\ndeterministic_field_rules: p50 0us p90 1999us over 1000/1000us (reported; judged on the target VPS)\njev_admission_request: p50 246043us p90 1200086us over 350000/800000us (reported; judged on the target VPS)\nspec_home_profile_edit: p50 65185us exceeds 50000us\n"
+  },
+  "notes": [
+    "whole_intake runs from the final upload byte read by the client transport to the filing's terminal event on an open SSE stream, over loopback.",
+    "Stage paths are timed inside the same filings by the intake Observer and include failed and degraded runs.",
+    "Round 1 is the first filing of each file in a process with PDFium and the Jev connection already warmed, as serve does at startup.",
+    "health_speed alternates the owner-only /api/health and /api/speed views after the filings, with the background queue still holding their stages.",
+    "Jev latency is the recorded provider latency replayed per document, not a live measurement. Release evidence is a -live run on the intended VPS.",
+    "Spec Home fixture SHA-256 858ce589eeea6cf3dde011d9e393f4cb2428e1dc8f512bc15fed0c67800ee61e: 38 documents, 1153 facts, 6742 passages; 40 full rebuilds and edits."
+  ]
+}

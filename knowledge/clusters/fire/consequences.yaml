@@ -1,0 +1,30 @@
+version: 1
+consequences:
+  - id: cq.existing-fire-measures-approval-basis-review
+    when:
+      all:
+        - works:
+            action: [alter, replace, upgrade, remove]
+            system: [fire-active, fire-passive]
+        - {det: existing_building, is: true}
+    propose:
+      - kind: approval
+        label: Review the existing fire strategy and confirm approval implications of the changes
+    signals: []
+    governed_by: []
+    clause_verified: false
+    severity: life-safety
+    status: draft
+    sources:
+      - {seed: fire-life-safety-guide.md, anchor: "## Compliance strategy and responsibility"}
+      - {seed: fire-life-safety-guide.md, anchor: "### Inception, site and existing information [inception]"}
+    notes: >-
+      Draft planning review, not a determination that a statutory approval or
+      whole-building upgrade is required. Review the existing strategy, fire
+      safety schedule, orders and performance solutions before changing the
+      measures. The approval kind creates a project delivery review only when
+      accepted; it does not grant approval or appoint a certifier. No authority,
+      package, stage or physical work target is inferred from this label.
+      Like-for-like repair, retained systems and new-building work are outside
+      this bounded trigger. A stated certificate alone does not address the
+      effect of these changes, so no generic document-existence signal suppresses it.

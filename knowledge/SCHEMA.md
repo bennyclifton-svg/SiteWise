@@ -379,12 +379,17 @@ boundary cases, as for systems. Top-level keys: `actions` (the eight: new,
 replace, upgrade, alter, repair, remove, retain, investigate), `answers`,
 `work_type_defaults` and `existing_conditions`.
 
+Every action requires an explicit boolean `needs_design`. The gap check uses
+this planning allocation rule for accepted non-group work items (D-09/D-33);
+it does not establish professional qualification or statutory approval.
+
 ```yaml
 version: 1
 status: draft
 sources: [{design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "### Actions"}]
 actions:
   - id: upgrade
+    needs_design: true
     describes: The works increase the capacity or performance of an existing one, ...
     excludes: Like-for-like renewal is replace.
 answers:                    # extra answers of the Jev choice sys.<leaf>.action
@@ -678,6 +683,27 @@ clauses:
     status: draft
     sources: [...]
 ```
+
+### Report templates (`reports/templates.yaml`)
+
+Versioned structure for the shared deterministic assembler. Templates contain
+section labels and references to versioned clause fragments, never generated
+wording or executable expressions. Only reviewed clauses can establish standard
+obligations; a draft template or fragment keeps the assembled report provisional.
+
+- File: `version: 1`, `templates: [...]`.
+- Each template has `id: tpl.<slug>`, positive integer `version`, `kind`
+  (`rfp`, `rft`, `pmp`), `status` and `sources`.
+- `sections` is an ordered, non-empty list. Each section has a unique stable
+  snake-case `id`, a non-empty `title`, boolean `essential`, and `clauses`.
+- `clauses` is an ordered list of `{id: cl.<slug>, version: <positive integer>}`.
+  The clause must exist at that version, list the template's output kind, and
+  name the same section. Empty lists permit sections populated from shared
+  project records; they do not permit invented prose or facts.
+- Section IDs are preserved by report edits and refreshes. Essential sections
+  cannot disappear to fit a page limit. Renaming a label does not change its ID.
+- Any structural or wording-reference change increments the template version.
+  Issued reports retain the template and clause versions in their snapshots.
 
 ### Benchmarks (`costs/benchmarks.yaml`)
 
