@@ -55,3 +55,7 @@ PDF writer and bundled Go fonts, preserving deterministic offline rendering in
 the existing single binary without a browser service or host font dependency.
 
 Final frozen-code tools/check.ps1 rerun: all Go packages, OCR, all 29 browser cases (clean exit), and intake replay pass; the command exits 1 at stale source profile replay. Hale separately exits 1 stale. The complete prescribed benchmark passes all local user paths; see [performance evidence](2026-10-07-integrated-performance.md). Final restore recheck passes in 5.864 s (dump/restore 4.17 s), preserving the same 96 digests and 115 FKs. No code changed afterward; two test files were gofmt-normalized only.
+
+## Publication
+
+M2/M3 implementation published on `main` and GitHub in [`7445288`](https://github.com/bennyclifton-svg/SiteWise/commit/74452883d545fec72e561184ecada8c7f3da6cf4). Validation below applies to that code; subsequent publication notes change documentation only.

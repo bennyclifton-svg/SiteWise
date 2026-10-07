@@ -85,7 +85,7 @@ The owner (Benny Clifton) granted these in conversation on 5 October 2026, while
 
 The current owner-facing progress page is [NEXT-WAVE-STATUS.md](NEXT-WAVE-STATUS.md).
 The previous checkpoint was committed and pushed as `d97e6ee` and `2edc077`.
-M2/M3 product behavior is implemented locally: split/retire, automatic proposals,
+M2/M3 product behavior is committed and pushed in `7445288`: split/retire, automatic proposals,
 evidence signals, exact-money costs and reviewed-benchmark selection, dependency
 cycles, frozen issue/export, RFT/PMP, changes since issue and the corresponding UI.
 The [validation checkpoint](../evidence/2026-10-07-m2-m3-validation.md) records

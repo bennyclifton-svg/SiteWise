@@ -702,3 +702,5 @@ The integration lead appends evidence updates here; the newest dated evidence ov
 | 2026-10-05 (WP-13) | NW-REQ-008, 185 | Blocked (libraries) | Starting values are offered only from a `reviewed` registry; `planning_keys.yaml` is draft, so none are proposed. |
 
 | 2026-10-05 (F31) | NW-REQ-272 (profile edit path), 314 (standing regression gate) | Prerequisite defect fixed; WP-14 not implemented | Exact-ID snapshot lookups and bounded profile response queries; single-statement provenance preserved under reprocessing. Full local gate passed and independent review resolved; see `docs/evidence/2026-10-05-f31-profile-snapshot.md` and `bench/results/latest.json`. No release verification claimed. |
+
+M2/M3 implementation published on `main` and GitHub in [`7445288`](https://github.com/bennyclifton-svg/SiteWise/commit/74452883d545fec72e561184ecada8c7f3da6cf4). Validation below applies to that code; subsequent publication notes change documentation only.
