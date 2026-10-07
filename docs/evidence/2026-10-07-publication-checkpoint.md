@@ -25,7 +25,9 @@ See the implementation plan's current owner direction and Petersham scope.
 - Source and Hale profile replays: fail, stale bankstown-page9 and
   hale-description recordings. No private passages were transmitted to refresh
   them in this task.
-- Playwright: all 22 test cases reported passing.
+- Playwright: all 22 test cases reported passing. The runner did not exit after
+  the final case and was interrupted during teardown; no clean suite-exit pass
+  is claimed.
 - OCR installed-runtime gate: passed; filing p50/p90 3265/4282 ms and detail
   recovery 3251/4074 ms against 10000/20000 ms, including polling allowance.
 - Intake benchmark: filing p50/p90 420.1/1022.1 ms against 1000/2000 ms.
