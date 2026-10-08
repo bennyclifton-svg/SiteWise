@@ -50,6 +50,40 @@ const KIND_LABELS: Record<string, string> = {
   unknown: "unclassified documents",
 };
 
+// The two rows a user reads first: the building, then the site. Pairs that
+// look alike but follow different definitions (building class and NCC class,
+// storeys and NCC rise in storeys, GFA and NCC floor area) sit side by side.
+// A list entry names alternatives because scale fields differ by building class.
+const GLANCE: string[][][] = [
+  [["hdr.building_class"], ["hdr.subclass"], ["det.ncc_class"], ["hdr.work_type"],
+    ["hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels"], ["det.rise_in_storeys"],
+    ["hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm"], ["det.floor_area"]],
+  [["det.state"], ["det.climate_zone"], ["det.wind_class"], ["det.bal"], ["det.site_class"], ["det.flood_hazard"], ["det.heritage_status"]],
+];
+
+// Compliance groups whose fields live in the Project section instead.
+const LIFTED_GROUPS = ["classification", "site"];
+
+function arrange(data: ProfileData) {
+  const whole = data.parts.find((p) => p.kind === "whole")?.id;
+  const lifted = data.compliance.filter((g) => LIFTED_GROUPS.includes(g.group)).flatMap((g) => g.rows);
+  const pool = [...data.header, ...lifted.filter((f) => !whole || f.part_id === whole)];
+  const used = new Set<ProfileField>();
+  const glance = GLANCE.map((row) =>
+    row.flatMap((keys) => {
+      const f = keys.map((k) => pool.find((x) => x.key === k)).find(Boolean);
+      if (!f) return [];
+      used.add(f);
+      return [f];
+    }),
+  );
+  return {
+    glance,
+    moreHeader: data.header.filter((f) => !used.has(f)),
+    moreCompliance: lifted.filter((f) => !used.has(f)),
+  };
+}
+
 export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, view = "all" }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
@@ -139,6 +173,7 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
   const builtAt = data.built_at ? new Date(data.built_at) : null;
   const complianceRows = data.compliance.flatMap((g) => g.rows);
   const relevantCount = complianceRows.filter((f) => f.relevant !== false).length;
+  const { glance, moreHeader, moreCompliance } = arrange(data);
 
   return (
     <div className="profile">
@@ -198,16 +233,21 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
 
       <section className="pf-section" aria-labelledby="pf-project" hidden={view === "systems"}>
         <h2 id="pf-project">Project</h2>
-        <div className="pf-grid">
-          {data.header.map((f) => (
-            <FieldRow key={f.key} field={f} onSet={set} onJump={onJump} />
-          ))}
-        </div>
+        {glance.map((row, i) => (
+          <div className="pf-glance" key={i} aria-label={i === 0 ? "The building" : "The site"} role="group">
+            {row.map((f) => (
+              <FieldRow key={f.key} field={f} onSet={set} onJump={onJump} compact />
+            ))}
+          </div>
+        ))}
         <details className="pf-more">
-          <summary>Approvals and contract</summary>
+          <summary>More detail</summary>
           <div className="pf-grid">
-            {data.facts.map((f) => (
+            {[...moreHeader, ...data.facts].map((f) => (
               <FieldRow key={f.key} field={f} onSet={set} onJump={onJump} />
+            ))}
+            {moreCompliance.filter((f) => allCompliance || f.relevant !== false).map((f) => (
+              <FieldRow key={f.key + f.part_id} field={f} onSet={set} onJump={onJump} parts={data.parts} />
             ))}
           </div>
         </details>
@@ -237,7 +277,7 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
             {allCompliance ? `Showing all ${complianceRows.length} compliance items.` : `Showing ${relevantCount} of ${complianceRows.length} compliance items for this scope.`}
           </p>
         )}
-        {data.compliance.map((g) => {
+        {data.compliance.filter((g) => !LIFTED_GROUPS.includes(g.group)).map((g) => {
           const rows = g.rows.filter((f) => allCompliance || f.relevant !== false);
           return rows.length === 0 ? null : (
             <div key={g.group}>
@@ -350,11 +390,14 @@ function FieldRow({
   onSet,
   onJump,
   parts,
+  compact,
 }: {
   field: ProfileField;
   onSet: Setter;
   onJump: (id: string) => void;
   parts?: ProfileData["parts"];
+  /** A glance cell: label over value, no "usually in" hint. */
+  compact?: boolean;
 }) {
   const [draft, setDraft] = useState(field.value);
   useEffect(() => setDraft(field.value), [field.value]);
@@ -424,7 +467,7 @@ function FieldRow({
             Reset
           </button>
         )}
-        {!field.value && !derived && field.band !== "user" && field.stated_in && field.stated_in.length > 0 && (
+        {!compact && !field.value && !derived && field.band !== "user" && field.stated_in && field.stated_in.length > 0 && (
           <span className="pf-hint">Usually in: {field.stated_in.join(", ")}</span>
         )}
       </div>

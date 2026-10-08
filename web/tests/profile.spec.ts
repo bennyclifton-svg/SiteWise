@@ -113,7 +113,8 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await expect(page.getByRole("complementary", { name: "Document register" })).toContainText("Documents");
 
   // Nothing read yet: compliance says where a value is usually stated.
-  await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
+  await page.getByText("More detail", { exact: true }).click();
+  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
 
   await page.getByLabel("Building category", { exact: true }).selectOption("residential");
   await page.getByLabel("Building class", { exact: true }).selectOption("house");
@@ -126,12 +127,12 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   const water = hydraulic.locator("li", { hasText: "Heated water" });
   await expect(water.getByRole("checkbox", { name: "Heated water" })).toBeChecked();
   await expect(water.locator(".pf-scope-origin")).toHaveText("Typical");
+  await water.getByRole("button", { name: "Details for Heated water" }).click();
   await expect(water.locator(".pf-sys")).toBeVisible();
 
   // The user's word: take it out of scope; it survives a reload.
   await water.getByRole("checkbox", { name: "Heated water" }).uncheck();
   await expect(water.locator(".pf-scope-origin")).toHaveText("Removed by you");
-  await expect(water.locator(".pf-sys")).toHaveCount(0);
   await page.reload();
   const again = page.getByRole("region", { name: "Scope of works" }).locator(".pf-scope-group", { hasText: "Hydraulic" });
   await again.locator("summary").click();
@@ -246,21 +247,25 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   const scope = page.getByRole("region", { name: "Scope of works" });
   await expect(scope).toContainText("0 systems");
   // Nothing in scope yet: no basis to hide a compliance row.
-  await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
+  await page.getByText("More detail", { exact: true }).click();
+  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
 
   const fire = scope.locator(".pf-scope-group", { hasText: "Active fire protection" });
   await fire.locator("summary").click();
-  await fire.getByLabel("Automatic fire sprinklers").check();
+  await fire.getByRole("checkbox", { name: "Automatic fire sprinklers" }).check();
   await expect(scope).toContainText("1 system");
   await expect(fire.locator(".pf-scope-origin")).toHaveText("You");
 
   // The checklist and compliance follow the scope.
-  await expect(fire.locator("li", { hasText: "Automatic fire sprinklers" }).locator(".pf-sys")).toBeVisible();
+  const sprinklers = fire.locator("li", { hasText: "Automatic fire sprinklers" });
+  await expect(sprinklers.locator(".pf-scope-provider")).toHaveText("Contractor");
+  await sprinklers.getByRole("button", { name: "Details for Automatic fire sprinklers" }).click();
+  await expect(sprinklers.locator(".pf-sys")).toBeVisible();
   await expect(page.getByText(/Showing \d+ of \d+ compliance items for this scope/)).toBeVisible();
   await expect(page.getByLabel("Top of storage height")).toBeVisible();
-  await expect(page.getByText("Usually in: Geotechnical report")).toBeHidden();
+  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeHidden();
   await page.getByLabel("Show everything").check();
-  await expect(page.getByText("Usually in: Geotechnical report")).toBeVisible();
+  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
   await page.getByLabel("Show everything").uncheck();
 
   // A preset adds a set at once; Reset hands every choice back.

@@ -11,8 +11,20 @@ import type { Profile, ScopeChoice, SystemRow } from "./profileApi";
 interface Props {
   data: Profile;
   onSet: (systems: Record<string, ScopeChoice>) => Promise<void>;
-  /** Provider, evidence and note for a system in scope or in conflict. */
+  /** Provider, evidence and note for a system, shown when its row opens. */
   detail: (row: SystemRow) => ReactNode;
+}
+
+const PROVIDERS: Record<string, string> = { contractor: "Contractor", owner: "Owner", others: "Others" };
+
+// What the documents say about a system, as one colour: included, not
+// included, disagreeing, or nothing read (a typical default or silence).
+function evidence(r: SystemRow): { state: string; label: string } {
+  if (r.presence.band === "red") return { state: "mixed", label: "Documents disagree" };
+  if (saysOut(r)) return { state: "out", label: "Documents say not included" };
+  if (r.presence.value === "included" && !["", "blank", "suggested"].includes(r.presence.band))
+    return { state: "in", label: r.presence.band === "user" ? "You say included" : "Documents say included" };
+  return { state: "none", label: "No document evidence" };
 }
 
 // Evidence, not a typical default or a blank reading, that the completed
@@ -31,6 +43,7 @@ export function ScopePicker({ data, onSet, detail }: Props) {
   // Groups open themselves when something needs checking, until the user
   // opens or closes them.
   const [opened, setOpened] = useState<Record<string, boolean>>({});
+  const [expanded, setExpanded] = useState<string | null>(null);
   // A tick shows at once; the rebuilt profile then settles it.
   const [pending, setPending] = useState<Record<string, boolean>>({});
   const isIn = (r: SystemRow) => pending[r.leaf] ?? r.in_scope;
@@ -134,34 +147,62 @@ export function ScopePicker({ data, onSet, detail }: Props) {
                 </span>
               </summary>
               <ul aria-labelledby={groupId}>
-                {g.rows.map((r) => (
-                  <li key={r.leaf}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={isIn(r)}
-                        onChange={() => run({ [r.leaf]: isIn(r) ? "out" : "in" })}
-                      />
-                      {r.label}
-                    </label>
-                    {r.scope_origin && (
-                      <span className="pf-scope-origin" data-origin={r.scope_origin}>
-                        {r.in_scope || r.scope_origin !== "user" ? ORIGINS[r.scope_origin] : "Removed by you"}
-                      </span>
-                    )}
-                    {r.scope_note && <span className="pf-scope-note">{r.scope_note}</span>}
-                    {saysOut(r) && !isIn(r) && <span className="pf-scope-out">Not included</span>}
-                    {saysOut(r) && isIn(r) && (
-                      <span className="pf-scope-check">
-                        Documents say not included{" "}
-                        <button type="button" className="cell-link" disabled={busy} onClick={() => run({ [r.leaf]: "out" })}>
-                          Remove from scope
-                        </button>
-                      </span>
-                    )}
-                    {(isIn(r) || r.presence.band === "red") && detail(r)}
-                  </li>
-                ))}
+                {g.rows.map((r) => {
+                  const ev = evidence(r);
+                  const provider = PROVIDERS[r.provider.value];
+                  const open = expanded === r.leaf;
+                  return (
+                    <li key={r.leaf} data-open={open ? "true" : undefined}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={isIn(r)}
+                          onChange={() => run({ [r.leaf]: isIn(r) ? "out" : "in" })}
+                        />
+                        {r.label}
+                      </label>
+                      {r.scope_origin && (
+                        <span className="pf-scope-origin" data-origin={r.scope_origin}>
+                          {r.in_scope || r.scope_origin !== "user" ? ORIGINS[r.scope_origin] : "Removed by you"}
+                        </span>
+                      )}
+                      {r.scope_note && <span className="pf-scope-note">{r.scope_note}</span>}
+                      {saysOut(r) && isIn(r) && (
+                        <span className="pf-scope-check">
+                          Documents say not included{" "}
+                          <button type="button" className="cell-link" disabled={busy} onClick={() => run({ [r.leaf]: "out" })}>
+                            Remove from scope
+                          </button>
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        className="pf-scope-more"
+                        aria-expanded={open}
+                        aria-label={`Details for ${r.label}`}
+                        onClick={() => setExpanded(open ? null : r.leaf)}
+                      >
+                        <span className="pf-ev" data-ev={ev.state} title={ev.label} />
+                        <span className="sr-only">{ev.label}</span>
+                        {saysOut(r) && !isIn(r) ? (
+                          <span className="pf-scope-out">Not included</span>
+                        ) : provider ? (
+                          <span className="pf-scope-provider" data-provider={r.provider.value}>{provider}</span>
+                        ) : (
+                          isIn(r) && (
+                            // Most works are the contractor's; shown, not stored, until a document or the user says.
+                            <span className="pf-scope-provider" data-default="true" title="Default: no document names who provides this">
+                              Contractor
+                            </span>
+                          )
+                        )}
+                        {r.presence.sources.length > 0 && <span className="pf-scope-count">{r.presence.sources.length}</span>}
+                        <span aria-hidden="true" className="pf-scope-caret">{open ? "▾" : "▸"}</span>
+                      </button>
+                      {open && detail(r)}
+                    </li>
+                  );
+                })}
               </ul>
             </details>
           );

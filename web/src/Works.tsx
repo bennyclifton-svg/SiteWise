@@ -117,7 +117,7 @@ export function Works({ projectId, tick, onSignedOut }: { projectId: string; tic
     <div className="works-matrix"><h1>Works</h1><p className="report-muted">Set what the works do to each system and whether it is in this contract. Open a row for its condition, target and source.</p>
       {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" disabled={busy} onClick={() => setReload(n => n + 1)}>Reload saved work</button></div>}
       {loaded && editor && !item && detail()}
-      {!loaded ? <p role="status">Loading work…</p> : !items.length ? <p>No work items yet. Review the project profile in Filing and include the systems this project touches.</p> : groupWorks(items, profile).map(group => <section key={group.id} className="works-group" aria-label={group.label}><h2>{group.label}</h2>
+      {!loaded ? <p role="status">Loading work…</p> : !items.length ? <p>No work items yet. Review the project profile in Profile and include the systems this project touches.</p> : groupWorks(items, profile).map(group => <section key={group.id} className="works-group" aria-label={group.label}><h2>{group.label}</h2>
         <ul className="works-rows">{group.rows.map(work => <li key={work.id}>
           <div className="works-row">
             <button type="button" className="works-open" disabled={busy || !!editor || !!split || retire} aria-expanded={work.id === selected} aria-current={work.id === selected ? "true" : undefined} onClick={() => { setSelected(work.id === selected ? "" : work.id); setError(""); }}>{work.title}<span>{part(work)}{work.is_group ? " · group" : ""}</span></button>

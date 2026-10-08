@@ -1855,3 +1855,98 @@ button.cell[data-state="check"]:hover {
   color: var(--ink-muted);
   font-size: 11px;
 }
+
+/* Project at a glance: two rows, the building then the site; label over value. */
+.pf-glance {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+  gap: 4px 10px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.pf-glance .pf-row {
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 2px;
+  padding: 4px 6px;
+}
+.pf-glance .pf-label {
+  color: var(--ink-muted);
+  font-size: 11px;
+}
+.pf-glance .pf-control {
+  width: 100%;
+}
+
+/* Scope rows: one line; evidence colour, provider and citations on the right. */
+.pf-scope-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 1px 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.pf-scope-more:hover {
+  background: var(--ground);
+}
+.pf-ev {
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+}
+.pf-ev[data-ev="in"] {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+.pf-ev[data-ev="out"] {
+  border-color: var(--ink-muted);
+  background: none;
+}
+.pf-ev[data-ev="mixed"] {
+  border-color: var(--warn);
+  background: linear-gradient(90deg, var(--warn) 50%, transparent 50%);
+}
+.pf-ev[data-ev="none"] {
+  border-color: var(--line-strong);
+  background: var(--line-strong);
+}
+.pf-scope-provider {
+  font-size: 11.5px;
+}
+.pf-scope-provider[data-default] {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+.pf-scope-provider[data-provider="owner"],
+.pf-scope-provider[data-provider="others"] {
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--azure-soft);
+  color: var(--azure);
+  font-weight: 500;
+}
+.pf-scope-count {
+  min-width: 16px;
+  padding: 0 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+  font-size: 10.5px;
+  text-align: center;
+}
+.pf-scope-caret {
+  color: var(--ink-muted);
+  font-size: 10px;
+}
+.pf-scope-group li[data-open] {
+  background: var(--ground);
+  border-radius: var(--radius-sm);
+}
