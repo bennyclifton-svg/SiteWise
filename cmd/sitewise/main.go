@@ -248,6 +248,16 @@ func listen(ctx context.Context, hs *http.Server, srv *httpapi.Server, logger *l
 		return 1
 	case <-ctx.Done():
 	}
+	// A graceful stop can wait on in-flight reading; say so, and let a second
+	// Ctrl-C end it at once. Unfinished filings resume on the next start.
+	fmt.Fprintln(stdout, "stopping: finishing in-flight work (up to 20s); press Ctrl-C again to stop now")
+	force := make(chan os.Signal, 1)
+	signal.Notify(force, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-force
+		fmt.Fprintln(stdout, "stopped now; unfinished filings resume on next start")
+		os.Exit(1)
+	}()
 	shutdown, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	// Event streams never go idle on their own; end them so Shutdown can.
