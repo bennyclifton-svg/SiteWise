@@ -19,6 +19,7 @@ always_shown:
 - state
 - ncc_class
 - ncc_edition
+- existing_building
 empty_work_types:
 - refurb
 - remediation

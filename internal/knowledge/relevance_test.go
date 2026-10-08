@@ -67,7 +67,7 @@ func TestPredicateFalseDropsARuleAndUnknownKeepsIt(t *testing.T) {
 
 func TestEmptyScopeShowsTheCoreRowsOnly(t *testing.T) {
 	got := relevant(t, nil, nil)
-	if !got["state"] || !got["ncc_class"] || !got["ncc_edition"] || len(got) != 3 {
+	if !got["state"] || !got["ncc_class"] || !got["ncc_edition"] || !got["existing_building"] || len(got) != 4 {
 		t.Fatalf("empty scope = %v", got)
 	}
 }

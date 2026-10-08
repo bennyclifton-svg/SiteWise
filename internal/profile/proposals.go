@@ -3,6 +3,7 @@ package profile
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -101,6 +102,13 @@ func ProposalInputs(rows []Row, parts []Part, items []works.Item, cat *knowledge
 					present[part.ID] = append(present[part.ID], knowledge.WorkItem{System: id, Action: action})
 				}
 			}
+		}
+		// A stated new build (and only that) has no existing building to tie
+		// into. This follows from a stated fact, not an assumption, so it may
+		// suppress existing-building risks; a stated answer or a user's
+		// explicit unknown still wins.
+		if v := p.Values["existing_building"]; v.Value == "" && v.Origin != OriginUser && reflect.DeepEqual(workTypes, []string{"new"}) {
+			p.Values["existing_building"] = works.ProposalValue{Key: "existing_building", Value: "false", Origin: "applied_work_types"}
 		}
 		partID := part.ID
 		p.PresentState = func(system string) knowledge.Truth {

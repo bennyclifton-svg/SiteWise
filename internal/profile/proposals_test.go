@@ -94,3 +94,33 @@ func TestProposalInputsRejectUnknownPart(t *testing.T) {
 		t.Fatal("foreign part accepted")
 	}
 }
+
+// A stated new build has no existing building to tie into; only a stated
+// "new" decides it, and a stated existing_building answer still wins.
+func TestProposalInputsNewBuildHasNoExistingBuilding(t *testing.T) {
+	cat := repoCatalog(t)
+	parts := input().Parts
+	newBuild := profile.Row{PartID: whole, Key: "hdr.work_type", Value: "new", Band: "user", Origin: "user"}
+	cases := []struct {
+		name string
+		rows []profile.Row
+		want string
+	}{
+		{"new build", []profile.Row{newBuild}, "false"},
+		{"stated answer wins", []profile.Row{newBuild, {PartID: whole, Key: "det.existing_building", Value: "true", Band: "user", Origin: "user"}}, "true"},
+		{"mixed work types", []profile.Row{newBuild, {PartID: "p-b", Key: "hdr.work_type", Value: "extend", Band: "user", Origin: "user"}}, ""},
+		{"assumed new build", []profile.Row{{PartID: whole, Key: "hdr.work_type", Value: "new", Band: "planning", Origin: "assumption"}}, ""},
+		{"no work type", nil, ""},
+	}
+	for _, tc := range cases {
+		in, err := profile.ProposalInputs(tc.rows, parts, nil, cat)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for id, p := range in.Parts {
+			if got := p.Values["existing_building"].Value; got != tc.want {
+				t.Errorf("%s: part %s existing_building = %q, want %q", tc.name, id, got, tc.want)
+			}
+		}
+	}
+}
