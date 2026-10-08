@@ -14,12 +14,13 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   expect(response.ok()).toBeTruthy();
   const created = await response.json();
   await page.getByRole("button", { name: "Works", exact: true }).click();
+  const gasGroup = profile.systems.find((g: { rows: { leaf: string }[] }) => g.rows.some(r => r.leaf === "hydraulic.gas"));
+  await expect(page.getByRole("region", { name: gasGroup.label, exact: true }).getByRole("button", { name: /Synthetic gas service/ })).toBeVisible();
+  await expect(page.getByLabel("Planning quantity")).toHaveCount(0);
   await page.getByRole("button", { name: /Synthetic gas service/ }).click();
   await page.getByRole("button", { name: "Correct work item", exact: true }).click();
   await page.getByLabel("Action", { exact: true }).selectOption("repair");
   await page.getByLabel("Target wording", { exact: true }).fill("Repair and test the existing connection.");
-  await page.getByLabel("Planning quantity", { exact: true }).fill("12.50");
-  await page.getByLabel("Unit", { exact: true }).fill("m");
   await page.getByRole("button", { name: "Packages", exact: true }).click();
   await page.getByRole("button", { name: "Works", exact: true }).click();
   await expect(page.getByLabel("Target wording", { exact: true })).toHaveValue("Repair and test the existing connection.");
@@ -41,10 +42,15 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   expect(saved.action).toBe("repair");
   expect(saved.target.text).toBe("Repair and test the existing connection.");
   expect(saved.target.values[0].value).toBe(200);
-  expect(saved.quantity).toBe("12.50");
+  expect(saved.quantity ?? null).toBeNull();
   expect(saved.version).toBe(3);
-  await page.getByRole("button", { name: "Correct work item", exact: true }).click();
-  await page.getByLabel("Planning quantity", { exact: true }).fill("");
-  await page.getByRole("button", { name: "Save correction", exact: true }).click();
-  await expect(page.getByText("Quantity: Not recorded", { exact: true })).toBeVisible();
+  // Action and inclusion are edited in the row and keep the saved target.
+  await page.getByLabel("Action for Synthetic gas service", { exact: true }).selectOption("replace");
+  await expect.poll(async () => (await (await page.request.get(base)).json()).items[0].action).toBe("replace");
+  await page.getByRole("checkbox", { name: "Included" }).uncheck();
+  await expect.poll(async () => (await (await page.request.get(base)).json()).items[0].inclusion).toBe("excluded");
+  await expect(page.getByRole("button", { name: /Synthetic gas service/ })).toBeVisible();
+  const row = (await (await page.request.get(base)).json()).items[0];
+  expect(row.target.text).toBe("Repair and test the existing connection.");
+  expect(row.version).toBe(5);
 });

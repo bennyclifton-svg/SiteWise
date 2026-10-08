@@ -80,3 +80,26 @@
 .report-table caption { text-align: left; padding-bottom: .5rem; font-weight: 600; }
 .report-table th, .report-table td { padding: .6rem; border: 1px solid var(--line, #cbd2db); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
 .report-table th { background: var(--paper, #f1f4f7); }
+
+/* Works: one matrix grouped like Filing; the chosen row opens its detail in place. */
+.works { display: block; }
+.works-matrix { max-width: 1100px; padding: 24px 36px 64px; }
+.works-matrix h1 { font-size: 22px; }
+.works-group { margin-top: 28px; }
+.works-group h2 { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line-strong); font-size: 16px; }
+.works-rows { list-style: none; padding: 0; margin: 0; }
+.works-rows > li { border-bottom: 1px solid var(--line); }
+.works-row { display: grid; grid-template-columns: minmax(0, 1fr) 150px 110px; align-items: center; gap: 12px; padding: 4px 0; }
+.works-open { min-width: 0; padding: 8px; text-align: left; border: 0; background: transparent; cursor: pointer; overflow-wrap: anywhere; }
+.works-open span { display: block; font-size: 12px; color: var(--ink-muted); }
+.works-open:hover, .works-open[aria-current="true"] { background: var(--ground); }
+.works-open[aria-current="true"] { font-weight: 600; }
+.works-row select { min-width: 0; padding: 6px; font: inherit; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
+.works-included { display: flex; align-items: center; gap: 6px; }
+.works-detail { padding: 4px 8px 24px 20px; border-left: 3px solid var(--line-strong); margin: 4px 0 16px; }
+@media (max-width: 760px) {
+  .works-matrix { padding: 20px 16px 48px; }
+  .works-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .works-open { grid-column: 1 / -1; }
+  .works-detail { padding-left: 12px; }
+}
