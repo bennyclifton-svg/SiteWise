@@ -1856,24 +1856,27 @@ button.cell[data-state="check"]:hover {
   font-size: 11px;
 }
 
-/* Project at a glance: two rows, the building then the site; label over value. */
-.pf-glance {
+/* Project at a glance: two columns, the building then the site; label beside value. */
+.pf-glance-cols {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
-  gap: 4px 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 0 20px;
   margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--line);
 }
-.pf-glance .pf-row {
-  grid-template-columns: minmax(0, 1fr);
+.pf-glance {
+  display: grid;
   align-content: start;
   gap: 2px;
-  padding: 4px 6px;
+}
+.pf-glance .pf-row {
+  grid-template-columns: minmax(90px, 9rem) minmax(0, 1fr);
+  gap: 8px;
 }
 .pf-glance .pf-label {
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .pf-glance .pf-control {
   width: 100%;

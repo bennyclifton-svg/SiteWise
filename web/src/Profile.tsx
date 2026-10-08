@@ -50,7 +50,7 @@ const KIND_LABELS: Record<string, string> = {
   unknown: "unclassified documents",
 };
 
-// The two rows a user reads first: the building, then the site. Pairs that
+// The two columns a user reads first: the building, then the site. Pairs that
 // look alike but follow different definitions (building class and NCC class,
 // storeys and NCC rise in storeys, GFA and NCC floor area) sit side by side.
 // A list entry names alternatives because scale fields differ by building class.
@@ -233,13 +233,15 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
 
       <section className="pf-section" aria-labelledby="pf-project" hidden={view === "systems"}>
         <h2 id="pf-project">Project</h2>
-        {glance.map((row, i) => (
-          <div className="pf-glance" key={i} aria-label={i === 0 ? "The building" : "The site"} role="group">
-            {row.map((f) => (
-              <FieldRow key={f.key} field={f} onSet={set} onJump={onJump} compact />
-            ))}
-          </div>
-        ))}
+        <div className="pf-glance-cols">
+          {glance.map((row, i) => (
+            <div className="pf-glance" key={i} aria-label={i === 0 ? "The building" : "The site"} role="group">
+              {row.map((f) => (
+                <FieldRow key={f.key} field={f} onSet={set} onJump={onJump} compact />
+              ))}
+            </div>
+          ))}
+        </div>
         <details className="pf-more">
           <summary>More detail</summary>
           <div className="pf-grid">
