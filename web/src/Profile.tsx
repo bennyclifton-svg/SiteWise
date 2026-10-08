@@ -50,12 +50,13 @@ const KIND_LABELS: Record<string, string> = {
   unknown: "unclassified documents",
 };
 
-// The two columns a user reads first: the building, then the site. Pairs that
+// The two columns a user reads first: the building (with the procurement
+// route, which shapes every package), then the site. Pairs that
 // look alike but follow different definitions (building class and NCC class,
 // storeys and NCC rise in storeys, GFA and NCC floor area) sit side by side.
 // A list entry names alternatives because scale fields differ by building class.
 const GLANCE: string[][][] = [
-  [["hdr.building_class"], ["hdr.subclass"], ["det.ncc_class"], ["hdr.work_type"],
+  [["hdr.building_class"], ["hdr.subclass"], ["det.ncc_class"], ["hdr.work_type"], ["hdr.cond.procurement_route"],
     ["hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels"], ["det.rise_in_storeys"],
     ["hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm"], ["det.floor_area"]],
   [["det.state"], ["det.climate_zone"], ["det.wind_class"], ["det.bal"], ["det.site_class"], ["det.flood_hazard"], ["det.heritage_status"]],

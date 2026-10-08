@@ -9,6 +9,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await expect(page.getByRole("button", { name: "Reports", exact: true })).toBeVisible();
   const project = new URL(page.url()).pathname.split("/").pop();
   await page.getByRole("button", { name: "Packages", exact: true }).click();
+  await page.getByText("Add a package yourself", { exact: true }).click();
   await page.getByLabel("Package title", { exact: true }).fill("Fire engineering");
   await page.getByLabel("Separate stages before and after novation").check();
   await page.getByRole("button", { name: "Create package", exact: true }).click();

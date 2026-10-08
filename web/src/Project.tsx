@@ -616,7 +616,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Reports projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {packagesOpened && <div className="project-reports" hidden={!showPackages}><Packages projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {packagesOpened && <div className="project-reports" hidden={!showPackages}><Packages projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => { setProfileView("all"); setShowPackages(false); }} /></div>}
       {/* Drop overlay: invisible until files are dragged over the page. */}
       <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>
         <p className="drop-title">Release to file into {state.projectName}</p>

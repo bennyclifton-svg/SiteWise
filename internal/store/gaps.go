@@ -28,26 +28,7 @@ func (s *Store) ReadGaps(ctx context.Context, org, project string) ([]procuremen
 	if err != nil {
 		return nil, err
 	}
-	rows, err := tx.Query(ctx, `SELECT to_jsonb(i) FROM package_scope_items i WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND inclusion='included' AND work_item_id IS NOT NULL`, org, project)
-	if err != nil {
-		return nil, err
-	}
-	assignments := []procurement.Assignment{}
-	for rows.Next() {
-		var raw []byte
-		var a procurement.Assignment
-		if err := rows.Scan(&raw); err != nil {
-			rows.Close()
-			return nil, err
-		}
-		if err := json.Unmarshal(raw, &a); err != nil {
-			rows.Close()
-			return nil, err
-		}
-		assignments = append(assignments, a)
-	}
-	err = rows.Err()
-	rows.Close()
+	assignments, err := readAssignments(ctx, tx, org, project)
 	if err != nil {
 		return nil, err
 	}
@@ -56,4 +37,25 @@ func (s *Store) ReadGaps(ctx context.Context, org, project string) ([]procuremen
 		return nil, err
 	}
 	return gaps, tx.Commit(ctx)
+}
+
+func readAssignments(ctx context.Context, q rowQuerier, org, project string) ([]procurement.Assignment, error) {
+	rows, err := q.Query(ctx, `SELECT to_jsonb(i) FROM package_scope_items i WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND inclusion='included' AND work_item_id IS NOT NULL`, org, project)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := []procurement.Assignment{}
+	for rows.Next() {
+		var raw []byte
+		var a procurement.Assignment
+		if err := rows.Scan(&raw); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(raw, &a); err != nil {
+			return nil, err
+		}
+		out = append(out, a)
+	}
+	return out, rows.Err()
 }

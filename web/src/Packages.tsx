@@ -1,17 +1,21 @@
-// Minimum M1 package allocation inside the incumbent workbench. Explicit user
-// wording and responsibility assignments stay separate from catalogue approval.
+// Packages open on a proposed set computed from the profile and works
+// (docs/design/2026-10-08-proposed-packages.md). Nothing is saved until the
+// user accepts; manual creation stays for exceptions.
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "./api";
-import { packageApi, type PackageRecord, type ScopeRecord, type ScopeWork, type ScopeInput } from "./packageApi";
+import { packageApi, type PackageOverview, type PackageRecord, type ScopeRecord, type ScopeWork, type ScopeInput } from "./packageApi";
 import "./reports.css";
 
 const roles = ["design", "document", "supply", "install", "test", "certify", "inspect", "maintain_operation", "protect"];
 const words = (value: string) => value.replaceAll("_", " ");
 const stageLabel = (stage: PackageRecord["stages"][number]) => `${stage.label}${stage.novation_phase === "none" ? "" : ` · ${stage.novation_phase === "pre" ? "before" : "after"} novation`}`;
+const routeLabels: Record<string, string> = { traditional: "Traditional (Lump Sum)", design_construct: "Design & Construct", eci: "Early Contractor Involvement", managing_contractor: "Managing Contractor", alliance: "Alliance", ppp: "PPP" };
+const gapWords: Record<string, string> = { install: "nobody carries out the works", design: "nobody designs it", maintain_operation_or_protect: "nobody protects it", inspect_or_test: "nobody inspects or tests it" };
 const blankScope = (): ScopeInput => ({ item_kind: "obligation", user_text: "", inclusion: "included", deliverable: "", interface_ids: [] });
 
-export function Packages({ projectId, tick, onSignedOut }: { projectId: string; tick: number; onSignedOut: () => void }) {
+export function Packages({ projectId, tick, onSignedOut, onOpenProfile }: { projectId: string; tick: number; onSignedOut: () => void; onOpenProfile: () => void }) {
   const [items, setItems] = useState<PackageRecord[]>([]);
+  const [overview, setOverview] = useState<PackageOverview | null>(null);
   const [works, setWorks] = useState<ScopeWork[]>([]);
   const [selected, setSelected] = useState("");
   const [scope, setScope] = useState<ScopeRecord[]>([]);
@@ -31,7 +35,7 @@ export function Packages({ projectId, tick, onSignedOut }: { projectId: string; 
   }, [onSignedOut]);
   useEffect(() => {
     let stopped = false;
-    Promise.all([packageApi.list(projectId), packageApi.works(projectId)]).then(([p, w]) => { if (!stopped) { setItems(p.items); setWorks(w.items.filter(item => !item.is_group)); setLoaded(true); } }).catch(e => { if (!stopped) { fail(e); setLoaded(true); } });
+    Promise.all([packageApi.list(projectId), packageApi.works(projectId)]).then(([p, w]) => { if (!stopped) { setItems(p.items); setOverview(p); setWorks(w.items.filter(item => !item.is_group)); setLoaded(true); } }).catch(e => { if (!stopped) { fail(e); setLoaded(true); } });
     return () => { stopped = true; };
   }, [projectId, tick, reload, fail]);
   useEffect(() => {
@@ -48,6 +52,17 @@ export function Packages({ projectId, tick, onSignedOut }: { projectId: string; 
     try { const created = await packageApi.create(projectId, title, kind, worksScope, novation); setItems(old => [...old, created]); choose(created.id); setTitle(""); setReload(n => n + 1); }
     catch (e) { fail(e); } finally { setBusy(false); }
   }
+  async function accept(key: string) {
+    setBusy(true); setError("");
+    try { const created = await packageApi.accept(projectId, key); choose(created.id); setReload(n => n + 1); }
+    catch (e) { if (e instanceof ApiError && e.status === 404) { setError("This proposal changed before it was accepted. The list has been refreshed."); setReload(n => n + 1); } else fail(e); }
+    finally { setBusy(false); }
+  }
+  const workTitle = (id: string) => works.find(work => work.id === id)?.title ?? "Work item";
+  const route = overview?.route;
+  const gaps = overview?.gaps.filter(gap => gap.state === "gap" || gap.state === "overlap") ?? [];
+  const waiting = overview?.gaps.filter(gap => gap.state === "not_yet_accepted").length ?? 0;
+  const proposals = overview ? [...(overview.proposed_works ? [overview.proposed_works] : []), ...overview.suggestions] : [];
   async function saveScope() {
     setBusy(true); setError("");
     try {
@@ -57,15 +72,26 @@ export function Packages({ projectId, tick, onSignedOut }: { projectId: string; 
     } catch (e) { fail(e); } finally { setBusy(false); }
   }
   return <section className="reports" aria-label="Packages" aria-busy={busy}>
-    <div className="report-library"><h1>Packages</h1><p className="report-muted">Assign scope and responsibilities before requesting a proposal.</p>
-      <form onSubmit={e => { e.preventDefault(); void create(); }}><fieldset disabled={busy}>
+    <div className="report-library"><h1>Packages</h1><p className="report-muted">Proposed from the profile and works. Nothing is saved until you accept it.</p>
+      {route && <div className="report-notice" role="note">{route.value === ""
+        ? <p><strong>Procurement route not answered.</strong> Packages assume Design &amp; Construct: the head contract designs, consultants are novated.</p>
+        : route.confirm ? <p><strong>{routeLabels[route.value] ?? words(route.value)}</strong> is proposed as Design &amp; Construct. Confirm who designs.</p>
+        : <p><strong>{routeLabels[route.value] ?? words(route.value)}.</strong> {route.builder_designs ? "The head contract designs; consultants are novated." : "Consultants design; the head contract constructs."}</p>}
+        <button type="button" className="btn btn-small" onClick={onOpenProfile}>{route.value === "" ? "Answer on the profile" : "Change on the profile"}</button></div>}
+      {loaded && overview && <section aria-label="Gaps"><h2>Gaps</h2>{!gaps.length ? <p>Every accepted work item is covered.{waiting ? ` ${waiting} work item${waiting === 1 ? " is" : "s are"} not yet accepted on Works.` : ""}</p>
+        : <ul className="report-list">{gaps.map(gap => <li key={gap.work_item_id + gap.role}>{workTitle(gap.work_item_id)}: {gap.state === "overlap" ? `two packages hold ${words(gap.role ?? "")}` : gapWords[gap.role ?? ""] ?? words(gap.role ?? "")}</li>)}</ul>}</section>}
+      {loaded && proposals.length > 0 && <section aria-label="Proposed packages"><h2>Proposed</h2><ul className="package-proposals">{proposals.map(p => <li key={p.key} className="package-proposal">
+        <div><strong>{"lines" in p && p.package_id ? `Add to ${p.title}` : p.title}</strong> <span className="report-muted">{"lines" in p ? "works · head contract" : `services${p.novation ? " · novated" : ""}${p.draft ? " · draft list" : ""}`}</span></div>
+        {"lines" in p && <ul>{p.lines.map(line => <li key={line.work_item_id + line.role}>{line.text}</li>)}</ul>}
+        <button type="button" className="btn btn-small" disabled={busy || !!editing || !!input.user_text} onClick={() => void accept(p.key)}>Accept {p.title}</button></li>)}</ul></section>}
+      <h2>Saved packages</h2>{!loaded ? <p role="status">Loading packages…</p> : !items.length ? <p>No packages yet.</p> : <ul className="report-list">{items.map(item => <li key={item.id}><button type="button" aria-current={selected === item.id ? "true" : undefined} disabled={busy || !!editing || !!input.user_text} onClick={() => choose(item.id)}>{item.title} · {words(item.kind)}</button></li>)}</ul>}
+      <details className="package-manual"><summary>Add a package yourself</summary><form onSubmit={e => { e.preventDefault(); void create(); }}><fieldset disabled={busy}>
         <label htmlFor="package-title">Package title</label><input id="package-title" required maxLength={200} value={title} onChange={e => setTitle(e.target.value)} disabled={busy} />
         <label htmlFor="package-kind">Package kind</label><select id="package-kind" value={kind} onChange={e => setKind(e.target.value)} disabled={busy}><option value="services">Services</option><option value="works">Works</option><option value="supply">Supply</option></select>
         {kind === "works" && <><label htmlFor="package-works-scope">Works scope</label><select id="package-works-scope" value={worksScope} onChange={e => setWorksScope(e.target.value)}><option value="trade">Trade</option><option value="head_contract">Head contract</option></select></>}
         {kind === "services" && <label><input type="checkbox" checked={novation} onChange={e => setNovation(e.target.checked)} /> Separate stages before and after novation</label>}
         <button className="btn" disabled={busy || !!editing || !!input.user_text || !title.trim()}>Create package</button>
-      </fieldset></form>
-      <h2>Saved packages</h2>{!loaded ? <p role="status">Loading packages…</p> : !items.length ? <p>No packages yet.</p> : <ul className="report-list">{items.map(item => <li key={item.id}><button type="button" aria-current={selected === item.id ? "true" : undefined} disabled={busy || !!editing || !!input.user_text} onClick={() => choose(item.id)}>{item.title} · {words(item.kind)}</button></li>)}</ul>}
+      </fieldset></form></details>
     </div>
     <div className="report-reader">
       {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => setReload(n => n + 1)}>Reload saved scope</button></div>}

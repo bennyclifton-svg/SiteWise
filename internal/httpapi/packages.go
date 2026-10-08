@@ -20,16 +20,49 @@ func getPackages(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}
-	items, suggestions, err := deps.Store.ReadPackageOverview(r.Context(), session.OrgID, project)
+	o, err := deps.Store.ReadPackageProposals(r.Context(), session.OrgID, project)
 	if err != nil {
 		packageError(w, err)
 		return
 	}
 	writeJSON(w, http.StatusOK, struct {
-		ProjectID   string                          `json:"project_id"`
-		Items       []procurement.Package           `json:"items"`
-		Suggestions []procurement.PackageSuggestion `json:"suggestions"`
-	}{project, items, suggestions})
+		ProjectID string `json:"project_id"`
+		store.PackageOverview
+	}{project, o})
+}
+
+// acceptProposedPackage takes only the proposal key; the store recomputes the
+// proposal so a client cannot inject package content.
+func acceptProposedPackage(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	project := r.PathValue("id")
+	if !uuidPattern.MatchString(project) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		Key string `json:"key"`
+	}
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil || body.Key == "" || len(body.Key) > 300 {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	p, err := deps.Store.AcceptProposedPackage(r.Context(), session.OrgID, project, session.UserID, body.Key)
+	if err != nil {
+		packageError(w, err)
+		return
+	}
+	if deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	writeJSON(w, http.StatusCreated, p)
 }
 
 func postPackage(w http.ResponseWriter, r *http.Request, deps Deps) {

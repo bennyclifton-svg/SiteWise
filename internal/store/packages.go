@@ -13,47 +13,97 @@ import (
 
 var ErrInvalidPackage = errors.New("invalid package")
 
+// PackageOverview is everything the Packages tab proposes, read from one
+// consistent snapshot. Proposals are computed here and never stored.
+type PackageOverview struct {
+	Items        []procurement.Package           `json:"items"`
+	Suggestions  []procurement.PackageSuggestion `json:"suggestions"`
+	Route        RouteState                      `json:"route"`
+	ProposedWork *procurement.WorksProposal      `json:"proposed_works"`
+	Gaps         []procurement.Gap               `json:"gaps"`
+}
+
+// RouteState is the procurement route packages follow. Value is empty when
+// the profile has no applied answer and D&C is assumed.
+type RouteState struct {
+	Value          string `json:"value"`
+	BuilderDesigns bool   `json:"builder_designs"`
+	Confirm        bool   `json:"confirm"`
+}
+
 func (s *Store) ReadPackageOverview(ctx context.Context, org, project string) ([]procurement.Package, []procurement.PackageSuggestion, error) {
+	o, err := s.ReadPackageProposals(ctx, org, project)
+	return o.Items, o.Suggestions, err
+}
+
+func (s *Store) ReadPackageProposals(ctx context.Context, org, project string) (PackageOverview, error) {
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
 	if err != nil {
-		return nil, nil, err
+		return PackageOverview{}, err
 	}
 	defer tx.Rollback(ctx)
 	var exists bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
-		return nil, nil, err
+		return PackageOverview{}, err
 	}
 	if !exists {
-		return nil, nil, ErrNotFound
+		return PackageOverview{}, ErrNotFound
 	}
+	o, err := s.packageOverview(ctx, tx, org, project)
+	if err != nil {
+		return o, err
+	}
+	return o, tx.Commit(ctx)
+}
+
+func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project string) (PackageOverview, error) {
+	var o PackageOverview
 	items, err := readPackages(ctx, tx, org, project)
 	if err != nil {
-		return nil, nil, err
+		return o, err
 	}
 	rows, err := tx.Query(ctx, `SELECT r.key,COALESCE(r.value,''),r.band,r.origin,r.meaning,r.review_status,r.value_state FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND (r.key='hdr.work_type' OR (p.kind='whole' AND (r.key='hdr.building_class' OR r.key LIKE 'det.%' OR r.key LIKE 'hdr.cond.%')))`, org, project)
 	if err != nil {
-		return nil, nil, err
+		return o, err
 	}
 	facts := []profile.Row{}
 	for rows.Next() {
 		var row profile.Row
 		if err := rows.Scan(&row.Key, &row.Value, &row.Band, &row.Origin, &row.Meaning, &row.ReviewStatus, &row.ValueState); err != nil {
 			rows.Close()
-			return nil, nil, err
+			return o, err
 		}
 		facts = append(facts, row)
 	}
 	err = rows.Err()
 	rows.Close()
 	if err != nil {
-		return nil, nil, err
+		return o, err
 	}
 	class, workTypes := profile.PackageBaselineFacts(facts)
-	suggestions := procurement.SuggestedPackages(s.workCatalog(), class, workTypes, profile.PackageComplexityFacts(facts), items)
-	if err := tx.Commit(ctx); err != nil {
-		return nil, nil, err
+	complexity := profile.PackageComplexityFacts(facts)
+	route := complexity["procurement_route"]
+	o.Route = RouteState{Value: route, BuilderDesigns: procurement.BuilderDesigns(route), Confirm: procurement.RouteNeedsConfirm(route)}
+	o.Items = items
+	o.Suggestions = procurement.SuggestedPackages(s.workCatalog(), class, workTypes, complexity, items)
+	// Under D&C the consultants are proposed for novation to the builder.
+	for i := range o.Suggestions {
+		o.Suggestions[i].Novation = o.Route.BuilderDesigns
 	}
-	return items, suggestions, nil
+	work, err := readWorkItems(ctx, tx, org, project)
+	if err != nil {
+		return o, err
+	}
+	assignments, err := readAssignments(ctx, tx, org, project)
+	if err != nil {
+		return o, err
+	}
+	o.Gaps, err = procurement.CheckGaps(work, items, assignments, s.workCatalog())
+	if err != nil {
+		return o, err
+	}
+	o.ProposedWork = procurement.ProposeHeadContract(o.Gaps, work, items, route)
+	return o, nil
 }
 
 func readPackages(ctx context.Context, q rowQuerier, org, project string) ([]procurement.Package, error) {
