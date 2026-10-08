@@ -107,7 +107,7 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
 
   // Layout: left nav with the project, profile sections, register beside them.
   await expect(page.getByRole("navigation", { name: "Projects" })).toContainText("188 Balnarring Road");
-  for (const name of ["Project", "Systems", "Compliance"]) {
+  for (const name of ["Project", "Scope of works", "Compliance"]) {
     await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
   }
   await expect(page.getByRole("complementary", { name: "Document register" })).toContainText("Documents");
@@ -119,17 +119,23 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await page.getByLabel("Building class", { exact: true }).selectOption("house");
   await page.getByLabel("Work type", { exact: true }).selectOption("new");
 
-  // Typical systems appear, marked as suggestions rather than evidence.
-  const water = page.locator(".pf-sys", { hasText: "Heated water" });
-  await expect(water).toBeVisible();
-  await expect(water.locator('.pf-mark[data-band="suggested"]')).toHaveText("Typical");
+  // Typical systems are ticked in scope, marked as suggestions rather than evidence.
+  const scope = page.getByRole("region", { name: "Scope of works" });
+  const hydraulic = scope.locator(".pf-scope-group", { hasText: "Hydraulic" });
+  await hydraulic.locator("summary").click();
+  const water = hydraulic.locator("li", { hasText: "Heated water" });
+  await expect(water.getByRole("checkbox", { name: "Heated water" })).toBeChecked();
+  await expect(water.locator(".pf-scope-origin")).toHaveText("Typical");
+  await expect(water.locator(".pf-sys")).toBeVisible();
 
-  // The user's word: mark it not included; it survives a reload.
-  await water.getByText("Not included", { exact: true }).click();
-  await expect(water.locator('.pf-mark[data-band="user"]')).toBeVisible();
+  // The user's word: take it out of scope; it survives a reload.
+  await water.getByRole("checkbox", { name: "Heated water" }).uncheck();
+  await expect(water.locator(".pf-scope-origin")).toHaveText("Removed by you");
+  await expect(water.locator(".pf-sys")).toHaveCount(0);
   await page.reload();
-  const again = page.locator(".pf-sys", { hasText: "Heated water" });
-  await expect(again.locator('label[data-on]')).toHaveText("Not included");
+  const again = page.getByRole("region", { name: "Scope of works" }).locator(".pf-scope-group", { hasText: "Hydraulic" });
+  await again.locator("summary").click();
+  await expect(again.getByRole("checkbox", { name: "Heated water" })).not.toBeChecked();
 
   // Switch projects from the left nav.
   await page.getByRole("button", { name: "188 Balnarring Road" }).click();
@@ -249,8 +255,7 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await expect(fire.locator(".pf-scope-origin")).toHaveText("You");
 
   // The checklist and compliance follow the scope.
-  await expect(page.locator(".pf-sys", { hasText: "Automatic fire sprinklers" })).toBeVisible();
-  await expect(page.locator(".pf-sys", { hasText: "Heated water" })).toHaveCount(0);
+  await expect(fire.locator("li", { hasText: "Automatic fire sprinklers" }).locator(".pf-sys")).toBeVisible();
   await expect(page.getByText(/Showing \d+ of \d+ compliance items for this scope/)).toBeVisible();
   await expect(page.getByLabel("Top of storage height")).toBeVisible();
   await expect(page.getByText("Usually in: Geotechnical report")).toBeHidden();

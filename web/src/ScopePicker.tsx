@@ -1,14 +1,24 @@
-// Scope of works: which building systems the works touch. The checklist and
-// the compliance rows follow it. Defaults come from the building class and
-// work type, documents can add systems, and the user's choice is final.
+// Scope of works: which building systems the works touch, and for each one
+// in scope who provides it and what the documents say. The tick is the one
+// decision; compliance follows it. Defaults come from the building class and
+// work type, documents can add systems, and the user's choice is final: a
+// document that says a ticked system is not included is flagged, never
+// allowed to untick it.
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { Profile, ScopeChoice, SystemRow } from "./profileApi";
 
 interface Props {
   data: Profile;
   onSet: (systems: Record<string, ScopeChoice>) => Promise<void>;
+  /** Provider, evidence and note for a system in scope or in conflict. */
+  detail: (row: SystemRow) => ReactNode;
 }
+
+// Evidence, not a typical default or a blank reading, that the completed
+// project will not have the system.
+const saysOut = (r: SystemRow) =>
+  r.presence.value === "not_included" && !["", "blank", "suggested"].includes(r.presence.band);
 
 const ORIGINS: Record<string, string> = {
   default: "Typical",
@@ -16,11 +26,15 @@ const ORIGINS: Record<string, string> = {
   user: "You",
 };
 
-export function ScopePicker({ data, onSet }: Props) {
+export function ScopePicker({ data, onSet, detail }: Props) {
   const [busy, setBusy] = useState(false);
+  // Groups open themselves when something needs checking, until the user
+  // opens or closes them.
+  const [opened, setOpened] = useState<Record<string, boolean>>({});
   // A tick shows at once; the rebuilt profile then settles it.
   const [pending, setPending] = useState<Record<string, boolean>>({});
   const isIn = (r: SystemRow) => pending[r.leaf] ?? r.in_scope;
+  const needsCheck = (r: SystemRow) => r.presence.band === "red" || (isIn(r) && saysOut(r));
   const run = async (systems: Record<string, ScopeChoice>) => {
     const keys = Object.keys(systems);
     if (keys.length === 0) return;
@@ -83,9 +97,19 @@ export function ScopePicker({ data, onSet }: Props) {
       <div className="pf-scope-groups">
         {data.systems.map((g) => {
           const on = g.rows.filter(isIn).length;
+          const checks = g.rows.filter(needsCheck).length;
           const groupId = `scope-${g.id}`;
           return (
-            <details className="pf-scope-group" key={g.id} data-active={on > 0 ? "true" : undefined}>
+            <details
+              className="pf-scope-group"
+              key={g.id}
+              data-active={on > 0 ? "true" : undefined}
+              open={opened[g.id] ?? checks > 0}
+              onToggle={(e) => {
+                const open = e.currentTarget.open;
+                if (open !== (opened[g.id] ?? checks > 0)) setOpened((o) => ({ ...o, [g.id]: open }));
+              }}
+            >
               <summary>
                 <input
                   type="checkbox"
@@ -104,6 +128,7 @@ export function ScopePicker({ data, onSet }: Props) {
                 <span id={groupId} className="pf-scope-label">
                   {g.label}
                 </span>
+                {checks > 0 && <span className="pf-scope-check">{checks} to check</span>}
                 <span className="muted">
                   {on} of {g.rows.length}
                 </span>
@@ -125,6 +150,16 @@ export function ScopePicker({ data, onSet }: Props) {
                       </span>
                     )}
                     {r.scope_note && <span className="pf-scope-note">{r.scope_note}</span>}
+                    {saysOut(r) && !isIn(r) && <span className="pf-scope-out">Not included</span>}
+                    {saysOut(r) && isIn(r) && (
+                      <span className="pf-scope-check">
+                        Documents say not included{" "}
+                        <button type="button" className="cell-link" disabled={busy} onClick={() => run({ [r.leaf]: "out" })}>
+                          Remove from scope
+                        </button>
+                      </span>
+                    )}
+                    {(isIn(r) || r.presence.band === "red") && detail(r)}
                   </li>
                 ))}
               </ul>

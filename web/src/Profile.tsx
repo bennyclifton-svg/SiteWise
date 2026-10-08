@@ -55,7 +55,6 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
   const [error, setError] = useState("");
-  const [showAll, setShowAll] = useState(false);
   const [allCompliance, setAllCompliance] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [requestNote, setRequestNote] = useState("");
@@ -214,33 +213,15 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
         </details>
       </section>
 
-      <div hidden={view === "summary"}><ScopePicker data={data} onSet={setScope} /></div>
-
-      <section className="pf-section" aria-labelledby="pf-systems" hidden={view === "summary"}>
-        <div className="pf-head">
-          <h2 id="pf-systems">Systems</h2>
-          <label className="pf-toggle">
-            <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> Show all systems
-          </label>
-        </div>
-        {data.systems.map((g) => {
-          const rows = g.rows.filter((r) => showAll || r.shown_by_default);
-          if (rows.length === 0) return null;
-          return (
-            <div className="pf-sysgroup" key={g.id}>
-              <h3>{g.label}</h3>
-              {rows.map((r) => (
-                <SystemLine key={r.leaf} row={r} onSet={set} onJump={onJump} onSources={() => { setSourceSystem(r.leaf); setSourcesOpen(true); document.getElementById("profile-sources")?.scrollIntoView({ block: "start" }); }} />
-              ))}
-            </div>
-          );
-        })}
-        {!showAll && data.systems.every((g) => g.rows.every((r) => !r.shown_by_default)) && (
-          <p className="muted">
-            Nothing in scope yet. Choose a building class and work type, tick systems in Scope of works, or show all systems.
-          </p>
-        )}
-      </section>
+      <div hidden={view === "summary"}>
+        <ScopePicker
+          data={data}
+          onSet={setScope}
+          detail={(r) => (
+            <SystemDetail key={r.leaf} row={r} onSet={set} onJump={onJump} onSources={() => { setSourceSystem(r.leaf); setSourcesOpen(true); document.getElementById("profile-sources")?.scrollIntoView({ block: "start" }); }} />
+          )}
+        />
+      </div>
 
       <section className="pf-section" aria-labelledby="pf-compliance">
         <div className="pf-head">
@@ -451,35 +432,14 @@ function FieldRow({
   );
 }
 
-const PRESENCE: { value: string; label: string }[] = [
-  { value: "included", label: "Included" },
-  { value: "not_included", label: "Not included" },
-  { value: "", label: "Unknown" },
-];
-
-function SystemLine({ row, onSet, onJump, onSources }: { row: SystemRow; onSet: Setter; onJump: (id: string) => void; onSources: () => void }) {
+// What the works include is the Scope of works tick; this strip carries the
+// rest of a system's facts: who provides it, the evidence, and a note.
+function SystemDetail({ row, onSet, onJump, onSources }: { row: SystemRow; onSet: Setter; onJump: (id: string) => void; onSources: () => void }) {
   const base = `sys.${row.leaf}`;
   const [note, setNote] = useState(row.note.value);
   useEffect(() => setNote(row.note.value), [row.note.value]);
-  const current = row.presence.value;
   return (
     <div className="pf-sys" data-band={row.presence.band || undefined}>
-      <span className="pf-sys-label" id={`${base}-label`}>
-        {row.label}
-      </span>
-      <div className="pf-seg" role="radiogroup" aria-labelledby={`${base}-label`}>
-        {PRESENCE.map((p) => (
-          <label key={p.value} data-on={current === p.value ? "true" : undefined}>
-            <input
-              type="radio"
-              name={`${base}-presence`}
-              checked={current === p.value}
-              onChange={() => onSet(`${base}.presence`, { part_id: row.part_id, value: p.value || null })}
-            />
-            {p.label}
-          </label>
-        ))}
-      </div>
       <select
         className="select pf-provider"
         aria-label={`Who provides ${row.label}`}
@@ -496,12 +456,12 @@ function SystemLine({ row, onSet, onJump, onSources }: { row: SystemRow; onSet: 
         <option value="others">Others</option>
       </select>
       <span className="pf-sys-marks">
-        <Mark cell={row.presence} />
+        {row.presence.band !== "suggested" && <Mark cell={row.presence} />}
         <Mark cell={row.provider.band === "red" ? row.provider : { ...row.provider, band: "" }} />
         <Conflict cell={row.presence} onPick={(v) => onSet(`${base}.presence`, { part_id: row.part_id, value: v })} />
         <Conflict cell={row.provider} onPick={(v) => onSet(`${base}.provider`, { part_id: row.part_id, value: v })} />
         <Sources cell={row.presence} onJump={onJump} />
-          <button type="button" className="cell-link" onClick={onSources} aria-label={`View requirements for ${row.label}`}>Requirements</button>
+        <button type="button" className="cell-link" onClick={onSources} aria-label={`View requirements for ${row.label}`}>Requirements</button>
         {row.presence.band === "user" && (
           <button type="button" className="cell-link" onClick={() => onSet(`${base}.presence`, { part_id: row.part_id, reset: true })}>
             Reset
@@ -513,7 +473,7 @@ function SystemLine({ row, onSet, onJump, onSources }: { row: SystemRow; onSet: 
         aria-label={`Note for ${row.label}`}
         maxLength={120}
         value={note}
-        placeholder={row.presence.note ?? ""}
+        placeholder={row.presence.note ?? "Note"}
         onChange={(e) => setNote(e.target.value)}
         onBlur={() => note !== row.note.value && onSet(`${base}.note`, { part_id: row.part_id, value: note })}
       />

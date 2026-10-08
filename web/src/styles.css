@@ -1472,7 +1472,7 @@ button.cell[data-state="check"]:hover {
 
 .pf-sys {
   display: grid;
-  grid-template-columns: minmax(150px, 1.2fr) auto 120px auto minmax(120px, 1fr);
+  grid-template-columns: 120px auto minmax(120px, 1fr);
   align-items: center;
   gap: 8px;
   min-height: 32px;
@@ -1836,4 +1836,22 @@ button.cell[data-state="check"]:hover {
   flex-basis: 100%;
   color: var(--warn);
   font-size: 11.5px;
+}
+
+/* An open group needs the width for each system's provider, evidence and note. */
+.pf-scope-group[open] {
+  grid-column: 1 / -1;
+}
+.pf-scope-group li .pf-sys {
+  flex-basis: 100%;
+  margin: 0 0 4px 22px;
+  min-height: 28px;
+}
+.pf-scope-check {
+  color: var(--warn);
+  font-size: 11.5px;
+}
+.pf-scope-out {
+  color: var(--ink-muted);
+  font-size: 11px;
 }
