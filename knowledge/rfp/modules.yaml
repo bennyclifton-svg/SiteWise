@@ -1,0 +1,30 @@
+# Shared work-type and use modules (peer review 2026-10-09, "Shared modules
+# for work type and use"). A discipline row names a module; the row applies
+# only while the module is active. Draft, seed-derived.
+version: 1
+status: draft
+modules:
+  - key: existing_building
+    label: Existing building, extension or refurbishment
+    when: [{work_type: [refurb, extend, remediation]}, {flag: [existing_building]}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
+  - key: live_site
+    label: Live institutional or industrial site
+    when: [{flag: [live_operations]}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/institution-construction-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/industrial-construction-guide.md"}]
+  - key: remediation
+    label: Remediation or rectification
+    when: [{work_type: [remediation]}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/building-remediation-rectification-guide.md"}]
+  - key: advisory
+    label: Advisory or due-diligence appointment
+    when: [{work_type: [advisory]}, {pathway: [advice_only]}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/advisory-services-guide.md"}]
+  - key: mixed_use
+    label: Mixed uses
+    when: [{flag: [mixed_use]}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mixed-use-construction-guide.md"}]
+  - key: staged
+    label: Staged or multi-building delivery
+    when: [{flag: [staged]}, {flag: [multi_building]}]
+    provenance: [{kind: evidence, ref: "architecture#1-14"}]

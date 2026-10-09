@@ -1,0 +1,185 @@
+# Shared consultant RFP parts (docs/rfp-golden/skeleton.md, repaired per the
+# 2026-10-09 peer review: complete shared terms, R6 scope, addenda, written
+# authority, client procurement defaults). Draft until the owner reviews it.
+version: 1
+status: draft
+golden: docs/rfp-golden/skeleton.md
+
+# Site and project conditions a row may test. Each is a separate fact held as
+# yes, no or unknown; an unknown never reads as no.
+flags:
+  - {key: heritage, label: Heritage item or conservation area}
+  - {key: bushfire, label: Bushfire-prone land}
+  - {key: flood, label: Flood-affected site}
+  - {key: contamination, label: Contaminated or potentially contaminated land}
+  - {key: acid_sulfate, label: Acid sulfate soils mapped}
+  - {key: groundwater, label: Groundwater above the base of excavation}
+  - {key: coastal, label: Coastal hazard area}
+  - {key: country, label: Connecting with Country input required}
+  - {key: existing_building, label: Work to an existing building}
+  - {key: live_operations, label: Site stays occupied or operating during the works}
+  - {key: staged, label: Delivered in stages}
+  - {key: multi_building, label: Several buildings or a campus}
+  - {key: mixed_use, label: Parts with different NCC classes}
+  - {key: basement, label: Basement or deep excavation}
+  - {key: excavation_adjoining, label: Excavation next to adjoining structures or boundaries}
+  - {key: transfer_structures, label: Transfer structures}
+  - {key: authority_asset, label: Building over or next to a water authority asset}
+  - {key: rail, label: Next to a rail corridor}
+  - {key: osd_existing, label: Existing on-site detention to keep or modify}
+  - {key: osd_required, label: On-site detention required by council}
+  - {key: norbe, label: Drinking water catchment (neutral or beneficial effect)}
+  - {key: stormwater_quality, label: Council requires stormwater quality modelling}
+  - {key: public_road, label: Works in a public road or intersection}
+  - {key: state_road, label: Site fronts or affects a state road}
+  - {key: heavy_vehicles, label: Use generates heavy vehicle movements}
+  - {key: tfnsw_referral, label: Traffic-generating development referred to TfNSW}
+  - {key: intersection_modelling, label: Intersection counts and modelling required}
+  - {key: gtp_required, label: Green travel plan required by a condition or the DCP}
+  - {key: cl46, label: A development standard is varied (clause 4.6)}
+  - {key: panel, label: Application goes to a planning panel}
+  - {key: objections, label: Notification likely to draw objections}
+  - {key: community, label: Community consultation required}
+  - {key: sustainability_target, label: Green Star or NABERS target set}
+  - {key: super_flat_floor, label: Super-flat floor needed for the use}
+  - {key: contract_admin, label: Client wants the consultant to administer the construction contract}
+
+# Planning pathways. ref, modification, planning_proposal and advice_only are
+# RFP values the profile taxonomy does not hold; a discipline lists the ones it
+# has no reviewed stage bundle for under unsupported_pathways.
+pathways:
+  - {key: exempt, label: Exempt development}
+  - {key: cdc, label: Complying development certificate (CDC)}
+  - {key: da, label: Development application (DA)}
+  - {key: ssd, label: State significant development (SSD)}
+  - {key: planning_permit, label: Planning permit (outside NSW)}
+  - {key: ref, label: Review of environmental factors (REF)}
+  - {key: modification, label: Modification of an existing consent}
+  - {key: planning_proposal, label: Planning proposal (rezoning)}
+  - {key: advice_only, label: "Planning advice only, no application"}
+
+procurement:
+  - {key: traditional, label: Traditional lump sum}
+  - {key: design_construct, label: Design and construct}
+  - {key: eci, label: Early contractor involvement}
+  - {key: managing_contractor, label: Managing contractor}
+  - {key: alliance, label: Alliance}
+  - {key: ppp, label: Public private partnership}
+
+work_types:
+  - {key: new, label: New build}
+  - {key: refurb, label: Refurbishment / fit-out / upgrade}
+  - {key: extend, label: Extension / addition}
+  - {key: remediation, label: Remediation / rectification}
+  - {key: advisory, label: Advisory services}
+
+fields:
+  - {key: ref, label: RFP reference, kind: text, required: true, group: issue}
+  - {key: issued, label: Issue date, kind: date, required: true, group: issue}
+  - {key: closes, label: Proposals close, kind: date, required: true, group: issue}
+  - {key: contact, label: Contact for questions, kind: text, required: true, group: issue}
+  - {key: questions_by, label: Questions in writing by, kind: date, required: true, group: issue}
+  - {key: agreement, label: Client agreement, kind: text, required: true, group: issue, help: "Name the agreement attached to this RFP. A missing agreement is an open question, never acceptance of the consultant's terms."}
+  - {key: start_by, label: Start by, kind: date, required: false, group: issue}
+  - {key: rates_hold_until, label: Rates hold until, kind: date, required: false, group: issue}
+  - {key: validity_days, label: Proposal validity (days), kind: number, required: true, group: issue, default: "90"}
+  - {key: payment_days, label: Payment terms (days), kind: number, required: true, group: issue, default: "30"}
+  - {key: pi, label: Professional indemnity cover, kind: text, required: true, group: issue, default: "$10 million"}
+  - {key: pl, label: Public liability cover, kind: text, required: true, group: issue, default: "$20 million"}
+  - {key: client, label: Client, kind: text, required: true, group: project}
+  - {key: lga, label: Local government area, kind: text, required: false, group: project}
+  - {key: zone, label: Zone, kind: text, required: false, group: project}
+  - {key: lot_dp, label: Lot and DP, kind: text, required: false, group: project}
+  - {key: program, label: Program milestones, kind: text, required: false, group: project, help: "Approval, start and completion dates as the client currently plans them."}
+  - {key: information, label: Information provided, kind: text, required: false, group: project, help: "Survey, due diligence, brief, geotechnical and other reports issued with this RFP."}
+  - {key: design_vehicle, label: Design vehicle, kind: text, required: false, group: project}
+  - {key: sustainability, label: Sustainability target, kind: text, required: false, group: project}
+  - {key: design_loads, label: Design loads from the brief, kind: text, required: false, group: project}
+
+evaluation:
+  - {key: price, label: Price, default: 40}
+  - {key: experience, label: Relevant experience, default: 20}
+  - {key: team, label: Team, default: 20}
+  - {key: methodology, label: Methodology and program, default: 10}
+  - {key: compliance, label: Compliance with the returnable schedules, default: 10}
+
+thresholds:
+  - {key: evaluation_weights, kind: client_default, text: "Price 40%, experience 20%, team 20%, methodology and program 10%, compliance 10%", source: "Golden drafts; client preference, editable per RFP", verified: false}
+  - {key: insurance_limits, kind: client_default, text: "PI $10 million and PL $20 million unless the discipline sets another default", source: "Golden proposals (architecture A p4, planning M p11, structural/civil E p4); client preference, not a statutory minimum", verified: false}
+  - {key: proposal_validity, kind: client_default, text: "Proposals valid for 90 days; payment within 30 days", source: "Golden proposals (architecture #153, #155); client preference", verified: false}
+  - {key: management_systems, kind: client_default, text: "ISO 9001 / 45001 / 14001 or an equivalent described system", source: "Golden proposals; the client accepts an equivalent system unless it states otherwise", verified: false}
+
+# The project table every discipline prints. A row with no label is the
+# opening sentence. Unfilled slots print ___ and appear under Before issue.
+project_rows:
+  - key: intro
+    text: "{client} intends to {work_phrase} {parts_phrase} at {address}."
+    required: true
+  - {key: parts, label: Building, text: "{parts}"}
+  - {key: quantities, label: Quantities, text: "{quantities}"}
+  - {key: program, label: Program, text: "{field:program}"}
+  - {key: pathway, label: Planning pathway, text: "{pathway}", required: true}
+  - {key: procurement, label: Procurement, text: "{procurement}", required: true}
+  - {key: conditions, label: Site conditions, text: "{flags}"}
+  - {key: information, label: Information provided, text: "{information}"}
+
+terms:
+  - key: agreement
+    text: "Engagement is under {field:agreement}. Your own terms and conditions do not apply; list any change you propose to the agreement in R6."
+    required: true
+    provenance: [{kind: practice, ref: "peer-review-2026-10-09 shared returnable refinements: R6 and agreement"}]
+  - key: authority
+    text: "Only a written instruction from the client's representative authorises a change in scope, work beyond an allowance or a change in fee, under the agreement. Work beyond an allowance without that instruction is not paid."
+    provenance: [{kind: practice, ref: "peer-review-2026-10-09 corrections: fee basis and allowance exceedance"}]
+  - key: baseline
+    text: "Each stage ends at client sign-off, and the signed-off design is the baseline for later stages. Design development within the brief is not a variation; a change the client asks for after sign-off is assessed under the agreement."
+    provenance: [{kind: evidence, ref: "architecture#151"}, {kind: evidence, ref: "civil#145"}]
+  - key: errors
+    text: "Correcting your own errors or omissions, and coordinating your work with information you were given, is not a variation."
+    provenance: [{kind: practice, ref: "peer-review-2026-10-09 corrections: consultant error is not a paid variation"}]
+  - key: payment
+    text: "Invoice monthly against stage progress; payment within {field:payment_days} days. Payment does not depend on an authority approval."
+    provenance: [{kind: evidence, ref: "architecture#153"}, {kind: evidence, ref: "architecture#159"}]
+  - key: rates
+    text: "Rates hold until {field:rates_hold_until}; state how they are indexed after that."
+    provenance: [{kind: evidence, ref: "architecture#154"}]
+  - key: validity
+    text: "Your proposal stays valid for {field:validity_days} days."
+    provenance: [{kind: evidence, ref: "architecture#155"}]
+  - key: questions
+    text: "Send questions in writing to {field:contact} by {field:questions_by}. Answers are issued to every tenderer as numbered addenda."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-guide.md (numbered addenda and acknowledgement)"}]
+
+returnables:
+  - key: r1
+    title: R1 Fee by stage
+    text: "Excl. GST, using the table below: one row per stage in section 3, then each option. Base fee, options and ceiling amounts are totalled separately; an item that appears in two places is priced once. Acknowledge each addendum by number, and confirm that the person signing can bind your firm."
+  - key: r2
+    title: R2 Deliverables list
+    text: "For each deliverable: format, stage, review rounds, who prepares it and who receives it. Say whether editable source files are included and what reliance others may place on them."
+  - key: r3
+    title: R3 Hourly rates
+    text: "Rates excl. GST, used only for work authorised in writing beyond the allowances."
+  - key: r4
+    title: R4 Team
+    text: "Named lead and their availability by stage, with % time; subconsultants and their roles. Resources must match the program in R7."
+  - key: r5
+    title: R5 Experience
+    text: "Two or three comparable projects in the last five years, each with a referee."
+  - key: r6
+    title: R6 Departures
+    text: "Each departure from sections 3 to 6 and from the agreement: the clause or item, the change you propose and its effect on fee and time; or write \"nil\". Departures are evaluated. A general exclusion or qualification not listed here is treated as non-compliant."
+  - key: r7
+    title: R7 Program
+    text: "Weeks by stage against the durations given, separating your working time, authority assessment time and the dates you need inputs from others. Confirm you can start by {field:start_by}."
+  - key: r8
+    title: R8 Insurance and compliance
+    text: "Professional indemnity {field:pi} and public liability {field:pl}, with insurer and expiry; workers compensation; a quality, safety and environmental management system (certified to ISO 9001, 45001 and 14001, or an equivalent system you describe); conflicts of interest."
+  - key: r9
+    title: R9 Reimbursables
+    text: "\"Included in the fee\" (preferred), or each item with its rate."
+
+legend: "I = included in the fee · O = optional, price as a separate line · X = excluded (the party named does it)."
+allowances: "Price exactly these. Work beyond an allowance needs a written instruction (section 6) and is then charged at your R3 rates."
+departures: "Tell us in R6 if you disagree with any line. Do not add your own general exclusions; any you add are treated as non-compliant."
+evaluation_note: "Lowest price does not automatically win."
