@@ -327,6 +327,9 @@ func Assemble(s Snapshot, template knowledge.ReportTemplate, cat *knowledge.Cata
 	if basisError != nil {
 		return nil, basisError
 	}
+	if template.Kind == "rfp" {
+		sections = shapeRFP(sections, s)
+	}
 	return ApplyEdits(sections, edits)
 }
 

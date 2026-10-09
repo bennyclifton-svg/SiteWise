@@ -31,7 +31,7 @@ func TestReportDraftAPI(t *testing.T) {
 	}
 	var d store.ReportDraft
 	m.call(t, http.MethodPost, base+"/draft", []byte(`{"use_last_completed":true}`), http.StatusOK, &d)
-	if len(d.Sections) != 7 || d.SourceRevisions.AppBuild == "" {
+	if len(d.Sections) != 8 || d.SourceRevisions.AppBuild == "" {
 		t.Fatal("missing draft content/build")
 	}
 	editURL := base + "/edits/" + url.PathEscape("package:"+p.ID)

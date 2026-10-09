@@ -103,3 +103,7 @@
   .works-open { grid-column: 1 / -1; }
   .works-detail { padding-left: 12px; }
 }
+.report-page-fit { margin-top: 4px; color: var(--ink-muted); }
+.report-page-fit-over { color: var(--ink-body); font-weight: 600; }
+.report-review summary { cursor: pointer; }
+.report-review li { margin: 4px 0; }

@@ -265,6 +265,9 @@ func ChangesSinceIssue(before, after []Section) []Change {
 	values := func(sections []Section) map[string]string {
 		out := map[string]string{}
 		for _, s := range sections {
+			if s.Internal {
+				continue
+			}
 			for _, b := range s.Blocks {
 				text := fmt.Sprintf("%s: %s", b.Label, b.Text)
 				if b.Table != nil {

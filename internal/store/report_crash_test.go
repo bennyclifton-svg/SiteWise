@@ -209,7 +209,7 @@ func TestReportAssemblyProcessCrashRecovery(t *testing.T) {
 			if err != nil || view.Draft == nil {
 				t.Fatalf("missing recovered draft: %+v %v", view, err)
 			}
-			if len(view.Draft.References) == 0 || len(view.Draft.Sections) != 7 || view.Draft.SourceRevisions.AppBuild != "restart-test" {
+			if len(view.Draft.References) == 0 || len(view.Draft.Sections) != 8 || view.Draft.SourceRevisions.AppBuild != "restart-test" {
 				t.Fatal("restart did not publish a complete draft")
 			}
 			if existingDraft && (view.Draft.ID != previous.ID || view.Draft.Version != previous.Version+1 || len(view.Edits) != 1 || view.Edits[0].Text != "Keep this protected wording") {

@@ -34,10 +34,12 @@ type Table struct {
 }
 
 type Section struct {
-	ID        string  `json:"id"`
-	Title     string  `json:"title"`
-	Essential bool    `json:"essential"`
-	Blocks    []Block `json:"blocks"`
+	ID        string `json:"id"`
+	Title     string `json:"title"`
+	Essential bool   `json:"essential"`
+	// Internal sections are review lists for the project manager; never issued.
+	Internal bool    `json:"internal,omitempty"`
+	Blocks   []Block `json:"blocks"`
 }
 
 type Edit struct {

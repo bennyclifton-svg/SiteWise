@@ -17,6 +17,13 @@ func IssueContent(sections []Section, kind string, disclose bool) ([]Section, []
 	if err = json.Unmarshal(raw, &out); err != nil {
 		return nil, nil, err
 	}
+	issued := out[:0]
+	for _, section := range out {
+		if !section.Internal {
+			issued = append(issued, section)
+		}
+	}
+	out = issued
 	for i := range out {
 		for j := range out[i].Blocks {
 			b := &out[i].Blocks[j]

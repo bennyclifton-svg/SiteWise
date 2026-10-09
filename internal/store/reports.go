@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/reports"
+	"sitewise/internal/reports/render"
 )
 
 var ErrInvalidReport = errors.New("invalid or unavailable report")
@@ -49,6 +50,7 @@ type ReportView struct {
 	Draft   *ReportDraft         `json:"draft"`
 	Edits   []reports.Edit       `json:"edits"`
 	Stale   []string             `json:"stale"`
+	PageFit *render.PageFit      `json:"page_fit,omitempty"`
 }
 
 func readReport(ctx context.Context, tx pgx.Tx, org, id string) (Report, error) {

@@ -39,12 +39,15 @@ func TestReportDraftRefreshEditsIsolationAndPending(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if d.ID == "" || len(d.Sections) != 7 || d.Status != "draft" || d.SourceRevisions.AppBuild != "test-build" {
+	if d.ID == "" || len(d.Sections) != 8 || d.Status != "draft" || d.SourceRevisions.AppBuild != "test-build" {
 		t.Fatalf("draft %+v", d)
 	}
 	view, err := s.ReadReport(ctx, orgA, r.ID, "test-build")
 	if err != nil || view.Draft.ID != d.ID {
 		t.Fatalf("read %+v %v", view, err)
+	}
+	if view.PageFit == nil || view.PageFit.Pages < 1 || view.PageFit.Limit != 2 || view.PageFit.Error != "" {
+		t.Fatalf("draft page fit missing %+v", view.PageFit)
 	}
 	if len(d.References) == 0 || len(view.Draft.References) != len(d.References) {
 		t.Fatal("references not persisted with draft")

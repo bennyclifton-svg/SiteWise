@@ -32,12 +32,12 @@ func TestRFPAssemblySavedScopeAndDraftBoundaries(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(sections) != 7 {
+	if len(sections) != 8 || !sections[7].Internal {
 		t.Fatal("missing required sections", sections)
 	}
 	blocks := map[string]Block{}
 	for _, section := range sections {
-		if !section.Essential {
+		if !section.Essential && !section.Internal {
 			t.Fatal("essential flag lost")
 		}
 		for _, b := range section.Blocks {
@@ -47,10 +47,10 @@ func TestRFPAssemblySavedScopeAndDraftBoundaries(t *testing.T) {
 			}
 		}
 	}
-	if blocks["brief:floor_area"].Text != "Not established" || !blocks["work:survey"].Provisional || !blocks["proposal:ic.open||||0"].Provisional {
+	if !strings.Contains(blocks["review:brief_unknown"].Text, "Floor area") || !blocks["work:survey"].Provisional || !blocks["proposal:ic.open||||0"].Provisional {
 		t.Fatal("unknown/proposed state lost", blocks)
 	}
-	if !strings.Contains(blocks["scope:scope"].Text, "Design drawings") || !strings.Contains(blocks["work:replace"].Text, "Warehouse A") || !strings.Contains(blocks["work:excluded"].Label, "excluded") {
+	if !strings.Contains(blocks["scope:scope"].Text, "Design drawings") || !strings.Contains(blocks["work:summary"].Text, "Replace sprinklers (Warehouse A)") || !strings.Contains(blocks["work:excluded_summary"].Text, "Excluded roof works") {
 		t.Fatal("scope detail lost", blocks)
 	}
 	if !blocks["clause:brief:cl.rfp-draft-status"].Provisional {

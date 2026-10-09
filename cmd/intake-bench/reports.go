@@ -42,7 +42,13 @@ func (a *apiClient) reports(ctx context.Context, n int) error {
 		if err := json.Unmarshal(raw, &d); err != nil {
 			return err
 		}
-		if len(d.Sections) != 7 {
+		issued := 0
+		for _, section := range d.Sections {
+			if !section.Internal {
+				issued++
+			}
+		}
+		if issued != 7 {
 			return fmt.Errorf("report benchmark missing sections")
 		}
 		body, _ = json.Marshal(map[string]any{"version": d.Version, "text": "Review the engineering scope."})

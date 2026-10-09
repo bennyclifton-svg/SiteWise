@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/reports"
+	"sitewise/internal/reports/render"
 )
 
 // Version is the draft version the user saw, protecting both concurrent edits
@@ -136,6 +137,12 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 		return view, err
 	}
 	view.Draft = &d
+	issued, refs, err := reports.IssueContent(d.Sections, r.Kind, false)
+	if err != nil {
+		return view, err
+	}
+	fit := render.Fit(reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, Sections: issued, References: refs, RendererVersion: render.Version})
+	view.PageFit = &fit
 	if len(view.Issues) > 0 {
 		compared, _, compareErr := reports.IssueContent(d.Sections, r.Kind, view.Issues[0].BudgetDisclosed)
 		if compareErr != nil {
