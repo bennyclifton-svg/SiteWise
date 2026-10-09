@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"sitewise/internal/reports"
 	"sitewise/internal/reports/render"
@@ -60,4 +61,42 @@ func renderPages(name string, sections []reports.Section) (int, float64, error) 
 		}
 	}
 	return r.Pages, r.Length, err
+}
+
+// TestPopulatedRFPSpeed times the work a setting change does (resolve and
+// render to sections) and the page-fit render, on every populated scenario.
+// The HTTP bench covers the transaction around it (report_setting 100/250 ms).
+func TestPopulatedRFPSpeed(t *testing.T) {
+	cat := loadCatalog(t)
+	sk, _ := cat.RFPSkeleton()
+	tpl := consultantTemplate(t)
+	var resolveTimes, renderTimes []time.Duration
+	for round := 0; round < 3; round++ {
+		for _, s := range loadScenarios(t) {
+			for id := range s.Expect {
+				d, _ := cat.RFP(id)
+				drivers := s.drivers(t, sk, d)
+				settings := s.settings(t, id, drivers)
+				start := time.Now()
+				sections, err := Sections(Resolve(d, sk, drivers, settings), tpl)
+				if err != nil {
+					t.Fatal(err)
+				}
+				resolveTimes = append(resolveTimes, time.Since(start))
+				start = time.Now()
+				if _, _, err := renderPages("", sections); err != nil {
+					t.Fatal(err)
+				}
+				renderTimes = append(renderTimes, time.Since(start))
+			}
+		}
+	}
+	pct := func(d []time.Duration, p float64) time.Duration {
+		sort.Slice(d, func(i, j int) bool { return d[i] < d[j] })
+		return d[int(float64(len(d)-1)*p)]
+	}
+	t.Logf("resolve+sections n=%d p50=%s p90=%s; render n=%d p50=%s p90=%s", len(resolveTimes), pct(resolveTimes, .5), pct(resolveTimes, .9), len(renderTimes), pct(renderTimes, .5), pct(renderTimes, .9))
+	if pct(resolveTimes, .9) > 20*time.Millisecond || pct(renderTimes, .9) > 100*time.Millisecond {
+		t.Fatal("RFP resolve or render is too slow for the report_setting and report_read budgets")
+	}
 }

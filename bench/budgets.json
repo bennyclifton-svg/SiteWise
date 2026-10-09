@@ -122,6 +122,11 @@
       "p90_us": 1000000
     },
     {
+      "name": "report_setting",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
       "name": "delivery_write",
       "p50_us": 100000,
       "p90_us": 250000
