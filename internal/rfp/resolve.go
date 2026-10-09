@@ -873,6 +873,11 @@ func (r *resolver) party(p knowledge.RFPPosition) string {
 		}
 	}
 	switch party {
+	case "":
+		// The user excluded an item the rules never exclude: someone must
+		// still own it.
+		r.check(Check{ID: "unallocated:" + p.Key, Label: "Unallocated: " + p.Label, Text: "You excluded this item. Name who does it.", Control: "responsible:" + p.Key})
+		return "party not named"
 	case "not_required":
 		return "not required"
 	case "client", "contractor", "superintendent", "architect":
@@ -974,7 +979,11 @@ func (r *resolver) resolveRows() {
 	fill := func(prefix string, row knowledge.RFPRow) Row {
 		label := row.Label
 		if label == "" {
-			label = row.Key
+			// An unlabelled row is the opening sentence of its section.
+			label = map[string]string{"intro": "Project description"}[row.Key]
+			if label == "" {
+				label = strings.ReplaceAll(row.Key, "_", " ")
+			}
 		}
 		return Row{Key: row.Key, Label: row.Label, Text: r.fill(row.Text, prefix+row.Key, label, row.Required)}
 	}
@@ -1036,10 +1045,18 @@ func (r *resolver) resolveRows() {
 		}
 		a.Text = strings.ReplaceAll(a.Text, "{n}", n)
 	}
+	// Missing issue details are one decision, not one per field.
+	missing, first := []string{}, ""
 	for _, f := range r.sk.Fields {
 		if f.Required && r.out.Fields[f.Key].Value == "" {
-			r.check(Check{ID: "field:" + f.Key, Label: f.Label + ": not set", Text: "Needed before issue.", Blocking: true, Control: "field:" + f.Key})
+			missing = append(missing, f.Label)
+			if first == "" {
+				first = "field:" + f.Key
+			}
 		}
+	}
+	if len(missing) > 0 {
+		r.check(Check{ID: "fields", Label: "Issue details not set", Text: strings.Join(missing, ", ") + ".", Blocking: true, Control: first, Changes: missing})
 	}
 }
 
@@ -1068,8 +1085,19 @@ func (r *resolver) fill(text, id, label string, required bool) string {
 		}
 		return v
 	})
-	if len(missing) > 0 && required {
-		r.check(Check{ID: "slot:" + id, Label: sentenceCase(label) + ": " + strings.Join(missing, ", ") + " not set", Text: "Needed before issue.", Blocking: true, Control: slotControl(missing, r.sk)})
+	// A required field already has its own check; repeat only what it lacks.
+	uncovered := []string{}
+	for _, m := range missing {
+		covered := false
+		for _, f := range r.sk.Fields {
+			covered = covered || (f.Required && f.Label == m)
+		}
+		if !covered {
+			uncovered = append(uncovered, m)
+		}
+	}
+	if len(uncovered) > 0 && required {
+		r.check(Check{ID: "slot:" + id, Label: sentenceCase(label) + ": " + strings.Join(uncovered, ", ") + " not set", Text: "Needed before issue.", Blocking: true, Control: slotControl(uncovered, r.sk)})
 	}
 	return out
 }
