@@ -190,6 +190,12 @@ Each report block keeps its reference disclosures beside its wording. A disclosu
 
 Creation, assembly and refresh are separate labelled actions. Editing reveals the textarea and Save/Cancel actions, while competing report actions are disabled. Saved edits receive a Protected wording label. Concurrent changes offer the latest saved wording for comparison; refresh keeps protected wording and flags changed or missing sources. These are visible interaction patterns in the current component, not a guarantee about backend behaviour.
 
+### Consultant RFP editor
+
+A discipline RFP widens the reader and places "Finish this RFP" beside the draft when the reader has room (container query at 1040px); otherwise the panel stacks above the draft. The panel is a paper surface with a strong border. Decisions that block issue sit first on the warm notice ground, each with its control inline or a link to it; the remaining controls live in native disclosures (appointment and stages, project, allowances, scope position, issue details, other checks) with mono counters.
+
+Rows reuse the Profile idiom: label above a compact control, then a text source pill (Profile, Rule, Default, Suggested in dashed azure, Not known in warning, You in ember) and a Reset link. Yes/No/Not known facts, the service level and I/O/X positions are segmented radio groups whose selected option is ink on paper-inverse; a choice shows at once while it saves, and only that control is disabled. Typed values save on blur or Enter. Source and reason text is never colour-only.
+
 ### Planning corrections and scope
 
 Works and Packages reuse labelled paper fields, native selects, multiline wording and wrapped Save/Cancel actions. Saved values remain above the editor so a correction can be compared in place. Work records expose the latest editor, edit time when present, rationale and original source excerpts; the disclosure does not present a complete correction history.

@@ -74,7 +74,7 @@ Price 40% · Relevant experience 20% · Team 20% · Methodology and program 10% 
 
 ### Returnable schedules: reply using this structure only
 
-R1 Fee by stage: Excl. GST, in the tables below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Meetings are inside the stage prices, not a separate line.
+R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Meetings are inside the stage prices, not a separate line.
 
 | Stage | A | B | C | D | Total $ | Weeks |
 |---|---|---|---|---|---|---|

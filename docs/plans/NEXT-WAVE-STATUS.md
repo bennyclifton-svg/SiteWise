@@ -35,6 +35,7 @@ usefulness judgments or a passing performance/release result.
 | WP-71 target-host timing | No target-VPS result | Representative VPS and off-site restore before release |
 | K1–K4 knowledge | Bounded implementation audit complete: layout context, six NSW review families, precise detectors and source corrections; checks pass | Owner content review and live accuracy |
 | K5/K6 owner knowledge and acceptance | Outstanding | Owner lessons, reviewed keys/clauses, usefulness and manual-time comparison |
+| Consultant RFP tranche 1 (architecture, planning, traffic, civil, structural) | Built on branch `rfp/golden`: discipline rules, three-valued resolver, settings, editor, 3-page issue; 12 answer keys pass ([evidence](../evidence/2026-10-10-rfp-tranche1/README.md)) | Owner review of [Phase A changes](../rfp-golden/phase-a-changes.md), answer keys and `status: reviewed` per discipline |
 
 ## Checks and limitations
 

@@ -154,7 +154,7 @@ terms:
 returnables:
   - key: r1
     title: R1 Fee by stage
-    text: "Excl. GST, in the tables below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm."
+    text: "Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm."
   - key: r2
     title: R2 Deliverables list
     text: "Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them."

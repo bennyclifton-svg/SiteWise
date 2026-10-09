@@ -81,6 +81,24 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if d.TemplateID != "tpl.rfp-consultant" || len(d.SourceRevisions.RFP) == 0 {
 		t.Fatalf("a confirmed architect package uses the consultant RFP with frozen drivers: %s", d.TemplateID)
 	}
+	// The generic RFP's brief, work, proposal and gap blocks never reach a
+	// discipline RFP; the first section a consultant reads is the project.
+	visible := []string{}
+	for _, section := range d.Sections {
+		if !section.Internal {
+			visible = append(visible, section.Title)
+		}
+		for _, b := range section.Blocks {
+			for _, prefix := range []string{"work:", "proposal:", "gap:", "brief:", "clause:"} {
+				if strings.HasPrefix(b.ID, prefix) {
+					t.Fatalf("generic block %s in a discipline RFP", b.ID)
+				}
+			}
+		}
+	}
+	if len(visible) == 0 || visible[0] != "1. Project" {
+		t.Fatalf("first visible section %v", visible)
+	}
 	if !strings.Contains(blockText(d, "rfp:role"), "Civil (to be appointed)") {
 		t.Fatalf("other consultants carry their real status: %q", blockText(d, "rfp:role"))
 	}
