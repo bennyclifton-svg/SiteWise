@@ -29,7 +29,7 @@ scale:
     - {class: ["3", 9a, 9b, 9c]}
 
 project_rows:
-  - {key: civil_works, label: Civil works, text: "{quantities} · design vehicle {field:design_vehicle}", provenance: [{kind: evidence, ref: "civil#62"}, {kind: evidence, ref: "civil#T p2"}]}
+  - {key: civil_works, label: Design vehicle, text: "{field:design_vehicle}", provenance: [{kind: evidence, ref: "civil#62"}, {kind: evidence, ref: "civil#T p2"}]}
 
 role:
   - key: engineer
@@ -139,9 +139,9 @@ allowances:
 
 positions:
   - {key: utility_plan, label: "Combined utility plan from others' layouts", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#80"}]}
-  - {key: discharge, label: "Discharge point, downstream capacity, easement and access constraints, and the approvals needed, confirmed at schematic design", kind: technical, value: I, provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-commercial-industrial-guide.md (evidence and common failures)"}, {kind: evidence, ref: "civil#15-17"}, {kind: evidence, ref: "civil#63"}]}
+  - {key: discharge, label: "Discharge point, downstream capacity, easements and approvals confirmed at schematic design", kind: technical, value: I, provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-commercial-industrial-guide.md (evidence and common failures)"}, {kind: evidence, ref: "civil#15-17"}, {kind: evidence, ref: "civil#63"}]}
   - {key: drainage_model, label: "Stormwater drainage model (DRAINS or equal)", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#12"}]}
-  - {key: hydraulic_connection, label: "Connection points between hydraulic and civil drainage: location, levels and who designs each side", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#42"}, {kind: evidence, ref: "civil#105"}]}
+  - {key: hydraulic_connection, label: "Hydraulic-to-civil connections: location, levels and who designs each side", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#42"}, {kind: evidence, ref: "civil#105"}]}
   - key: water_quality
     label: "Water quality modelling (MUSIC) and treatment design"
     kind: technical
@@ -150,14 +150,14 @@ positions:
     assumption: "Price as an option: needed if council or the catchment requires stormwater quality modelling."
     provenance: [{kind: evidence, ref: "civil#13"}, {kind: evidence, ref: "civil#48"}]
   - key: norbe
-    label: "Neutral or beneficial effect assessment for the drinking water catchment"
+    label: "Neutral or beneficial effect assessment (drinking water catchment)"
     kind: technical
     value: {value: I, when: [{flag: [norbe]}], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only in a drinking water catchment."
     provenance: [{kind: evidence, ref: "civil#108"}]
   - key: osd_existing
-    label: "Feasibility of keeping or modifying the existing on-site detention: capacity, access and approval constraints from the listed records and agreed investigations"
+    label: "Feasibility of keeping or modifying the existing on-site detention"
     kind: technical
     value: {value: I, when: [{flag: [osd_existing]}], else: "-"}
     if_unknown: include
@@ -178,13 +178,13 @@ positions:
     assumption: "Price as an option: needed if council requires on-site detention."
     provenance: [{kind: evidence, ref: "civil#16-17"}, {kind: evidence, ref: "civil#49"}, {kind: evidence, ref: "civil#107"}]
   - key: retained_services
-    label: "Brief for CCTV, survey or potholing of retained drainage and services; who commissions and does the investigation; how findings change the design"
+    label: "Investigation brief for retained drainage and services (CCTV, survey, potholing) and how findings change the design"
     kind: technical
     value: I
     module: existing_building
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}, {kind: seed, ref: "civil-commercial-industrial-guide.md inception"}]
   - key: earthworks_suitability
-    label: "Geotechnical and environmental advice coordinated into reuse, disposal and design; no balanced cut and fill promised independently of material suitability"
+    label: "Geotechnical and environmental advice coordinated into earthworks reuse and disposal (balance depends on material suitability)"
     kind: technical
     value: {value: I, when: [{flag: [contamination]}, {flag: [acid_sulfate]}, {flag: [groundwater]}], else: "-"}
     if_unknown: include
@@ -198,10 +198,10 @@ positions:
     assumption: "Price as an option: needed only if the site is flood affected."
     provenance: [{kind: evidence, ref: "civil#46"}, {kind: evidence, ref: "civil#109"}]
   - {key: flood_evacuation, label: "Flood evacuation plan", kind: technical, value: {value: O, when: [{flag: [flood]}], else: "-"}, if_unknown: option, assumption: "Price as an option: needed only if the site is flood affected.", provenance: [{kind: evidence, ref: "civil#110"}]}
-  - {key: pavement_design, label: "Detailed pavement design where the geotechnical report does not provide it; name the pavement designer in R4", kind: technical, value: O, provenance: [{kind: evidence, ref: "civil#32"}, {kind: evidence, ref: "civil#99"}]}
+  - {key: pavement_design, label: "Detailed pavement design where the geotechnical report does not give it (name the designer in R4)", kind: technical, value: O, provenance: [{kind: evidence, ref: "civil#32"}, {kind: evidence, ref: "civil#99"}]}
   - {key: retaining_structural, label: "Structural design of retaining walls", kind: technical, value: X, responsible: "structural engineer", provenance: [{kind: evidence, ref: "civil#101"}, {kind: evidence, ref: "civil#141"}]}
   - key: public_road_approvals
-    label: "Authority submission schedule: designer or coordinator, review rounds and asset handover requirements"
+    label: "Authority submission schedule: designer, review rounds, asset handover"
     kind: technical
     value: {value: I, when: [{flag: [public_road]}], else: "-"}
     if_unknown: option
@@ -209,7 +209,7 @@ positions:
     provenance: [{kind: evidence, ref: "civil#43"}, {kind: evidence, ref: "civil#92"}, {kind: evidence, ref: "civil#137"}]
   - {key: clash_check, label: "3D clash check of combined services", kind: service_level, simple: X, complex: O, responsible: not_required, provenance: [{kind: evidence, ref: "civil#S p3"}]}
   - {key: civil_model, label: "Coordinated 3D civil model (surface and earthworks)", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "civil#113"}]}
-  - {key: design_criteria, label: "Design criteria document: design life, flood immunity, water reuse and quality targets, vehicles, pavements", kind: service_level, simple: X, complex: I, responsible: not_required, provenance: [{kind: evidence, ref: "civil#65"}]}
+  - {key: design_criteria, label: "Design criteria document", kind: service_level, simple: X, complex: I, responsible: not_required, provenance: [{kind: evidence, ref: "civil#65"}]}
   - {key: water_strategy, label: "Water management strategy (supply, reuse, effluent)", kind: service_level, simple: X, complex: O, responsible: "hydraulic engineer", provenance: [{kind: evidence, ref: "civil#66"}]}
   - {key: safety_in_design, label: "Civil safety in design report", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#111"}]}
   - key: civil_declarations
@@ -220,7 +220,7 @@ positions:
     threshold: dbp_regime
     provenance: [{kind: evidence, ref: "civil#72"}]
   - {key: quality_audit, label: "Audit of the contractor's quality system", kind: service_level, simple: X, complex: O, responsible: superintendent, provenance: [{kind: evidence, ref: "civil#124"}]}
-  - {key: services_location, label: "Physically locating services; designing service relocations", kind: technical, value: X, responsible: "services locator and utility designers", provenance: [{kind: evidence, ref: "civil#77-78"}]}
+  - {key: services_location, label: "Locating services; designing service relocations", kind: technical, value: X, responsible: "services locator and utility designers", provenance: [{kind: evidence, ref: "civil#77-78"}]}
   - key: shoring
     label: "Shoring, rock anchors, slope stability"
     kind: technical

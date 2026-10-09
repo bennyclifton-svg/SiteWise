@@ -3,10 +3,12 @@ package store
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 	"unicode/utf8"
 
 	"github.com/jackc/pgx/v5"
+	"sitewise/internal/procurement"
 	"sitewise/internal/reports"
 	"sitewise/internal/reports/render"
 )
@@ -128,6 +130,13 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if err != nil {
 		return view, err
 	}
+	var pkg procurement.Package
+	if r.Kind != "pmp" {
+		if pkg, err = readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true); err != nil {
+			return view, err
+		}
+		view.RFPSuggestion = s.rfpSuggestion(pkg)
+	}
 	if r.CurrentDraftVersionID == "" {
 		view.Stale = append(view.Stale, "not_assembled")
 		return view, tx.Commit(ctx)
@@ -141,7 +150,7 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if err != nil {
 		return view, err
 	}
-	fit := render.Fit(reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, Sections: issued, References: refs, RendererVersion: render.Version})
+	fit := render.Fit(reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: issued, References: refs, RendererVersion: render.Version})
 	view.PageFit = &fit
 	if len(view.Issues) > 0 {
 		compared, _, compareErr := reports.IssueContent(d.Sections, r.Kind, view.Issues[0].BudgetDisclosed)
@@ -154,7 +163,14 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if err != nil {
 		return view, err
 	}
-	template, err := s.reportTemplate(r.Kind)
+	if d.TemplateID == rfpTemplateID && d.Status == "draft" {
+		// A draft whose discipline file changed shape still opens; the stale
+		// notice asks for a refresh.
+		if view.RFP, err = s.rfpControls(ctx, tx, org, d); err != nil && !errors.Is(err, ErrInvalidReport) {
+			return view, err
+		}
+	}
+	template, err := s.reportTemplateFor(r.Kind, pkg)
 	if err != nil {
 		return view, err
 	}
@@ -175,14 +191,8 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if len(v.StaleFor(*s.profileBuild)) > 0 {
 		view.Stale = append(view.Stale, "saved_profile")
 	}
-	if r.Kind != "pmp" {
-		p, err := readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
-		if err != nil {
-			return view, err
-		}
-		if p.RetiredAt != nil {
-			view.Stale = append(view.Stale, "package_retired")
-		}
+	if r.Kind != "pmp" && pkg.RetiredAt != nil {
+		view.Stale = append(view.Stale, "package_retired")
 	}
 	return view, tx.Commit(ctx)
 }

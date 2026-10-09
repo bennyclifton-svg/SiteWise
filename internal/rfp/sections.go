@@ -11,9 +11,7 @@ import (
 
 // BudgetBlockID is the one RFP block that carries the internal budget. Issue
 // strips it unless the user discloses the budget.
-const BudgetBlockID = "rfp:budget"
-
-var feeBasisLabel = map[string]string{"fixed": "Lump sum", "time_to_ceiling": "Time to the ceiling", "per_unit": "Rate per unit", "option": "Option"}
+const BudgetBlockID = reports.RFPBudgetBlockID
 
 type builder struct {
 	r       Resolved
@@ -79,7 +77,8 @@ func (b *builder) field(key string) string {
 }
 
 func (b *builder) project() {
-	header := strings.Join([]string{b.r.Heading, "Ref " + b.field("ref") + " · Issued " + b.field("issued") + " · Closes " + b.field("closes") + " · Contact " + b.field("contact")}, "\n")
+	// The PDF title names the discipline; the header carries the issue details.
+	header := "Ref " + b.field("ref") + " · Issued " + b.field("issued") + " · Closes " + b.field("closes") + " · Contact " + b.field("contact")
 	b.add("project", "rfp:header", "", header, nil, map[string]any{"fields": b.r.Fields})
 	rows := [][]string{}
 	for _, row := range b.r.Project {
@@ -111,7 +110,8 @@ func (b *builder) role() {
 }
 
 func (b *builder) stages() {
-	main, options := [][]string{}, [][]string{}
+	rows := [][]string{}
+	options := [][]string{}
 	for _, s := range b.r.Stages {
 		text := s.Text
 		if s.Responsibility != "" {
@@ -122,40 +122,40 @@ func (b *builder) stages() {
 			if s.Assumption != "" {
 				text += " Assumption: " + s.Assumption
 			}
-			main = append(main, []string{s.Name, text, feeBasisLabel[s.FeeBasis]})
+			rows = append(rows, []string{s.Name, text})
 		case Ask:
-			main = append(main, []string{s.Name, "To confirm before issue: " + text, feeBasisLabel[s.FeeBasis]})
+			rows = append(rows, []string{s.Name, "To confirm before issue: " + text})
 		case Option:
 			why := s.Assumption
 			if after, ok := strings.CutPrefix(s.Why, "Follows "); ok && why == "" {
-				why = "With the " + strings.ToLower(after)
+				why = "With the " + strings.ToLower(after) + "."
+			}
+			if why == "" && s.Source == "boundary" {
+				why = "A later stage the client may commission."
 			}
 			if why == "" {
-				why = map[string]string{"boundary": "Later stage; the client may commission it", "default": "Client opts in"}[s.Source]
+				why = "The client opts in."
 			}
-			if why == "" {
-				why = "Client opts in"
-			}
-			options = append(options, []string{s.Name, text, why})
+			options = append(options, []string{s.Name + " (option)", text + ". " + why})
 		}
 	}
-	b.add("stages", "rfp:stages", "", b.r.StageIntro, doc([]string{"Stage", "Deliverable at sign-off", "Pricing"}, main), map[string]any{"stages": b.r.Stages, "boundary": b.r.Boundary})
-	if len(options) > 0 {
-		b.add("stages", "rfp:stages:options", "", "Price these separately; they are not in the base fee.", doc([]string{"Option", "Deliverable", "Why it is optional"}, options), map[string]any{"stages": b.r.Stages})
-	}
+	// Options follow the base stages in one table: an option is scope the
+	// client may buy, priced on its own line in R1.
+	rows = append(rows, options...)
+	b.add("stages", "rfp:stages", "", b.r.StageIntro+" Options are priced on their own and are not in the base fee.", doc([]string{"Stage", "Deliverable at sign-off"}, rows), map[string]any{"stages": b.r.Stages, "boundary": b.r.Boundary})
 	if len(b.r.Elements) > 0 {
-		rows := [][]string{}
+		lines := []string{b.r.ElementNote}
 		for _, e := range b.r.Elements {
 			switch e.State {
 			case Include:
-				rows = append(rows, []string{e.Code, e.Name, e.Text})
+				lines = append(lines, e.Code+" "+e.Name+": "+e.Text+".")
 			case Option:
-				rows = append(rows, []string{e.Code, e.Name + " (option)", e.Text + " " + e.Assumption})
+				lines = append(lines, e.Code+" "+e.Name+" (option): "+e.Text+". "+e.Assumption)
 			case Ask:
-				rows = append(rows, []string{e.Code, e.Name + " (to confirm)", e.Text})
+				lines = append(lines, e.Code+" "+e.Name+" (to confirm before issue): "+e.Text+".")
 			}
 		}
-		b.add("stages", "rfp:elements", "", b.r.ElementNote, doc([]string{"Element", "Name", "Includes"}, rows), map[string]any{"elements": b.r.Elements})
+		b.add("stages", "rfp:elements", "", strings.Join(lines, "\n"), nil, map[string]any{"elements": b.r.Elements})
 	}
 }
 
@@ -171,27 +171,40 @@ func (b *builder) allowances() {
 	b.add("allowances", "rfp:allowances", "", b.r.AllowNote, doc([]string{"Item", "Allowance", "Item", "Allowance"}, rows), map[string]any{"allowances": b.r.Allowances})
 }
 
+// positions prints each canonical item under its position: included,
+// optional or excluded with the party who does it. A grouped list reads like
+// the golden I/O/X table and, unlike a table row, can break across pages.
 func (b *builder) positions() {
-	rows := [][]string{}
+	groups := map[string][]string{}
 	for _, p := range b.r.Positions {
-		v := p.Value
-		switch p.Value {
-		case "X":
-			v = "X: " + p.Party
-		case Ask:
-			v = "To confirm before issue"
+		item := p.Label
+		if p.Value == "X" {
+			item += " (" + p.Party + ")"
 		}
-		if p.Assumption != "" {
-			v += ". " + p.Assumption
+		// An included item's label already states it; only an option or a
+		// decision carries the condition it waits on.
+		if p.Assumption != "" && p.Value != "I" {
+			item += " (" + compactAssumption(p.Assumption) + ")"
 		}
-		rows = append(rows, []string{p.Label, v})
+		groups[p.Value] = append(groups[p.Value], item)
 	}
-	scale := "Service levels in this table are set for a " + b.r.Scale + " project"
+	scale := "Service levels are set for a " + b.r.Scale + " project"
 	if b.r.ScaleSource == "rule" && b.r.Scale == "complex" {
 		scale += " (" + b.r.ScaleWhy + ")"
 	}
-	text := strings.Join([]string{b.r.Legend, scale + ". Technical items follow the project's own facts.", b.r.Departures}, "\n")
-	b.add("positions", "rfp:positions", "", text, doc([]string{"Item", "Position"}, rows), map[string]any{"positions": b.r.Positions, "scale": b.r.Scale, "scale_source": b.r.ScaleSource})
+	lines := []string{scale + "; technical items follow the project's own facts."}
+	for _, g := range []struct{ value, title string }{
+		{"I", "Included in the fee"},
+		{"O", "Optional: price each on its own line in R1"},
+		{"X", "Excluded: the party named does it"},
+		{Ask, "To confirm before issue"},
+	} {
+		if items := groups[g.value]; len(items) > 0 {
+			lines = append(lines, g.title+": "+strings.Join(items, "; ")+".")
+		}
+	}
+	lines = append(lines, b.r.Departures)
+	b.add("positions", "rfp:positions", "", strings.Join(lines, "\n"), nil, map[string]any{"positions": b.r.Positions, "scale": b.r.Scale, "scale_source": b.r.ScaleSource})
 }
 
 func (b *builder) terms() {
@@ -275,33 +288,41 @@ func (b *builder) feeTable() *reports.Table {
 		rows = append(rows, stageRow(s, label))
 	}
 	rows = append(rows, blank("Base fee total"))
-	optionRows := [][]string{}
+	// Options follow the base total and are totalled on their own, as in the
+	// golden R1: each option stage by name, then the section 5 options.
+	options := 0
 	for _, s := range b.r.Stages {
 		if s.State == Option {
-			optionRows = append(optionRows, stageRow(s, "Option: "+s.Name))
+			rows = append(rows, stageRow(s, "Option: "+s.Name))
+			options++
 		}
 	}
 	for _, p := range b.r.Positions {
 		if p.Value == "O" {
-			row := blank("Option: " + shortLabel(p.Label))
-			if grid {
-				for i := range elements {
-					row[i+1] = "—"
-				}
-			}
-			optionRows = append(optionRows, row)
+			rows = append(rows, blank("Each optional item in section 5, one line each"))
+			options++
+			break
 		}
 	}
-	if len(optionRows) > 0 {
-		rows = append(rows, optionRows...)
+	if options > 0 {
 		rows = append(rows, blank("Options total"))
 	}
 	return doc(columns, rows)
 }
 
+// compactAssumption shortens a printed pricing assumption for the grouped
+// position list, where the group already says how the item is priced.
+func compactAssumption(a string) string {
+	a = strings.TrimSuffix(a, ".")
+	for _, prefix := range []string{"Price as an option: ", "Priced as an option ", "Included: "} {
+		a = strings.TrimPrefix(a, prefix)
+	}
+	return strings.Replace(a, "needed only if ", "if ", 1)
+}
+
 // shortLabel keeps a fee row readable: the item up to its first clause.
 func shortLabel(label string) string {
-	for _, sep := range []string{"; ", ": "} {
+	for _, sep := range []string{"; "} {
 		if i := strings.Index(label, sep); i > 0 {
 			label = label[:i]
 		}

@@ -5,10 +5,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"math"
 	"regexp"
 	"strings"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/signintech/gopdf"
 	"golang.org/x/image/font/gofont/gobold"
@@ -21,13 +23,26 @@ const Version = "sitewise-pdf-2/gopdf-0.38.1/go-font-0.38.0"
 const BodySize = 10.0
 const MinimumSize = 8.5
 const margin = 42.52 // 15 mm in PDF points.
-var ErrOverflow = errors.New("report exceeds two pages; shorten the report or identify an attachment")
+var ErrOverflow = errors.New("report exceeds its page limit; shorten the report or identify an attachment")
+
+// PageLimit is the issued length allowed for a report's template. Consultant
+// RFPs carry a schedule of returnables and may run to three pages (owner
+// decision O1, 2026-10-09); every other report keeps two.
+func PageLimit(s reports.IssueSnapshot) (int, float64) {
+	if s.SourceRevisions.TemplateID == "tpl.rfp-consultant" {
+		return 3, 2.5
+	}
+	return 2, 1.5
+}
+
 var ErrContent = errors.New("report content cannot be exported")
 
 type Result struct {
 	PDF         []byte
 	Pages       int
 	MinimumFont float64
+	// Length is the page count as a fraction: the last page's share used.
+	Length float64
 }
 type line struct {
 	text   string
@@ -36,11 +51,21 @@ type line struct {
 	gap    float64
 	cells  [][]string
 	height float64
+	// widths and pad lay out a document table row; empty means equal widths
+	// and the saved-comparison padding.
+	widths []float64
+	pad    float64
 }
 
 // PDF uses one typography specification for measurement and drawing. It never
 // shrinks text or drops blocks to make the page-count gate pass.
-func PDF(s reports.IssueSnapshot) (Result, error) {
+func PDF(s reports.IssueSnapshot) (Result, error) { return renderPDF(s, true) }
+
+// PDFUnlimited renders without the page gate, for inspecting a draft that is
+// too long. It is never used to issue.
+func PDFUnlimited(s reports.IssueSnapshot) (Result, error) { return renderPDF(s, false) }
+
+func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 	var out Result
 	if s.RendererVersion != Version {
 		return out, fmt.Errorf("renderer version unavailable")
@@ -92,9 +117,13 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 			return err
 		}
 		for _, paragraph := range strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n") {
-			wrapped, err := gp.SplitTextWithWordWrap(paragraph, width)
-			if err != nil {
-				return err
+			// gopdf refuses an empty string; an empty paragraph is a blank line.
+			wrapped := []string{""}
+			if paragraph != "" {
+				var err error
+				if wrapped, err = gp.SplitTextWithWordWrap(paragraph, width); err != nil {
+					return err
+				}
 			}
 			for _, v := range wrapped {
 				lines = append(lines, line{text: v, size: size, bold: bold})
@@ -116,38 +145,67 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 			return out, err
 		}
 	}
+	// A consultant RFP prints only what the consultant prices from. Its
+	// citations stay in the issue record; every block is calculated from the
+	// stored rules, so printing them would only repeat that.
+	quiet := s.SourceRevisions.TemplateID == "tpl.rfp-consultant"
+	// RFP schedules are set a little tighter; the type size is unchanged.
+	leading := 1.3
+	if quiet {
+		leading = 1.2
+	}
 	for _, section := range s.Sections {
 		if err := appendText(section.Title, 11, true, 4); err != nil {
 			return out, err
 		}
 		for _, b := range section.Blocks {
-			label := b.Label
-			if b.Provisional {
-				label += " [PROVISIONAL]"
-			}
-			if b.Origin == "assumption" {
-				label += " [MATERIAL ASSUMPTION]"
-			}
-			text := label + ": " + b.Text
-			if len(b.CitationIDs) > 0 {
-				text += " [" + strings.Join(b.CitationIDs, ", ") + "]"
-			}
-			if err := appendText(text, BodySize, false, 4); err != nil {
-				return out, err
-			}
-			if b.Table != nil {
-				heading := "Saved source comparison"
-				if b.Edited {
-					heading += " — independent of edited wording"
+			document := b.Table != nil && b.Table.Display == "document"
+			text := b.Text
+			// A block with no label is the report's own wording, not a labelled
+			// saved value.
+			if b.Label != "" {
+				label := b.Label
+				if b.Provisional {
+					label += " [PROVISIONAL]"
 				}
-				if err := appendText(heading, BodySize, true, 3); err != nil {
+				if b.Origin == "assumption" {
+					label += " [MATERIAL ASSUMPTION]"
+				}
+				text = label + ": " + b.Text
+			}
+			if len(b.CitationIDs) > 0 && !quiet {
+				text = strings.TrimSpace(text + " [" + strings.Join(b.CitationIDs, ", ") + "]")
+			}
+			if strings.TrimSpace(text) != "" {
+				if err := appendText(text, BodySize, false, 4); err != nil {
 					return out, err
 				}
+			}
+			if b.Table != nil {
+				maxColumns := 6
+				if document {
+					maxColumns = 8
+				} else {
+					heading := "Saved source comparison"
+					if b.Edited {
+						heading += " — independent of edited wording"
+					}
+					if err := appendText(heading, BodySize, true, 3); err != nil {
+						return out, err
+					}
+				}
 				table := b.Table
-				if len(table.Columns) < 1 || len(table.Columns) > 6 || len(table.Rows) > 500 {
+				if len(table.Columns) < 1 || len(table.Columns) > maxColumns || len(table.Rows) > 500 {
 					return out, fmt.Errorf("%w: invalid table dimensions", ErrContent)
 				}
-				cellWidth := width / float64(len(table.Columns))
+				widths := make([]float64, len(table.Columns))
+				for i := range widths {
+					widths[i] = width / float64(len(table.Columns))
+				}
+				pad := 10.0
+				if document {
+					widths, pad = columnWidths(*table, width), 4
+				}
 				tableRows := append([][]string{table.Columns}, table.Rows...)
 				for rowIndex, row := range tableRows {
 					if len(row) != len(table.Columns) {
@@ -163,9 +221,13 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 						}
 						lines = lines[:start]
 						for _, paragraph := range strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n") {
-							wrapped, err := gp.SplitTextWithWordWrap(paragraph, cellWidth-10)
-							if err != nil {
-								return out, err
+							// A blank cell (a price the consultant fills in) is one empty line.
+							wrapped := []string{""}
+							if paragraph != "" {
+								var err error
+								if wrapped, err = gp.SplitTextWithWordWrap(paragraph, widths[col]-10); err != nil {
+									return out, err
+								}
 							}
 							cells[col] = append(cells[col], wrapped...)
 						}
@@ -173,14 +235,14 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 							maxLines = len(cells[col])
 						}
 					}
-					lines = append(lines, line{size: BodySize, bold: rowIndex == 0, cells: cells, height: float64(maxLines)*BodySize*1.3 + 10})
+					lines = append(lines, line{size: BodySize, bold: rowIndex == 0, cells: cells, height: float64(maxLines)*BodySize*leading + pad, widths: widths, pad: pad})
 				}
 				lines[len(lines)-1].height += 7
 				lines[len(lines)-1].gap = 7
 			}
 		}
 	}
-	if len(s.References) > 0 {
+	if len(s.References) > 0 && !quiet {
 		if err := appendText("References — E evidence / U user / C calculation / A assumption", 10, true, 5); err != nil {
 			return out, err
 		}
@@ -195,7 +257,7 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 	for _, l := range lines {
 		h := l.height
 		if h == 0 {
-			h = l.size*1.3 + l.gap
+			h = l.size*leading + l.gap
 		}
 		if h > height-margin {
 			return Result{Pages: 3, MinimumFont: MinimumSize}, ErrOverflow
@@ -206,8 +268,9 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 		}
 		y += h
 	}
-	if pages > 2 {
-		return Result{Pages: pages, MinimumFont: MinimumSize}, ErrOverflow
+	length := float64(pages-1) + (y-margin)/(height-margin)
+	if limit, _ := PageLimit(s); gate && pages > limit {
+		return Result{Pages: pages, MinimumFont: MinimumSize, Length: length}, ErrOverflow
 	}
 	page, y := 0, margin
 	newPage := func() error {
@@ -227,7 +290,7 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 	for _, l := range lines {
 		h := l.height
 		if h == 0 {
-			h = l.size*1.3 + l.gap
+			h = l.size*leading + l.gap
 		}
 		if y+h > height {
 			if err := newPage(); err != nil {
@@ -242,20 +305,28 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 			return out, err
 		}
 		if len(l.cells) > 0 {
-			cellWidth := width / float64(len(l.cells))
 			gp.SetStrokeColor(180, 188, 198)
+			x := margin
 			for col, cell := range l.cells {
-				x := margin + float64(col)*cellWidth
+				cellWidth := width / float64(len(l.cells))
+				if len(l.widths) == len(l.cells) {
+					cellWidth = l.widths[col]
+				}
 				if l.bold {
 					gp.SetFillColor(237, 241, 245)
 					gp.RectFromUpperLeftWithStyle(x, y, cellWidth, h-l.gap, "F")
 				}
 				gp.RectFromUpperLeft(x, y, cellWidth, h-l.gap)
+				top := 5.0
+				if l.pad > 0 {
+					top = l.pad / 2
+				}
 				for row, text := range cell {
-					if err := drawCitations(gp, x+5, y+5+float64(row)*l.size*1.3, text); err != nil {
+					if err := drawCitations(gp, x+5, y+top+float64(row)*l.size*leading, text); err != nil {
 						return out, err
 					}
 				}
+				x += cellWidth
 			}
 		} else if err := drawCitations(gp, margin, y, l.text); err != nil {
 			return out, err
@@ -266,7 +337,41 @@ func PDF(s reports.IssueSnapshot) (Result, error) {
 	if _, err := gp.WriteTo(&buf); err != nil {
 		return out, err
 	}
-	return Result{PDF: buf.Bytes(), Pages: pages, MinimumFont: MinimumSize}, nil
+	return Result{PDF: buf.Bytes(), Pages: pages, MinimumFont: MinimumSize, Length: length}, nil
+}
+
+// columnWidths shares a document table's width by how much each column
+// holds, so a long deliverable is not squeezed into an equal share beside a
+// one-letter position. Every column keeps room for a short word.
+func columnWidths(t reports.Table, width float64) []float64 {
+	weights := make([]float64, len(t.Columns))
+	total := 0.0
+	for col := range t.Columns {
+		longest := utf8.RuneCountInString(t.Columns[col])
+		sum, count := 0, 0
+		for _, row := range t.Rows {
+			if col < len(row) {
+				n := utf8.RuneCountInString(row[col])
+				sum += n
+				count++
+				if n > longest {
+					longest = n
+				}
+			}
+		}
+		average := float64(sum) / math.Max(1, float64(count))
+		// Blend the longest and the typical cell, capped so one long cell
+		// cannot take the table.
+		// A header is one unbroken word or two, so its column keeps room for it.
+		header := float64(utf8.RuneCountInString(t.Columns[col]))
+		weights[col] = math.Max(math.Max(7, header*1.4+2), math.Min(90, (float64(longest)+2*average)/3))
+		total += weights[col]
+	}
+	out := make([]float64, len(weights))
+	for i, w := range weights {
+		out[i] = width * w / total
+	}
+	return out
 }
 
 // Citation letters remain explicit in monochrome printing. Colour reinforces

@@ -87,6 +87,7 @@ fields:
   - {key: pi, label: Professional indemnity cover, kind: text, required: true, group: issue, default: "$10 million"}
   - {key: pl, label: Public liability cover, kind: text, required: true, group: issue, default: "$20 million"}
   - {key: client, label: Client, kind: text, required: true, group: project}
+  - {key: address, label: Site address, kind: text, required: false, group: project, help: "Used when the site record has no address."}
   - {key: lga, label: Local government area, kind: text, required: false, group: project}
   - {key: zone, label: Zone, kind: text, required: false, group: project}
   - {key: lot_dp, label: Lot and DP, kind: text, required: false, group: project}
@@ -125,20 +126,20 @@ project_rows:
 
 terms:
   - key: agreement
-    text: "Engagement is under {field:agreement}. Your own terms and conditions do not apply; list any change you propose to the agreement in R6."
+    text: "Engagement is under {field:agreement}; your own terms do not apply. List any change you propose to the agreement in R6."
     required: true
     provenance: [{kind: practice, ref: "peer-review-2026-10-09 shared returnable refinements: R6 and agreement"}]
   - key: authority
-    text: "Only a written instruction from the client's representative authorises a change in scope, work beyond an allowance or a change in fee, under the agreement. Work beyond an allowance without that instruction is not paid."
+    text: "Only a written instruction from the client's representative authorises extra scope, work beyond an allowance or a fee change; work without one is not paid."
     provenance: [{kind: practice, ref: "peer-review-2026-10-09 corrections: fee basis and allowance exceedance"}]
   - key: baseline
-    text: "Each stage ends at client sign-off, and the signed-off design is the baseline for later stages. Design development within the brief is not a variation; a change the client asks for after sign-off is assessed under the agreement."
+    text: "Each stage ends at client sign-off, which sets the baseline for later stages. Design development within the brief is not a variation; a client change after sign-off is assessed under the agreement."
     provenance: [{kind: evidence, ref: "architecture#151"}, {kind: evidence, ref: "civil#145"}]
   - key: errors
-    text: "Correcting your own errors or omissions, and coordinating your work with information you were given, is not a variation."
+    text: "Correcting your own errors, or coordinating with information you were given, is not a variation."
     provenance: [{kind: practice, ref: "peer-review-2026-10-09 corrections: consultant error is not a paid variation"}]
   - key: payment
-    text: "Invoice monthly against stage progress; payment within {field:payment_days} days. Payment does not depend on an authority approval."
+    text: "Invoice monthly against stage progress; payment within {field:payment_days} days, not dependent on any authority approval."
     provenance: [{kind: evidence, ref: "architecture#153"}, {kind: evidence, ref: "architecture#159"}]
   - key: rates
     text: "Rates hold until {field:rates_hold_until}; state how they are indexed after that."
@@ -147,34 +148,34 @@ terms:
     text: "Your proposal stays valid for {field:validity_days} days."
     provenance: [{kind: evidence, ref: "architecture#155"}]
   - key: questions
-    text: "Send questions in writing to {field:contact} by {field:questions_by}. Answers are issued to every tenderer as numbered addenda."
+    text: "Questions in writing to {field:contact} by {field:questions_by}; answers go to every tenderer as numbered addenda."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-guide.md (numbered addenda and acknowledgement)"}]
 
 returnables:
   - key: r1
     title: R1 Fee by stage
-    text: "Excl. GST, using the table below: one row per stage in section 3, then each option. Base fee, options and ceiling amounts are totalled separately; an item that appears in two places is priced once. Acknowledge each addendum by number, and confirm that the person signing can bind your firm."
+    text: "Excl. GST, in the tables below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm."
   - key: r2
     title: R2 Deliverables list
-    text: "For each deliverable: format, stage, review rounds, who prepares it and who receives it. Say whether editable source files are included and what reliance others may place on them."
+    text: "Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them."
   - key: r3
     title: R3 Hourly rates
-    text: "Rates excl. GST, used only for work authorised in writing beyond the allowances."
+    text: "Excl. GST, for work authorised in writing beyond the allowances."
   - key: r4
     title: R4 Team
-    text: "Named lead and their availability by stage, with % time; subconsultants and their roles. Resources must match the program in R7."
+    text: "Named lead, % time by stage, subconsultants; resources must match R7."
   - key: r5
     title: R5 Experience
     text: "Two or three comparable projects in the last five years, each with a referee."
   - key: r6
     title: R6 Departures
-    text: "Each departure from sections 3 to 6 and from the agreement: the clause or item, the change you propose and its effect on fee and time; or write \"nil\". Departures are evaluated. A general exclusion or qualification not listed here is treated as non-compliant."
+    text: "Each departure from sections 3 to 6 or the agreement: clause or item, proposed change, effect on fee and time; or \"nil\". A general exclusion not listed here is non-compliant."
   - key: r7
     title: R7 Program
-    text: "Weeks by stage against the durations given, separating your working time, authority assessment time and the dates you need inputs from others. Confirm you can start by {field:start_by}."
+    text: "Weeks by stage, separating your time, authority time and the dates you need inputs. Confirm you can start by {field:start_by}."
   - key: r8
     title: R8 Insurance and compliance
-    text: "Professional indemnity {field:pi} and public liability {field:pl}, with insurer and expiry; workers compensation; a quality, safety and environmental management system (certified to ISO 9001, 45001 and 14001, or an equivalent system you describe); conflicts of interest."
+    text: "PI {field:pi} and PL {field:pl} with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest."
   - key: r9
     title: R9 Reimbursables
     text: "\"Included in the fee\" (preferred), or each item with its rate."

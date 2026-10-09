@@ -110,3 +110,65 @@ func TestPDFExportSpeedBudget(t *testing.T) {
 		t.Fatal("PDF export exceeded speed budget")
 	}
 }
+
+func documentFixture(rows int) reports.IssueSnapshot {
+	s := fixture()
+	s.Kind = "rfp"
+	s.SourceRevisions.TemplateID = "tpl.rfp-consultant"
+	table := &reports.Table{Columns: []string{"Stage", "Deliverable at sign-off"}, Display: "document"}
+	for i := 0; i < rows; i++ {
+		table.Rows = append(table.Rows, []string{fmt.Sprintf("Stage %d", i), "Coordinated design to the approval and consent conditions; finishes and typical details"})
+	}
+	s.Sections[1].Blocks = []reports.Block{{ID: "rfp:stages", Text: "Price each stage that applies.", Table: table, CitationIDs: []string{"C1"}}}
+	return s
+}
+
+func TestPDFDocumentTables(t *testing.T) {
+	s := documentFixture(3)
+	s.Sections[1].Blocks[0].Table.Rows[0][1] = ""
+	if _, err := PDF(s); err != nil {
+		t.Fatalf("a document table with a blank cell (a price to fill in) must render: %v", err)
+	}
+	wide := documentFixture(1)
+	wide.Sections[1].Blocks[0].Table = &reports.Table{Columns: []string{"Stage", "A", "B", "C", "D", "Total", "Weeks", "Hours"}, Rows: [][]string{{"Schematic", "", "", "", "", "", "", ""}}, Display: "document"}
+	if _, err := PDF(wide); err != nil {
+		t.Fatalf("an 8-column document table renders: %v", err)
+	}
+	wide.Sections[1].Blocks[0].Table.Columns = append(wide.Sections[1].Blocks[0].Table.Columns, "Extra")
+	wide.Sections[1].Blocks[0].Table.Rows[0] = append(wide.Sections[1].Blocks[0].Table.Rows[0], "")
+	if _, err := PDF(wide); !errors.Is(err, ErrContent) {
+		t.Fatal("a 9-column table must be refused", err)
+	}
+	saved := fixture()
+	saved.Sections[0].Blocks[0].Table = &reports.Table{Columns: []string{"A", "B", "C", "D", "E", "F", "G"}, Rows: [][]string{{"1", "2", "3", "4", "5", "6", "7"}}}
+	if _, err := PDF(saved); !errors.Is(err, ErrContent) {
+		t.Fatal("a saved comparison table keeps its 6-column cap", err)
+	}
+}
+
+func TestPDFPageLimitFollowsTemplate(t *testing.T) {
+	if limit, target := PageLimit(documentFixture(1)); limit != 3 || target != 2.5 {
+		t.Fatalf("consultant RFP limit %d/%v", limit, target)
+	}
+	if limit, _ := PageLimit(fixture()); limit != 2 {
+		t.Fatalf("other reports keep two pages, got %d", limit)
+	}
+	long := documentFixture(140)
+	r, err := PDF(long)
+	if err == nil || !errors.Is(err, ErrOverflow) || r.Pages <= 3 {
+		t.Fatalf("a consultant RFP over three pages is refused, got %d pages: %v", r.Pages, err)
+	}
+	fits := documentFixture(60)
+	r, err = PDF(fits)
+	if err != nil || r.Pages < 3 {
+		t.Fatalf("three pages are allowed for a consultant RFP, got %d: %v", r.Pages, err)
+	}
+	other := documentFixture(60)
+	other.SourceRevisions.TemplateID = "tpl.rft"
+	if _, err := PDF(other); !errors.Is(err, ErrOverflow) {
+		t.Fatal("the same length is refused for a two-page report", err)
+	}
+	if fit := Fit(fits); fit.Limit != 3 || !fit.Fits {
+		t.Fatalf("the draft screen uses the same limit: %+v", fit)
+	}
+}

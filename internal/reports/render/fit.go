@@ -17,7 +17,8 @@ type PageFit struct {
 }
 
 func Fit(s reports.IssueSnapshot) PageFit {
-	fit := PageFit{Limit: 2, Target: 1.5}
+	limit, target := PageLimit(s)
+	fit := PageFit{Limit: limit, Target: target}
 	r, err := PDF(s)
 	fit.Pages = r.Pages
 	switch {

@@ -878,7 +878,7 @@ func (r *resolver) party(p knowledge.RFPPosition) string {
 	case "client", "contractor", "superintendent", "architect":
 		if party == "architect" && r.d.ID != "architecture" {
 			if c, ok := r.consultantFor(party); ok {
-				return "the architect (" + c.Status + ")"
+				return "the architect, " + c.Status
 			}
 		}
 		return "the " + party
@@ -887,10 +887,10 @@ func (r *resolver) party(p knowledge.RFPPosition) string {
 		return party
 	}
 	if c, ok := r.consultantFor(party); ok {
-		return party + " (" + c.Status + ")"
+		return party + ", " + c.Status
 	}
 	r.check(Check{ID: "unallocated:" + p.Key, Label: "Unallocated: " + p.Label, Text: "Excluded from this RFP, but the project has no " + party + " package. Add one or name who does it.", Control: "responsible:" + p.Key})
-	return party + " (not yet engaged)"
+	return party + ", not yet engaged"
 }
 
 func needsFirm(party string) bool {
@@ -1107,6 +1107,9 @@ func (r *resolver) slot(name string) (string, bool) {
 		return v, v != ""
 	case "address":
 		v := r.drivers.Text["address"]
+		if f := r.out.Fields["address"]; f.Source == "user" || v == "" {
+			v = f.Value
+		}
 		if v == "" {
 			return "", false
 		}
@@ -1343,6 +1346,8 @@ func slotControl(missing []string, sk knowledge.RFPSkeleton) string {
 		}
 	}
 	switch missing[0] {
+	case "Site address":
+		return "field:address"
 	case "Planning pathway":
 		return "driver:pathway"
 	case "Procurement":

@@ -28,6 +28,8 @@ func issueReport(w http.ResponseWriter, r *http.Request, deps Deps) {
 			writeJSON(w, http.StatusUnprocessableEntity, map[string]string{"error": "report_content", "message": err.Error()})
 		case errors.Is(err, store.ErrReportStale):
 			writeJSON(w, http.StatusConflict, map[string]string{"error": "report_stale", "message": err.Error()})
+		case errors.Is(err, store.ErrRFPOpenChecks):
+			writeJSON(w, http.StatusUnprocessableEntity, map[string]string{"error": "rfp_open_checks", "message": "Resolve the items marked \"Blocks issue\" under Before issue first."})
 		case errors.Is(err, store.ErrReportUnreviewed):
 			writeJSON(w, http.StatusUnprocessableEntity, map[string]string{"error": "unreviewed_clauses", "message": err.Error()})
 		default:

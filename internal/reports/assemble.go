@@ -90,7 +90,7 @@ func Assemble(s Snapshot, template knowledge.ReportTemplate, cat *knowledge.Cata
 	if cat == nil || !validReportPackage(template.Kind, s.Package) {
 		return nil, fmt.Errorf("report requires a matching live package and template")
 	}
-	if (s.PendingDocuments > 0 || s.FailedDocuments > 0 || (!s.ProfileMissing && len(s.ProfileStale) > 0)) && !useLastCompleted {
+	if ReadingIncomplete(s) && !useLastCompleted {
 		return nil, ErrReadingIncomplete
 	}
 	sections := make([]Section, 0, len(template.Sections))
@@ -344,6 +344,15 @@ func Assemble(s Snapshot, template knowledge.ReportTemplate, cat *knowledge.Cata
 	}
 	return ApplyEdits(sections, edits)
 }
+
+// ReadingIncomplete reports whether document reading is still pending, failed
+// or behind the profile; a draft then needs the user's explicit consent.
+func ReadingIncomplete(s Snapshot) bool {
+	return s.PendingDocuments > 0 || s.FailedDocuments > 0 || (!s.ProfileMissing && len(s.ProfileStale) > 0)
+}
+
+// ValidReportPackage reports whether a package can carry a report of kind.
+func ValidReportPackage(kind string, p procurement.Package) bool { return validReportPackage(kind, p) }
 
 func readingSummary(s Snapshot, lastCompleted bool) string {
 	parts := []string{}

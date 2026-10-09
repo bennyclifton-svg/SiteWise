@@ -31,7 +31,7 @@ scale:
     - {flag: [tfnsw_referral]}
 
 project_rows:
-  - {key: assessment_quantities, label: Quantities for assessment, text: "{quantities} · design vehicle {field:design_vehicle}", required: true, provenance: [{kind: evidence, ref: "traffic#B p1"}, {kind: client_decision, ref: "skeleton changes log 2026-10-09", why: "BG&E used a different GFA from the other firms; the project table is the single source consultants price from."}]}
+  - {key: assessment_quantities, label: Design vehicle, text: "{field:design_vehicle}", required: true, provenance: [{kind: evidence, ref: "traffic#B p1"}, {kind: client_decision, ref: "skeleton changes log 2026-10-09", why: "BG&E used a different GFA from the other firms; the project table is the single source consultants price from."}]}
   - {key: controls, label: Controls, text: "{field:lga} DCP parking rates · {pathway}", provenance: [{kind: evidence, ref: "traffic#V p1"}]}
 
 role:

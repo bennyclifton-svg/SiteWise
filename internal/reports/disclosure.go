@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// RFPBudgetBlockID carries a consultant RFP's internal construction budget.
+const RFPBudgetBlockID = "rfp:budget"
+
 // IssueContent strips undisclosed pricing from BOTH rendered wording and its
 // citation basis. Hiding an amount on the page alone would leak it in snapshots.
 func IssueContent(sections []Section, kind string, disclose bool) ([]Section, []Reference, error) {
@@ -25,6 +28,16 @@ func IssueContent(sections []Section, kind string, disclose bool) ([]Section, []
 	}
 	out = issued
 	for i := range out {
+		// A consultant RFP's budget block is internal unless disclosed.
+		if !disclose && kind != "pmp" {
+			kept := out[i].Blocks[:0]
+			for _, b := range out[i].Blocks {
+				if b.ID != RFPBudgetBlockID {
+					kept = append(kept, b)
+				}
+			}
+			out[i].Blocks = kept
+		}
 		for j := range out[i].Blocks {
 			b := &out[i].Blocks[j]
 			if !strings.HasPrefix(b.ID, "cost:line:") {

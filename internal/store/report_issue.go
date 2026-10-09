@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/files"
+	"sitewise/internal/procurement"
 	"sitewise/internal/reports"
 	"sitewise/internal/reports/render"
 )
@@ -73,18 +74,18 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	if d.Status != "draft" || d.Version != options.Version {
 		return out, ErrVersionConflict
 	}
-	template, err := s.reportTemplate(r.Kind)
-	if err != nil {
-		return out, err
-	}
+	var pkg procurement.Package
 	if r.Kind != "pmp" {
-		p, e := readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
-		if e != nil {
-			return out, e
+		if pkg, err = readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true); err != nil {
+			return out, err
 		}
-		if p.RetiredAt != nil {
+		if pkg.RetiredAt != nil {
 			return out, ErrReportPackageRetired
 		}
+	}
+	template, err := s.reportTemplateFor(r.Kind, pkg)
+	if err != nil {
+		return out, err
 	}
 	v, err := readProfileTx(ctx, tx, org, r.ProjectID, s.profileBuild.ReadKinds)
 	if err != nil {
@@ -96,6 +97,13 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	}
 	if len(stale) > 0 && !options.AcceptStale {
 		return out, ErrReportStale
+	}
+	// A consultant RFP is not issued while a decision, client quantity or
+	// required detail is open; the Before-issue list names each one.
+	if open, err := s.rfpIssueChecks(ctx, tx, org, d); err != nil {
+		return out, err
+	} else if len(open) > 0 {
+		return out, ErrRFPOpenChecks
 	}
 	for _, section := range d.Sections {
 		for _, b := range section.Blocks {
@@ -169,9 +177,16 @@ func (s *Store) ReadIssuedReport(ctx context.Context, org, reportID, versionID s
 // that every catalogue obligation was reviewed before issue.
 func unreviewedReportClause(b reports.Block) bool {
 	var target struct {
-		Reviewed *bool `json:"target_clauses_reviewed"`
+		Reviewed *bool  `json:"target_clauses_reviewed"`
+		Method   string `json:"method"`
+		Status   string `json:"status"`
 	}
 	if json.Unmarshal(b.Basis, &target) == nil && target.Reviewed != nil && !*target.Reviewed {
+		return true
+	}
+	// Consultant RFP rules are knowledge data: until the owner marks the
+	// discipline reviewed, its wording cannot be issued as a requirement.
+	if target.Method == "rfp_discipline" && target.Status != "reviewed" {
 		return true
 	}
 	if !b.Provisional {

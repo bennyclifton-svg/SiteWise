@@ -64,7 +64,7 @@ expect:
     stages_option: [construction_support, contract_admin]
     stages_absent: [brief_masterplan, dnc_tender, post_novation, regulated_design]
     positions: {existing_interfaces: I, mixed_use_map: I, tenant_fitout: O, community: O, apartment_design: absent, live_staging: absent}
-    party: {outside_boundary: "civil engineer (to be appointed)"}
+    party: {outside_boundary: "civil engineer, to be appointed"}
     scale: complex
     blocking: ["fact:gfa"]
     blocking_only: true
@@ -72,7 +72,7 @@ expect:
     stages_include: [concept_schematic, existing_assessment, planning_approval, authority_asset, design_development, tender_traditional, construction_documents, construction_phase]
     stages_absent: [dnc_tender, regulated_design, post_novation]
     positions: {strengthening: O, temporary_works_design: X, retention_design: O, specialist_element_design: O, residential_framing: absent}
-    party: {compaction: "geotechnical engineer (not yet engaged)"}
+    party: {compaction: "geotechnical engineer, not yet engaged"}
     checks: ["unallocated:compaction"]
     blocking: ["fact:gfa"]
     blocking_only: true
@@ -83,7 +83,7 @@ expect:
     elements_include: [earthworks, roads, stormwater]
     elements_option: [public_road]
     positions: {osd_existing: I, osd_replacement: O, osd_new: O, sea: X, civil_declarations: absent, retained_services: I}
-    party: {sea: "structural engineer (to be appointed)", retaining_structural: "structural engineer"}
+    party: {sea: "structural engineer, to be appointed", retaining_structural: "structural engineer"}
     blocking: ["fact:gfa"]
     blocking_only: true
   town-planning:

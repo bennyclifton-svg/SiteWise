@@ -10,8 +10,10 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"sitewise/internal/knowledge"
+	"sitewise/internal/procurement"
 	"sitewise/internal/reports"
 	"sitewise/internal/reports/render"
+	"sitewise/internal/rfp"
 )
 
 var ErrInvalidReport = errors.New("invalid or unavailable report")
@@ -44,13 +46,17 @@ type ReportDraft struct {
 }
 
 type ReportView struct {
-	Issues  []ReportIssueSummary `json:"issues"`
-	Changes []reports.Change     `json:"changes_since_issue"`
-	Report  Report               `json:"report"`
-	Draft   *ReportDraft         `json:"draft"`
-	Edits   []reports.Edit       `json:"edits"`
-	Stale   []string             `json:"stale"`
-	PageFit *render.PageFit      `json:"page_fit,omitempty"`
+	// RFP holds the consultant RFP editor controls; RFPSuggestion proposes a
+	// discipline for a services package that has none confirmed.
+	RFP           *rfp.Controls        `json:"rfp,omitempty"`
+	RFPSuggestion *RFPSuggestion       `json:"rfp_suggestion,omitempty"`
+	Issues        []ReportIssueSummary `json:"issues"`
+	Changes       []reports.Change     `json:"changes_since_issue"`
+	Report        Report               `json:"report"`
+	Draft         *ReportDraft         `json:"draft"`
+	Edits         []reports.Edit       `json:"edits"`
+	Stale         []string             `json:"stale"`
+	PageFit       *render.PageFit      `json:"page_fit,omitempty"`
 }
 
 func readReport(ctx context.Context, tx pgx.Tx, org, id string) (Report, error) {
@@ -190,18 +196,19 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 	if err := packageActor(ctx, tx, org, actor); err != nil {
 		return d, err
 	}
-	template, err := s.reportTemplate(r.Kind)
-	if err != nil {
-		return d, err
-	}
+	var pkg procurement.Package
 	if r.Kind != "pmp" {
-		p, err := readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
+		pkg, err = readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
 		if err != nil {
 			return d, err
 		}
-		if p.RetiredAt != nil {
+		if pkg.RetiredAt != nil {
 			return d, ErrReportPackageRetired
 		}
+	}
+	template, err := s.reportTemplateFor(r.Kind, pkg)
+	if err != nil {
+		return d, err
 	}
 	previous := ""
 	history, _, err := reportHistory(ctx, tx, org, r.ID)
@@ -236,8 +243,23 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 	if err != nil {
 		return d, err
 	}
-	sections, err := reports.Assemble(snap, template, s.workCatalog(), edits, useLastCompleted)
-	if err != nil {
+	var sections []reports.Section
+	if template.ID == rfpTemplateID {
+		// Settings come from the current draft, or from the last issue when
+		// this refresh starts the next draft.
+		source := d.ID
+		if source == "" {
+			source = previous
+		}
+		settings, err := readReportSettings(ctx, tx, org, source)
+		if err != nil {
+			return d, err
+		}
+		sections, err = s.assembleRFP(snap, template, settings, edits, useLastCompleted, &state)
+		if err != nil {
+			return d, err
+		}
+	} else if sections, err = reports.Assemble(snap, template, s.workCatalog(), edits, useLastCompleted); err != nil {
 		return d, err
 	}
 	sections, refs, err := reports.Cite(sections)
@@ -262,6 +284,10 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 	}
 	if previous != "" && creatingDraft {
 		_, err = tx.Exec(ctx, `INSERT INTO report_edits(org_id,report_version_id,target_id,text,base_content_sha256,user_id,version,created_at,updated_at) SELECT org_id,$3::uuid,target_id,text,base_content_sha256,user_id,version,created_at,updated_at FROM report_edits WHERE org_id=$1::uuid AND report_version_id=$2::uuid ON CONFLICT DO NOTHING`, org, previous, d.ID)
+		if err != nil {
+			return d, err
+		}
+		_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id,version,created_at,updated_at) SELECT org_id,$3::uuid,key,value,basis,user_id,version,created_at,updated_at FROM report_settings WHERE org_id=$1::uuid AND report_version_id=$2::uuid ON CONFLICT DO NOTHING`, org, previous, d.ID)
 		if err != nil {
 			return d, err
 		}

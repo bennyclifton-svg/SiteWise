@@ -1,6 +1,5 @@
 ### 1. Project
 
-REQUEST FOR PROPOSAL: TOWN PLANNING SERVICES
 Ref HC-ARTHUR-RFP · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manager, pm@example.com
 
 Hale Capital intends to extend Warehouse (Class 7b) and Mezzanine office (Class 5) at 145-151 Arthur St, Homebush West NSW (Strathfield).
@@ -20,23 +19,18 @@ Planning consultant for the applicant. You prepare the planning report, collate 
 
 ### 3. Scope by stage
 
-Price each stage that applies as a lump sum. Work beyond an allowance needs a written instruction.
+Price each stage that applies as a lump sum. Work beyond an allowance needs a written instruction. Options are priced on their own and are not in the base fee.
 
-| Stage | Deliverable at sign-off | Pricing |
-|---|---|---|
-| Preliminary planning advice | Review of the plans against the LEP, DCP and other controls; site constraints; historic consents; pathway confirmed; planning risks and the design changes that reduce them; reports needed for lodgement; information limits and recommended investigations. Advice report: 1 draft, 1 final | Lump sum |
-| Pre-lodgement | Book the meeting; pre-lodgement letter with a scheme overview and compliance summary; attend 1 meeting(s); note of outcomes and plan changes | Lump sum |
-| Planning report | Statement of Environmental Effects incorporating the specialist reports; 1 draft, 1 client review, 1 final | Lump sum |
-| Lodgement | Forms, owner's consent, checklist, fee advice, collation and portal lodgement | Lump sum |
-| Assessment | Monitor and follow up; client updates; up to 1 response(s) to authority information requests; 1 meeting(s) with the authority; review of the assessment report and draft conditions | Lump sum |
-| Determination review | Review of the consent conditions; advice on conditions to challenge or modify | Lump sum |
-
-Price these separately; they are not in the base fee.
-
-| Option | Deliverable | Why it is optional |
-|---|---|---|
-| Variation request | Clause 4.6 written request for each varied development standard | Price as an option: needed only if a development standard is varied. |
-| Post-approval support | Conditions register separating pre-construction, pre-occupation and ongoing conditions, with the responsible consultant and the evidence each needs; consistency review of later design changes; condition compliance advice | Later stage; the client may commission it |
+| Stage | Deliverable at sign-off |
+|---|---|
+| Preliminary planning advice | Review of the plans against the LEP, DCP and other controls; site constraints; historic consents; pathway confirmed; planning risks and the design changes that reduce them; reports needed for lodgement; information limits and recommended investigations. Advice report: 1 draft, 1 final |
+| Pre-lodgement | Book the meeting; pre-lodgement letter with a scheme overview and compliance summary; attend 1 meeting(s); note of outcomes and plan changes |
+| Planning report | Statement of Environmental Effects incorporating the specialist reports; 1 draft, 1 client review, 1 final |
+| Lodgement | Forms, owner's consent, checklist, fee advice, collation and portal lodgement |
+| Assessment | Monitor and follow up; client updates; up to 1 response(s) to authority information requests; 1 meeting(s) with the authority; review of the assessment report and draft conditions |
+| Determination review | Review of the consent conditions; advice on conditions to challenge or modify |
+| Variation request (option) | Clause 4.6 written request for each varied development standard. Price as an option: needed only if a development standard is varied. |
+| Post-approval support (option) | Conditions register separating pre-construction, pre-occupation and ongoing conditions, with the responsible consultant and the evidence each needs; consistency review of later design changes; condition compliance advice. A later stage the client may commission. |
 
 ### 4. Allowances
 
@@ -52,34 +46,21 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 
 ### 5. Scope position
 
-I = included in the fee · O = optional, price as a separate line · X = excluded (the party named does it).
-Service levels in this table are set for a simple project. Technical items follow the project's own facts.
+Service levels are set for a simple project; technical items follow the project's own facts.
+Included in the fee: Review of specialist reports for planning compliance before lodgement; Planning certificate, title and DP searches (fees at cost); Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner and required date; Ad hoc planning advice and consultant coordination, within the meeting allowance; Pre-lodgement plans in council's required format.
+Optional: price each on its own line in R1: Historic consents through GIPA; Response to public submissions (if notification draws submissions); Attendance at planning panel meetings, to the allowance in section 4 (if the application goes to a planning panel); Modification application after approval.
+Excluded: the party named does it: Land and Environment Court appeal or expert witness (client (separate engagement)); Council, agency and panel fees; contributions (the client); Specialist reports (traffic, acoustic and others) (specialist consultants engaged by the client, not yet engaged).
 Tell us in R6 if you disagree with any line. Do not add your own general exclusions; any you add are treated as non-compliant.
-
-| Item | Position |
-|---|---|
-| Review of specialist reports for planning compliance before lodgement | I |
-| Planning certificate, title and DP searches (fees at cost) | I |
-| Historic consents through GIPA | O |
-| Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner and required date | I |
-| Response to public submissions | O. Price as an option: needed only if notification draws submissions. |
-| Attendance at planning panel meetings, to the allowance in section 4 | O. Price as an option: needed only if the application goes to a planning panel. |
-| Ad hoc planning advice and consultant coordination, within the meeting allowance | I |
-| Pre-lodgement plans in council's required format | I |
-| Modification application after approval | O |
-| Land and Environment Court appeal or expert witness | X: client (separate engagement) |
-| Council, agency and panel fees; contributions | X: the client |
-| Specialist reports (traffic, acoustic and others) | X: specialist consultants engaged by the client (not yet engaged) |
 
 ### 6. Terms
 
-- Engagement is under AS 4122-2010 as amended by the client's special conditions (attached). Your own terms and conditions do not apply; list any change you propose to the agreement in R6.
-- Only a written instruction from the client's representative authorises a change in scope, work beyond an allowance or a change in fee, under the agreement. Work beyond an allowance without that instruction is not paid.
-- Each stage ends at client sign-off, and the signed-off design is the baseline for later stages. Design development within the brief is not a variation; a change the client asks for after sign-off is assessed under the agreement.
-- Correcting your own errors or omissions, and coordinating your work with information you were given, is not a variation.
-- Invoice monthly against stage progress; payment within 30 days. Payment does not depend on an authority approval.
+- Engagement is under AS 4122-2010 as amended by the client's special conditions (attached); your own terms do not apply. List any change you propose to the agreement in R6.
+- Only a written instruction from the client's representative authorises extra scope, work beyond an allowance or a fee change; work without one is not paid.
+- Each stage ends at client sign-off, which sets the baseline for later stages. Design development within the brief is not a variation; a client change after sign-off is assessed under the agreement.
+- Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Invoice monthly against stage progress; payment within 30 days, not dependent on any authority approval.
 - Your proposal stays valid for 90 days.
-- Send questions in writing to Project manager, pm@example.com by 2026-10-23. Answers are issued to every tenderer as numbered addenda.
+- Questions in writing to Project manager, pm@example.com by 2026-10-23; answers go to every tenderer as numbered addenda.
 - Final draft plans and reports reach you at least 3 weeks before target lodgement; state in R7 the working days you need from final documents to a draft report.
 - No mobilisation payment.
 
@@ -89,7 +70,7 @@ Price 40% · Relevant experience 20% · Team 20% · Methodology and program 10% 
 
 ### Returnable schedules: reply using this structure only
 
-R1 Fee by stage: Excl. GST, using the table below: one row per stage in section 3, then each option. Base fee, options and ceiling amounts are totalled separately; an item that appears in two places is priced once. Acknowledge each addendum by number, and confirm that the person signing can bind your firm.
+R1 Fee by stage: Excl. GST, in the tables below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm.
 
 | Stage | Fee $ excl. GST | Weeks | Hours |
 |---|---|---|---|
@@ -102,19 +83,16 @@ R1 Fee by stage: Excl. GST, using the table below: one row per stage in section 
 | Base fee total |  |  |  |
 | Option: Variation request |  |  |  |
 | Option: Post-approval support |  |  |  |
-| Option: Historic consents through GIPA |  |  |  |
-| Option: Response to public submissions |  |  |  |
-| Option: Attendance at planning panel meetings, to the allowance in section 4 |  |  |  |
-| Option: Modification application after approval |  |  |  |
+| Each optional item in section 5, one line each |  |  |  |
 | Options total |  |  |  |
 
-R2 Deliverables list: For each deliverable: format, stage, review rounds, who prepares it and who receives it. Say whether editable source files are included and what reliance others may place on them. Reports and letters you will issue, with drafts.
-R3 Hourly rates: Rates excl. GST, used only for work authorised in writing beyond the allowances. Roles: Director · Associate Director or Senior Associate · Senior Planner · Planner · Graduate.
-R4 Team: Named lead and their availability by stage, with % time; subconsultants and their roles. Resources must match the program in R7. Named director and day-to-day lead.
+R2 Deliverables list: Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Reports and letters you will issue, with drafts.
+R3 Hourly rates: Excl. GST, for work authorised in writing beyond the allowances. Roles: Director · Associate Director or Senior Associate · Senior Planner · Planner · Graduate.
+R4 Team: Named lead, % time by stage, subconsultants; resources must match R7. Named director and day-to-day lead.
 R5 Experience: Two or three comparable projects in the last five years, each with a referee. Applications on the same pathway for this use, in the same consent authority or LGA, with the outcome.
-R6 Departures: Each departure from sections 3 to 6 and from the agreement: the clause or item, the change you propose and its effect on fee and time; or write "nil". Departures are evaluated. A general exclusion or qualification not listed here is treated as non-compliant.
-R7 Program: Weeks by stage against the durations given, separating your working time, authority assessment time and the dates you need inputs from others.
-R8 Insurance and compliance: Professional indemnity $10 million and public liability $20 million, with insurer and expiry; workers compensation; a quality, safety and environmental management system (certified to ISO 9001, 45001 and 14001, or an equivalent system you describe); conflicts of interest.
+R6 Departures: Each departure from sections 3 to 6 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant.
+R7 Program: Weeks by stage, separating your time, authority time and the dates you need inputs.
+R8 Insurance and compliance: PI $10 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest.
 R9 Reimbursables: "Included in the fee" (preferred), or each item with its rate. At cost with no handling fee is preferred.
 
 ### Before issue — resolve or accept

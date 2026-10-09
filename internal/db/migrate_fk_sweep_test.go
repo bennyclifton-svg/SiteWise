@@ -146,6 +146,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			"proposal_triggers":       {"org_id": org, "project_id": p, "proposal_key": proposalKey, "work_item_id": w},
 			"delivery_dependencies":   {"org_id": org, "project_id": p, "predecessor_id": d, "successor_id": id(950 + n)},
 			"report_edits":            {"org_id": org, "report_version_id": version, "target_id": "seed", "text": "Edit", "base_content_sha256": strings.Repeat("a", 64), "user_id": u},
+			"report_settings":         {"org_id": org, "report_version_id": version, "key": "scale", "value": "simple", "user_id": u},
 			"report_references":       {"org_id": org, "report_version_id": version, "citation_id": "U1", "label": "U", "anchor_id": "seed", "basis": row{}},
 		}
 		f["passages"] = row{"org_id": org, "id": id(2400 + n), "document_id": id(1900 + n), "ordinal": 0, "body": "Source"}

@@ -1,6 +1,9 @@
 package reports
 
-import "sort"
+import (
+	"encoding/json"
+	"sort"
+)
 
 type SourceState struct {
 	CostPlanVersionID        string           `json:"cost_plan_version_id,omitempty"`
@@ -16,6 +19,10 @@ type SourceState struct {
 	AppBuild                 string           `json:"app_build"`
 	TemplateID               string           `json:"template_id"`
 	TemplateVersion          int              `json:"template_version"`
+	// RFP freezes a consultant RFP's discipline version and drivers, so a
+	// setting change re-resolves without reloading the project and an issue
+	// records exactly what the selection was made from.
+	RFP json.RawMessage `json:"rfp,omitempty"`
 }
 
 // Every report shares explicit revision dependencies, including the cost plan.
