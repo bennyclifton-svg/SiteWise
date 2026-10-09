@@ -125,7 +125,8 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
     if (disciplines.some(d => d.discipline_ids.includes(p.discipline_id ?? ""))) return `${p.title} · discipline RFP`;
     const words = p.title.toLowerCase().split(/[\s,/-]+/);
     if (disciplines.some(d => d.title_aliases.some(a => words.includes(a)))) return `${p.title} · confirm discipline`;
-    return `${p.title} · generic RFP`;
+    // Other disciplines keep today's RFP and today's label (owner decision O2).
+    return p.title;
   }
   async function issue() {
     if (!view?.draft) return;
