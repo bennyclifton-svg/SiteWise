@@ -4,8 +4,60 @@
 
 Revision 2, 9 October 2026. This revision takes in the
 [peer review](../rfp-golden/peer-review-2026-10-09.md). §7 lists every
-recommendation in the review and where this plan handles it. Nothing in this
-plan has been built.
+recommendation in the review and where this plan handles it.
+
+## Build status (10 October 2026)
+
+Built on branch `rfp/golden` (worktree `../sitewise-rfp`). Evidence:
+[2026-10-10 tranche 1](../evidence/2026-10-10-rfp-tranche1/README.md).
+Phase A content: [phase-a-changes.md](../rfp-golden/phase-a-changes.md).
+Owner decision O1 was taken on 9 October: **three pages**.
+
+| Task | State |
+|---|---|
+| Phase A C1-C6 | Done as **draft** in `knowledge/rfp/*.yaml`, with a change log for review. C1.1 (PACE fee): the review was wrong; the ledger matches the PDF. 12 answer keys in `data/eval/rfp/answer-keys/` (`reviewed: false`). Owner sign-off outstanding. |
+| 1 Loader | Done, with the review record (`reviewed_by`, `reviewed_on`) required for `status: reviewed` |
+| 2 and 7 Transcription, snapshots | Done for all five disciplines; Markdown snapshots for Arthur St and Yarramundi. The owner comparison (task 7, step 4) is outstanding. |
+| 3 Knowledge gate | Done |
+| 4-6 Drivers, resolver, sections | Done |
+| 8 Selection answer keys | Done; all pass |
+| 9-10 Store, HTTP | Done (migration `021l_report_settings.sql`) |
+| 11 PDF and page policy | Done; 27 scenario RFPs measured at 1.55-2.78 pages |
+| 12 Issue gate | Done |
+| 13 Editor UI | Done; Playwright `rfp-editor.spec.ts` |
+| 14 Bench and driver report | Done, except a run concurrent with filing |
+| 15 Retire generic blocks | Done |
+
+Where the build departs from this plan, and why:
+
+- **Settings keys.** The appointment is one key, `boundary:range`
+  (`{start, end}`), not two, so a range is never half-saved. The parts
+  covered are `parts:affected`. Facts are set one at a time
+  (`driver:flag.<name>`).
+- **Unknown modules.** When a shared module's activation is unknown, its rows
+  are left out and listed as an advisory check, unless the module says `ask`.
+  Asking about "live operations" on every project was noise. Rows inside a
+  discipline still default to `ask`.
+- **Issue details.** These are one blocking decision listing every missing
+  field, not one decision per field. A `field:address` override covers a
+  site record with no address.
+- **Getting the PDF to three pages without shrinking text or dropping
+  scope:**
+  - Scope positions print as three grouped lists.
+  - R1 names each option stage, then one line for "each optional item in
+    section 5", as the golden R1 did.
+  - Option stages sit at the end of the stage table.
+  - Civil elements print as a list.
+  - Consultant RFP PDFs omit the citation list; it stays in the issue record.
+  - Leading is 1.2 for consultant RFPs.
+  - Document tables size their columns by content.
+- **New discipline ids.** `consultant.traffic` and `consultant.structural`
+  are new strings; architect, town planner and civil already existed.
+- **Not merged to `main`.** `docs/rfp-golden/` holds fee ledgers from real
+  proposals, and the answer keys name real projects. The repository is
+  public, so the owner decides what may be pushed.
+
+---
 
 **Goal:** Reports → "RFP — services appointment" → Architect / Town Planner /
 Traffic / Civil / Structural produces an RFP built from approved, conditional
