@@ -137,7 +137,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 	// and events. Checking just the returned status would miss partial writes.
 	snapshot := func() map[string]string {
 		out := map[string]string{}
-		for _, table := range []string{"projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs"} {
+		for _, table := range []string{"projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs"} {
 			var raw []byte
 			err := conn.QueryRow(ctx, `SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY to_jsonb(r)::text),'[]'::jsonb) FROM `+pgx.Identifier{table}.Sanitize()+` r WHERE org_id=ANY($1::uuid[])`, []string{m.orgID, foreign.orgID}).Scan(&raw)
 			if err != nil {
@@ -165,6 +165,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"GET", base + "/proposals", nil, false}, {"POST", proposalPath + "/accept", decisionBody, true}, {"POST", proposalPath + "/dismiss", decisionBody, true}, {"DELETE", proposalPath + "/decision", jsonBody(map[string]any{"version": decision.Version}), true},
 		{"GET", base + "/reports", nil, false}, {"POST", base + "/reports", reportBody, true}, {"GET", reportPath, nil, false}, {"POST", reportPath + "/draft", []byte(`{"use_last_completed":true}`), false},
 		{"PUT", editPath, jsonBody(map[string]any{"version": draft.Version, "text": "Intrusion"}), false}, {"DELETE", editPath, jsonBody(map[string]any{"version": draft.Version}), false},
+		{"PUT", reportPath + "/settings/scale", jsonBody(map[string]any{"version": draft.Version, "value": "complex"}), false}, {"DELETE", reportPath + "/settings/scale", jsonBody(map[string]any{"version": draft.Version}), false},
 		{"GET", base + "/site", nil, false}, {"PATCH", "/api/sites/" + site.ID, []byte(`{"version":1,"address":"Intrusion"}`), false},
 		{"GET", base + "/profile", nil, false}, {"GET", base + "/profile/sources", nil, false},
 		{"PUT", base + "/profile/hdr.subclass", []byte(`{"value":"house"}`), false}, {"PUT", base + "/profile/scope", []byte(`{"systems":{"mechanical.air-conditioning":"in"}}`), false}, {"POST", base + "/profile/read", nil, false},
