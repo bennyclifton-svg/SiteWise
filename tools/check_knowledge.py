@@ -97,7 +97,8 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
     for path in sorted(KNOWLEDGE.rglob("*.yaml")):
         rel = path.relative_to(ROOT).as_posix()
         parts = path.relative_to(KNOWLEDGE).parts[:-1]
-        if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in parts or set(CATALOGUE_DIRS) & set(parts):
+        # RFP discipline files have their own shape and check (check_rfp).
+        if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in parts or set(CATALOGUE_DIRS) & set(parts) or "rfp" in parts:
             continue
         if path.name in CLUSTER_WORKS_FILES and path.parent.parent.name == "clusters":
             continue
@@ -1276,6 +1277,81 @@ def check_source_archive(archive: Path, report: Report) -> None:
         report.error(where, f"source missing from manifest: {name}")
 
 
+RFP_DIR = "rfp"
+RFP_ANSWER_KEYS = ROOT / "data" / "eval" / "rfp" / "answer-keys"
+RFP_THRESHOLD_KINDS = {"statutory", "client_default", "evidence_estimate"}
+RFP_PROVENANCE_KINDS = {"evidence", "seed", "practice", "client_decision"}
+
+
+def rfp_provenance(where: str, rows, report: Report) -> None:
+    for row in rows or []:
+        for p in row.get("provenance") or [] if isinstance(row, dict) else []:
+            if not isinstance(p, dict) or p.get("kind") not in RFP_PROVENANCE_KINDS or not p.get("ref"):
+                report.error(where, f"{row.get('key')}: provenance needs a kind and a ref")
+            elif p.get("kind") == "client_decision" and not str(p.get("why") or "").strip():
+                report.error(where, f"{row.get('key')}: a client_decision provenance needs a why")
+
+
+def check_rfp(report: Report) -> None:
+    """Consultant RFP discipline files (knowledge/rfp) and their selection
+    answer keys. The Go loader enforces the condition vocabulary; this gate
+    adds review records, threshold provenance, golden paths and answer-key
+    references."""
+    folder = KNOWLEDGE / RFP_DIR
+    if not folder.is_dir():
+        return
+    disciplines: dict = {}
+    for path in sorted(folder.glob("*.yaml")):
+        rel = path.relative_to(ROOT).as_posix()
+        try:
+            doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError as e:
+            report.error(rel, f"invalid YAML: {e}")
+            continue
+        status = doc.get("status")
+        if status not in {"draft", "reviewed"}:
+            report.error(rel, "status must be draft or reviewed")
+        if status == "reviewed" and not (doc.get("reviewed_by") and doc.get("reviewed_on")):
+            report.error(rel, "reviewed needs reviewed_by and reviewed_on; only the owner marks a file reviewed")
+        golden = doc.get("golden")
+        if golden and not (ROOT / golden).is_file():
+            report.error(rel, f"golden file not found: {golden}")
+        for t in doc.get("thresholds") or []:
+            if not isinstance(t, dict) or t.get("kind") not in RFP_THRESHOLD_KINDS or "verified" not in t:
+                report.error(rel, f"threshold {t.get('key') if isinstance(t, dict) else t}: needs kind and verified")
+            elif not str(t.get("source") or "").strip():
+                report.error(rel, f"threshold {t.get('key')}: needs a source")
+        for section in ("stages", "elements", "allowances", "positions", "role", "terms", "project_rows"):
+            rfp_provenance(f"{rel} {section}", doc.get(section), report)
+        if path.name not in {"skeleton.yaml", "modules.yaml"} and doc.get("id"):
+            disciplines[doc["id"]] = doc
+    if not RFP_ANSWER_KEYS.is_dir():
+        return
+    for path in sorted(RFP_ANSWER_KEYS.glob("*.yaml")):
+        rel = path.relative_to(ROOT).as_posix()
+        key = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        if key.get("reviewed") and key.get("label_source") == "agent-draft":
+            report.error(rel, "an agent draft cannot be marked reviewed")
+        for discipline, expect in (key.get("expect") or {}).items():
+            doc = disciplines.get(discipline)
+            if doc is None:
+                report.error(rel, f"unknown discipline {discipline}")
+                continue
+            names = {
+                "stage": {s.get("key") for s in doc.get("stages") or []},
+                "element": {e.get("key") for e in doc.get("elements") or []},
+                "allowance": {a.get("key") for a in doc.get("allowances") or []},
+                "position": {p.get("key") for p in doc.get("positions") or []},
+            }
+            refs = [("stage", k) for f in ("stages_include", "stages_option", "stages_absent", "stages_ask") for k in expect.get(f) or []]
+            refs += [("element", k) for f in ("elements_include", "elements_option", "elements_absent") for k in expect.get(f) or []]
+            refs += [("allowance", k) for f in ("allowances_present", "allowances_absent") for k in expect.get(f) or []]
+            refs += [("position", k) for f in ("positions", "party") for k in (expect.get(f) or {})]
+            for kind, name in refs:
+                if name not in names[kind]:
+                    report.error(rel, f"{discipline}: unknown {kind} {name}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed-dir", type=Path, default=DEFAULT_SEED_DIR)
@@ -1325,6 +1401,7 @@ def main() -> int:
     check_profile(report, args.seed_dir, known, deprecated, refs, cache, determinants, rules)
     pending = check_works(report, args.seed_dir, refs, cache, actions_doc, known)
     check_catalogues(report, args.seed_dir, cache, determinants)
+    check_rfp(report)
     check_replacements(deprecated, known, report)
     check_deprecated_refs(refs, deprecated, report)
 

@@ -165,9 +165,12 @@ type RFPScale struct {
 }
 
 type RFPDiscipline struct {
-	ID            string   `yaml:"id" json:"id"`
-	Version       int      `yaml:"version" json:"version"`
-	Status        string   `yaml:"status" json:"status"`
+	ID      string `yaml:"id" json:"id"`
+	Version int    `yaml:"version" json:"version"`
+	Status  string `yaml:"status" json:"status"`
+	// ReviewedBy and ReviewedOn record the owner's review; reviewed needs both.
+	ReviewedBy    string   `yaml:"reviewed_by" json:"reviewed_by,omitempty"`
+	ReviewedOn    string   `yaml:"reviewed_on" json:"reviewed_on,omitempty"`
 	Title         string   `yaml:"title" json:"title"`
 	Heading       string   `yaml:"heading" json:"heading"`
 	Golden        string   `yaml:"golden" json:"golden"`
@@ -470,6 +473,9 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	}
 	if !regexp.MustCompile(`^[a-z-]+$`).MatchString(d.ID) || d.Version < 1 || !slices.Contains([]string{"draft", "reviewed"}, d.Status) || d.Title == "" || d.Heading == "" {
 		return d, fmt.Errorf("discipline needs an id, version, title, heading and status draft or reviewed")
+	}
+	if d.Status == "reviewed" && (strings.TrimSpace(d.ReviewedBy) == "" || strings.TrimSpace(d.ReviewedOn) == "") {
+		return d, fmt.Errorf("discipline %s is reviewed without reviewed_by and reviewed_on; only the owner marks it reviewed", d.ID)
 	}
 	if len(d.DisciplineIDs) == 0 || len(d.Stages) == 0 {
 		return d, fmt.Errorf("discipline %s needs discipline_ids and stages", d.ID)

@@ -249,7 +249,7 @@ func reviewedCatalog(t *testing.T) *knowledge.Catalog {
 			return err
 		}
 		if filepath.ToSlash(rel) == "rfp/architecture.yaml" {
-			body = []byte(strings.Replace(string(body), "\nstatus: draft\n", "\nstatus: reviewed\n", 1))
+			body = []byte(strings.Replace(string(body), "\nstatus: draft\n", "\nstatus: reviewed\nreviewed_by: test owner\nreviewed_on: \"2026-10-10\"\n", 1))
 		}
 		return os.WriteFile(target, body, 0o644)
 	})

@@ -330,3 +330,62 @@ class CatalogueTests(unittest.TestCase):
                  'sections': [{'id': 'brief', 'title': 'Brief', 'essential': True,
                                'clauses': [{'id': 'cl.test', 'version': 2}]}]}]}})
         self.assertTrue(any('incompatible clause reference' in e for e in report.errors))
+
+
+class RFPCheckTests(unittest.TestCase):
+    def run_check(self, discipline: dict, answer_key: dict | None = None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            knowledge = root / 'knowledge'
+            (knowledge / 'rfp').mkdir(parents=True)
+            (root / 'docs').mkdir()
+            (root / 'docs' / 'golden.md').write_text('# Golden\n', encoding='utf-8')
+            (knowledge / 'rfp' / 'architecture.yaml').write_text(yaml.safe_dump(discipline), encoding='utf-8')
+            keys = root / 'keys'
+            keys.mkdir()
+            if answer_key is not None:
+                (keys / 'scenario.yaml').write_text(yaml.safe_dump(answer_key), encoding='utf-8')
+            report = checker.Report()
+            with patch.object(checker, 'ROOT', root), patch.object(checker, 'KNOWLEDGE', knowledge), patch.object(checker, 'RFP_ANSWER_KEYS', keys):
+                checker.check_rfp(report)
+            return report
+
+    def base(self, **extra):
+        doc = {'id': 'architecture', 'status': 'draft', 'golden': 'docs/golden.md',
+               'thresholds': [{'key': 't', 'kind': 'client_default', 'text': 't', 'source': 's', 'verified': False}],
+               'stages': [{'key': 'concept', 'provenance': [{'kind': 'evidence', 'ref': 'architecture#1'}]}],
+               'positions': [{'key': 'bim', 'provenance': [{'kind': 'evidence', 'ref': 'architecture#2'}]}]}
+        doc.update(extra)
+        return doc
+
+    def test_valid_draft_passes(self):
+        self.assertEqual(self.run_check(self.base()).errors, [])
+
+    def test_reviewed_needs_the_owner_review_record(self):
+        report = self.run_check(self.base(status='reviewed'))
+        self.assertTrue(any('reviewed_by' in e for e in report.errors), report.errors)
+        report = self.run_check(self.base(status='reviewed', reviewed_by='Owner', reviewed_on='2026-10-10'))
+        self.assertEqual(report.errors, [])
+
+    def test_threshold_needs_kind_verified_and_source(self):
+        report = self.run_check(self.base(thresholds=[{'key': 't', 'text': 't', 'source': 's'}]))
+        self.assertTrue(any('kind and verified' in e for e in report.errors), report.errors)
+        report = self.run_check(self.base(thresholds=[{'key': 't', 'kind': 'client_default', 'text': 't', 'source': '', 'verified': False}]))
+        self.assertTrue(any('needs a source' in e for e in report.errors), report.errors)
+
+    def test_golden_path_must_exist(self):
+        report = self.run_check(self.base(golden='docs/missing.md'))
+        self.assertTrue(any('golden file not found' in e for e in report.errors), report.errors)
+
+    def test_client_decision_needs_a_why(self):
+        report = self.run_check(self.base(positions=[{'key': 'bim', 'provenance': [{'kind': 'client_decision', 'ref': 'x'}]}]))
+        self.assertTrue(any('needs a why' in e for e in report.errors), report.errors)
+
+    def test_answer_keys_name_real_rows_and_stay_drafts(self):
+        key = {'reviewed': True, 'label_source': 'agent-draft',
+               'expect': {'architecture': {'stages_include': ['concept', 'gone'], 'positions': {'bim': 'I', 'nope': 'X'}},
+                          'acoustics': {}}}
+        report = self.run_check(self.base(), key)
+        joined = ' '.join(report.errors)
+        for needle in ('cannot be marked reviewed', 'unknown stage gone', 'unknown position nope', 'unknown discipline acoustics'):
+            self.assertIn(needle, joined)

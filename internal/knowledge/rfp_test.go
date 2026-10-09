@@ -200,3 +200,14 @@ func TestRealRFPCatalogue(t *testing.T) {
 		t.Fatal("tranche 2/3 packages must keep the generic RFP")
 	}
 }
+
+func TestLoadRFPReviewedNeedsOwnerRecord(t *testing.T) {
+	body := strings.Replace(minimalDiscipline, "status: draft", "status: reviewed", 1)
+	if _, err := ParseRFPDiscipline([]byte(body), realRFPSkeleton(t)); err == nil || !strings.Contains(err.Error(), "reviewed_by") {
+		t.Fatalf("reviewed without the owner's record: %v", err)
+	}
+	body = strings.Replace(minimalDiscipline, "status: draft", "status: reviewed\nreviewed_by: Owner\nreviewed_on: \"2026-10-10\"", 1)
+	if _, err := ParseRFPDiscipline([]byte(body), realRFPSkeleton(t)); err != nil {
+		t.Fatal(err)
+	}
+}
