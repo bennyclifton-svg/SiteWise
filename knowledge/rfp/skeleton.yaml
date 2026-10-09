@@ -118,8 +118,8 @@ project_rows:
   - {key: parts, label: Building, text: "{parts}"}
   - {key: quantities, label: Quantities, text: "{quantities}"}
   - {key: program, label: Program, text: "{field:program}"}
-  - {key: pathway, label: Planning pathway, text: "{pathway}", required: true}
-  - {key: procurement, label: Procurement, text: "{procurement}", required: true}
+  - {key: pathway, label: Planning pathway, text: "{pathway}"}
+  - {key: procurement, label: Procurement, text: "{procurement}"}
   - {key: conditions, label: Site conditions, text: "{flags}"}
   - {key: information, label: Information provided, text: "{information}"}
 

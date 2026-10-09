@@ -1,0 +1,37 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: planning-advice-only
+description: "Due-diligence planning advice before a purchase; no application."
+facts:
+  work_type: advisory
+  category: commercial
+  pathway: advice_only
+  state: NSW
+parts:
+  - {id: site, label: Site, kind: whole, classes: ["5"]}
+address: "9 Example St, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  town-planning:
+    "boundary:range": {start: prelim_advice, end: prelim_advice}
+expect:
+  town-planning:
+    stages_include: [prelim_advice]
+    stages_absent: [pre_lodgement, planning_report, lodgement, assessment, determination_review, post_approval, variation_request]
+    positions: {certificates: I, court: X, specialist_review: absent, compliance_matrix: absent, submissions_response: absent, modification: absent}
+    allowances_absent: [rfi_responses, authority_meetings, pre_lodgement_meetings]
+    role: [adviser]
+    role_absent: [planner]
+    blocking_only: true
+sources:
+  - "Peer review: advice or due diligence only has no automatic lodgement or determination stage."

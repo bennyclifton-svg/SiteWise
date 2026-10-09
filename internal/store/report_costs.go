@@ -61,3 +61,29 @@ func reportCommercial(ctx context.Context, tx pgx.Tx, org, project, pkg, kind st
 	}
 	return out, p.ID, nil
 }
+
+// reportWorksBudget is the cost plan's works budget total, the construction
+// budget a consultant RFP may test against a scale threshold. An incomplete
+// total stays unknown rather than becoming a partial figure.
+func reportWorksBudget(ctx context.Context, tx pgx.Tx, org, project string) (string, string, error) {
+	p, err := readCostPlan(ctx, tx, org, project, "")
+	if errors.Is(err, ErrNotFound) {
+		return "", "", nil
+	}
+	if err != nil || p.Status == "unavailable" {
+		return "", "", err
+	}
+	totals, err := costs.Summarize(p, "overall")
+	if err != nil {
+		return "", "", err
+	}
+	t := totals.Works["budget"]
+	if t.Amount == nil || !t.Complete || t.Lines == 0 {
+		return "", "", nil
+	}
+	basis := p.Currency + " excl. GST"
+	if p.TaxBasis == "inc_tax" {
+		basis = p.Currency + " incl. GST"
+	}
+	return string(*t.Amount), basis, nil
+}

@@ -1,0 +1,74 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: yarramundi
+description: "Camp Yarramundi stage 1 redevelopment (Hawkesbury, 21.6 ha): masterplan plus new accommodation and alterations to an operating camp; Class 3 lodges and a Class 9b conference hall; DA; D&C with novation; flood fringe, NorBE catchment, Springwood Rd intersection upgrade."
+facts:
+  work_type: extend
+  category: institution
+  pathway: da
+  procurement: design_construct
+  novation: "yes"
+  state: NSW
+  site_area: "216000"
+  parking: "129"
+  regulated_design: "yes"
+flags:
+  staged: "yes"
+  multi_building: "yes"
+  flood: "yes"
+  norbe: "yes"
+  public_road: "yes"
+  live_operations: "yes"
+parts:
+  - {id: lodges, label: Accommodation lodges, classes: ["3"]}
+  - {id: hall, label: Conference hall, classes: [9b]}
+address: "Springwood Rd, Yarramundi NSW"
+documents: 30
+consultants:
+  - {title: Architect, status: appointed}
+  - {title: Civil, status: to be appointed}
+fields:
+  ref: YMCA-YAR-RFP
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: YMCA NSW
+  lga: Hawkesbury
+  design_vehicle: "14.5 m rigid bus"
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: dnc_tender}
+    "allowance:client_presentations": "4"
+    "allowance:planning_cap": "40"
+  civil:
+    "boundary:range": {start: schematic, end: dnc_tender}
+expect:
+  architecture:
+    stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, interiors, dnc_tender]
+    stages_option: [regulated_design, post_novation]
+    stages_absent: [tender_traditional, bidding, for_construction, construction_support]
+    positions: {live_staging: I, mixed_use_map: I, existing_interfaces: I, dnc_performance_brief: I, extra_declarations: O, tender_evaluation: O}
+    allowances_present: [workshops]
+    role: [lead, novation]
+    role_absent: [dnc_handover]
+    scale: complex
+    blocking_only: true
+  civil:
+    stages_include: [schematic, dnc_tender]
+    stages_option: [post_novation, construction_phase, as_built]
+    stages_absent: [detailed_tender, for_construction]
+    elements_include: [earthworks, roads, stormwater, public_road]
+    positions: {flood_report: I, flood_evacuation: O, norbe: I, water_quality: I, civil_declarations: I, public_road_approvals: I, road_safety_audit: O, trunk_drainage: O, design_criteria: I, civil_model: I}
+    allowances_present: [design_meetings, authority_meetings, ca_inspections, rfi_hours]
+    role: [engineer, novation]
+    scale: complex
+    blocking_only: true
+sources:
+  - "Project: civil ledger part 2 (Yarramundi RFT) and architecture ledger (AJC proposal states the DBP Act applies)."
+  - "Regulated design is recorded as a fact because AJC's proposal states the DBP Act applies; it is not inferred from Class 3."
+  - "Novated D&C: the client-side boundary ends at the D&C tender; post-novation and regulated design after it are priced as options."
+  - "The 2.8x civil price spread came from unfixed meetings, inspections, OSD, flood and intersection approvals; each is a stated allowance or position here."

@@ -45,6 +45,7 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 	snap.PartLabels = map[string]string{}
 	for _, p := range v.Parts {
 		snap.PartLabels[p.ID] = p.Label
+		snap.Parts = append(snap.Parts, reports.PartInfo{ID: p.ID, Label: p.Label, Kind: p.Kind, NCCClass: p.NCCClass})
 	}
 	labels := reportBriefLabels(s.workCatalog())
 	audit, err := reportUserAudit(ctx, tx, org, project)
@@ -109,6 +110,12 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 	snap.Commercial, state.CostPlanVersionID, err = reportCommercial(ctx, tx, org, project, pkg, template.Kind)
 	if err != nil {
 		return snap, state, err
+	}
+	if template.ID == rfpTemplateID {
+		snap.ConstructionBudget, snap.BudgetBasis, err = reportWorksBudget(ctx, tx, org, project)
+		if err != nil {
+			return snap, state, err
+		}
 	}
 	return snap, state, nil
 }

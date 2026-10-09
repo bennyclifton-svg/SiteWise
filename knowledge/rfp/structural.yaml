@@ -47,7 +47,7 @@ stage_intro: "Price each stage that applies as a lump sum. Each stage ends at cl
 boundary:
   - {when: [{procurement: [design_construct]}], start: concept_schematic, end: dnc_tender}
   - {when: [{work_type: [advisory]}], start: concept_schematic, end: existing_assessment}
-  - {start: concept_schematic, end: construction_documents}
+  - {start: concept_schematic, end: construction_phase}
 
 stages:
   - key: concept_schematic
@@ -64,6 +64,8 @@ stages:
     fee_basis: fixed
     delivery_stage: concept_design
     when: [{work_type: [refurb, extend, remediation]}, {flag: [existing_building]}, {flag: [osd_existing]}]
+    if_unknown: option
+    assumption: "Price as an option: needed only if the works load or connect to existing structures."
     shown_when: Alteration, extension or building over existing structures
     provenance: [{kind: evidence, ref: "structural#45"}, {kind: evidence, ref: "structural#56-57"}, {kind: seed, ref: "data/reference/clerk/data/seed/building-remediation-rectification-guide.md (investigation before design)"}]
   - key: planning_approval
@@ -179,6 +181,8 @@ positions:
     kind: technical
     value: {value: X, when: [{procurement: [design_construct]}], else: O}
     responsible: "specialist contractor (D&C element)"
+    if_unknown: option
+    assumption: "Priced as an option until the procurement route is decided."
     provenance: [{kind: evidence, ref: "structural#41-42"}]
   - key: retention_design
     label: "Shoring and piled retention design"
@@ -197,7 +201,7 @@ positions:
   - key: temporary_works_design
     label: "Temporary works and propping design"
     kind: technical
-    value: {value: X, when: [{flag: [basement]}, {flag: [excavation_adjoining]}, {work_type: [refurb, extend, remediation]}], else: "-"}
+    value: X
     responsible: "contractor's temporary works designer"
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md (structural intervention)"}]
   - key: strengthening
@@ -215,7 +219,7 @@ positions:
     if_unknown: option
     assumption: "Price as an option: needed where excavation is next to adjoining structures."
     provenance: [{kind: evidence, ref: "structural#50"}]
-  - {key: super_flat_floor, label: "Super-flat floor design", kind: technical, value: {value: O, when: [{flag: [super_flat_floor]}], else: "-"}, provenance: [{kind: evidence, ref: "structural#59"}]}
+  - {key: super_flat_floor, label: "Super-flat floor design", kind: technical, value: {value: O, when: [{flag: [super_flat_floor]}], else: "-"}, if_unknown: option, assumption: "Price as an option: needed only if the use needs a super-flat floor.", provenance: [{kind: evidence, ref: "structural#59"}]}
   - {key: compaction, label: "Ground compaction inspections", kind: technical, value: X, responsible: "geotechnical engineer", provenance: [{kind: evidence, ref: "structural#54"}]}
   - {key: demolition_drawings, label: "Demolition drawings (engineering demolition and propping design is not replaced by them)", kind: technical, value: X, responsible: architect, provenance: [{kind: evidence, ref: "structural#52"}]}
   - {key: services_footings, label: "Footings affected by in-ground services", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#49"}]}

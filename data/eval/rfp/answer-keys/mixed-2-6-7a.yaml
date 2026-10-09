@@ -1,0 +1,63 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: mixed-2-6-7a
+description: "New mixed-use building: apartments (Class 2) over retail (Class 6) and a car park (Class 7a), DA, traditional."
+facts:
+  work_type: new
+  category: mixed
+  pathway: da
+  procurement: traditional
+  novation: "no"
+  state: NSW
+flags:
+  staged: "no"
+  multi_building: "no"
+parts:
+  - {id: apartments, label: Apartments, classes: ["2"]}
+  - {id: retail, label: Retail, classes: ["6"]}
+  - {id: carpark, label: Car park, classes: [7a]}
+address: "20 Example Rd, Example NSW"
+consultants:
+  - {title: Architect, status: to be appointed}
+  - {title: Structural, status: to be appointed}
+  - {title: Civil, status: to be appointed}
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "3"
+    "allowance:planning_cap": "40"
+    "allowance:ca_inspections": "8"
+  structural:
+    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "allowance:ca_inspections": "10"
+  civil:
+    "boundary:range": {start: schematic, end: for_construction}
+expect:
+  architecture:
+    stages_ask: [regulated_design]
+    stages_include: [interiors]
+    positions: {mixed_use_map: I, apartment_design: O}
+    scale: complex
+    blocking: ["fact:regulated_design"]
+    blocking_only: true
+  structural:
+    stages_ask: [regulated_design]
+    blocking: ["fact:regulated_design"]
+    blocking_only: true
+  civil:
+    positions: {civil_declarations: ask}
+    blocking: ["fact:regulated_design"]
+    blocking_only: true
+sources:
+  - "Peer review: part-specific clauses plus shared interfaces. The Class 2 part raises the regulated-design question; the unverified rule does not answer it."

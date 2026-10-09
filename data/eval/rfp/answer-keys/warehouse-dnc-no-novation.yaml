@@ -1,0 +1,63 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: warehouse-dnc-no-novation
+description: "New warehouse (Class 7b), DA, design and construct without novation."
+facts:
+  work_type: new
+  category: industrial
+  pathway: da
+  procurement: design_construct
+  novation: "no"
+  state: NSW
+  site_area: "20000"
+flags:
+  staged: "no"
+  multi_building: "no"
+parts:
+  - {id: warehouse, label: Warehouse, classes: [7b]}
+address: "1 Logistics Way, Example NSW"
+consultants:
+  - {title: Architect, status: to be appointed}
+  - {title: Structural, status: to be appointed}
+  - {title: Civil, status: to be appointed}
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: dnc_tender}
+    "allowance:client_presentations": "2"
+    "allowance:planning_cap": "20"
+  civil:
+    "boundary:range": {start: schematic, end: dnc_tender}
+  structural:
+    "boundary:range": {start: concept_schematic, end: dnc_tender}
+expect:
+  architecture:
+    stages_include: [concept, schematic, planning_approval, planning_response, design_development, dnc_tender]
+    stages_absent: [tender_traditional, bidding, for_construction, construction_support, post_novation]
+    positions: {dnc_performance_brief: I, existing_interfaces: absent}
+    role: [lead, dnc_handover]
+    role_absent: [novation]
+    blocking_only: true
+  civil:
+    stages_include: [schematic, dnc_tender]
+    stages_absent: [detailed_tender, for_construction, post_novation]
+    blocking_only: true
+  structural:
+    stages_include: [concept_schematic, planning_approval, design_development, dnc_tender]
+    stages_option: [existing_assessment]
+    stages_absent: [tender_traditional, construction_documents, post_novation]
+    positions: {specialist_element_design: X}
+    party: {specialist_element_design: "specialist contractor"}
+    blocking_only: true
+sources:
+  - "Peer review scenario: D&C without novation gets a client-side tender and performance brief; contractor completion is not sold as client consultant scope."

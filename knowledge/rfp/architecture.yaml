@@ -195,7 +195,7 @@ allowances:
   - {key: renders, label: Working 3D views, text: "{n}", default: "1", owner: client, provenance: [{kind: evidence, ref: "architecture#15"}, {kind: evidence, ref: "architecture#45"}]}
   - {key: issues_per_stage, label: Issues per stage, text: "{n} draft and 1 final", default: "1", owner: client, provenance: [{kind: evidence, ref: "architecture#41"}, {kind: evidence, ref: "architecture#90"}]}
   - {key: site_visits, label: "Site visits, design stages", text: "{n}", default: "2", owner: client, provenance: [{kind: evidence, ref: "architecture#5"}, {kind: evidence, ref: "architecture#60"}]}
-  - {key: workshops, label: Stakeholder workshops, text: "{n}", default: "1", owner: client, when: [{flag: [staged]}, {flag: [multi_building]}, {flag: [community]}], provenance: [{kind: evidence, ref: "architecture#8"}]}
+  - {key: workshops, label: Stakeholder workshops, text: "{n}", default: "1", owner: client, when: [{flag: [staged]}, {flag: [multi_building]}], provenance: [{kind: evidence, ref: "architecture#8"}]}
   - {key: qs_reviews, label: QS cost plan reviews, text: "{n}, at schematic, design development and pre-tender", default: "3", owner: client, provenance: [{kind: evidence, ref: "architecture#66"}]}
   - {key: bim_lod, label: BIM level of detail, text: "LOD {n}", default: "200", complex_default: "300", owner: client, provenance: [{kind: evidence, ref: "architecture#138-140"}]}
   - {key: drawing_sheets, label: Drawing sheets at planning, text: "{n}, indicative; list them in R2", default: "12", owner: consultant, when: [{stage: [planning_approval]}], provenance: [{kind: evidence, ref: "architecture#45"}]}

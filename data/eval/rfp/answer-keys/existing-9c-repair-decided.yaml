@@ -1,0 +1,42 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: existing-9c-repair-decided
+description: "As existing-3-9c-repair, after the user records professional advice that the regime does not apply to this repair."
+facts:
+  work_type: remediation
+  category: institution
+  pathway: da
+  procurement: traditional
+  novation: "no"
+  state: NSW
+flags:
+  staged: "no"
+  multi_building: "no"
+parts:
+  - {id: care, label: Residential care, classes: [9c]}
+address: "3 Example Ave, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "2"
+    "allowance:planning_cap": "20"
+    "allowance:ca_inspections": "4"
+    "driver:regulated_design": "no"
+expect:
+  architecture:
+    stages_absent: [regulated_design]
+    positions: {extra_declarations: absent}
+    blocking_only: true
+sources:
+  - "A recorded decision clears the regulated-design question; the stage then follows the decision, not the class."

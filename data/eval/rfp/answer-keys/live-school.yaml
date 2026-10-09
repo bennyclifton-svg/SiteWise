@@ -1,0 +1,43 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: live-school
+description: "Classroom extension at an operating school (Class 9b), DA, traditional."
+facts:
+  work_type: extend
+  category: institution
+  pathway: da
+  procurement: traditional
+  novation: "no"
+  state: NSW
+flags:
+  live_operations: "yes"
+  staged: "no"
+  multi_building: "no"
+parts:
+  - {id: classrooms, label: Classrooms, classes: [9b]}
+address: "School Rd, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "2"
+    "allowance:planning_cap": "20"
+    "allowance:ca_inspections": "6"
+expect:
+  architecture:
+    stages_include: [interiors]
+    stages_absent: [regulated_design, brief_masterplan]
+    positions: {live_staging: I, tenant_fitout: O, existing_interfaces: I}
+    blocking_only: true
+sources:
+  - "Same live-site module as the hospital; the rows are the operator interfaces, not hospital-specific requirements."

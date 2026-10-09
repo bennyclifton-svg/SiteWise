@@ -1,0 +1,36 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: ref-town-planning
+description: "Public works assessed under an REF: no reviewed town planning bundle exists yet."
+facts:
+  work_type: new
+  category: institution
+  pathway: ref
+  procurement: traditional
+  novation: "no"
+  state: NSW
+parts:
+  - {id: building, label: School building, classes: [9b]}
+address: "School Rd, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  town-planning:
+    "boundary:range": {start: prelim_advice, end: determination_review}
+expect:
+  town-planning:
+    stages_include: [prelim_advice]
+    stages_absent: [planning_report, lodgement, assessment]
+    blocking: [pathway_unsupported]
+    blocking_only: true
+sources:
+  - "Peer review: REF needs its own determining-authority workflow and must not fall back to DA lodgement wording; unsupported pathways block issue until a bundle is reviewed."

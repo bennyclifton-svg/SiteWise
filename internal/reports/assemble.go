@@ -61,6 +61,18 @@ type Snapshot struct {
 	Packages             []procurement.Package
 	Documents            []BriefValue
 	Commercial           []BriefValue
+	// Parts and the works budget feed consultant RFP drivers. The budget is an
+	// internal selection input; an RFP prints it only when disclosed at issue.
+	Parts              []PartInfo
+	ConstructionBudget string
+	BudgetBasis        string
+}
+
+type PartInfo struct {
+	ID       string `json:"id"`
+	Label    string `json:"label"`
+	Kind     string `json:"kind"`
+	NCCClass string `json:"ncc_class,omitempty"`
 }
 
 func AssembleRFP(s Snapshot, template knowledge.ReportTemplate, cat *knowledge.Catalog, edits []Edit, useLastCompleted bool) ([]Section, error) {

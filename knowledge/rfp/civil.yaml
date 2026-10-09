@@ -197,7 +197,7 @@ positions:
     if_unknown: option
     assumption: "Price as an option: needed only if the site is flood affected."
     provenance: [{kind: evidence, ref: "civil#46"}, {kind: evidence, ref: "civil#109"}]
-  - {key: flood_evacuation, label: "Flood evacuation plan", kind: technical, value: {value: O, when: [{flag: [flood]}], else: "-"}, provenance: [{kind: evidence, ref: "civil#110"}]}
+  - {key: flood_evacuation, label: "Flood evacuation plan", kind: technical, value: {value: O, when: [{flag: [flood]}], else: "-"}, if_unknown: option, assumption: "Price as an option: needed only if the site is flood affected.", provenance: [{kind: evidence, ref: "civil#110"}]}
   - {key: pavement_design, label: "Detailed pavement design where the geotechnical report does not provide it; name the pavement designer in R4", kind: technical, value: O, provenance: [{kind: evidence, ref: "civil#32"}, {kind: evidence, ref: "civil#99"}]}
   - {key: retaining_structural, label: "Structural design of retaining walls", kind: technical, value: X, responsible: "structural engineer", provenance: [{kind: evidence, ref: "civil#101"}, {kind: evidence, ref: "civil#141"}]}
   - key: public_road_approvals

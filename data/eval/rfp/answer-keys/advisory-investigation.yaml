@@ -1,0 +1,37 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: advisory-investigation
+description: "Structural investigation of an existing office building before a purchase; no design yet."
+facts:
+  work_type: advisory
+  category: commercial
+  pathway: advice_only
+  state: NSW
+flags:
+  existing_building: "yes"
+parts:
+  - {id: office, label: Office, classes: ["5"]}
+address: "7 Example St, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  structural:
+    "boundary:range": {start: concept_schematic, end: existing_assessment}
+expect:
+  structural:
+    stages_include: [concept_schematic, existing_assessment]
+    stages_option: [design_development, tender_traditional, construction_documents]
+    stages_absent: [planning_approval]
+    positions: {strengthening: O}
+    blocking_only: true
+sources:
+  - "Peer review: advisory or remedial investigation states limits, testing and the next decision; permanent design is not assumed complete."

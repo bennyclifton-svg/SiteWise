@@ -126,7 +126,7 @@ allowances:
   - {key: pre_lodgement_meetings, label: Pre-lodgement meetings, text: "{n}", default: "1", owner: client, when: [{stage: [pre_lodgement]}], provenance: [{kind: evidence, ref: "town-planning#22"}]}
   - {key: rfi_responses, label: Authority information requests, text: "{n} response(s)", default: "1", owner: client, when: [{stage: [assessment]}], provenance: [{kind: evidence, ref: "town-planning#45"}]}
   - {key: authority_meetings, label: Authority meetings in assessment, text: "{n}", owner: client, when: [{stage: [assessment]}], provenance: [{kind: evidence, ref: "town-planning#46"}]}
-  - {key: panel_meetings, label: Planning panel meetings, text: "{n}", owner: client, when: [{flag: [panel]}], provenance: [{kind: evidence, ref: "town-planning#51"}]}
+  - {key: panel_meetings, label: Planning panel meetings, text: "{n}", default: "1", owner: client, when: [{flag: [panel]}], provenance: [{kind: evidence, ref: "town-planning#51"}]}
 
 positions:
   - {key: specialist_review, label: "Review of specialist reports for planning compliance before lodgement", kind: technical, value: I, when: [{pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#58"}]}

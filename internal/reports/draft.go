@@ -28,9 +28,12 @@ type Block struct {
 }
 
 // Table is saved source data, displayed separately from editable prose.
+// Display "document" marks a table that is the document's own content (an
+// RFP schedule) rather than a comparison of saved sources.
 type Table struct {
 	Columns []string   `json:"columns"`
 	Rows    [][]string `json:"rows"`
+	Display string     `json:"display,omitempty"`
 }
 
 type Section struct {

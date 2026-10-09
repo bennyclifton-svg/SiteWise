@@ -1,0 +1,59 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: small-class1-extension
+description: "Rear extension to a detached house (Class 1a) under a CDC, traditional contract."
+facts:
+  work_type: extend
+  category: residential
+  pathway: cdc
+  procurement: traditional
+  novation: "no"
+  state: NSW
+flags:
+  staged: "no"
+  multi_building: "no"
+parts:
+  - {id: house, label: House, classes: [1a]}
+address: "12 Example St, Example NSW"
+consultants:
+  - {title: Architect, status: appointed}
+  - {title: Structural, status: to be appointed}
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "1"
+    "allowance:ca_inspections": "3"
+  structural:
+    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "allowance:ca_inspections": "3"
+expect:
+  architecture:
+    stages_include: [concept, schematic, planning_approval, design_development, tender_traditional, bidding, for_construction]
+    stages_option: [construction_support]
+    stages_absent: [brief_masterplan, planning_response, interiors, regulated_design, dnc_tender]
+    positions: {bim_coordination: X, marketing_renders: X, specification: O, typical_interiors: O, existing_interfaces: I, mixed_use_map: absent, apartment_design: absent}
+    allowances_absent: [workshops, planning_cap]
+    scale: simple
+    blocking_only: true
+  structural:
+    stages_include: [concept_schematic, existing_assessment, planning_approval, design_development, tender_traditional, construction_documents]
+    stages_option: [construction_phase, authority_asset]
+    stages_absent: [regulated_design, dnc_tender]
+    positions: {residential_framing: I, shared_model: O, retention_design: O, dilapidation: O, strengthening: O}
+    scale: simple
+    checks: [scale]
+    blocking_only: true
+sources:
+  - "Peer review scenario: a small Class 1 extension gets footing and framing scope and existing-work scope, with no warehouse BIM, SIDRA or campus allowances."
+  - "Structural service level is assumed simple while basement, transfer and asset flags are unknown; the assumption is listed for review."

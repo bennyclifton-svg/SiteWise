@@ -1,0 +1,44 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: live-hospital
+description: "Staged refurbishment of a ward in an operating hospital (Class 9a), DA, traditional."
+facts:
+  work_type: refurb
+  category: institution
+  pathway: da
+  procurement: traditional
+  novation: "no"
+  state: NSW
+flags:
+  live_operations: "yes"
+  staged: "yes"
+  multi_building: "no"
+parts:
+  - {id: ward, label: Ward, classes: [9a]}
+address: "Hospital Rd, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "3"
+    "allowance:planning_cap": "20"
+    "allowance:ca_inspections": "10"
+expect:
+  architecture:
+    stages_include: [brief_masterplan, interiors]
+    stages_absent: [regulated_design]
+    positions: {live_staging: I, tenant_fitout: I, existing_interfaces: I}
+    scale: complex
+    blocking_only: true
+sources:
+  - "Peer review: live institutional sites need operator inputs (access, shutdowns, temporary services, staging); requirements come from this operator's brief."

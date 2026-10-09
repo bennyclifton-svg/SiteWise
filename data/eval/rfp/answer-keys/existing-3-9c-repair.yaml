@@ -1,0 +1,51 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: existing-3-9c-repair
+description: "Remediation of an existing residential care building (Class 9c), DA, traditional."
+facts:
+  work_type: remediation
+  category: institution
+  pathway: da
+  procurement: traditional
+  novation: "no"
+  state: NSW
+flags:
+  staged: "no"
+  multi_building: "no"
+parts:
+  - {id: care, label: Residential care, classes: [9c]}
+address: "3 Example Ave, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "2"
+    "allowance:planning_cap": "20"
+    "allowance:ca_inspections": "4"
+  structural:
+    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "allowance:ca_inspections": "4"
+expect:
+  architecture:
+    stages_ask: [regulated_design]
+    positions: {existing_interfaces: I}
+    blocking: ["fact:regulated_design"]
+    blocking_only: true
+  structural:
+    stages_ask: [regulated_design]
+    stages_include: [existing_assessment]
+    positions: {strengthening: O}
+    blocking: ["fact:regulated_design"]
+    blocking_only: true
+sources:
+  - "Peer review: the regime for existing Class 3/9c repair is decided from verified applicability, not class alone (NSW guidance: alterations to existing Class 3 and 9c enter the regime from 1 July 2028, with exemptions)."

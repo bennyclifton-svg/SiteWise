@@ -43,7 +43,7 @@ stage_intro: "Price each stage that applies as a lump sum; surveys are priced pe
 
 boundary:
   - {when: [{pathway: [advice_only, exempt]}, {work_type: [advisory]}], start: design_advice, end: design_advice}
-  - {start: design_advice, end: conditions_review}
+  - {start: design_advice, end: travel_plan}
 
 stages:
   - key: design_advice

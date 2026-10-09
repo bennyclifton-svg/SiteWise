@@ -1,0 +1,51 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: planning-only
+description: "Office building (Class 5), DA. The client buys design only to planning approval; later stages are priced as options for a later decision."
+facts:
+  work_type: new
+  category: commercial
+  pathway: da
+  procurement: traditional
+  novation: "no"
+  state: NSW
+flags:
+  staged: "no"
+  multi_building: "no"
+parts:
+  - {id: office, label: Office, classes: ["5"]}
+address: "5 Example St, Example NSW"
+consultants:
+  - {title: Structural, status: to be appointed}
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: planning_response}
+    "allowance:client_presentations": "2"
+    "allowance:planning_cap": "20"
+    "allowance:ca_inspections": "4"
+  structural:
+    "boundary:range": {start: concept_schematic, end: planning_approval}
+    "allowance:ca_inspections": "4"
+expect:
+  architecture:
+    stages_include: [concept, schematic, planning_approval, planning_response]
+    stages_option: [design_development, interiors, tender_traditional, bidding, for_construction, construction_support]
+    stages_absent: [dnc_tender, brief_masterplan]
+    blocking_only: true
+  structural:
+    stages_include: [concept_schematic, planning_approval]
+    stages_option: [design_development, tender_traditional, construction_documents, construction_phase]
+    blocking_only: true
+sources:
+  - "Peer review scenario: a planning-only appointment never acquires design development or construction documentation as included scope."

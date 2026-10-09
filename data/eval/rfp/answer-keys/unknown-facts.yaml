@@ -1,0 +1,45 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: unknown-facts
+description: "Early project with no pathway, no procurement route, no class on the building part, a disputed GFA and conflicting heritage evidence."
+facts:
+  work_type: new
+  category: commercial
+  gfa: {state: conflict, values: ["4100", "4600"]}
+  flag.heritage: {state: conflict, values: ["yes", "no"]}
+parts:
+  - {id: building, label: Building, classes: []}
+address: "11 Example St, Example NSW"
+fields:
+  ref: RFP-TEST
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client (attached)"
+  client: Example Client
+  lga: Example LGA
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "2"
+    "allowance:planning_cap": "20"
+    "allowance:ca_inspections": "4"
+  town-planning:
+    "boundary:range": {start: prelim_advice, end: determination_review}
+    "allowance:authority_meetings": "1"
+expect:
+  architecture:
+    stages_ask: [planning_approval, tender_traditional, for_construction, dnc_tender]
+    stages_option: [interiors]
+    stages_include: [concept, schematic, design_development]
+    blocking: ["fact:pathway", "fact:procurement", "fact:gfa", "fact:class", "fact:regulated_design"]
+    checks: [scale]
+  town-planning:
+    stages_ask: [pre_lodgement, planning_report, lodgement, assessment, determination_review]
+    stages_include: [prelim_advice]
+    blocking: ["fact:pathway", "fact:gfa"]
+sources:
+  - "Peer review: unknown pathway, missing information or contradictory facts become focused decisions or printed assumptions, never fabricated certainty."

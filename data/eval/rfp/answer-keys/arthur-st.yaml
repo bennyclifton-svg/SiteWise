@@ -1,0 +1,110 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: arthur-st
+description: "145-151 Arthur St Homebush West NSW: warehouse extension (Class 7b) with a mezzanine office (Class 5), DA, traditional, no novation. The existing on-site detention and a Sydney Water asset affect the design; GFA differs between sources."
+facts:
+  work_type: extend
+  category: industrial
+  pathway: da
+  procurement: traditional
+  novation: "no"
+  state: NSW
+  site_area: "31720"
+  gfa: {state: conflict, values: ["2135", "2895"]}
+flags:
+  osd_existing: "yes"
+  authority_asset: "yes"
+  heavy_vehicles: "yes"
+  multi_building: "no"
+  staged: "no"
+parts:
+  - {id: warehouse, label: Warehouse, classes: [7b], gfa: "2135"}
+  - {id: office, label: Mezzanine office, classes: ["5"], gfa: "215"}
+address: "145-151 Arthur St, Homebush West NSW"
+documents: 12
+consultants:
+  - {title: Architect, status: to be appointed}
+  - {title: Structural, status: to be appointed}
+  - {title: Civil, status: to be appointed}
+  - {title: Traffic, status: to be appointed}
+  - {title: Town Planner, status: to be appointed}
+fields:
+  ref: HC-ARTHUR-RFP
+  issued: "2026-10-12"
+  closes: "2026-10-30"
+  contact: "Project manager, pm@example.com"
+  questions_by: "2026-10-23"
+  agreement: "AS 4122-2010 as amended by the client's special conditions (attached)"
+  client: Hale Capital
+  lga: Strathfield
+  design_vehicle: "B-double"
+settings:
+  architecture:
+    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "allowance:client_presentations": "2"
+    "allowance:planning_cap": "20"
+    "allowance:ca_inspections": "6"
+  town-planning:
+    "boundary:range": {start: prelim_advice, end: determination_review}
+    "allowance:authority_meetings": "1"
+  traffic:
+    "boundary:range": {start: design_advice, end: travel_plan}
+    "allowance:authority_meetings": "1"
+    "driver:flag.intersection_modelling": "no"
+  civil:
+    "boundary:range": {start: schematic, end: for_construction}
+  structural:
+    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "allowance:ca_inspections": "4"
+expect:
+  architecture:
+    stages_include: [concept, schematic, planning_approval, planning_response, design_development, interiors, tender_traditional, bidding, for_construction]
+    stages_option: [construction_support, contract_admin]
+    stages_absent: [brief_masterplan, dnc_tender, post_novation, regulated_design]
+    positions: {existing_interfaces: I, mixed_use_map: I, tenant_fitout: O, community: O, apartment_design: absent, live_staging: absent}
+    party: {outside_boundary: "civil engineer (to be appointed)"}
+    scale: complex
+    blocking: ["fact:gfa"]
+    blocking_only: true
+  structural:
+    stages_include: [concept_schematic, existing_assessment, planning_approval, authority_asset, design_development, tender_traditional, construction_documents, construction_phase]
+    stages_absent: [dnc_tender, regulated_design, post_novation]
+    positions: {strengthening: O, temporary_works_design: X, retention_design: O, specialist_element_design: O, residential_framing: absent}
+    party: {compaction: "geotechnical engineer (not yet engaged)"}
+    checks: ["unallocated:compaction"]
+    blocking: ["fact:gfa"]
+    blocking_only: true
+  civil:
+    stages_include: [schematic, detailed_tender, for_construction]
+    stages_option: [construction_phase, as_built]
+    stages_absent: [dnc_tender, post_novation]
+    elements_include: [earthworks, roads, stormwater]
+    elements_option: [public_road]
+    positions: {osd_existing: I, osd_replacement: O, osd_new: O, sea: X, civil_declarations: absent, retained_services: I}
+    party: {sea: "structural engineer (to be appointed)", retaining_structural: "structural engineer"}
+    blocking: ["fact:gfa"]
+    blocking_only: true
+  town-planning:
+    stages_include: [prelim_advice, pre_lodgement, planning_report, lodgement, assessment, determination_review]
+    stages_option: [variation_request, post_approval]
+    positions: {submissions_response: O, panel_attendance: O, compliance_matrix: I, court: X}
+    role: [planner]
+    role_absent: [adviser]
+    blocking: ["fact:gfa"]
+    blocking_only: true
+  traffic:
+    stages_include: [design_advice, report, assessment_response, conditions_review, ctmp]
+    stages_option: [design_review, car_park_certification, travel_plan]
+    stages_absent: [surveys, modelling]
+    positions: {microsimulation: X, vehicle_schedule: I, survey_costs: absent}
+    scale: complex
+    blocking: ["fact:gfa"]
+    blocking_only: true
+sources:
+  - "Parts and areas: architecture ledger header (nettletontribe: warehouse 2,135 m², mezzanine office 215 m², site 31,720 m²)."
+  - "GFA dispute: traffic ledger note (BG&E 2,895 m² vs 2,135 m² elsewhere); the project table must carry one figure, so the conflict blocks issue."
+  - "Existing OSD and Sydney Water asset: civil ledger (keep existing OSD; option to design a new OSD) and structural ledger #47-48."
+  - "Strengthening stays an option pending the existing structure assessment (peer review: no unsupported strengthening assumption)."
+  - "Geotechnical engineer has no package in this fixture, so compaction inspections show as unallocated (advisory)."
