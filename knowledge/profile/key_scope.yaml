@@ -22,3 +22,5 @@ families:
   - {match: "sys.*.existing", scope: site}
   - {match: "sys.*", scope: project}
   - {match: "scope.*", scope: project}
+  # RFP flags with no determinant (knowledge/rfp/skeleton.yaml flags).
+  - {match: "proj.flag.*", scope: project}

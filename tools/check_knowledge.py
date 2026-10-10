@@ -1122,6 +1122,24 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
                 report.error(where, "duplicate key")
             seen.add(k["key"])
 
+    rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "project_details.yaml", "details", report)
+    if doc is not None:
+        seen = set()
+        for d in doc.get("details") or []:
+            where = f"{rel} [{d.get('key', '?') if isinstance(d, dict) else '?'}]"
+            if not isinstance(d, dict) or not str(d.get("key", "")).strip() or not str(d.get("label", "")).strip():
+                report.error(where, "project detail needs key and label")
+                continue
+            if not PLANNING_KEY.match(d["key"]) or d["key"] == "flag":
+                report.error(where, f"key does not match {PLANNING_KEY.pattern} or is 'flag'; the profile shows it as proj.<key>")
+            if d.get("value") not in ("text", "yes_no"):
+                report.error(where, "value must be text or yes_no")
+            if d.get("scope") not in SCOPES:
+                report.error(where, f"scope must be one of {sorted(SCOPES)}")
+            if d["key"] in seen:
+                report.error(where, "duplicate key")
+            seen.add(d["key"])
+
     rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "key_scope.yaml", "families", report)
     if doc is not None:
         patterns = set()

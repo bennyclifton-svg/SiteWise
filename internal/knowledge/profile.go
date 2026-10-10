@@ -290,6 +290,9 @@ func (c *Catalog) loadProfile(dir string) error {
 	if err := c.loadPlanningKeys(dir); err != nil {
 		return err
 	}
+	if err := c.loadProjectDetails(dir); err != nil {
+		return err
+	}
 	return c.loadKeyScope(dir)
 }
 

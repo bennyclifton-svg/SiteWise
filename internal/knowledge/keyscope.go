@@ -24,12 +24,18 @@ type keyScopeEntry struct {
 }
 
 // KeyScope returns "site" or "project" for a profile key, or "" when the
-// registry is absent or no entry matches. A planning key carries its own
-// scope in the planning-key registry.
+// registry is absent or no entry matches. A planning key and a project
+// detail carry their own scope in their registries.
 func (c *Catalog) KeyScope(key string) string {
 	if k, ok := strings.CutPrefix(key, PlanningPrefix); ok {
 		if pk, ok := c.PlanningKey(k); ok {
 			return pk.Scope
+		}
+		return ""
+	}
+	if k, ok := strings.CutPrefix(key, DetailPrefix); ok && !strings.HasPrefix(k, "flag.") {
+		if d, ok := c.ProjectDetail(k); ok {
+			return d.Scope
 		}
 		return ""
 	}
@@ -109,6 +115,9 @@ func (c *Catalog) profileKeys() []string {
 	}
 	for _, k := range c.planning.keys {
 		keys = append(keys, PlanningPrefix+k.Key)
+	}
+	for _, d := range c.details.list {
+		keys = append(keys, DetailPrefix+d.Key)
 	}
 	return keys
 }

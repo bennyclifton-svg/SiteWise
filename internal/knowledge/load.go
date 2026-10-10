@@ -99,6 +99,7 @@ type Catalog struct {
 	evidence        []Question
 	profile         profileData
 	planning        planningData
+	details         detailsData
 	works           worksData
 	clauses         map[string]Clause
 	stages          []DeliveryStage

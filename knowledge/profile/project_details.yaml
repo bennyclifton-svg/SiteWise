@@ -1,0 +1,14 @@
+# Facts the user states once for the project; every consultant RFP reads them
+# from Profile. Shape: knowledge/SCHEMA.md "Project details". No document
+# reading fills these and Jev is never asked. Labels follow
+# knowledge/rfp/skeleton.yaml so Profile and the RFP use the same words.
+# RFP flags with no determinant are stored as proj.flag.<flag key>.
+version: 1
+status: draft
+details:
+  - {key: client, label: Client, value: text, scope: project}
+  - {key: lga, label: Local government area, value: text, scope: site}
+  - {key: zone, label: Zone, value: text, scope: site}
+  - {key: program, label: Program milestones, value: text, scope: project, help: "Approval, start and completion dates as the client currently plans them."}
+  - {key: sustainability, label: Sustainability target, value: text, scope: project}
+  - {key: regulated_design, label: Regulated design applies, value: yes_no, scope: project, help: "Record the professional advice or verified rule you relied on. The class alone does not decide it."}

@@ -580,6 +580,7 @@ knowledge/works/stages.yaml            delivery stages and editable design sub-s
 knowledge/works/package_defaults.yaml  default consultant packages, copied as data from Clerk
 knowledge/profile/planning_keys.yaml   keys a planning value (assumption or calculation) may use
 knowledge/profile/key_scope.yaml       whether each profile key belongs to the site or the project
+knowledge/profile/project_details.yaml facts the user states once for the project (client, LGA, zone)
 knowledge/reports/clauses.yaml         approved clause and prose fragments for RFP, RFT and PMP
 knowledge/costs/benchmarks.yaml        cost benchmarks an estimate may use
 ```
@@ -662,6 +663,21 @@ families:
   - {match: "det.*", scope: site}
   - {match: "sys.*.condition", scope: site}
   - {match: "sys.*", scope: project}
+```
+
+### Project details (`profile/project_details.yaml`)
+
+Facts the user states once for the project, which every consultant RFP reads from Profile (owner decision D1, 10 October 2026). No document reading fills them and Jev is never asked, so an entry has no triggers, question or sources.
+
+- **Shape.** `key` (lower-case words and underscores, never `flag`), `label`, `value` (`text` or `yes_no`), `scope` (`site` or `project`), and optional `help`.
+- **Row key.** The profile stores a detail as `proj.<key>`. An RFP flag in `rfp/skeleton.yaml` with no determinant is stored as `proj.flag.<flag key>`; `key_scope.yaml` gives those their scope.
+
+```yaml
+version: 1
+status: draft
+details:
+  - {key: zone, label: Zone, value: text, scope: site}
+  - {key: regulated_design, label: Regulated design applies, value: yes_no, scope: project}
 ```
 
 ### Clauses (`reports/clauses.yaml`)
