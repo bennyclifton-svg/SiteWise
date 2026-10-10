@@ -6,7 +6,11 @@ export interface CostItem extends CostContent { cost_item_id: string; version: n
 export interface CostPlan extends CostSettings { id: string; baseline_version_id?: string; revision: number; version: number; status: string; items: CostItem[]; links: { package_scope_item_id: string; cost_item_id: string }[] }
 export interface BenchmarkSuggestion { benchmark: { id: string; version: number; geography: string; quality: string; price_date: string; inclusions: string[]; exclusions: string[]; sources: unknown }; amount: string; limitations: string }
 export interface CostTotal { amount: string | null; low: string | null; high: string | null; known_subtotal: string; unknown: number; complete: boolean; lines: number }
-export interface CostTotals { overall: Record<string, CostTotal>; groups: Record<string, Record<string, CostTotal>>; variance: string | null }
+// budget_variance is budget − forecast (positive is under budget); remaining is
+// forecast − claimed. Both are null when an input is unknown or a range.
+export interface CostDerived { budget_variance: string | null; remaining: string | null }
+export interface CostFigures extends CostDerived { forecast: CostValue; basis: string }
+export interface CostTotals { overall: Record<string, CostTotal>; works: Record<string, CostTotal>; fees: Record<string, CostTotal>; project_wide: Record<string, CostTotal>; groups: Record<string, Record<string, CostTotal>>; variance: string | null; items: Record<string, CostFigures>; buckets: Record<string, CostDerived> }
 const path = (p: string) => `/projects/${p}/cost-plan`;
 const pin = (p: CostPlan) => ({ plan_version_id: p.id || "", version: p.version || 0 });
 export const costApi = {
