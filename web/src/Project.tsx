@@ -17,7 +17,6 @@ import {
 import { type RowModel } from "./DocumentRow";
 import { Profile } from "./Profile";
 import { Register } from "./Register";
-import { Reports } from "./Reports";
 import { Packages } from "./Packages";
 import { Delivery } from "./Delivery";
 import { Costs, CostSummary } from "./Costs";
@@ -610,7 +609,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
       {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Implications projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!showReports}><Reports projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={!showReports}><p className="report-empty">The Procurement table replaces this library in the next change.</p></div>}
       {packagesOpened && <div className="project-reports" hidden={!showPackages}><Packages projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => { setProfileView("all"); setShowPackages(false); }} /></div>}
       {/* Drop overlay: invisible until files are dragged over the page. */}
       <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>
