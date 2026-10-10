@@ -85,9 +85,13 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		}
 		return out
 	}
+	// Controls sit where their value prints: page one is the project; the
+	// parts covered, scope choices and the discipline's own inputs belong to
+	// the appointment in section 2.
+	appointment := Group{ID: "appointment", Title: "This appointment", Section: "role"}
 	// A project fact is read from Profile and an edit writes it there (D1),
 	// so it is never "set" on the RFP.
-	fact := func(key, label, kind string, opts []Choice, help string) {
+	factControl := func(key, label, kind string, opts []Choice, help string) Control {
 		f := r.Fact(key)
 		var v any = nil
 		if f.State == Known && len(f.Values) > 0 {
@@ -106,8 +110,19 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		case HomeDerived:
 			help = "Follows from the parts' classes in Profile."
 		}
-		project.Controls = append(project.Controls, Control{Key: "fact:" + key, Label: label, Kind: kind, Value: v, Options: opts, Source: sourceOf(f), Why: why, Help: help, Home: home.Kind, Locked: !home.Writable()})
+		return Control{Key: "fact:" + key, Label: label, Kind: kind, Value: v, Options: opts, Source: sourceOf(f), Why: why, Help: help, Home: home.Kind, Locked: !home.Writable()}
 	}
+	fact := func(key, label, kind string, opts []Choice, help string) {
+		project.Controls = append(project.Controls, factControl(key, label, kind, opts, help))
+	}
+	field := func(f knowledge.RFPField) Control {
+		v := r.Fields[f.Key]
+		if f.Profile != "" {
+			return Control{Key: "fact:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Home: FactHome(sk, r, f.Key).Kind}
+		}
+		return Control{Key: "field:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Set: isSet("field:" + f.Key)}
+	}
+	tristate := []Choice{{"yes", "Yes"}, {"no", "No"}, {"unknown", "Not known"}}
 	fact("work_type", "Work type", "choice", options(sk.WorkTypes), "")
 	fact("pathway", "Planning pathway", "choice", options(sk.Pathways), "")
 	fact("procurement", "Procurement route", "choice", options(sk.Procurement), "")
@@ -128,31 +143,30 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	for _, p := range r.Parts {
 		selected = append(selected, p.ID)
 	}
-	project.Controls = append(project.Controls, Control{Key: "parts:affected", Label: "Parts this appointment covers", Kind: "parts", Value: selected, Options: parts, Source: map[bool]string{true: "user", false: "profile"}[isSet("parts:affected")], Set: isSet("parts:affected")})
+	appointment.Controls = append(appointment.Controls, Control{Key: "parts:affected", Label: "Parts this appointment covers", Kind: "parts", Value: selected, Options: parts, Source: map[bool]string{true: "user", false: "profile"}[isSet("parts:affected")], Set: isSet("parts:affected")})
 	for _, key := range []string{"site_area", "gfa", "budget"} {
 		if used[key] || key != "budget" {
 			fact(key, factLabels[key], "number", nil, "")
 		}
 	}
+	// Page one prints exactly these conditions.
+	for _, cond := range r.Conditions {
+		fact("flag."+cond.Key, cond.Label, "tristate", tristate, "")
+	}
 	for _, f := range sk.Flags {
-		if !used["flag."+f.Key] {
-			continue
+		if f.ScopeDecision && used["flag."+f.Key] {
+			appointment.Controls = append(appointment.Controls, factControl("flag."+f.Key, f.Label, "tristate", tristate, ""))
 		}
-		fact("flag."+f.Key, f.Label, "tristate", []Choice{{"yes", "Yes"}, {"no", "No"}, {"unknown", "Not known"}}, "")
 	}
 	for _, f := range sk.Fields {
-		if f.Group != "project" {
-			continue
+		switch {
+		case f.Group == "project":
+			project.Controls = append(project.Controls, field(f))
+		case f.Group == "appointment" && usesField(d, f.Key):
+			appointment.Controls = append(appointment.Controls, field(f))
 		}
-		v := r.Fields[f.Key]
-		if f.Profile != "" {
-			home := FactHome(sk, r, f.Key)
-			project.Controls = append(project.Controls, Control{Key: "fact:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Home: home.Kind})
-			continue
-		}
-		project.Controls = append(project.Controls, Control{Key: "field:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Set: isSet("field:" + f.Key)})
 	}
-	c.Groups = append(c.Groups, project)
+	c.Groups = append(c.Groups, project, appointment)
 
 	stages := Group{ID: "stages", Title: "Stages", Section: "stages"}
 	stateOptions := []Choice{{Include, "In the base fee"}, {Option, "Priced as an option"}, {Exclude, "Not in this RFP"}, {Done, "Done by others"}}
@@ -181,21 +195,39 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		positions.Controls = append(positions.Controls, Control{Key: "position:" + p.Key, Label: p.Label, Kind: "position", Value: p.Value, Options: []Choice{{"I", "Included"}, {"O", "Optional"}, {"X", "Excluded"}}, Source: p.Source, Why: why, Party: p.Party, Set: isSet("position:" + p.Key)})
 	}
 	c.Groups = append(c.Groups, positions)
-	issue := Group{ID: "issue", Title: "Issue details", Section: "terms"}
+	// The agreement and commercial terms print in section 6; the issue
+	// details close the RFP, where it is issued (section "issue" is the
+	// screen's own, never printed).
+	terms := Group{ID: "terms", Title: "Terms", Section: "terms"}
+	issue := Group{ID: "issue", Title: "Issue details", Section: "issue"}
 	for _, f := range sk.Fields {
-		if f.Group != "issue" {
-			continue
+		switch f.Group {
+		case "terms":
+			terms.Controls = append(terms.Controls, field(f))
+		case "issue":
+			issue.Controls = append(issue.Controls, field(f))
 		}
-		v := r.Fields[f.Key]
-		issue.Controls = append(issue.Controls, Control{Key: "field:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Set: isSet("field:" + f.Key)})
 	}
-	c.Groups = append(c.Groups, issue)
+	c.Groups = append(c.Groups, terms)
 	weights := Group{ID: "weights", Title: "Evaluation weights", Section: "evaluation"}
 	for _, w := range r.Weights {
 		weights.Controls = append(weights.Controls, Control{Key: "weight:" + w.Key, Label: w.Label + " (%)", Kind: "weight", Value: w.Value, Source: w.Source, Set: isSet("weight:" + w.Key)})
 	}
-	c.Groups = append(c.Groups, weights)
+	c.Groups = append(c.Groups, weights, issue)
 	return c
+}
+
+// usesField reports whether the discipline's own rows print the field.
+func usesField(d knowledge.RFPDiscipline, key string) bool {
+	slot := "{field:" + key + "}"
+	for _, rows := range [][]knowledge.RFPRow{d.ProjectRows, d.Role, d.Terms, d.ScopeSchedule} {
+		for _, row := range rows {
+			if strings.Contains(row.Text, slot) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func sourceOf(f Fact) string {

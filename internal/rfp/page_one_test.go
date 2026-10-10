@@ -163,3 +163,67 @@ type reportsBlock struct {
 	text  string
 	table *reports.Table
 }
+
+func controlKeys(c Controls, group string) (string, []string) {
+	for _, g := range c.Groups {
+		if g.ID == group {
+			keys := []string{}
+			for _, ctl := range g.Controls {
+				keys = append(keys, ctl.Key)
+			}
+			return g.Section, keys
+		}
+	}
+	return "", nil
+}
+
+func TestControlsFollowThePage(t *testing.T) {
+	sk := skeleton(t)
+	for _, id := range []string{"architecture", "civil"} {
+		d := discipline(t, id)
+		r := Resolve(d, sk, facts(t, "work_type=new", "class=7b", "class=5", "flag.rail=yes"), Settings{})
+		c := BuildControls(r, d, sk, Settings{})
+		section, project := controlKeys(c, "project")
+		joined := strings.Join(project, ",")
+		if section != "project" || strings.Contains(joined, "parts:affected") || strings.Contains(joined, "design_vehicle") || strings.Contains(joined, "field:agreement") {
+			t.Fatalf("%s project controls = %v", id, project)
+		}
+		flags := []string{}
+		for _, k := range project {
+			if strings.HasPrefix(k, "fact:flag.") {
+				flags = append(flags, k)
+			}
+		}
+		want := []string{}
+		for _, cond := range r.Conditions {
+			want = append(want, cond.Control)
+		}
+		if strings.Join(flags, ",") != strings.Join(want, ",") {
+			t.Fatalf("%s condition controls = %v, want %v", id, flags, want)
+		}
+		section, appointment := controlKeys(c, "appointment")
+		if section != "role" || appointment[0] != "parts:affected" || strings.Contains(strings.Join(appointment, ","), "design_vehicle") != (id == "civil") {
+			t.Fatalf("%s appointment controls = %s %v", id, section, appointment)
+		}
+		if section, terms := controlKeys(c, "terms"); section != "terms" || !strings.Contains(strings.Join(terms, ","), "field:agreement") || strings.Contains(strings.Join(terms, ","), "field:ref") {
+			t.Fatalf("%s terms controls = %s %v", id, section, terms)
+		}
+		if section, issue := controlKeys(c, "issue"); section != "issue" || !strings.Contains(strings.Join(issue, ","), "field:ref") || strings.Contains(strings.Join(issue, ","), "field:pi") {
+			t.Fatalf("%s issue controls = %s %v", id, section, issue)
+		}
+	}
+}
+
+func TestMissingTermsAreTheirOwnCheck(t *testing.T) {
+	r := Resolve(discipline(t, "architecture"), skeleton(t), facts(t, "work_type=new", "class=2"), Settings{})
+	byID := map[string]Check{}
+	for _, c := range r.Checks {
+		byID[c.ID] = c
+	}
+	if c := byID["terms"]; !c.Blocking || c.Control != "field:agreement" {
+		t.Fatalf("terms check = %+v", c)
+	}
+	if strings.Contains(byID["fields"].Text, "Client agreement") {
+		t.Fatalf("issue details check names a term: %+v", byID["fields"])
+	}
+}

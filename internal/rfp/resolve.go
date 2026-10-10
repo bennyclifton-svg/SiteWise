@@ -1161,6 +1161,7 @@ func (r *resolver) resolveRows() {
 	// Missing issue details are one decision, not one per field; missing
 	// project details are another, answered once in Profile.
 	missing, first := []string{}, ""
+	terms, termsFirst := []string{}, ""
 	project, projectFirst := []string{}, ""
 	for _, f := range r.sk.Fields {
 		if !f.Required || r.out.Fields[f.Key].Value != "" {
@@ -1173,6 +1174,14 @@ func (r *resolver) resolveRows() {
 			}
 			continue
 		}
+		// Terms are their own decision, so its marker sits in section 6.
+		if f.Group == "terms" {
+			terms = append(terms, f.Label)
+			if termsFirst == "" {
+				termsFirst = "field:" + f.Key
+			}
+			continue
+		}
 		missing = append(missing, f.Label)
 		if first == "" {
 			first = "field:" + f.Key
@@ -1180,6 +1189,9 @@ func (r *resolver) resolveRows() {
 	}
 	if len(missing) > 0 {
 		r.check(Check{ID: "fields", Label: "Issue details not set", Text: strings.Join(missing, ", ") + ".", Blocking: true, Control: first, Changes: missing})
+	}
+	if len(terms) > 0 {
+		r.check(Check{ID: "terms", Label: "Terms not set", Text: strings.Join(terms, ", ") + ".", Blocking: true, Control: termsFirst, Changes: terms})
 	}
 	if len(project) > 0 {
 		r.check(Check{ID: "details", Label: "Project details not set", Text: strings.Join(project, ", ") + ". Set once in Profile; every RFP uses it.", Blocking: true, Control: projectFirst, Changes: project})
