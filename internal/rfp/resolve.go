@@ -173,6 +173,9 @@ type GridCell struct {
 	Label   string `json:"label"`
 	Text    string `json:"text"`
 	Control string `json:"control,omitempty"`
+	// Empty is a row with nothing to print; the screen still offers it, as
+	// the Profile card offers its unset fields behind "more".
+	Empty bool `json:"empty,omitempty"`
 }
 
 // Condition is one site condition printed on page one with its answer.
@@ -1529,17 +1532,15 @@ func (r *resolver) resolveGrid(replacements map[string]knowledge.RFPRow) {
 			if o, replaced := replacements[row.Key]; replaced && r.complete(o.Text) {
 				text, ok = r.fill(o.Text, "project:"+o.Key, row.Label, o.Required), true
 			}
-			if !ok && !row.Essential {
-				continue
-			}
-			if !ok {
+			empty := !ok && !row.Essential
+			if !ok && row.Essential {
 				text = "___"
 			}
 			control := ""
 			if FactHome(r.sk, r.out, row.Key).Kind != "" {
 				control = "fact:" + row.Key
 			}
-			column.Cells = append(column.Cells, GridCell{Key: row.Key, Label: row.Label, Text: text, Control: control})
+			column.Cells = append(column.Cells, GridCell{Key: row.Key, Label: row.Label, Text: text, Control: control, Empty: empty})
 		}
 		r.out.Grid = append(r.out.Grid, column)
 	}

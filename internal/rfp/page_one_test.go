@@ -40,8 +40,8 @@ func TestGridMirrorsProfileColumns(t *testing.T) {
 	if c, _ := gridCell(r, "The building", "Work type"); c.Text != "New build" || c.Control != "fact:work_type" {
 		t.Fatalf("work type = %+v", c)
 	}
-	if _, ok := gridCell(r, "The building", "Storeys"); ok {
-		t.Fatal("an unknown, non-essential row is left out")
+	if c, ok := gridCell(r, "The building", "Storeys"); !ok || !c.Empty {
+		t.Fatal("an unknown, non-essential row is kept for the screen but marked empty")
 	}
 	if c, ok := gridCell(r, "Delivery", "Client"); !ok || c.Text != "___" {
 		t.Fatalf("an essential row prints a blank: %+v %v", c, ok)

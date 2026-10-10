@@ -164,3 +164,34 @@ Two slices, one lane each.
 In-place editing for sections 3 to 7; moving the RFT (`tpl.rft`) to the
 shared page one; changing which flags each discipline uses; any change to
 document reading.
+
+## As built (10 October 2026)
+
+Built on branch `rfp/page-one` in two slices (plans `...-slice1.md`,
+`...-slice2.md`). Where the build departs from the text above, and why:
+
+- **Print layout, to hold the three-page limit.** The scenario RFPs already
+  reached 3.00 pages, so page one could not grow. The grid prints as three
+  columns of "Label: value" cells (a six-column label/value table wrapped
+  too much), and the conditions print as one line per answer ("Conditions
+  that apply: …", "do not apply", "not yet known", "to be confirmed") rather
+  than a table. Every answer still prints. Across 137 scenario RFPs the
+  longest is 2.98 pages and the mean length is unchanged.
+- **Heading.** "Project conditions" on screen: several are not about the
+  site (staging, consultation, contract administration).
+- **Heritage and existing building** print as conditions, not grid rows:
+  they are flags, and printing them twice would repeat them.
+- **Scope-decision flags** ("Investigation selected" and the like) are the
+  client's choices for one appointment: their controls sit in section 2 and
+  they never print as conditions.
+- **Discipline rows.** A discipline's procurement wording rewords the grid
+  cell in place; its other project rows (design vehicle, assessment basis)
+  print at the end of section 2. Town planning's site row and
+  architecture's sustainability row were deleted as repeats of the grid.
+- **Unset rows** do not print but are offered on screen behind "+ N more"
+  in their column, as on the Profile card.
+- **Stale draft.** Refresh keeps its name; every stale reason shows beside
+  it as one compact line (a renamed button broke nothing but would have
+  hidden which source changed).
+- **Section 2** opens with an Edit toggle like sections 3 to 7; its markers
+  show under the heading while it is closed.

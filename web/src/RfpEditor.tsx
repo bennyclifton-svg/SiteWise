@@ -1,10 +1,12 @@
-// A consultant RFP is one report edited in place. Decisions that block
-// issue sit in a banner above the draft; each report section opens its own
-// controls under its heading. Project facts save to Profile, the one home
-// every RFP reads (owner decision D1); the rest belong to this RFP. Each
-// control writes on change and shows where its value came from.
-import { useEffect, useState, type FormEvent } from "react";
-import type { RfpCheck, RfpChoice, RfpControl, RfpControls } from "./reportApi";
+// A consultant RFP is one report edited in place. Page one is the project,
+// always open, each value edited where it prints; the other sections open
+// their own controls under their heading. A check that blocks issue sits
+// beside what it concerns, and the RFP closes with its Issue section.
+// Project facts save to Profile, the one home every RFP reads (owner
+// decision D1); the rest belong to this RFP. Each control writes on change
+// and shows where its value came from.
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import type { ReportBlock, RfpChoice, RfpControl, RfpControls } from "./reportApi";
 
 export type Write = (key: string, value: unknown | null) => Promise<void>;
 
@@ -18,45 +20,57 @@ const groupIntro: Record<string, string> = {
   elements: "Elements priced by stage in the R1 grid.",
   allowances: "Quantities every firm prices. Blank client quantities block issue.",
   positions: "I included · O optional, priced on its own · X excluded, done by the party named.",
-  issue: "Printed on the RFP and checked before issue. Cover and terms can differ for each appointment.",
+  terms: "Printed in section 6. Terms can differ for each appointment.",
   weights: "How proposals are scored. The weights must total 100%.",
 };
 
-/** The report section a control is edited under. */
+/** The report section a control is edited under ("" when none holds it). */
 export function controlSection(controls: RfpControls, key: string): string {
-  if (key === "boundary:range" || key === "scale") return "stages";
+  if (key === "boundary:range") return "role";
+  if (key === "scale") return "stages";
   return controls.groups.find(g => g.controls.some(c => c.key === key))?.section ?? "";
 }
 
-/** Sections that have something to edit. */
+/** Sections opened by an Edit toggle. Page one is always open; Issue is the screen's own. */
 export function editableSections(controls: RfpControls): Set<string> {
   const out = new Set(controls.groups.filter(g => g.controls.length > 0).map(g => g.section));
   out.add("stages");
+  out.add("role");
+  out.delete("project");
+  out.delete("issue");
   return out;
 }
 
-export function RfpDecisions({ controls, busyKey, onWrite, onJump }: { controls: RfpControls; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
-  const draftRules = controls.status !== "reviewed";
-  const n = controls.decisions.length;
-  return <section className={n ? "rfp-decisions" : "rfp-decisions rfp-decisions-clear"} aria-label="Decide before issue">
-    <div className="rfp-decisions-head">
-      <h3>{n ? "Decide before issue" : "Ready to issue"}</h3>
-      <p className="rfp-status" role="status">{n ? `${n} ${n === 1 ? "item blocks" : "items block"} issue` : draftRules ? "Choices complete. Issue waits for owner review of the rules." : "No open decisions."}</p>
-    </div>
-    {draftRules && <p className="rfp-rules-note">The {controls.title.toLowerCase()} rules are a draft. You can prepare and edit this RFP; issue stays blocked until the owner marks the rules reviewed.</p>}
-    {n > 0 && <ol>{controls.decisions.map(d => <Decision key={d.id} check={d} controls={controls} busyKey={busyKey} onWrite={onWrite} onJump={onJump} />)}</ol>}
-  </section>;
+/** Control keys a blocking check names, so their values show red where they print. */
+export function blockedKeys(controls: RfpControls): Set<string> {
+  const all = controls.groups.flatMap(g => g.controls);
+  const out = new Set<string>();
+  for (const d of controls.decisions) {
+    if (d.control) out.add(d.control);
+    for (const c of all) if (d.changes?.includes(c.label)) out.add(c.key);
+  }
+  return out;
+}
+
+/** Blocking checks listed under a section's heading; "" lists those no section holds. */
+export function SectionMarkers({ controls, section, onJump }: { controls: RfpControls; section: string; onJump: (key?: string) => void }) {
+  const here = controls.decisions.filter(d => (d.control ? controlSection(controls, d.control) : "") === section);
+  if (!here.length) return null;
+  return <ul className="rfp-markers" aria-label="Blocks issue">
+    {here.map(d => <li key={d.id}>
+      <strong>{d.label}.</strong> {d.text}
+      {d.control && <button type="button" className="cell-link" onClick={() => onJump(d.control)}>Show</button>}
+    </li>)}
+  </ul>;
 }
 
 export function RfpSectionEditor({ controls, section, busyKey, onWrite }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write }) {
   const groups = controls.groups.filter(g => g.section === section && g.controls.length > 0);
   return <div className="rfp-edit" role="group" aria-label={`Edit ${section}`}>
-    {section === "stages" && <div className="rfp-rows">
-      <Boundary controls={controls} busy={busyKey === "boundary:range"} onWrite={onWrite} />
-      <Scale controls={controls} busy={busyKey === "scale"} onWrite={onWrite} />
-    </div>}
-    {groups.map(g => g.id === "project" ? <ProjectGroup key={g.id} controls={g.controls} busyKey={busyKey} onWrite={onWrite} /> : <div key={g.id} className="rfp-edit-group">
-      {(groups.length > 1 || section === "stages") && <h5 className="rfp-edit-title">{g.title}{g.id === "weights" && <WeightTotal controls={g.controls} />}</h5>}
+    {section === "role" && <div className="rfp-rows"><Boundary controls={controls} busy={busyKey === "boundary:range"} onWrite={onWrite} /></div>}
+    {section === "stages" && <div className="rfp-rows"><Scale controls={controls} busy={busyKey === "scale"} onWrite={onWrite} /></div>}
+    {groups.map(g => <div key={g.id} className="rfp-edit-group">
+      {(groups.length > 1 || section === "stages" || section === "role") && <h5 className="rfp-edit-title">{g.title}{g.id === "weights" && <WeightTotal controls={g.controls} />}</h5>}
       {groups.length === 1 && g.id === "weights" && <p className="rfp-group-intro"><WeightTotal controls={g.controls} /></p>}
       {groupIntro[g.id] && <p className="rfp-group-intro">{groupIntro[g.id]}</p>}
       <Rows controls={g.controls} busyKey={busyKey} onWrite={onWrite} />
@@ -64,56 +78,107 @@ export function RfpSectionEditor({ controls, section, busyKey, onWrite }: { cont
   </div>;
 }
 
-// Project facts are answered once in Profile; the rest is this appointment.
-function ProjectGroup({ controls, busyKey, onWrite }: { controls: RfpControl[]; busyKey: string; onWrite: Write }) {
-  const facts = controls.filter(c => c.key.startsWith("fact:"));
-  const own = controls.filter(c => !c.key.startsWith("fact:"));
-  return <>
-    <div className="rfp-edit-group">
-      <h5 className="rfp-edit-title">Project facts <span className="rfp-saves">Saved to Profile</span></h5>
-      <p className="rfp-group-intro">Answered once for the project. A change here updates Profile and every RFP that reads it.</p>
-      <Rows controls={facts} busyKey={busyKey} onWrite={onWrite} />
+type GridCellData = { key: string; label: string; text: string; control?: string; empty?: boolean };
+type GridColumnData = { title: string; cells: GridCellData[] };
+
+/**
+ * Page one: the project, as it prints, laid out like the Profile card
+ * (.pf-card columns). Each value opens its control in place; a change saves
+ * to Profile and every RFP that reads it.
+ */
+export function ProjectPage({ blocks, controls, busyKey, onWrite, onJump, renderBlock }: { blocks: ReportBlock[]; controls: RfpControls; busyKey: string; onWrite: Write; onJump: (key?: string) => void; renderBlock: (b: ReportBlock) => ReactNode }) {
+  const byKey = new Map(controls.groups.flatMap(g => g.controls).map(c => [c.key, c]));
+  const project = controls.groups.find(g => g.id === "project")?.controls ?? [];
+  const blocked = blockedKeys(controls);
+  const block = (id: string) => blocks.find(b => b.id === id);
+  const header = block("rfp:header");
+  const intro = block("rfp:project:intro");
+  const budget = block("rfp:budget");
+  const columns = (block("rfp:project:grid")?.basis?.grid ?? []) as GridColumnData[];
+  const conditions = project.filter(c => c.key.startsWith("fact:flag."));
+  const information = byKey.get("field:information");
+  const informationText = block("rfp:project:information")?.text.replace(/^Information provided: /, "") || String(information?.value ?? "") || "___";
+  return <div className="rfp-page-one">
+    {header && <button type="button" className="rfp-strip" title="Change the issue details in the Issue section" onClick={() => onJump("field:ref")}>{header.text}</button>}
+    {intro && renderBlock(intro)}
+    <div className="pf-card rfp-grid">
+      {columns.map(col => <GridColumn key={col.title} column={col} byKey={byKey} busyKey={busyKey} blocked={blocked} onWrite={onWrite} />)}
     </div>
-    {own.length > 0 && <div className="rfp-edit-group">
-      <h5 className="rfp-edit-title">This appointment</h5>
-      <Rows controls={own} busyKey={busyKey} onWrite={onWrite} />
+    {conditions.length > 0 && <div className="rfp-conditions" role="group" aria-label="Project conditions">
+      <h4>Project conditions</h4>
+      <div className="rfp-conditions-grid">{conditions.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} blocked={blocked.has(c.key)} onWrite={onWrite} />)}</div>
     </div>}
-  </>;
-}
-
-export function RfpOtherChecks({ controls, onJump }: { controls: RfpControls; onJump: (key?: string) => void }) {
-  const advisory = controls.checks.filter(c => !c.blocking);
-  if (!advisory.length) return null;
-  return <details className="report-notice rfp-advisory">
-    <summary><strong>Other checks</strong> <span className="rfp-count">{advisory.length}</span></summary>
-    <p className="rfp-group-intro">Issue is not blocked by these; review them before you send.</p>
-    <ul>{advisory.map(c => <li key={c.id}><strong>{c.label}.</strong> {c.text} {c.control && <button type="button" className="cell-link" onClick={() => onJump(c.control)}>Show</button>}</li>)}</ul>
-  </details>;
-}
-
-function Decision({ check, controls, busyKey, onWrite, onJump }: { check: RfpCheck; controls: RfpControls; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
-  const control = controls.groups.flatMap(g => g.controls).find(c => c.key === check.control);
-  const inline = control && ["choice", "tristate", "count", "text", "date", "number"].includes(control.kind);
-  return <li className="rfp-decision">
-    <p className="rfp-decision-label">{check.label}</p>
-    <p className="rfp-decision-text">{check.text}</p>
-    {check.id === "boundary" && <BoundaryConfirm controls={controls} busy={busyKey === "boundary:range"} onWrite={onWrite} />}
-    {check.id === "fields" && <div className="rfp-decision-fields">
-      {controls.groups.flatMap(g => g.controls).filter(c => c.key.startsWith("field:") && (check.changes ?? []).includes(c.label)).map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} onWrite={onWrite} compact />)}
-    </div>}
-    {inline && check.id !== "fields" && <ControlRow control={control!} busy={busyKey === control!.key} onWrite={onWrite} compact />}
-    {!inline && check.id !== "boundary" && check.id !== "fields" && check.control && <button type="button" className="cell-link" onClick={() => onJump(check.control)}>Show the setting</button>}
-  </li>;
-}
-
-function stageName(controls: RfpControls, key: string) { return controls.boundary.stages.find(s => s.value === key)?.label ?? key; }
-
-function BoundaryConfirm({ controls, busy, onWrite }: { controls: RfpControls; busy: boolean; onWrite: Write }) {
-  const b = controls.boundary;
-  return <div className="rfp-decision-actions">
-    <button type="button" className="btn btn-small btn-primary" disabled={busy} onClick={() => void onWrite("boundary:range", { start: b.start, end: b.end })}>Confirm: {stageName(controls, b.start)} to {stageName(controls, b.end)}</button>
+    {information && <div className="rfp-information"><GridValue label="Information provided" text={informationText} control={information} busy={busyKey === information.key} blocked={blocked.has(information.key)} onWrite={onWrite} /></div>}
+    {budget && renderBlock(budget)}
   </div>;
 }
+
+/** One Profile column: what prints, then the unset rows behind "more", as on the Profile card. */
+function GridColumn({ column, byKey, busyKey, blocked, onWrite }: { column: GridColumnData; byKey: Map<string, RfpControl>; busyKey: string; blocked: Set<string>; onWrite: Write }) {
+  const [open, setOpen] = useState(false);
+  const cell = (c: GridCellData) => <GridValue key={c.key} label={c.label} text={c.empty ? "—" : c.text} control={c.control ? byKey.get(c.control) : undefined} busy={!!c.control && busyKey === c.control} blocked={!!c.control && blocked.has(c.control)} onWrite={onWrite} />;
+  const more = column.cells.filter(c => c.empty);
+  return <div className="pf-col" role="group" aria-label={column.title}>
+    <h4>{column.title}</h4>
+    {column.cells.filter(c => !c.empty).map(cell)}
+    {open && more.map(cell)}
+    {more.length > 0 && <button type="button" className="cell-link pf-col-more" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Fewer" : `+ ${more.length} more`}</button>}
+  </div>;
+}
+
+/** A printed value that opens its control in place; closes once it saves or loses focus. */
+function GridValue({ label, text, control, busy, blocked, onWrite }: { label: string; text: string; control?: RfpControl; busy: boolean; blocked: boolean; onWrite: Write }) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const editable = !!control && !control.locked;
+  const id = `rfp-cell-${(control?.key ?? label).replace(/[^a-z0-9]+/gi, "-")}`;
+  useEffect(() => { if (open) box.current?.querySelector<HTMLElement>("input, select")?.focus(); }, [open]);
+  const write: Write = async (key, value) => { await onWrite(key, value); setOpen(false); };
+  return <div className="pf-row rfp-cell-row" data-control={control?.key} data-blocked={blocked || undefined}>
+    {open ? <label className="pf-label" htmlFor={id} id={`${id}-label`}>{label}</label> : <span className="pf-label">{label}</span>}
+    <div className="pf-value" ref={box} onKeyDown={e => { if (e.key === "Escape") setOpen(false); }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false); }}>
+      {open && control
+        ? <Control control={control} id={id} labelID={`${id}-label`} busy={busy} onWrite={write} />
+        : editable
+          ? <button type="button" className="rfp-cell" aria-label={`${label}: ${text}. Change`} disabled={busy} onClick={() => setOpen(true)}>{text}</button>
+          : <span className="rfp-cell-text">{text}</span>}
+      <Source source={control ? (control.set ? "user" : control.source) : "profile"} />
+      {control?.locked && control.help && <span className="rfp-why">{control.help}</span>}
+    </div>
+  </div>;
+}
+
+/**
+ * The RFP's closing section, on screen only: what still blocks issue, the
+ * issue details, the advisory checks and the issue form itself.
+ */
+export function RfpIssue({ controls, busyKey, onWrite, onJump, children }: { controls: RfpControls; busyKey: string; onWrite: Write; onJump: (key?: string) => void; children: ReactNode }) {
+  const n = controls.decisions.length;
+  const draftRules = controls.status !== "reviewed";
+  const issue = controls.groups.find(g => g.id === "issue")?.controls ?? [];
+  const blocked = blockedKeys(controls);
+  const advisory = controls.checks.filter(c => !c.blocking);
+  return <section className="report-section rfp-issue" aria-labelledby="rs-issue">
+    <div className="report-section-head">
+      <h3 id="rs-issue">Issue</h3>
+      <p className="rfp-status" role="status">{n ? `${n} ${n === 1 ? "item blocks" : "items block"} issue` : draftRules ? "Choices complete" : "Ready to issue"}
+        {n > 0 && controls.decisions[0].control && <> · <button type="button" className="cell-link" onClick={() => onJump(controls.decisions[0].control)}>Show first</button></>}</p>
+    </div>
+    {draftRules && <p className="rfp-rules-note">The {controls.title.toLowerCase()} rules are a draft. You can prepare and edit this RFP; issue stays blocked until the owner marks the rules reviewed.</p>}
+    <SectionMarkers controls={controls} section="issue" onJump={onJump} />
+    <SectionMarkers controls={controls} section="" onJump={onJump} />
+    <div className="rfp-issue-grid" role="group" aria-label="Issue details">
+      {issue.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} blocked={blocked.has(c.key)} onWrite={onWrite} />)}
+    </div>
+    {advisory.length > 0 && <details className="rfp-advisory">
+      <summary><strong>Other checks</strong> <span className="rfp-count">{advisory.length}</span></summary>
+      <p className="rfp-group-intro">Issue is not blocked by these; review them before you send.</p>
+      <ul>{advisory.map(c => <li key={c.id}><strong>{c.label}.</strong> {c.text} {c.control && <button type="button" className="cell-link" onClick={() => onJump(c.control)}>Show</button>}</li>)}</ul>
+    </details>}
+    {children}
+  </section>;
+}
+
 
 function Boundary({ controls, busy, onWrite }: { controls: RfpControls; busy: boolean; onWrite: Write }) {
   const b = controls.boundary;
@@ -158,10 +223,10 @@ function Rows({ controls, busyKey, onWrite }: { controls: RfpControl[]; busyKey:
   return <div className="rfp-rows">{controls.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} onWrite={onWrite} />)}</div>;
 }
 
-function ControlRow({ control: c, busy, onWrite, compact }: { control: RfpControl; busy: boolean; onWrite: Write; compact?: boolean }) {
-  const id = `rfp-${c.key.replace(/[^a-z0-9]+/gi, "-")}${compact ? "-d" : ""}`;
+function ControlRow({ control: c, busy, blocked, onWrite }: { control: RfpControl; busy: boolean; blocked?: boolean; onWrite: Write }) {
+  const id = `rfp-${c.key.replace(/[^a-z0-9]+/gi, "-")}`;
   const labelID = `${id}-label`;
-  return <div className="rfp-row" data-control={compact ? undefined : c.key} data-kind={c.kind} aria-busy={busy || undefined}>
+  return <div className="rfp-row" data-control={c.key} data-kind={c.kind} data-blocked={blocked || undefined} aria-busy={busy || undefined}>
     {c.kind === "tristate" || c.kind === "position" || c.kind === "parts"
       ? <span className="rfp-label" id={labelID}>{c.label}</span>
       : <label className="rfp-label" htmlFor={id}>{c.label}</label>}

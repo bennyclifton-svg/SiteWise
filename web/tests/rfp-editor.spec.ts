@@ -22,7 +22,7 @@ async function refreshDraft(page: Page) {
   await expect(toolbar).toContainText(`Version ${Number(version![1]) + 1} ·`);
 }
 
-test("one RFP report: decide first, edit each section in place, project facts save to Profile", async ({ page }) => {
+test("one RFP report: page one edited where it prints, checks beside their values, issue at the end", async ({ page }) => {
   const project = await signIn(page, "RFP editor regression");
   const profile = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   const part = profile.parts[0].id;
@@ -41,36 +41,58 @@ test("one RFP report: decide first, edit each section in place, project facts sa
   const useCompleted = page.getByRole("button", { name: "Use last completed state", exact: true });
   if (await useCompleted.isVisible().catch(() => false)) await useCompleted.click();
 
-  // One report: no side panel, decisions in a banner above the draft.
+  // One report: page one is the project, always open in the Profile card's
+  // columns; no decisions banner, no stale block.
   await expect(page.getByRole("complementary", { name: "Finish this RFP" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "3. Scope by stage", exact: true })).toBeVisible();
-  const decisions = page.getByRole("region", { name: "Decide before issue" });
-  await expect(decisions.getByText("Appointment not confirmed", { exact: true })).toBeVisible();
-  await expect(decisions.getByText("Project details not set", { exact: true })).toBeVisible();
-  await page.screenshot({ path: "../.tools/rfp-report-desktop.png", fullPage: true });
-  await decisions.getByRole("button", { name: /^Confirm: / }).click();
-  await expect(decisions.getByText("Appointment not confirmed", { exact: true })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Decide before issue" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Edit 1. Project", exact: true })).toHaveCount(0);
+  const pageOne = page.locator(".rfp-page-one");
+  for (const column of ["The building", "Site and planning", "Delivery"]) await expect(pageOne.getByRole("group", { name: column, exact: true })).toBeVisible();
+  await expect(pageOne.getByRole("group", { name: "Project conditions", exact: true })).toBeVisible();
 
-  // A blank client quantity is a decision with its control inline.
-  await decisions.getByLabel("Client presentations", { exact: true }).fill("3");
-  await decisions.getByLabel("Client presentations", { exact: true }).press("Enter");
+  // A blocking check sits beside what it concerns; the Issue section counts them.
+  const issue = page.getByRole("region", { name: "Issue", exact: true });
+  await expect(issue.getByRole("button", { name: "Issue report", exact: true })).toBeDisabled();
+  await expect(issue.getByRole("group", { name: "Issue details" }).getByLabel("RFP reference", { exact: true })).toBeVisible();
+  const role = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "2. Your role", exact: true }) });
+  await expect(role.getByText("Appointment not confirmed.", { exact: true })).toBeVisible();
+  await expect(pageOne.locator('[data-control="fact:client"][data-blocked]')).toBeVisible();
+  await page.screenshot({ path: "../.tools/rfp-report-desktop.png", fullPage: true });
+  await role.locator(".rfp-markers li").filter({ hasText: "Appointment not confirmed" }).getByRole("button", { name: "Show", exact: true }).click();
+  await role.getByRole("button", { name: "Confirm", exact: true }).click();
+  await expect(role.getByText("Appointment not confirmed.", { exact: true })).toHaveCount(0);
+
+  // A blank client quantity is marked under section 4 and opens its control.
+  const allowances = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "4. Allowances", exact: true }) });
+  await allowances.locator(".rfp-markers li").filter({ hasText: "Client presentations" }).getByRole("button", { name: "Show", exact: true }).click();
+  await allowances.getByLabel("Client presentations", { exact: true }).fill("3");
+  await allowances.getByLabel("Client presentations", { exact: true }).press("Enter");
   await expect(page.locator(".rfp-draft").getByRole("cell", { name: "Client presentations", exact: true })).toBeVisible();
 
-  // Project facts are edited under "1. Project" and saved to Profile.
-  await page.getByRole("button", { name: "Edit 1. Project", exact: true }).click();
-  const projectEdit = page.getByRole("group", { name: "Edit project" });
-  await expect(projectEdit.getByText("Saved to Profile", { exact: true })).toBeVisible();
-  await projectEdit.getByLabel("Client", { exact: true }).fill("Inner West Council");
-  await projectEdit.getByLabel("Client", { exact: true }).press("Enter");
-  await expect(projectEdit.locator('[data-control="fact:client"] .rfp-source')).toHaveText("Profile");
-  await expect(decisions.getByText("Project details not set", { exact: true })).toHaveCount(0);
-  await projectEdit.getByLabel("Zone", { exact: true }).fill("R2");
-  await projectEdit.getByLabel("Zone", { exact: true }).press("Enter");
-  await expect(projectEdit.locator('[data-control="fact:zone"] .rfp-source')).toHaveText("Profile");
+  // Project facts are edited where they print on page one and saved to Profile.
+  await pageOne.getByRole("button", { name: /^Client: .*Change$/ }).click();
+  await pageOne.getByLabel("Client", { exact: true }).fill("Inner West Council");
+  await pageOne.getByLabel("Client", { exact: true }).press("Enter");
+  await expect(pageOne.locator('[data-control="fact:client"] .rfp-source')).toHaveText("Profile");
+  await expect(pageOne.locator('[data-control="fact:client"]')).toContainText("Inner West Council");
+  await expect(pageOne.locator('[data-control="fact:client"][data-blocked]')).toHaveCount(0);
+  // An unset row waits behind "more", as on the Profile card.
+  const site = pageOne.getByRole("group", { name: "Site and planning", exact: true });
+  await site.getByRole("button", { name: /^\+ \d+ more$/ }).click();
+  await site.getByRole("button", { name: "Zone: —. Change", exact: true }).click();
+  await site.getByLabel("Zone", { exact: true }).fill("R2");
+  await site.getByLabel("Zone", { exact: true }).press("Enter");
+  await expect(pageOne.locator('[data-control="fact:zone"]')).toContainText("R2");
+  // A condition answers in place.
+  const country = pageOne.locator('[data-control="fact:flag.country"]');
+  await country.getByRole("radio", { name: "Yes", exact: true }).check();
+  await expect(country.locator(".rfp-source")).toHaveText("Profile");
   await page.screenshot({ path: "../.tools/rfp-report-editing.png", fullPage: true });
   const saved = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   expect(saved.details.find((d: { key: string }) => d.key === "proj.zone").value).toBe("R2");
   expect(saved.details.find((d: { key: string }) => d.key === "proj.client").value).toBe("Inner West Council");
+  expect(saved.details.find((d: { key: string }) => d.key === "proj.flag.country").value).toBe("yes");
 
   // Scope position is this RFP's own choice, edited under section 5.
   await page.getByRole("button", { name: "Edit 5. Scope position", exact: true }).click();
@@ -114,9 +136,9 @@ test("a package titled Civil is offered the civil RFP and switches only when con
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Civil", exact: true }).click();
   await expect(page.getByText("This package looks like civil engineering services", { exact: true })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Decide before issue" })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Issue", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Use the civil engineering services RFP", exact: true }).click();
-  await expect(page.getByRole("region", { name: "Decide before issue" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Issue", exact: true })).toBeVisible();
   await expect(page.getByText("This package looks like civil engineering services", { exact: true })).toHaveCount(0);
 });
 

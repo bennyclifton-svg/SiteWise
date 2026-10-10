@@ -109,17 +109,25 @@ func (b *builder) project() {
 // rather than a sixth. A shorter column leaves its cell blank.
 func (b *builder) grid() *reports.Table {
 	columns := []string{}
+	printed := [][]string{}
 	height := 0
 	for _, c := range b.r.Grid {
 		columns = append(columns, c.Title)
-		height = max(height, len(c.Cells))
+		cells := []string{}
+		for _, cell := range c.Cells {
+			if !cell.Empty {
+				cells = append(cells, cell.Label+": "+cell.Text)
+			}
+		}
+		printed = append(printed, cells)
+		height = max(height, len(cells))
 	}
 	rows := make([][]string, height)
 	for i := range rows {
-		for _, c := range b.r.Grid {
+		for _, cells := range printed {
 			cell := ""
-			if i < len(c.Cells) {
-				cell = c.Cells[i].Label + ": " + c.Cells[i].Text
+			if i < len(cells) {
+				cell = cells[i]
 			}
 			rows[i] = append(rows[i], cell)
 		}
