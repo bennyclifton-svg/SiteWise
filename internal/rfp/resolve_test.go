@@ -106,36 +106,42 @@ func TestScaleOnlyMovesServiceLevels(t *testing.T) {
 	}
 }
 
-func TestPerFlagOverrideLeavesOtherFlagsLive(t *testing.T) {
-	d := discipline(t, "civil")
-	drivers := facts(t, "class=7b", "procurement=traditional", "pathway=da", "flag.public_road=no")
-	r := Resolve(d, skeleton(t), drivers, set("driver:flag.flood", `"yes"`))
-	if r.Position("flood_report").Value != "I" {
-		t.Fatal("the flood override applies")
+// Project facts live in Profile (owner decision D1): an RFP setting can
+// neither set nor override them.
+func TestProjectFactsAreNotRFPSettings(t *testing.T) {
+	d, sk := discipline(t, "civil"), skeleton(t)
+	drivers := facts(t, "class=7b", "procurement=traditional", "pathway=da", "flag.flood=no")
+	for _, key := range []string{"driver:flag.flood", "driver:pathway", "field:client", "field:lga", "field:address"} {
+		if err := ValidateSetting(d, sk, drivers, key, json.RawMessage(`"yes"`)); err == nil {
+			t.Fatalf("%s must be refused as an RFP setting", key)
+		}
 	}
-	if r.Fact("flag.public_road").Values[0] != "no" || r.Fact("flag.public_road").Source != "profile" {
-		t.Fatal("other flags keep following the profile")
+	r := Resolve(d, sk, drivers, set("driver:flag.flood", `"yes"`))
+	if r.Fact("flag.flood").Values[0] != "no" || !r.HasCheck("orphan:driver:flag.flood") {
+		t.Fatal("a leftover override is ignored and shown")
 	}
 }
 
-func TestSourceChangeAfterSettingIsAConflict(t *testing.T) {
-	d := discipline(t, "civil")
-	old := facts(t, "class=7b", "procurement=traditional", "pathway=da", "flag.flood=no")
-	s := Settings{"driver:flag.flood": {Value: json.RawMessage(`"no"`), Basis: SettingBasis(old, "driver:flag.flood")}}
-	if r := Resolve(d, skeleton(t), old, s); r.HasCheck("changed:driver:flag.flood") {
-		t.Fatal("unchanged source raises no conflict")
-	}
-	now := facts(t, "class=7b", "procurement=traditional", "pathway=da", "flag.flood=yes")
-	r := Resolve(d, skeleton(t), now, s)
-	if !r.HasCheck("changed:driver:flag.flood") || r.Position("flood_report").Key != "" {
-		t.Fatal("the setting still applies, and the source change is shown")
+func TestProfileHomedFieldsReadFromDrivers(t *testing.T) {
+	d, sk := discipline(t, "structural"), skeleton(t)
+	drivers := facts(t, "class=2", "procurement=traditional", "pathway=da")
+	r := Resolve(d, sk, drivers, Settings{})
+	if !r.HasCheck("details") {
+		t.Fatal("a missing client is a project detail to set in Profile")
 	}
 	for _, c := range r.Blocking() {
-		if c.ID == "changed:driver:flag.flood" {
-			return
+		if c.ID == "details" && c.Control != "fact:client" {
+			t.Fatalf("details control = %s", c.Control)
 		}
 	}
-	t.Fatal("a changed source under a scope setting blocks issue")
+	drivers.Text = map[string]string{"client": "Inner West Council", "zone": "R2"}
+	r = Resolve(d, sk, drivers, set("field:client", `"Somebody else"`))
+	if f := r.Fields["client"]; f.Value != "Inner West Council" || f.Source != "profile" {
+		t.Fatalf("client = %+v", f)
+	}
+	if r.Fields["zone"].Value != "R2" || r.HasCheck("details") {
+		t.Fatal("profile values fill the RFP")
+	}
 }
 
 func TestStaleSettingIsKeptAsCheck(t *testing.T) {

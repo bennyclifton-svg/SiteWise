@@ -277,45 +277,10 @@ func settingStrings(raw json.RawMessage) []string {
 	return nil
 }
 
-// FactBasis is what a driver setting records about the source it overrode.
-type FactBasis struct {
-	State  string   `json:"state"`
-	Values []string `json:"values"`
-}
-
 func (r *resolver) applyFacts() {
 	r.out.Facts = map[string]Fact{}
 	for k, v := range r.drivers.Facts {
 		r.out.Facts[k] = v
-	}
-	keys := make([]string, 0, len(r.settings))
-	for k := range r.settings {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, key := range keys {
-		name, ok := strings.CutPrefix(key, "driver:")
-		if !ok {
-			continue
-		}
-		raw, _ := r.setting(key)
-		source := r.drivers.Fact(name)
-		var basis FactBasis
-		if json.Unmarshal(r.settings[key].Basis, &basis) == nil && basis.State != "" && (basis.State != source.State || strings.Join(basis.Values, "|") != strings.Join(source.Values, "|")) {
-			now := "not established"
-			if source.State == Known {
-				now = strings.Join(source.Values, ", ")
-			}
-			r.check(Check{ID: "changed:" + key, Label: factLabel(r.sk, name) + ": changed since your setting", Text: "The project now says " + now + ". Keep your setting or use the new value.", Blocking: true, Control: key})
-		}
-		values := settingStrings(raw)
-		if len(values) == 1 && values[0] == "unknown" {
-			r.out.Facts[name] = Fact{State: Unknown, Source: "user"}
-			continue
-		}
-		if len(values) > 0 {
-			r.out.Facts[name] = Fact{Values: values, State: Known, Source: "user"}
-		}
 	}
 	if f := r.out.Facts["budget"]; f.State == Known {
 		r.out.Budget = f.Values[0]
@@ -965,6 +930,15 @@ func (r *resolver) resolveFields() {
 		if v.Value == "" {
 			v.Source = "none"
 		}
+		// A field with a profile home is read, never set here (D1).
+		if f.Profile != "" {
+			v = FieldValue{Value: r.drivers.Text[f.Key], Source: "profile"}
+			if v.Value == "" {
+				v.Source = "none"
+			}
+			r.out.Fields[f.Key] = v
+			continue
+		}
 		if raw, ok := r.setting("field:" + f.Key); ok {
 			if s := strings.TrimSpace(settingString(raw)); s != "" {
 				v = FieldValue{Value: s, Source: "user"}
@@ -1045,18 +1019,31 @@ func (r *resolver) resolveRows() {
 		}
 		a.Text = strings.ReplaceAll(a.Text, "{n}", n)
 	}
-	// Missing issue details are one decision, not one per field.
+	// Missing issue details are one decision, not one per field; missing
+	// project details are another, answered once in Profile.
 	missing, first := []string{}, ""
+	project, projectFirst := []string{}, ""
 	for _, f := range r.sk.Fields {
-		if f.Required && r.out.Fields[f.Key].Value == "" {
-			missing = append(missing, f.Label)
-			if first == "" {
-				first = "field:" + f.Key
+		if !f.Required || r.out.Fields[f.Key].Value != "" {
+			continue
+		}
+		if f.Profile != "" {
+			project = append(project, f.Label)
+			if projectFirst == "" {
+				projectFirst = "fact:" + f.Key
 			}
+			continue
+		}
+		missing = append(missing, f.Label)
+		if first == "" {
+			first = "field:" + f.Key
 		}
 	}
 	if len(missing) > 0 {
 		r.check(Check{ID: "fields", Label: "Issue details not set", Text: strings.Join(missing, ", ") + ".", Blocking: true, Control: first, Changes: missing})
+	}
+	if len(project) > 0 {
+		r.check(Check{ID: "details", Label: "Project details not set", Text: strings.Join(project, ", ") + ". Set once in Profile; every RFP uses it.", Blocking: true, Control: projectFirst, Changes: project})
 	}
 }
 
@@ -1134,9 +1121,9 @@ func (r *resolver) slot(name string) (string, bool) {
 		v := r.out.Fields["client"].Value
 		return v, v != ""
 	case "address":
-		v := r.drivers.Text["address"]
-		if f := r.out.Fields["address"]; f.Source == "user" || v == "" {
-			v = f.Value
+		v := r.out.Fields["address"].Value
+		if v == "" {
+			v = r.drivers.Text["address"]
 		}
 		if v == "" {
 			return "", false
@@ -1285,7 +1272,7 @@ func (r *resolver) resolveWeights() {
 func (r *resolver) checkPathway() {
 	f := r.fact("pathway")
 	if f.State == Known && contains(r.d.UnsupportedPathways, f.Values[0]) {
-		r.check(Check{ID: "pathway_unsupported", Label: "No reviewed " + strings.ToLower(r.d.Title) + " stages for " + valueLabel(r.sk, "pathway", f.Values[0]), Text: "This pathway's stage bundle has not been written and reviewed. It does not fall back to another pathway's wording.", Blocking: true, Control: "driver:pathway"})
+		r.check(Check{ID: "pathway_unsupported", Label: "No reviewed " + strings.ToLower(r.d.Title) + " stages for " + valueLabel(r.sk, "pathway", f.Values[0]), Text: "This pathway's stage bundle has not been written and reviewed. It does not fall back to another pathway's wording.", Blocking: true, Control: "fact:pathway"})
 	}
 }
 
@@ -1294,7 +1281,7 @@ func (r *resolver) checkPathway() {
 func (r *resolver) finishChecks() {
 	for _, key := range []string{"gfa", "site_area", "parking", "storeys", "budget", "work_type", "category", "pathway", "procurement", "state"} {
 		if f := r.fact(key); f.State == Conflict {
-			r.check(Check{ID: "fact:" + key, Label: factLabel(r.sk, key) + ": sources disagree (" + strings.Join(f.Values, " vs ") + ")", Text: "Set the one figure every firm prices from.", Blocking: true, Control: "driver:" + key})
+			r.check(Check{ID: "fact:" + key, Label: factLabel(r.sk, key) + ": sources disagree (" + strings.Join(f.Values, " vs ") + ")", Text: "Set the one figure every firm prices from.", Blocking: true, Control: "fact:" + key})
 		}
 	}
 	for _, m := range r.sk.Modules {
@@ -1361,7 +1348,7 @@ func controlFor(fact string) string {
 	if strings.HasPrefix(fact, "stage:") {
 		return fact
 	}
-	return "driver:" + fact
+	return "fact:" + fact
 }
 
 func slotControl(missing []string, sk knowledge.RFPSkeleton) string {
@@ -1370,18 +1357,19 @@ func slotControl(missing []string, sk knowledge.RFPSkeleton) string {
 	}
 	for _, f := range sk.Fields {
 		if f.Label == missing[0] {
+			if f.Profile != "" {
+				return "fact:" + f.Key
+			}
 			return "field:" + f.Key
 		}
 	}
 	switch missing[0] {
-	case "Site address":
-		return "field:address"
 	case "Planning pathway":
-		return "driver:pathway"
+		return "fact:pathway"
 	case "Procurement":
-		return "driver:procurement"
+		return "fact:procurement"
 	case "Work type":
-		return "driver:work_type"
+		return "fact:work_type"
 	}
 	return ""
 }

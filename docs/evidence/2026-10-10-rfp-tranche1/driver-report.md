@@ -20,7 +20,7 @@ Structural investigation of an existing office building before a purchase; no de
 | civil | Building class; Work to an existing building; Existing on-site detention to keep or modify; Novation; Procurement route; Site area; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling; Regulated design applies |
 | structural | Building class; Building over or next to a water authority asset; Work to an existing building; Existing on-site detention to keep or modify; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 | town-planning | Planning pathway; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
-| traffic | Use generates heavy vehicle movements; Planning pathway; Work type | Intersection counts and modelling required | Green travel plan required by a condition or the DCP; Works in a public road or intersection; Site fronts or affects a state road; Traffic-generating development referred to TfNSW |
+| traffic | Use generates heavy vehicle movements; Intersection counts and modelling required; Planning pathway; Work type | — | Green travel plan required by a condition or the DCP; Works in a public road or intersection; Site fronts or affects a state road; Traffic-generating development referred to TfNSW |
 
 ## existing-3-9c-repair
 
@@ -37,7 +37,7 @@ As existing-3-9c-repair, after the user records professional advice that the reg
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | Regulated design applies | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
+| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
 
 ## live-hospital
 

@@ -133,3 +133,28 @@ func TestWholePartStandsInWhenNoParts(t *testing.T) {
 		t.Fatalf("whole part with two classes: %+v", d.Parts)
 	}
 }
+
+// Project details and flags with no determinant are read from Profile; the
+// user's word on a flag replaces a reading of it.
+func TestDriversReadProjectDetails(t *testing.T) {
+	s := arthurSnapshot()
+	brief := func(key, text string) reports.BriefValue {
+		return reports.BriefValue{ID: "w:" + key, Label: key, Text: text}
+	}
+	s.Brief = append(s.Brief, brief("proj.client", "Hale Capital"), brief("proj.zone", "IN1"),
+		brief("proj.regulated_design", "no"), brief("proj.flag.basement", "yes"),
+		brief("det.groundwater_above_excavation", "stated_true"), brief("proj.flag.groundwater", "no"))
+	d := Drivers(s, skeleton(t))
+	if d.Text["client"] != "Hale Capital" || d.Text["zone"] != "IN1" || d.Text["address"] != "145-151 Arthur St, Homebush West NSW" || d.Text["lot_dp"] != "Lot 1 DP 1" {
+		t.Fatalf("text = %v", d.Text)
+	}
+	if f := d.Fact("regulated_design"); f.State != Known || f.Values[0] != "no" {
+		t.Fatalf("regulated design = %+v", f)
+	}
+	if f := d.Fact("flag.basement"); f.State != Known || f.Values[0] != "yes" {
+		t.Fatalf("basement = %+v", f)
+	}
+	if f := d.Fact("flag.groundwater"); f.State != Known || f.Values[0] != "no" {
+		t.Fatalf("the user's groundwater answer wins: %+v", f)
+	}
+}

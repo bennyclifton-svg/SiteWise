@@ -87,15 +87,15 @@ fields:
   - {key: payment_days, label: Payment terms (days), kind: number, required: true, group: issue, default: "30"}
   - {key: pi, label: Professional indemnity cover, kind: text, required: true, group: issue, default: "$10 million"}
   - {key: pl, label: Public liability cover, kind: text, required: true, group: issue, default: "$20 million"}
-  - {key: client, label: Client, kind: text, required: true, group: project}
-  - {key: address, label: Site address, kind: text, required: false, group: project, help: "Used when the site record has no address."}
-  - {key: lga, label: Local government area, kind: text, required: false, group: project}
-  - {key: zone, label: Zone, kind: text, required: false, group: project}
-  - {key: lot_dp, label: Lot and DP, kind: text, required: false, group: project}
-  - {key: program, label: Program milestones, kind: text, required: false, group: project, help: "Approval, start and completion dates as the client currently plans them."}
+  - {key: client, label: Client, kind: text, required: true, group: project, profile: proj.client}
+  - {key: address, label: Site address, kind: text, required: false, group: project, profile: site.address}
+  - {key: lga, label: Local government area, kind: text, required: false, group: project, profile: proj.lga}
+  - {key: zone, label: Zone, kind: text, required: false, group: project, profile: proj.zone}
+  - {key: lot_dp, label: Lot and DP, kind: text, required: false, group: project, profile: site.lot}
+  - {key: program, label: Program milestones, kind: text, required: false, group: project, profile: proj.program, help: "Approval, start and completion dates as the client currently plans them."}
   - {key: information, label: Information provided, kind: text, required: false, group: project, help: "Survey, due diligence, brief, geotechnical and other reports issued with this RFP."}
   - {key: design_vehicle, label: Design vehicle, kind: text, required: false, group: project}
-  - {key: sustainability, label: Sustainability target, kind: text, required: false, group: project}
+  - {key: sustainability, label: Sustainability target, kind: text, required: false, group: project, profile: proj.sustainability}
   - {key: design_loads, label: Design loads from the brief, kind: text, required: false, group: project}
 
 evaluation:

@@ -114,6 +114,7 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	choice("pathway", "hdr.cond.planning")
 	choice("procurement", "hdr.cond.procurement_route")
 	choice("state", "det.state")
+	choice("regulated_design", knowledge.DetailPrefix+"regulated_design")
 	for fact, key := range map[string]string{"site_area": "hdr.scale.site_sqm", "storeys": "hdr.scale.storeys", "parking": "hdr.scale.car_parks"} {
 		if v, ok := value(key); ok {
 			if _, err := strconv.ParseFloat(v, 64); err == nil {
@@ -124,7 +125,7 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	for _, key := range []string{"hdr.scale.total_gfa_sqm", "hdr.scale.gfa_sqm"} {
 		if v, ok := value(key); ok {
 			if _, err := strconv.ParseFloat(v, 64); err == nil {
-				d.Facts["gfa"] = known("profile", v)
+				d.Facts["gfa"] = Fact{Values: []string{v}, State: Known, Source: "profile", Detail: key}
 				break
 			}
 		}
@@ -144,6 +145,13 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	d.Consultants = consultants(s)
 	d.Documents = len(s.Documents)
 	readFlags(d.Facts, value)
+	// A flag stored as a project detail is the user's word; it replaces
+	// any reading of the same flag rather than disagreeing with it.
+	for _, f := range DetailFlags(sk) {
+		if v, ok := value(FlagHome(f.Key).Key); ok && (v == "yes" || v == "no") {
+			d.Facts["flag."+f.Key] = Fact{Values: []string{v}, State: Known, Source: "profile", Detail: FlagHome(f.Key).Key}
+		}
+	}
 	deriveFlags(d.Facts, d.Parts)
 	for _, f := range sk.Flags {
 		if _, ok := d.Facts["flag."+f.Key]; !ok {
@@ -163,6 +171,18 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	d.Text["project"] = strings.TrimSpace(s.ProjectName)
 	d.Text["address"] = strings.TrimSpace(site.Site.Address)
 	d.Text["lot"] = strings.TrimSpace(site.Site.Lot)
+	for _, f := range sk.Fields {
+		switch {
+		case f.Profile == "site.address":
+			d.Text[f.Key] = d.Text["address"]
+		case f.Profile == "site.lot":
+			d.Text[f.Key] = d.Text["lot"]
+		case f.Profile != "":
+			if v, ok := value(f.Profile); ok {
+				d.Text[f.Key] = v
+			}
+		}
+	}
 	return d
 }
 

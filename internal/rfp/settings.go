@@ -21,9 +21,6 @@ var factLabels = map[string]string{
 	"site_area": "Site area", "gfa": "Gross floor area", "storeys": "Storeys", "parking": "Car spaces",
 }
 
-// textFacts may be set by the user as a value; flags are set one at a time.
-var textFacts = map[string]bool{"work_type": true, "category": true, "pathway": true, "procurement": true, "state": true, "regulated_design": true, "budget": true, "site_area": true, "gfa": true, "storeys": true, "parking": true}
-
 func factLabel(sk knowledge.RFPSkeleton, key string) string {
 	if flag, ok := strings.CutPrefix(key, "flag."); ok {
 		return flagLabel(sk, flag)
@@ -102,16 +99,6 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 		return true
 	}
 	switch prefix {
-	case "driver":
-		if flag, ok := strings.CutPrefix(name, "flag."); ok {
-			for _, f := range sk.Flags {
-				if f.Key == flag {
-					return true
-				}
-			}
-			return false
-		}
-		return textFacts[name]
 	case "stage":
 		for _, s := range d.Stages {
 			if s.Key == name {
@@ -139,7 +126,7 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 	case "field":
 		for _, f := range sk.Fields {
 			if f.Key == name {
-				return true
+				return f.Profile == ""
 			}
 		}
 	case "weight":
@@ -153,7 +140,7 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 }
 
 var (
-	settingKeyRE = regexp.MustCompile(`^((driver|stage|element|allowance|position|responsible|field|weight):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
+	settingKeyRE = regexp.MustCompile(`^((stage|element|allowance|position|responsible|field|weight):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
 	dateRE       = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 	numberRE     = regexp.MustCompile(`^[0-9]{1,12}(\.[0-9]{1,2})?$`)
 )
@@ -216,10 +203,6 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 			}
 		}
 		return nil
-	case prefix == "driver" && strings.HasPrefix(name, "flag."):
-		return oneOf("yes", "no", "unknown")
-	case prefix == "driver":
-		return validDriverValue(sk, name, raw)
 	case prefix == "stage":
 		return oneOf(Include, Option, Exclude, Done)
 	case prefix == "element":
@@ -269,52 +252,6 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 	return ErrInvalidSetting
 }
 
-func validDriverValue(sk knowledge.RFPSkeleton, name string, raw json.RawMessage) error {
-	values := settingStrings(raw)
-	if len(values) != 1 {
-		return ErrInvalidSetting
-	}
-	v := values[0]
-	if v == "unknown" {
-		return nil
-	}
-	var list []knowledge.RFPOption
-	switch name {
-	case "pathway":
-		list = sk.Pathways
-	case "procurement":
-		list = sk.Procurement
-	case "work_type":
-		list = sk.WorkTypes
-	case "regulated_design":
-		if v == "yes" || v == "no" {
-			return nil
-		}
-		return ErrInvalidSetting
-	case "state":
-		if contains([]string{"ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"}, v) {
-			return nil
-		}
-		return ErrInvalidSetting
-	case "category":
-		if contains([]string{"residential", "commercial", "industrial", "institution", "mixed", "infrastructure"}, v) {
-			return nil
-		}
-		return ErrInvalidSetting
-	case "budget", "site_area", "gfa", "storeys", "parking":
-		if numberRE.MatchString(v) {
-			return nil
-		}
-		return ErrInvalidSetting
-	}
-	for _, o := range list {
-		if o.Key == v {
-			return nil
-		}
-	}
-	return ErrInvalidSetting
-}
-
 func printable(s string) bool {
 	if !utf8.ValidString(s) {
 		return false
@@ -325,16 +262,4 @@ func printable(s string) bool {
 		}
 	}
 	return true
-}
-
-// SettingBasis records the source fact a driver setting overrides, so a
-// later change in that source is shown rather than hidden by the override.
-func SettingBasis(drivers DriverSet, key string) json.RawMessage {
-	name, ok := strings.CutPrefix(key, "driver:")
-	if !ok {
-		return json.RawMessage(`{}`)
-	}
-	f := drivers.Fact(name)
-	raw, _ := json.Marshal(FactBasis{State: f.State, Values: f.Values})
-	return raw
 }

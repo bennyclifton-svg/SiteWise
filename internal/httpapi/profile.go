@@ -118,11 +118,11 @@ type profileJSON struct {
 	FailedDocuments  int                    `json:"failed_documents"`
 	PaymentRequired  bool                   `json:"payment_required"`
 	// Queued answers a profile read request: documents it sent to Jev.
-	Queued     *int64                `json:"queued,omitempty"`
-	Thresholds map[string]any        `json:"thresholds"`
-	Parts      []partJSON            `json:"parts"`
-	Header     []fieldJSON           `json:"header"`
-	Facts      []fieldJSON           `json:"facts"`
+	Queued     *int64         `json:"queued,omitempty"`
+	Thresholds map[string]any `json:"thresholds"`
+	Parts      []partJSON     `json:"parts"`
+	Header     []fieldJSON    `json:"header"`
+	Facts      []fieldJSON    `json:"facts"`
 	// Details are facts the user states once: client, LGA, zone, and the RFP
 	// flags with no determinant (proj.flag.*).
 	Details    []fieldJSON           `json:"details"`

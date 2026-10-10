@@ -142,6 +142,24 @@ func (s scenario) drivers(t *testing.T, sk knowledge.RFPSkeleton, discipline kno
 		}
 		d.Parts = append(d.Parts, Part{ID: p.ID, Label: p.Label, Kind: kind, Classes: p.Classes, GFA: p.GFA})
 	}
+	// Facts the project owns live in Profile (D1): a scenario's project
+	// fields and fact choices reach the RFP as frozen drivers, not settings.
+	for _, f := range sk.Fields {
+		if v, ok := s.Fields[f.Key]; ok && f.Profile != "" {
+			d.Text[f.Key] = v
+		}
+	}
+	for key, node := range s.Settings[discipline.ID] {
+		name, ok := strings.CutPrefix(key, "driver:")
+		if !ok {
+			continue
+		}
+		if node.Value == "unknown" {
+			d.Facts[name] = Fact{State: Unknown, Source: "profile"}
+		} else {
+			d.Facts[name] = Fact{Values: []string{node.Value}, State: Known, Source: "profile"}
+		}
+	}
 	deriveFlags(d.Facts, d.Parts)
 	for _, f := range sk.Flags {
 		if _, ok := d.Facts["flag."+f.Key]; !ok {
@@ -156,10 +174,16 @@ func (s scenario) settings(t *testing.T, discipline string, drivers DriverSet) S
 	t.Helper()
 	out := Settings{}
 	for key, v := range s.Fields {
+		if _, ok := drivers.Text[key]; ok {
+			continue
+		}
 		raw, _ := json.Marshal(v)
 		out["field:"+key] = Setting{Value: raw}
 	}
 	for key, node := range s.Settings[discipline] {
+		if strings.HasPrefix(key, "driver:") {
+			continue
+		}
 		var v any
 		if err := node.Decode(&v); err != nil {
 			t.Fatalf("%s setting %s: %v", s.Name, key, err)
@@ -168,7 +192,7 @@ func (s scenario) settings(t *testing.T, discipline string, drivers DriverSet) S
 		if err != nil {
 			t.Fatal(err)
 		}
-		out[key] = Setting{Value: raw, Basis: SettingBasis(drivers, key)}
+		out[key] = Setting{Value: raw}
 	}
 	return out
 }

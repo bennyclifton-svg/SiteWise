@@ -58,6 +58,10 @@ type Control struct {
 	Set     bool     `json:"set"`
 	Party   string   `json:"party,omitempty"`
 	Owner   string   `json:"owner,omitempty"`
+	// Home is the kind of Profile home a fact: control writes to (detail,
+	// header, site, determinant), or where it is changed instead
+	// (cost_plan, link, derived; then Locked).
+	Home string `json:"home,omitempty"`
 }
 
 // BuildControls is pure: it reads the resolved RFP, the rules and the
@@ -79,6 +83,8 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		}
 		return out
 	}
+	// A project fact is read from Profile and an edit writes it there (D1),
+	// so it is never "set" on the RFP.
 	fact := func(key, label, kind string, opts []Choice, help string) {
 		f := r.Fact(key)
 		var v any = nil
@@ -89,7 +95,16 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		if f.State == Conflict {
 			why = "Sources disagree: " + strings.Join(f.Values, " vs ")
 		}
-		project.Controls = append(project.Controls, Control{Key: "driver:" + key, Label: label, Kind: kind, Value: v, Options: opts, Source: sourceOf(f), Why: why, Help: help, Set: isSet("driver:" + key)})
+		home := FactHome(sk, r, key)
+		switch home.Kind {
+		case HomeCostPlan:
+			help = "Set in the cost plan."
+		case HomeLink:
+			help = "Change it in Profile."
+		case HomeDerived:
+			help = "Follows from the parts' classes in Profile."
+		}
+		project.Controls = append(project.Controls, Control{Key: "fact:" + key, Label: label, Kind: kind, Value: v, Options: opts, Source: sourceOf(f), Why: why, Help: help, Home: home.Kind, Locked: !home.Writable()})
 	}
 	fact("work_type", "Work type", "choice", options(sk.WorkTypes), "")
 	fact("pathway", "Planning pathway", "choice", options(sk.Pathways), "")
@@ -124,10 +139,16 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		fact("flag."+f.Key, f.Label, "tristate", []Choice{{"yes", "Yes"}, {"no", "No"}, {"unknown", "Not known"}}, "")
 	}
 	for _, f := range sk.Fields {
-		if f.Group == "project" {
-			v := r.Fields[f.Key]
-			project.Controls = append(project.Controls, Control{Key: "field:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Set: isSet("field:" + f.Key)})
+		if f.Group != "project" {
+			continue
 		}
+		v := r.Fields[f.Key]
+		if f.Profile != "" {
+			home := FactHome(sk, r, f.Key)
+			project.Controls = append(project.Controls, Control{Key: "fact:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Home: home.Kind})
+			continue
+		}
+		project.Controls = append(project.Controls, Control{Key: "field:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Set: isSet("field:" + f.Key)})
 	}
 	c.Groups = append(c.Groups, project)
 

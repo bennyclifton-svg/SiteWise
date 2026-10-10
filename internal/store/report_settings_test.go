@@ -23,7 +23,9 @@ import (
 func rfpProject(t *testing.T, s *store.Store, b store.ProfileBuild, part string) (store.Report, store.ReportDraft) {
 	t.Helper()
 	ctx := context.Background()
-	for key, value := range map[string]string{"hdr.work_type": "extend", "hdr.cond.planning": "da", "hdr.cond.procurement_route": "traditional", "det.state": "NSW", "det.ncc_class": "7b"} {
+	// Project facts live in Profile (D1), including those an RFP requires.
+	for key, value := range map[string]string{"hdr.work_type": "extend", "hdr.cond.planning": "da", "hdr.cond.procurement_route": "traditional", "det.state": "NSW", "det.ncc_class": "7b",
+		"proj.client": "Client", "proj.regulated_design": "no", "proj.flag.staged": "no", "proj.flag.multi_building": "no"} {
 		v := value
 		scope := b.Catalog.KeyScope(key)
 		if scope == "" {
@@ -32,6 +34,14 @@ func rfpProject(t *testing.T, s *store.Store, b store.ProfileBuild, part string)
 		if _, err := s.SetUserValue(ctx, orgA, projectA, part, userA, key, store.UserWrite{Value: &v, State: "set", Scope: scope}); err != nil {
 			t.Fatal(key, err)
 		}
+	}
+	site, err := s.ProjectSite(ctx, orgA, projectA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	address := "1 Test St, Sydney NSW"
+	if _, err := s.UpdateSite(ctx, orgA, site.ID, site.Version, nil, &address, nil); err != nil {
+		t.Fatal(err)
 	}
 	p, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", DisciplineID: "consultant.architect", LifecycleStatus: "planned"})
 	if err != nil {
@@ -135,7 +145,6 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	}
 
 	// A setting survives refresh.
-	next = setSetting(t, s, r, next, "driver:flag.flood", `"no"`)
 	refreshed, err := s.RefreshReport(ctx, orgA, r.ID, userA, "test-build", true)
 	if err != nil {
 		t.Fatal(err)
@@ -144,9 +153,9 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 		t.Fatal("a setting survives refresh")
 	}
 
-	// The source the user overrode changes: the setting stays, the change shows.
-	flood := "stated_true"
-	if _, err := s.SetUserValue(ctx, orgA, projectA, part, userA, "det.flood_hazard", store.UserWrite{Value: &flood, State: "set", Scope: scopeOf(b.Catalog, "det.flood_hazard")}); err != nil {
+	// A project fact is Profile's: a change there reaches the RFP on refresh.
+	existing := "stated_false"
+	if _, err := s.SetUserValue(ctx, orgA, projectA, part, userA, "det.existing_building", store.UserWrite{Value: &existing, State: "set", Scope: scopeOf(b.Catalog, "det.existing_building")}); err != nil {
 		t.Fatal(err)
 	}
 	if err := s.RebuildProfile(ctx, orgA, projectA, "", b.Compute); err != nil {
@@ -159,8 +168,8 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !hasCheck(view.RFP.Checks, "changed:driver:flag.flood", true) {
-		t.Fatalf("a changed source under a setting is a blocking check: %+v", view.RFP.Checks)
+	if c := rfpControl(view.RFP, "fact:flag.existing_building"); c.Value != "no" || c.Source != "profile" || c.Home != rfp.HomeDeterminant || c.Locked {
+		t.Fatalf("existing building follows Profile and saves there: %+v", c)
 	}
 
 	// Deleting a setting restores the rule.
@@ -172,6 +181,17 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if err != nil || strings.Contains(blockText(restored, "rfp:positions"), "Help selecting other consultants (") {
 		t.Fatalf("delete restores the rule: %v", err)
 	}
+}
+
+func rfpControl(c *rfp.Controls, key string) rfp.Control {
+	for _, g := range c.Groups {
+		for _, ctl := range g.Controls {
+			if ctl.Key == key {
+				return ctl
+			}
+		}
+	}
+	return rfp.Control{}
 }
 
 func scopeOf(cat *knowledge.Catalog, key string) string {
@@ -201,15 +221,10 @@ func finishRFP(t *testing.T, s *store.Store, r store.Report, d store.ReportDraft
 		"field:contact":                  `"pm@example.com"`,
 		"field:questions_by":             `"2026-10-23"`,
 		"field:agreement":                `"AS 4122-2010 as amended"`,
-		"field:client":                   `"Client"`,
-		"field:address":                  `"1 Test St, Sydney NSW"`,
 		"allowance:client_presentations": `"2"`,
 		"allowance:planning_cap":         `"20"`,
 		"allowance:ca_inspections":       `"6"`,
 		"parts:affected":                 "",
-		"driver:flag.staged":             `"no"`,
-		"driver:flag.multi_building":     `"no"`,
-		"driver:regulated_design":        `"no"`,
 	} {
 		if value == "" {
 			continue

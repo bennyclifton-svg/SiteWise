@@ -131,7 +131,9 @@ type Condition struct {
 }
 
 // AllOptions lists the options Jev may pick, then the user-only ones.
-func (c Condition) AllOptions() []Choice { return append(append([]Choice{}, c.Options...), c.UserOptions...) }
+func (c Condition) AllOptions() []Choice {
+	return append(append([]Choice{}, c.Options...), c.UserOptions...)
+}
 
 // Taxonomy is the project header vocabulary copied from Clerk data.
 type Taxonomy struct {

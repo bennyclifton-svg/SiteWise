@@ -215,6 +215,10 @@ type RFPField struct {
 	Group    string `yaml:"group" json:"group"` // issue | project
 	Default  string `yaml:"default" json:"default,omitempty"`
 	Help     string `yaml:"help" json:"help,omitempty"`
+	// Profile is the field's one home when the project, not the RFP, owns
+	// it: proj.<detail>, site.address or site.lot. The RFP reads it and
+	// never stores its own value (owner decision D1).
+	Profile string `yaml:"profile" json:"profile,omitempty"`
 }
 
 type RFPWeight struct {
@@ -418,6 +422,9 @@ func parseRFPSkeleton(body []byte) (RFPSkeleton, error) {
 	for _, f := range s.Fields {
 		if !slices.Contains([]string{"text", "date", "money", "number"}, f.Kind) || !slices.Contains([]string{"issue", "project"}, f.Group) || f.Label == "" {
 			return s, fmt.Errorf("field %q needs a label, kind and group", f.Key)
+		}
+		if f.Profile != "" && (f.Group != "project" || (f.Profile != "site.address" && f.Profile != "site.lot" && !strings.HasPrefix(f.Profile, DetailPrefix))) {
+			return s, fmt.Errorf("field %q: profile home %q must be proj.<detail>, site.address or site.lot on a project field", f.Key, f.Profile)
 		}
 	}
 	total := 0

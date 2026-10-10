@@ -193,7 +193,7 @@ func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string
 		if err := rfp.ValidateSetting(disc, sk, drivers, key, value); err != nil {
 			return d, err
 		}
-		basis := rfp.SettingBasis(drivers, key)
+		basis := json.RawMessage(`{}`)
 		_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,$3,$4::jsonb,$5::jsonb,$6::uuid) ON CONFLICT(org_id,report_version_id,key) DO UPDATE SET value=EXCLUDED.value,basis=EXCLUDED.basis,user_id=EXCLUDED.user_id,version=report_settings.version+1,updated_at=now()`, org, d.ID, key, []byte(value), []byte(basis), actor)
 		if err != nil {
 			return d, err
