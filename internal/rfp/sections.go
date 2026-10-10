@@ -205,6 +205,22 @@ func (b *builder) positions() {
 	}
 	lines = append(lines, b.r.Departures)
 	b.add("positions", "rfp:positions", "", strings.Join(lines, "\n"), nil, map[string]any{"positions": b.r.Positions, "scale": b.r.Scale, "scale_source": b.r.ScaleSource})
+	if len(b.r.ScopeSchedule) > 0 {
+		intro := []string{}
+		rows := [][]string{}
+		for _, row := range b.r.ScopeSchedule {
+			if row.Label == "" {
+				intro = append(intro, row.Text)
+			} else {
+				rows = append(rows, []string{row.Label, row.Text})
+			}
+		}
+		var table *reports.Table
+		if len(rows) > 0 {
+			table = doc([]string{"System / interface", "Allocation and acceptance basis"}, rows)
+		}
+		b.add("positions", "rfp:scope_schedule", "Responsibility schedule", strings.Join(intro, "\n"), table, map[string]any{"rows": b.r.ScopeSchedule})
+	}
 }
 
 func (b *builder) terms() {

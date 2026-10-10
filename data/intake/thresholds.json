@@ -1,6 +1,6 @@
 {
-  "question_version": "intake-76",
-  "reconciliation": "Intake-76: distinguish issuing discipline from title-block project contacts, using filename descriptions when PDF text is incomplete. Kind and discipline retain provisional amber-only review cutoffs; no automatic green cutoff is enabled. The Bankstown repair is development evidence, not an independent release holdout or recalibration. Metadata and lifecycle Jev bands remain uncalibrated; no experimental fitted cutoff is promoted.",
+  "question_version": "intake-77",
+  "reconciliation": "Intake-77: owner-requested separation of fire engineering and fire-services design makes 58 discipline choices; installation remains a trade. Existing issuing-discipline and filename rules remain. Kind and discipline retain only provisional amber review cutoffs, not calibrated automatic acceptance; green remains disabled. No live recalibration or release accuracy claim is made for the added discipline. Metadata and lifecycle Jev bands remain uncalibrated; no experimental fitted cutoff is promoted.",
   "fit": {
     "seed": "sitewise-corpus-1",
     "calibration_answers": 179,

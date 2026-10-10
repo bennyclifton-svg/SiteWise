@@ -1,0 +1,85 @@
+# Draft answer key; only the owner marks reviewed.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: advisory
+  category: commercial
+  pathway: advice_only
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  bca_existing_assessment: 'no'
+  bca_classification_map: 'no'
+  bca_staged_occupation: 'no'
+  bca_fire_referrals: 'no'
+  bca_residential_evidence: 'no'
+  bca_advisory: 'yes'
+  bca_certification: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  live_operations: 'no'
+parts:
+- id: building
+  label: Building
+  classes:
+  - '5'
+address: 1 Example St, Example NSW
+fields:
+  ref: BCA-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  contact: Project manager, pm@example.com
+  questions_by: '2026-10-23'
+  agreement: Project BCA appointment agreement (attached)
+  client: Example Client
+  lga: Example LGA
+  pi: $5 million (client agreed)
+  pl: $20 million (client agreed)
+settings:
+  bca-certification:
+    boundary:range:
+      start: a1_inception
+      end: a3_tender
+    allowance:plan_sets: '2'
+    allowance:reports: '2'
+    allowance:meetings: '2'
+    allowance:rfi_hours: '2'
+    allowance:solution_versions: '2'
+    allowance:cc_packages: '2'
+    allowance:oc_packages: '2'
+    allowance:visits: '2'
+    allowance:witness_events: '2'
+    allowance:duration_months: '2'
+sources:
+- docs/rfp-golden/bca-certification/rfp.md Sections 2-7
+- 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
+scenario: bca-advisory-only
+description: Advice-only has no certification or planning-submission appointment;
+  tender boundary leaves construction advice optional.
+expect:
+  bca-certification:
+    stages_include:
+    - a1_inception
+    - a3_tender
+    stages_option:
+    - a4_construction
+    stages_absent:
+    - a2_planning
+    - b1_preliminary
+    - b2_construction_approval
+    - b3_construction
+    - b4_occupation
+    positions:
+      statutory_functions: absent
+      performance_assessment: O
+      specialist_design: X
+    role:
+    - advisory
+    - independence
+    role_absent:
+    - statutory
+    allowances_absent:
+    - cc_packages
+    - oc_packages

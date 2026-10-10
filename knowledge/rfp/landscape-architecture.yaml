@@ -1,0 +1,920 @@
+id: landscape-architecture
+version: 1
+status: draft
+title: Landscape architectural services
+heading: 'REQUEST FOR PROPOSAL: LANDSCAPE ARCHITECTURE'
+golden: docs/rfp-golden/landscape-architecture/rfp.md
+discipline_ids:
+- consultant.landscape
+title_aliases:
+- landscape architect
+- landscape architecture
+evidence_limit: Two versions of one agreement with a narrow DA schedule; incorporated fee proposal absent, client acceptance
+  unproved and novation heading/body conflict unresolved. No independent bid benchmark.
+field_defaults:
+  pi: ''
+  pl: ''
+scale:
+  text: Actual external extent and selected stages govern; no industrial default.
+  complex: []
+thresholds:
+- key: commercial
+  kind: client_default
+  text: 90-day validity, 30-day payment and project-selected insurance
+  source: landscape-architecture#35 proposed policy, not historical agreement
+  verified: false
+- key: evaluation
+  kind: client_default
+  text: Price40/experience20/team20/method10/compliance10
+  source: landscape-architecture#35 proposed policy
+  verified: false
+evaluation:
+- key: price
+  label: Price
+  default: 40
+  provenance:
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+- key: experience
+  label: Experience
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+- key: team
+  label: Team
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+- key: methodology
+  label: Method/program
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+- key: compliance
+  label: Compliance
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+evaluation_note: Compare equal extents, stages, visits, specialist boundaries, establishment periods and departures.
+project_rows:
+- key: procurement
+  text: '{procurement_route}; no automatic later appointment or novation.'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#21
+  - kind: seed
+    ref: landscape-architecture#28
+  - kind: client_decision
+    ref: landscape-architecture#34
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Procurement
+  replace: true
+- key: landscape_basis
+  text: Confirm measured extent/map revision, actual users, private/common/public ground/roof areas; survey, levels/services,
+    tree IDs, soil/environmental and structural/waterproofing evidence, current controls/consents, operator and access.
+    Record gaps/conflicts.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#3,8,9
+  - kind: seed
+    ref: landscape-architecture#26-33
+  - kind: client_decision
+    ref: landscape-architecture#34,36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Landscape basis
+role:
+- key: appointment
+  text: Selected landscape design/advice from instruction, inputs and access to named output/response milestone. Specialists
+    own technical design; authorities approve. No approval, plant-survival or unseen-work guarantee.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5-10
+  - kind: seed
+    ref: landscape-architecture#26-29,33
+  - kind: client_decision
+    ref: landscape-architecture#34,36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+- key: records
+  text: Controlled PDFs/plans, schedules/calculations and registers; agree native formats, recipients/reliance, input
+    revisions, rounds/dates. Verify instrument/edition before using ratios, canopy, soil-depth or load figures.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5,6,9
+  - kind: seed
+    ref: landscape-architecture#27-29,33
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+stage_intro: Select base/options and end; later stages require instruction. Fit-out without landscape impact buys no
+  design; advice ends at its report/response round.
+boundary:
+- when:
+  - work_type:
+    - advisory
+  start: s1_inception
+  end: s9_advisory
+- start: s1_inception
+  end: s3_approval
+stages:
+- key: s1_inception
+  name: S1 Inception / evidence
+  deliverable: Agreed accessible-site review/photos, controls/use/maintenance brief, constraints and investigation register;
+    missing levels, services, soil, trees and access.
+  fee_basis: fixed
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5,8,12
+  - kind: seed
+    ref: landscape-architecture#26,27,30-33
+- key: s2_concept
+  name: S2 Concept
+  deliverable: Counted alternatives/tree workshops, layout/palette and measured deep-soil/canopy basis; soil volumes/depths,
+    loads, shade, water and maintenance assumptions.
+  fee_basis: fixed
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5,6
+  - kind: seed
+    ref: landscape-architecture#27,29
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - flag:
+    - landscape_design
+    work_type:
+    - new
+    - refurb
+    - extend
+    - remediation
+  if_unknown: ask
+- key: s3_approval
+  name: S3 Approval / responses
+  deliverable: Pathway-specific plans, planting schedule/details/calculations; draft/consolidated comment/final and counted
+    council responses to named milestone. Scales suit submission.
+  fee_basis: fixed
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5-9
+  - kind: seed
+    ref: landscape-architecture#27
+  - kind: client_decision
+    ref: landscape-architecture#34
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - flag:
+    - landscape_design
+    work_type:
+    - new
+    - refurb
+    - extend
+    - remediation
+  if_unknown: ask
+- key: s4_developed
+  name: S4 Consent / developed design
+  deliverable: Conditions/register, hard/soft landscape, soils and planting; coordinate irrigation, public domain, civil,
+    structure/waterproofing, access and long-lead items.
+  fee_basis: fixed
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#27,29
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - flag:
+    - landscape_design
+    work_type:
+    - new
+    - refurb
+    - extend
+    - remediation
+  if_unknown: ask
+- key: s5_tender
+  name: S5 Traditional documentation
+  deliverable: Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment
+    requirements/hold points; counted queries/substitutions.
+  fee_basis: fixed
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#27,28
+  - kind: client_decision
+    ref: landscape-architecture#34,36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - flag:
+    - landscape_design
+    work_type:
+    - new
+    - refurb
+    - extend
+    - remediation
+    procurement:
+    - traditional
+  if_unknown: ask
+- key: s6_dnc
+  name: S6 D&C / post-contract
+  deliverable: Design intent/performance tender package; delegated detail, handover and remaining deliverables. Separately
+    price post-contract completion, novation and substitutions; name instructor.
+  fee_basis: fixed
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#21
+  - kind: seed
+    ref: landscape-architecture#28
+  - kind: client_decision
+    ref: landscape-architecture#34
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - flag:
+    - landscape_design
+    work_type:
+    - new
+    - refurb
+    - extend
+    - remediation
+    procurement:
+    - design_construct
+  if_unknown: ask
+- key: s7_construction
+  name: S7 Construction / completion
+  deliverable: Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits; departures/actions/evidence
+    and bounded completion statement, distinct from contract PC/authority acceptance.
+  fee_basis: option
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#28-31
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - flag:
+    - landscape_design
+    work_type:
+    - new
+    - refurb
+    - extend
+    - remediation
+  if_unknown: ask
+  default: option
+- key: s8_establishment
+  name: S8 Establishment review
+  deliverable: 'Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation,
+    erosion/defects; end report to administrator/operator. Contractor maintains.'
+  fee_basis: option
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#28,31,32
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - flag:
+    - landscape_design
+    work_type:
+    - new
+    - refurb
+    - extend
+    - remediation
+  if_unknown: ask
+  default: option
+- key: s9_advisory
+  name: S9 Advice / rectification
+  deliverable: Defined question/cutoff, observed/tested/inferred evidence, limits/confidence, options/actions/reliance.
+    Tests separate; rectification follows agreed cause/extent or express risk allocation.
+  fee_basis: option
+  shown_when: Selected extent and appointment
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#30-33
+  default: option
+  include_when:
+  - work_type:
+    - advisory
+durations: R7 fixes input/start, draft/review/final, authority and stage-specific handover/establishment dates; no universal
+  PC date.
+allowances_note: Complete a separate quantity/basis for each listed item by selected stage; grouped entries are not a
+  common count. Record authorised assumptions (owner/date/consequence/review). Fixed fee, ceiling or unit/quantity; options
+  separate; written authority before overruns.
+allowances:
+- key: extent
+  text: '{n} sites/areas/stages/public packages and concept alternatives; map/revision'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#8,9
+  - kind: seed
+    ref: landscape-architecture#26,27,32
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Extent / concepts
+  owner: client
+- key: evidence
+  text: '{n} initial visits/duration, test locations/method/lab; access, locating and reinstatement owner'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#8,12
+  - kind: seed
+    ref: landscape-architecture#30,31,33
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Visits / tests
+  owner: client
+- key: reviews
+  text: '{n} workshops/duration, draft/final issues, reviews and authority responses/hours/end'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5,9
+  - kind: seed
+    ref: landscape-architecture#27
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Design / approvals
+  owner: client
+- key: tender
+  text: '{n} packages, queries/ceiling, submittals/substitutions and post-contract stages'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#8,9
+  - kind: seed
+    ref: landscape-architecture#27,28
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Tender / substitutions
+  owner: client
+- key: works
+  text: '{n} stock/hold-point/completion/revisits by purpose/duration; notice/report turnaround'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#8,9
+  - kind: seed
+    ref: landscape-architecture#28,31
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Works / completion
+  owner: client
+- key: establishment
+  text: '{n} months/start event; visits/timing/duration, logs, replacements/reinspection and recipient/criteria'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#8,9
+  - kind: seed
+    ref: landscape-architecture#28,31,32
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Establishment
+  owner: client
+- key: extras
+  text: '{n} base months; extra visit/round/hour, travel/out-of-hours/callout/cancellation/delay/remobilisation'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#13-16
+  - kind: seed
+    ref: landscape-architecture#28
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  label: Duration / extras
+  owner: client
+positions:
+- key: design
+  label: Planting/hardscape/external design only in enabled stages
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_approval
+      - s4_developed
+      - s5_tender
+      - s6_dnc
+    else: O
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#26,27
+  - kind: client_decision
+    ref: landscape-architecture#34,36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s2_concept
+    - s3_approval
+    - s4_developed
+    - s5_tender
+    - s6_dnc
+  if_unknown: ask
+- key: trees
+  label: 'Retained/street/neighbouring trees: condition/impact/protection; survey locates; no removal authority'
+  kind: technical
+  value: X
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5
+  - kind: seed
+    ref: landscape-architecture#29
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  responsible: arborist
+- key: civil_structure
+  label: Levels/runoff/WSUD by civil; retaining structure by structural; geotechnical soil advice
+  kind: technical
+  value: X
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#27,29,31
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  responsible: civil engineer and structural engineer
+- key: podium
+  label: Podium/roof/planter build-up and loads; structure verifies, architect/waterproofing and drainage owners named
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_approval
+      - s4_developed
+      - s5_tender
+      - s6_dnc
+    else: O
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#27-31
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s2_concept
+    - s3_approval
+    - s4_developed
+    - s5_tender
+    - s6_dnc
+    flag:
+    - landscape_podium
+  if_unknown: ask
+- key: irrigation_brief
+  label: Irrigation notation/performance brief; hydraulic/electrical interfaces named
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_approval
+      - s4_developed
+      - s5_tender
+      - s6_dnc
+    else: O
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#6
+  - kind: seed
+    ref: landscape-architecture#27
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s2_concept
+    - s3_approval
+    - s4_developed
+    - s5_tender
+    - s6_dnc
+    flag:
+    - landscape_irrigation_brief
+  if_unknown: ask
+- key: irrigation_detail
+  label: Detailed irrigation design only by expressly selected competent designer
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s4_developed
+      - s5_tender
+      - s6_dnc
+    else: O
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#6,8
+  - kind: seed
+    ref: landscape-architecture#27
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s4_developed
+    - s5_tender
+    - s6_dnc
+    flag:
+    - landscape_irrigation_detail
+  if_unknown: ask
+- key: public
+  label: Public-domain manuals/approvals/bonds/handover; extent and authority lead agreed
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_approval
+      - s4_developed
+      - s5_tender
+      - s6_dnc
+    else: O
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#26-29,32
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s2_concept
+    - s3_approval
+    - s4_developed
+    - s5_tender
+    - s6_dnc
+    flag:
+    - landscape_public
+  if_unknown: ask
+- key: special
+  label: 'Special external uses: name play/access, lighting/electrical, ecology/heritage/bushfire/horticulture specialists'
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_approval
+      - s4_developed
+      - s5_tender
+      - s6_dnc
+    else: O
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#26-29
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s2_concept
+    - s3_approval
+    - s4_developed
+    - s5_tender
+    - s6_dnc
+    flag:
+    - landscape_special
+  if_unknown: ask
+- key: staging
+  label: 'Existing/occupied/mixed/staged work: retained-condition/tie-ins, access and separate acceptance/establishment
+    dates'
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_approval
+      - s4_developed
+      - s5_tender
+      - s6_dnc
+      - s7_construction
+      - s8_establishment
+      - s9_advisory
+    else: O
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#30-32
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s2_concept
+    - s3_approval
+    - s4_developed
+    - s5_tender
+    - s6_dnc
+    - s7_construction
+    - s8_establishment
+    - s9_advisory
+    flag:
+    - landscape_staging
+  if_unknown: ask
+- key: environment
+  label: 'Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose
+    cause; assign opening-up/testing/reinstatement'
+  kind: technical
+  value: X
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#30,31,33
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  responsible: environmental consultant and relevant cause specialist
+- key: establishment
+  label: Plant establishment/maintenance inspections; contractor/operator maintains, quantified visits/end criteria
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s8_establishment
+    else: O
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#28,31,32
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s8_establishment
+  if_unknown: ask
+- key: construction
+  label: Construction visits/completion report against selected evidenced scope; contract PC remains administrator
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s7_construction
+    else: O
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#28,31,32
+  - kind: client_decision
+    ref: landscape-architecture#36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  when:
+  - stage:
+    - s7_construction
+  if_unknown: ask
+terms:
+- key: agreement
+  text: Engage under {field:agreement}, scope/fees, numbered addenda and written acceptance with precedence; no commencement.
+    Resolve incorporated proposals, novation conflicts and trustee terms.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#1-3,21,25
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: authority
+  text: Written representative approval before scope/allowance/fee/program change; submit reason, deliverables, fee/time
+    and delay/access/remobilisation effect.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#9,12-14
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: baseline
+  text: Agreed brief/sign-off is baseline; normal development remains included.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#9,13
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: errors
+  text: Correct own errors without extra fee.
+  provenance:
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: payment
+  text: Payment {field:payment_days} days for correct agreed-service invoice, subject to law/settled agreement; disclose
+    deposits, release/interest/suspension departures.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#15,16
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: rates
+  text: State rate fixed period, review/indexation dates and approved extra-work basis.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#16
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: validity
+  text: Valid {field:validity_days} days; base/options/disbursements and ex GST/GST/total separate.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#4,16
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: questions
+  text: Questions to {field:contact} by {field:questions_by}; changes as numbered addenda to all.
+  provenance:
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: rights
+  text: Reasonable skill/care; project-use/native/third-party rights, reliance, retention and confidentiality; marketing
+    needs consent. Set liability/indemnities, law/disputes, novation and suspension/termination notice/cure.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#10,17,18,20-25
+  - kind: seed
+    ref: landscape-architecture#33
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+returnable_notes:
+- key: r1
+  text: 'Price selected stages/quantities once: fixed/ceiling/unit, base/options/dependencies, ex GST/GST/total and milestones;
+    confirm validity, authorised signatory and numbered addenda.'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#4,9,16
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r2
+  text: 'Plans/details, plant/material/soil schedules, specifications/calculations, authority, completion/establishment
+    reports and native registers: extent, formats, recipients/reliance, input revisions, rounds/dates.'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5-9
+  - kind: seed
+    ref: landscape-architecture#27,28,33
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r3
+  text: Personnel/extra visit/review/substitution rates, meeting/response ceilings, durations, hold points/establishment,
+    travel/callout/out-of-hours/cancellation and overrun authority.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#9,13-16
+  - kind: seed
+    ref: landscape-architecture#28
+  - kind: client_decision
+    ref: landscape-architecture#34,35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r4
+  text: Lead/reviewer, stage resources, competence, subconsultants/conflicts and ISO or equivalent QA; allocate civil/structure/arborist/irrigation/environmental/authority/contractor
+    duties.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#10,11
+  - kind: seed
+    ref: landscape-architecture#26-29,31,32
+  - kind: client_decision
+    ref: landscape-architecture#35,36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r5
+  text: 'Two or three comparable actual-use/site/soil/podium/public/retained-landscape/establishment projects: personnel
+    role, outputs, lessons and referees.'
+  provenance:
+  - kind: seed
+    ref: landscape-architecture#26-33
+  - kind: client_decision
+    ref: landscape-architecture#35,36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r6
+  text: 'Sections 3-6/agreement departures: reason, alternative, fee/time; unresolved evidence or authorised assumption
+    with owner/date/consequence/review; name excluded-work owners.'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#1-3,8,9,13-25
+  - kind: client_decision
+    ref: landscape-architecture#34-36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r7
+  text: Input providers/dates, stage resources, access/test method, draft/review/final, authority/contractor dependencies,
+    hold-point notice and establishment schedule; calculations/substitutions, evidence limits, urgent escalation/close-out.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#5-7,10-14
+  - kind: seed
+    ref: landscape-architecture#26-33
+  - kind: client_decision
+    ref: landscape-architecture#34,36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r8
+  text: Current selected PI {field:pi}, PL {field:pl}, workers cover, duration/exclusions/renewals; agreement/precedence
+    acceptance or departures, novation and reliance/IP.
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#17-25
+  - kind: client_decision
+    ref: landscape-architecture#35
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true
+- key: r9
+  text: 'Travel/access, survey/locating, soil/lab/testing, authorities, specialists, samples/documents: included/allowance/unit,
+    quantity/payer/GST/markup/approval; no R1 duplication or hidden installation/maintenance.'
+  provenance:
+  - kind: evidence
+    ref: landscape-architecture#8,12,16
+  - kind: seed
+    ref: landscape-architecture#28-33
+  - kind: client_decision
+    ref: landscape-architecture#34-36
+    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
+      quantities or current terms.
+  replace: true

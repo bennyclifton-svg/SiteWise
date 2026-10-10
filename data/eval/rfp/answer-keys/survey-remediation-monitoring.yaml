@@ -1,0 +1,87 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: remediation
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  survey_detail: 'yes'
+  survey_boundary: 'yes'
+  survey_services: 'yes'
+  survey_adjoining: 'yes'
+  survey_buried: 'yes'
+  survey_sewer: 'yes'
+  live_operations: 'no'
+  staged: 'yes'
+parts:
+- id: building
+  label: Residential remediation
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: SURVEY-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  contact: Project manager
+  questions_by: '2026-10-23'
+  agreement: Project survey appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Marked survey extent/features; title/DP/easements, current design revisions, agreed datum/control/accuracy,
+    methods and named third-party responsibilities. Quantities are client fixture selections.
+settings:
+  land-surveying:
+    boundary:range:
+      start: s1_plan
+      end: s7_completion
+    allowance:features: '2'
+    allowance:control: '2'
+    allowance:visits: '2'
+    allowance:services: '2'
+    allowance:issues: '2'
+    allowance:setout: '2'
+    allowance:monitoring: '2'
+    allowance:completion: '2'
+    stage:s6_construction: include
+    stage:s7_completion: include
+sources:
+- docs/rfp-golden/land-surveying/rfp.md Sections 1-7
+- 'docs/rfp-golden/land-surveying/ledger.md #1-33'
+scenario: survey-remediation-monitoring
+description: Remediation explicitly appoints construction observations and completion; engineering trigger/diagnosis
+  remains separate.
+expect:
+  land-surveying:
+    positions:
+      titling: O
+      control: I
+      records: I
+      exposure: X
+      interior: O
+      monitoring: O
+      setout: I
+      asbuilt: I
+      boundary: I
+      adjoining: I
+      buried: I
+      sewer: I
+      access: I
+    stages_include:
+    - s1_plan
+    - s2_detail
+    - s3_boundary
+    - s4_services
+    - s6_construction
+    - s7_completion
+    stages_option:
+    - s5_support
+    blocking_only: true
+    blocking: []
+    role:
+    - advice

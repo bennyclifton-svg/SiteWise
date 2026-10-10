@@ -121,39 +121,40 @@ type Boundary struct {
 }
 
 type Resolved struct {
-	Discipline  string                `json:"discipline"`
-	Version     int                   `json:"version"`
-	Status      string                `json:"status"`
-	Title       string                `json:"title"`
-	Heading     string                `json:"heading"`
-	Scale       string                `json:"scale"`
-	ScaleSource string                `json:"scale_source"`
-	ScaleWhy    string                `json:"scale_why"`
-	Boundary    Boundary              `json:"boundary"`
-	Facts       map[string]Fact       `json:"facts"`
-	Parts       []Part                `json:"parts"`
-	AllParts    []Part                `json:"all_parts"`
-	Modules     map[string]string     `json:"modules"`
-	Stages      []StageResult         `json:"stages"`
-	Elements    []ElementResult       `json:"elements,omitempty"`
-	Allowances  []AllowanceResult     `json:"allowances"`
-	Positions   []PositionResult      `json:"positions"`
-	Project     []Row                 `json:"project"`
-	Role        []Row                 `json:"role"`
-	StageIntro  string                `json:"stage_intro"`
-	ElementNote string                `json:"element_intro,omitempty"`
-	Terms       []Row                 `json:"terms"`
-	Returnables []Row                 `json:"returnables"`
-	Fields      map[string]FieldValue `json:"fields"`
-	Weights     []Weight              `json:"weights"`
-	Budget      string                `json:"budget,omitempty"`
-	Checks      []Check               `json:"checks"`
-	Orphans     []string              `json:"orphans"`
-	Durations   string                `json:"durations"`
-	Legend      string                `json:"legend"`
-	AllowNote   string                `json:"allowance_note"`
-	Departures  string                `json:"departures"`
-	EvalNote    string                `json:"evaluation_note"`
+	Discipline    string                `json:"discipline"`
+	Version       int                   `json:"version"`
+	Status        string                `json:"status"`
+	Title         string                `json:"title"`
+	Heading       string                `json:"heading"`
+	Scale         string                `json:"scale"`
+	ScaleSource   string                `json:"scale_source"`
+	ScaleWhy      string                `json:"scale_why"`
+	Boundary      Boundary              `json:"boundary"`
+	Facts         map[string]Fact       `json:"facts"`
+	Parts         []Part                `json:"parts"`
+	AllParts      []Part                `json:"all_parts"`
+	Modules       map[string]string     `json:"modules"`
+	Stages        []StageResult         `json:"stages"`
+	Elements      []ElementResult       `json:"elements,omitempty"`
+	Allowances    []AllowanceResult     `json:"allowances"`
+	Positions     []PositionResult      `json:"positions"`
+	ScopeSchedule []Row                 `json:"scope_schedule,omitempty"`
+	Project       []Row                 `json:"project"`
+	Role          []Row                 `json:"role"`
+	StageIntro    string                `json:"stage_intro"`
+	ElementNote   string                `json:"element_intro,omitempty"`
+	Terms         []Row                 `json:"terms"`
+	Returnables   []Row                 `json:"returnables"`
+	Fields        map[string]FieldValue `json:"fields"`
+	Weights       []Weight              `json:"weights"`
+	Budget        string                `json:"budget,omitempty"`
+	Checks        []Check               `json:"checks"`
+	Orphans       []string              `json:"orphans"`
+	Durations     string                `json:"durations"`
+	Legend        string                `json:"legend"`
+	AllowNote     string                `json:"allowance_note"`
+	Departures    string                `json:"departures"`
+	EvalNote      string                `json:"evaluation_note"`
 }
 
 func (r Resolved) Stage(key string) StageResult {
@@ -225,6 +226,12 @@ type resolver struct {
 func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers DriverSet, settings Settings) Resolved {
 	r := &resolver{d: d, sk: sk, drivers: drivers, settings: settings, asks: map[string][]string{}, assumptions: map[string][]string{}, used: map[string]bool{}, skipped: map[string][]string{}}
 	r.out = Resolved{Discipline: d.ID, Version: d.Version, Status: d.Status, Title: d.Title, Heading: d.Heading, Modules: map[string]string{}, Fields: map[string]FieldValue{}, Checks: []Check{}, Orphans: []string{}, Durations: d.Durations, Legend: sk.Legend, AllowNote: sk.Allowances, Departures: sk.Departures, EvalNote: sk.Evaluate, StageIntro: d.StageIntro, ElementNote: d.ElementIntro}
+	if d.AllowancesNote != "" {
+		r.out.AllowNote = d.AllowancesNote
+	}
+	if d.EvaluationNote != "" {
+		r.out.EvalNote = d.EvaluationNote
+	}
 	r.applyFacts()
 	r.applyParts()
 	r.resolveFields()
@@ -401,6 +408,13 @@ func (r *resolver) driver(key string, values []string) outcome {
 			}
 		}
 		return res
+	case "stage_included":
+		for _, v := range values {
+			if r.stageState(v) == Include {
+				return outcome{t: yes}
+			}
+		}
+		return outcome{t: no}
 	case "stage":
 		for _, v := range values {
 			switch r.stageState(v) {
@@ -466,6 +480,10 @@ func (r *resolver) resolveScale() {
 			r.out.Scale, r.out.ScaleSource, r.out.ScaleWhy = v, "user", "Set by you"
 			return
 		}
+	}
+	if len(r.d.Scale.Complex) == 0 {
+		r.out.Scale, r.out.ScaleSource, r.out.ScaleWhy = "simple", "rule", "No complex service-level triggers defined"
+		return
 	}
 	o := r.eval(r.d.Scale.Complex)
 	switch o.t {
@@ -882,12 +900,47 @@ var partyWords = map[string][]string{
 }
 
 func (r *resolver) consultantFor(party string) (Consultant, bool) {
-	lower := strings.ToLower(party)
+	lower := strings.ReplaceAll(strings.ToLower(party), "-", " ")
+	// These appointments used to share a taxonomy alias. A strategy author
+	// cannot satisfy the separate system designer's responsibility.
+	fireID := ""
+	fireTitles := []string{}
+	if strings.Contains(lower, "fire services") {
+		fireID, fireTitles = "consultant.fire_services", []string{"fire services design", "fire services engineer", "wet fire design", "sprinkler design"}
+	} else if strings.Contains(lower, "fire engineer") || strings.Contains(lower, "fire safety engineer") || strings.Contains(lower, "fire and access engineers") {
+		fireID, fireTitles = "consultant.fire_engineer", []string{"fire engineer", "fire safety engineer"}
+	}
+	if fireID != "" {
+		if strings.Contains(lower, " or ") {
+			return Consultant{}, false // The project must settle the allocation.
+		}
+		for _, c := range r.drivers.Consultants {
+			if c.DisciplineID != "" {
+				if c.DisciplineID == fireID {
+					return c, true
+				}
+				continue
+			}
+			title := strings.ReplaceAll(strings.ToLower(c.Title), "-", " ")
+			if strings.Contains(title, "contractor") || strings.Contains(title, "trade") {
+				continue
+			}
+			for _, phrase := range fireTitles {
+				if strings.Contains(title, phrase) {
+					return c, true
+				}
+			}
+		}
+		return Consultant{}, false
+	}
 	for key, words := range partyWords {
 		if !strings.Contains(lower, key) {
 			continue
 		}
 		for _, c := range r.drivers.Consultants {
+			if key == "hydraulic" && (c.DisciplineID == "consultant.fire_services" || c.DisciplineID == "consultant.fire_engineer" || c.DisciplineID == "trade.fire_services") {
+				continue
+			}
 			title := strings.ToLower(c.Title)
 			for _, w := range words {
 				if strings.Contains(title, w) {
@@ -961,11 +1014,31 @@ func (r *resolver) resolveRows() {
 		}
 		return Row{Key: row.Key, Label: row.Label, Text: r.fill(row.Text, prefix+row.Key, label, row.Required)}
 	}
-	for _, rows := range [][]knowledge.RFPRow{r.sk.ProjectRows, r.d.ProjectRows} {
-		for _, row := range rows {
-			if keep(row) && (row.Required || r.complete(row.Text)) {
-				r.out.Project = append(r.out.Project, fill("project:", row))
+	// Preserve the shared order when a discipline explicitly replaces a row.
+	merge := func(shared, own []knowledge.RFPRow) []knowledge.RFPRow {
+		replacements := map[string]knowledge.RFPRow{}
+		for _, row := range own {
+			if row.Replace && keep(row) {
+				replacements[row.Key] = row
 			}
+		}
+		rows := make([]knowledge.RFPRow, 0, len(shared)+len(own))
+		for _, row := range shared {
+			if replacement, ok := replacements[row.Key]; ok {
+				row = replacement
+			}
+			rows = append(rows, row)
+		}
+		for _, row := range own {
+			if !row.Replace {
+				rows = append(rows, row)
+			}
+		}
+		return rows
+	}
+	for _, row := range merge(r.sk.ProjectRows, r.d.ProjectRows) {
+		if keep(row) && (row.Required || r.complete(row.Text)) {
+			r.out.Project = append(r.out.Project, fill("project:", row))
 		}
 	}
 	for _, row := range r.d.Role {
@@ -973,20 +1046,29 @@ func (r *resolver) resolveRows() {
 			r.out.Role = append(r.out.Role, fill("role:", row))
 		}
 	}
-	for _, rows := range [][]knowledge.RFPRow{r.sk.Terms, r.d.Terms} {
-		for _, row := range rows {
-			if keep(row) && (row.Required || r.complete(row.Text)) {
-				r.out.Terms = append(r.out.Terms, fill("terms:", row))
-			}
+	for _, row := range r.d.ScopeSchedule {
+		if keep(row) {
+			r.out.ScopeSchedule = append(r.out.ScopeSchedule, fill("scope_schedule:", row))
+		}
+	}
+	for _, row := range merge(r.sk.Terms, r.d.Terms) {
+		if keep(row) && (row.Required || r.complete(row.Text)) {
+			r.out.Terms = append(r.out.Terms, fill("terms:", row))
 		}
 	}
 	for _, ret := range r.sk.Returnables {
-		parts := []string{ret.Text}
+		base := ret.Text
+		for _, n := range r.d.ReturnableNotes {
+			if n.Key == ret.Key && n.Replace && r.eval(n.When).t == yes {
+				base = n.Text
+			}
+		}
+		parts := []string{base}
 		if extra := r.d.Returnables[ret.Key]; extra != "" {
 			parts = append(parts, extra)
 		}
 		for _, n := range r.d.ReturnableNotes {
-			if n.Key == ret.Key && r.eval(n.When).t == yes {
+			if n.Key == ret.Key && !n.Replace && r.eval(n.When).t == yes {
 				parts = append(parts, n.Text)
 			}
 		}
@@ -1173,19 +1255,23 @@ func (r *resolver) slot(name string) (string, bool) {
 			return "Not yet decided", true
 		}
 		return valueLabel(r.sk, "pathway", f.Values[0]), true
-	case "procurement":
+	case "procurement", "procurement_route":
 		f := r.fact("procurement")
 		if f.State != Known {
 			return "Not yet decided", true
 		}
 		v := valueLabel(r.sk, "procurement", f.Values[0])
-		if n := r.fact("novation"); n.State == Known && n.Values[0] == "yes" {
+		if n := r.fact("novation"); name == "procurement" && n.State == Known && n.Values[0] == "yes" {
 			v += "; this appointment is novated to the contractor"
 		}
 		return v, true
 	case "flags":
 		names := []string{}
+		used := usedDrivers(r.d, r.sk)
 		for _, f := range r.sk.Flags {
+			if f.ScopeDecision && !used["flag."+f.Key] {
+				continue
+			}
 			if fact := r.fact("flag." + f.Key); fact.State == Known && fact.Values[0] == "yes" {
 				names = append(names, f.Label)
 			}
@@ -1251,9 +1337,16 @@ func (r *resolver) partsPhrase() (string, bool) {
 	return strings.Join(names[:len(names)-1], ", ") + " and " + names[len(names)-1], true
 }
 
+func evaluationWeights(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton) []knowledge.RFPWeight {
+	if len(d.Evaluation) > 0 {
+		return d.Evaluation
+	}
+	return sk.Evaluation
+}
+
 func (r *resolver) resolveWeights() {
 	total := 0
-	for _, w := range r.sk.Evaluation {
+	for _, w := range evaluationWeights(r.d, r.sk) {
 		res := Weight{Key: w.Key, Label: w.Label, Value: w.Default, Source: "default"}
 		if raw, ok := r.setting("weight:" + w.Key); ok {
 			var n int

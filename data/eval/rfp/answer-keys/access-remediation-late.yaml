@@ -1,0 +1,87 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: remediation
+  category: mixed
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  mixed_use: 'yes'
+  multi_building: 'no'
+  live_operations: 'yes'
+  staged: 'no'
+  access_shared_routes: 'no'
+  access_housing: 'yes'
+  access_facilities: 'yes'
+  access_planning: 'no'
+  access_approval: 'yes'
+parts:
+- id: housing
+  label: Housing
+  classes:
+  - '2'
+- id: shop
+  label: Shop
+  classes:
+  - '6'
+address: 1 Example St, Example NSW
+fields:
+  ref: ACCESS-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project access appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts
+    are client choices.
+settings:
+  access:
+    boundary:range:
+      start: s4_approval
+      end: s7_completion
+    allowance:coverage: '2'
+    allowance:reviews: '2'
+    allowance:meetings: '2'
+    allowance:solutions: '2'
+    allowance:visits: '2'
+    allowance:duration: '2'
+    stage:s6_postcontract: include
+    stage:s7_completion: include
+sources:
+- docs/rfp-golden/access/rfp.md Sections 1-7
+- 'docs/rfp-golden/access/ledger.md #1-43'
+scenario: access-remediation-late
+description: Late mixed-use remediation appointment includes explicit construction/completion review while specialist
+  repair design, field tests and solution authoring remain separately scoped.
+expect:
+  access:
+    stages_include:
+    - s4_approval
+    - s6_postcontract
+    - s7_completion
+    stages_absent:
+    - s1_inception
+    - s2_concept
+    - s3_planning
+    stages_option:
+    - s5_tender
+    - s8_advisory
+    positions:
+      existing: I
+      shared_routes: I
+      housing: I
+      facilities: I
+      occupied: I
+      remediation: O
+      solutions: O
+      testing: O
+      inclusive: O
+    blocking_only: true
+    blocking: []

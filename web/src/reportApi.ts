@@ -2,7 +2,7 @@ import { request } from "./api";
 
 export interface SavedReport { id: string; title: string; kind: string; package_id: string; current_draft_version_id: string }
 export interface ReportReference { citation_id: string; label: "E" | "U" | "C" | "A"; anchor_id: string; basis: { text: string; source: Record<string, unknown>; material_assumption: boolean; protected_edit: boolean } }
-export interface ReportBlock { table?: { columns: string[]; rows: string[][]; display?: string }; generated_text?: string; id: string; label: string; text: string; provisional: boolean; edited: boolean; conflict: boolean; source_missing: boolean; citation_ids: string[] }
+export interface ReportBlock { basis?: Record<string, unknown>; table?: { columns: string[]; rows: string[][]; display?: string }; generated_text?: string; id: string; label: string; text: string; provisional: boolean; edited: boolean; conflict: boolean; source_missing: boolean; citation_ids: string[] }
 export interface ReportDraft { id: string; version: number; status: string; reporting_date: string; sections: { id: string; title: string; internal?: boolean; blocks: ReportBlock[] }[]; references: ReportReference[]; material_assumptions: ReportReference[] }
 export interface ReportView { rfp?: RfpControls; rfp_suggestion?: RfpSuggestion; report: SavedReport; draft: ReportDraft | null; stale: string[]; issues: { id: string; number: number; reporting_date: string; snapshot_sha256: string }[]; changes_since_issue: { target_id: string; kind: string; before?: string; after?: string }[]; page_fit?: PageFit }
 export interface PageFit { pages: number; limit: number; target: number; fits: boolean; error?: string }

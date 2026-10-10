@@ -1,0 +1,84 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: refurb
+  category: residential
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  live_operations: 'yes'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'yes'
+  fire_vulnerable_occupants: 'no'
+  fire_special_hazards: 'no'
+  fire_specialist_systems: 'no'
+  fe_existing_reconciliation: 'yes'
+  fe_solutions: 'yes'
+parts:
+- id: housing
+  label: Housing
+  classes:
+  - '2'
+- id: shops
+  label: Shops
+  classes:
+  - '6'
+address: 1 Example Street, Example NSW
+fields:
+  ref: FE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire engineering agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
+    scheduled.
+settings:
+  fire-engineering:
+    allowance:solutions: '2'
+    allowance:analysis: '2'
+    allowance:issues: '2'
+    allowance:evidence: '2'
+    allowance:construction: '2'
+    allowance:verification: '2'
+    allowance:options: '2'
+    boundary:range:
+      start: s1_strategy
+      end: s1_strategy
+sources:
+- docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
+scenario: fire-engineering-strategy-only
+description: Occupied mixed residential refurbishment buys strategy only; later brief/FER and commissioning stay
+  optional despite required solutions.
+expect:
+  fire-engineering:
+    stages_include:
+    - s1_strategy
+    stages_option:
+    - s3_brief
+    - s4_report
+    - s7_verification
+    positions:
+      wet_design: X
+      dry_design: X
+      matrix_design: X
+      peer: O
+      remediation: O
+      interim: O
+      brief: O
+      fer: O
+      strategy_review: O
+      witnessing: O
+      existing: I
+      occupants: I
+    blocking_only: true
+    blocking: []

@@ -1,0 +1,78 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: advisory
+  category: commercial
+  pathway: advice_only
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fs_wet: 'yes'
+  fs_supply: 'yes'
+  fs_authority: 'yes'
+  fs_dry: 'yes'
+  fs_controls: 'yes'
+  fs_plant_interfaces: 'yes'
+  fs_investigation: 'no'
+  fs_upgrade: 'no'
+  fs_declarations: 'yes'
+parts:
+- id: affected
+  label: Office
+  classes:
+  - '5'
+address: 1 Example Street, Example NSW
+fields:
+  ref: FS-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire services agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
+    R1-R9 schedules.
+settings:
+  fire-services:
+    boundary:range:
+      start: advisory
+      end: advisory
+    allowance:extent: '2'
+    allowance:visits: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+sources:
+- docs/rfp-golden/fire-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-services/ledger.md #1-55'
+scenario: fire-services-capacity-advice
+description: Capacity advice ends at report and does not buy design, construction or performance solutions.
+snapshot: false
+expect:
+  fire-services:
+    stages_include:
+    - advisory
+    stages_absent:
+    - inception
+    - concept
+    - design
+    - tender
+    - construction
+    - handover
+    positions:
+      wet: absent
+      supply: absent
+      dry: absent
+      strategy: X
+      remediation: O

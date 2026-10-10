@@ -216,6 +216,42 @@ func TestEveryReadFlagIsARealDetailFlagOfTheSkeleton(t *testing.T) {
 	}
 }
 
+func TestConsultantEvidenceDoesNotAppointServices(t *testing.T) {
+	cat := repoCatalog(t)
+	cases := map[string]string{
+		"arborist_offsite_trees":    "Neighbouring trees T3 and T4 are within the assessment extent.",
+		"arborist_tree_impacts":     "The proposed excavation affects the roots of T3.",
+		"arborist_pruning":          "Pruning of tree T3 is proposed for canopy clearance.",
+		"arborist_offsite_access":   "The neighbour has granted inspection access for all required offsite trees.",
+		"fire_vulnerable_occupants": "The occupants require assisted evacuation by staff.",
+		"fire_special_hazards":      "Assess the battery thermal runaway fire scenario for the proposed energy store.",
+		"fire_specialist_systems":   "The facade fire assessment identifies a departure from the tested assembly.",
+	}
+	for flag, text := range cases {
+		key := "proj.flag." + flag
+		h := profile.Harvest(text, cat)
+		qs, _ := profile.LabelQuestions(profile.PassageInfo{Ordinal: 1, Text: text}, h, cat)
+		if _, ok := qs[key]; !ok {
+			t.Fatalf("missing evidence question %s", key)
+		}
+		for _, choice := range []string{"yes", "no", "not_stated"} {
+			got := profile.Readings(jev.Result{Answers: map[string]jev.Answer{key: {Type: jev.TypeChoice, Choice: choice, Confidence: conf(.9)}}}, qs, nil, text)
+			if choice == "not_stated" {
+				if len(got) != 0 {
+					t.Fatalf("silence became a project fact: %+v", got)
+				}
+			} else if len(got) != 1 || got[0].Value != choice {
+				t.Fatalf("explicit %s lost: %+v", choice, got)
+			}
+		}
+	}
+	for _, flag := range []string{"arborist_impact_report", "arborist_protection_plan", "fe_solutions", "fe_existing_reconciliation", "fe_specialist_assessment", "fe_hazard_assessment", "fe_occupant_assessment"} {
+		if _, ok := cat.FlagReading(flag); ok {
+			t.Fatalf("appointment choice %s must remain client-confirmed", flag)
+		}
+	}
+}
+
 // A passage inherits its section heading and context; a detail must come from
 // the passage's own text. Petersham's list of the contractor's past projects
 // ("81 MacDonald Street Erskineville") rode along into 195 later passages and

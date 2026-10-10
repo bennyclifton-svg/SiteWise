@@ -1,0 +1,84 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: remediation
+  category: residential
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  live_operations: 'yes'
+  staged: 'yes'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fire_vulnerable_occupants: 'no'
+  fire_special_hazards: 'yes'
+  fire_specialist_systems: 'yes'
+  fe_existing_reconciliation: 'yes'
+  fe_solutions: 'yes'
+parts:
+- id: housing
+  label: Occupied housing remediation
+  classes:
+  - '2'
+address: 1 Example Street, Example NSW
+fields:
+  ref: FE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire engineering agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
+    scheduled.
+settings:
+  fire-engineering:
+    allowance:solutions: '2'
+    allowance:analysis: '2'
+    allowance:issues: '2'
+    allowance:evidence: '2'
+    allowance:construction: '2'
+    allowance:verification: '2'
+    allowance:options: '2'
+    stage:s6_construction: include
+    stage:s7_verification: include
+    stage:s8_specialist: include
+    stage:s8_staging: include
+    boundary:range:
+      start: s1_strategy
+      end: s4_report
+    position:remediation: I
+sources:
+- docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
+scenario: fire-engineering-appointed-remediation
+description: Residential remediation explicitly appoints specialist, staging, investigation and verification; their
+  purchased positions become I and statutory/trade duties stay separate.
+expect:
+  fire-engineering:
+    stages_include:
+    - s6_construction
+    - s7_verification
+    - s8_specialist
+    - s8_staging
+    stages_option:
+    - s9_peer
+    positions:
+      wet_design: X
+      dry_design: X
+      matrix_design: X
+      peer: O
+      remediation: I
+      interim: I
+      specialist: I
+      hazards: I
+      witnessing: I
+      existing: I
+    blocking_only: true
+    blocking: []

@@ -19,7 +19,7 @@ func TestGoldenRFPs(t *testing.T) {
 	sk, _ := cat.RFPSkeleton()
 	tpl := consultantTemplate(t)
 	for _, s := range loadScenarios(t) {
-		if s.Name != "arthur-st" && s.Name != "yarramundi" {
+		if !s.Snapshot && s.Name != "arthur-st" && s.Name != "yarramundi" {
 			continue
 		}
 		ids := make([]string, 0, len(s.Expect))

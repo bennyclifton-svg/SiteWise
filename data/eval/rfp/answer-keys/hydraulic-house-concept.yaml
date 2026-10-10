@@ -1,0 +1,82 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: extension
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  hyd_investigation: 'no'
+  hyd_planning: 'no'
+  hyd_sources: 'no'
+  hyd_pumps: 'yes'
+  hyd_treatment: 'no'
+  hyd_roof: 'yes'
+  hyd_external: 'no'
+  hyd_trade: 'no'
+  hyd_gas: 'no'
+  hyd_utility: 'no'
+  hyd_interfaces: 'yes'
+  hyd_staging: 'no'
+  hyd_declarations: 'yes'
+  hyd_process: 'no'
+parts:
+- id: affected
+  label: House extension
+  classes:
+  - 1a
+address: 1 Example Street, Example NSW
+fields:
+  ref: HYD-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project hydraulic agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
+settings:
+  hydraulic-services:
+    boundary:range:
+      start: inception
+      end: concept
+    allowance:extent: '2'
+    allowance:investigation: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+    allowance:access: '2'
+sources:
+- docs/rfp-golden/hydraulic-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/hydraulic-services/ledger.md #1-54'
+scenario: hydraulic-house-concept
+description: Residential concept appoints preliminary options; later detailed system design remains optional.
+snapshot: false
+expect:
+  hydraulic-services:
+    stages_include:
+    - inception
+    - concept
+    stages_option:
+    - design
+    - tender
+    - continuation
+    positions:
+      concept: I
+      domestic: O
+      pumps: O
+      roof: O
+      declarations: O
+      trade: absent

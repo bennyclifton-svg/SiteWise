@@ -1,0 +1,1008 @@
+id: mechanical-services
+version: 1
+status: draft
+title: Mechanical services
+heading: 'REQUEST FOR PROPOSAL: MECHANICAL SERVICES'
+golden: docs/rfp-golden/mechanical-services/rfp.md
+discipline_ids:
+- consultant.mechanical
+title_aliases:
+- mechanical services
+- HVAC design
+evidence_limit: Historical offers establish scope, not retained capacity, current instruments or accepted appointments.
+field_defaults:
+  pi: ''
+  pl: ''
+scale:
+  text: Actual spaces, loads, hours, systems and purchased maturity govern scope.
+  complex: []
+thresholds:
+- key: policy
+  kind: client_default
+  text: 90-day validity, 30-day payment, selected insurance; evaluation 40/20/20/10/10
+  source: mechanical-services#52-54
+  verified: false
+- key: instruments
+  kind: evidence_estimate
+  text: Historical regulatory identifiers require current instrument verification
+  source: mechanical-services#32
+  verified: false
+evaluation:
+- key: price
+  label: Price
+  default: 40
+  provenance:
+  - kind: client_decision
+    ref: mechanical-services#54
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: experience
+  label: Experience
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: mechanical-services#54
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: team
+  label: Team
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: mechanical-services#54
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: methodology
+  label: Method/program
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: mechanical-services#54
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: compliance
+  label: Compliance
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: mechanical-services#54
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+evaluation_note: Compare equal systems, evidence, maturity, interfaces and test/attendance duties.
+project_rows:
+- key: procurement
+  text: '{procurement_route}; continuation/novation requires separate appointment.'
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#5,18
+  - kind: seed
+    ref: mechanical-services#48
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  label: Procurement
+  replace: true
+role:
+- key: designer
+  text: Design selected systems to purchased maturity; retain load/airflow/pressure/selection calculations.
+    AC is not outdoor air; resolve missing loads/evidence.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#2-7,12-18,23-25
+  - kind: seed
+    ref: mechanical-services#40-43,48
+- key: boundaries
+  text: Fire engineer owns strategy/solutions; mechanical implements selected plant/fire modes. Trades install/program/test;
+    review/witnessing is not execution, continuous supervision or unseen-work certification.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#4-7,16-18,29
+  - kind: seed
+    ref: mechanical-services#42,49
+stage_intro: R2 defines output maturity/formats/reliance/revisions/rounds/dates.
+boundary:
+- when:
+  - work_type:
+    - advisory
+  - pathway:
+    - advice_only
+  start: advisory
+  end: advisory
+- start: inception
+  end: tender
+stages:
+- key: inception
+  name: S1 Evidence
+  deliverable: Brief/system-space register; accessible review, observed/tested/assumed condition/capacity/life;
+    gaps/owners
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#1,13,17,24
+  - kind: seed
+    ref: mechanical-services#40,44
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: investigation
+  name: S2 Investigation
+  deliverable: Surveys/logging/tests, retained capacity/options; intrusion/safety/isolation/operator/reinstatement;
+    upgrades separate
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#6,13,17,24
+  - kind: seed
+    ref: mechanical-services#44-45
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  when:
+  - flag:
+    - mech_investigation
+  if_unknown: ask
+- key: concept
+  name: S3 Concept
+  deliverable: Options/preliminary loads/zones, plant/routes/replacement access, intakes/discharges/acoustics/cost
+    inputs
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3,5,13-15,25
+  - kind: seed
+    ref: mechanical-services#40-43
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: planning
+  name: S4 Planning
+  deliverable: Listed spatial sketches or formal plans/reports; screening/noise/energy inputs, submissions
+    and bounded responses
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3,25
+  - kind: seed
+    ref: mechanical-services#48
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  when:
+  - flag:
+    - mech_planning
+  if_unknown: ask
+- key: design
+  name: S5 Design
+  deliverable: Load/airflow/pressure/selection calculations, layouts/schedules, refrigerant/condensate, energy/controls/fire
+    modes; structure/envelope/power/access coordination
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-7,14-15,23
+  - kind: seed
+    ref: mechanical-services#41-43,48
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: tender
+  name: S6 Documentation
+  deliverable: Traditional design/calculations/specs; D&C performance/intent, retained/delegated design/test
+    criteria; RFIs/addenda/comparison
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,14-18,25
+  - kind: seed
+    ref: mechanical-services#48
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: continuation
+  name: S7 Post-contract
+  deliverable: Retained design/substitutions/declarations; settle novation duties/fee
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#4-5,14-18
+  - kind: seed
+    ref: mechanical-services#48
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  default: option
+- key: construction
+  name: S8 Construction
+  deliverable: RFIs/submittals/equipment, hold-point reports/concealed-work limits, test plans/defects
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#4,16
+  - kind: seed
+    ref: mechanical-services#48-49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  default: option
+- key: handover
+  name: S9 Commissioning
+  deliverable: Scripts/results; balancing/controls/fire/failure/recovery witnesses, expected/actual/defects/retests;
+    as-builts/O&M/settings/trends/training/residuals
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#16
+  - kind: seed
+    ref: mechanical-services#49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  default: option
+- key: seasonal
+  name: S10 Seasonal
+  deliverable: Deferred seasonal/tuning/defect reviews, weather/operation prerequisites, closure
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#16
+  - kind: seed
+    ref: mechanical-services#45,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  default: option
+- key: advisory
+  name: S11 Advisory
+  deliverable: Decision/extent/cutoff/reliance/method/confidence/actions; separate diagnosis/remedy/verification;
+    reviewer is not designer
+  fee_basis: fixed
+  shown_when: Selected appointment stage
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#13,24
+  - kind: seed
+    ref: mechanical-services#45,47,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  default: option
+  include_when:
+  - work_type:
+    - advisory
+  - pathway:
+    - advice_only
+durations: R7 sets input/access/outage dates, authority lead times, hold-point notice/response and service/defect
+  endpoint.
+allowances_note: Separate quantities/durations for each item/system/stage. Fixed fee, time ceiling or unit
+  rate; assumptions need owner/date/consequence/review point.
+allowances:
+- key: extent
+  label: Extent
+  text: '{n} parts/areas/rooms/zones/assets; retained/new/removed, shell/fit-out and tenancy limits'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#1,17,23-24
+  - kind: seed
+    ref: mechanical-services#40,46
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: investigation
+  label: Investigation
+  text: '{n} visits/hours, tests/logging points/days/openings; method/operator/safety/isolation/reinstatement'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#6,13,17,24
+  - kind: seed
+    ref: mechanical-services#44-45
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: design
+  label: Design
+  text: '{n} options/load scenarios/iterations/calculation packages/issues; maturity/native files'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,14-15,25
+  - kind: seed
+    ref: mechanical-services#41,48
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: coordination
+  label: Coordination
+  text: '{n} meetings/hours, interface reviews/submissions/responses; author/submitter/payer'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,14-15,25
+  - kind: seed
+    ref: mechanical-services#43,48
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: tender
+  label: Tender
+  text: '{n} packages/tenderers/comparisons/RFI hours/addenda/rounds'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,15,25
+  - kind: seed
+    ref: mechanical-services#48
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: construction
+  label: Construction
+  text: '{n} months/design updates/submittals/rounds/RFI hours/visits/reports; notice/response'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#4,16
+  - kind: seed
+    ref: mechanical-services#48-49
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: completion
+  label: Completion
+  text: '{n} scripts/systems/sessions/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal
+    rounds/months'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#16
+  - kind: seed
+    ref: mechanical-services#49
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+- key: access
+  label: Access
+  text: '{n} phases/shutdowns/out-of-hours/handbacks; temporary ventilation, permissions/abortive basis'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#17,24
+  - kind: seed
+    ref: mechanical-services#44-46
+  - kind: client_decision
+    ref: mechanical-services#51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+positions:
+- key: hvac
+  label: 'Selected detailed HVAC design: duties/air paths/outdoor air; loads/hours/reserve'
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#2,12-13,23
+  - kind: seed
+    ref: mechanical-services#40-41
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - design
+      - tender
+      - continuation
+    else: O
+  when:
+  - stage:
+    - design
+    - tender
+    - continuation
+- key: local
+  label: Toilet/laundry/refuse/car-park/charging exhaust; make-up air/discharge separation
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#12,23-24
+  - kind: seed
+    ref: mechanical-services#41,43
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - design
+      - tender
+      - continuation
+    else: O
+  when:
+  - stage:
+    - design
+    - tender
+    - continuation
+    flag:
+    - mech_local
+  if_unknown: ask
+- key: kitchen
+  label: Kitchen/process exhaust; equipment brief/specialist, not kitchenette
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#12,23-24
+  - kind: seed
+    ref: mechanical-services#41,43,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - design
+      - tender
+      - continuation
+    else: O
+  when:
+  - stage:
+    - design
+    - tender
+    - continuation
+    flag:
+    - mech_kitchen
+  if_unknown: ask
+- key: smoke
+  label: Smoke fans/shafts/dampers/pressurisation under fire-engineer strategy; wet fire separate
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#2,12,23,29
+  - kind: seed
+    ref: mechanical-services#42,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - design
+      - tender
+      - continuation
+    else: O
+  when:
+  - stage:
+    - design
+    - tender
+    - continuation
+    flag:
+    - mech_smoke
+  if_unknown: ask
+- key: controls
+  label: BMS sequences/points/alarms/metering; programming/licences/commissioning owners
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#2,23,29
+  - kind: seed
+    ref: mechanical-services#42,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - design
+      - tender
+      - continuation
+    else: O
+  when:
+  - stage:
+    - design
+    - tender
+    - continuation
+    flag:
+    - mech_controls
+  if_unknown: ask
+- key: energy
+  label: Whole-building energy/rating only; mechanical inputs remain in appointed design
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#7,30-31
+  - kind: seed
+    ref: mechanical-services#40-43
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value: X
+  responsible: energy assessor
+- key: acoustic
+  label: Acoustic/envelope design only; mechanical noise inputs remain in appointed design
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#7,30-31
+  - kind: seed
+    ref: mechanical-services#40-43
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value: X
+  responsible: acoustic consultant / architect
+- key: interfaces
+  label: Coordinate supports/plinths/openings/power/refrigerant leak/condensate; respective specialists design
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#2-7,18
+  - kind: seed
+    ref: mechanical-services#41-43
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - design
+      - tender
+      - continuation
+    else: O
+  when:
+  - stage:
+    - design
+    - tender
+    - continuation
+    flag:
+    - mech_interfaces
+  if_unknown: ask
+- key: existing
+  label: Condition/capacity/controls investigation; operation is not proof; upgrade separate
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#1,6,13,17,24
+  - kind: seed
+    ref: mechanical-services#40,44,46
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - investigation
+    else: O
+  when:
+  - stage:
+    - investigation
+    flag:
+    - mech_investigation
+  if_unknown: ask
+- key: staging
+  label: Occupied/phased temporary ventilation/isolation/handback by use/phase
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#17,24
+  - kind: seed
+    ref: mechanical-services#44-46,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value: O
+- key: remediation
+  label: Diagnosis/trial/verification; no whole-building conclusion from samples
+  kind: technical
+  provenance:
+  - kind: seed
+    ref: mechanical-services#44-45,47,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value: O
+- key: specialist
+  label: Laboratory/clean-room/medical gases/process refrigeration/hazardous areas
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#23
+  - kind: seed
+    ref: mechanical-services#40-41,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value: X
+  responsible: competent specialist
+- key: declarations
+  label: Declarations/lodgement; verify jurisdiction/competence, no approval guarantee
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#4,6,14-18,24,32
+  - kind: seed
+    ref: mechanical-services#48-49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - design
+      - tender
+      - continuation
+    else: O
+  when:
+  - stage:
+    - design
+    - tender
+    - continuation
+    flag:
+    - mech_declarations
+  if_unknown: ask
+- key: continuation
+  label: Separate continued design/novation
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,14-18,25
+  - kind: seed
+    ref: mechanical-services#47-49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - continuation
+    else: O
+  when:
+  - stage:
+    - continuation
+- key: construction
+  label: Quantified construction support
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,14-18,25
+  - kind: seed
+    ref: mechanical-services#47-49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - construction
+    else: O
+  when:
+  - stage:
+    - construction
+- key: witness
+  label: Selected witnessing/handover
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,14-18,25
+  - kind: seed
+    ref: mechanical-services#47-49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - handover
+    else: O
+  when:
+  - stage:
+    - handover
+- key: seasonal
+  label: Seasonal/defects reviews
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-5,14-18,25
+  - kind: seed
+    ref: mechanical-services#47-49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value:
+    value: I
+    when:
+    - stage_included:
+      - seasonal
+    else: O
+  when:
+  - stage:
+    - seasonal
+- key: execution
+  label: Test execution separately priced to named contractors
+  kind: technical
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#16
+  - kind: seed
+    ref: mechanical-services#49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  value: O
+scope_schedule:
+- key: condensate
+  text: 'Condensate: agree hydraulic/mechanical connection point/level, receiving capacity, falls/traps/tundish/discharge;
+    name upstream/downstream design/install/test owners. Unresolved allocation stays open. R4 names strategy/cause-and-effect
+    authors, mechanical designer, programmer, power/network provider, test performer/leader/witness.'
+  provenance:
+  - kind: seed
+    ref: mechanical-services#41,43
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  - kind: evidence
+    ref: mechanical-services#29
+  - kind: seed
+    ref: mechanical-services#42,49
+  - kind: client_decision
+    ref: mechanical-services#50
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+terms:
+- key: agreement
+  text: Engage under {field:agreement}, scope/fees/addenda and written acceptance; settle conflicts/precedence.
+    RFP authorises no work.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#9-10,21-22,27-28
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+- key: authority
+  text: Written authority before scope/quantity/ceiling/rate/program changes; state reason/system/approval
+    and cost/time.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#7-10,14-22,27-28
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+- key: baseline
+  text: Approved brief/revisions set baseline; ordinary coordination/development included.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#7,14-18
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+- key: errors
+  text: Own-error correction included; reasonable professional skill/care within competence.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#10
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+- key: payment
+  text: Payment {field:payment_days} days from correct milestone invoices; R6 declares prepayment/release conditions,
+    interest/recovery/suspension.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#9-10,19-22,26-28
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+- key: validity
+  text: Valid {field:validity_days} days after closing; ex GST/GST/total, base/options separate.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#9,19,27
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+- key: questions
+  text: Questions to {field:contact} by {field:questions_by}; numbered addenda to all, acknowledged in R1.
+  provenance:
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+- key: rights
+  text: Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination
+    handover; confidentiality permits authorised/lawful disclosure; marketing by consent.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#10,18,21-22,28
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+- key: risk
+  text: Settle caps/indemnities, law/disputes, notices/cure/suspension/termination, assignment/novation/subcontracts;
+    insurance is not a cap; conflicts/staff changes agreed.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#9-11,18,20-22,27-28,32
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+- key: rates
+  text: State rate hold/escalation; preapprove extras/expenses; no duplicate package fees.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#8,19-20,26
+  - kind: client_decision
+    ref: mechanical-services#52
+    why: Proposed client contract defaults deliberately replace differing historical supplier terms; settle
+      before engagement.
+  replace: true
+returnable_notes:
+- key: r1
+  text: Fees/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/dependencies/milestones.
+    Acknowledge numbered addenda/validity and authorised signatory; price each service once.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#8,19-20,26
+  - kind: client_decision
+    ref: mechanical-services#50-52,54
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true
+- key: r2
+  text: 'Section 3 outputs/registers: purpose/maturity, native calculations/formats, recipient/reliance, revisions/rounds/dates.'
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#3-7,13-18,25
+  - kind: seed
+    ref: mechanical-services#40-49
+  replace: true
+- key: r3
+  text: Lead/engineer/controls/smoke/specialist/checker/modeller/inspector/witness rates; extra visit/review/test/retest
+    units/ceilings, travel/out-of-hours/cancellation/escalation.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#8,19-20,26
+  - kind: client_decision
+    ref: mechanical-services#51-52
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true
+- key: r4
+  text: Lead/checker/registrations/competence, resources/conflicts/subconsultants, ISO/equivalent QA; responsibility
+    matrix for design/strategy/controls/power/network/install/test/lead/witness/certify.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#18,29
+  - kind: seed
+    ref: mechanical-services#40-49
+  - kind: client_decision
+    ref: mechanical-services#53
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true
+- key: r5
+  text: 'Two or three comparable systems/use/live/staged commissions: staff roles, outputs, coordination/test
+    lessons and referees.'
+  provenance:
+  - kind: seed
+    ref: mechanical-services#40-49
+  - kind: client_decision
+    ref: mechanical-services#53
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true
+- key: r6
+  text: 'Sections 3-6/agreement departures: wording/reason/fee/time; exclusion owner; resolve conflicts or
+    priced assumption with owner/date/consequence/review point.'
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#6-7,9-11,15-18,21-22,24,27-32
+  - kind: client_decision
+    ref: mechanical-services#50-52
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true
+- key: r7
+  text: 'Inputs/providers/revisions/dates: loads/hours, facade/energy/acoustics, plant/controls/tests, structure/MEP,
+    strategy/approvals; checks/gates/outages/notice/response; balancing/integrated-test criteria/closure.'
+  provenance:
+  - kind: seed
+    ref: mechanical-services#40-49
+  - kind: client_decision
+    ref: mechanical-services#50-51
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true
+- key: r8
+  text: PI {field:pi}; PL {field:pl}; current workers cover/periods/certificates/activity exclusions; agreement/precedence,
+    liability/reliance/IP/termination/novation.
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#9-11,20-22,27-28,32
+  - kind: client_decision
+    ref: mechanical-services#52-53
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true
+- key: r9
+  text: 'Authority/surveys/logging/openings/lab/specialist/access/isolation/reinstatement/independent commissioning/travel/printing:
+    quantity/payer/markup/GST/approval; no R1, other consultant or contractor-test duplication.'
+  provenance:
+  - kind: evidence
+    ref: mechanical-services#6,8,19-22,24,26-31
+  - kind: seed
+    ref: mechanical-services#43-49
+  - kind: client_decision
+    ref: mechanical-services#51-52
+    why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal
+      scope or current requirements.
+  replace: true

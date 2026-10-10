@@ -685,6 +685,49 @@ details:
   - {key: regulated_design, label: Regulated design applies, value: yes_no, scope: project}
 ```
 
+### Consultant RFP library (`rfp/<discipline>.yaml`)
+
+Discipline files are a procurement view over the building, not a second physical
+model. They resolve deterministically from the saved Profile and explicit
+appointment choices. `skeleton.yaml` supplies shared fields and defaults;
+`modules.yaml` supplies reusable conditional content. Each discipline retains
+its stable ID, version, draft/reviewed status and source ledger.
+
+- `role`, `stages`, `allowances`, `positions`, `terms` and `returnable_notes`
+  carry row-level `provenance` distinguishing evidence, seed and client decisions.
+  Numeric ledger references are checked against the corresponding `ledger.md`.
+  Unverified quantities or regulatory identifiers retain `verified: false`.
+- `when` selects relevant content; `if_unknown: ask` preserves unresolved scope
+  as a decision. `if_unknown: option` is an explicit pricing assumption, not a
+  substitute for every unknown. Known negative, unknown and conflicting facts
+  must not be treated as interchangeable.
+- `stage: [keys]` matches included **or optional** stages. `stage_included:
+  [keys]` matches only base stages. Use the former for relevance and the latter
+  inside a conditional position value to promote O to I only when appointed.
+  Inspection, witnessing and maintenance stages do not buy design services.
+- Position values are I, O or X; X names `responsible`. Conditional positions
+  can remain unanswered and carry an `assumption`. Project evidence identifies
+  a need; it does not appoint its consultant or select later stages.
+- `replace: true` on `project_rows`, `terms` or `returnable_notes` explicitly
+  replaces a shared row of the same key. Unmarked rows retain additive behavior.
+  Optional `evaluation`, `evaluation_note` and `allowances_note` override shared
+  procurement defaults; evaluation weights total 100.
+- New client package/extent flags use `scope_decision: true` and client-decision
+  provenance in the skeleton. Only disciplines using them print them as project
+  conditions. They have no document reading unless separately authored in
+  `profile/flag_readings.yaml`; silence never purchases a service.
+- `scope_schedule` preserves supplemental system allocation tables after the
+  grouped positions. It contains unconditional provenanced rows: an optional
+  unlabelled introduction, then labelled system/interface rows. It does not
+  accept `when`, `module` or `replace`, so unresolved responsibilities cannot
+  disappear. Its saved block ID is `rfp:scope_schedule`.
+
+Draft rules block issue. Saved wording edits remain authoritative on refresh.
+New discipline scenarios must cover appointment boundaries and unresolved facts,
+and populated outputs must pass the existing three-page and speed gates.
+See `docs/rfp-golden/phase-a-changes.md` and `encoding-register.md` for the
+four-state policy and the sequential encoding record.
+
 ### Clauses (`reports/clauses.yaml`)
 
 The approved wording reports assemble; code never generates prose.

@@ -57,6 +57,20 @@ func TestLoadRFPMinimalDiscipline(t *testing.T) {
 	}
 }
 
+func TestDisciplineOverridesValidate(t *testing.T) {
+	for _, extra := range []string{
+		"positions:\n  - {key: attendance, label: Attendance, kind: technical, value: {value: I, when: [{stage_included: [missing]}], else: O}}\n",
+		"terms:\n  - {key: missing, replace: true, text: x}\n",
+		"evaluation:\n  - {key: price, label: Fee, default: 90}\n",
+		"evaluation:\n  - {key: price, label: Fee, default: 110}\n  - {key: team, label: Team, default: -10}\n",
+		"returnable_notes:\n  - {key: r3, text: x, replace: true, provenance: [{kind: client_decision, ref: r}]}\n",
+	} {
+		if err := parseWith(t, extra); err == nil {
+			t.Fatalf("invalid override accepted: %s", extra)
+		}
+	}
+}
+
 func TestLoadRFPDisciplineRejectsUnknownDriver(t *testing.T) {
 	err := parseWith(t, `positions:
   - {key: x, label: X, kind: technical, value: I, when: [{colour: [red]}], provenance: [{kind: practice, ref: r}]}
@@ -172,6 +186,23 @@ func TestLoadRFPRejectsUnknownField(t *testing.T) {
 	}
 }
 
+func TestScopeScheduleCannotHideUnconfirmedAllocations(t *testing.T) {
+	row := `scope_schedule:
+  - {key: matrix, label: Interface, text: Name both owners, provenance: [{kind: practice, ref: test}]}
+`
+	if err := parseWith(t, row); err != nil {
+		t.Fatal(err)
+	}
+	for _, change := range []string{"when: [{flag: [heritage]}], ", "replace: true, ", "module: existing, "} {
+		if err := parseWith(t, strings.Replace(row, "key: matrix, ", "key: matrix, "+change, 1)); err == nil {
+			t.Fatal("conditional or replacement allocation accepted")
+		}
+	}
+	if err := parseWith(t, "scope_schedule:\n  - {key: matrix, label: Interface, text: Name both owners}\n"); err == nil {
+		t.Fatal("allocation without provenance accepted")
+	}
+}
+
 func TestRealRFPCatalogue(t *testing.T) {
 	cat, err := Load("../../knowledge")
 	if err != nil {
@@ -180,7 +211,7 @@ func TestRealRFPCatalogue(t *testing.T) {
 	if _, ok := cat.RFPSkeleton(); !ok {
 		t.Fatal("skeleton missing")
 	}
-	for _, id := range []string{"architecture", "town-planning", "traffic", "civil", "structural"} {
+	for _, id := range cat.RFPDisciplines() {
 		d, ok := cat.RFP(id)
 		if !ok {
 			t.Fatalf("%s discipline missing", id)
@@ -196,8 +227,31 @@ func TestRealRFPCatalogue(t *testing.T) {
 	if d, ok := cat.RFPSuggest("Town Planner"); !ok || d.ID != "town-planning" {
 		t.Fatal("title suggestion for a town planner failed")
 	}
-	if _, ok := cat.RFPSuggest("Geotechnical"); ok {
-		t.Fatal("tranche 2/3 packages must keep the generic RFP")
+	if d, ok := cat.RFPSuggest("Geotechnical"); !ok || d.ID != "geotechnical" {
+		t.Fatal("encoded geotechnical RFP must be offered")
+	}
+	if _, ok := cat.RFPSuggest("Acoustic"); ok {
+		t.Fatal("unencoded packages must keep the generic RFP")
+	}
+}
+
+func TestRFPSuggestPhrasesAndAmbiguity(t *testing.T) {
+	cat := &Catalog{rfp: rfpData{disciplines: map[string]RFPDiscipline{
+		"fire-engineering": {ID: "fire-engineering", TitleAliases: []string{"fire engineering", "fire engineer"}},
+		"fire-services":    {ID: "fire-services", TitleAliases: []string{"fire services", "sprinkler"}},
+		"access":           {ID: "access", TitleAliases: []string{"access consultant", "accessibility"}},
+	}}}
+	for _, c := range []struct{ title, want string }{
+		{"Fire-services design (sprinklers)", "fire-services"},
+		{"Fire Engineering / performance solutions", "fire-engineering"},
+		{"Access consultant", "access"},
+		{"Fire engineering and fire services", ""},
+		{"Access road designer", ""},
+	} {
+		got, ok := cat.RFPSuggest(c.title)
+		if ok != (c.want != "") || ok && got.ID != c.want {
+			t.Fatalf("%q: got %q, %v; want %q", c.title, got.ID, ok, c.want)
+		}
 	}
 }
 

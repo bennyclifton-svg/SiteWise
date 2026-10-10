@@ -80,3 +80,30 @@ flags:
   - key: sustainability_target
     triggers: ['green star', 'nabers', 'passive ?haus|passive ?house', '\bleed\b', 'net[- ]zero']
     asks: does the passage state that a Green Star, NABERS or similar rating target is set for this project?
+  # Arborist ledger #3,21-23,28-30. These are evidence questions, never
+  # appointments. Existing background fan-out and confidence routing apply:
+  # https://docs.typesafe.ai/patterns/fan-out
+  # https://docs.typesafe.ai/confidence
+  - key: arborist_offsite_trees
+    triggers: ['(?:neighbou?r|adjoin|street|council|off[- ]?site)[^.]{0,70}\btrees?\b', '\btrees?\b[^.]{0,70}(?:neighbou?r|adjoin|street|off[- ]?site)']
+    asks: does the passage explicitly state that neighbouring or street trees are within the proposed assessment or affected by the works? An onsite significant or heritage tree alone does not establish this; generic duties do not identify affected trees.
+  - key: arborist_tree_impacts
+    triggers: ['(?:tree|root|canopy)[^.]{0,90}(?:impact|affect|excavat|demoli|trench|foundation|clearance|protection)', '(?:excavat|demoli|trench|foundation|works)[^.]{0,90}(?:tree|root|canopy)']
+    asks: does the passage explicitly state that proposed works affect trees, roots or canopy? Read project-specific impacts including excavation, demolition, levels, foundations, services and access; tree presence or generic protection guidance alone does not establish an impact.
+  - key: arborist_pruning
+    triggers: ['\bprun', '\btrees?\b[^.]{0,70}(?:remov|clear)', '(?:remov|clear)[^.]{0,70}\btrees?\b', 'canopy clearance']
+    asks: does the passage explicitly propose pruning, tree removal or canopy clearance for this project? A conditional recommendation or general contractor capability alone does not establish proposed work; a proposal is not permission to execute it.
+  - key: arborist_offsite_access
+    triggers: ['(?:neighbou?r|off[- ]?site|adjoining)[^.]{0,100}(?:access|permission|consent)', '(?:access|permission|consent)[^.]{0,100}(?:neighbou?r|off[- ]?site|adjoining)']
+    asks: does the passage explicitly confirm documented inspection-access permission for all offsite areas required by the stated arborist assessment? A requirement to obtain permission, a request, silence or permission limited to only some required areas is not confirmation; do not infer legal rights.
+  # Fire-engineering ledger #37-44,48. Identify stated project scenarios;
+  # presence of a system or a building-use label is not a hazard assessment.
+  - key: fire_vulnerable_occupants
+    triggers: ['assisted evacuation', 'vulnerable occupants', 'non[- ]ambulant', 'occupants?[^.]{0,80}(?:assist|evacuat)', '(?:staff|carer)[^.]{0,80}evacuat']
+    asks: does the passage explicitly identify occupants needing assistance to evacuate, or vulnerable occupants whose needs affect this project's fire strategy? Do not infer staffing, evacuation ability or assessment scope from a building label alone.
+  - key: fire_special_hazards
+    triggers: ['special (?:fire )?hazard', 'dangerous goods', '(?:storage|process|battery|batteries|electric vehicle|\bev\b)[^.]{0,90}(?:fire|thermal runaway|explosion)', '(?:fire|thermal runaway|explosion)[^.]{0,90}(?:storage|process|battery|batteries|electric vehicle|\bev\b)']
+    asks: does the passage identify a project-specific fire-hazard scenario involving storage, process, dangerous goods, electric vehicles or batteries that needs assessment? A warehouse label, ordinary storage, a charger or a battery alone does not establish this; do not invent the hazard or appoint the assessment.
+  - key: fire_specialist_systems
+    triggers: ['(?:facade|cladding|timber|modular|tested.system|structural)[^.]{0,100}(?:fire|departure|performance solution)', '(?:fire|departure|performance solution)[^.]{0,100}(?:facade|cladding|timber|modular|tested.system|structural)']
+    asks: does the passage explicitly identify a facade, timber or modular fire-assessment issue, departure from a tested assembly, or structural-fire assessment issue for this project? Mere presence of facade, timber or modular construction is not a departure or specialist assessment requirement; do not infer approval or appoint a specialist.

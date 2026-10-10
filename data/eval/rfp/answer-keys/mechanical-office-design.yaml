@@ -1,0 +1,81 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: commercial
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  mech_investigation: 'no'
+  mech_planning: 'yes'
+  mech_local: 'yes'
+  mech_kitchen: 'yes'
+  mech_smoke: 'yes'
+  mech_controls: 'yes'
+  mech_interfaces: 'yes'
+  mech_declarations: 'yes'
+parts:
+- id: affected
+  label: Office
+  classes:
+  - '5'
+address: 1 Example Street, Example NSW
+fields:
+  ref: MECH-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project mechanical agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued space/load/hour, system/extent and evidence registers; separately quantified R1-R9 schedules.
+settings:
+  mechanical-services:
+    boundary:range:
+      start: inception
+      end: tender
+    allowance:extent: '2'
+    allowance:investigation: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+    allowance:access: '2'
+sources:
+- docs/rfp-golden/mechanical-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/mechanical-services/ledger.md #1-54'
+scenario: mechanical-office-design
+description: New office selected design ends at tender; later work priced separately.
+snapshot: true
+expect:
+  mechanical-services:
+    stages_include:
+    - inception
+    - concept
+    - planning
+    - design
+    - tender
+    stages_option:
+    - continuation
+    - construction
+    - handover
+    - seasonal
+    positions:
+      hvac: I
+      smoke: I
+      controls: I
+      existing: absent
+      witness: O
+      execution: O
+      specialist: X

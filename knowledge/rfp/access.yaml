@@ -1,0 +1,854 @@
+id: access
+version: 1
+status: draft
+title: Access consulting services
+heading: 'REQUEST FOR PROPOSAL: ACCESS CONSULTING'
+golden: docs/rfp-golden/access/rfp.md
+discipline_ids:
+- consultant.access
+title_aliases:
+- access consultant
+- accessibility consultant
+evidence_limit: Two historic warehouse-extension offers do not establish industrial defaults, whole-project scope,
+  current insurance or statutory requirements.
+field_defaults:
+  pi: ''
+  pl: ''
+scale:
+  text: Actual access chain, evidence and selected appointment govern scope for every use and work type.
+  complex: []
+thresholds:
+- key: access_commercial
+  kind: client_default
+  text: 90-day validity; 30-day payment; project-selected insurance
+  source: access#41,43 proposed client policy
+  verified: false
+- key: access_evaluation
+  kind: client_default
+  text: Price40/experience20/team20/method-program10/compliance10
+  source: access#43 proposed client policy
+  verified: false
+evaluation:
+- key: price
+  label: Evaluated price
+  default: 40
+  provenance:
+  - kind: client_decision
+    ref: access#43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: experience
+  label: Relevant experience
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: access#43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: team
+  label: Named team
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: access#43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: methodology
+  label: Method/program
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: access#43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: compliance
+  label: Compliance
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: access#43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+evaluation_note: Compare equivalent stages, counts, evidence and dependencies before price; DA, design and completion
+  appointments differ. Lowest fee need not win.
+project_rows:
+- key: procurement
+  text: '{procurement_route}; no automatic later appointment or novation.'
+  provenance:
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#40
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  label: Procurement
+  replace: true
+- key: access_basis
+  text: Confirm uses/classes by part, affected access chain and tenant/operator boundaries; current jurisdiction/editions,
+    housing targets and mandatory versus voluntary objectives. Attach measured evidence, approvals, conditions and
+    gaps.
+  provenance:
+  - kind: seed
+    ref: access#31,33,34
+  - kind: client_decision
+    ref: access#37,38,40,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+  label: Assessment basis
+role:
+- key: adviser
+  text: Access advice from written instruction/agreed inputs to named final output and response-round end. Architect/specialists
+    retain design; BCA adviser coordinates code; independent statutory certifier decides approval. No approval or
+    discrimination-immunity guarantee.
+  provenance:
+  - kind: evidence
+    ref: access#13,20
+  - kind: seed
+    ref: access#31,36
+  - kind: client_decision
+    ref: access#39,40
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+- key: records
+  text: Dated PDFs/mark-ups and editable issues, assumptions, solutions and evidence registers; locations, input
+    revisions, owners/dates and closure proof. Coordinate architecture, landscape/civil, services/AV, lifts, fire,
+    BCA and operator.
+  provenance:
+  - kind: evidence
+    ref: access#14,15
+  - kind: seed
+    ref: access#32,33
+  - kind: client_decision
+    ref: access#37,39,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+stage_intro: Select base, options and end boundary; advice-only ends at its report/response round. Later work needs
+  written activation.
+boundary:
+- when:
+  - work_type:
+    - advisory
+  start: s1_inception
+  end: s8_advisory
+- start: s1_inception
+  end: s4_approval
+stages:
+- key: s1_inception
+  name: S1 Inception / evidence
+  deliverable: Agree brief/basis; inspect agreed existing routes, separate observed/measured/reported facts; route
+    map/photos, inaccessible areas, upgrade questions and prioritised actions
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#2,8
+  - kind: seed
+    ref: access#31,34,35,36
+  - kind: client_decision
+    ref: access#37,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#35
+    why: Access repair advice relies on specialist defect diagnosis and does not assume structural, waterproofing
+      or hazardous-material design.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+- key: s2_concept
+  name: S2 Concept advice
+  deliverable: 'Mark access-chain barriers/options: arrival/parking, entries/levels, routes, lifts and facilities;
+    flag solution candidates and required versus voluntary improvements'
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#1,14
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#37,38,39
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  when:
+  - work_type: &id001
+    - new
+    - refurb
+    - extend
+    - remediation
+  if_unknown: ask
+- key: s3_planning
+  name: S3 Planning report
+  deliverable: Preliminary/final drawing review; BCA/architect liaison, draft/final access report and unresolved
+    register. Submission ends stage unless authority responses through determination quantified
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#1,14,28
+  - kind: seed
+    ref: access#31,32
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  when:
+  - work_type: *id001
+    flag:
+    - access_planning
+  if_unknown: ask
+- key: s4_approval
+  name: S4 Construction approval
+  deliverable: Review conditions and coordinated drawings/specs; preliminary mark-ups/final access report, close
+    earlier findings and schedule product/measurement evidence. Solution preparation separate
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#15,19,28
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#39
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  when:
+  - work_type: *id001
+    flag:
+    - access_approval
+  if_unknown: ask
+- key: s5_tender
+  name: S5 Tender support
+  deliverable: Review agreed tender access documents and counted queries; D&C design-intent/contractor duties explicit.
+    Access review does not prepare architectural design
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#28
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#40,41,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  when:
+  - work_type: *id001
+  if_unknown: ask
+  default: option
+- key: s6_postcontract
+  name: S6 Post-contract review
+  deliverable: 'Separately appointed contractor details/substitutions: tactile indicators, doors, fixtures, signs/lifts;
+    effects on earlier reports/solutions and reassessment. No automatic novation'
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#20
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#37,39,40,41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  when:
+  - work_type: *id001
+  if_unknown: ask
+  default: option
+- key: s7_completion
+  name: S7 Construction / completion
+  deliverable: Counted hold-point visits, pre-final/final audits and close-out; location/photos, test/product/as-built
+    evidence and solution conditions. Qualified opinion only for inspected scope; outstanding gaps explicit; certifier
+    decides occupation
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#4,20
+  - kind: seed
+    ref: access#32,35
+  - kind: client_decision
+    ref: access#39,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#35
+    why: Access repair advice relies on specialist defect diagnosis and does not assume structural, waterproofing
+      or hazardous-material design.
+  when:
+  - work_type: *id001
+  if_unknown: ask
+  default: option
+- key: s8_advisory
+  name: S8 Advisory / operational
+  deliverable: 'Defined audit/inclusive brief: sampling, evidence cutoff, user consultation, sensory/cognitive needs,
+    priorities/actions and operator commitments. Operational plan cannot replace physical compliance or accepted
+    solution'
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: access#13,20
+  - kind: seed
+    ref: access#36
+  - kind: client_decision
+    ref: access#38,39,40
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+  default: option
+  include_when:
+  - work_type:
+    - advisory
+durations: R7 confirms complete-input/start, preliminary/final review, authority/solution dates, hold points and
+  end; historic availability/program is not a turnaround promise.
+allowances_note: Complete quantities or authorised assumption with owner/date/consequence. Fixed fee, time ceiling
+  or unit rate/quantity; base/options and standalone/package dependencies separate.
+allowances:
+- key: coverage
+  label: Coverage
+  text: '{n} buildings/uses/floors/units/routes/sample areas; measured versus visual evidence, inaccessible areas
+    and safe-access provider'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: access#2,8
+  - kind: seed
+    ref: access#34,36
+  - kind: client_decision
+    ref: access#41,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+- key: reviews
+  label: Reviews / reports
+  text: '{n} packages/rounds by stage; preliminary/final mark-ups, draft/final reports, client and authority responses'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: access#1,14,15,28
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: meetings
+  label: Meetings / RFIs
+  text: '{n} meetings by stage/duration/location; RFI hour ceiling and tender period. Reconcile stage counts/concessions
+    and disclose conflicting totals'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: access#17,18,28
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: solutions
+  label: Solution options
+  text: '{n} departures/groups, briefs/reports, consultations/revisions, independent review and completion checks'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: access#3,19
+  - kind: client_decision
+    ref: access#39,41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: visits
+  label: Tests / visits
+  text: '{n} visits allocated by selected stage: inspections/pre-final/final/revisits/handovers; separate test methods/locations/quantities/provider,
+    equipment and certificate gaps'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: access#4,20
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#37,38,41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: duration
+  label: Duration / extras
+  text: '{n} months; travel/out-of-hours, delay/remobilisation/cancellation; extra review/meeting/visit/departure
+    units'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: access#5,18,21
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+positions:
+- key: review
+  label: Access review against confirmed basis at appointed stages only
+  kind: technical
+  value: I
+  provenance:
+  - kind: seed
+    ref: access#31,32
+  - kind: client_decision
+    ref: access#40,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: existing
+  label: Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade
+    or exemption
+  kind: technical
+  value:
+    value: I
+    when:
+    - work_type:
+      - refurb
+      - extend
+      - remediation
+    - flag:
+      - existing_building
+    else: '-'
+  provenance:
+  - kind: seed
+    ref: access#31,34,35
+  - kind: client_decision
+    ref: access#40
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#35
+    why: Access repair advice relies on specialist defect diagnosis and does not assume structural, waterproofing
+      or hazardous-material design.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+  if_unknown: ask
+- key: shared_routes
+  label: 'Mixed uses/buildings/tenancies: continuous routes, shared entries/lifts/amenities; resolve adjoining-property/tenancy
+    reliance'
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - mixed_use
+      - multi_building
+      - access_shared_routes
+    else: '-'
+  provenance:
+  - kind: seed
+    ref: access#33
+  - kind: client_decision
+    ref: access#37
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  if_unknown: ask
+- key: housing
+  label: 'Housing/SDA targets: named scheme, unit types and assessor; residential label alone does not appoint'
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - access_housing
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: access#27
+  - kind: seed
+    ref: access#31,32
+  - kind: client_decision
+    ref: access#38
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  if_unknown: ask
+- key: facilities
+  label: Hearing/signage/tactile/lift/facility criteria review; services/AV designs hearing, architect signs, lift
+    specialist lifts
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - access_facilities
+    else: '-'
+  provenance:
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#37,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  if_unknown: ask
+- key: solutions
+  label: 'Performance departure: brief/method/report/revisions per departure; author/independent assessor, fire/egress
+    interfaces and acceptance/completion conditions'
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: access#3,19
+  - kind: seed
+    ref: access#31,32
+  - kind: client_decision
+    ref: access#39
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: testing
+  label: 'Luminance/slip tests: competent named provider, installed-product certificates and field-test extent separately
+    priced'
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: access#4
+  - kind: client_decision
+    ref: access#37,38,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+- key: occupied
+  label: Occupied/staged route-continuity review at appointed stages; repeat audits only within selected visit/stage
+    allowances; contractor methods/safety, operator management
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - live_operations
+      - staged
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: access#4,20
+  - kind: seed
+    ref: access#33,34,35
+  - kind: client_decision
+    ref: access#39
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#35
+    why: Access repair advice relies on specialist defect diagnosis and does not assume structural, waterproofing
+      or hazardous-material design.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+  if_unknown: ask
+- key: inclusive
+  label: Beyond-minimum inclusive/user/operational brief, sensory/cognitive needs and action plan; owner training/ongoing
+    management
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s8_advisory
+    else: O
+  provenance:
+  - kind: evidence
+    ref: access#13,20
+  - kind: seed
+    ref: access#36
+  - kind: client_decision
+    ref: access#38
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+- key: remediation
+  label: Remediation/heritage access options from specialist diagnosis/advice; no structural/fire/conservation/hazardous-material
+    design
+  kind: technical
+  value: O
+  provenance:
+  - kind: seed
+    ref: access#34,35
+  - kind: client_decision
+    ref: access#39
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#35
+    why: Access repair advice relies on specialist defect diagnosis and does not assume structural, waterproofing
+      or hazardous-material design.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+- key: peer
+  label: 'Independent peer review/expert evidence: independence, reliance and legal instruction; no transfer of
+    design duty'
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: access#13
+  - kind: seed
+    ref: access#36
+  - kind: client_decision
+    ref: access#38
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+terms:
+- key: agreement
+  text: Engagement under attached {field:agreement}, agreed schedules, numbered addenda and written acceptance;
+    settle precedence/departures. No commencement, boilerplate or correspondence silently settles conflicts or activates
+    work.
+  provenance:
+  - kind: evidence
+    ref: access#6,23,24,25,29,30
+  - kind: client_decision
+    ref: access#43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: authority
+  text: 'Written authority before extra scope, overrun, rate/fee/time change: reason, output, price and program
+    effect. Agree law/interpretation changes, delays and staged releases against baseline.'
+  provenance:
+  - kind: evidence
+    ref: access#1,4,5,8,17,19,22,28
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: baseline
+  text: Sign-off records baseline; agreed design development/routine coordination remain included. Inputs need revisions/owners/dates;
+    missing evidence/access promptly flagged.
+  provenance:
+  - kind: evidence
+    ref: access#8,22,28
+  - kind: client_decision
+    ref: access#41,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: errors
+  text: Correct own errors without extra fee. Reasonable professional skill/care within competence; evidence limits
+    do not waive agreed responsibilities.
+  provenance:
+  - kind: evidence
+    ref: access#8,22
+  - kind: client_decision
+    ref: access#41,43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: payment
+  text: Payment {field:payment_days} days after correct invoice for agreed services; GST/stage milestones separate.
+    Declare deposits, final-report release, interest and suspension departures.
+  provenance:
+  - kind: evidence
+    ref: access#7,21,29
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: rates
+  text: State fixed rate period and proposed changes; disclose travel, portals/invoice formats, cancellation/remobilisation
+    before appointment; no hidden uplift.
+  provenance:
+  - kind: evidence
+    ref: access#5,18,21
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: validity
+  text: Valid {field:validity_days} days; reconcile conflicting offered validity, program, meeting and liability
+    terms. Missing agreement or revised attachment is not acceptance.
+  provenance:
+  - kind: evidence
+    ref: access#17,23,25,29,30
+  - kind: client_decision
+    ref: access#41,43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: questions
+  text: Questions to {field:contact} by {field:questions_by}; scope answers as numbered addenda to all tenderers;
+    acknowledge each.
+  provenance:
+  - kind: client_decision
+    ref: access#43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: rights
+  text: Agree project/team/authority/operator use and explicit third-party reliance, editable files/retention/handover
+    and confidentiality. R6 declares caps/time bars, indemnities, IP limits, caveat/security and retrospective terms;
+    agree law/disputes/cure/termination.
+  provenance:
+  - kind: evidence
+    ref: access#6,9,10,11,23,24,25,29
+  - kind: client_decision
+    ref: access#42,43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: false
+returnable_notes:
+- key: r1
+  text: 'Price each selected stage/service: basis, quantity, ex GST/GST/total; base/options/alternatives and standalone/package
+    dependency separate. State milestones/validity; acknowledge addenda and authorised signatory.'
+  provenance:
+  - kind: evidence
+    ref: access#2,3,5,16,18,19
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: r2
+  text: 'Reports/mark-ups/maps/audits/solutions/registers: purpose, extent, revisions, dates, formats/editable files,
+    reliance and draft/final rounds; completion-opinion limits.'
+  provenance:
+  - kind: evidence
+    ref: access#1,14,15,20
+  - kind: seed
+    ref: access#31,32
+  - kind: client_decision
+    ref: access#39,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: r3
+  text: Actual role rates and fixed period; counted additional reviews/RFIs, stage meetings, visits/revisits/tests,
+    solution departures/revisions, travel/delay/cancellation and approval ceiling.
+  provenance:
+  - kind: evidence
+    ref: access#1,4,5,17,18,19,21
+  - kind: client_decision
+    ref: access#41
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: r4
+  text: Lead/reviewer, solution author/independent reviewer, housing assessor and survey/test providers; competence,
+    conflicts, stage resources, substitutions and ISO/equivalent QA; named design/certifier/operator evidence owners.
+  provenance:
+  - kind: evidence
+    ref: access#13,27,28
+  - kind: seed
+    ref: access#31,32
+  - kind: client_decision
+    ref: access#37,39,42,43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: r5
+  text: Two or three comparable uses/work types, existing conditions, housing/operational targets and occupation
+    stages; actual personal scope, lessons and referees.
+  provenance:
+  - kind: evidence
+    ref: access#13,27
+  - kind: seed
+    ref: access#33,34,35,36
+  - kind: client_decision
+    ref: access#38,43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#35
+    why: Access repair advice relies on specialist defect diagnosis and does not assume structural, waterproofing
+      or hazardous-material design.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+  replace: true
+- key: r6
+  text: 'Each sections 3-6/agreement departure or unresolved fact: reason, alternative, fee/time, owner/date/evidence,
+    or nil. Cover meetings, authority scope, tests/solutions, housing, IP/reliance, liability/payment/insurance.'
+  provenance:
+  - kind: evidence
+    ref: access#4,6,17,20,23,25,30
+  - kind: client_decision
+    ref: access#40,41,43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: r7
+  text: Input/access owners/dates, start, draft/final reviews, consultations, authority/tender responses, hold points
+    before finishes, final response/end and later options; unavailable-evidence consequences.
+  provenance:
+  - kind: evidence
+    ref: access#8,14,15,21,28,30
+  - kind: seed
+    ref: access#32
+  - kind: client_decision
+    ref: access#40,41,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: r8
+  text: Current PI {field:pi}/PL {field:pl}/workers evidence and agreed duration; claim/aggregate, expiry/retroactivity/exclusions/renewal.
+    Task competence/accreditation and required registration; historic certificates insufficient.
+  provenance:
+  - kind: evidence
+    ref: access#12,26,27
+  - kind: client_decision
+    ref: access#38,43
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  replace: true
+- key: r9
+  text: 'Testing/survey/opening-up/reinstatement, specialist/authority/equipment/travel/platform costs: included/quantity/rate,
+    payer, GST/markup/prior authority; client-direct evidence owners; no double counting.'
+  provenance:
+  - kind: evidence
+    ref: access#4,5,8,20,21,28,29
+  - kind: seed
+    ref: access#34,35,36
+  - kind: client_decision
+    ref: access#38,41,42
+    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
+      not establish included work or current statutory requirements.
+  - kind: client_decision
+    ref: access#35
+    why: Access repair advice relies on specialist defect diagnosis and does not assume structural, waterproofing
+      or hazardous-material design.
+  - kind: client_decision
+    ref: access#34
+    why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
+      legal upgrade trigger.
+  - kind: client_decision
+    ref: access#36
+    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
+      and reliance; no discrimination-immunity promise.
+  replace: true

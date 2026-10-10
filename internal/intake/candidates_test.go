@@ -177,13 +177,13 @@ func TestCandidateHarvestBudget(t *testing.T) {
 	assertBudget(t, "candidate_harvesting", samples, 5_000, 10_000)
 }
 
-func TestRuleCatalogIsCopiedNotInvented(t *testing.T) {
+func TestRuleCatalogPreservesReferenceAndFireServicesSplit(t *testing.T) {
 	dir := filepath.Join(repoRoot(t), "data", "intake")
 	cat, err := intake.LoadCatalog(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(cat.Disciplines) != 57 {
+	if len(cat.Disciplines) != 58 {
 		t.Fatalf("disciplines: %d", len(cat.Disciplines))
 	}
 	raw, err := os.ReadFile(filepath.Join(dir, "disciplines.json"))
@@ -199,6 +199,15 @@ func TestRuleCatalogIsCopiedNotInvented(t *testing.T) {
 	if !contains(civil.Aliases, "Stormwater") {
 		t.Fatalf("civil aliases: %v", civil.Aliases)
 	}
+	fireEngineering := findDiscipline(t, cat, "consultant.fire_engineer")
+	fireServices := findDiscipline(t, cat, "consultant.fire_services")
+	if contains(fireEngineering.Aliases, "Fire Services") || contains(fireEngineering.Aliases, "Fire services engineer") {
+		t.Fatal("fire engineering still claims fire-services design")
+	}
+	if fireServices.Label != "Fire Services" || !contains(fireServices.Aliases, "Fire services designer") || !contains(fireEngineering.Aliases, "Fire performance solutions") {
+		t.Fatalf("fire discipline distinction lost: %+v / %+v", fireEngineering, fireServices)
+	}
+	findDiscipline(t, cat, "trade.fire_services") // Installation remains a separate trade.
 	clerk := filepath.Join(repoRoot(t), "..", "clerk", "data", "taxonomy", "disciplines.json")
 	body, err := os.ReadFile(clerk)
 	if err != nil {

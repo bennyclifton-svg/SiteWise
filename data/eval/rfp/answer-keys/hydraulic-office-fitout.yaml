@@ -1,0 +1,80 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: refurb
+  category: commercial
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  hyd_investigation: 'yes'
+  hyd_planning: 'no'
+  hyd_sources: 'no'
+  hyd_pumps: 'no'
+  hyd_treatment: 'no'
+  hyd_roof: 'no'
+  hyd_external: 'no'
+  hyd_trade: 'no'
+  hyd_gas: 'no'
+  hyd_utility: 'no'
+  hyd_interfaces: 'yes'
+  hyd_staging: 'no'
+  hyd_declarations: 'no'
+  hyd_process: 'no'
+parts:
+- id: affected
+  label: Internal office fit-out with kitchenette
+  classes:
+  - '5'
+address: 1 Example Street, Example NSW
+fields:
+  ref: HYD-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project hydraulic agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
+settings:
+  hydraulic-services:
+    boundary:range:
+      start: inception
+      end: tender
+    allowance:extent: '2'
+    allowance:investigation: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+    allowance:access: '2'
+sources:
+- docs/rfp-golden/hydraulic-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/hydraulic-services/ledger.md #1-54'
+scenario: hydraulic-office-fitout
+description: Internal office kitchenette design buys no whole-site drainage, trade waste, treatment, roof or gas.
+snapshot: false
+expect:
+  hydraulic-services:
+    stages_absent:
+    - planning
+    positions:
+      domestic: I
+      existing: I
+      trade: absent
+      process: absent
+      civil: absent
+      roof: absent
+      treatment: absent
+      gas: absent
+      declarations: absent

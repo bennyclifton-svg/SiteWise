@@ -1,7 +1,7 @@
 {
   "source": "clerk/data/taxonomy/disciplines.json",
   "source_sha256": "6e079e5e91ff479e147cf3244a7a80fd34d2011e9fe749d570201614120157fa",
-  "note": "Filing view copied from the reference taxonomy. Consultant disciplines are not the building model. PM doctrine fields are omitted.",
+  "note": "Filing view derived from the reference taxonomy (source hash retained). Owner-requested 10 October 2026 correction separates fire services design from fire engineering; the frozen reference is unchanged. Consultant disciplines are not the building model. PM doctrine fields are omitted.",
   "disciplines": [
     {
       "id": "consultant.access",
@@ -179,7 +179,17 @@
       "label": "Fire Engineer",
       "aliases": [
         "Fire safety engineer",
-        "Fire Services",
+        "Fire engineering",
+        "Fire performance solutions"
+      ]
+    },
+    {
+      "id": "consultant.fire_services",
+      "label": "Fire Services",
+      "aliases": [
+        "Fire services designer",
+        "Sprinkler system designer",
+        "Wet fire design",
         "Fire services engineer"
       ]
     },

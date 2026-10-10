@@ -1,0 +1,75 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: advisory
+  category: commercial
+  pathway: advice_only
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  elec_investigation: 'no'
+  elec_planning: 'yes'
+  elec_controls: 'yes'
+  elec_generation: 'yes'
+  elec_ict: 'yes'
+  elec_dry_fire: 'yes'
+  elec_staging: 'yes'
+  elec_declarations: 'yes'
+parts:
+- id: affected
+  label: Existing community centre
+  classes:
+  - 9b
+address: 1 Example Street, Example NSW
+fields:
+  ref: ELEC-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project electrical agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued system/load/utility evidence and separately quantified R1-R9 schedules.
+settings:
+  electrical-services:
+    boundary:range:
+      start: advisory
+      end: advisory
+    allowance:extent: '2'
+    allowance:investigation: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:testing: '2'
+    allowance:completion: '2'
+    allowance:access: '2'
+sources:
+- docs/rfp-golden/electrical-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/electrical-services/ledger.md #1-54'
+scenario: electrical-advice-only
+description: Condition advice ends at report; no automatic design or witnessing appointment.
+snapshot: false
+expect:
+  electrical-services:
+    stages_include:
+    - advisory
+    stages_absent:
+    - design
+    - tender
+    - handover
+    positions:
+      distribution: absent
+      controls: absent
+      existing: absent
+      handover: absent
+      declarations: absent

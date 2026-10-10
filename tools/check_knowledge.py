@@ -1384,13 +1384,26 @@ RFP_THRESHOLD_KINDS = {"statutory", "client_default", "evidence_estimate"}
 RFP_PROVENANCE_KINDS = {"evidence", "seed", "practice", "client_decision"}
 
 
-def rfp_provenance(where: str, rows, report: Report) -> None:
+def rfp_provenance(where: str, rows, report: Report, ledgers: dict) -> None:
     for row in rows or []:
         for p in row.get("provenance") or [] if isinstance(row, dict) else []:
             if not isinstance(p, dict) or p.get("kind") not in RFP_PROVENANCE_KINDS or not p.get("ref"):
                 report.error(where, f"{row.get('key')}: provenance needs a kind and a ref")
             elif p.get("kind") == "client_decision" and not str(p.get("why") or "").strip():
                 report.error(where, f"{row.get('key')}: a client_decision provenance needs a why")
+            if not isinstance(p, dict):
+                continue
+            # Check numeric ledger citations without interpreting source-page or
+            # seed-heading references as ledger row numbers.
+            for discipline, refs in re.findall(r"([a-z][a-z-]+)#(\d+(?:[-–]\d+)?(?:,\d+(?:[-–]\d+)?)*)", str(p.get("ref", ""))):
+                if discipline not in ledgers:
+                    report.error(where, f"{row.get('key')}: unknown ledger {discipline}")
+                    continue
+                for ref in refs.split(","):
+                    bounds = [int(n) for n in re.split("[-–]", ref)]
+                    missing = set(range(bounds[0], bounds[-1] + 1)) - ledgers[discipline]
+                    if bounds[-1] < bounds[0] or missing:
+                        report.error(where, f"{row.get('key')}: invalid ledger reference {discipline}#{ref}")
 
 
 def check_rfp(report: Report) -> None:
@@ -1401,6 +1414,10 @@ def check_rfp(report: Report) -> None:
     folder = KNOWLEDGE / RFP_DIR
     if not folder.is_dir():
         return
+    ledgers = {
+        path.parent.name: {int(n) for n in re.findall(r"^\|\s*(\d+)\s*\|", path.read_text(encoding="utf-8-sig"), re.M)}
+        for path in (ROOT / "docs" / "rfp-golden").glob("*/ledger.md")
+    }
     disciplines: dict = {}
     for path in sorted(folder.glob("*.yaml")):
         rel = path.relative_to(ROOT).as_posix()
@@ -1422,8 +1439,8 @@ def check_rfp(report: Report) -> None:
                 report.error(rel, f"threshold {t.get('key') if isinstance(t, dict) else t}: needs kind and verified")
             elif not str(t.get("source") or "").strip():
                 report.error(rel, f"threshold {t.get('key')}: needs a source")
-        for section in ("stages", "elements", "allowances", "positions", "role", "terms", "project_rows"):
-            rfp_provenance(f"{rel} {section}", doc.get(section), report)
+        for section in ("stages", "elements", "allowances", "positions", "scope_schedule", "role", "terms", "project_rows", "returnable_notes", "evaluation", "flags"):
+            rfp_provenance(f"{rel} {section}", doc.get(section), report, ledgers)
         if path.name not in {"skeleton.yaml", "modules.yaml"} and doc.get("id"):
             disciplines[doc["id"]] = doc
     if not RFP_ANSWER_KEYS.is_dir():

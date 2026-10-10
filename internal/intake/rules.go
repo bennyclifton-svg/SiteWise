@@ -414,7 +414,7 @@ func preference(c Candidate) int {
 	return score
 }
 
-// Discipline is a filing view copied from the reference taxonomy.
+// Discipline is a filing view derived from the reference taxonomy.
 type Discipline struct {
 	ID      string   `json:"id"`
 	Label   string   `json:"label"`
@@ -465,7 +465,8 @@ type lifecycleFile struct {
 }
 
 // LoadCatalog reads the intake vocabulary. It rejects a discipline list that
-// is no longer the copied 57, and a kind list that claims to be complete
+// differs from the reference 57 plus the owner's fire-services split,
+// and a kind list that claims to be complete
 // without the design count.
 func LoadCatalog(dir string) (Catalog, error) {
 	var cat Catalog
@@ -516,7 +517,7 @@ func validateDisciplines(file disciplineFile) error {
 	if len(file.SourceSHA256) != 64 {
 		return fmt.Errorf("discipline source hash is missing")
 	}
-	if len(file.Disciplines) != 57 {
+	if len(file.Disciplines) != 58 {
 		return fmt.Errorf("discipline count %d", len(file.Disciplines))
 	}
 	seen := make(map[string]struct{}, len(file.Disciplines))

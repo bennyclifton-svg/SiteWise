@@ -1,0 +1,111 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+  flag.geotech_intrusive:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.geotech_foundation:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.geotech_civil_parameters:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.geotech_asset_exposure:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.geotech_ass:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.geotech_handback:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.geotech_planning:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags: {}
+parts:
+- id: building
+  label: Housing
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: GEOTECH-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  contact: Project manager
+  questions_by: '2026-10-23'
+  agreement: Project geotechnical appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory
+    suite, owners and reliance recipients); quantities are client test-fixture choices.
+settings:
+  geotechnical:
+    boundary:range:
+      start: g1_plan
+      end: g4_planning
+    allowance:mobilisation: '2'
+    allowance:boreholes: '2'
+    allowance:pits: '2'
+    allowance:tests: '2'
+    allowance:groundwater: '2'
+    allowance:reports: '2'
+    allowance:construction: '2'
+    allowance:handback: '2'
+sources:
+- docs/rfp-golden/geotechnical/rfp.md Sections 1-7
+- 'docs/rfp-golden/geotechnical/ledger.md #1-54'
+scenario: geotech-conflicting-scope
+description: Conflicting investigation, exposure and handback choices require decisions; conflicting historical
+  offers cannot be merged.
+expect:
+  geotechnical:
+    stages_ask:
+    - g2_field
+    - g4_planning
+    positions:
+      plan: I
+      foundation: ask
+      civil_parameters: ask
+      monitoring: O
+      asset_exposure: ask
+      clearance: ask
+      access: X
+      defects: O
+      environment: X
+      ass: ask
+      handback: ask
+      construction: O
+      transfer: O
+    blocking:
+    - fact:flag.geotech_intrusive
+    - fact:flag.geotech_foundation
+    - fact:flag.geotech_civil_parameters
+    - fact:flag.geotech_asset_exposure
+    - fact:flag.geotech_ass
+    - fact:flag.geotech_handback
+    - fact:flag.geotech_planning
+    blocking_only: true

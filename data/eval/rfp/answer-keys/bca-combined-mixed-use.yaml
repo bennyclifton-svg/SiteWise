@@ -1,0 +1,91 @@
+# Draft answer key; only the owner marks reviewed.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: refurb
+  category: commercial
+  pathway: da
+  procurement: design_construct
+  novation: 'yes'
+  state: NSW
+flags:
+  bca_existing_assessment: 'yes'
+  bca_classification_map: 'yes'
+  bca_staged_occupation: 'yes'
+  bca_fire_referrals: 'yes'
+  bca_residential_evidence: 'yes'
+  bca_advisory: 'yes'
+  bca_certification: 'yes'
+  staged: 'yes'
+  multi_building: 'yes'
+  live_operations: 'yes'
+parts:
+- id: housing
+  label: Housing
+  classes:
+  - '2'
+- id: shop
+  label: Shop
+  classes:
+  - '6'
+address: 1 Example St, Example NSW
+fields:
+  ref: BCA-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  contact: Project manager, pm@example.com
+  questions_by: '2026-10-23'
+  agreement: Project BCA appointment agreement (attached)
+  client: Example Client
+  lga: Example LGA
+  pi: $5 million (client agreed)
+  pl: $20 million (client agreed)
+settings:
+  bca-certification:
+    boundary:range:
+      start: a1_inception
+      end: b4_occupation
+    allowance:plan_sets: '2'
+    allowance:reports: '2'
+    allowance:meetings: '2'
+    allowance:rfi_hours: '2'
+    allowance:solution_versions: '2'
+    allowance:cc_packages: '2'
+    allowance:oc_packages: '2'
+    allowance:visits: '2'
+    allowance:witness_events: '2'
+    allowance:duration_months: '2'
+sources:
+- docs/rfp-golden/bca-certification/rfp.md Sections 2-7
+- 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
+snapshot: true
+scenario: bca-combined-mixed-use
+description: Separate A/B packages, mixed-use occupied fit-out and D&C transfer request;
+  all conditional extents expressly confirmed. Novation does not add a statutory-transfer
+  stage.
+expect:
+  bca-certification:
+    stages_include:
+    - a1_inception
+    - a2_planning
+    - a3_tender
+    - b1_preliminary
+    - b2_construction_approval
+    - b3_construction
+    - b4_occupation
+    stages_option:
+    - a4_construction
+    positions:
+      statutory_functions: I
+      existing_assessment: I
+      classification_map: I
+      staged_occupation: I
+      fire_referrals: I
+      residential_evidence: I
+      performance_assessment: O
+      extra_visits: O
+    role:
+    - advisory
+    - statutory
+    - independence

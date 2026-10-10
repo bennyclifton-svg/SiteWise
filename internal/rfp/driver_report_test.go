@@ -38,7 +38,7 @@ func TestDriverReport(t *testing.T) {
 			used := usedDrivers(d, sk)
 			keys := make([]string, 0, len(used))
 			for k := range used {
-				if k == "scale" || k == "stage" || k == "element" {
+				if k == "scale" || k == "stage" || k == "stage_included" || k == "element" {
 					continue
 				}
 				keys = append(keys, k)

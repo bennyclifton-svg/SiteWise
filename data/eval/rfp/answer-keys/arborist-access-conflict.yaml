@@ -1,0 +1,66 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: other
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+  flag.arborist_offsite_access:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags:
+  heritage: 'no'
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  arborist_offsite_trees: 'yes'
+  arborist_tree_impacts: 'yes'
+  arborist_pruning: 'no'
+  arborist_impact_report: 'no'
+  arborist_protection_plan: 'no'
+parts:
+- id: affected
+  label: Infrastructure demolition tree interface
+  classes:
+  - 10b
+address: 1 Example St, Example NSW
+fields:
+  ref: ARB-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project arborist agreement (attached)
+  client: Example Client
+  pi: Client-selected $5m
+  pl: Client-selected $20m
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+    explicit limits.
+settings:
+  arborist:
+    boundary:range:
+      start: s1_inventory
+      end: s3_protection
+    allowance:coverage: '2'
+    allowance:reports: '2'
+    allowance:investigations: '2'
+    allowance:visits: '2'
+    allowance:period: '2'
+sources:
+- docs/rfp-golden/arborist/rfp.md Sections 1-7
+- 'docs/rfp-golden/arborist/ledger.md #1-32'
+scenario: arborist-access-conflict
+description: Infrastructure demolition interface has offsite trees but contradictory lawful-access evidence; tree
+  assessment remains unresolved rather than excluded.
+expect:
+  arborist:
+    positions:
+      offsite: ask
+      impacts: O
+    blocking:
+    - fact:flag.arborist_offsite_access

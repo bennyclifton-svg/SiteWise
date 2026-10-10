@@ -1,0 +1,70 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: remediation
+  category: industrial
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  heritage: 'no'
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  arborist_offsite_trees: 'no'
+  arborist_offsite_access: 'no'
+  arborist_tree_impacts: 'no'
+  arborist_pruning: 'no'
+  arborist_impact_report: 'no'
+  arborist_protection_plan: 'no'
+parts:
+- id: affected
+  label: Factory trees
+  classes:
+  - '8'
+address: 1 Example St, Example NSW
+fields:
+  ref: ARB-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project arborist agreement (attached)
+  client: Example Client
+  pi: Client-selected $5m
+  pl: Client-selected $20m
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+    explicit limits.
+settings:
+  arborist:
+    boundary:range:
+      start: s1_inventory
+      end: s7_advisory
+    allowance:coverage: '2'
+    allowance:reports: '2'
+    allowance:investigations: '2'
+    allowance:visits: '2'
+    allowance:period: '2'
+    stage:s6_investigation: include
+sources:
+- docs/rfp-golden/arborist/rfp.md Sections 1-7
+- 'docs/rfp-golden/arborist/ledger.md #1-32'
+scenario: arborist-appointed-investigation
+description: Industrial remediation buys diagnostics only in addition to inventory/advice; risk and monitoring
+  remain optional.
+expect:
+  arborist:
+    stages_include:
+    - s6_investigation
+    stages_option:
+    - s6_risk
+    - s7_monitoring
+    - s7_peer
+    positions:
+      investigation: I
+      risk: O
+      monitoring: O
+    blocking_only: true
+    blocking: []

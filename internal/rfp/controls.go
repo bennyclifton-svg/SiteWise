@@ -262,7 +262,7 @@ func usedDrivers(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton) map[string
 		cell(p.Complex)
 		modules[p.Module] = true
 	}
-	for _, rows := range [][]knowledge.RFPRow{d.ProjectRows, d.Role, d.Terms, d.ReturnableNotes} {
+	for _, rows := range [][]knowledge.RFPRow{d.ProjectRows, d.Role, d.Terms, d.ReturnableNotes, d.ScopeSchedule} {
 		for _, row := range rows {
 			visit(row.When)
 			modules[row.Module] = true

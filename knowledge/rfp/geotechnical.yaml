@@ -1,0 +1,624 @@
+id: geotechnical
+version: 1
+status: draft
+title: Geotechnical services
+heading: 'REQUEST FOR PROPOSAL: GEOTECHNICAL SERVICES'
+golden: docs/rfp-golden/geotechnical/rfp.md
+discipline_ids:
+- consultant.geotechnical
+title_aliases:
+- geotechnical
+- geotech
+evidence_limit: Four historical warehouse-extension offers disagree on quantities and assumptions; other uses follow
+  physical scope and client selections.
+field_defaults:
+  pi: ''
+  pl: ''
+evaluation_note: Check coverage, competence, insurance and departures first. Normalise quantities, labs, monitoring,
+  restoration and options; lowest price need not win.
+allowances_note: Client completes the reconciled plan and quantities. Guaranteed work is separate from time permitting;
+  return insufficiency and fee effects before issue.
+scale:
+  text: Investigation follows the actual footprint, loads, disturbance and risk; building use never sets test quantities.
+  complex: []
+thresholds:
+- key: geotech_commercial
+  kind: client_default
+  text: 90-day validity; monthly invoices payable within 30 days; insurance project-selected
+  source: 'geotechnical#52,54: proposed client procurement policy'
+  verified: false
+- key: geotech_evaluation
+  kind: client_default
+  text: Price 40%, experience 20%, team 20%, method/program 10%, compliance 10%
+  source: 'geotechnical#54: proposed client procurement policy'
+  verified: false
+evaluation:
+- key: price
+  label: Evaluated price
+  default: 40
+  provenance:
+  - kind: client_decision
+    ref: geotechnical#54
+    why: Proposed evaluation weights for owner review.
+- key: experience
+  label: Relevant experience
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: geotechnical#54
+    why: Proposed evaluation weights for owner review.
+- key: team
+  label: Team
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: geotechnical#54
+    why: Proposed evaluation weights for owner review.
+- key: methodology
+  label: Method/program
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: geotechnical#54
+    why: Proposed evaluation weights for owner review.
+- key: compliance
+  label: Compliance
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: geotechnical#54
+    why: Proposed evaluation weights for owner review.
+project_rows:
+- key: procurement
+  replace: true
+  label: Procurement
+  text: '{procurement_route}; no automatic later appointment or novation.'
+  provenance:
+  - kind: seed
+    ref: geotechnical#45
+  - kind: client_decision
+    ref: geotechnical#51
+    why: Delivery route cannot appoint or transfer this consultant.
+- key: ground_brief
+  label: Ground brief
+  text: Confirm footprints, loads, levels/cut-fill, excavation, prior logs, services, risks, access and reliance recipients;
+    reconcile conflicting plans.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#2,3,4,5,6,7,8,20,21,22,23,24
+role:
+- key: geotechnical
+  text: Investigate and interpret ground for the stated decision; identify preliminary/final reports and monitoring endpoint.
+    Civil/structural designers own design; contractor owns methods, temporary works and supervision. Environmental assessment
+    is a separate appointment.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#1,9,15,24,25,26,27,28,42
+  - kind: seed
+    ref: geotechnical#45,50
+- key: advice_limits
+  text: Advice/defect work states decision, evidence cutoff, reliance, gaps and further tests; observations are not proof
+    of causation or unconditional suitability. Preserve evidence before remedy.
+  when:
+  - work_type:
+    - advisory
+    - remediation
+  provenance:
+  - kind: seed
+    ref: geotechnical#48,49
+stage_intro: Base stages only, from written instruction/input-access milestone to the selected deliverable. Later options
+  require written instruction; agree interim reports and monitoring endpoint.
+boundary:
+- start: g1_plan
+  end: g3_report
+stages:
+- key: g1_plan
+  name: G1 Brief / plan
+  deliverable: Review design and prior tests for relevance; agree location/method/depth/refusal/lab schedule, groundwater,
+    clearance, safe fieldwork, access and handback; reconcile counts/levels. Deliver plan, inputs and issues register.
+  fee_basis: fixed
+  provenance:
+  - kind: evidence
+    ref: geotechnical#2,3,4,5,6,7,8,21,22,23,24
+  - kind: seed
+    ref: geotechnical#44,47
+  shown_when: Appointed brief and report
+- key: g2_field
+  name: G2 Field / laboratory
+  deliverable: Scheduled locating/clearance, drilling/coring/pits, sampling and tests; competent supervision. Record
+    locations/datum/precision, logs/photos, groundwater and incomplete/refusal points; traceable lab records and scheduled
+    site handback.
+  fee_basis: fixed
+  provenance:
+  - kind: evidence
+    ref: geotechnical#4,5,6,7,8,11,12,13,14,21,22,23,24
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  when:
+  - flag:
+    - geotech_intrusive
+  if_unknown: ask
+  shown_when: Client selects this package
+- key: g3_report
+  name: G3 Interpretation / report
+  deliverable: Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater,
+    aggressivity, pavement and classification parameters; location plan and designer parameter schedule. Identify pending
+    tests and further evidence.
+  fee_basis: fixed
+  provenance:
+  - kind: evidence
+    ref: geotechnical#11,12,13,14,15
+  - kind: seed
+    ref: geotechnical#44,49
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  shown_when: Appointed brief and report
+- key: g4_planning
+  name: G4 Concept / planning
+  deliverable: Compare selected ground/foundation options and risk; nominated planning report and responses. Interim
+    report has stated limits; approval not guaranteed.
+  fee_basis: fixed
+  provenance:
+  - kind: evidence
+    ref: geotechnical#34
+  - kind: seed
+    ref: geotechnical#45
+  when:
+  - flag:
+    - geotech_planning
+  if_unknown: ask
+  shown_when: Client selects this package
+- key: g5_design
+  name: G5 Design / tender support
+  deliverable: Review conditions and changed footprint/loads against coverage; supplementary work separately priced.
+    Review parameter use; tender inputs, hold points and scheduled queries. Review is not design authorship
+  fee_basis: option
+  provenance:
+  - kind: seed
+    ref: geotechnical#45
+  default: option
+  shown_when: Optional later appointment
+- key: g6_construction
+  name: G6 Construction / completion
+  deliverable: Scheduled founding/pile/excavation inspections, earthworks tests and monitoring reviews; changed-condition
+    advice, test/issues register and scoped completion statement. Record missed/inaccessible work; agree instruments
+    handover/decommissioning
+  fee_basis: option
+  provenance:
+  - kind: evidence
+    ref: geotechnical#42
+  - kind: seed
+    ref: geotechnical#46
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  default: option
+  shown_when: Optional later appointment
+- key: g7_transfer
+  name: G7 Contractor advice / transfer
+  deliverable: Define contractor design review, further investigation, client, reliance and endpoint. Separate appointment
+    and fee for novation/transfer
+  fee_basis: option
+  provenance:
+  - kind: seed
+    ref: geotechnical#45
+  - kind: client_decision
+    ref: geotechnical#51
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  default: option
+  shown_when: Optional later appointment
+allowances:
+- key: mobilisation
+  label: Mobilisation
+  text: '{n} mobilisations; allocate rigs/locators/excavators, hours/crew/permits/access/water/power'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#21,22
+  when:
+  - stage:
+    - g2_field
+- key: boreholes
+  label: Boreholes / cores
+  text: '{n} by location/method/depth; soil/rock metres, penetration/refusal and pavement thickness'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#4,5,6,7
+  when:
+  - stage:
+    - g2_field
+- key: pits
+  label: Pits / exposures
+  text: '{n} by location/dimensions/depth; method, target evidence and stopping criteria'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#8,16,17,18,19,20
+  when:
+  - stage:
+    - g2_field
+- key: tests
+  label: In-situ / laboratory
+  text: '{n} laboratory tests; attach counts by suite/sample, method/accreditation/turnaround and in-situ type/location/frequency;
+    environmental suites separate'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#11,12,13,14,26,27,28
+  when:
+  - stage:
+    - g2_field
+- key: groundwater
+  label: Groundwater option
+  text: '{n} optional monitoring visits; schedule spot readings, wells/loggers, tests, duration, updates and protection/decommissioning
+    owner'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#9,10
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: reports
+  label: Reports / support
+  text: '{n} reports; schedule draft/final/updates, review rounds, meetings/duration and RFI/planning hours'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#1,34
+  - kind: seed
+    ref: geotechnical#45
+- key: construction
+  label: Construction option
+  text: '{n} inspections; schedule hold points, tests/reviews, booking notice, missed work and completion record'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#42
+  - kind: seed
+    ref: geotechnical#46
+  when:
+  - stage:
+    - g6_construction
+- key: handback
+  label: Handback / waste
+  text: '{n} repair areas; surface/temporary/permanent standard; schedule spoil/fluid quantities, classification/disposal
+    records and maintenance owner'
+  owner: client
+  provenance:
+  - kind: evidence
+    ref: geotechnical#16,17,18,19,20,21,22,23,24
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  when:
+  - stage:
+    - g2_field
+positions:
+- key: plan
+  label: Investigation plan and issues register reconciled to allowances
+  kind: technical
+  value: I
+  provenance:
+  - kind: evidence
+    ref: geotechnical#2,3,4,5,6,7,8
+  - kind: seed
+    ref: geotechnical#44,47
+- key: foundation
+  label: Foundation/bearing/settlement advice; structural engineer designs
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - geotech_foundation
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#2,3,4,5,6,7,8
+  - kind: seed
+    ref: geotechnical#44,47,48
+  if_unknown: ask
+- key: civil_parameters
+  label: Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - geotech_civil_parameters
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#11,12,13,14,15
+  - kind: seed
+    ref: geotechnical#45
+  if_unknown: ask
+- key: monitoring
+  label: Beyond-spot groundwater monitoring / hydrogeology / dewatering; define objective, duration and specialist
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: geotechnical#9,10
+  - kind: seed
+    ref: geotechnical#45
+- key: asset_exposure
+  label: Buried tank/OSD/services/asset exposure; no integrity certification; civil capacity/structural adequacy
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - geotech_asset_exposure
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#15,16,17,18,19,20
+  if_unknown: ask
+- key: clearance
+  label: Locating/clearance before intrusive work; name isolation/potholing party
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - geotech_intrusive
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#21,22,23,24
+  - kind: seed
+    ref: geotechnical#47
+  if_unknown: ask
+- key: access
+  label: Occupied access, tenant liaison and permits
+  kind: technical
+  value: X
+  provenance:
+  - kind: evidence
+    ref: geotechnical#21,22,23,24
+  - kind: seed
+    ref: geotechnical#47
+  responsible: client access lead (name in R4)
+- key: defects
+  label: Defect/distress diagnosis; expert evidence separate, structural engineer designs remedy
+  kind: technical
+  value: O
+  provenance:
+  - kind: seed
+    ref: geotechnical#48,49
+- key: environment
+  label: Contamination, waste classification, remediation/validation and independent audit
+  kind: technical
+  value: X
+  provenance:
+  - kind: evidence
+    ref: geotechnical#25,26,27,28
+  - kind: seed
+    ref: geotechnical#50
+  responsible: separately appointed environmental consultant (name in R4)
+- key: ass
+  label: Acid sulfate soil assessment; define desktop/intrusive/management package from evidence
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - geotech_ass
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#14,26,27,28
+  - kind: seed
+    ref: geotechnical#50
+  if_unknown: ask
+- key: handback
+  label: Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - geotech_handback
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#16,17,18,19,20,21,22,23,24
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  if_unknown: ask
+- key: construction
+  label: G6 inspections/tests/scoped completion; contractor books, named others supervise/design temporary works
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - g6_construction
+    else: O
+  provenance:
+  - kind: evidence
+    ref: geotechnical#42
+  - kind: seed
+    ref: geotechnical#46
+  - kind: client_decision
+    ref: geotechnical#51
+    why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the purchased
+      stage.
+- key: transfer
+  label: G7 novation/transfer; separate appointment and fee, never inferred from route
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - g7_transfer
+    else: O
+  provenance:
+  - kind: seed
+    ref: geotechnical#45
+  - kind: client_decision
+    ref: geotechnical#51
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  - kind: client_decision
+    ref: geotechnical#51
+    why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the purchased
+      stage.
+terms:
+- key: agreement
+  text: Agree {field:agreement}, precedence and express departures before instruction; commencing work does not accept
+    competing supplier terms.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#35,36,37,38,39,40,41,42,43
+  - kind: client_decision
+    ref: geotechnical#52
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  replace: true
+  required: true
+- key: authority
+  text: 'Written authority before extra scope/allowance/fee/program changes; state reason, baseline and effect. Immediate
+    safety action: notify and record minimum action/cost. Agree standby/cancellation and handback.'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#22,37,38
+  - kind: client_decision
+    ref: geotechnical#52
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  replace: true
+- key: baseline
+  text: Design sign-off sets the pricing baseline; normal agreed development remains included.
+  provenance:
+  - kind: client_decision
+    ref: geotechnical#52
+    why: Preserve the agreed pricing baseline without charging for own errors.
+  replace: true
+- key: payment
+  text: Monthly itemised invoices payable within {field:payment_days} days; disclose deposits/report withholding/licence
+    suspension departures.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#36,40
+  - kind: client_decision
+    ref: geotechnical#52
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  replace: true
+- key: professional
+  text: Client supplies inputs/access; report gaps. Manage agreed work/subcontractors without blanket service waiver.
+    Disclose caps/time bars/indemnities/transfer/IP departures; agree notice/cure, safe handback, records and disputes.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#21,22,23,24,38,39,40,41,42,43
+- key: records
+  text: Dated PDFs, logs/lab certificates and editable data/registers; agree project use/reliance, confidentiality, sample
+    retention/evidence preservation, instrument ownership and handover. State storage cost before disposal.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#40,42
+  - kind: seed
+    ref: geotechnical#49
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+returnable_notes:
+- key: r1
+  replace: true
+  text: 'Price stages/options separately: fixed, time-ceiling or unit basis; quantities, rates, GST, dependencies and
+    markups. Cored alternatives include auger: total and increment, no double count. Acknowledge addenda. Confirm the
+    signatory can bind your firm.'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#29,30,31,32,33,34,35,36
+  - kind: client_decision
+    ref: geotechnical#51,52
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: r2
+  replace: true
+  text: 'Plan, logs/location/photos, labs, ground model/parameters, interim/final/monitoring reports and completion records:
+    purpose, recipient, editable formats, dates, rounds, limits/reliance and pending tests.'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#11,12,13,14,15,34,42
+  - kind: seed
+    ref: geotechnical#49
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: r3
+  replace: true
+  text: Role/equipment and extra metre/hole/test/well/visit rates; minimum hire, travel, standby/cancellation, expedited
+    lab/storage/restoration, ceilings and escalation. Expose markups.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#31,32,37,42
+  - kind: client_decision
+    ref: geotechnical#52
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: r4
+  replace: true
+  text: Name lead, field supervisor, reviewer, environmental specialist, labs/subcontractors, competence and availability.
+    Allocate clearance, sampling, design, disposal, reinstatement and handover; QA ISO or equivalent.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#21,22,23,24,41,42,43
+  - kind: seed
+    ref: geotechnical#44,45,46,50
+  - kind: client_decision
+    ref: geotechnical#53,54
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: r5
+  replace: true
+  text: 'Two or three comparable investigations with referees: actual ground/excavation, existing/live constraints, scale,
+    decision, role and outcome.'
+  provenance:
+  - kind: seed
+    ref: geotechnical#44,47,48,49
+  - kind: client_decision
+    ref: geotechnical#54
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: r6
+  replace: true
+  text: List scope/agreement departures, alternatives and fee/time effect, or nil. Include conflicting levels, counts/depths,
+    reliance/environmental scope; authorised assumptions need quantity, decision owner/date.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#2,3,4,5,6,7,8,9,10,18,20,28,35,36,37,38,39,40,41,42,43
+  - kind: client_decision
+    ref: geotechnical#51
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: r7
+  replace: true
+  text: Input/plan approval, mobilisation, field/lab, preliminary/final report and monitoring endpoint dates; optional
+    construction coverage, booking notice, dependencies/start/pause and interim report limits.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#9,33,34
+  - kind: seed
+    ref: geotechnical#45,46
+- key: r8
+  replace: true
+  text: Client-selected PI {field:pi} and PL {field:pl}. Current PI/PL/workers compensation as applicable, claim/aggregate
+    limits, exclusions, continuity and competence/registration. Agree client-selected insurance limits before issue.
+  provenance:
+  - kind: evidence
+    ref: geotechnical#41
+  - kind: client_decision
+    ref: geotechnical#54
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+- key: r9
+  replace: true
+  text: 'Labs/plant/locator, permits, water/skips/disposal/restoration, travel, instruments/storage: included/allowance/rate,
+    payer, quantity, markup/GST and approval. No R1 duplication; identify client-direct work.'
+  provenance:
+  - kind: evidence
+    ref: geotechnical#22,23,24,26,27,32,37,42
+  - kind: client_decision
+    ref: geotechnical#53
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+durations: R7 states access/input milestones, field/lab dates, interim limitations and monitoring endpoint; no historical
+  program adopted.

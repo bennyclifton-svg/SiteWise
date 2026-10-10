@@ -133,6 +133,11 @@ func (s scenario) drivers(t *testing.T, sk knowledge.RFPSkeleton, discipline kno
 		d.Facts[key] = Fact{Values: f.Values, State: f.State, Source: "profile"}
 	}
 	for key, v := range s.Flags {
+		// Silence is unknown. Reject misspelled states instead of silently
+		// treating an "unknown" fixture value as a known negative answer.
+		if v != "yes" && v != "no" {
+			t.Fatalf("%s flag %s: use yes/no, omit unknown, or set an explicit state under facts", s.Name, key)
+		}
 		d.Facts["flag."+key] = Fact{Values: []string{v}, State: Known, Source: "profile"}
 	}
 	for _, p := range s.Parts {

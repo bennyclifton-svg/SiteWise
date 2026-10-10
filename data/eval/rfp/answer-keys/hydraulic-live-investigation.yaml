@@ -1,0 +1,80 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: remediation
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  live_operations: 'yes'
+  staged: 'yes'
+  multi_building: 'no'
+  mixed_use: 'no'
+  hyd_investigation: 'yes'
+  hyd_planning: 'yes'
+  hyd_sources: 'yes'
+  hyd_pumps: 'yes'
+  hyd_treatment: 'yes'
+  hyd_roof: 'yes'
+  hyd_external: 'yes'
+  hyd_trade: 'yes'
+  hyd_gas: 'yes'
+  hyd_utility: 'yes'
+  hyd_interfaces: 'yes'
+  hyd_staging: 'yes'
+  hyd_declarations: 'yes'
+  hyd_process: 'no'
+parts:
+- id: affected
+  label: Occupied apartments leaking retained drainage
+  classes:
+  - '2'
+address: 1 Example Street, Example NSW
+fields:
+  ref: HYD-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project hydraulic agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
+settings:
+  hydraulic-services:
+    boundary:range:
+      start: investigation
+      end: investigation
+    allowance:extent: '2'
+    allowance:investigation: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+    allowance:access: '2'
+sources:
+- docs/rfp-golden/hydraulic-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/hydraulic-services/ledger.md #1-54'
+scenario: hydraulic-live-investigation
+description: Occupied apartment investigation distinguishes observed/tested/assumed condition; remedy and later
+  design remain options.
+snapshot: false
+expect:
+  hydraulic-services:
+    stages_include:
+    - investigation
+    stages_option:
+    - design
+    - construction
+    - advisory
+    positions:
+      existing: I
+      domestic: O
+      witness: O
+      advice: O

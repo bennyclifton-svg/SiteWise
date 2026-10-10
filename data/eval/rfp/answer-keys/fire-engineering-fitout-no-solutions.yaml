@@ -1,0 +1,78 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: refurb
+  category: commercial
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fire_vulnerable_occupants: 'no'
+  fire_special_hazards: 'no'
+  fire_specialist_systems: 'no'
+  fe_existing_reconciliation: 'no'
+  fe_solutions: 'no'
+parts:
+- id: shop
+  label: Shop fitout
+  classes:
+  - '6'
+address: 1 Example Street, Example NSW
+fields:
+  ref: FE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire engineering agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
+    scheduled.
+settings:
+  fire-engineering:
+    allowance:solutions: '2'
+    allowance:analysis: '2'
+    allowance:issues: '2'
+    allowance:evidence: '2'
+    allowance:construction: '2'
+    allowance:verification: '2'
+    allowance:options: '2'
+    boundary:range:
+      start: s1_strategy
+      end: s4_report
+sources:
+- docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
+scenario: fire-engineering-fitout-no-solutions
+description: Small shop fitout explicitly requires no performance solution or special assessment; absence remains
+  not applicable, not named-party exclusion.
+expect:
+  fire-engineering:
+    stages_include:
+    - s1_strategy
+    stages_absent:
+    - s3_brief
+    - s4_report
+    positions:
+      wet_design: X
+      dry_design: X
+      matrix_design: X
+      peer: O
+      remediation: O
+      interim: O
+      brief: absent
+      fer: absent
+      existing: absent
+      hazards: absent
+      specialist: absent
+    blocking_only: true
+    blocking: []

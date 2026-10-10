@@ -1,0 +1,88 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: extend
+  category: industrial
+  pathway: da
+  procurement: design_construct
+  novation: 'yes'
+  state: NSW
+flags:
+  geotech_intrusive: 'yes'
+  geotech_foundation: 'yes'
+  geotech_civil_parameters: 'yes'
+  geotech_asset_exposure: 'yes'
+  geotech_ass: 'yes'
+  geotech_handback: 'yes'
+  geotech_planning: 'yes'
+  live_operations: 'yes'
+parts:
+- id: building
+  label: Warehouse extension
+  classes:
+  - 7b
+address: 1 Example St, Example NSW
+fields:
+  ref: GEOTECH-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  contact: Project manager
+  questions_by: '2026-10-23'
+  agreement: Project geotechnical appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory
+    suite, owners and reliance recipients); quantities are client test-fixture choices.
+settings:
+  geotechnical:
+    boundary:range:
+      start: g1_plan
+      end: g7_transfer
+    allowance:mobilisation: '2'
+    allowance:boreholes: '2'
+    allowance:pits: '2'
+    allowance:tests: '2'
+    allowance:groundwater: '2'
+    allowance:reports: '2'
+    allowance:construction: '2'
+    allowance:handback: '2'
+    stage:g6_construction: include
+    stage:g7_transfer: include
+sources:
+- docs/rfp-golden/geotechnical/rfp.md Sections 1-7
+- 'docs/rfp-golden/geotechnical/ledger.md #1-54'
+scenario: geotech-appointed-construction
+description: Client explicitly buys construction and contractor support; G6/G7 positions become I only with stage
+  selection, not procurement or novation.
+expect:
+  geotechnical:
+    stages_include:
+    - g1_plan
+    - g2_field
+    - g3_report
+    - g4_planning
+    - g6_construction
+    - g7_transfer
+    stages_option:
+    - g5_design
+    positions:
+      plan: I
+      foundation: I
+      civil_parameters: I
+      monitoring: O
+      asset_exposure: I
+      clearance: I
+      access: X
+      defects: O
+      environment: X
+      ass: I
+      handback: I
+      construction: I
+      transfer: I
+    party:
+      environment: environmental consultant
+      access: client access lead
+    blocking_only: true
+    blocking: []

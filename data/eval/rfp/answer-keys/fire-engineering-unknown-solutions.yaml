@@ -1,0 +1,69 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: industrial
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fe_existing_reconciliation: 'no'
+parts:
+- id: warehouse
+  label: Warehouse
+  classes:
+  - 7b
+address: 1 Example Street, Example NSW
+fields:
+  ref: FE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire engineering agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
+    scheduled.
+settings:
+  fire-engineering:
+    allowance:solutions: '2'
+    allowance:analysis: '2'
+    allowance:issues: '2'
+    allowance:evidence: '2'
+    allowance:construction: '2'
+    allowance:verification: '2'
+    allowance:options: '2'
+    boundary:range:
+      start: s1_strategy
+      end: s4_report
+sources:
+- docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
+scenario: fire-engineering-unknown-solutions
+description: Industrial label alone does not settle solution need/count or hazard/specialist scope; blank evidence
+  raises decisions.
+expect:
+  fire-engineering:
+    stages_ask:
+    - s3_brief
+    - s4_report
+    positions:
+      brief: ask
+      fer: ask
+      hazards: ask
+      specialist: ask
+      occupants: ask
+    blocking:
+    - fact:flag.fe_solutions
+    - fact:flag.fire_special_hazards
+    - fact:flag.fire_specialist_systems
+    - fact:flag.fire_vulnerable_occupants

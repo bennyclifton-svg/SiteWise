@@ -1,0 +1,824 @@
+id: cost-planning
+version: 1
+status: draft
+title: Cost planning and quantity surveying services
+heading: 'REQUEST FOR PROPOSAL: COST PLANNING AND QUANTITY SURVEYING'
+golden: docs/rfp-golden/cost-planning/rfp.md
+discipline_ids:
+- consultant.quantity_surveyor
+title_aliases:
+- quantity surveyor
+- cost planning
+- cost consultant
+evidence_limit: Historical industrial planning estimates differ in scope, identity, iteration caps and terms; no
+  current cost benchmark or universal CIV requirement established.
+field_defaults:
+  pi: ''
+  pl: ''
+scale:
+  text: Purpose, inputs and selected stages govern scope across all building/work types.
+  complex: []
+thresholds:
+- key: cost_commercial
+  kind: client_default
+  text: 90-day validity; 30-day payment; project-selected insurance
+  source: cost-planning#37,39 client policy
+  verified: false
+- key: cost_evaluation
+  kind: client_default
+  text: Price40/experience20/team20/method-program10/compliance10
+  source: cost-planning#39 client policy
+  verified: false
+evaluation:
+- key: price
+  label: Evaluated price
+  default: 40
+  provenance:
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+- key: experience
+  label: Relevant experience
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+- key: team
+  label: Named team
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+- key: methodology
+  label: Method/program
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+- key: compliance
+  label: Compliance
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+evaluation_note: Check cost basis, independence, insurance and departures first; normalise counts, input maturity,
+  coverage, reliance and options. Lowest price need not win.
+project_rows:
+- key: procurement
+  text: '{procurement_route}; D&C does not appoint later services or novate this consultant.'
+  provenance:
+  - kind: seed
+    ref: cost-planning#30
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  label: Procurement
+  replace: true
+- key: cost_basis
+  text: Confirm purpose/users; construction versus total-project boundary; currency/tax adviser, budget/date/approval,
+    quality, measurement method, price date/location and escalation endpoints. Attach current revisions, contracts/quotes
+    and conflicting identities/dates.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#12
+  - kind: seed
+    ref: cost-planning#25,26,27
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  label: Cost basis
+role:
+- key: cost
+  text: Independent cost advice from written instruction/complete inputs to named final output and query-period
+    end. Estimate uncertainty is explicit; no guaranteed tender, final cost, approval or funding.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#4,16
+  - kind: seed
+    ref: cost-planning#27,34
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+- key: interfaces
+  text: Designers/specialists define design, compliance, retained-system adequacy and remediation; operator supplies
+    equipment/owner costs; PM owns budget/change approval. QS prices gaps, administrator directs/certifies, advisers
+    own tax/legal/valuation. Disclose client/contractor/lender conflicts.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#20,23
+  - kind: seed
+    ref: cost-planning#25,26,29,31,32
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+stage_intro: Confirm base stages, inputs and final query-period end; later services require written instruction.
+boundary:
+- when:
+  - work_type:
+    - advisory
+  start: s1_basis
+  end: s8_advice
+- start: s1_basis
+  end: s4_design
+stages:
+- key: s1_basis
+  name: S1 Inception / cost basis
+  deliverable: Reconcile brief, budget, scope/area/quantity definitions and evidence; establish source, gap, risk
+    and priced-assumption registers, reporting/program and input owners
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: seed
+    ref: cost-planning#25,26,27,28,34
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+- key: s2_concept
+  name: S2 Feasibility / options
+  deliverable: Evidence-appropriate order-of-cost/measured estimate; normalise benchmark date/location/specification,
+    compare counted options, risk/escalation/sensitivity and investigations before commitment
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: seed
+    ref: cost-planning#26,27,28,31,32,34
+  when:
+  - work_type: &id001
+    - new
+    - refurb
+    - extend
+    - remediation
+    flag:
+    - cost_concept
+  if_unknown: ask
+- key: s3_authority
+  name: S3 Authority estimate
+  deliverable: Confirmed current purpose/definition/form/date/signatory; draft, agreed review and signed final report.
+    Reconcile differences to cost plan; historical CIV is not the default. Authority decides approval
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: cost-planning#1,8,15
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  when:
+  - work_type: *id001
+    flag:
+    - cost_authority
+  if_unknown: ask
+- key: s4_design
+  name: S4 Design cost planning
+  deliverable: At named milestones measure/price agreed documents; coordinate services/siteworks, test value options
+    with designers, reconcile changes/budget and risk/owner costs; flag gaps before freeze
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: seed
+    ref: cost-planning#25,26,27,28,29,31,33
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  when:
+  - work_type: *id001
+    flag:
+    - cost_design
+  if_unknown: ask
+- key: s5_tender
+  name: S5 Procurement / tender
+  deliverable: Separately select pretender estimate, BoQ/schedule, packages, clarifications/interviews/negotiation
+    and recommendation; agree measurement rules/contractual quantity status. D&C/ECI design/risk allowances and
+    tender-budget reconciliation
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5
+  - kind: seed
+    ref: cost-planning#25,29,30
+  when:
+  - work_type: *id001
+  default: option
+- key: s6_construction
+  name: S6 Post-contract cost advice
+  deliverable: Named contract; counted claims/variations, observations, cost reports/cashflow and forecast. Separate
+    claimed, assessed/certified, paid, committed/disputed/forecast; reconcile PC/PS, contingency and client costs.
+    Administrator retains powers; lender reliance separate
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: cost-planning#24
+  - kind: seed
+    ref: cost-planning#25,26,28,29
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  when:
+  - work_type: *id001
+  default: option
+- key: s7_completion
+  name: S7 Final account
+  deliverable: Reconcile contract sum, variations/allowances/claims, commitments and risk; scoped retention/defects
+    advice, unresolved disputes and final registers. Completion certification, entitlement and security release
+    remain contract roles
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: seed
+    ref: cost-planning#29
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  when:
+  - work_type: *id001
+  default: option
+- key: s8_advice
+  name: S8 Standalone advisory
+  deliverable: Define decision, extent, evidence cutoff, sample/inspection limits, data horizon, method/competence,
+    reliance and final report for selected feasibility/capex study. Lender, life-cycle/carbon/LCA and expert evidence
+    separately priced; valuation/tax by named specialists
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5,13,24
+  - kind: seed
+    ref: cost-planning#34
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  when:
+  - work_type:
+    - advisory
+durations: R7 sets complete-input/start, measurement cutoff, draft/review/final dates and query-period end; no inherited
+  ten-day/two-week promise.
+allowances_note: Complete counts before issue. Fixed fee, time ceiling or unit rate with quantity; options separately
+  totalled. Construction provisional sums do not authorise consultant fees.
+allowances:
+- key: plans
+  text: '{n} cost issues; stages/buildings/packages, alternatives, maturity/quantity basis and total-project extent'
+  provenance:
+  - kind: seed
+    ref: cost-planning#25,26,27
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  label: Plans / options
+  owner: client
+- key: authority
+  text: '{n} reports/forms; current requirements confirmer, review/update rounds and standalone/dependent fee'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#1,8,15
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  label: Authority reports
+  owner: client
+  when:
+  - stage:
+    - s3_authority
+- key: review
+  text: '{n} feedback rounds; draft/final issues, meetings/duration, authority discussions and advice-hour ceiling'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#4,9,15
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  label: Review / meetings
+  owner: client
+- key: visits
+  text: '{n} visits/hours; sites/areas, access/induction/travel and named specialist investigations; no hidden-work
+    verification'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5
+  - kind: seed
+    ref: cost-planning#31,32
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  label: Visits / access
+  owner: client
+- key: tender
+  text: '{n} packages; bills/schedules/tenders, clarification/interview hours and reconciliation issues'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5
+  - kind: seed
+    ref: cost-planning#25,29
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  label: Tender services
+  owner: client
+  when:
+  - stage:
+    - s5_tender
+- key: construction
+  text: '{n} months; claims/variations or hours ceiling, reports/visits, final-account rounds, defects/retention
+    period and extension rates'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#24
+  - kind: seed
+    ref: cost-planning#29
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  label: Post-contract / completion
+  owner: client
+  when:
+  - stage:
+    - s6_construction
+    - s7_completion
+- key: specialist
+  text: '{n} reports/scenarios; purpose/extent/horizon, drawdowns, reliance users and extra inputs/inspections'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5,13,24
+  - kind: seed
+    ref: cost-planning#34
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  label: Specialist options
+  owner: client
+positions:
+- key: construction_plan
+  label: Construction cost plan at selected stages; measured/assumed quantities and missing specialist inputs recorded
+  kind: technical
+  value: I
+  provenance:
+  - kind: seed
+    ref: cost-planning#25,26,27,28,31
+- key: total_budget
+  label: 'Total project budget: fees/charges, off-site, FF&E, land/finance/tax; item boundaries and tax adviser
+    agreed'
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - cost_total_budget
+    else: '-'
+  provenance:
+  - kind: seed
+    ref: cost-planning#26
+  if_unknown: ask
+- key: contract_allowances
+  label: Contract PC/PS, owner supply and selection dates; no default contract form or contingency percentage
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - cost_contract_allowances
+    else: '-'
+  provenance:
+  - kind: seed
+    ref: cost-planning#25,28,29
+  if_unknown: ask
+- key: existing_costs
+  label: Fit-out/refurb/live-site strip-out, make-good, isolation, after-hours and decanting; designers assess retained
+    systems
+  kind: technical
+  value:
+    value: I
+    when:
+    - work_type:
+      - refurb
+      - extend
+    - flag:
+      - live_operations
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#8
+  - kind: seed
+    ref: cost-planning#31,33
+  if_unknown: ask
+- key: operator
+  label: Operator equipment/specialist operations; evidenced requirements or explicit allowances only
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - cost_operator
+    else: '-'
+  provenance:
+  - kind: seed
+    ref: cost-planning#26,27,31
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  if_unknown: ask
+- key: allocation
+  label: Mixed-use/building/stage cost allocation; reconcile shared infrastructure and preliminaries to total
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - cost_allocation
+    else: '-'
+  provenance:
+  - kind: seed
+    ref: cost-planning#33
+  if_unknown: ask
+- key: remediation
+  label: Defect/remediation/contamination costing; specialists diagnose, QS prices defined extent/ranges
+  kind: technical
+  value:
+    value: I
+    when:
+    - flag:
+      - cost_remediation
+    else: '-'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#23
+  - kind: seed
+    ref: cost-planning#28,32
+  if_unknown: ask
+- key: risk
+  label: Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin
+  kind: technical
+  value: I
+  provenance:
+  - kind: seed
+    ref: cost-planning#27,28
+- key: tender
+  label: Tender/D&C/ECI review; normalise qualifications, PC/PS and alternatives; no novation or superintendent
+    role
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s5_tender
+    else: O
+  provenance:
+  - kind: seed
+    ref: cost-planning#25,29,30
+- key: claims
+  label: Progress-claim reports; separate brief/inspection counts and administrator authority
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s6_construction
+    else: O
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5,24
+  - kind: seed
+    ref: cost-planning#29
+- key: lender
+  label: Lender reports; separate brief, inspections and reliance, never implied by progress-claim advice
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5,21,24
+  - kind: seed
+    ref: cost-planning#34
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+- key: valuation
+  label: Valuation, insurance replacement value and tax depreciation
+  kind: technical
+  value: X
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5
+  - kind: seed
+    ref: cost-planning#34
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  responsible: named valuer / insurer / tax adviser (R4)
+- key: lifecycle
+  label: Life-cycle/carbon/LCA analysis; horizon/assumptions stated, designers approve performance effects; no compliance
+    certification
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5,13
+  - kind: seed
+    ref: cost-planning#29,34
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+terms:
+- key: agreement
+  text: Agree {field:agreement}, version/precedence and written departures; no unavailable standard terms or conflicting
+    purchase-order terms by implication.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#6,18
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+  replace: true
+  required: true
+- key: authority
+  text: Written authority before extra scope, ceilings/counts, later stages or fee/program change; give cause, alternatives
+    and effects. Report material unpriced gaps/budget overruns promptly.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#10,15,18
+  - kind: seed
+    ref: cost-planning#28,29
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  replace: true
+- key: baseline
+  text: Facts, revisions, selected stages, counts, positions and addenda set baseline; purchased design development/review
+    is included.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#9,10,15
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  replace: true
+- key: payment
+  text: Correct invoices for completed work payable within {field:payment_days} days, subject to agreement/applicable
+    requirements. Disclose advance payment, interest, suspension, minimums and withholding.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#3,6,17,19
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  replace: true
+- key: rates
+  text: Agree rate-validity date and escalation, unused allowances, cancellation/standby and remobilisation; no
+    inherited annual increase.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#3,10,11,17
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  replace: true
+- key: records
+  text: Dated PDFs/editable quantity/rate/reconciliation workbooks; source cutoff, units, rate evidence, preliminaries/margin,
+    PC/PS, gaps, risk/escalation/tax and confidence limits. Agree project distribution licence, separate lender
+    reliance, proprietary-data limits, confidentiality/security/retention and handover.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#4,20,21
+  - kind: seed
+    ref: cost-planning#25,26,27,28,34
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+- key: professional
+  text: Competent resources/independent review, substitutions/conflicts and selected insurance; disclose liability/indemnity/loss/novation/IP/contamination
+    departures. Agree notice/cure, completed/committed costs, records transfer, negotiation/mediation and urgent
+    relief.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#7,14,18,20,21,22,23,24
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+returnable_notes:
+- key: r1
+  text: 'Price stages/options once: base/options/alternatives totals, fixed/time-ceiling/unit basis, quantities/GST/payments
+    and dependent/standalone authority fees. Separate already-authorised work/ad hoc allowances. Confirm validity,
+    numbered addenda and signatory authority.'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#1,2,3,8,15
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  replace: true
+- key: r2
+  text: 'Each report/BoQ/workbook/register: purpose/scope, input cutoff, format/editability, recipient/reliance,
+    dates/rounds and confidence. Include reconciliation, unpriced gaps and authority versus budget differences.'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#4,15,21
+  - kind: seed
+    ref: cost-planning#25,26,27,28,29
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  replace: true
+- key: r3
+  text: Personnel and extra plan/option/update/meeting/visit/tender/claim/variation rates, ceilings, duration extensions/travel/cancellation/escalation;
+    quantity assumptions and authority before exceedance.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#3,9,10,11,15,17
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  replace: true
+- key: r4
+  text: Lead, measurer/estimator, services specialist/reviewer/subconsultants, stage availability/conflicts and
+    ISO or equivalent QA. Assign design/quantity/operator/owner/authority/tax inputs and claim assessor/certifier/payer.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#4,7,13,20,24
+  - kind: seed
+    ref: cost-planning#25,26,29
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+  replace: true
+- key: r5
+  text: Two or three matching building/work/purpose/procurement/maturity and existing/live/staging examples; personal
+    role, deliverables, forecast lessons and referees.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#13,24
+  - kind: seed
+    ref: cost-planning#31,32,33,34
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+  replace: true
+- key: r6
+  text: 'Sections 3-6/agreement: comply/departure or nil; reason, alternative, fee/time effect, owner/date/evidence.
+    Resolve identity/date, meeting/update/rate conflicts and unpriced gaps. Assumptions state extent/quantity, basis
+    and consequence; unknown cost is not zero.'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#6,9,10,11,12,18,20,21,23
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+  replace: true
+- key: r7
+  text: Start/complete-input conditions, owners/due dates, cutoff/draft/review/final, authority/design/tender milestones,
+    optional reporting cycle and appointment end; pauses/update triggers/consequences.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#4,11,16
+  - kind: seed
+    ref: cost-planning#27,29,30
+  - kind: client_decision
+    ref: cost-planning#36
+    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types;
+      unknown scope remains unresolved.
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  - kind: client_decision
+    ref: cost-planning#38
+    why: Client requests reviewable editable records, explicit gaps, input owners and project distribution beyond
+      the historical PDF-only promises.
+  replace: true
+- key: r8
+  text: Current PI {field:pi}, PL {field:pl}, workers evidence; project-selected limits before issue, claim/aggregate/expiry/exclusions
+    and task-specific competence/registration. Old certificates establish no current cover.
+  provenance:
+  - kind: evidence
+    ref: cost-planning#7,14,20,24
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#39
+    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier
+      limits and certificates are not current requirements.
+  replace: true
+- key: r9
+  text: 'Travel/site, investigation/data access, authority/lender and specialist costs: included/allowance/unit,
+    quantity/payer/GST/markup/approval. Identify client-direct costs; no R1 or budget duplication.'
+  provenance:
+  - kind: evidence
+    ref: cost-planning#5,8,15,23
+  - kind: seed
+    ref: cost-planning#26
+  - kind: client_decision
+    ref: cost-planning#35
+    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
+      lists do not commission these services.
+  - kind: client_decision
+    ref: cost-planning#37
+    why: Client sets fee basis, quantities, authority for extras and commercial defaults instead of inheriting conflicting
+      historic offers.
+  replace: true

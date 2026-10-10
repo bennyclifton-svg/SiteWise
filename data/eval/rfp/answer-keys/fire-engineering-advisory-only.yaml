@@ -1,0 +1,82 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: advisory
+  category: institutional
+  pathway: advice_only
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fire_vulnerable_occupants: 'yes'
+  fire_special_hazards: 'no'
+  fire_specialist_systems: 'no'
+  fe_existing_reconciliation: 'yes'
+  fe_solutions: 'no'
+parts:
+- id: care
+  label: Care facility
+  classes:
+  - 9c
+address: 1 Example Street, Example NSW
+fields:
+  ref: FE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire engineering agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
+    scheduled.
+settings:
+  fire-engineering:
+    allowance:solutions: '2'
+    allowance:analysis: '2'
+    allowance:issues: '2'
+    allowance:evidence: '2'
+    allowance:construction: '2'
+    allowance:verification: '2'
+    allowance:options: '2'
+    boundary:range:
+      start: s9_advisory
+      end: s9_advisory
+sources:
+- docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
+scenario: fire-engineering-advisory-only
+description: Advisory aged-care review ends at report/response; no full FER, construction verification or independent
+  peer appointment implied.
+expect:
+  fire-engineering:
+    stages_include:
+    - s9_advisory
+    stages_absent:
+    - s1_strategy
+    - s3_brief
+    - s4_report
+    - s7_verification
+    stages_option:
+    - s9_peer
+    positions:
+      wet_design: X
+      dry_design: X
+      matrix_design: X
+      peer: O
+      remediation: O
+      interim: O
+      brief: absent
+      fer: absent
+      existing: I
+      occupants: I
+      witnessing: O
+    blocking_only: true
+    blocking: []

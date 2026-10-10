@@ -1,0 +1,72 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+  flag.access_housing:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.access_approval:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags:
+  existing_building: 'no'
+  mixed_use: 'no'
+  multi_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  access_shared_routes: 'no'
+  access_facilities: 'no'
+  access_planning: 'no'
+parts:
+- id: building
+  label: House
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: ACCESS-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project access appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts
+    are client choices.
+settings:
+  access:
+    boundary:range:
+      start: s1_inception
+      end: s4_approval
+    allowance:coverage: '2'
+    allowance:reviews: '2'
+    allowance:meetings: '2'
+    allowance:solutions: '2'
+    allowance:visits: '2'
+    allowance:duration: '2'
+sources:
+- docs/rfp-golden/access/rfp.md Sections 1-7
+- 'docs/rfp-golden/access/ledger.md #1-43'
+scenario: access-conflicting-scope
+description: Conflicting housing and approval scope stay unresolved even on a known residential building.
+expect:
+  access:
+    stages_ask:
+    - s4_approval
+    positions:
+      housing: ask
+    blocking:
+    - fact:flag.access_housing
+    - fact:flag.access_approval

@@ -1,0 +1,75 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  landscape_design: 'yes'
+  landscape_podium: 'yes'
+  landscape_irrigation_brief: 'yes'
+  landscape_irrigation_detail: 'yes'
+  landscape_public: 'yes'
+  landscape_staging: 'no'
+parts:
+- id: house
+  label: House garden
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: LANDSCAPE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project landscape appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+    quantities are client choices.
+settings:
+  landscape-architecture:
+    boundary:range:
+      start: s1_inception
+      end: s1_inception
+    allowance:extent: '2'
+    allowance:evidence: '2'
+    allowance:reviews: '2'
+    allowance:tender: '2'
+    allowance:works: '2'
+    allowance:establishment: '2'
+    allowance:extras: '2'
+sources:
+- docs/rfp-golden/landscape-architecture/rfp.md Sections 1-7
+- 'docs/rfp-golden/landscape-architecture/ledger.md #1-36'
+scenario: landscape-inception-options
+description: Inception boundary prices selected future podium/irrigation/public extent as O; unknown specialist
+  extent asks, never I or X.
+expect:
+  landscape-architecture:
+    stages_include:
+    - s1_inception
+    stages_option:
+    - s2_concept
+    - s3_approval
+    - s4_developed
+    - s5_tender
+    - s7_construction
+    - s8_establishment
+    positions:
+      design: O
+      podium: O
+      irrigation_brief: O
+      irrigation_detail: O
+      public: O
+      special: ask
+      construction: O
+      establishment: O
+    blocking:
+    - fact:flag.landscape_special

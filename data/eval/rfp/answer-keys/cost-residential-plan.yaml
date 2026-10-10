@@ -1,0 +1,80 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  cost_concept: 'yes'
+  cost_authority: 'no'
+  cost_design: 'yes'
+  cost_total_budget: 'no'
+  cost_contract_allowances: 'yes'
+  cost_operator: 'no'
+  cost_allocation: 'no'
+  cost_remediation: 'no'
+  live_operations: 'no'
+parts:
+- id: building
+  label: House
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: COST-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project cost appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
+    are fixture choices.
+settings:
+  cost-planning:
+    boundary:range:
+      start: s1_basis
+      end: s4_design
+    allowance:plans: '2'
+    allowance:authority: '2'
+    allowance:review: '2'
+    allowance:visits: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:specialist: '2'
+sources:
+- docs/rfp-golden/cost-planning/rfp.md Sections 1-7
+- 'docs/rfp-golden/cost-planning/ledger.md #1-39'
+scenario: cost-residential-plan
+description: Residential cost plans include explicitly selected contract allowances, not authority/lender work.
+expect:
+  cost-planning:
+    stages_include:
+    - s1_basis
+    - s2_concept
+    - s4_design
+    stages_absent:
+    - s3_authority
+    - s8_advice
+    stages_option:
+    - s5_tender
+    - s6_construction
+    - s7_completion
+    positions:
+      construction_plan: I
+      contract_allowances: I
+      total_budget: absent
+      risk: I
+      claims: O
+      lender: O
+      valuation: X
+    party:
+      valuation: valuer
+    blocking_only: true
+    blocking: []

@@ -1,0 +1,74 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: extend
+  category: institutional
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+  flag.fire_special_hazards:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.fe_existing_reconciliation:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags:
+  existing_building: 'yes'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fire_vulnerable_occupants: 'no'
+  fire_specialist_systems: 'no'
+  fe_solutions: 'yes'
+parts:
+- id: school
+  label: School extension
+  classes:
+  - 9b
+address: 1 Example Street, Example NSW
+fields:
+  ref: FE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire engineering agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
+    scheduled.
+settings:
+  fire-engineering:
+    allowance:solutions: '2'
+    allowance:analysis: '2'
+    allowance:issues: '2'
+    allowance:evidence: '2'
+    allowance:construction: '2'
+    allowance:verification: '2'
+    allowance:options: '2'
+    boundary:range:
+      start: s1_strategy
+      end: s4_report
+sources:
+- docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
+scenario: fire-engineering-conflicting-existing
+description: Extension has conflicting reconciliation extent and hazard evidence; do not exclude or assume adequacy.
+expect:
+  fire-engineering:
+    positions:
+      existing: ask
+      hazards: ask
+      brief: I
+      fer: I
+    blocking:
+    - fact:flag.fe_existing_reconciliation
+    - fact:flag.fire_special_hazards

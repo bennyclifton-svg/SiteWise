@@ -1,0 +1,83 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  geotech_foundation: 'yes'
+  geotech_civil_parameters: 'yes'
+  geotech_asset_exposure: 'yes'
+  geotech_ass: 'yes'
+  geotech_handback: 'yes'
+  geotech_planning: 'no'
+parts:
+- id: building
+  label: Housing
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: GEOTECH-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  contact: Project manager
+  questions_by: '2026-10-23'
+  agreement: Project geotechnical appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory
+    suite, owners and reliance recipients); quantities are client test-fixture choices.
+settings:
+  geotechnical:
+    boundary:range:
+      start: g1_plan
+      end: g1_plan
+    allowance:mobilisation: '2'
+    allowance:boreholes: '2'
+    allowance:pits: '2'
+    allowance:tests: '2'
+    allowance:groundwater: '2'
+    allowance:reports: '2'
+    allowance:construction: '2'
+    allowance:handback: '2'
+sources:
+- docs/rfp-golden/geotechnical/rfp.md Sections 1-7
+- 'docs/rfp-golden/geotechnical/ledger.md #1-54'
+scenario: geotech-plan-only-boundary
+description: Plan-only start/end leaves later fieldwork/report as options; clearance responsibility still requires
+  a project decision before disturbance.
+expect:
+  geotechnical:
+    stages_include:
+    - g1_plan
+    stages_option:
+    - g2_field
+    - g3_report
+    - g5_design
+    - g6_construction
+    - g7_transfer
+    stages_absent:
+    - g4_planning
+    positions:
+      plan: I
+      foundation: I
+      civil_parameters: I
+      monitoring: O
+      asset_exposure: I
+      clearance: ask
+      access: X
+      defects: O
+      environment: X
+      ass: I
+      handback: I
+      construction: O
+      transfer: O
+    blocking:
+    - fact:flag.geotech_intrusive
+    blocking_only: true

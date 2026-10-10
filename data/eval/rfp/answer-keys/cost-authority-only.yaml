@@ -1,0 +1,74 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: extend
+  category: industrial
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  cost_concept: 'no'
+  cost_authority: 'yes'
+  cost_design: 'no'
+  cost_total_budget: 'no'
+  cost_contract_allowances: 'no'
+  cost_operator: 'no'
+  cost_allocation: 'no'
+  cost_remediation: 'no'
+  live_operations: 'no'
+parts:
+- id: building
+  label: Warehouse
+  classes:
+  - 7b
+address: 1 Example St, Example NSW
+fields:
+  ref: COST-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project cost appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
+    are fixture choices.
+settings:
+  cost-planning:
+    boundary:range:
+      start: s1_basis
+      end: s3_authority
+    allowance:plans: '2'
+    allowance:authority: '2'
+    allowance:review: '2'
+    allowance:visits: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:specialist: '2'
+sources:
+- docs/rfp-golden/cost-planning/rfp.md Sections 1-7
+- 'docs/rfp-golden/cost-planning/ledger.md #1-39'
+scenario: cost-authority-only
+description: Industrial extension buys current authority report only; DA/D&C do not imply design/tender/novation.
+expect:
+  cost-planning:
+    stages_include:
+    - s1_basis
+    - s3_authority
+    stages_absent:
+    - s2_concept
+    - s4_design
+    stages_option:
+    - s5_tender
+    - s6_construction
+    positions:
+      existing_costs: I
+      total_budget: absent
+      tender: O
+      claims: O
+      lender: O
+    blocking_only: true
+    blocking: []

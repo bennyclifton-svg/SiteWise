@@ -62,8 +62,20 @@ func TestConsultantRFPSettingsAPI(t *testing.T) {
 		} `json:"items"`
 	}
 	m.getJSON(t, "/api/rfp/disciplines", &disciplines)
-	if len(disciplines.Items) != 5 {
-		t.Fatalf("tranche 1 has five disciplines, got %d", len(disciplines.Items))
+	available := map[string]bool{}
+	for _, item := range disciplines.Items {
+		if available[item.ID] || len(item.TitleAliases) == 0 {
+			t.Fatalf("duplicate or unidentifiable RFP discipline: %+v", item)
+		}
+		available[item.ID] = true
+	}
+	for _, id := range []string{"architecture", "civil", "structural", "town-planning", "traffic",
+		"bca-certification", "geotechnical", "land-surveying", "cost-planning", "access", "waste-management",
+		"arborist", "fire-engineering", "landscape-architecture", "fire-services", "mechanical-services",
+		"electrical-services", "hydraulic-services"} {
+		if !available[id] {
+			t.Errorf("golden RFP %s missing from the API catalogue", id)
+		}
 	}
 	body, _ = json.Marshal(map[string]string{"kind": "rfp", "package_id": civil.ID})
 	var generic store.Report

@@ -1,0 +1,73 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+  flag.cost_authority:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.cost_remediation:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags:
+  cost_concept: 'no'
+  cost_design: 'no'
+  cost_total_budget: 'no'
+  cost_contract_allowances: 'no'
+  cost_operator: 'no'
+  cost_allocation: 'no'
+  live_operations: 'no'
+parts:
+- id: building
+  label: House
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: COST-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project cost appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
+    are fixture choices.
+settings:
+  cost-planning:
+    boundary:range:
+      start: s1_basis
+      end: s4_design
+    allowance:plans: '2'
+    allowance:authority: '2'
+    allowance:review: '2'
+    allowance:visits: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:specialist: '2'
+sources:
+- docs/rfp-golden/cost-planning/rfp.md Sections 1-7
+- 'docs/rfp-golden/cost-planning/ledger.md #1-39'
+scenario: cost-conflicting-extent
+description: Conflicting authority scope and remediation extent stay unresolved; source identities/dates require
+  agreement.
+expect:
+  cost-planning:
+    stages_ask:
+    - s3_authority
+    positions:
+      remediation: ask
+    blocking:
+    - fact:flag.cost_authority
+    - fact:flag.cost_remediation

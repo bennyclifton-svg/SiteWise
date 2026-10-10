@@ -1,0 +1,64 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+  flag.landscape_design:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags:
+  landscape_podium: 'no'
+  landscape_irrigation_brief: 'no'
+  landscape_irrigation_detail: 'no'
+  landscape_public: 'no'
+  landscape_special: 'no'
+  landscape_staging: 'no'
+parts:
+- id: house
+  label: House garden
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: LANDSCAPE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project landscape appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+    quantities are client choices.
+settings:
+  landscape-architecture:
+    boundary:range:
+      start: s1_inception
+      end: s3_approval
+    allowance:extent: '2'
+    allowance:evidence: '2'
+    allowance:reviews: '2'
+    allowance:tender: '2'
+    allowance:works: '2'
+    allowance:establishment: '2'
+    allowance:extras: '2'
+sources:
+- docs/rfp-golden/landscape-architecture/rfp.md Sections 1-7
+- 'docs/rfp-golden/landscape-architecture/ledger.md #1-36'
+scenario: landscape-conflicting-design
+description: Conflicting landscape extent never implies design or specialist exclusion.
+expect:
+  landscape-architecture:
+    stages_ask:
+    - s2_concept
+    - s3_approval
+    blocking:
+    - fact:flag.landscape_design

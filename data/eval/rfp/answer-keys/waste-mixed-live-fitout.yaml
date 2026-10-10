@@ -1,0 +1,79 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: refurb
+  category: commercial
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  mixed_use: 'yes'
+  multi_building: 'no'
+  live_operations: 'yes'
+  staged: 'yes'
+  waste_operational: 'yes'
+  waste_cd: 'yes'
+  waste_shared: 'yes'
+parts:
+- id: homes
+  label: Residential floors
+  classes:
+  - '2'
+- id: retail
+  label: Food retail fit-out
+  classes:
+  - '6'
+address: 1 Example St, Example NSW
+fields:
+  ref: WASTE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project waste appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation
+    owners. Fixture quantities are client choices, not generation-rate defaults.
+settings:
+  waste-management:
+    boundary:range:
+      start: s1_inception
+      end: s3_cd
+    allowance:coverage: '2'
+    allowance:plans: '2'
+    allowance:meetings: '2'
+    allowance:design: '2'
+    allowance:visits: '2'
+    allowance:duration: '2'
+sources:
+- docs/rfp-golden/waste-management/rfp.md Sections 1-7
+- 'docs/rfp-golden/waste-management/ledger.md #1-45'
+scenario: waste-mixed-live-fitout
+description: Occupied mixed-use fit-out buys separately scoped plans and shared tenancy/operator coordination; D&C
+  does not novate.
+expect:
+  waste-management:
+    stages_include:
+    - s1_inception
+    - s2_concept
+    - s3_operational
+    - s3_cd
+    stages_option:
+    - s4_review
+    - s5_tender
+    - s6_contractor
+    - s7_completion
+    positions:
+      operational: I
+      cd: I
+      shared: I
+      interim: O
+      completion: O
+      swept_paths: X
+      equipment: X
+snapshot: true

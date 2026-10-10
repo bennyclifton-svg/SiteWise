@@ -1,0 +1,74 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: advisory
+  category: commercial
+  pathway: advice_only
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  cost_concept: 'no'
+  cost_authority: 'no'
+  cost_design: 'no'
+  cost_total_budget: 'no'
+  cost_contract_allowances: 'no'
+  cost_operator: 'no'
+  cost_allocation: 'no'
+  cost_remediation: 'no'
+  live_operations: 'no'
+parts:
+- id: building
+  label: House
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: COST-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project cost appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
+    are fixture choices.
+settings:
+  cost-planning:
+    boundary:range:
+      start: s1_basis
+      end: s8_advice
+    allowance:plans: '2'
+    allowance:authority: '2'
+    allowance:review: '2'
+    allowance:visits: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:specialist: '2'
+sources:
+- docs/rfp-golden/cost-planning/rfp.md Sections 1-7
+- 'docs/rfp-golden/cost-planning/ledger.md #1-39'
+scenario: cost-advisory-capex
+description: Standalone capex advice has no design/tender/claims retainer or valuation authority.
+expect:
+  cost-planning:
+    stages_include:
+    - s1_basis
+    - s8_advice
+    stages_absent:
+    - s2_concept
+    - s3_authority
+    - s4_design
+    - s5_tender
+    - s6_construction
+    - s7_completion
+    positions:
+      claims: O
+      lender: O
+      valuation: X
+      lifecycle: O
+    blocking_only: true
+    blocking: []

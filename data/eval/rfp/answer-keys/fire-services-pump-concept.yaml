@@ -1,0 +1,80 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: extend
+  category: industrial
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'yes'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fs_wet: 'yes'
+  fs_supply: 'yes'
+  fs_authority: 'yes'
+  fs_dry: 'yes'
+  fs_controls: 'yes'
+  fs_plant_interfaces: 'yes'
+  fs_investigation: 'yes'
+  fs_upgrade: 'yes'
+  fs_declarations: 'yes'
+parts:
+- id: affected
+  label: Warehouse
+  classes:
+  - 7b
+address: 1 Example Street, Example NSW
+fields:
+  ref: FS-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire services agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
+    R1-R9 schedules.
+settings:
+  fire-services:
+    boundary:range:
+      start: inception
+      end: concept
+    allowance:extent: '2'
+    allowance:visits: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+sources:
+- docs/rfp-golden/fire-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-services/ledger.md #1-55'
+scenario: fire-services-pump-concept
+description: Extension pump/tank concept cannot buy full hydraulic/upgrade design or later D&C services.
+snapshot: true
+expect:
+  fire-services:
+    stages_include:
+    - inception
+    - investigation
+    - concept
+    stages_option:
+    - design
+    - tender
+    - continuation
+    - construction
+    - handover
+    positions:
+      wet: I
+      supply: O
+      upgrade: O
+      existing: I
+      dry: I
+      witness: O

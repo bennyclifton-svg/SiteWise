@@ -1,0 +1,898 @@
+id: waste-management
+version: 1
+status: draft
+title: Waste management consulting services
+heading: 'REQUEST FOR PROPOSAL: WASTE MANAGEMENT'
+golden: docs/rfp-golden/waste-management/rfp.md
+discipline_ids:
+- consultant.waste
+title_aliases:
+- waste management
+- waste consultant
+evidence_limit: Four historic warehouse offers differ on operational and C&D plans, reviews and equipment support; none
+  establishes universal rates, appointment, current insurance or collection acceptance.
+field_defaults:
+  pi: ''
+  pl: ''
+scale:
+  text: Actual uses, waste streams and selected services govern scope; no industrial default.
+  complex: []
+thresholds:
+- key: commercial
+  kind: client_default
+  text: 90-day validity, 30-day payment; project-selected insurance
+  source: waste-management#43,45 client procurement policy
+  verified: false
+- key: evaluation
+  kind: client_default
+  text: Price40/experience20/team20/method10/compliance10
+  source: waste-management#45 client procurement policy
+  verified: false
+evaluation:
+- key: price
+  label: Price
+  default: 40
+  provenance:
+  - kind: client_decision
+    ref: waste-management#45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+- key: experience
+  label: Experience
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: waste-management#45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+- key: team
+  label: Team
+  default: 20
+  provenance:
+  - kind: client_decision
+    ref: waste-management#45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+- key: methodology
+  label: Method/program
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: waste-management#45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+- key: compliance
+  label: Compliance
+  default: 10
+  provenance:
+  - kind: client_decision
+    ref: waste-management#45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+evaluation_note: Compare equivalent plans, stage ends, equipment/traffic interfaces, counts and exclusions before price;
+  lowest fee need not win.
+project_rows:
+- key: procurement
+  text: '{procurement_route}; no automatic later appointment or novation.'
+  provenance:
+  - kind: seed
+    ref: waste-management#33
+  - kind: client_decision
+    ref: waste-management#42
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  label: Procurement
+  replace: true
+- key: waste_basis
+  text: Confirm actual uses/occupancy/activity by part, streams, dated quantities/rates, local controls/conditions and
+    mandatory versus voluntary targets; existing contracts, collection vehicles/frequency, rights and gaps. Building
+    labels and absent records prove neither zero waste nor adequate collection.
+  provenance:
+  - kind: evidence
+    ref: waste-management#17,18,22,25
+  - kind: seed
+    ref: waste-management#32,34,35
+  - kind: client_decision
+    ref: waste-management#39,42
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#35
+    why: Apply mixed-use tenancy and staged-handover principles to waste services without substituting dominant-use assumptions.
+  label: Waste basis
+role:
+- key: adviser
+  text: Selected waste advice from written instruction/agreed inputs to named final output and response round. Contractor
+    implements; operator contracts collections; specialists classify controlled waste; traffic tests access. No approval,
+    facility acceptance, diversion or savings guarantee.
+  provenance:
+  - kind: evidence
+    ref: waste-management#4,12,16,23,25
+  - kind: seed
+    ref: waste-management#32,37,38
+  - kind: client_decision
+    ref: waste-management#40,41,42,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+- key: records
+  text: 'Revision-controlled PDFs/plans/calculations and editable registers: input revisions, units/source/date, assumptions,
+    owners/dates, recipients/reliance and closure evidence. Separate observed, reported and estimated conditions.'
+  provenance:
+  - kind: evidence
+    ref: waste-management#17,18,22,25
+  - kind: seed
+    ref: waste-management#38
+  - kind: client_decision
+    ref: waste-management#39,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+stage_intro: Select base/options and named end; operational and C&D plans are separate purchases. Later work needs written
+  activation.
+boundary:
+- when:
+  - work_type:
+    - advisory
+  start: s1_inception
+  end: s8_advisory
+- start: s1_inception
+  end: s3_cd
+stages:
+- key: s1_inception
+  name: S1 Inception / evidence
+  deliverable: 'Brief, local controls/consents, operator arrangements and agreed visits; input gaps, stream/stakeholder
+    schedule and responsibility map. Existing work: photos, retained/removed extent and safe access; remediation follows
+    specialist diagnosis'
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#1,17,18,22,25
+  - kind: seed
+    ref: waste-management#32,36,37,38
+  - kind: client_decision
+    ref: waste-management#39,40
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#36
+    why: Extend renovation evidence and live-occupancy principles to other existing uses; specialist investigation remains
+      separate.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+- key: s2_concept
+  name: S2 Operational concept
+  deliverable: 'Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste,
+    rooms/routes/chutes and collection points. Compare feasibility before space is fixed'
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#2,6,7,11,17,22
+  - kind: seed
+    ref: waste-management#33,34,35
+  - kind: client_decision
+    ref: waste-management#39,41
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#35
+    why: Apply mixed-use tenancy and staged-handover principles to waste services without substituting dominant-use assumptions.
+  when:
+  - flag:
+    - waste_operational
+  if_unknown: ask
+- key: s3_operational
+  name: S3 Operational plan
+  deliverable: 'Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties;
+    scheduled drafts, council forms/consultation/responses to named milestone. Confirm operator acceptance owner/date'
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#2,6,7,11,17,22,26
+  - kind: seed
+    ref: waste-management#32,33
+  - kind: client_decision
+    ref: waste-management#39,41,43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  when:
+  - flag:
+    - waste_operational
+  if_unknown: ask
+- key: s3_cd
+  name: S3 C&D plan
+  deliverable: 'Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage,
+    reuse/recycling/disposal pathways and tracking evidence. Confirm contractor processes/destinations later if unavailable;
+    no hazardous audit'
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#1,12,18,24,25
+  - kind: seed
+    ref: waste-management#32,36,37
+  - kind: client_decision
+    ref: waste-management#40,43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#36
+    why: Extend renovation evidence and live-occupancy principles to other existing uses; specialist investigation remains
+      separate.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+  when:
+  - flag:
+    - waste_cd
+  if_unknown: ask
+- key: s4_review
+  name: S4 Consent / design review
+  deliverable: Conditions and design changes checked against selected plans; space, routes, wash-down/drainage, ventilation/security
+    and fire/acoustic interfaces. Assign/close actions; equipment drawings separately commissioned
+  fee_basis: fixed
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#7,13,16,18,23,26
+  - kind: seed
+    ref: waste-management#33,34
+  - kind: client_decision
+    ref: waste-management#41
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  when:
+  - work_type: &id001
+    - new
+    - refurb
+    - extend
+    - remediation
+  if_unknown: ask
+- key: s5_tender
+  name: S5 Tender support
+  deliverable: Functional criteria, selected plan updates, waste targets/tracking clauses and counted RFIs. D&C design
+    intent and contractor selections/detailed-design duties explicit; no daily waste management
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#25
+  - kind: seed
+    ref: waste-management#33
+  - kind: client_decision
+    ref: waste-management#40,41,42,43,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  when:
+  - work_type: *id001
+  if_unknown: ask
+  default: option
+- key: s6_contractor
+  name: S6 Contractor review
+  deliverable: Selected processes/equipment/design changes, plan updates and counted authority responses; retained versus
+    novated role and handover. No automatic novation or supplier design
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#13,24,25
+  - kind: seed
+    ref: waste-management#33
+  - kind: client_decision
+    ref: waste-management#41,42,43,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  when:
+  - work_type: *id001
+  if_unknown: ask
+  default: option
+- key: s7_completion
+  name: S7 Construction / completion
+  deliverable: Sample tracking/destination evidence and counted room/route hold-point visits; deviations, outstanding
+    gaps and qualified completion report for inspected/evidenced scope. Authority/certifier retains approval
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#23
+  - kind: seed
+    ref: waste-management#33,37
+  - kind: client_decision
+    ref: waste-management#40,43,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+  when:
+  - work_type: *id001
+  if_unknown: ask
+  default: option
+- key: s8_advisory
+  name: S8 Advisory review
+  deliverable: 'Defined advice/audit/options/cost decision: evidence cutoff, sampling/inspection limits, calculations/confidence,
+    reliance and prioritised actions; independent peer/expert evidence separately selected'
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#23
+  - kind: seed
+    ref: waste-management#34,38
+  - kind: client_decision
+    ref: waste-management#39,40,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  default: option
+  include_when:
+  - work_type:
+    - advisory
+- key: s8_operational
+  name: S8 Post-occupation review
+  deliverable: Review actual collection records/costs over stated period against assumptions; prioritise actions and
+    operator ownership. No ongoing management or savings guarantee
+  fee_basis: option
+  shown_when: Selected appointment
+  provenance:
+  - kind: evidence
+    ref: waste-management#23
+  - kind: seed
+    ref: waste-management#34,38
+  - kind: client_decision
+    ref: waste-management#39,40,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  default: option
+durations: R7 confirms complete-input/start, review/final, authority/operator and completion dates; historical lead times
+  are not promises.
+allowances_note: Allocate counts to each selected stage/service below, not every category. Complete quantities or authorised
+  assumption with owner/date/consequence; fixed fee, time ceiling or unit/quantity; separate options/package dependencies.
+allowances:
+- key: coverage
+  text: '{n} buildings/tenancies/uses, rooms, streams, points/routes and staging packages; desktop versus measured evidence'
+  provenance:
+  - kind: evidence
+    ref: waste-management#17,18,22,25
+  - kind: seed
+    ref: waste-management#35,36
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#35
+    why: Apply mixed-use tenancy and staged-handover principles to waste services without substituting dominant-use assumptions.
+  - kind: client_decision
+    ref: waste-management#36
+    why: Extend renovation evidence and live-occupancy principles to other existing uses; specialist investigation remains
+      separate.
+  label: Physical coverage
+  owner: client
+- key: plans
+  text: '{n} operational/C&D plans, draft/final issues, consolidated reviews, revisions, authority forms/responses'
+  provenance:
+  - kind: evidence
+    ref: waste-management#3,7,8,11,12,15,26
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  label: Plans / rounds
+  owner: client
+- key: meetings
+  text: '{n} meetings by stage/duration/location; council/operator consultations, RFI ceiling and tender period'
+  provenance:
+  - kind: evidence
+    ref: waste-management#7,15,22,24,26
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  label: Coordination
+  owner: client
+- key: design
+  text: '{n} equipment rooms/drawings, vehicle/layout tests and specialist investigations; name separate providers'
+  provenance:
+  - kind: evidence
+    ref: waste-management#13,16,18,23
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  label: Design / testing
+  owner: client
+- key: visits
+  text: '{n} visits/revisits, areas/hold points, tracking samples/reporting periods, staged handovers and operational
+    reviews'
+  provenance:
+  - kind: evidence
+    ref: waste-management#4,23
+  - kind: seed
+    ref: waste-management#33
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  label: Site / completion
+  owner: client
+- key: duration
+  text: '{n} months; access/travel/out-of-hours, delay/cancellation/remobilisation and extra review/meeting/room/visit
+    units'
+  provenance:
+  - kind: evidence
+    ref: waste-management#14,15,19,24
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  label: Duration / extras
+  owner: client
+positions:
+- key: operational
+  label: 'Operational WMP: actual streams, bins/storage and collection; dated rates/records only'
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s3_operational
+    else: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#2,6,17,22
+  - kind: seed
+    ref: waste-management#34,35
+  - kind: client_decision
+    ref: waste-management#39,42
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#35
+    why: Apply mixed-use tenancy and staged-handover principles to waste services without substituting dominant-use assumptions.
+  if_unknown: ask
+  when:
+  - flag:
+    - waste_operational
+- key: cd
+  label: 'C&D plan: separate quantities, reuse/disposal pathways and tracking'
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s3_cd
+    else: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#1,12,18,25
+  - kind: seed
+    ref: waste-management#32,36,37
+  - kind: client_decision
+    ref: waste-management#40,42
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#36
+    why: Extend renovation evidence and live-occupancy principles to other existing uses; specialist investigation remains
+      separate.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+  if_unknown: ask
+  when:
+  - flag:
+    - waste_cd
+- key: hazardous
+  label: Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings
+  kind: technical
+  value: X
+  provenance:
+  - kind: evidence
+    ref: waste-management#16,18,25
+  - kind: seed
+    ref: waste-management#37
+  - kind: client_decision
+    ref: waste-management#40
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+  responsible: competent environmental/hazardous-waste specialist named in R4
+- key: collection
+  label: Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator
+    engagement separate
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_operational
+    else: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#2,4,6,7,16,17,21,22,23
+  - kind: seed
+    ref: waste-management#32,34
+  - kind: client_decision
+    ref: waste-management#41
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  if_unknown: ask
+  when:
+  - flag:
+    - waste_operational
+- key: swept_paths
+  label: Vehicle swept paths/clearances; civil/structural confirm grades and loads
+  kind: technical
+  value: X
+  provenance:
+  - kind: evidence
+    ref: waste-management#4,16,21,23
+  - kind: seed
+    ref: waste-management#32
+  - kind: client_decision
+    ref: waste-management#41
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  responsible: traffic engineer named in R4
+- key: rooms
+  label: Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_operational
+    else: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#2,7,13,16,17,18,23
+  - kind: seed
+    ref: waste-management#33
+  - kind: client_decision
+    ref: waste-management#41
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  if_unknown: ask
+  when:
+  - flag:
+    - waste_operational
+- key: equipment
+  label: Equipment design, supply and commissioning
+  kind: technical
+  value: X
+  provenance:
+  - kind: evidence
+    ref: waste-management#13,16,23
+  - kind: seed
+    ref: waste-management#32
+  - kind: client_decision
+    ref: waste-management#41,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  responsible: equipment supplier or engineer named in R4
+- key: shared
+  label: 'Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated
+    assumptions'
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s2_concept
+      - s3_operational
+      - s3_cd
+      - s4_review
+      - s5_tender
+      - s6_contractor
+      - s7_completion
+      - s8_operational
+    else: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#17,22
+  - kind: seed
+    ref: waste-management#35
+  - kind: client_decision
+    ref: waste-management#39,41
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#35
+    why: Apply mixed-use tenancy and staged-handover principles to waste services without substituting dominant-use assumptions.
+  if_unknown: ask
+  when:
+  - flag:
+    - mixed_use
+    - waste_shared
+- key: interim
+  label: Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#25
+  - kind: seed
+    ref: waste-management#35,36,37
+  - kind: client_decision
+    ref: waste-management#40,41,42,43,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#35
+    why: Apply mixed-use tenancy and staged-handover principles to waste services without substituting dominant-use assumptions.
+  - kind: client_decision
+    ref: waste-management#36
+    why: Extend renovation evidence and live-occupancy principles to other existing uses; specialist investigation remains
+      separate.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+- key: targets
+  label: 'Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee'
+  kind: technical
+  value: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#10,12,23
+  - kind: seed
+    ref: waste-management#33,38
+  - kind: client_decision
+    ref: waste-management#39,40
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+- key: completion
+  label: 'Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence'
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s7_completion
+    else: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#23
+  - kind: seed
+    ref: waste-management#33,37
+  - kind: client_decision
+    ref: waste-management#40,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  - kind: client_decision
+    ref: waste-management#37
+    why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
+- key: postoccupation
+  label: 'Post-occupation records/cost review: separately selected period and operator actions'
+  kind: technical
+  value:
+    value: I
+    when:
+    - stage_included:
+      - s8_operational
+    else: O
+  provenance:
+  - kind: evidence
+    ref: waste-management#23
+  - kind: seed
+    ref: waste-management#34,38
+  - kind: client_decision
+    ref: waste-management#39,44
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+- key: independent
+  label: 'Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer'
+  kind: technical
+  value: O
+  provenance:
+  - kind: seed
+    ref: waste-management#38
+  - kind: client_decision
+    ref: waste-management#42,43,44,45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+terms:
+- key: agreement
+  text: Engage under {field:agreement}, scope/fees, addenda and written acceptance; agree precedence and R6 departures
+    before work. No implied acceptance through supplier forms or correspondence.
+  provenance:
+  - kind: evidence
+    ref: waste-management#5,9,19,28,29,30,31
+  - kind: client_decision
+    ref: waste-management#43,45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  replace: true
+- key: authority
+  text: Obtain written authority before extras, ceiling/allowance overruns or fee/time changes; give cause, deliverable,
+    price/basis and program effect.
+  provenance:
+  - kind: evidence
+    ref: waste-management#15,24,26,28
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  replace: true
+- key: baseline
+  text: Sign-off sets baseline; normal development and own-error correction included. Distinguish included clarification
+    from changed design/process/evidence; agree delay/remobilisation.
+  provenance:
+  - kind: evidence
+    ref: waste-management#3,8,15,24,26
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  replace: true
+- key: payment
+  text: Payment {field:payment_days} days against agreed milestones. R6 declares deposits/prepayment, release restrictions,
+    surcharges, recovery and suspension terms.
+  provenance:
+  - kind: evidence
+    ref: waste-management#5,9,19,29
+  - kind: client_decision
+    ref: waste-management#43,45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  replace: true
+- key: rates
+  text: Rates fixed to {field:rates_hold_until}; disclose GST, travel/forms/data/platform and cancellation costs; no
+    historical fees as benchmarks.
+  provenance:
+  - kind: evidence
+    ref: waste-management#10,15,16,21,24
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  replace: true
+- key: validity
+  text: Proposal valid {field:validity_days} days; base/options, ex GST/GST/total and third-party costs separate.
+  provenance:
+  - kind: evidence
+    ref: waste-management#19,28
+  - kind: client_decision
+    ref: waste-management#43
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  replace: true
+- key: questions
+  text: Questions to {field:contact} by {field:questions_by}; changed answers issued to all as numbered addenda.
+  provenance:
+  - kind: client_decision
+    ref: waste-management#43,45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+  replace: true
+- key: rights
+  text: Reasonable professional skill/care; agree project-use/editable-file rights, reliance, retention/handover and
+    confidential disclosure; marketing needs consent. Agreement resolves IP, liability/caps/indemnities, law/disputes
+    and suspension/termination notice/cure.
+  provenance:
+  - kind: evidence
+    ref: waste-management#28,29,30,31
+  - kind: seed
+    ref: waste-management#38
+  - kind: client_decision
+    ref: waste-management#44,45
+    why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
+      current requirements.
+returnable_notes:
+- key: r1
+  text: 'Price selected stages/services once: quantities, fixed/ceiling/unit basis, base/options, package dependencies,
+    ex GST/GST/total, milestones and addenda. Confirm authorised signatory and addenda numbers.'
+  provenance:
+  - kind: evidence
+    ref: waste-management#3,5,9,10,13,14,15,19,21,24
+  - kind: client_decision
+    ref: waste-management#43
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r2
+  text: 'Plans, calculations, layouts/forms and condition/decision/completion records: extent/input revisions, formats/editable
+    files, recipients/reliance, rounds/dates and evidence limits.'
+  provenance:
+  - kind: evidence
+    ref: waste-management#1,2,3,4,11,12,13,14,15,16,17,18,22,23,24,25,26
+  - kind: seed
+    ref: waste-management#33,38
+  - kind: client_decision
+    ref: waste-management#39,40,41,42,43,44
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r3
+  text: Personnel and extra unit rates; counted rounds/meetings/visits/rooms/tests/reporting periods, travel/delay/cancellation
+    and prior-overrun approval. State rate fixed period/indexation.
+  provenance:
+  - kind: evidence
+    ref: waste-management#3,7,8,13,14,15,16,22,23,24,25,26
+  - kind: client_decision
+    ref: waste-management#43
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r4
+  text: Lead/reviewer, resources, competence/conflicts, supplier affiliations and QA (ISO or equivalent); allocate architect/services/fire/access,
+    traffic/specialists, contractor/operator and evidence owners.
+  provenance:
+  - kind: evidence
+    ref: waste-management#4,13,16,23,25
+  - kind: seed
+    ref: waste-management#32
+  - kind: client_decision
+    ref: waste-management#40,41,45
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r5
+  text: 'Two or three comparable actual-use/work/stream/collection/staging projects: personal roles, outputs, lessons
+    and referees.'
+  provenance:
+  - kind: evidence
+    ref: waste-management#6,23,27
+  - kind: seed
+    ref: waste-management#35,36,37,38
+  - kind: client_decision
+    ref: waste-management#39,40,41,45
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r6
+  text: 'Numbered scope/agreement departures: alternative, reason, fee/time; unknown/conflicting facts need resolution
+    or priced assumption with owner/date/consequence/review point. Include IP/reliance/payment/liability and excluded
+    parties.'
+  provenance:
+  - kind: evidence
+    ref: waste-management#16,19,23,24,25,26,27,28,29,30,31
+  - kind: client_decision
+    ref: waste-management#42,43,44,45
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r7
+  text: 'Input/access owners/dates: plans/sections/DWGs/clearances, occupancy/activity, records, photos and quantity
+    estimates; specialist reports and contractor processes/destinations. Method checks, council/operator/traffic dependencies,
+    milestone/end, risks and expedited option.'
+  provenance:
+  - kind: evidence
+    ref: waste-management#14,17,18,22,25
+  - kind: seed
+    ref: waste-management#32,33,34,35,36,37,38
+  - kind: client_decision
+    ref: waste-management#39,40,41,42,43,44
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r8
+  text: Current PI {field:pi}, PL {field:pl}, workers cover/duration, exclusions/renewals; subcontractors and agreement/precedence
+    acceptance or departures. Historical cover is insufficient.
+  provenance:
+  - kind: evidence
+    ref: waste-management#19,20,27,28,29,30,31
+  - kind: client_decision
+    ref: waste-management#45
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true
+- key: r9
+  text: 'Authority/collector/traffic/specialist/equipment/survey/travel/platform/expedite costs: included/allowance/unit,
+    quantity, payer, GST/markup/prior approval; client-direct costs and no R1 duplication.'
+  provenance:
+  - kind: evidence
+    ref: waste-management#4,5,9,10,13,14,15,16,19,21,23,25,27,28,29,30,31
+  - kind: client_decision
+    ref: waste-management#43,44,45
+    why: Project-specific procurement and evidence requirement in this returnable; historical offers do not set universal
+      allowances or settle agreement departures.
+  replace: true

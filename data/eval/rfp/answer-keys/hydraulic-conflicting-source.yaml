@@ -1,0 +1,91 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: extension
+  category: industrial
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+  flag.hyd_sources:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.hyd_treatment:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.hyd_trade:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.hyd_declarations:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  hyd_investigation: 'yes'
+  hyd_planning: 'yes'
+  hyd_pumps: 'yes'
+  hyd_roof: 'yes'
+  hyd_external: 'yes'
+  hyd_gas: 'yes'
+  hyd_utility: 'yes'
+  hyd_interfaces: 'yes'
+  hyd_staging: 'yes'
+  hyd_process: 'yes'
+parts:
+- id: affected
+  label: Food processing extension
+  classes:
+  - '8'
+address: 1 Example Street, Example NSW
+fields:
+  ref: HYD-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project hydraulic agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
+settings:
+  hydraulic-services:
+    boundary:range:
+      start: inception
+      end: tender
+    allowance:extent: '2'
+    allowance:investigation: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+    allowance:access: '2'
+sources:
+- docs/rfp-golden/hydraulic-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/hydraulic-services/ledger.md #1-54'
+scenario: hydraulic-conflicting-source
+description: Conflicting source/treatment, trade and declarations cannot be guessed or absorbed by later design.
+snapshot: false
+expect:
+  hydraulic-services:
+    positions:
+      sources: ask
+      treatment: ask
+      trade: ask
+      declarations: ask
+      continuation: O
+      process: X

@@ -1,0 +1,82 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  mixed_use: 'no'
+  multi_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  access_shared_routes: 'no'
+  access_housing: 'no'
+  access_facilities: 'no'
+  access_planning: 'yes'
+  access_approval: 'yes'
+parts:
+- id: building
+  label: House
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: ACCESS-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project access appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts
+    are client choices.
+settings:
+  access:
+    boundary:range:
+      start: s1_inception
+      end: s4_approval
+    allowance:coverage: '2'
+    allowance:reviews: '2'
+    allowance:meetings: '2'
+    allowance:solutions: '2'
+    allowance:visits: '2'
+    allowance:duration: '2'
+sources:
+- docs/rfp-golden/access/rfp.md Sections 1-7
+- 'docs/rfp-golden/access/ledger.md #1-43'
+scenario: access-house-known-no
+description: Residential label does not appoint housing/SDA, testing or performance solutions; explicit planning
+  and approval do apply.
+expect:
+  access:
+    stages_include:
+    - s1_inception
+    - s2_concept
+    - s3_planning
+    - s4_approval
+    stages_option:
+    - s5_tender
+    - s6_postcontract
+    - s7_completion
+    - s8_advisory
+    positions:
+      review: I
+      existing: absent
+      shared_routes: absent
+      housing: absent
+      facilities: absent
+      occupied: absent
+      solutions: O
+      testing: O
+      inclusive: O
+      remediation: O
+      peer: O
+    blocking_only: true
+    blocking: []

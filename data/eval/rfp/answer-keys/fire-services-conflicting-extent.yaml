@@ -1,0 +1,79 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: commercial
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+  flag.fs_wet:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.fs_supply:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+  flag.fs_dry:
+    state: conflict
+    values:
+    - 'yes'
+    - 'no'
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fs_authority: 'yes'
+  fs_controls: 'yes'
+  fs_plant_interfaces: 'yes'
+  fs_investigation: 'no'
+  fs_upgrade: 'no'
+  fs_declarations: 'yes'
+parts:
+- id: affected
+  label: Office
+  classes:
+  - '5'
+address: 1 Example Street, Example NSW
+fields:
+  ref: FS-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire services agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
+    R1-R9 schedules.
+settings:
+  fire-services:
+    boundary:range:
+      start: inception
+      end: tender
+    allowance:extent: '2'
+    allowance:visits: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+sources:
+- docs/rfp-golden/fire-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-services/ledger.md #1-55'
+scenario: fire-services-conflicting-extent
+description: Conflicting sprinkler/calculation inclusions and dry-fire ownership are not guessed.
+snapshot: false
+expect:
+  fire-services:
+    positions:
+      wet: ask
+      dry: ask
+      supply: ask

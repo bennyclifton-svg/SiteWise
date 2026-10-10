@@ -130,7 +130,7 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 			}
 		}
 	case "weight":
-		for _, w := range sk.Evaluation {
+		for _, w := range evaluationWeights(d, sk) {
 			if w.Key == name {
 				return true
 			}

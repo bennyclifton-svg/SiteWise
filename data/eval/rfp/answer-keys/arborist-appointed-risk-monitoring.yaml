@@ -1,0 +1,72 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: advisory
+  category: residential
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  heritage: 'no'
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  arborist_offsite_trees: 'no'
+  arborist_offsite_access: 'no'
+  arborist_tree_impacts: 'no'
+  arborist_pruning: 'no'
+  arborist_impact_report: 'no'
+  arborist_protection_plan: 'no'
+parts:
+- id: affected
+  label: Housing trees
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: ARB-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project arborist agreement (attached)
+  client: Example Client
+  pi: Client-selected $5m
+  pl: Client-selected $20m
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+    explicit limits.
+settings:
+  arborist:
+    boundary:range:
+      start: s1_inventory
+      end: s7_monitoring
+    allowance:coverage: '2'
+    allowance:reports: '2'
+    allowance:investigations: '2'
+    allowance:visits: '2'
+    allowance:period: '2'
+    stage:s6_risk: include
+    stage:s7_monitoring: include
+sources:
+- docs/rfp-golden/arborist/rfp.md Sections 1-7
+- 'docs/rfp-golden/arborist/ledger.md #1-32'
+scenario: arborist-appointed-risk-monitoring
+description: Residential tree-risk commission explicitly appoints formal risk and finite monitoring independently;
+  construction supervision and internal diagnostics remain options.
+expect:
+  arborist:
+    stages_include:
+    - s6_risk
+    - s7_monitoring
+    stages_option:
+    - s6_investigation
+    - s7_peer
+    positions:
+      investigation: O
+      risk: I
+      monitoring: I
+      supervision: O
+    blocking_only: true
+    blocking: []

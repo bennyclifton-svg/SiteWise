@@ -1,0 +1,177 @@
+# Draft encoding of the revised golden RFP; source numbers are ledger references,
+# never verified statutory thresholds. Package/extent decisions remain ask states.
+id: bca-certification
+version: 1
+status: draft
+title: BCA advisory and building certification services
+heading: "REQUEST FOR PROPOSAL: BCA ADVISORY AND BUILDING CERTIFICATION"
+golden: docs/rfp-golden/bca-certification/rfp.md
+discipline_ids: [consultant.bca, consultant.certifier]
+title_aliases: [bca, certifier, certification]
+evidence_limit: "NSW advisory and CC/principal-certifier/occupation scope only. Current appointment, payment and independence requirements require confirmation; no guarantee of approval."
+field_defaults: {pi: "", pl: ""}
+evaluation:
+  - {key: methodology, label: Technical coverage and method, default: 35, provenance: [{kind: client_decision, ref: "bca-certification#55", why: "Proposed role-aware evaluation, not a statutory rule."}]}
+  - {key: team, label: Named team and independence, default: 25, provenance: [{kind: client_decision, ref: "bca-certification#55", why: "Proposed role-aware evaluation, not a statutory rule."}]}
+  - {key: program, label: Achievable program, default: 15, provenance: [{kind: client_decision, ref: "bca-certification#55", why: "Proposed role-aware evaluation, not a statutory rule."}]}
+  - {key: price, label: Evaluated fee, default: 25, provenance: [{kind: client_decision, ref: "bca-certification#55", why: "Proposed role-aware evaluation, not a statutory rule."}]}
+evaluation_note: "First assess role eligibility, independence, scope completeness, insurance and material departures. Compare common allowances/options and contingency exposure; approval guarantees are not an advantage. Lowest price need not win."
+allowances_note: "Price these quantities; identify insufficiency before engagement. Allowances never permit omission of required statutory duties. R1/R6 must state authorised assumed counts, unit rates and fee effects."
+thresholds:
+  - {key: bca_commercial, kind: client_default, text: "90-day validity; advisory monthly invoices payable within 30 days; certification payment separately agreed against current requirements", source: "bca-certification#35,38,54: proposed client procurement policy", verified: false}
+  - {key: bca_evaluation, kind: client_default, text: "Technical coverage/method 35%, team/independence 25%, program 15%, evaluated fee 25%; project insurance limits to be agreed", source: "bca-certification#43-44,55: proposed client procurement policy", verified: false}
+scale:
+  text: "Scope follows the appointed role and agreed assessment extent, never a building-label service default."
+  complex: []
+unsupported_pathways: [cdc, planning_permit, ref, modification, planning_proposal]
+project_rows:
+  - key: procurement
+    replace: true
+    label: Procurement
+    text: "{procurement_route}; A transfer requires agreement/independence review; B separately appointed."
+    provenance: [{kind: evidence, ref: "bca-certification#38"}, {kind: client_decision, ref: "bca-certification#53", why: "A project's D&C novation choice does not transfer the statutory role."}]
+  - key: assessment_basis
+    label: Assessment basis
+    text: "Confirm uses/classifications by part, new/retained/affected areas, consent and drawing revisions, governing NCC edition, prior approvals and missing/conflicting evidence in the information register."
+    provenance: [{kind: seed, ref: "bca-certification#47-51"}, {kind: evidence, ref: "bca-certification#6-7,16,21"}]
+role:
+  - key: advisory
+    text: "A: design-team BCA adviser; identify risks and evidence gaps, coordinate specialists and report. No statutory appointment or specialist design."
+    when: [{flag: [bca_advisory]}]
+    provenance: [{kind: evidence, ref: "bca-certification#1-4,22"}]
+  - key: statutory
+    text: "B: independent regulatory assessor for expressly appointed functions. Fees buy assessment and duties; issue of a certificate depends on satisfactory assessment."
+    when: [{flag: [bca_certification]}]
+    provenance: [{kind: evidence, ref: "bca-certification#6,13-24,38"}]
+  - key: independence
+    text: "Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work."
+    provenance: [{kind: evidence, ref: "bca-certification#24,38"}, {kind: client_decision, ref: "bca-certification#53", why: "Independently priced and appointed packages; neither role implies the other."}]
+stage_intro: "Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A; CDC/other routes need separately confirmed scope."
+boundary:
+  - {when: [{flag: [bca_advisory]}], start: a1_inception, end: a3_tender}
+  - {when: [{flag: [bca_certification]}], start: b1_preliminary, end: b4_occupation}
+  - {start: a1_inception, end: a3_tender}
+stages:
+  - key: a1_inception
+    name: A1 Inception / schematic advice
+    deliverable: "Review brief/plans; classifications/code basis, markups, high-level report, action register and specialist input schedule. Inspect accessible affected existing fabric; state investigation limits."
+    fee_basis: fixed
+    when: [{flag: [bca_advisory]}]
+    if_unknown: ask
+    shown_when: Advisory package selected
+    provenance: [{kind: evidence, ref: "bca-certification#2"}, {kind: seed, ref: "bca-certification#47-51"}]
+  - key: a2_planning
+    name: A2 Planning submission advice
+    deliverable: "Review planning drawings/interfaces and proposed performance solutions; draft/final BCA statement and applicable draft fire safety schedule. Ends at submission; price later responses separately."
+    fee_basis: fixed
+    when: [{flag: [bca_advisory], pathway: [da, ssd]}]
+    if_unknown: ask
+    shown_when: Advisory planning submission selected
+    provenance: [{kind: evidence, ref: "bca-certification#3"}]
+  - key: a3_tender
+    name: A3 Detailed design / tender advice
+    deliverable: "Review updated plans, selected upgrade interfaces and specialist briefs/reports; tender BCA report records unresolved specialist design and statutory assessment issues."
+    fee_basis: fixed
+    when: [{flag: [bca_advisory]}]
+    if_unknown: ask
+    shown_when: Advisory package selected
+    provenance: [{kind: evidence, ref: "bca-certification#4,8-10,22"}]
+  - key: a4_construction
+    name: A4 Construction advisory support
+    deliverable: "BCA query/changed-design advice and action updates within allowances; price advisory visits, detail reviews and completion report individually. No statutory appointment"
+    fee_basis: option
+    default: option
+    when: [{flag: [bca_advisory]}]
+    if_unknown: ask
+    shown_when: Optional advisory extension
+    provenance: [{kind: evidence, ref: "bca-certification#4,22"}, {kind: seed, ref: "bca-certification#48,50"}, {kind: client_decision, ref: "bca-certification#53", why: "Construction advice extends beyond source B's tender-only appointment; price separately."}]
+  - key: b1_preliminary
+    name: B1 Preliminary regulatory assessment
+    deliverable: "Preliminary-document assessment, regulatory report and evidence checklist; scheduled visit. Identify independence limits on design advice."
+    fee_basis: fixed
+    when: [{flag: [bca_certification], pathway: [da, ssd]}]
+    if_unknown: ask
+    shown_when: Certification package selected
+    provenance: [{kind: evidence, ref: "bca-certification#5,24,38"}]
+  - key: b2_construction_approval
+    name: B2 Construction approval assessment
+    deliverable: "CC checklist/condition register; assess plans, specialist evidence and scheduled solutions/referrals; determine each CC package with reasons/outstanding actions, supporting documents and applicable fire safety schedule."
+    fee_basis: fixed
+    when: [{flag: [bca_certification], pathway: [da, ssd]}]
+    if_unknown: ask
+    shown_when: Certification following consent
+    provenance: [{kind: evidence, ref: "bca-certification#6-13"}, {kind: client_decision, ref: "bca-certification#57", why: "Only consent-followed-by-CC supported; no mechanical substitution of CDC."}]
+  - key: b3_construction
+    name: B3 Principal-certifier construction services
+    deliverable: "Appointment notices/inspection schedule, booking responsibilities and notice; scheduled inspections/photo reports, close-out and missed-inspection records; witness/referral tasks, occupation checklist and required compliance/complaint duties."
+    fee_basis: fixed
+    when: [{flag: [bca_certification], pathway: [da, ssd]}]
+    if_unknown: ask
+    shown_when: Principal-certifier appointment following consent
+    provenance: [{kind: evidence, ref: "bca-certification#14-18,25"}]
+  - key: b4_occupation
+    name: B4 Occupation assessment / handover
+    deliverable: "Assess conditions and completion evidence; final inspection/fire-authority coordination; determine each OC package. Certificates or reasons/outstanding items, approved-document index, inspection records and fire safety schedule; separate from practical completion."
+    fee_basis: fixed
+    when: [{flag: [bca_certification], pathway: [da, ssd]}]
+    if_unknown: ask
+    shown_when: Occupation assessment following consent
+    provenance: [{kind: evidence, ref: "bca-certification#19-24"}, {kind: seed, ref: "bca-certification#50"}, {kind: client_decision, ref: "bca-certification#56", why: "Complete handover records support project use and evidence trust."}]
+allowances:
+  - {key: plan_sets, label: Plan assessments, text: "{n} plan sets per stage; R1 states revision baseline and coordinated review rounds", owner: client, provenance: [{kind: evidence, ref: "bca-certification#5,27"}]}
+  - {key: reports, label: Reports / checklists, text: "{n} per deliverable; R2 separates draft, final and updates by purpose", owner: client, provenance: [{kind: evidence, ref: "bca-certification#2-7,27"}]}
+  - {key: meetings, label: Meetings, text: "{n} by stage; R1 states duration/location", owner: client, provenance: [{kind: evidence, ref: "bca-certification#27,30"}]}
+  - {key: rfi_hours, label: RFI support, text: "{n} design-team hours; state regulatory-feedback basis separately", owner: client, provenance: [{kind: evidence, ref: "bca-certification#5,27"}]}
+  - {key: solution_versions, label: Performance solutions, text: "{n} brief/report versions per named author/solution; distinguish comment and assessment", owner: client, provenance: [{kind: evidence, ref: "bca-certification#8-10,27"}]}
+  - {key: cc_packages, label: CC applications, text: "{n} named packages/areas; amendments separate", owner: client, when: [{stage: [b2_construction_approval]}], provenance: [{kind: evidence, ref: "bca-certification#13,29"}]}
+  - {key: oc_packages, label: OC applications, text: "{n} named occupation packages/areas", owner: client, when: [{stage: [b4_occupation]}], provenance: [{kind: evidence, ref: "bca-certification#21,29"}]}
+  - {key: visits, label: Visits, text: "{n} total; R1 splits audit/pre-CC/critical/progress/reinspection/final/fire attendance and identifies overlap", owner: client, provenance: [{kind: evidence, ref: "bca-certification#12,16-18,27-29"}]}
+  - {key: witness_events, label: Tests / referrals, text: "{n} events; split hours, initial/final submissions, responses/resubmissions and out-of-hours", owner: client, provenance: [{kind: evidence, ref: "bca-certification#11-12,17-18"}]}
+  - {key: duration_months, label: Duration / access, text: "{n} months; state dates, safe access, travel area, occupied restrictions and cancellation notice", owner: client, provenance: [{kind: evidence, ref: "bca-certification#26,37"}, {kind: seed, ref: "bca-certification#48"}]}
+positions:
+  - {key: evidence_registers, label: "Compliance evidence, action and condition registers (PDF/editable), every selected stage", kind: technical, value: I, provenance: [{kind: evidence, ref: "bca-certification#6-7"}, {kind: client_decision, ref: "bca-certification#56", why: "Keep reusable evidence and action records at every selected stage."}]}
+  - {key: statutory_functions, label: "Statutory/principal-certifier functions: Package B only, separate from A", kind: technical, when: [{flag: [bca_certification]}], value: {value: I, when: [{stage_included: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]}], else: O}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#6,13-24,38"}]}
+  - {key: existing_assessment, label: "Existing/fit-out/extension/changed-use assessment: agreed extent; opening-up/surveys by named others; no whole-building upgrade assumed", kind: technical, value: {value: I, when: [{flag: [bca_existing_assessment]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#2,4"}, {kind: seed, ref: "bca-certification#48"}]}
+  - {key: classification_map, label: "Mixed-use/building/tenancy classification and approval map: shared egress, fire/services and shell/tenant boundaries", kind: technical, value: {value: I, when: [{flag: [bca_classification_map]}], else: "-"}, if_unknown: ask, provenance: [{kind: seed, ref: "bca-certification#47,49"}]}
+  - {key: staged_occupation, label: "Occupied/staged occupation boundaries and certificate packages; designers design temporary measures, contractor sets methods", kind: technical, value: {value: I, when: [{flag: [bca_staged_occupation]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#16,21"}, {kind: seed, ref: "bca-certification#48-50"}]}
+  - {key: performance_assessment, label: "Performance-solution assessment; specialist author and assessor are different parties", kind: technical, value: O, provenance: [{kind: evidence, ref: "bca-certification#8-10,20,22"}, {kind: seed, ref: "bca-certification#51"}]}
+  - {key: fire_referrals, label: "Fire-system/authority referrals and witnessing; contractor/specialists test and certify", kind: technical, value: {value: I, when: [{flag: [bca_fire_referrals]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#11-12,17-20"}, {kind: seed, ref: "bca-certification#50"}]}
+  - {key: residential_evidence, label: "Residential energy/design-evidence review (e.g. BASIX), only if required", kind: technical, value: {value: I, when: [{flag: [bca_residential_evidence]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#20"}, {kind: seed, ref: "bca-certification#47"}]}
+  - {key: specialist_design, label: "Detailed access/energy/structural/acoustic/waterproofing/passive-fire/bushfire design", kind: technical, value: X, responsible: "separately appointed specialist (name in R4)", provenance: [{kind: evidence, ref: "bca-certification#22-23"}, {kind: seed, ref: "bca-certification#51"}]}
+  - {key: other_approvals, label: "Utility/adjoining-owner/planning/road/demolition approvals", kind: technical, value: X, responsible: "client / project lead (name in R4)", provenance: [{kind: evidence, ref: "bca-certification#23"}]}
+  - {key: extra_visits, label: "Extra visits, missed inspections and changed approved design: contingency rates/notice; required statutory action is not optional", kind: technical, value: O, provenance: [{kind: evidence, ref: "bca-certification#25,37"}, {kind: client_decision, ref: "bca-certification#54", why: "Separate contingency pricing without making required duties discretionary."}]}
+  - {key: supervision, label: "Building supervision, contractual quality, methods and recurring annual inspections; no automatic retainer", kind: technical, value: X, responsible: "builder / contract administrator / owner (name in R4)", provenance: [{kind: evidence, ref: "bca-certification#22,24"}, {kind: seed, ref: "bca-certification#50"}, {kind: client_decision, ref: "bca-certification#53", why: "The appointment boundary does not create a continuing annual retainer."}]}
+terms:
+  - key: agreement
+    replace: true
+    text: "Agree {field:agreement}, precedence and departures before appointment. Confirm current NSW appointing-party, contract, declarations, independence, payment and replacement requirements."
+    required: true
+    provenance: [{kind: evidence, ref: "bca-certification#35,38-46"}]
+  - key: authority
+    replace: true
+    text: "Agree extra scope/allowance/fee/time changes in writing before work; notify reason, baseline and cost. Required statutory action proceeds with prompt notice/cost records under the contingency basis."
+    provenance: [{kind: evidence, ref: "bca-certification#25,37"}, {kind: client_decision, ref: "bca-certification#54", why: "Prior commercial approval cannot defer a required statutory duty."}]
+  - key: baseline
+    replace: true
+    text: "Design sign-off sets the pricing baseline; normal agreed design development remains included. Regulatory assessment/determination is independent of client sign-off."
+    provenance: [{kind: evidence, ref: "bca-certification#24,38"}, {kind: client_decision, ref: "bca-certification#54", why: "Client sign-off must not be the statutory assessment completion gate."}]
+  - key: payment
+    replace: true
+    text: "A: monthly itemised invoices, {field:payment_days} days; no automatic final-report withholding. B: separate verified statutory payment milestones before issue/appointment. Agree advance-fee refunds/reconciliation."
+    provenance: [{kind: evidence, ref: "bca-certification#35,42"}, {kind: client_decision, ref: "bca-certification#54", why: "The advisory default must never override certification prepayment requirements."}]
+  - key: professional_terms
+    text: "Disclose fee dependencies, escalation and liability/time-bar/indemnity/insurance/transfer departures. Maintain eligibility; notify conflicts/substitutions. Agree notice/cure, fee reconciliation, records/replacement and disputes under the agreement; required duties continue."
+    provenance: [{kind: evidence, ref: "bca-certification#33,38-46"}]
+  - key: records
+    text: "Client supplies inputs/safe access; report gaps and reliance limits without blanket waiver. Agree project-team/authority/operator use licence, editable registers/native outputs, confidentiality with statutory disclosure, retention and handover."
+    provenance: [{kind: evidence, ref: "bca-certification#40-41,46"}, {kind: client_decision, ref: "bca-certification#56", why: "Require usable evidence and records while declaring reliance limits."}]
+returnable_notes:
+  - {key: r3, replace: true, text: "Named-role/hourly and unit rates: review, meeting, visit, certificate, travel/out-of-hours, cancellation/reinspection, complaints/enforcement and solution versions. Distinguish staging from design change; state ceilings/escalation.", provenance: [{kind: evidence, ref: "bca-certification#25,27-32,37"}]}
+  - {key: r8, replace: true, text: "Current registrations/eligibility, PI/PL limits and exclusions, workers compensation, conflicts and QA (ISO or equivalent). Agree project cover before appointment; no universal statutory insurance limit inferred.", provenance: [{kind: evidence, ref: "bca-certification#38,43-44"}, {kind: client_decision, ref: "bca-certification#55", why: "Historical supplier cover does not set universal project insurance requirements."}]}
+  - {key: r1, text: "Separate A/B boundaries, stages/options, payment milestones, authority fees, unit rates, GST, stage dependencies, baseline and cancellation reconciliation.", provenance: [{kind: evidence, ref: "bca-certification#28-37"}, {kind: client_decision, ref: "bca-certification#53-54", why: "Separate roles and certification payment; comparable transparent pricing."}]}
+  - {key: r2, replace: true, text: "Reports/markups, registers, fire schedule, inspection/test records, determinations and handover index: purpose, recipient, formats/editable files, rounds, dates, licence/reliance. Distinguish preparation from assessment.", provenance: [{kind: evidence, ref: "bca-certification#2-21,41"}, {kind: client_decision, ref: "bca-certification#56", why: "Handover includes reusable evidence records."}]}
+  - {key: r4, replace: true, text: "Name adviser, certifier, inspectors, reviewer, substitutes and specialists; eligibility/prior involvement, stage availability and R7 resources. Allocate authorship, review, tests and assessment; name excluded parties.", provenance: [{kind: evidence, ref: "bca-certification#1,22,38,44"}, {kind: seed, ref: "bca-certification#50-51"}]}
+  - {key: r5, replace: true, text: "Two or three comparable appointments with referees: actual use/work type, existing/live constraints, solutions, staging and your role/outcome.", provenance: [{kind: evidence, ref: "bca-certification#44"}, {kind: seed, ref: "bca-certification#47-50"}]}
+  - {key: r6, text: "Include unresolved/conflicting facts, decision owner/date and expressly authorised pricing assumptions with scope/allowance.", provenance: [{kind: evidence, ref: "bca-certification#35-46"}, {kind: client_decision, ref: "bca-certification#52", why: "Unknown/conflicting facts cannot silently exclude scope."}]}
+  - {key: r7, text: "Completeness-review/assessment targets, inspection booking notice, authority dependencies and timing start/pause points; no guaranteed certificate date.", provenance: [{kind: evidence, ref: "bca-certification#14-21,26"}]}
+durations: "State stage dates, access and duration assumptions in R7; allowances do not authorise omission of a necessary statutory function."

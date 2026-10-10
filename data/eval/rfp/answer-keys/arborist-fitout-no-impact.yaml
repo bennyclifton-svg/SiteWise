@@ -1,0 +1,72 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: refurb
+  category: commercial
+  pathway: da
+  procurement: design_construct
+  novation: 'no'
+  state: NSW
+flags:
+  heritage: 'no'
+  existing_building: 'yes'
+  live_operations: 'no'
+  staged: 'no'
+  arborist_offsite_trees: 'no'
+  arborist_offsite_access: 'no'
+  arborist_tree_impacts: 'no'
+  arborist_pruning: 'no'
+  arborist_impact_report: 'yes'
+  arborist_protection_plan: 'yes'
+parts:
+- id: affected
+  label: Retail tenancy trees
+  classes:
+  - '6'
+address: 1 Example St, Example NSW
+fields:
+  ref: ARB-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project arborist agreement (attached)
+  client: Example Client
+  pi: Client-selected $5m
+  pl: Client-selected $20m
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+    explicit limits.
+settings:
+  arborist:
+    boundary:range:
+      start: s1_inventory
+      end: s3_protection
+    allowance:coverage: '2'
+    allowance:reports: '2'
+    allowance:investigations: '2'
+    allowance:visits: '2'
+    allowance:period: '2'
+sources:
+- docs/rfp-golden/arborist/rfp.md Sections 1-7
+- 'docs/rfp-golden/arborist/ledger.md #1-32'
+scenario: arborist-fitout-no-impact
+description: Retail fitout confirms no tree impacts; inventory must not buy development reports even with stale
+  selected-package choices.
+expect:
+  arborist:
+    stages_include:
+    - s1_inventory
+    stages_absent:
+    - s2_impact
+    - s3_protection
+    - s4_tender
+    - s5_construction
+    positions:
+      impacts: absent
+      offsite: absent
+      pruning: absent
+      existing: I
+      supervision: O
+    blocking_only: true
+    blocking: []

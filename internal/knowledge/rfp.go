@@ -23,7 +23,7 @@ import (
 var RFPDrivers = map[string]bool{
 	"class": true, "category": true, "work_type": true, "pathway": true,
 	"procurement": true, "novation": true, "state": true, "flag": true,
-	"regulated_design": true, "scale": true, "stage": true, "element": true,
+	"regulated_design": true, "scale": true, "stage": true, "stage_included": true, "element": true,
 	"budget_over": true, "site_area_over": true, "gfa_over": true, "parking_over": true,
 }
 
@@ -62,6 +62,8 @@ func (c *RFPCell) UnmarshalYAML(n *yaml.Node) error {
 
 // RFPRow is a printed line: a project-table row, a role sentence or a term.
 type RFPRow struct {
+	// Replace explicitly substitutes a shared project row, term or returnable at this key.
+	Replace    bool            `yaml:"replace" json:"replace,omitempty"`
 	Key        string          `yaml:"key" json:"key"`
 	Label      string          `yaml:"label" json:"label,omitempty"`
 	Text       string          `yaml:"text" json:"text"`
@@ -191,7 +193,11 @@ type RFPDiscipline struct {
 	Elements            []RFPElement   `yaml:"elements" json:"elements,omitempty"`
 	Allowances          []RFPAllowance `yaml:"allowances" json:"allowances"`
 	Positions           []RFPPosition  `yaml:"positions" json:"positions"`
+	ScopeSchedule       []RFPRow       `yaml:"scope_schedule" json:"scope_schedule,omitempty"`
 	Terms               []RFPRow       `yaml:"terms" json:"terms"`
+	Evaluation          []RFPWeight    `yaml:"evaluation" json:"evaluation,omitempty"`
+	EvaluationNote      string         `yaml:"evaluation_note" json:"evaluation_note,omitempty"`
+	AllowancesNote      string         `yaml:"allowances_note" json:"allowances_note,omitempty"`
 	// Returnables holds this discipline's line for a shared schedule (r2..r9).
 	Returnables map[string]string `yaml:"returnables" json:"returnables"`
 	// ReturnableNotes add a line to a schedule only when their condition holds.
@@ -202,9 +208,12 @@ type RFPDiscipline struct {
 }
 
 type RFPOption struct {
-	Key   string `yaml:"key" json:"key"`
-	Label string `yaml:"label" json:"label"`
-	Help  string `yaml:"help" json:"help,omitempty"`
+	Provenance []RFPProvenance `yaml:"provenance" json:"provenance,omitempty"`
+	// ScopeDecision is an appointment choice, printed only by RFPs that use it.
+	ScopeDecision bool   `yaml:"scope_decision" json:"scope_decision,omitempty"`
+	Key           string `yaml:"key" json:"key"`
+	Label         string `yaml:"label" json:"label"`
+	Help          string `yaml:"help" json:"help,omitempty"`
 }
 
 type RFPField struct {
@@ -222,9 +231,10 @@ type RFPField struct {
 }
 
 type RFPWeight struct {
-	Key     string `yaml:"key" json:"key"`
-	Label   string `yaml:"label" json:"label"`
-	Default int    `yaml:"default" json:"default"`
+	Provenance []RFPProvenance `yaml:"provenance" json:"provenance,omitempty"`
+	Key        string          `yaml:"key" json:"key"`
+	Label      string          `yaml:"label" json:"label"`
+	Default    int             `yaml:"default" json:"default"`
 }
 
 type RFPReturnable struct {
@@ -309,16 +319,28 @@ func (c *Catalog) RFPForDiscipline(disciplineID string) (RFPDiscipline, bool) {
 // RFPSuggest proposes a discipline from a package title. It is a hint for
 // the user to confirm; a free-text title never selects contract scope.
 func (c *Catalog) RFPSuggest(title string) (RFPDiscipline, bool) {
-	words := strings.Fields(strings.ToLower(strings.NewReplacer("-", " ", "/", " ", ",", " ").Replace(title)))
+	normalize := func(s string) string {
+		s = strings.ToLower(strings.NewReplacer("-", " ", "/", " ", ",", " ", "(", " ", ")", " ", ".", " ").Replace(s))
+		return strings.Join(strings.Fields(s), " ")
+	}
+	text := " " + normalize(title) + " "
+	best, score, ambiguous := RFPDiscipline{}, 0, false
 	for _, id := range c.RFPDisciplines() {
 		d := c.rfp.disciplines[id]
 		for _, alias := range d.TitleAliases {
-			if slices.Contains(words, alias) {
-				return d, true
+			phrase := normalize(alias)
+			if phrase == "" || !strings.Contains(text, " "+phrase+" ") {
+				continue
+			}
+			n := len(strings.Fields(phrase))
+			if n > score {
+				best, score, ambiguous = d, n, false
+			} else if n == score && best.ID != d.ID {
+				ambiguous = true
 			}
 		}
 	}
-	return RFPDiscipline{}, false
+	return best, score > 0 && !ambiguous
 }
 
 func (c *Catalog) loadRFP(dir string) error {
@@ -415,6 +437,11 @@ func parseRFPSkeleton(body []byte) (RFPSkeleton, error) {
 		if err := uniqueKeys(name, len(list), func(i int) string { return list[i].Key }); err != nil {
 			return s, err
 		}
+		for _, option := range list {
+			if err := checkProvenance(name+" "+option.Key, option.Provenance); err != nil {
+				return s, err
+			}
+		}
 	}
 	if err := uniqueKeys("fields", len(s.Fields), func(i int) string { return s.Fields[i].Key }); err != nil {
 		return s, err
@@ -502,17 +529,66 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	if err := checkWhen("scale", d.Scale.Complex, s); err != nil {
 		return d, err
 	}
+	if len(d.Evaluation) > 0 {
+		if err := uniqueKeys("evaluation", len(d.Evaluation), func(i int) string { return d.Evaluation[i].Key }); err != nil {
+			return d, err
+		}
+		total := 0
+		for _, w := range d.Evaluation {
+			if w.Label == "" || w.Default < 0 || w.Default > 100 {
+				return d, fmt.Errorf("evaluation %s needs a label and percentage", w.Key)
+			}
+			if err := checkProvenance("evaluation "+w.Key, w.Provenance); err != nil {
+				return d, err
+			}
+			total += w.Default
+		}
+		if total != 100 {
+			return d, fmt.Errorf("discipline evaluation must total 100")
+		}
+	}
+	for _, group := range []struct {
+		name        string
+		own, shared []RFPRow
+	}{
+		{"term", d.Terms, s.Terms}, {"project", d.ProjectRows, s.ProjectRows},
+	} {
+		for _, row := range group.own {
+			if !row.Replace {
+				continue
+			}
+			found := false
+			for _, shared := range group.shared {
+				found = found || shared.Key == row.Key
+			}
+			if !found {
+				return d, fmt.Errorf("%s replacement %q names no shared row", group.name, row.Key)
+			}
+		}
+	}
 	for _, n := range d.ReturnableNotes {
 		if !regexp.MustCompile(`^r[1-9]$`).MatchString(n.Key) {
 			return d, fmt.Errorf("returnable note %q must name r1-r9", n.Key)
+		}
+		if strings.TrimSpace(n.Text) == "" {
+			return d, fmt.Errorf("returnable note %s needs text", n.Key)
+		}
+		if err := checkProvenance("returnable note "+n.Key, n.Provenance); err != nil {
+			return d, err
 		}
 		if err := checkWhen("returnable note "+n.Key, n.When, s); err != nil {
 			return d, err
 		}
 	}
-	for _, rows := range [][]RFPRow{d.ProjectRows, d.Role, d.Terms} {
+	for _, rows := range [][]RFPRow{d.ProjectRows, d.Role, d.Terms, d.ScopeSchedule} {
 		if err := checkRows(rows, s); err != nil {
 			return d, err
+		}
+	}
+	for _, row := range d.ScopeSchedule {
+		// Unknown allocations must remain visible for the parties to resolve.
+		if len(row.When) > 0 || row.Module != "" || row.Replace || len(row.Provenance) == 0 {
+			return d, fmt.Errorf("scope schedule %s must be unconditional and have provenance", row.Key)
 		}
 	}
 	stageKeys := map[string]bool{}
@@ -636,7 +712,7 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	// stage and element conditions may only name keys that exist.
 	check := func(where string, w RFPWhen) error {
 		for _, clause := range w {
-			for _, v := range clause["stage"] {
+			for _, v := range append(append([]string(nil), clause["stage"]...), clause["stage_included"]...) {
 				if !stageKeys[v] {
 					return fmt.Errorf("%s names unknown stage %q", where, v)
 				}
@@ -652,6 +728,13 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	for _, p := range d.Positions {
 		if err := check("position "+p.Key, p.When); err != nil {
 			return d, err
+		}
+		for _, cell := range []*RFPCell{p.Value, p.Simple, p.Complex} {
+			if cell != nil {
+				if err := check("position "+p.Key, cell.When); err != nil {
+					return d, err
+				}
+			}
 		}
 	}
 	for _, a := range d.Allowances {

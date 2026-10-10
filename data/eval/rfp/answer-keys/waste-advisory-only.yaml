@@ -1,0 +1,72 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: advisory
+  category: residential
+  pathway: advice_only
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  mixed_use: 'no'
+  multi_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  waste_operational: 'no'
+  waste_cd: 'no'
+  waste_shared: 'no'
+parts:
+- id: building
+  label: House
+  classes:
+  - 1a
+address: 1 Example St, Example NSW
+fields:
+  ref: WASTE-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project waste appointment (attached)
+  client: Example Client
+  pi: $5 million (client selected)
+  pl: $20 million (client selected)
+  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation
+    owners. Fixture quantities are client choices, not generation-rate defaults.
+settings:
+  waste-management:
+    boundary:range:
+      start: s1_inception
+      end: s8_advisory
+    allowance:coverage: '2'
+    allowance:plans: '2'
+    allowance:meetings: '2'
+    allowance:design: '2'
+    allowance:visits: '2'
+    allowance:duration: '2'
+sources:
+- docs/rfp-golden/waste-management/rfp.md Sections 1-7
+- 'docs/rfp-golden/waste-management/ledger.md #1-45'
+scenario: waste-advisory-only
+description: Evidence-limited peer review ends at its report; no automatic operational/C&D WMP or later construction
+  service.
+expect:
+  waste-management:
+    stages_include:
+    - s1_inception
+    - s8_advisory
+    stages_absent:
+    - s2_concept
+    - s3_operational
+    - s3_cd
+    - s4_review
+    - s5_tender
+    - s6_contractor
+    - s7_completion
+    positions:
+      operational: absent
+      cd: absent
+      independent: O
+      postoccupation: O

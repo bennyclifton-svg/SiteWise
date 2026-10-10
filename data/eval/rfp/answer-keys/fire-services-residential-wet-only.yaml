@@ -1,0 +1,72 @@
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+facts:
+  work_type: new
+  category: residential
+  pathway: da
+  procurement: traditional
+  novation: 'no'
+  state: NSW
+flags:
+  existing_building: 'no'
+  live_operations: 'no'
+  staged: 'no'
+  multi_building: 'no'
+  mixed_use: 'no'
+  fs_wet: 'yes'
+  fs_supply: 'yes'
+  fs_authority: 'no'
+  fs_dry: 'no'
+  fs_controls: 'no'
+  fs_plant_interfaces: 'no'
+  fs_investigation: 'no'
+  fs_upgrade: 'no'
+  fs_declarations: 'no'
+parts:
+- id: affected
+  label: Office
+  classes:
+  - '2'
+address: 1 Example Street, Example NSW
+fields:
+  ref: FS-TEST
+  issued: '2026-10-12'
+  closes: '2026-10-30'
+  questions_by: '2026-10-23'
+  contact: Project manager
+  agreement: Project fire services agreement (attached)
+  client: Example Client
+  pi: Project-selected $5m
+  pl: Project-selected $20m
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
+    R1-R9 schedules.
+settings:
+  fire-services:
+    boundary:range:
+      start: inception
+      end: tender
+    allowance:extent: '2'
+    allowance:visits: '2'
+    allowance:design: '2'
+    allowance:coordination: '2'
+    allowance:tender: '2'
+    allowance:construction: '2'
+    allowance:completion: '2'
+sources:
+- docs/rfp-golden/fire-services/rfp.md Sections 1-7
+- 'docs/rfp-golden/fire-services/ledger.md #1-55'
+scenario: fire-services-residential-wet-only
+description: Residential wet package does not silently purchase dry fire or authority works.
+snapshot: false
+expect:
+  fire-services:
+    positions:
+      wet: I
+      dry: absent
+      controls: absent
+      authority: absent
+      plant: absent
+      declarations: absent
+    blocking_only: true
+    blocking: []
