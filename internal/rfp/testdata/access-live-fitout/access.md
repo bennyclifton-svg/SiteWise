@@ -4,19 +4,21 @@ Ref ACCESS-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project man
 
 Example Client intends to refurbish and fit out Retail fit-out (Class 6) at 1 Example St, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Retail fit-out: Class 6 |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; no automatic later appointment or novation. |
-| Site conditions | Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Access building-approval review selected; Shared tenancy access review selected; Hearing signage lifts and facility criteria review selected |
-| Information provided | Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts are client choices. |
-| Assessment basis | Confirm uses/classes by part, affected access chain and tenant/operator boundaries; current jurisdiction/editions, housing targets and mandatory versus voluntary objectives. Attach measured evidence, approvals, conditions and gaps. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Refurbishment / fit-out / upgrade | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: Retail fit-out: Class 6 | Planning pathway: Development application (DA) | Procurement route: Design and construct; no automatic later appointment or novation. |
+
+Conditions that apply: Work to an existing building; Site stays occupied or operating during the works; Delivered in stages.
+Conditions that do not apply: Several buildings or a campus; Parts with different NCC classes.
+
+Information provided: Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts are client choices.
 
 ### 2. Your role
 
 Access advice from written instruction/agreed inputs to named final output and response-round end. Architect/specialists retain design; BCA adviser coordinates code; independent statutory certifier decides approval. No approval or discrimination-immunity guarantee.
 Dated PDFs/mark-ups and editable issues, assumptions, solutions and evidence registers; locations, input revisions, owners/dates and closure proof. Coordinate architecture, landscape/civil, services/AV, lifts, fire, BCA and operator.
+Assessment basis: Confirm uses/classes by part, affected access chain and tenant/operator boundaries; current jurisdiction/editions, housing targets and mandatory versus voluntary objectives. Attach measured evidence, approvals, conditions and gaps.
 
 ### 3. Scope by stage
 

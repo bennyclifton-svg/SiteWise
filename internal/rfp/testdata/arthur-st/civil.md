@@ -4,19 +4,22 @@ Ref HC-ARTHUR-RFP · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project m
 
 Hale Capital intends to extend Warehouse (Class 7b) and Mezzanine office (Class 5) at 145-151 Arthur St, Homebush West NSW (Strathfield).
 
-| Project | Detail |
-|---|---|
-| Building | Warehouse: Class 7b, 2,135 m² GFA; Mezzanine office: Class 5, 215 m² GFA |
-| Quantities | Site 31,720 m² · Gross floor area to be confirmed |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum |
-| Site conditions | Work to an existing building; Parts with different NCC classes; Building over or next to a water authority asset; Existing on-site detention to keep or modify; Use generates heavy vehicle movements |
-| Information provided | 12 current documents in the project register, listed in the issue record |
-| Design vehicle | B-double |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Extension / addition | Site address: 145-151 Arthur St, Homebush West NSW | Client: Hale Capital |
+| Building: Warehouse: Class 7b, 2,135 m² GFA; Mezzanine office: Class 5, 215 m² GFA | Local government area: Strathfield | Procurement route: Traditional lump sum |
+| Gross floor area: To be confirmed | Site area: 31,720 m² | Regulated design applies: Not known |
+|  | Planning pathway: Development application (DA) |  |
+
+Conditions that apply: Work to an existing building; Parts with different NCC classes; Building over or next to a water authority asset; Existing on-site detention to keep or modify; Use generates heavy vehicle movements.
+Conditions not yet known: Flood-affected site; Contaminated or potentially contaminated land; Acid sulfate soils mapped; Groundwater above the base of excavation; Basement or deep excavation; Excavation next to adjoining structures or boundaries; On-site detention required by council; Drinking water catchment (neutral or beneficial effect); Council requires stormwater quality modelling; Works in a public road or intersection.
+
+Information provided: 12 current documents in the project register, listed in the issue record
 
 ### 2. Your role
 
 Civil engineer for work outside building footprints: earthworks, roads and pavements, levels, stormwater and water quality. The hydraulic engineer designs roof drainage, downpipes and pumped systems; utility designers do water, sewer, power and communications; you combine their layouts with yours. The traffic engineer sets parking numbers, design vehicles and intersection layout; you design to them.
+Design vehicle: B-double
 
 ### 3. Scope by stage
 

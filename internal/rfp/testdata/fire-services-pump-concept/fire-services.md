@@ -4,19 +4,20 @@ Ref FS-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manager
 
 Example Client intends to extend Warehouse (Class 7b) at 1 Example Street, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Warehouse: Class 7b |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; no automatic continuation or novation. |
-| Site conditions | Wet design selected; Demand/storage selected; Authority/test tasks allocated; Dry design allocated; Controls coordination allocated; Plant interface review selected; Existing investigation selected; Upgrade design selected; Declarations selected; Work to an existing building |
-| Information provided | Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified R1-R9 schedules. |
-| Design basis | R7: parts/use/hazards, strategy/approvals, insurer/operator criteria, records/revisions, supply dates/conditions, plant/pipework and access gaps. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Extension / addition | Site address: 1 Example Street, Example NSW | Client: Example Client |
+| Building: Warehouse: Class 7b | Planning pathway: Development application (DA) | Procurement route: Design and construct; no automatic continuation or novation. |
+
+Conditions that apply: Work to an existing building.
+
+Information provided: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified R1-R9 schedules.
 
 ### 2. Your role
 
 Design selected physical systems at purchased maturity. Concept tank/pump capacity is not full hydraulic design or proof of existing adequacy.
 Fire engineer owns strategy/solutions; authorities decide. Trades install/test/certify; review/witnessing neither executes tests nor certifies unseen work. Name network design/application owners.
+Design basis: R7: parts/use/hazards, strategy/approvals, insurer/operator criteria, records/revisions, supply dates/conditions, plant/pipework and access gaps.
 
 ### 3. Scope by stage
 

@@ -221,13 +221,45 @@ type RFPField struct {
 	Label    string `yaml:"label" json:"label"`
 	Kind     string `yaml:"kind" json:"kind"` // text | date | money | number
 	Required bool   `yaml:"required" json:"required"`
-	Group    string `yaml:"group" json:"group"` // issue | project
+	Group    string `yaml:"group" json:"group"` // issue | terms | project | appointment
 	Default  string `yaml:"default" json:"default,omitempty"`
 	Help     string `yaml:"help" json:"help,omitempty"`
 	// Profile is the field's one home when the project, not the RFP, owns
 	// it: proj.<detail>, site.address or site.lot. The RFP reads it and
 	// never stores its own value (owner decision D1).
 	Profile string `yaml:"profile" json:"profile,omitempty"`
+}
+
+// GridRow is one labelled value in the project grid on RFP page one. The
+// columns mirror the Profile card's (web/src/Profile.tsx COLUMNS), so a fact
+// sits in the same place on both. The RFP fills each row from facts it
+// already holds; a discipline may replace a row's wording (replace: true).
+type GridRow struct {
+	Key       string
+	Label     string
+	Column    string
+	Essential bool // printed even when unknown
+}
+
+var ProjectGridColumns = []string{"The building", "Site and planning", "Delivery"}
+
+var ProjectGrid = []GridRow{
+	{"work_type", "Work type", "The building", true},
+	{"parts", "Building", "The building", true},
+	{"storeys", "Storeys", "The building", false},
+	{"gfa", "Gross floor area", "The building", false},
+	{"parking", "Car parks", "The building", false},
+	{"address", "Site address", "Site and planning", true},
+	{"lot_dp", "Lot and DP", "Site and planning", false},
+	{"lga", "Local government area", "Site and planning", false},
+	{"zone", "Zone", "Site and planning", false},
+	{"site_area", "Site area", "Site and planning", false},
+	{"pathway", "Planning pathway", "Site and planning", true},
+	{"client", "Client", "Delivery", true},
+	{"procurement", "Procurement route", "Delivery", true},
+	{"program", "Program milestones", "Delivery", false},
+	{"sustainability", "Sustainability target", "Delivery", false},
+	{"regulated_design", "Regulated design applies", "Delivery", false},
 }
 
 type RFPWeight struct {
@@ -447,7 +479,7 @@ func parseRFPSkeleton(body []byte) (RFPSkeleton, error) {
 		return s, err
 	}
 	for _, f := range s.Fields {
-		if !slices.Contains([]string{"text", "date", "money", "number"}, f.Kind) || !slices.Contains([]string{"issue", "project"}, f.Group) || f.Label == "" {
+		if !slices.Contains([]string{"text", "date", "money", "number"}, f.Kind) || !slices.Contains([]string{"issue", "terms", "project", "appointment"}, f.Group) || f.Label == "" {
 			return s, fmt.Errorf("field %q needs a label, kind and group", f.Key)
 		}
 		if f.Profile != "" && (f.Group != "project" || (f.Profile != "site.address" && f.Profile != "site.lot" && !strings.HasPrefix(f.Profile, DetailPrefix))) {
@@ -560,6 +592,11 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 			found := false
 			for _, shared := range group.shared {
 				found = found || shared.Key == row.Key
+			}
+			if group.name == "project" {
+				for _, g := range ProjectGrid {
+					found = found || g.Key == row.Key
+				}
 			}
 			if !found {
 				return d, fmt.Errorf("%s replacement %q names no shared row", group.name, row.Key)

@@ -4,19 +4,20 @@ Ref LANDSCAPE-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project 
 
 Example Client intends to build Apartments (Class 2) and Shops (Class 6) at 1 Example St, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Apartments: Class 2; Shops: Class 6 |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum; no automatic later appointment or novation. |
-| Site conditions | Parts with different NCC classes; Landscape design extent selected; Podium roof planter interface extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected |
-| Information provided | Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture quantities are client choices. |
-| Landscape basis | Confirm measured extent/map revision, actual users, private/common/public ground/roof areas; survey, levels/services, tree IDs, soil/environmental and structural/waterproofing evidence, current controls/consents, operator and access. Record gaps/conflicts. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: New build | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: Apartments: Class 2; Shops: Class 6 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; no automatic later appointment or novation. |
+
+Conditions that apply: Parts with different NCC classes.
+
+Information provided: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture quantities are client choices.
 
 ### 2. Your role
 
 Selected landscape design/advice from instruction, inputs and access to named output/response milestone. Specialists own technical design; authorities approve. No approval, plant-survival or unseen-work guarantee.
 Controlled PDFs/plans, schedules/calculations and registers; agree native formats, recipients/reliance, input revisions, rounds/dates. Verify instrument/edition before using ratios, canopy, soil-depth or load figures.
+Landscape basis: Confirm measured extent/map revision, actual users, private/common/public ground/roof areas; survey, levels/services, tree IDs, soil/environmental and structural/waterproofing evidence, current controls/consents, operator and access. Record gaps/conflicts.
 
 ### 3. Scope by stage
 

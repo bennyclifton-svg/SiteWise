@@ -4,19 +4,20 @@ Ref BCA-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manage
 
 Example Client intends to refurbish and fit out Housing (Class 2) and Shop (Class 6) at 1 Example St, Example NSW (Example LGA).
 
-| Project | Detail |
-|---|---|
-| Building | Housing: Class 2; Shop: Class 6 |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; A transfer requires agreement/independence review; B separately appointed. |
-| Site conditions | Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Several buildings or a campus; Parts with different NCC classes; BCA advisory requested; Certification requested; Existing BCA extent agreed; Classification map required; Occupied/staged BCA assessment; Fire referrals/witnessing required; Residential evidence review required |
-| Assessment basis | Confirm uses/classifications by part, new/retained/affected areas, consent and drawing revisions, governing NCC edition, prior approvals and missing/conflicting evidence in the information register. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Refurbishment / fit-out / upgrade | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: Housing: Class 2; Shop: Class 6 | Local government area: Example LGA | Procurement route: Design and construct; A transfer requires agreement/independence review; B separately appointed. |
+|  | Planning pathway: Development application (DA) |  |
+
+Conditions that apply: Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Several buildings or a campus; Parts with different NCC classes.
 
 ### 2. Your role
 
 A: design-team BCA adviser; identify risks and evidence gaps, coordinate specialists and report. No statutory appointment or specialist design.
 B: independent regulatory assessor for expressly appointed functions. Fees buy assessment and duties; issue of a certificate depends on satisfactory assessment.
 Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work.
+Assessment basis: Confirm uses/classifications by part, new/retained/affected areas, consent and drawing revisions, governing NCC edition, prior approvals and missing/conflicting evidence in the information register.
 
 ### 3. Scope by stage
 

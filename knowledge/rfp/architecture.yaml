@@ -28,9 +28,6 @@ scale:
     - {budget_over: ["20000000"]}
     - {flag: [heritage]}
 
-project_rows:
-  - {key: sustainability, label: Sustainability target, text: "{field:sustainability}", when: [{flag: [sustainability_target]}], provenance: [{kind: evidence, ref: "architecture#115"}]}
-
 role:
   - key: lead
     text: "Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. The client engages the other consultants directly: {consultants}."

@@ -4,19 +4,21 @@ Ref SURVEY-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project man
 
 Example Client intends to extend Industrial extend (Class 7b) at 1 Example St, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Industrial extend: Class 7b |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; no automatic novation or continuing builder support. |
-| Site conditions | Work to an existing building; Site stays occupied or operating during the works; Detail survey selected; Boundary survey selected; Services survey selected; Adjoining features selected; Buried geometry selected; Sewer evidence selected |
-| Information provided | Marked survey extent/features; title/DP/easements, current design revisions, agreed datum/control/accuracy, methods and named third-party responsibilities. Quantities are client fixture selections. |
-| Survey brief | Attach marked extent/features, purpose/users, title/DP/easements, dated records/conflicts, coordinate system/zone/epoch, vertical datum/control/transformation and accuracy by purpose. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Extension / addition | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: Industrial extend: Class 7b | Planning pathway: Development application (DA) | Procurement route: Design and construct; no automatic novation or continuing builder support. |
+
+Conditions that apply: Work to an existing building; Site stays occupied or operating during the works.
+Conditions that do not apply: Delivered in stages.
+
+Information provided: Marked survey extent/features; title/DP/easements, current design revisions, agreed datum/control/accuracy, methods and named third-party responsibilities. Quantities are client fixture selections.
 
 ### 2. Your role
 
 Provide selected survey evidence; detail observations, legal boundary/title, utility detection and set-out are distinct purchases. Confirm task/jurisdiction competence. Fence lines or title searches are not boundary proof; legal adviser owns rights advice.
 Designers own design; locator detects, surveyor captures, plumber provides sewer evidence. Name client-direct/subcontract work. Tank geometry is not hydraulic capacity, integrity or watertightness certification.
+Survey brief: Attach marked extent/features, purpose/users, title/DP/easements, dated records/conflicts, coordinate system/zone/epoch, vertical datum/control/transformation and accuracy by purpose.
 
 ### 3. Scope by stage
 

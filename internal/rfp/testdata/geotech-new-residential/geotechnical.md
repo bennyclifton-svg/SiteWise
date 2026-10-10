@@ -4,18 +4,17 @@ Ref GEOTECH-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project ma
 
 Example Client intends to build Housing (Class 1a) at 1 Example St, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Housing: Class 1a |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum; no automatic later appointment or novation. |
-| Site conditions | Intrusive investigation selected; Foundation advice selected; Civil ground parameters selected; Asset exposure selected; ASS assessment package selected; Investigation handback selected; Ground planning support selected |
-| Information provided | Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory suite, owners and reliance recipients); quantities are client test-fixture choices. |
-| Ground brief | Confirm footprints, loads, levels/cut-fill, excavation, prior logs, services, risks, access and reliance recipients; reconcile conflicting plans. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: New build | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: Housing: Class 1a | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; no automatic later appointment or novation. |
+
+Information provided: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory suite, owners and reliance recipients); quantities are client test-fixture choices.
 
 ### 2. Your role
 
 Investigate and interpret ground for the stated decision; identify preliminary/final reports and monitoring endpoint. Civil/structural designers own design; contractor owns methods, temporary works and supervision. Environmental assessment is a separate appointment.
+Ground brief: Confirm footprints, loads, levels/cut-fill, excavation, prior logs, services, risks, access and reliance recipients; reconcile conflicting plans.
 
 ### 3. Scope by stage
 

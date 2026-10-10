@@ -4,19 +4,20 @@ Ref WASTE-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project mana
 
 Example Client intends to refurbish and fit out Residential floors (Class 2) and Food retail fit-out (Class 6) at 1 Example St, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Residential floors: Class 2; Food retail fit-out: Class 6 |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; no automatic later appointment or novation. |
-| Site conditions | Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Parts with different NCC classes; Operational waste plan selected; Construction and demolition waste plan selected; Shared waste facilities or operator coordination selected |
-| Information provided | Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation owners. Fixture quantities are client choices, not generation-rate defaults. |
-| Waste basis | Confirm actual uses/occupancy/activity by part, streams, dated quantities/rates, local controls/conditions and mandatory versus voluntary targets; existing contracts, collection vehicles/frequency, rights and gaps. Building labels and absent records prove neither zero waste nor adequate collection. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Refurbishment / fit-out / upgrade | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: Residential floors: Class 2; Food retail fit-out: Class 6 | Planning pathway: Development application (DA) | Procurement route: Design and construct; no automatic later appointment or novation. |
+
+Conditions that apply: Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Parts with different NCC classes.
+
+Information provided: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 
 ### 2. Your role
 
 Selected waste advice from written instruction/agreed inputs to named final output and response round. Contractor implements; operator contracts collections; specialists classify controlled waste; traffic tests access. No approval, facility acceptance, diversion or savings guarantee.
 Revision-controlled PDFs/plans/calculations and editable registers: input revisions, units/source/date, assumptions, owners/dates, recipients/reliance and closure evidence. Separate observed, reported and estimated conditions.
+Waste basis: Confirm actual uses/occupancy/activity by part, streams, dated quantities/rates, local controls/conditions and mandatory versus voluntary targets; existing contracts, collection vehicles/frequency, rights and gaps. Building labels and absent records prove neither zero waste nor adequate collection.
 
 ### 3. Scope by stage
 

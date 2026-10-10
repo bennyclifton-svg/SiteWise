@@ -4,13 +4,14 @@ Ref HYD-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manage
 
 Example Client intends to build Residential camp and commercial kitchen (Class 3, 9b) at 1 Example Street, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Residential camp and commercial kitchen: Class 3, 9b |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; later design/novation separately appointed. |
-| Site conditions | Investigation selected; Authority inputs selected; Alternative sources; Domestic pumps/storage; Treatment connection; Roof drainage; External drainage; Trade waste; Gas/fluids; Utility/WSC; Building interfaces selected; Phase/tenancy design selected; Declarations selected; Parts with different NCC classes |
-| Information provided | Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
+| Building: Residential camp and commercial kitchen: Class 3, 9b | Planning pathway: Development application (DA) | Procurement route: Design and construct; later design/novation separately appointed. |
+
+Conditions that apply: Parts with different NCC classes.
+
+Information provided: Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
 
 ### 2. Your role
 

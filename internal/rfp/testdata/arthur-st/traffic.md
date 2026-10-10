@@ -4,20 +4,24 @@ Ref HC-ARTHUR-RFP · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project m
 
 Hale Capital intends to extend Warehouse (Class 7b) and Mezzanine office (Class 5) at 145-151 Arthur St, Homebush West NSW (Strathfield).
 
-| Project | Detail |
-|---|---|
-| Building | Warehouse: Class 7b, 2,135 m² GFA; Mezzanine office: Class 5, 215 m² GFA |
-| Quantities | Site 31,720 m² · Gross floor area to be confirmed |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum |
-| Site conditions | Work to an existing building; Parts with different NCC classes; Building over or next to a water authority asset; Existing on-site detention to keep or modify; Use generates heavy vehicle movements |
-| Information provided | 12 current documents in the project register, listed in the issue record |
-| Design vehicle | B-double |
-| Controls | Strathfield DCP parking rates · Development application (DA) |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Extension / addition | Site address: 145-151 Arthur St, Homebush West NSW | Client: Hale Capital |
+| Building: Warehouse: Class 7b, 2,135 m² GFA; Mezzanine office: Class 5, 215 m² GFA | Local government area: Strathfield | Procurement route: Traditional lump sum |
+| Gross floor area: To be confirmed | Site area: 31,720 m² |  |
+|  | Planning pathway: Development application (DA) |  |
+
+Conditions that apply: Work to an existing building; Parts with different NCC classes; Building over or next to a water authority asset; Existing on-site detention to keep or modify; Use generates heavy vehicle movements.
+Conditions that do not apply: Intersection counts and modelling required.
+Conditions not yet known: Works in a public road or intersection; Site fronts or affects a state road; Traffic-generating development referred to TfNSW; Green travel plan required by a condition or the DCP.
+
+Information provided: 12 current documents in the project register, listed in the issue record
 
 ### 2. Your role
 
 Traffic engineer for the applicant. You advise the design team on access, parking and circulation while the design develops, and prepare the traffic report the consent authority needs. Plans come from the architect in DWG and PDF.
+Design vehicle: B-double
+Controls: Strathfield DCP parking rates · Development application (DA)
 
 ### 3. Scope by stage
 

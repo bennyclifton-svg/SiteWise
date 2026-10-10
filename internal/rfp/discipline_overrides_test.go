@@ -81,20 +81,31 @@ func TestScopeChoicesDoNotLeakIntoOtherRFPs(t *testing.T) {
 	d := discipline(t, "structural")
 	drivers := facts(t, "flag.test_package=yes", "flag.flood=yes")
 	conditions := func(r Resolved) string {
-		for _, row := range r.Project {
-			if row.Key == "conditions" {
-				return row.Text
-			}
+		labels := []string{}
+		for _, c := range r.Conditions {
+			labels = append(labels, c.Label+": "+c.Answer)
 		}
-		return ""
+		return strings.Join(labels, "; ")
 	}
 	text := conditions(Resolve(d, sk, drivers, nil))
 	if strings.Contains(text, "Other consultant package") || !strings.Contains(text, "Flood") {
 		t.Fatalf("unrelated scope choice or missing shared condition: %s", text)
 	}
 	d.Role = append(d.Role, knowledge.RFPRow{Key: "test_package", Text: "Appointed package", When: knowledge.RFPWhen{{"flag": {"test_package"}}}})
-	if text := conditions(Resolve(d, sk, drivers, nil)); !strings.Contains(text, "Other consultant package") {
-		t.Fatalf("own scope choice missing: %s", text)
+	// Its own scope choice is part of the appointment (section 2), never a
+	// site condition on the shared page one.
+	r := Resolve(d, sk, drivers, nil)
+	if text := conditions(r); strings.Contains(text, "Other consultant package") {
+		t.Fatalf("scope choice printed as a site condition: %s", text)
+	}
+	if !strings.Contains(strings.Join(func() []string {
+		out := []string{}
+		for _, row := range r.Role {
+			out = append(out, row.Text)
+		}
+		return out
+	}(), " "), "Appointed package") {
+		t.Fatal("own scope choice missing from the role")
 	}
 }
 
@@ -113,17 +124,15 @@ func TestDisciplineContractOverrides(t *testing.T) {
 		if r.Scale != "simple" {
 			t.Fatal("an empty complex condition must not imply complexity")
 		}
-		procurementRows := 0
-		for _, row := range r.Project {
-			if row.Key == "procurement" {
-				procurementRows++
-				if strings.Contains(row.Text, "this appointment is novated") || !strings.Contains(row.Text, "separate statutory appointment") {
-					t.Fatal(row.Text)
-				}
-			}
+		// The replacement rewords the page-one grid cell, once.
+		cell, _ := gridCell(r, "Delivery", "Procurement route")
+		if strings.Contains(cell.Text, "this appointment is novated") || !strings.Contains(cell.Text, "separate statutory appointment") {
+			t.Fatal(cell.Text)
 		}
-		if procurementRows != 1 {
-			t.Fatalf("got %d procurement rows", procurementRows)
+		for _, row := range append(r.Project, r.Appointment...) {
+			if row.Key == "procurement" {
+				t.Fatalf("procurement printed twice: %s", row.Text)
+			}
 		}
 		payments := []string{}
 		for _, row := range r.Terms {

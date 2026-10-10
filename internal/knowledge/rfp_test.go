@@ -2,6 +2,7 @@ package knowledge
 
 import (
 	"os"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -288,7 +289,7 @@ func TestSkeletonProfileHomes(t *testing.T) {
 			t.Fatalf("%s home = %q, want %q", key, homes[key], want)
 		}
 	}
-	bad := strings.Replace(mustRead(t, "../../knowledge/rfp/skeleton.yaml"), "group: issue, help: \"Name the agreement", "group: issue, profile: proj.agreement, help: \"Name the agreement", 1)
+	bad := strings.Replace(mustRead(t, "../../knowledge/rfp/skeleton.yaml"), "group: terms, help: \"Name the agreement", "group: terms, profile: proj.agreement, help: \"Name the agreement", 1)
 	if _, err := parseRFPSkeleton([]byte(bad)); err == nil {
 		t.Fatal("an issue field cannot have a profile home")
 	}
@@ -301,4 +302,49 @@ func mustRead(t *testing.T, path string) string {
 		t.Fatal(err)
 	}
 	return string(body)
+}
+
+// Page one is the project; the RFP's commercial terms, its issue details and
+// a discipline's own inputs are separate groups (docs/plans/2026-10-10-rfp-page-one-design.md).
+func TestSkeletonFieldGroups(t *testing.T) {
+	s := realRFPSkeleton(t)
+	groups := map[string]string{}
+	for _, f := range s.Fields {
+		groups[f.Key] = f.Group
+	}
+	for key, want := range map[string]string{
+		"agreement": "terms", "payment_days": "terms", "validity_days": "terms", "rates_hold_until": "terms", "pi": "terms", "pl": "terms",
+		"ref": "issue", "closes": "issue", "contact": "issue", "client": "project", "design_vehicle": "appointment", "design_loads": "appointment",
+	} {
+		if groups[key] != want {
+			t.Errorf("%s group = %q, want %q", key, groups[key], want)
+		}
+	}
+	keys := []string{}
+	for _, r := range s.ProjectRows {
+		keys = append(keys, r.Key)
+	}
+	if strings.Join(keys, ",") != "intro,information" {
+		t.Fatalf("shared project rows = %v; the grid holds the rest", keys)
+	}
+}
+
+func TestProjectGridMirrorsProfileColumns(t *testing.T) {
+	if strings.Join(ProjectGridColumns, ",") != "The building,Site and planning,Delivery" {
+		t.Fatalf("columns = %v", ProjectGridColumns)
+	}
+	last := 0
+	for _, r := range ProjectGrid {
+		i := slices.Index(ProjectGridColumns, r.Column)
+		if i < last {
+			t.Fatalf("%s is out of column order", r.Key)
+		}
+		last = i
+	}
+	if err := parseWith(t, "project_rows:\n  - {key: procurement, replace: true, label: Procurement, text: \"{procurement_route}; no novation.\", provenance: [{kind: seed, ref: x}]}\n"); err != nil {
+		t.Fatalf("a discipline may replace a grid cell: %v", err)
+	}
+	if err := parseWith(t, "project_rows:\n  - {key: nowhere, replace: true, label: X, text: x, provenance: [{kind: seed, ref: x}]}\n"); err == nil {
+		t.Fatal("a replacement must name a shared row or a grid cell")
+	}
 }

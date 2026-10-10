@@ -4,14 +4,17 @@ Ref YMCA-YAR-RFP · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project ma
 
 YMCA NSW intends to extend Accommodation lodges (Class 3) and Conference hall (Class 9b) at Springwood Rd, Yarramundi NSW (Hawkesbury).
 
-| Project | Detail |
-|---|---|
-| Building | Accommodation lodges: Class 3; Conference hall: Class 9b |
-| Quantities | Site 216,000 m² · 129 car spaces |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; this appointment is novated to the contractor |
-| Site conditions | Flood-affected site; Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Several buildings or a campus; Parts with different NCC classes; Drinking water catchment (neutral or beneficial effect); Works in a public road or intersection |
-| Information provided | 30 current documents in the project register, listed in the issue record |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Extension / addition | Site address: Springwood Rd, Yarramundi NSW | Client: YMCA NSW |
+| Building: Accommodation lodges: Class 3; Conference hall: Class 9b | Local government area: Hawkesbury | Procurement route: Design and construct; this appointment is novated to the contractor |
+| Car parks: 129 | Site area: 216,000 m² | Regulated design applies: Yes |
+|  | Planning pathway: Development application (DA) |  |
+
+Conditions that apply: Flood-affected site; Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Several buildings or a campus; Parts with different NCC classes; Drinking water catchment (neutral or beneficial effect); Works in a public road or intersection.
+Conditions not yet known: Heritage item or conservation area; Connecting with Country input required; Community consultation required; Green Star or NABERS target set; Client wants the consultant to administer the construction contract.
+
+Information provided: 30 current documents in the project register, listed in the issue record
 
 ### 2. Your role
 

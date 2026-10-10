@@ -187,13 +187,13 @@ fields:
   - {key: closes, label: Proposals close, kind: date, required: true, group: issue}
   - {key: contact, label: Contact for questions, kind: text, required: true, group: issue}
   - {key: questions_by, label: Questions in writing by, kind: date, required: true, group: issue}
-  - {key: agreement, label: Client agreement, kind: text, required: true, group: issue, help: "Name the agreement attached to this RFP. A missing agreement is an open question, never acceptance of the consultant's terms."}
+  - {key: agreement, label: Client agreement, kind: text, required: true, group: terms, help: "Name the agreement attached to this RFP. A missing agreement is an open question, never acceptance of the consultant's terms."}
   - {key: start_by, label: Start by, kind: date, required: false, group: issue}
-  - {key: rates_hold_until, label: Rates hold until, kind: date, required: false, group: issue}
-  - {key: validity_days, label: Proposal validity (days), kind: number, required: true, group: issue, default: "90"}
-  - {key: payment_days, label: Payment terms (days), kind: number, required: true, group: issue, default: "30"}
-  - {key: pi, label: Professional indemnity cover, kind: text, required: true, group: issue, default: "$10 million"}
-  - {key: pl, label: Public liability cover, kind: text, required: true, group: issue, default: "$20 million"}
+  - {key: rates_hold_until, label: Rates hold until, kind: date, required: false, group: terms}
+  - {key: validity_days, label: Proposal validity (days), kind: number, required: true, group: terms, default: "90"}
+  - {key: payment_days, label: Payment terms (days), kind: number, required: true, group: terms, default: "30"}
+  - {key: pi, label: Professional indemnity cover, kind: text, required: true, group: terms, default: "$10 million"}
+  - {key: pl, label: Public liability cover, kind: text, required: true, group: terms, default: "$20 million"}
   - {key: client, label: Client, kind: text, required: true, group: project, profile: proj.client}
   - {key: address, label: Site address, kind: text, required: false, group: project, profile: site.address}
   - {key: lga, label: Local government area, kind: text, required: false, group: project, profile: proj.lga}
@@ -201,9 +201,9 @@ fields:
   - {key: lot_dp, label: Lot and DP, kind: text, required: false, group: project, profile: site.lot}
   - {key: program, label: Program milestones, kind: text, required: false, group: project, profile: proj.program, help: "Approval, start and completion dates as the client currently plans them."}
   - {key: information, label: Information provided, kind: text, required: false, group: project, help: "Survey, due diligence, brief, geotechnical and other reports issued with this RFP."}
-  - {key: design_vehicle, label: Design vehicle, kind: text, required: false, group: project}
+  - {key: design_vehicle, label: Design vehicle, kind: text, required: false, group: appointment}
   - {key: sustainability, label: Sustainability target, kind: text, required: false, group: project, profile: proj.sustainability}
-  - {key: design_loads, label: Design loads from the brief, kind: text, required: false, group: project}
+  - {key: design_loads, label: Design loads from the brief, kind: text, required: false, group: appointment}
 
 evaluation:
   - {key: price, label: Price, default: 40}
@@ -220,16 +220,13 @@ thresholds:
 
 # The project table every discipline prints. A row with no label is the
 # opening sentence. Unfilled slots print ___ and appear under Before issue.
+# Page one prints the opening sentence, the project grid
+# (internal/knowledge/rfp.go ProjectGrid) and the project conditions, then
+# these other rows.
 project_rows:
   - key: intro
     text: "{client} intends to {work_phrase} {parts_phrase} at {address}."
     required: true
-  - {key: parts, label: Building, text: "{parts}"}
-  - {key: quantities, label: Quantities, text: "{quantities}"}
-  - {key: program, label: Program, text: "{field:program}"}
-  - {key: pathway, label: Planning pathway, text: "{pathway}"}
-  - {key: procurement, label: Procurement, text: "{procurement}"}
-  - {key: conditions, label: Site conditions, text: "{flags}"}
   - {key: information, label: Information provided, text: "{information}"}
 
 terms:

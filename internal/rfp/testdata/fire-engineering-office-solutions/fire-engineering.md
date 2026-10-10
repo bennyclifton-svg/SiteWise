@@ -4,19 +4,20 @@ Ref FE-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manager
 
 Example Client intends to build Office (Class 5) at 1 Example Street, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Office: Class 5 |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum; later stages and novation require explicit agreement. |
-| Site conditions | Performance solution scope selected |
-| Information provided | Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage scheduled. |
-| Fire basis | Confirm parts/classes/compartments/height, occupants/hazards/systems, accepted solutions, current instruments/verification owner, authority route, insurer targets and revisions. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
+| Building: Office: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; later stages and novation require explicit agreement. |
+
+Conditions that do not apply: Vulnerable or assisted occupants documented; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Parts with different NCC classes.
+
+Information provided: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage scheduled.
 
 ### 2. Your role
 
 Own strategy/analysis. BCA adviser coordinates departures; system/passive/structure/facade designers detail; contractors install/test; authorities decide. Scoped FEIR is not occupation approval.
 Report unsupported solutions/alternatives; no approval guarantee. Operator accepts staffing/maintenance/storage/use limits. Revision-controlled plans/registers trace solutions to designer/verification.
+Fire basis: Confirm parts/classes/compartments/height, occupants/hazards/systems, accepted solutions, current instruments/verification owner, authority route, insurer targets and revisions.
 
 ### 3. Scope by stage
 

@@ -4,13 +4,12 @@ Ref ELEC-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manag
 
 Example Client intends to build Office (Class 5) at 1 Example Street, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Office: Class 5 |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum; continuation/novation separately appointed. |
-| Site conditions | Declarations selected; Authority inputs selected; Controls interface selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Dry-fire design selected; Phase/tenancy design selected |
-| Information provided | Issued system/load/utility evidence and separately quantified R1-R9 schedules. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
+| Building: Office: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; continuation/novation separately appointed. |
+
+Information provided: Issued system/load/utility evidence and separately quantified R1-R9 schedules.
 
 ### 2. Your role
 

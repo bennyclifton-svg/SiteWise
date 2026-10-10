@@ -4,19 +4,20 @@ Ref COST-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manag
 
 Example Client intends to refurbish and fit out Occupied fit-out (Class 5) at 1 Example St, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Occupied fit-out: Class 5 |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum; D&C does not appoint later services or novate this consultant. |
-| Site conditions | Work to an existing building; Site stays occupied or operating during the works; Design cost reviews selected; Total project budget extent agreed; Operator equipment cost inputs selected |
-| Information provided | Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts are fixture choices. |
-| Cost basis | Confirm purpose/users; construction versus total-project boundary; currency/tax adviser, budget/date/approval, quality, measurement method, price date/location and escalation endpoints. Attach current revisions, contracts/quotes and conflicting identities/dates. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Refurbishment / fit-out / upgrade | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: Occupied fit-out: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; D&C does not appoint later services or novate this consultant. |
+
+Conditions that apply: Work to an existing building; Site stays occupied or operating during the works.
+
+Information provided: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts are fixture choices.
 
 ### 2. Your role
 
 Independent cost advice from written instruction/complete inputs to named final output and query-period end. Estimate uncertainty is explicit; no guaranteed tender, final cost, approval or funding.
 Designers/specialists define design, compliance, retained-system adequacy and remediation; operator supplies equipment/owner costs; PM owns budget/change approval. QS prices gaps, administrator directs/certifies, advisers own tax/legal/valuation. Disclose client/contractor/lender conflicts.
+Cost basis: Confirm purpose/users; construction versus total-project boundary; currency/tax adviser, budget/date/approval, quality, measurement method, price date/location and escalation endpoints. Attach current revisions, contracts/quotes and conflicting identities/dates.
 
 ### 3. Scope by stage
 

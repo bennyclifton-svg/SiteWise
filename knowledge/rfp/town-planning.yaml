@@ -30,9 +30,6 @@ scale:
     - {flag: [heritage]}
     - {flag: [objections]}
 
-project_rows:
-  - {key: site_controls, label: Site, text: "Lot and DP {field:lot_dp} · {field:lga} · zone {field:zone}", provenance: [{kind: evidence, ref: "town-planning#U p1"}]}
-
 role:
   - key: planner
     text: "Planning consultant for the applicant. You prepare the planning report, collate and lodge the application, and manage it through assessment. The architect leads design; the client engages the specialist consultants ({consultants}). You review their plans and reports for planning compliance before lodgement, and help scope the specialist reports the authority requires."

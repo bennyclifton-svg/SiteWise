@@ -4,13 +4,12 @@ Ref MECH-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manag
 
 Example Client intends to build Office (Class 5) at 1 Example Street, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | Office: Class 5 |
-| Planning pathway | Development application (DA) |
-| Procurement | Traditional lump sum; continuation/novation requires separate appointment. |
-| Site conditions | Planning inputs selected; Local exhaust selected; Kitchen exhaust selected; Smoke design selected; BMS design selected; Plant interfaces selected; Declarations selected |
-| Information provided | Issued space/load/hour, system/extent and evidence registers; separately quantified R1-R9 schedules. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
+| Building: Office: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; continuation/novation requires separate appointment. |
+
+Information provided: Issued space/load/hour, system/extent and evidence registers; separately quantified R1-R9 schedules.
 
 ### 2. Your role
 

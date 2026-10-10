@@ -80,18 +80,71 @@ func (b *builder) project() {
 	// The PDF title names the discipline; the header carries the issue details.
 	header := "Ref " + b.field("ref") + " · Issued " + b.field("issued") + " · Closes " + b.field("closes") + " · Contact " + b.field("contact")
 	b.add("project", "rfp:header", "", header, nil, map[string]any{"fields": b.r.Fields})
-	rows := [][]string{}
+	// Page one is the project, the same on every RFP: the opening sentence,
+	// the grid in the Profile card's columns, the site conditions with every
+	// answer, then the other shared rows. Each cell keeps its control key in
+	// the basis so the screen can edit the value where it prints.
+	rest := []Row{}
 	for _, row := range b.r.Project {
 		if row.Label == "" {
-			b.add("project", "rfp:project:intro", "", row.Text, nil, map[string]any{"facts": b.r.Facts, "parts": b.r.Parts})
+			b.add("project", "rfp:project:intro", "", row.Text, nil, map[string]any{"facts": b.r.Facts, "parts": b.r.AllParts})
 			continue
 		}
-		rows = append(rows, []string{row.Label, row.Text})
+		rest = append(rest, row)
 	}
-	b.add("project", "rfp:project", "", "", doc([]string{"Project", "Detail"}, rows), map[string]any{"rows": b.r.Project, "facts": b.r.Facts})
+	b.add("project", "rfp:project:grid", "", "", b.grid(), map[string]any{"grid": b.r.Grid, "facts": b.r.Facts})
+	if len(b.r.Conditions) > 0 {
+		b.add("project", "rfp:project:conditions", "", b.conditionLines(), nil, map[string]any{"conditions": b.r.Conditions})
+	}
+	for _, row := range rest {
+		b.add("project", "rfp:project:"+row.Key, "", row.Label+": "+row.Text, nil, map[string]any{"row": row})
+	}
 	if b.r.Budget != "" {
 		b.add("project", BudgetBlockID, "Construction budget", "$"+formatNumber(b.r.Budget)+" "+b.budgetBasis(), nil, map[string]any{"budget": b.r.Budget})
 	}
+}
+
+// grid lays the project grid out in the Profile card's three columns, each
+// cell "Label: value", so a long value wraps across a third of the page
+// rather than a sixth. A shorter column leaves its cell blank.
+func (b *builder) grid() *reports.Table {
+	columns := []string{}
+	height := 0
+	for _, c := range b.r.Grid {
+		columns = append(columns, c.Title)
+		height = max(height, len(c.Cells))
+	}
+	rows := make([][]string, height)
+	for i := range rows {
+		for _, c := range b.r.Grid {
+			cell := ""
+			if i < len(c.Cells) {
+				cell = c.Cells[i].Label + ": " + c.Cells[i].Text
+			}
+			rows[i] = append(rows[i], cell)
+		}
+	}
+	return doc(columns, rows)
+}
+
+// conditionLines prints every answer, one full-width line per answer, so
+// page one is no longer than the table it replaced (owner decision O1:
+// three pages). Each line names its answer, so it needs no heading.
+func (b *builder) conditionLines() string {
+	by := map[string][]string{}
+	for _, c := range b.r.Conditions {
+		by[c.Answer] = append(by[c.Answer], c.Label)
+	}
+	lines := []string{}
+	for _, a := range []struct{ answer, lead string }{
+		{"Yes", "Conditions that apply"}, {"No", "Conditions that do not apply"},
+		{"To be confirmed", "Conditions to be confirmed (sources disagree)"}, {"Not known", "Conditions not yet known"},
+	} {
+		if len(by[a.answer]) > 0 {
+			lines = append(lines, a.lead+": "+strings.Join(by[a.answer], "; ")+".")
+		}
+	}
+	return strings.Join(lines, "\n")
 }
 
 func (b *builder) budgetBasis() string {
@@ -106,7 +159,16 @@ func (b *builder) role() {
 	for _, row := range b.r.Role {
 		lines = append(lines, row.Text)
 	}
-	b.add("role", "rfp:role", "", strings.Join(lines, "\n"), nil, map[string]any{"rows": b.r.Role})
+	// The discipline's own project rows describe this appointment; they
+	// follow the role in the same block.
+	for _, row := range b.r.Appointment {
+		if row.Label != "" {
+			lines = append(lines, row.Label+": "+row.Text)
+			continue
+		}
+		lines = append(lines, row.Text)
+	}
+	b.add("role", "rfp:role", "", strings.Join(lines, "\n"), nil, map[string]any{"rows": b.r.Role, "appointment": b.r.Appointment})
 }
 
 func (b *builder) stages() {

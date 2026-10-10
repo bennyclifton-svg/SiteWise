@@ -4,19 +4,21 @@ Ref ARB-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manage
 
 Example Client intends to extend School extension (Class 9b) at 1 Example St, Example NSW.
 
-| Project | Detail |
-|---|---|
-| Building | School extension: Class 9b |
-| Planning pathway | Development application (DA) |
-| Procurement | Design and construct; later stages and novation require separate appointment. |
-| Site conditions | Neighbouring or street trees affected; Lawful offsite tree access confirmed; Works affect trees roots or canopy; Tree pruning removal or clearance proposed; Arboricultural impact report selected; Tree protection plan selected; Work to an existing building; Site stays occupied or operating during the works; Delivered in stages |
-| Information provided | Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with explicit limits. |
-| Tree basis | Confirm survey/DWG revision, IDs/count/ownership, inaccessible trees, works/access/laydown footprints, services, current controls/editions and permission owner. |
+| The building | Site and planning | Delivery |
+|---|---|---|
+| Work type: Extension / addition | Site address: 1 Example St, Example NSW | Client: Example Client |
+| Building: School extension: Class 9b | Planning pathway: Development application (DA) | Procurement route: Design and construct; later stages and novation require separate appointment. |
+
+Conditions that apply: Neighbouring or street trees affected; Lawful offsite tree access confirmed; Works affect trees roots or canopy; Tree pruning removal or clearance proposed; Work to an existing building; Site stays occupied or operating during the works; Delivered in stages.
+Conditions that do not apply: Heritage item or conservation area.
+
+Information provided: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with explicit limits.
 
 ### 2. Your role
 
 Assess scheduled trees and advise within competence. Client/approval lead obtains permissions; competent tree-work contractor executes pruning/removal/protection. Advice grants no permission, survival or future-safety guarantee; escalate urgent concerns.
 Coordinate survey, landscape, civil, structure and utilities; retain their design duties. Revision-controlled PDF/CAD plans, calculations and editable registers state observed/measured/reported/inferred basis, access limits, recipients and reliance.
+Tree basis: Confirm survey/DWG revision, IDs/count/ownership, inaccessible trees, works/access/laydown footprints, services, current controls/editions and permission owner.
 
 ### 3. Scope by stage
 

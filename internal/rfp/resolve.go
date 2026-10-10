@@ -140,6 +140,9 @@ type Resolved struct {
 	Positions     []PositionResult      `json:"positions"`
 	ScopeSchedule []Row                 `json:"scope_schedule,omitempty"`
 	Project       []Row                 `json:"project"`
+	Grid          []GridColumn          `json:"grid"`
+	Conditions    []Condition           `json:"conditions"`
+	Appointment   []Row                 `json:"appointment"`
 	Role          []Row                 `json:"role"`
 	StageIntro    string                `json:"stage_intro"`
 	ElementNote   string                `json:"element_intro,omitempty"`
@@ -155,6 +158,29 @@ type Resolved struct {
 	AllowNote     string                `json:"allowance_note"`
 	Departures    string                `json:"departures"`
 	EvalNote      string                `json:"evaluation_note"`
+}
+
+// GridColumn is one column of the project grid on page one; its cells are
+// the knowledge.ProjectGrid rows that have something to print. Control is
+// the editor control that changes the value ("" when Profile alone does).
+type GridColumn struct {
+	Title string     `json:"title"`
+	Cells []GridCell `json:"cells"`
+}
+
+type GridCell struct {
+	Key     string `json:"key"`
+	Label   string `json:"label"`
+	Text    string `json:"text"`
+	Control string `json:"control,omitempty"`
+}
+
+// Condition is one site condition printed on page one with its answer.
+type Condition struct {
+	Key     string `json:"key"`
+	Label   string `json:"label"`
+	Answer  string `json:"answer"`
+	Control string `json:"control"`
 }
 
 func (r Resolved) Stage(key string) StageResult {
@@ -1036,9 +1062,40 @@ func (r *resolver) resolveRows() {
 		}
 		return rows
 	}
-	for _, row := range merge(r.sk.ProjectRows, r.d.ProjectRows) {
+	// Page one is shared: a discipline's replacement rewords a shared row or
+	// a grid cell in place; its other project rows describe the appointment
+	// and print in section 2.
+	replacements := map[string]knowledge.RFPRow{}
+	own := []knowledge.RFPRow{}
+	for _, row := range r.d.ProjectRows {
+		switch {
+		case !keep(row):
+		case row.Replace:
+			replacements[row.Key] = row
+		default:
+			own = append(own, row)
+		}
+	}
+	for _, row := range r.sk.ProjectRows {
+		if replacement, ok := replacements[row.Key]; ok {
+			row = replacement
+		}
 		if keep(row) && (row.Required || r.complete(row.Text)) {
 			r.out.Project = append(r.out.Project, fill("project:", row))
+		}
+	}
+	r.resolveGrid(replacements)
+	r.resolveConditions()
+	if len(r.out.Parts) < len(r.out.AllParts) {
+		names := []string{}
+		for _, p := range r.out.Parts {
+			names = append(names, p.Label)
+		}
+		r.out.Appointment = append(r.out.Appointment, Row{Key: "covers", Text: "This appointment covers: " + strings.Join(names, ", ") + "."})
+	}
+	for _, row := range own {
+		if row.Required || r.complete(row.Text) {
+			r.out.Appointment = append(r.out.Appointment, fill("project:", row))
 		}
 	}
 	for _, row := range r.d.Role {
@@ -1223,32 +1280,6 @@ func (r *resolver) slot(name string) (string, bool) {
 		return phrase, phrase != ""
 	case "parts_phrase":
 		return r.partsPhrase()
-	case "parts":
-		lines := []string{}
-		for _, p := range r.out.Parts {
-			line := p.Label
-			if len(p.Classes) > 0 {
-				line += ": Class " + strings.Join(p.Classes, ", ")
-			} else {
-				line += ": class not established"
-			}
-			if p.GFA != "" {
-				line += ", " + formatNumber(p.GFA) + " m² GFA"
-			}
-			lines = append(lines, line)
-		}
-		return strings.Join(lines, "; "), len(lines) > 0
-	case "quantities":
-		parts := []string{}
-		for _, q := range []struct{ fact, format string }{{"site_area", "Site %s m²"}, {"gfa", "GFA %s m²"}, {"storeys", "%s storeys"}, {"parking", "%s car spaces"}} {
-			switch f := r.fact(q.fact); f.State {
-			case Known:
-				parts = append(parts, fmt.Sprintf(q.format, formatNumber(f.Values[0])))
-			case Conflict:
-				parts = append(parts, factLabel(r.sk, q.fact)+" to be confirmed")
-			}
-		}
-		return strings.Join(parts, " · "), len(parts) > 0
 	case "pathway":
 		f := r.fact("pathway")
 		if f.State != Known {
@@ -1265,21 +1296,6 @@ func (r *resolver) slot(name string) (string, bool) {
 			v += "; this appointment is novated to the contractor"
 		}
 		return v, true
-	case "flags":
-		names := []string{}
-		used := usedDrivers(r.d, r.sk)
-		for _, f := range r.sk.Flags {
-			if f.ScopeDecision && !used["flag."+f.Key] {
-				continue
-			}
-			if fact := r.fact("flag." + f.Key); fact.State == Known && fact.Values[0] == "yes" {
-				names = append(names, f.Label)
-			}
-		}
-		if len(names) == 0 {
-			return "None recorded", true
-		}
-		return strings.Join(names, "; "), true
 	case "information":
 		if v := r.out.Fields["information"].Value; v != "" {
 			return v, true
@@ -1314,8 +1330,10 @@ func (r *resolver) slot(name string) (string, bool) {
 }
 
 func (r *resolver) partsPhrase() (string, bool) {
+	// The opening sentence describes the project; section 2 says which parts
+	// this appointment covers.
 	names := []string{}
-	for _, p := range r.out.Parts {
+	for _, p := range r.out.AllParts {
 		label := p.Label
 		if p.Kind == "whole" {
 			label = "the building"
@@ -1481,4 +1499,116 @@ func sentenceCase(s string) string {
 		return s
 	}
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+// ---- page one ----
+
+// resolveGrid fills the project grid from facts already resolved; a
+// discipline's complete replacement rewords its cell.
+func (r *resolver) resolveGrid(replacements map[string]knowledge.RFPRow) {
+	used := usedDrivers(r.d, r.sk)
+	for _, title := range knowledge.ProjectGridColumns {
+		column := GridColumn{Title: title, Cells: []GridCell{}}
+		for _, row := range knowledge.ProjectGrid {
+			if row.Column != title || (row.Key == "regulated_design" && !used["regulated_design"]) {
+				continue
+			}
+			text, ok := r.gridText(row.Key)
+			if o, replaced := replacements[row.Key]; replaced && r.complete(o.Text) {
+				text, ok = r.fill(o.Text, "project:"+o.Key, row.Label, o.Required), true
+			}
+			if !ok && !row.Essential {
+				continue
+			}
+			if !ok {
+				text = "___"
+			}
+			control := ""
+			if FactHome(r.sk, r.out, row.Key).Kind != "" {
+				control = "fact:" + row.Key
+			}
+			column.Cells = append(column.Cells, GridCell{Key: row.Key, Label: row.Label, Text: text, Control: control})
+		}
+		r.out.Grid = append(r.out.Grid, column)
+	}
+}
+
+func (r *resolver) gridText(key string) (string, bool) {
+	number := func(fact, unit string) (string, bool) {
+		switch f := r.fact(fact); f.State {
+		case Known:
+			return formatNumber(f.Values[0]) + unit, true
+		case Conflict:
+			return "To be confirmed", true
+		}
+		return "", false
+	}
+	switch key {
+	case "work_type":
+		switch f := r.fact("work_type"); f.State {
+		case Known:
+			return valueLabel(r.sk, "work_type", f.Values[0]), true
+		case Conflict:
+			return "To be confirmed", true
+		}
+		return "", false
+	case "parts":
+		lines := []string{}
+		for _, p := range r.out.AllParts {
+			line := p.Label
+			if len(p.Classes) > 0 {
+				line += ": Class " + strings.Join(p.Classes, ", ")
+			} else {
+				line += ": class not established"
+			}
+			if p.GFA != "" {
+				line += ", " + formatNumber(p.GFA) + " m² GFA"
+			}
+			lines = append(lines, line)
+		}
+		return strings.Join(lines, "; "), len(lines) > 0
+	case "storeys", "parking":
+		return number(key, "")
+	case "gfa", "site_area":
+		return number(key, " m²")
+	case "address":
+		v := r.out.Fields["address"].Value
+		if v == "" {
+			v = r.drivers.Text["address"]
+		}
+		return v, v != ""
+	case "pathway", "procurement":
+		return r.slot(key)
+	case "regulated_design":
+		return answer(r.fact("regulated_design")), true
+	}
+	v := r.out.Fields[key].Value
+	return v, v != ""
+}
+
+// resolveConditions lists every site condition the discipline tests, and
+// any other known to apply, each with its answer. A scope decision is the
+// client's choice for this appointment, not a condition of the site.
+func (r *resolver) resolveConditions() {
+	used := usedDrivers(r.d, r.sk)
+	for _, f := range r.sk.Flags {
+		fact := r.fact("flag." + f.Key)
+		applies := fact.State == Known && fact.Values[0] == "yes"
+		if f.ScopeDecision || (!used["flag."+f.Key] && !applies) {
+			continue
+		}
+		r.out.Conditions = append(r.out.Conditions, Condition{Key: f.Key, Label: f.Label, Answer: answer(fact), Control: "fact:flag." + f.Key})
+	}
+}
+
+func answer(f Fact) string {
+	switch {
+	case f.State == Conflict:
+		return "To be confirmed"
+	case f.State == Known && f.Values[0] == "yes":
+		return "Yes"
+	case f.State == Known && f.Values[0] == "no":
+		return "No"
+	}
+	return "Not known"
 }
