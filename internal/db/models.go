@@ -187,19 +187,20 @@ type Invite struct {
 }
 
 type Job struct {
-	OrgID       string
-	ID          string
-	DocumentID  string
-	Kind        string
-	Status      string
-	Attempts    int32
-	RunAfter    time.Time
-	LockedUntil pgtype.Timestamptz
-	CreatedAt   time.Time
-	Priority    int32
-	LeaseToken  pgtype.UUID
-	MaxAttempts int32
-	LastError   string
+	OrgID        string
+	ID           string
+	DocumentID   string
+	Kind         string
+	Status       string
+	Attempts     int32
+	RunAfter     time.Time
+	LockedUntil  pgtype.Timestamptz
+	CreatedAt    time.Time
+	Priority     int32
+	LeaseToken   pgtype.UUID
+	MaxAttempts  int32
+	LastError    string
+	ReadRevision string
 }
 
 type Membership struct {

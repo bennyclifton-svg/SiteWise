@@ -23,7 +23,8 @@ type Reading struct {
 // IsProfileQuestion reports whether a question id belongs to the profile.
 func IsProfileQuestion(id string) bool {
 	return strings.HasPrefix(id, "det.") || strings.HasPrefix(id, "fact.") ||
-		strings.HasPrefix(id, "hdr.") || strings.HasPrefix(id, "sys.") || strings.HasPrefix(id, "sig:")
+		strings.HasPrefix(id, "hdr.") || strings.HasPrefix(id, "sys.") || strings.HasPrefix(id, "sig:") ||
+		strings.HasPrefix(id, knowledge.DetailPrefix) || strings.HasPrefix(id, knowledge.SitePrefix)
 }
 
 // Readings turns one call's profile answers into readings. A pre-parsed pick

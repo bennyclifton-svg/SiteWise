@@ -456,3 +456,25 @@ func databaseName(dsn string) (string, error) {
 	}
 	return name, nil
 }
+
+// Every project detail and flag can be triggered by one passage. The label
+// fan-out must still fit the Jev request limits, because an oversized state
+// fails whole rather than being trimmed.
+func TestLabelCallWithEveryDetailTriggeredFitsTheRequestLimit(t *testing.T) {
+	cat := loadKnowledge(t)
+	text := "Principal: Joins Win Pty Ltd. The site at 568-572 Parramatta Road Petersham (Lot 1 DP 123456) is zoned B4 Mixed Use in the Inner West Council area, " +
+		"must achieve a 5 Star Green Star rating, has a basement, on-site detention, stage 1 and stage 2, a rail corridor, a state road, groundwater, " +
+		"transfer slabs, Sydney Water trunk mains, MUSIC modelling, SIDRA counts, a green travel plan, a clause 4.6 variation, a planning panel, " +
+		"heavy vehicle access, coastal hazard, Connecting with Country, community consultation, NorBE and a TfNSW referral."
+	call := jobs.LabelCall(cat, jobs.Passage{Ordinal: 1, Kind: "report", Text: text, Section: "Project description"})
+	for _, key := range []string{"proj.client", "proj.lga", "proj.zone", "proj.sustainability", "site.address", "site.lot", "proj.flag.basement", "proj.flag.rail"} {
+		if _, ok := call.Questions[key]; !ok {
+			t.Errorf("%s was not asked", key)
+		}
+	}
+	size, err := jev.CheckRequestSize(call)
+	if err != nil {
+		t.Fatalf("%v (%+v)", err, size)
+	}
+	t.Logf("%d questions, %d bytes, about %d tokens", size.Questions, size.Bytes, size.EstimatedTokens)
+}

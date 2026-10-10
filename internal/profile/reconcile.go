@@ -350,6 +350,8 @@ func shapeOf(key string) string {
 		return "assertion"
 	case strings.HasPrefix(key, "hdr."):
 		return "header"
+	case strings.HasPrefix(key, knowledge.DetailPrefix), strings.HasPrefix(key, knowledge.SitePrefix):
+		return "detail"
 	}
 	return "determinant"
 }

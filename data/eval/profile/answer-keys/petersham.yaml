@@ -57,6 +57,32 @@ facts:
     - '50'
     evidence: 4. Design life 50 years
     blank_ok: true
+details:
+  site.address:
+    accept:
+    - 568-572 Parramatta Road Petersham
+    - 568-572 Parramatta Rd Petersham
+    evidence: "cover page, 'JW building: 568-572 Parramatta Road Petersham'; 3.1 two approved street addresses (572 Parramatta Road and 82 Queen Street)"
+  site.lot:
+    accept: []
+    evidence: no lot or DP number is stated
+    blank_ok: true
+  proj.client:
+    accept:
+    - Joins Win Pty Ltd
+    evidence: "cover page, 'Principal: Joins Win Pty Ltd ABN 20 098 348 031'"
+  proj.lga:
+    accept:
+    - Inner West
+    evidence: "3.1 Location, 'within the Inner West local government area'"
+  proj.zone:
+    accept: []
+    evidence: no planning zone is stated
+    blank_ok: true
+  proj.sustainability:
+    accept: []
+    evidence: BASIX and NatHERS are named as requirements, not a rating target
+    blank_ok: true
 determinants:
   det.heritage_status:
     accept:

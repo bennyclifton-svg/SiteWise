@@ -22,5 +22,7 @@ families:
   - {match: "sys.*.existing", scope: site}
   - {match: "sys.*", scope: project}
   - {match: "scope.*", scope: project}
+  # Address and lot of the site (a reading is shown until the user types one).
+  - {match: "site.*", scope: site}
   # RFP flags with no determinant (knowledge/rfp/skeleton.yaml flags).
   - {match: "proj.flag.*", scope: project}

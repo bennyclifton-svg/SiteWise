@@ -158,3 +158,21 @@ func TestDriversReadProjectDetails(t *testing.T) {
 		t.Fatalf("the user's groundwater answer wins: %+v", f)
 	}
 }
+
+// An address or lot read from the documents stands in for a blank site record,
+// but never replaces what the user typed there.
+func TestDriversUseReadSiteDetailsOnlyWhereNothingIsTyped(t *testing.T) {
+	sk := skeleton(t)
+	s := arthurSnapshot()
+	s.ProjectBasis = json.RawMessage(`{"project":{"name":"Petersham"},"site":{"address":"","lot":"Lot 9 DP 9"}}`)
+	s.Brief = append(s.Brief,
+		reports.BriefValue{ID: "w:site.address", Text: "568-572 Parramatta Road Petersham"},
+		reports.BriefValue{ID: "w:site.lot", Text: "Lot 1 DP 1"})
+	d := Drivers(s, sk)
+	if d.Text["address"] != "568-572 Parramatta Road Petersham" {
+		t.Errorf("read address not used: %q", d.Text["address"])
+	}
+	if d.Text["lot"] != "Lot 9 DP 9" {
+		t.Errorf("typed lot must win: %q", d.Text["lot"])
+	}
+}

@@ -119,5 +119,8 @@ func (c *Catalog) profileKeys() []string {
 	for _, d := range c.details.list {
 		keys = append(keys, DetailPrefix+d.Key)
 	}
+	for _, d := range c.details.site {
+		keys = append(keys, SitePrefix+d.Key)
+	}
 	return keys
 }

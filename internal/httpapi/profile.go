@@ -125,10 +125,13 @@ type profileJSON struct {
 	Facts      []fieldJSON    `json:"facts"`
 	// Details are facts the user states once: client, LGA, zone, and the RFP
 	// flags with no determinant (proj.flag.*).
-	Details    []fieldJSON           `json:"details"`
-	Systems    []systemGroupJSON     `json:"systems"`
-	Compliance []complianceGroupJSON `json:"compliance"`
-	Presets    []presetJSON          `json:"presets"`
+	Details []fieldJSON `json:"details"`
+	// SiteDetails are the readings of the site address and lot. The typed
+	// value lives on the site record and wins over a reading.
+	SiteDetails []fieldJSON           `json:"site_details"`
+	Systems     []systemGroupJSON     `json:"systems"`
+	Compliance  []complianceGroupJSON `json:"compliance"`
+	Presets     []presetJSON          `json:"presets"`
 }
 
 func getProfile(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -315,6 +318,10 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		} else {
 			out.Details = append(out.Details, field(knowledge.DetailPrefix+d.Key, d.Label, "text", nil))
 		}
+	}
+	out.SiteDetails = []fieldJSON{}
+	for _, d := range cat.SiteDetails() {
+		out.SiteDetails = append(out.SiteDetails, field(knowledge.SitePrefix+d.Key, d.Label, "text", nil))
 	}
 	if sk, ok := cat.RFPSkeleton(); ok {
 		for _, f := range rfp.DetailFlags(sk) {

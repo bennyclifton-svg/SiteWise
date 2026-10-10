@@ -108,6 +108,8 @@ export interface Profile {
   facts: ProfileField[];
   /** Facts the user states once (client, LGA, zone) and the RFP flags with no determinant. */
   details: ProfileField[];
+  /** Readings of the site address and lot; what the user typed on the site record wins. */
+  site_details: ProfileField[];
   systems: { id: string; label: string; rows: SystemRow[] }[];
   compliance: { group: string; rows: ProfileField[] }[];
   presets: Preset[];

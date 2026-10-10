@@ -243,7 +243,7 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
             </div>
           ))}
         </div>
-        <ProjectDetails projectId={projectId} tick={tick} details={data.details ?? []} onSet={set} onJump={onJump} onError={fail} />
+        <ProjectDetails projectId={projectId} tick={tick} details={data.details ?? []} siteDetails={data.site_details ?? []} onSet={set} onJump={onJump} onError={fail} />
         <details className="pf-more">
           <summary>More detail</summary>
           <div className="pf-grid">
@@ -391,14 +391,14 @@ function Conflict({ cell, onPick }: { cell: Cell; onPick: (v: string) => void })
 
 // Facts the user states once for the project. Every consultant RFP reads
 // them from here, and an edit made in an RFP lands here too.
-function ProjectDetails({ projectId, tick, details, onSet, onJump, onError }: { projectId: string; tick: number; details: ProfileField[]; onSet: Setter; onJump: (id: string) => void; onError: (e: unknown) => void }) {
+function ProjectDetails({ projectId, tick, details, siteDetails, onSet, onJump, onError }: { projectId: string; tick: number; details: ProfileField[]; siteDetails: ProfileField[]; onSet: Setter; onJump: (id: string) => void; onError: (e: unknown) => void }) {
   const flags = details.filter((f) => f.key.startsWith("proj.flag."));
   const stated = details.filter((f) => !f.key.startsWith("proj.flag."));
   const answered = flags.filter((f) => f.value !== "").length;
   return (
     <>
       <div className="pf-grid pf-details" role="group" aria-label="Site and project details">
-        <SiteRows projectId={projectId} tick={tick} onError={onError} />
+        <SiteRows projectId={projectId} tick={tick} readings={siteDetails} onJump={onJump} onError={onError} />
         {stated.map((f) => (
           <FieldRow key={f.key} field={f} onSet={onSet} onJump={onJump} />
         ))}
@@ -419,8 +419,10 @@ function ProjectDetails({ projectId, tick, details, onSet, onJump, onError }: { 
   );
 }
 
-// Address and lot live on the site record, which outlasts the project.
-function SiteRows({ projectId, tick, onError }: { projectId: string; tick: number; onError: (e: unknown) => void }) {
+// Address and lot live on the site record, which outlasts the project. What
+// the user typed there wins; until then the documents' reading is shown, with
+// its sources, and typing over it or resetting only touches the site record.
+function SiteRows({ projectId, tick, readings, onJump, onError }: { projectId: string; tick: number; readings: ProfileField[]; onJump: (id: string) => void; onError: (e: unknown) => void }) {
   const [site, setSite] = useState<Site | null>(null);
   useEffect(() => {
     let live = true;
@@ -439,32 +441,15 @@ function SiteRows({ projectId, tick, onError }: { projectId: string; tick: numbe
       else onError(e);
     }
   };
+  const set: Setter = (key, body) => save(key === "site.address" ? "address" : "lot", body.reset || body.value == null ? "" : body.value);
   return (
     <>
-      <SiteRow id="pf-site-address" label="Site address" value={site.address} onCommit={(v) => save("address", v)} />
-      <SiteRow id="pf-site-lot" label="Lot and DP" value={site.lot} onCommit={(v) => save("lot", v)} />
+      {readings.map((reading) => {
+        const typed = reading.key === "site.address" ? site.address : site.lot;
+        const shown: ProfileField = typed ? { ...reading, value: typed, band: "user", sources: [], alternatives: [], assertion: "" } : reading;
+        return <FieldRow key={reading.key} field={shown} onSet={set} onJump={onJump} />;
+      })}
     </>
-  );
-}
-
-function SiteRow({ id, label, value, onCommit }: { id: string; label: string; value: string; onCommit: (v: string) => void }) {
-  const [draft, setDraft] = useState(value);
-  useEffect(() => setDraft(value), [value]);
-  const commit = (e?: FormEvent) => {
-    e?.preventDefault();
-    if (draft.trim() !== value) onCommit(draft.trim());
-  };
-  return (
-    <div className="pf-row" data-band={value ? "user" : undefined}>
-      <label htmlFor={id} className="pf-label">
-        {label}
-      </label>
-      <div className="pf-value">
-        <form onSubmit={commit} className="pf-inline">
-          <input id={id} className="input pf-control" value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={() => commit()} />
-        </form>
-      </div>
-    </div>
   );
 }
 

@@ -285,7 +285,8 @@ test("site and project details are answered once in Profile", async ({ browser }
   await details.getByLabel("Zone").blur();
   await details.getByLabel("Site address").fill("1 Crystal Street, Petersham");
   await details.getByLabel("Site address").blur();
-  await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(1);
+  // Zone and the typed address each carry a Reset.
+  await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(2);
   await page.getByText("Site risks and project features").click();
   await page.getByLabel("Basement or deep excavation").selectOption("yes");
   await page.reload();
@@ -293,4 +294,39 @@ test("site and project details are answered once in Profile", async ({ browser }
   await expect(page.getByLabel("Site address")).toHaveValue("1 Crystal Street, Petersham");
   await page.getByText("Site risks and project features").click();
   await expect(page.getByLabel("Basement or deep excavation")).toHaveValue("yes");
+});
+
+test("a site address read from documents shows until the user types one", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Address read from documents");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  // The profile as the server returns it once a document states the address.
+  await page.route("**/api/projects/*/profile", async (route) => {
+    const response = await route.fetch();
+    const body = await response.json();
+    const address = body.site_details.find((f: { key: string }) => f.key === "site.address");
+    Object.assign(address, {
+      value: "568-572 Parramatta Road Petersham",
+      band: "amber",
+      origin: "document",
+      sources: [{ document_id: "d1", passage_id: "p1", filename: "PPR.pdf", excerpt: "568-572 Parramatta Road Petersham", page: 1 }],
+    });
+    await route.fulfill({ response, json: body });
+  });
+  await page.reload();
+  const details = page.getByRole("group", { name: "Site and project details" });
+  const address = details.getByLabel("Site address");
+  await expect(address).toHaveValue("568-572 Parramatta Road Petersham");
+  await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(0);
+  await expect(details.locator(".pf-row").filter({ hasText: "Site address" })).toHaveAttribute("data-band", "amber");
+
+  // The user's word wins and survives a reload; Reset returns to the reading.
+  await address.fill("1 Crystal Street, Petersham");
+  await address.blur();
+  await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(1);
+  await page.reload();
+  await expect(details.getByLabel("Site address")).toHaveValue("1 Crystal Street, Petersham");
+  await details.getByRole("button", { name: "Reset" }).click();
+  await expect(details.getByLabel("Site address")).toHaveValue("568-572 Parramatta Road Petersham");
 });

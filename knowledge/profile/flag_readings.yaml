@@ -1,0 +1,82 @@
+# RFP flags with no determinant (knowledge/rfp/skeleton.yaml), stored as
+# proj.flag.<key>, that a document can settle. A passage is asked only when a
+# trigger matches (https://docs.typesafe.ai/patterns/intent-routing); the
+# question is yes, no or not stated, and the user's own word always wins.
+# Not read, because no document states them: objections likely, super-flat
+# floor needed, and contract administration by the consultant (judgements of
+# the client or the project team). Regulated design needs professional advice.
+version: 1
+status: draft
+flags:
+  - key: groundwater
+    triggers: ['ground ?water', 'water table', 'dewater']
+    asks: does the passage state that groundwater is above the base of the excavation, or that dewatering is needed?
+  - key: coastal
+    triggers: ['coastal (?:hazard|use area|environment|wetland|management|zone)', 'coastal protection']
+    asks: does the passage state that the site is in a coastal hazard or coastal management area?
+  - key: country
+    triggers: ['connecting with country', 'aboriginal cultural', 'first nations', 'country (?:statement|input)']
+    asks: does the passage state that Connecting with Country input is required for this project?
+  - key: staged
+    triggers: ['\bstages? [1-9a-c]\b', 'staged (?:construction|delivery|development|handover|works|release)', 'in (?:two|three|four|\d) stages']
+    asks: does the passage state that the project is delivered in stages?
+  - key: multi_building
+    triggers: ['\bbuildings? [a-d]\b', '\bcampus\b', 'multiple buildings', '(?:two|three|four|five|\d+) buildings']
+    asks: does the passage state that the project has several buildings, or is a campus?
+  - key: basement
+    triggers: ['\bbasement', 'deep excavation', 'excavat\w* to a depth']
+    asks: does the passage state that the project includes a basement or deep excavation?
+  - key: excavation_adjoining
+    triggers: ['excavat\w*[^.]{0,120}(?:adjoin|neighbour|boundar)', '(?:adjoin|neighbour|boundar)\w*[^.]{0,120}excavat']
+    asks: does the passage state that excavation is next to adjoining structures or boundaries?
+  - key: transfer_structures
+    triggers: ['transfer (?:slab|beam|structure|girder|level|floor)']
+    asks: does the passage state that the project has transfer structures?
+  - key: authority_asset
+    triggers: ['build(?:ing)? over', '(?:sewer|water) (?:main|asset)', 'trunk (?:main|sewer|drain)', 'sydney water asset', 'authority asset']
+    asks: does the passage state that the building is over or next to a water authority asset (a sewer or water main, for example)?
+  - key: rail
+    triggers: ['rail (?:corridor|line|network|infrastructure)', 'railway', 'sydney trains']
+    asks: does the passage state that the site is next to or affected by a rail corridor?
+  - key: osd_existing
+    triggers: ['(?:on-?site detention|\bosd\b)[^.]{0,100}(?:existing|retain|modif)', 'existing[^.]{0,60}(?:on-?site detention|\bosd\b)']
+    asks: does the passage state that there is existing on-site detention to keep or modify?
+  - key: osd_required
+    triggers: ['on-?site (?:stormwater )?detention', '\bosd\b']
+    asks: does the passage state that on-site detention is required by council or a condition?
+  - key: norbe
+    triggers: ['neutral or beneficial', '\bnorbe\b', 'drinking water catchment']
+    asks: does the passage state that the site is in a drinking water catchment needing a neutral or beneficial effect assessment?
+  - key: stormwater_quality
+    triggers: ['\bmusic model', 'stormwater quality', 'water sensitive urban design', '\bwsud\b', 'pollutant (?:load|reduction)']
+    asks: does the passage state that council requires stormwater quality modelling (MUSIC or similar)?
+  - key: public_road
+    triggers: ['road occupancy', 'works (?:in|within) (?:the )?(?:public )?road', 'road opening', 'intersection upgrade', 'road reserve', 'public road works']
+    asks: does the passage state that the works include work in a public road or intersection?
+  - key: state_road
+    triggers: ['state road', 'classified road', '\btfnsw\b', 'transport for nsw', '\brms\b', 'roads and maritime']
+    asks: does the passage state that the site fronts or affects a state or classified road?
+  - key: heavy_vehicles
+    triggers: ['heavy vehicle', 'b-?double', 'semi-?trailer', 'articulated vehicle', 'truck movements', '\b[hms]rv\b']
+    asks: does the passage state that the use generates heavy vehicle movements?
+  - key: tfnsw_referral
+    triggers: ['traffic[- ]generating development', 'referred to (?:tfnsw|transport for nsw)']
+    asks: does the passage state that the development is referred to TfNSW as traffic-generating development?
+  - key: intersection_modelling
+    triggers: ['\bsidra\b', 'intersection (?:count|model|analysis|performance|survey)', 'traffic (?:count|model)']
+    asks: does the passage state that intersection counts or modelling are required?
+  - key: gtp_required
+    triggers: ['green travel plan', '\bgtp\b', 'workplace travel plan']
+    asks: does the passage state that a green travel plan is required by a condition or the DCP?
+  - key: cl46
+    triggers: ['clause 4\.6', '\bcl\.? ?4\.6', '(?:variation|exception) to (?:a )?development standard']
+    asks: does the passage state that a development standard is varied (clause 4.6)?
+  - key: panel
+    triggers: ['planning panel', 'regionally significant development', 'independent hearing and assessment panel', '\bihap\b']
+    asks: does the passage state that the application is determined by a planning panel?
+  - key: community
+    triggers: ['community (?:consultation|engagement)', 'public exhibition', 'consultation plan']
+    asks: does the passage state that community consultation is required?
+  - key: sustainability_target
+    triggers: ['green star', 'nabers', 'passive ?haus|passive ?house', '\bleed\b', 'net[- ]zero']
+    asks: does the passage state that a Green Star, NABERS or similar rating target is set for this project?

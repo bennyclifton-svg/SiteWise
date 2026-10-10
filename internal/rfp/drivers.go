@@ -171,11 +171,20 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	d.Text["project"] = strings.TrimSpace(s.ProjectName)
 	d.Text["address"] = strings.TrimSpace(site.Site.Address)
 	d.Text["lot"] = strings.TrimSpace(site.Site.Lot)
+	// What the user typed on the site record wins; otherwise the profile's
+	// reading of the documents stands in for it.
+	for text, key := range map[string]string{"address": knowledge.SitePrefix + "address", "lot": knowledge.SitePrefix + "lot"} {
+		if d.Text[text] == "" {
+			if v, ok := value(key); ok {
+				d.Text[text] = v
+			}
+		}
+	}
 	for _, f := range sk.Fields {
 		switch {
-		case f.Profile == "site.address":
+		case f.Profile == knowledge.SitePrefix+"address":
 			d.Text[f.Key] = d.Text["address"]
-		case f.Profile == "site.lot":
+		case f.Profile == knowledge.SitePrefix+"lot":
 			d.Text[f.Key] = d.Text["lot"]
 		case f.Profile != "":
 			if v, ok := value(f.Profile); ok {

@@ -66,3 +66,22 @@ func TestProfileHoldsProjectDetailsAndFlags(t *testing.T) {
 	other := a.member(t, newUUID(t))
 	put(t, other, project, "proj.zone", map[string]any{"value": "B4"}, http.StatusNotFound, nil)
 }
+
+// The site address and lot are listed for the profile to show a reading
+// beside what the user typed on the site record.
+func TestProfileListsSiteDetailReadings(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Petersham")
+	var p struct {
+		Site []struct{ Key, Label, Kind string } `json:"site_details"`
+	}
+	m.getJSON(t, "/api/projects/"+project+"/profile", &p)
+	got := map[string]string{}
+	for _, d := range p.Site {
+		got[d.Key] = d.Label
+	}
+	if got["site.address"] != "Site address" || got["site.lot"] != "Lot and DP" || len(got) != 2 {
+		t.Fatalf("site details = %v", got)
+	}
+}

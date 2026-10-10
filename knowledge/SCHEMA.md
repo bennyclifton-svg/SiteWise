@@ -580,7 +580,8 @@ knowledge/works/stages.yaml            delivery stages and editable design sub-s
 knowledge/works/package_defaults.yaml  default consultant packages, copied as data from Clerk
 knowledge/profile/planning_keys.yaml   keys a planning value (assumption or calculation) may use
 knowledge/profile/key_scope.yaml       whether each profile key belongs to the site or the project
-knowledge/profile/project_details.yaml facts the user states once for the project (client, LGA, zone)
+knowledge/profile/project_details.yaml facts about the project the user can state once and documents can fill (client, LGA, zone, site address)
+knowledge/profile/flag_readings.yaml   RFP flags with no determinant that a document can settle, and how they are asked
 knowledge/reports/clauses.yaml         approved clause and prose fragments for RFP, RFT and PMP
 knowledge/costs/benchmarks.yaml        cost benchmarks an estimate may use
 ```
@@ -667,9 +668,12 @@ families:
 
 ### Project details (`profile/project_details.yaml`)
 
-Facts the user states once for the project, which every consultant RFP reads from Profile (owner decision D1, 10 October 2026). No document reading fills them and Jev is never asked, so an entry has no triggers, question or sources.
+Facts about the project that the user can state once, which every consultant RFP reads from Profile (owner decision D1, 10 October 2026). The user's own word always wins. A detail is also read from the documents the profile reads when it says how (owner decision, 10 October 2026: everything on the Profile tab that a document can settle is filled by "Update project profile").
 
 - **Shape.** `key` (lower-case words and underscores, never `flag`), `label`, `value` (`text` or `yes_no`), `scope` (`site` or `project`), and optional `help`.
+- **Reading a detail.** Optional `extraction: pre_parsed` (text only), `triggers` (a non-empty keyword gate, as for determinants) and `asks` (the instruction Jev is given, which names `excerpt` and `candidates`). Code finds the candidates (`internal/profile/details.go`); Jev picks one or none; the stored value is the candidate's verbatim text. A detail without `extraction` is never asked of Jev (program milestones, regulated design).
+- **Site details.** `site_details:` lists the details stored on the site record, `address` and `lot`, as `site.<key>`. They have the same reading settings. A reading is shown only until the user types a value on the site record, and the RFP reads the typed value first.
+- **Flags read from documents.** `profile/flag_readings.yaml` lists `{key, triggers, asks}` for RFP flags with no determinant (`proj.flag.<key>`); the question is yes, no or not stated, and silence is never "no". A flag that has a determinant, a link or a derivation in the profile is not listed, and neither are flags no document states (objections likely, super-flat floor, contract administration).
 - **User-only options.** A taxonomy condition may list `user_options` after `options`: Profile offers and accepts them, and Jev's question never lists them. The planning condition uses this for the RFP's extra pathways (REF, modification, planning proposal, advice only).
 - **Row key.** The profile stores a detail as `proj.<key>`. An RFP flag in `rfp/skeleton.yaml` with no determinant is stored as `proj.flag.<flag key>`; `key_scope.yaml` gives those their scope.
 

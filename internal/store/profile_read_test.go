@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"sitewise/internal/profile"
 	"sitewise/internal/store"
 )
 
@@ -201,5 +202,71 @@ func TestRequestProfileReadRestampsOldQueuedJobs(t *testing.T) {
 	}
 	if !fresh {
 		t.Fatal("queued full_text job was not restamped")
+	}
+}
+
+// A document read before a family of profile questions existed is read again
+// by the next Update, once; a document already at the current revision is not.
+func TestRequestProfileReadRereadsDocumentsBehindTheReadRevision(t *testing.T) {
+	ctx := context.Background()
+	st := profileStore(t)
+	pool := rawPool(t)
+	for _, kind := range []string{store.JobKindFullText, store.JobKindLabel} {
+		if err := st.EnqueueStage(ctx, orgA, docA, kind); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='done' WHERE org_id=$1 AND document_id=$2`, orgA, docA); err != nil {
+		t.Fatal(err)
+	}
+	label := func() (status, revision string) {
+		t.Helper()
+		if err := pool.QueryRow(ctx, `SELECT status, read_revision FROM jobs WHERE org_id=$1 AND document_id=$2 AND kind='label'`, orgA, docA).Scan(&status, &revision); err != nil {
+			t.Fatal(err)
+		}
+		return
+	}
+	// Finished before revisions existed: the first Update reads it again.
+	// The text is already prepared at the current source version, so only the
+	// reading revision can make this document stale.
+	if _, err := pool.Exec(ctx, `INSERT INTO document_sources(org_id,document_id,version,pages,empty_pages,source) VALUES($1::uuid,$2::uuid,$3,1,'{}','{}'::jsonb)
+ON CONFLICT(org_id,document_id) DO UPDATE SET version=EXCLUDED.version`, orgA, docA, store.SourceVersion); err != nil {
+		t.Fatal(err)
+	}
+	n, err := st.RequestProfileRead(ctx, orgA, projectA, nil)
+	if err != nil || n != 1 {
+		t.Fatalf("behind document not requeued: n=%d err=%v", n, err)
+	}
+	if status, _ := label(); status != "queued" {
+		t.Fatalf("label job is %s", status)
+	}
+	// The worker finishes it and records the revision it read.
+	job, err := st.ClaimJob(ctx, orgA, time.Minute, []string{store.JobKindLabel})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := st.SetReadRevision(ctx, orgA, docA, profile.ReadRevision); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.CompleteJob(ctx, orgA, job.ID, job.Token, store.EventWrite{Kind: "job", DocumentID: docA, Payload: `{}`}); err != nil {
+		t.Fatal(err)
+	}
+	// A second Update finds nothing behind and queues nothing.
+	n, err = st.RequestProfileRead(ctx, orgA, projectA, nil)
+	if err != nil || n != 0 {
+		t.Fatalf("current document requeued: n=%d err=%v", n, err)
+	}
+	if status, rev := label(); status != "done" || rev != profile.ReadRevision {
+		t.Fatalf("label job = %s %q", status, rev)
+	}
+	// A document the user turned off is not read again.
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET read_revision='' WHERE org_id=$1 AND document_id=$2`, orgA, docA); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := pool.Exec(ctx, `UPDATE documents SET profile_read='skip' WHERE org_id=$1 AND id=$2`, orgA, docA); err != nil {
+		t.Fatal(err)
+	}
+	if n, err = st.RequestProfileRead(ctx, orgA, projectA, nil); err != nil || n != 0 {
+		t.Fatalf("skipped document requeued: n=%d err=%v", n, err)
 	}
 }

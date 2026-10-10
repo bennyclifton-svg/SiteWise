@@ -53,7 +53,7 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 		return snap, state, err
 	}
 	for _, row := range v.Rows {
-		if !strings.HasPrefix(row.Key, "hdr.") && !strings.HasPrefix(row.Key, "det.") && !strings.HasPrefix(row.Key, knowledge.DetailPrefix) {
+		if !strings.HasPrefix(row.Key, "hdr.") && !strings.HasPrefix(row.Key, "det.") && !strings.HasPrefix(row.Key, knowledge.DetailPrefix) && !strings.HasPrefix(row.Key, knowledge.SitePrefix) {
 			continue
 		}
 		label := labels[row.Key]
@@ -138,6 +138,9 @@ func reportBriefLabels(cat *knowledge.Catalog) map[string]string {
 	}
 	for _, d := range cat.ProjectDetails() {
 		labels[knowledge.DetailPrefix+d.Key] = d.Label
+	}
+	for _, d := range cat.SiteDetails() {
+		labels[knowledge.SitePrefix+d.Key] = d.Label
 	}
 	if sk, ok := cat.RFPSkeleton(); ok {
 		for _, f := range sk.Flags {

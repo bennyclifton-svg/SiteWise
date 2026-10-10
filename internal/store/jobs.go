@@ -96,6 +96,13 @@ func (s *Store) ClaimJobSince(ctx context.Context, orgID string, lease time.Dura
 	}, nil
 }
 
+// SetReadRevision records which profile question families a document's label
+// job read.
+func (s *Store) SetReadRevision(ctx context.Context, orgID, documentID, revision string) error {
+	_, err := s.pool.Exec(ctx, `UPDATE jobs SET read_revision=$3 WHERE org_id=$1::uuid AND document_id=$2::uuid AND kind='label'`, orgID, documentID, revision)
+	return err
+}
+
 // CompleteJob finishes a lease and writes its event in the same transaction.
 func (s *Store) CompleteJob(ctx context.Context, orgID, jobID, token string, event EventWrite) error {
 	return s.finishJob(ctx, orgID, jobID, token, event, true, 0, "")

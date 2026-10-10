@@ -90,6 +90,19 @@ func Harvest(text string, cat *knowledge.Catalog) Harvested {
 		}
 		h.add("fact."+f.ID, f.Extraction, candidatesFor(f.ID, f.Value, f.Extraction, text))
 	}
+	// Details a document can settle: the client, LGA, zone, site address and
+	// lot (candidates found by code) and the RFP's yes/no flags (keyword gate).
+	for _, d := range cat.ProjectDetails() {
+		h.addDetail(knowledge.DetailPrefix, d, t, text)
+	}
+	for _, d := range cat.SiteDetails() {
+		h.addDetail(knowledge.SitePrefix, d, t, text)
+	}
+	for _, f := range cat.FlagReadings() {
+		if f.TriggeredIn(t) {
+			h.add(knowledge.DetailPrefix+"flag."+f.Key, "choice", nil)
+		}
+	}
 	for _, f := range cat.ScaleFields() {
 		if !f.TriggeredIn(t) && !(f.Key == "units" && unitCountRe.MatchString(text)) {
 			continue
@@ -97,6 +110,14 @@ func Harvest(text string, cat *knowledge.Catalog) Harvested {
 		h.add("hdr.scale."+f.Key, "pre_parsed", scaleCandidates(f, text))
 	}
 	return h
+}
+
+func (h *Harvested) addDetail(prefix string, d knowledge.ProjectDetail, t knowledge.Text, text string) {
+	if d.Extraction == "" || !d.TriggeredIn(t) {
+		return
+	}
+	key := prefix + d.Key
+	h.add(key, d.Extraction, detailCandidates(key, text))
 }
 
 // add records a trigger. A pre-parsed key with no candidates is not asked:

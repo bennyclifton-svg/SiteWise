@@ -140,6 +140,20 @@ def vocab(name: str) -> set:
     return _VOCAB[name]
 
 
+def check_detail_reading(where: str, d: dict, report: Report) -> None:
+    """A project or site detail is read from documents only when it says how:
+    pre_parsed text, a keyword gate and the question Jev is asked."""
+    if not d.get("extraction"):
+        if d.get("triggers") or d.get("asks"):
+            report.error(where, "triggers or asks without extraction")
+        return
+    if d["extraction"] != "pre_parsed" or d.get("value") != "text":
+        report.error(where, "a read detail is text with extraction pre_parsed")
+    if not str(d.get("asks", "")).strip():
+        report.error(where, "a read detail needs the question it asks")
+    check_triggers(where, d.get("triggers"), report)
+
+
 def check_triggers(where: str, triggers, report: Report) -> None:
     # Go's regexp is RE2: no look-around and no backreferences.
     if not isinstance(triggers, list) or not triggers:
@@ -1136,9 +1150,44 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
                 report.error(where, "value must be text or yes_no")
             if d.get("scope") not in SCOPES:
                 report.error(where, f"scope must be one of {sorted(SCOPES)}")
+            check_detail_reading(where, d, report)
             if d["key"] in seen:
                 report.error(where, "duplicate key")
             seen.add(d["key"])
+        seen = set()
+        for d in doc.get("site_details") or []:
+            where = f"{rel} [site {d.get('key', '?') if isinstance(d, dict) else '?'}]"
+            if not isinstance(d, dict) or not PLANNING_KEY.match(str(d.get("key", ""))) or not str(d.get("label", "")).strip():
+                report.error(where, "site detail needs a key matching " + PLANNING_KEY.pattern + " and a label")
+                continue
+            if d.get("value") != "text":
+                report.error(where, "a site detail is text")
+            check_detail_reading(where, d, report)
+            if d["key"] in seen:
+                report.error(where, "duplicate key")
+            seen.add(d["key"])
+
+    # Flags a document can settle: each must be a skeleton flag that has no
+    # determinant, so a flag is never read twice and left to disagree.
+    skeleton = load_catalogue(KNOWLEDGE / "rfp" / "skeleton.yaml", "flags", report)[1]
+    rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "flag_readings.yaml", "flags", report)
+    if doc is not None and skeleton is not None:
+        skeleton_flags = {f.get("key") for f in skeleton.get("flags") or [] if isinstance(f, dict)}
+        has_home = {"bushfire", "flood", "contamination", "acid_sulfate", "existing_building", "heritage", "live_operations", "mixed_use"}
+        seen = set()
+        for f in doc.get("flags") or []:
+            where = f"{rel} [{f.get('key', '?') if isinstance(f, dict) else '?'}]"
+            if not isinstance(f, dict) or f.get("key") not in skeleton_flags:
+                report.error(where, "not a flag of rfp/skeleton.yaml")
+                continue
+            if f["key"] in has_home:
+                report.error(where, "this flag already has a determinant or derived home in the profile")
+            if not str(f.get("asks", "")).strip():
+                report.error(where, "a flag reading needs the question it asks")
+            check_triggers(where, f.get("triggers"), report)
+            if f["key"] in seen:
+                report.error(where, "duplicate key")
+            seen.add(f["key"])
 
     rel, doc = load_catalogue(KNOWLEDGE / PROFILE_DIR / "key_scope.yaml", "families", report)
     if doc is not None:

@@ -223,7 +223,10 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		facts = append(facts, set...)
 	}
 
-	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr."}, profile.QuestionVersion, facts); err != nil {
+	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr.", knowledge.DetailPrefix, knowledge.SitePrefix}, profile.QuestionVersion, facts); err != nil {
+		return err
+	}
+	if err := w.Store.SetReadRevision(ctx, job.OrgID, job.DocumentID, profile.ReadRevision); err != nil {
 		return err
 	}
 	// Header and compliance readings show now; systems follow evidence.

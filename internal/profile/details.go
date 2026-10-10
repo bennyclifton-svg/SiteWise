@@ -1,0 +1,258 @@
+package profile
+
+import (
+	"regexp"
+	"strings"
+)
+
+// Candidate finders for the project details Jev reads (knowledge/profile/
+// project_details.yaml). Each over-finds: Jev picks the candidate the passage
+// states for this project, or none, and code copies the text, so the value
+// stored is always a verbatim span (https://docs.typesafe.ai/cookbooks/
+// pre_parsed_value_extraction_cookbook).
+
+const streetTypes = `(?:Street|St|Road|Rd|Avenue|Ave|Parade|Pde|Drive|Dr|Place|Pl|Lane|Ln|Highway|Hwy|Boulevard|Blvd|Crescent|Cres|Court|Ct|Close|Terrace|Tce|Way|Circuit|Cct|Esplanade|Grove)`
+
+var (
+	// number, street name (one to three capitalised words), street type, then
+	// at most one suburb word. A second suburb word is taken only after the
+	// few words that start two-word suburbs (see suburbSecond).
+	addressRe = regexp.MustCompile(`\b(\d{1,4}[A-Za-z]?(?:\s*[-–/]\s*\d{1,4}[A-Za-z]?)?)\s+((?:[A-Z][A-Za-z'’]+\s+){1,3}?` + streetTypes + `)\b\.?(?:,?\s+([A-Z][a-z]+)(?:\s+([A-Z][a-z]+))?)?(?:,?\s+(NSW|VIC|QLD|SA|WA|TAS|NT|ACT)\b)?(?:\s+(\d{4})\b)?`)
+	// suburbFirst are first words of two-word suburbs (Mount Druitt, North Sydney).
+	suburbFirst = map[string]bool{"Mount": true, "Mt": true, "North": true, "South": true, "East": true, "West": true, "St": true,
+		"Port": true, "Lake": true, "Glen": true, "Castle": true, "New": true, "Old": true, "Upper": true, "Lower": true,
+		"Surry": true, "Rose": true, "Bella": true, "Kings": true, "Point": true, "Bondi": true, "Darling": true}
+
+	lotRe = regexp.MustCompile(`(?i)\bLots?\s+\d+[A-Z]?(?:\s*(?:,|and|&)\s*\d+[A-Z]?)*(?:\s+(?:in|on|of))?(?:,?\s+Section\s+\d+[A-Z]?)?,?\s*(?:DP|D\.P\.|SP|RP|PS|CP|Deposited Plan|Strata Plan)\s*\d+`)
+	lotIn = regexp.MustCompile(`(?i)\s+(?:in|on|of)\s+`)
+
+	clientCueRe = regexp.MustCompile(`(?i)\b(?:Principal|Client|Owner|Proponent|Applicant|Developer|Landowner)\b(?:\s*\([^)]{0,40}\))?\s*[:–]\s*|\b(?:prepared for|commissioned by)\s+`)
+	wordRe      = regexp.MustCompile(`\S+`)
+	// clientStop ends a name: the next label or number on a cover block.
+	clientStop = map[string]bool{"ABN": true, "ACN": true, "DRAFT": true, "Revision": true, "Rev": true, "Date": true,
+		"Project": true, "Address": true, "Phone": true, "Email": true, "Contact": true, "Architect": true,
+		"Prepared": true, "Issue": true, "Version": true, "Job": true, "Page": true, "Principal": true}
+	clientSuffix = map[string]bool{"pty": true, "ltd": true, "inc": true, "co": true, "corp": true}
+	// clientSuffixEnd close a company name; a full stop after them ends it.
+	clientSuffixEnd = map[string]bool{"ltd": true, "inc": true, "co": true, "corp": true}
+	clientJoin      = map[string]bool{"and": true, "of": true, "the": true, "&": true}
+
+	lgaAreaRe   = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:\s+[A-Z][A-Za-z'’-]*){0,2})\s+(?i:local\s+government\s+area|LGA)\b`)
+	lgaCouncil  = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:\s+[A-Z][A-Za-z'’-]*){0,2})\s+Council\b`)
+	lgaCityOf   = regexp.MustCompile(`\b((?:City|Shire|Municipality|Town|Borough|Rural City|Regional Council) of\s+[A-Z][A-Za-z'’-]*(?:\s+[A-Z][A-Za-z'’-]*){0,2})`)
+	lgaGeneric  = map[string]bool{"The": true, "Local": true, "Relevant": true, "Each": true, "Any": true, "This": true, "That": true, "Council": true, "Planning": true}
+	lgaTrailing = map[string]bool{"City": true, "Municipal": true, "Shire": true, "Regional": true, "Rural": true, "Town": true, "Council": true}
+
+	zoneCode = `(?:R[1-5]|B[1-8]|E[1-5]|MU1|IN[1-4]|SP[1-3]|RE[12]|RU[1-6]|SU[1-2]|W[1-4]|C[1-4])`
+	zoneRe   = regexp.MustCompile(`\b(` + zoneCode + `)\b((?:\s+(?:[A-Z][a-z]+|and|&)){0,3})`)
+
+	sustainRe = regexp.MustCompile(`(?i)\b(?:\d(?:\.\d)?\s*[- ]?star\s+)?(?:Green\s+Star|NABERS|NatHERS|Passive\s*Haus|Passive\s*House|LEED|Net[- ]Zero)\b[^.;\n]{0,60}`)
+)
+
+// detailCandidates returns the verbatim candidates for one detail key
+// ("site.address", "proj.client") in a passage.
+func detailCandidates(key, text string) []Candidate {
+	switch key {
+	case "site.address":
+		return addressCandidates(text)
+	case "site.lot":
+		return lotCandidates(text)
+	case "proj.client":
+		return clientCandidates(text)
+	case "proj.lga":
+		return lgaCandidates(text)
+	case "proj.zone":
+		return zoneCandidates(text)
+	case "proj.sustainability":
+		return sustainabilityCandidates(text)
+	}
+	return nil
+}
+
+// span is a verbatim stretch of the passage with its stored form.
+type span struct {
+	start, end int
+	norm       string
+}
+
+// collect turns spans into candidates, one per distinct stored value.
+func collect(text string, spans []span) []Candidate {
+	var out []Candidate
+	seen := map[string]bool{}
+	for _, s := range spans {
+		norm := strings.Join(strings.Fields(s.norm), " ")
+		if norm == "" || seen[norm] {
+			continue
+		}
+		seen[norm] = true
+		out = append(out, candidate(len(out), text, s.start, s.end, norm, "", ""))
+	}
+	return capped(out)
+}
+
+func addressCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range addressRe.FindAllStringSubmatchIndex(text, -1) {
+		group := func(g int) string {
+			if m[2*g] < 0 {
+				return ""
+			}
+			return text[m[2*g]:m[2*g+1]]
+		}
+		// Groups: 1 number, 2 street, 3 and 4 suburb words, 5 state, 6 postcode.
+		end := m[5]
+		if m[6] >= 0 {
+			end = m[7]
+			// A second word is a suburb only after a word that starts two-word
+			// suburbs; otherwise it is the next sentence ("Petersham Principal").
+			if group(4) != "" {
+				if !suburbFirst[group(3)] {
+					spans = append(spans, span{m[0], end, text[m[0]:end]})
+					continue
+				}
+				end = m[9]
+			}
+			for _, g := range []int{5, 6} {
+				if m[2*g] >= 0 {
+					end = m[2*g+1]
+				}
+			}
+		}
+		spans = append(spans, span{m[0], end, text[m[0]:end]})
+	}
+	return collect(text, spans)
+}
+
+func lotCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range lotRe.FindAllStringIndex(text, -1) {
+		spans = append(spans, span{m[0], m[1], lotIn.ReplaceAllString(text[m[0]:m[1]], " ")})
+	}
+	return collect(text, spans)
+}
+
+// clientCandidates reads the capitalised name that follows a label such as
+// "Principal:" or "Prepared for". The name ends at a label, a lower-case word,
+// a line break or punctuation; "Pty." and "Ltd." keep their full stop.
+func clientCandidates(text string) []Candidate {
+	var spans []span
+	for _, cue := range clientCueRe.FindAllStringIndex(text, -1) {
+		rest := text[cue[1]:]
+		if len(rest) > 160 {
+			rest = rest[:160]
+		}
+		var words [][2]int
+		prevEnd := -1
+		for _, w := range wordRe.FindAllStringIndex(rest, -1) {
+			if prevEnd >= 0 && strings.ContainsRune(rest[prevEnd:w[0]], '\n') {
+				break
+			}
+			word := rest[w[0]:w[1]]
+			bare := strings.TrimRight(word, ".,;:")
+			if bare == "" || clientStop[bare] {
+				break
+			}
+			upper := bare[0] >= 'A' && bare[0] <= 'Z' || bare[0] >= '0' && bare[0] <= '9'
+			if !upper && !(len(words) > 0 && clientJoin[strings.ToLower(bare)]) {
+				break
+			}
+			end, trail := w[0]+len(bare), word[len(bare):]
+			if trail == "." && clientSuffix[strings.ToLower(bare)] {
+				end, trail = w[1], ""
+				if clientSuffixEnd[strings.ToLower(bare)] {
+					trail = "."
+				}
+			}
+			words = append(words, [2]int{w[0], end})
+			prevEnd = w[1]
+			if trail != "" || len(words) >= 8 {
+				break
+			}
+		}
+		for len(words) > 0 && clientJoin[strings.ToLower(rest[words[len(words)-1][0]:words[len(words)-1][1]])] {
+			words = words[:len(words)-1]
+		}
+		if len(words) == 0 {
+			continue
+		}
+		start, end := words[0][0], words[len(words)-1][1]
+		spans = append(spans, span{cue[1] + start, cue[1] + end, strings.TrimRight(rest[start:end], ".")})
+	}
+	return collect(text, spans)
+}
+
+func lgaCandidates(text string) []Candidate {
+	var spans []span
+	add := func(start, end int, name string) {
+		name = strings.TrimSpace(name)
+		for {
+			words := strings.Fields(name)
+			if len(words) > 0 && (lgaGeneric[words[0]] && len(words) > 1) {
+				name = strings.Join(words[1:], " ")
+				continue
+			}
+			if len(words) > 1 && lgaTrailing[words[len(words)-1]] && !strings.Contains(name, " of ") {
+				name = strings.Join(words[:len(words)-1], " ")
+				continue
+			}
+			break
+		}
+		if words := strings.Fields(name); len(words) == 0 || lgaGeneric[words[0]] {
+			return
+		}
+		spans = append(spans, span{start, end, name})
+	}
+	for _, re := range []*regexp.Regexp{lgaAreaRe, lgaCouncil} {
+		for _, m := range re.FindAllStringSubmatchIndex(text, -1) {
+			add(m[0], m[1], text[m[2]:m[3]])
+		}
+	}
+	for _, m := range lgaCityOf.FindAllStringSubmatchIndex(text, -1) {
+		name := strings.TrimSuffix(text[m[2]:m[3]], " Council")
+		add(m[0], m[1], name)
+	}
+	return collect(text, spans)
+}
+
+// zoneCandidates takes a zone code with its name, only where the word "zone"
+// precedes it closely, so a stray grade or room code is not offered.
+func zoneCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range zoneRe.FindAllStringSubmatchIndex(text, -1) {
+		lo := m[0] - 60
+		if lo < 0 {
+			lo = 0
+		}
+		if !strings.Contains(strings.ToLower(text[lo:m[0]]), "zon") {
+			continue
+		}
+		code := text[m[2]:m[3]]
+		spans = append(spans, span{m[0], m[3], code})
+		raw := text[m[4]:m[5]]
+		name := strings.TrimSpace(raw)
+		for _, join := range []string{" and", " &"} {
+			name = strings.TrimSuffix(name, join)
+		}
+		if name != "" {
+			start := m[4] + len(raw) - len(strings.TrimLeft(raw, " \t\r\n"))
+			spans = append(spans, span{m[0], start + len(name), code + " " + name})
+		}
+	}
+	return collect(text, spans)
+}
+
+func sustainabilityCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range sustainRe.FindAllStringIndex(text, -1) {
+		end := m[1]
+		// The 60-character tail may stop mid-word; end at the last word.
+		if end < len(text) && text[end] != ' ' && text[end] != '.' && text[end] != ',' {
+			if i := strings.LastIndex(text[m[0]:end], " "); i > 0 {
+				end = m[0] + i
+			}
+		}
+		name := strings.TrimRight(text[m[0]:end], " ,:;")
+		spans = append(spans, span{m[0], m[0] + len(name), name})
+	}
+	return collect(text, spans)
+}

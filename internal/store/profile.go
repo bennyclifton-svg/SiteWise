@@ -909,6 +909,14 @@ func (s *Store) RequestProfileRead(ctx context.Context, orgID, projectID string,
  AND (j.kind='full_text' OR (j.kind IN ('label','evidence') AND `+readableSQL("$4")+`))`, orgID, projectID, SourceVersion, kinds); err != nil {
 		return 0, err
 	}
+	// A finished reading made before a family of profile questions existed is
+	// read again; passages whose questions did not change come from the cache.
+	behind, err := tx.Exec(ctx, `UPDATE jobs j SET status='queued',attempts=0,last_error='',run_after=now(),created_at=now()
+FROM documents d WHERE j.org_id=$1::uuid AND d.org_id=j.org_id AND d.id=j.document_id AND d.project_id=$2::uuid
+ AND j.kind='label' AND j.status='done' AND j.read_revision<>$4 AND `+readableSQL("$3"), orgID, projectID, kinds, profile.ReadRevision)
+	if err != nil {
+		return 0, err
+	}
 	// An explicit click retries failed work; completed readings are retained.
 	if _, err := tx.Exec(ctx, `UPDATE jobs j SET status='queued', attempts=0, last_error='', run_after=now(), created_at=now()
 FROM documents d WHERE j.org_id=$1::uuid AND d.org_id=j.org_id AND d.id=j.document_id AND d.project_id=$2::uuid
@@ -932,7 +940,7 @@ ON CONFLICT (org_id, document_id, kind) DO NOTHING`, orgID, projectID, kinds)
 	if err != nil {
 		return 0, err
 	}
-	return tag.RowsAffected(), tx.Commit(ctx)
+	return tag.RowsAffected() + behind.RowsAffected(), tx.Commit(ctx)
 }
 
 // SetScope records the user's scope choices on the whole project in one

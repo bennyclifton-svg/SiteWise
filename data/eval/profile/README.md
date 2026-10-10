@@ -10,6 +10,7 @@ owner changes that. Scoring rules for the harness (plan task P16):
 - `accept: [...]`: a filled value must be one of these; a blank is a miss.
 - `blank_ok: true`: a blank is correct. With `accept: []`, any fill is a
   wrong value.
+- `details`: the project and site details (`proj.*`, `site.*`: client, LGA, zone, address, lot) are scored like `facts`.
 - `assertion`: the expected assertion (stated, required, allowance).
 - `systems`: `presence` is included, not_included or not_stated (expected
   blank); `provider` when the document says who supplies it.
