@@ -179,12 +179,12 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
           {draft.sections.filter(section => !section.internal).map(section => view.rfp && section.id === "project"
             ? <section className="report-section" key={section.id}>
               <h3 id={`rs-${section.id}`}>{section.title}</h3>
-              <SectionMarkers controls={view.rfp} section="project" onJump={jump} />
+              <SectionMarkers controls={view.rfp} section="project" busyKey={busyKey} onWrite={writeSetting} onJump={jump} />
               <ProjectPage blocks={section.blocks ?? []} controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump} renderBlock={blockView} />
             </section>
             : <section className="report-section" key={section.id}>
             {view.rfp && editable.has(section.id) ? <div className="report-section-head"><h3 id={`rs-${section.id}`}>{section.title}</h3><button type="button" className="btn btn-small" aria-expanded={openEdits.has(section.id)} aria-controls={`rfp-edit-${section.id}`} aria-label={`${openEdits.has(section.id) ? "Done editing" : "Edit"} ${section.title}`} disabled={!!editor} onClick={() => toggleEdit(section.id)}>{openEdits.has(section.id) ? "Done" : "Edit"}</button></div> : <h3>{section.title}</h3>}
-            {view.rfp && <SectionMarkers controls={view.rfp} section={section.id} onJump={jump} />}
+            {view.rfp && <SectionMarkers controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} onJump={jump} />}
             {view.rfp && openEdits.has(section.id) && <div id={`rfp-edit-${section.id}`}><RfpSectionEditor controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} /></div>}
             {(section.blocks ?? []).map(blockView)}</section>)}
           {view.rfp && <RfpIssue controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump}>{issueForm(draft.version, view.rfp.decisions.length > 0)}</RfpIssue>}

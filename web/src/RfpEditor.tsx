@@ -6,7 +6,7 @@
 // decision D1); the rest belong to this RFP. Each control writes on change
 // and shows where its value came from.
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import type { ReportBlock, RfpChoice, RfpControl, RfpControls } from "./reportApi";
+import type { ReportBlock, RfpCheck, RfpChoice, RfpControl, RfpControls } from "./reportApi";
 
 export type Write = (key: string, value: unknown | null) => Promise<void>;
 
@@ -53,15 +53,21 @@ export function blockedKeys(controls: RfpControls): Set<string> {
 }
 
 /** Blocking checks listed under a section's heading; "" lists those no section holds. */
-export function SectionMarkers({ controls, section, onJump }: { controls: RfpControls; section: string; onJump: (key?: string) => void }) {
+export function SectionMarkers({ controls, section, busyKey, onWrite, onJump }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
   const here = controls.decisions.filter(d => (d.control ? controlSection(controls, d.control) : "") === section);
   if (!here.length) return null;
   return <ul className="rfp-markers" aria-label="Blocks issue">
-    {here.map(d => <li key={d.id}>
-      <strong>{d.label}.</strong> {d.text}
-      {d.control && <button type="button" className="cell-link" onClick={() => onJump(d.control)}>Show</button>}
-    </li>)}
+    {here.map(d => <li key={d.id}><strong>{d.label}.</strong> {d.text} <CheckAction check={d} controls={controls} busyKey={busyKey} onWrite={onWrite} onJump={onJump} /></li>)}
   </ul>;
+}
+
+// A setting the rules no longer hold has no control to show; it is removed
+// once reviewed. Any other check jumps to its control.
+function CheckAction({ check, controls, busyKey, onWrite, onJump }: { check: RfpCheck; controls: RfpControls; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
+  if (!check.control) return null;
+  if (check.id.startsWith("orphan:")) return <button type="button" className="cell-link" disabled={busyKey === check.control} onClick={() => void onWrite(check.control!, null)}>Remove the old setting</button>;
+  if (!controlSection(controls, check.control)) return null;
+  return <button type="button" className="cell-link" onClick={() => onJump(check.control)}>Show</button>;
 }
 
 export function RfpSectionEditor({ controls, section, busyKey, onWrite }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write }) {
@@ -165,15 +171,15 @@ export function RfpIssue({ controls, busyKey, onWrite, onJump, children }: { con
         {n > 0 && controls.decisions[0].control && <> · <button type="button" className="cell-link" onClick={() => onJump(controls.decisions[0].control)}>Show first</button></>}</p>
     </div>
     {draftRules && <p className="rfp-rules-note">The {controls.title.toLowerCase()} rules are a draft. You can prepare and edit this RFP; issue stays blocked until the owner marks the rules reviewed.</p>}
-    <SectionMarkers controls={controls} section="issue" onJump={onJump} />
-    <SectionMarkers controls={controls} section="" onJump={onJump} />
+    <SectionMarkers controls={controls} section="issue" busyKey={busyKey} onWrite={onWrite} onJump={onJump} />
+    <SectionMarkers controls={controls} section="" busyKey={busyKey} onWrite={onWrite} onJump={onJump} />
     <div className="rfp-issue-grid" role="group" aria-label="Issue details">
       {issue.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} blocked={blocked.has(c.key)} onWrite={onWrite} />)}
     </div>
     {advisory.length > 0 && <details className="rfp-advisory">
       <summary><strong>Other checks</strong> <span className="rfp-count">{advisory.length}</span></summary>
       <p className="rfp-group-intro">Issue is not blocked by these; review them before you send.</p>
-      <ul>{advisory.map(c => <li key={c.id}><strong>{c.label}.</strong> {c.text} {c.control && <button type="button" className="cell-link" onClick={() => onJump(c.control)}>Show</button>}</li>)}</ul>
+      <ul>{advisory.map(c => <li key={c.id}><strong>{c.label}.</strong> {c.text} <CheckAction check={c} controls={controls} busyKey={busyKey} onWrite={onWrite} onJump={onJump} /></li>)}</ul>
     </details>}
     {children}
   </section>;
