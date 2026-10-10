@@ -670,6 +670,7 @@ families:
 Facts the user states once for the project, which every consultant RFP reads from Profile (owner decision D1, 10 October 2026). No document reading fills them and Jev is never asked, so an entry has no triggers, question or sources.
 
 - **Shape.** `key` (lower-case words and underscores, never `flag`), `label`, `value` (`text` or `yes_no`), `scope` (`site` or `project`), and optional `help`.
+- **User-only options.** A taxonomy condition may list `user_options` after `options`: Profile offers and accepts them, and Jev's question never lists them. The planning condition uses this for the RFP's extra pathways (REF, modification, planning proposal, advice only).
 - **Row key.** The profile stores a detail as `proj.<key>`. An RFP flag in `rfp/skeleton.yaml` with no determinant is stored as `proj.flag.<flag key>`; `key_scope.yaml` gives those their scope.
 
 ```yaml

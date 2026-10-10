@@ -45,8 +45,9 @@ flags:
   - {key: contract_admin, label: Client wants the consultant to administer the construction contract}
 
 # Planning pathways. ref, modification, planning_proposal and advice_only are
-# RFP values the profile taxonomy does not hold; a discipline lists the ones it
-# has no reviewed stage bundle for under unsupported_pathways.
+# user_options of the profile's planning condition: the user states them, Jev
+# never picks them. A discipline lists the pathways it has no reviewed stage
+# bundle for under unsupported_pathways.
 pathways:
   - {key: exempt, label: Exempt development}
   - {key: cdc, label: Complying development certificate (CDC)}

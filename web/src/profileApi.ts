@@ -106,6 +106,8 @@ export interface Profile {
   parts: Part[];
   header: ProfileField[];
   facts: ProfileField[];
+  /** Facts the user states once (client, LGA, zone) and the RFP flags with no determinant. */
+  details: ProfileField[];
   systems: { id: string; label: string; rows: SystemRow[] }[];
   compliance: { group: string; rows: ProfileField[] }[];
   presets: Preset[];
@@ -127,6 +129,9 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
   return (await res.json()) as T;
 }
 
+/** The project's site: address and lot live on the site record. */
+export interface Site { id: string; label: string; address: string; lot: string; version: number }
+
 export const profileApi = {
  sources: (projectId: string, system = "", outcome = "", offset = 0) => call<SourceRecords>("GET", `/projects/${projectId}/profile/sources?${new URLSearchParams({ system, outcome, offset: String(offset) })}`),
   get: (projectId: string) => call<Profile>("GET", `/projects/${projectId}/profile`),
@@ -142,4 +147,7 @@ export const profileApi = {
     call<Part>("POST", `/projects/${projectId}/parts`, { label, kind, ncc_class }),
   renamePart: (projectId: string, partId: string, label: string) =>
     call<Part>("PATCH", `/projects/${projectId}/parts/${partId}`, { label }),
+  site: (projectId: string) => call<Site>("GET", `/projects/${projectId}/site`),
+  setSite: (siteId: string, version: number, fields: { address?: string; lot?: string }) =>
+    call<Site>("PATCH", `/sites/${siteId}`, { version, ...fields }),
 };

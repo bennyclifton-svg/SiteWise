@@ -274,3 +274,23 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await scope.getByRole("button", { name: "Reset to defaults" }).click();
   await expect(scope).toContainText("0 systems");
 });
+
+test("site and project details are answered once in Profile", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Project details in Profile");
+  await page.getByRole("button", { name: "Create project" }).click();
+  const details = page.getByRole("group", { name: "Site and project details" });
+  await expect(details).toBeVisible();
+  await details.getByLabel("Zone").fill("R2");
+  await details.getByLabel("Zone").blur();
+  await details.getByLabel("Site address").fill("1 Crystal Street, Petersham");
+  await details.getByLabel("Site address").blur();
+  await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(1);
+  await page.getByText("Site risks and project features").click();
+  await page.getByLabel("Basement or deep excavation").selectOption("yes");
+  await page.reload();
+  await expect(page.getByRole("group", { name: "Site and project details" }).getByLabel("Zone")).toHaveValue("R2");
+  await expect(page.getByLabel("Site address")).toHaveValue("1 Crystal Street, Petersham");
+  await page.getByText("Site risks and project features").click();
+  await expect(page.getByLabel("Basement or deep excavation")).toHaveValue("yes");
+});

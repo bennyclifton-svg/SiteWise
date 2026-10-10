@@ -124,7 +124,14 @@ type Condition struct {
 	Label     string   `yaml:"label"`
 	AppliesTo []string `yaml:"applies_to"`
 	Options   []Choice `yaml:"options"`
+	// UserOptions are values only the user may state (the RFP's extra
+	// planning pathways). Profile offers and accepts them; Jev's question
+	// never lists them, so reading behaviour is unchanged.
+	UserOptions []Choice `yaml:"user_options"`
 }
+
+// AllOptions lists the options Jev may pick, then the user-only ones.
+func (c Condition) AllOptions() []Choice { return append(append([]Choice{}, c.Options...), c.UserOptions...) }
 
 // Taxonomy is the project header vocabulary copied from Clerk data.
 type Taxonomy struct {

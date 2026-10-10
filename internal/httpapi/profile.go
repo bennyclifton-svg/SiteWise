@@ -9,6 +9,7 @@ import (
 
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
+	"sitewise/internal/rfp"
 	"sitewise/internal/store"
 )
 
@@ -122,6 +123,9 @@ type profileJSON struct {
 	Parts      []partJSON            `json:"parts"`
 	Header     []fieldJSON           `json:"header"`
 	Facts      []fieldJSON           `json:"facts"`
+	// Details are facts the user states once: client, LGA, zone, and the RFP
+	// flags with no determinant (proj.flag.*).
+	Details    []fieldJSON           `json:"details"`
 	Systems    []systemGroupJSON     `json:"systems"`
 	Compliance []complianceGroupJSON `json:"compliance"`
 	Presets    []presetJSON          `json:"presets"`
@@ -293,7 +297,7 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 			continue
 		}
 		var opts []optionJSON
-		for _, o := range c.Options {
+		for _, o := range c.AllOptions() {
 			opts = append(opts, optionJSON{o.ID, o.Label})
 		}
 		out.Header = append(out.Header, field("hdr.cond."+c.Key, c.Label, "choice", opts))
@@ -302,6 +306,20 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		fj := field("fact."+f.ID, f.Label, valueKind(f), detOptions(f))
 		fj.Unit = f.Unit
 		out.Facts = append(out.Facts, fj)
+	}
+	yesNo := []optionJSON{{"yes", "Yes"}, {"no", "No"}}
+	out.Details = []fieldJSON{}
+	for _, d := range cat.ProjectDetails() {
+		if d.Value == "yes_no" {
+			out.Details = append(out.Details, field(knowledge.DetailPrefix+d.Key, d.Label, "choice", yesNo))
+		} else {
+			out.Details = append(out.Details, field(knowledge.DetailPrefix+d.Key, d.Label, "text", nil))
+		}
+	}
+	if sk, ok := cat.RFPSkeleton(); ok {
+		for _, f := range rfp.DetailFlags(sk) {
+			out.Details = append(out.Details, field(knowledge.DetailPrefix+"flag."+f.Key, f.Label, "choice", yesNo))
+		}
 	}
 
 	// The scope of works was decided at build time (scope.<leaf> rows);
@@ -610,7 +628,7 @@ func validProfileValue(cat *knowledge.Catalog, key string, value *string, note s
 		for _, c := range tax.Conditions {
 			if "hdr.cond."+c.Key == key {
 				var ids []string
-				for _, o := range c.Options {
+				for _, o := range c.AllOptions() {
 					ids = append(ids, o.ID)
 				}
 				return oneOf(ids...)
@@ -625,6 +643,26 @@ func validProfileValue(cat *knowledge.Catalog, key string, value *string, note s
 				return number()
 			}
 		}
+	case strings.HasPrefix(key, knowledge.DetailPrefix+"flag."):
+		flag := strings.TrimPrefix(key, knowledge.DetailPrefix+"flag.")
+		sk, ok := cat.RFPSkeleton()
+		if !ok || rfp.FlagHome(flag).Kind != rfp.HomeDetail {
+			break
+		}
+		for _, f := range sk.Flags {
+			if f.Key == flag {
+				return oneOf("yes", "no")
+			}
+		}
+	case strings.HasPrefix(key, knowledge.DetailPrefix):
+		d, ok := cat.ProjectDetail(strings.TrimPrefix(key, knowledge.DetailPrefix))
+		if !ok {
+			break
+		}
+		if value == nil || v == "" {
+			return ""
+		}
+		return d.Check(v)
 	case strings.HasPrefix(key, knowledge.PlanningPrefix):
 		// The user may state a planning key as fact; it outranks the
 		// assumption or calculation on the same key.

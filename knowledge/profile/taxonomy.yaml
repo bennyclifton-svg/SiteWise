@@ -1549,6 +1549,16 @@ conditions:
     label: State Significant Development (SSD)
   - id: planning_permit
     label: Planning permit (VIC and other states)
+  # Stated by the user only; never offered to Jev (SCHEMA.md "Project details").
+  user_options:
+  - id: ref
+    label: Review of environmental factors (REF)
+  - id: modification
+    label: Modification of an existing consent
+  - id: planning_proposal
+    label: Planning proposal (rezoning)
+  - id: advice_only
+    label: Planning advice only, no application
 - key: procurement_route
   label: Procurement route
   options:
