@@ -4,7 +4,7 @@ import { proposalApi, type ProposalRecord, type ProposalAssignment } from "./pro
 import { packageApi, type PackageRecord } from "./packageApi";
 import { workApi, type WorkRecord } from "./workApi";
 import type { Profile } from "./profileApi";
-import { WorkSources } from "./Works";
+import { WorkSources } from "./WorkItem";
 import { ConfirmDialog } from "./ConfirmDialog";
 import "./reports.css";
 import "./implications.css";
@@ -31,7 +31,7 @@ function signalState(state: string) {
 const systemOf = (p: ProposalRecord) => p.target_system_id || p.reason.triggers?.[0]?.system || "";
 const partOf = (p: ProposalRecord) => p.target_part_id || p.reason.triggers?.[0]?.part || "";
 
-// Rows follow the profile's system groups and order, the same list Works uses,
+// Rows follow the profile's system groups and order, the same list Profile uses,
 // so the page reads in building order and follows any change to that order.
 function groupImplications(items: ProposalRecord[], profile: Profile | null): Group[] {
   const groups: Group[] = (profile?.systems ?? []).map(g => ({ id: g.id, label: g.label, rows: [] }));

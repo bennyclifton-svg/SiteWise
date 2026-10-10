@@ -5,7 +5,7 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Synthetic work review");
   await page.getByRole("button", { name: "Create project", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Works", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
   const project = new URL(page.url()).pathname.split("/").pop();
   const profile = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   const base = `/api/projects/${project}/works`;
@@ -13,16 +13,21 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   const response = await page.request.post(base, { headers, data: { part_id: profile.parts[0].id, system_id: "hydraulic.gas", action: "investigate", title: "Synthetic gas service", target: { text: "Confirm condition", values: [{ key: "plan.gross_floor_area", value: 100, unit: "m2" }] } } });
   expect(response.ok()).toBeTruthy();
   const created = await response.json();
-  await page.getByRole("button", { name: "Works", exact: true }).click();
+  // Work lives under its system in Profile: the rail entry, then the system row.
+  await page.reload();
   const gasGroup = profile.systems.find((g: { rows: { leaf: string }[] }) => g.rows.some(r => r.leaf === "hydraulic.gas"));
-  await expect(page.getByRole("region", { name: gasGroup.label, exact: true }).getByRole("button", { name: /Synthetic gas service/ })).toBeVisible();
+  const gas = gasGroup.rows.find((r: { leaf: string }) => r.leaf === "hydraulic.gas");
+  await page.locator(".sw-entry", { hasText: gasGroup.label }).click();
+  const pane = page.getByRole("region", { name: gasGroup.label, exact: true });
+  await pane.getByRole("button", { name: `Details for ${gas.label}`, exact: true }).click();
+  await expect(pane.getByRole("button", { name: /Synthetic gas service/ })).toBeVisible();
   await expect(page.getByLabel("Planning quantity")).toHaveCount(0);
-  await page.getByRole("button", { name: /Synthetic gas service/ }).click();
+  await pane.getByRole("button", { name: /Synthetic gas service/ }).click();
   await page.getByRole("button", { name: "Correct work item", exact: true }).click();
   await page.getByLabel("Action", { exact: true }).selectOption("repair");
   await page.getByLabel("Target wording", { exact: true }).fill("Repair and test the existing connection.");
   await page.getByRole("button", { name: "Packages", exact: true }).click();
-  await page.getByRole("button", { name: "Works", exact: true }).click();
+  await page.getByRole("button", { name: "Profile", exact: true }).click();
   await expect(page.getByLabel("Target wording", { exact: true })).toHaveValue("Repair and test the existing connection.");
   const concurrent = await page.request.patch(`${base}/${created.id}`, { headers, data: { version: created.version, title: "Updated synthetic service", target: { text: "Another reviewer's target", values: [{ key: "plan.gross_floor_area", value: 200, unit: "m2" }] } } });
   expect(concurrent.ok()).toBeTruthy();
@@ -30,11 +35,11 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   await expect(page.getByRole("button", { name: "Save correction", exact: true })).toBeDisabled();
   await expect(page.getByRole("region", { name: "Saved work", exact: true })).toContainText("Another reviewer's target");
   await expect(page.getByLabel("Target wording", { exact: true })).toHaveValue("Repair and test the existing connection.");
-  await page.getByRole("region", { name: "Works", exact: true }).locator("..").evaluate(el => { el.scrollTop = 0; });
   await page.screenshot({ path: "../.tools/wp45-works-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: "../.tools/wp45-works-mobile.png", fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.getByRole("button", { name: "Keep my correction against this version", exact: true }).click();
   await page.getByRole("button", { name: "Save correction", exact: true }).click();
   await expect(page.getByRole("button", { name: "Correct work item", exact: true })).toBeVisible();
@@ -44,12 +49,14 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   expect(saved.target.values[0].value).toBe(200);
   expect(saved.quantity ?? null).toBeNull();
   expect(saved.version).toBe(3);
-  // Action and inclusion are edited in the row and keep the saved target.
+  // Action is edited in the system row and keeps the saved target. The item
+  // is the system's own (its coarse item), so the row's tick is its inclusion.
   await page.getByLabel("Action for Synthetic gas service", { exact: true }).selectOption("replace");
   await expect.poll(async () => (await (await page.request.get(base)).json()).items[0].action).toBe("replace");
-  await page.getByRole("checkbox", { name: "Included" }).uncheck();
+  await expect(pane.getByRole("checkbox", { name: "Included" })).toHaveCount(0);
+  await pane.getByRole("checkbox", { name: gas.label, exact: true }).uncheck();
   await expect.poll(async () => (await (await page.request.get(base)).json()).items[0].inclusion).toBe("excluded");
-  await expect(page.getByRole("button", { name: /Synthetic gas service/ })).toBeVisible();
+  await expect(pane.getByRole("button", { name: /Synthetic gas service/ })).toBeVisible();
   const row = (await (await page.request.get(base)).json()).items[0];
   expect(row.target.text).toBe("Repair and test the existing connection.");
   expect(row.version).toBe(5);

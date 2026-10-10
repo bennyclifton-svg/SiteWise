@@ -2,6 +2,7 @@ package httpapi_test
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -83,5 +84,48 @@ func TestProfileListsSiteDetailReadings(t *testing.T) {
 	}
 	if got["site.address"] != "Site address" || got["site.lot"] != "Lot and DP" || len(got) != 2 {
 		t.Fatalf("site details = %v", got)
+	}
+}
+
+// Profile shows systems in build order and every input under one entry
+// (knowledge/profile/layout.yaml); a flag with no home would vanish.
+func TestProfilePlacesInputsInBuildOrder(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Petersham")
+
+	var p struct {
+		Details    []struct{ Key, Home string } `json:"details"`
+		Systems    []struct{ ID string }        `json:"systems"`
+		Compliance []struct {
+			Rows []struct{ Key, Home string } `json:"rows"`
+		} `json:"compliance"`
+	}
+	m.getJSON(t, "/api/projects/"+project+"/profile", &p)
+	if len(p.Systems) < 2 || p.Systems[0].ID != "site" || p.Systems[1].ID != "substructure" {
+		t.Fatalf("systems are not in build order: %v", p.Systems)
+	}
+	flags := 0
+	for _, d := range p.Details {
+		if strings.HasPrefix(d.Key, "proj.flag.") {
+			flags++
+			if d.Home == "" {
+				t.Errorf("%s has no home", d.Key)
+			}
+		}
+	}
+	if flags == 0 {
+		t.Fatal("no flags listed")
+	}
+	homes := map[string]string{}
+	for _, g := range p.Compliance {
+		for _, r := range g.Rows {
+			homes[r.Key] = r.Home
+		}
+	}
+	for key, want := range map[string]string{"det.climate_zone": "envelope", "det.ncc_class": "project", "det.water_supply_source": "hydraulic"} {
+		if homes[key] != want {
+			t.Errorf("%s home = %q, want %q", key, homes[key], want)
+		}
 	}
 }

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { profileApi, type Profile, type SourceRecords } from "./profileApi";
 
-export function ProfileSources({ projectId, data, system, onSystem, open, onOpen }: {
-  projectId: string; data: Profile; system: string; onSystem: (value: string) => void;
-  open: boolean; onOpen: (value: boolean) => void;
+// Source requirements: every passage the profile read, filterable by system.
+// Opened from the profile header or a system's Requirements link.
+export function ProfileSources({ projectId, data, system, onSystem, onClose }: {
+  projectId: string; data: Profile; system: string; onSystem: (value: string) => void; onClose: () => void;
 }) {
   const [outcome, setOutcome] = useState("");
   const [offset, setOffset] = useState(0);
@@ -16,7 +17,6 @@ export function ProfileSources({ projectId, data, system, onSystem, open, onOpen
   const unresolved = coverage.reduce((n, d) => n + d.needs_mapping, 0);
   useEffect(() => { setOffset(0); }, [projectId, system, outcome]);
   useEffect(() => {
-    if (!open) return;
     let live = true;
     setResult(null); setError("");
     profileApi.sources(projectId, system, outcome, offset).then(
@@ -24,12 +24,12 @@ export function ProfileSources({ projectId, data, system, onSystem, open, onOpen
       e => { if (live) setError(e instanceof Error ? e.message : "Could not load source requirements."); },
     );
     return () => { live = false; };
-  }, [projectId, system, outcome, offset, open, retry, data.built_at, data.pending_documents]);
+  }, [projectId, system, outcome, offset, retry, data.built_at, data.pending_documents]);
   const labels = new Map(data.systems.flatMap(g => [[g.id, g.label], ...g.rows.map(r => [r.leaf, r.label])]) as [string, string][]);
   return <section className="pf-section pf-sources" id="profile-sources" aria-labelledby="pf-source-heading">
-    <h2 id="pf-source-heading"><button type="button" className="cell-link" aria-expanded={open} onClick={() => onOpen(!open)}>Source requirements · {open ? "Hide" : "View"}</button></h2>
+    <div className="pf-head"><h2 id="pf-source-heading">Source requirements</h2><button type="button" className="btn btn-small" onClick={onClose}>Close</button></div>
     <p className="muted">{read} of {total} passages classified{unresolved > 0 ? ` · ${unresolved} need mapping or review` : ""}. Classification does not confirm accuracy.</p>
-    {open && <>
+    <>
       <details className="pf-more"><summary>Document coverage</summary>
         <ul className="pf-coverage">{coverage.map(d => <li key={d.document_id}>
           <strong>{d.filename}</strong><br />
@@ -71,7 +71,7 @@ export function ProfileSources({ projectId, data, system, onSystem, open, onOpen
           <button className="btn btn-small" disabled={!result.more} onClick={() => setOffset(offset + 50)}>Next</button>
         </nav>
       </>}
-    </>}
+    </>
   </section>;
 }
 

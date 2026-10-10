@@ -105,7 +105,6 @@ select {
 .ocr-steps li[data-state="active"] .ocr-step-mark { border-color: var(--ink); }
 @media (max-width: 800px) { .ocr-status { align-items: flex-start; flex-direction: column; gap: 12px; } .ocr-steps { flex-wrap: wrap; gap: 12px; } }
 
-
 .bar {
   position: sticky;
   top: 0;
@@ -1353,8 +1352,7 @@ button.cell[data-state="check"]:hover {
   border-radius: var(--radius-sm);
 }
 
-.pf-row:hover,
-.pf-sys:hover {
+.pf-row:hover {
   background: var(--ground);
 }
 
@@ -1464,54 +1462,6 @@ button.cell[data-state="check"]:hover {
 
 .pf-sources li + li {
   margin-top: 6px;
-}
-
-.pf-sysgroup {
-  margin-bottom: 6px;
-}
-
-.pf-sys {
-  display: grid;
-  grid-template-columns: 120px auto minmax(120px, 1fr);
-  align-items: center;
-  gap: 8px;
-  min-height: 32px;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-}
-
-.pf-seg {
-  display: inline-flex;
-  overflow: hidden;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-control);
-}
-
-.pf-seg label {
-  position: relative;
-  padding: 3px 8px;
-  font-size: 11.5px;
-  cursor: pointer;
-}
-
-.pf-seg label + label {
-  border-left: 1px solid var(--line);
-}
-
-.pf-seg input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.pf-seg label[data-on] {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.pf-seg label:focus-within {
-  outline: 2px solid var(--azure);
-  outline-offset: -2px;
 }
 
 .pf-provider,
@@ -1744,77 +1694,10 @@ button.cell[data-state="check"]:hover {
   gap: 8px;
 }
 
-/* Scope of works: a compact picker grouped by top-level system. */
-.pf-scope-head {
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 8px;
-}
-.pf-scope-head h2 {
-  margin-right: 2px;
-}
 .pf-scope-hint {
   margin: 0 0 8px;
   color: var(--ink-muted);
   font-size: 12px;
-}
-.pf-scope-groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-  gap: 4px 12px;
-}
-.pf-scope-group summary {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 6px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--paper);
-  cursor: pointer;
-  list-style: none;
-}
-.pf-scope-group summary::-webkit-details-marker {
-  display: none;
-}
-.pf-scope-group[data-active] summary {
-  border-color: var(--azure);
-  background: var(--azure-soft);
-}
-.pf-scope-group[open] summary {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.pf-scope-label {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.pf-scope-group input {
-  margin: 0;
-  accent-color: var(--azure);
-}
-.pf-scope-group ul {
-  margin: 0;
-  padding: 4px 6px 6px;
-  border: 1px solid var(--line);
-  border-top: 0;
-  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-  list-style: none;
-}
-.pf-scope-group li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
-  padding: 2px 0;
-  font-size: 12.5px;
-}
-.pf-scope-group li label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
 }
 .pf-scope-origin {
   padding: 0 6px;
@@ -1838,15 +1721,6 @@ button.cell[data-state="check"]:hover {
   font-size: 11.5px;
 }
 
-/* An open group needs the width for each system's provider, evidence and note. */
-.pf-scope-group[open] {
-  grid-column: 1 / -1;
-}
-.pf-scope-group li .pf-sys {
-  flex-basis: 100%;
-  margin: 0 0 4px 22px;
-  min-height: 28px;
-}
 .pf-scope-check {
   color: var(--warn);
   font-size: 11.5px;
@@ -1856,49 +1730,6 @@ button.cell[data-state="check"]:hover {
   font-size: 11px;
 }
 
-/* Project at a glance: two columns, the building then the site; label beside value. */
-.pf-glance-cols {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-  gap: 0 20px;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-}
-.pf-glance {
-  display: grid;
-  align-content: start;
-  gap: 2px;
-}
-.pf-glance .pf-row {
-  grid-template-columns: minmax(90px, 9rem) minmax(0, 1fr);
-  gap: 8px;
-}
-.pf-glance .pf-label {
-  color: var(--ink-muted);
-  font-size: 12px;
-}
-.pf-glance .pf-control {
-  width: 100%;
-}
-
-/* Scope rows: one line; evidence colour, provider and citations on the right. */
-.pf-scope-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-  padding: 1px 4px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: none;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.pf-scope-more:hover {
-  background: var(--ground);
-}
 .pf-ev {
   width: 9px;
   height: 9px;
@@ -1921,21 +1752,6 @@ button.cell[data-state="check"]:hover {
   border-color: var(--line-strong);
   background: var(--line-strong);
 }
-.pf-scope-provider {
-  font-size: 11.5px;
-}
-.pf-scope-provider[data-default] {
-  color: var(--ink-muted);
-  font-style: italic;
-}
-.pf-scope-provider[data-provider="owner"],
-.pf-scope-provider[data-provider="others"] {
-  padding: 0 5px;
-  border-radius: 999px;
-  background: var(--azure-soft);
-  color: var(--azure);
-  font-weight: 500;
-}
 .pf-scope-count {
   min-width: 16px;
   padding: 0 4px;
@@ -1945,11 +1761,375 @@ button.cell[data-state="check"]:hover {
   font-size: 10.5px;
   text-align: center;
 }
-.pf-scope-caret {
-  color: var(--ink-muted);
-  font-size: 10px;
+
+/* Profile header: who and where, the update button, then one status line. */
+.pf-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0 0 4px;
 }
-.pf-scope-group li[data-open] {
-  background: var(--ground);
+.pf-identity {
+  margin: 0;
+  color: var(--ink-body);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.pf-header .profile-reading {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+}
+.pf-header .profile-reading > * + span::before {
+  content: "·";
+  margin: 0 6px;
+  color: var(--line-strong);
+}
+.pf-checks {
+  margin-left: 10px;
+  padding: 0 8px;
+  border: 1px solid var(--alert);
+  border-radius: 999px;
+  background: var(--alert-soft);
+  color: var(--alert);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+/* One value per line: the control takes the room, how it was decided follows. */
+.pf-main {
+  display: flex;
+  flex: 1 1 14rem;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 340px;
+}
+.pf-main > .pf-control,
+.pf-main > .pf-inline {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+.pf-inline .pf-control {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+.pf-why {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+}
+.pf-why:empty {
+  display: none;
+}
+.pf-unit {
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+.pf-reset {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ember-hot);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pf-reset:hover {
+  border-color: var(--line-strong);
+  background: var(--paper);
+}
+
+/* Project card: the building, the site and planning, delivery. */
+.pf-head .pf-parts {
+  justify-content: flex-end;
+  font-size: 12px;
+}
+.pf-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 0 24px;
+}
+.pf-col {
+  display: grid;
+  align-content: start;
+  gap: 1px;
+  min-width: 0;
+}
+.pf-section .pf-col h3 {
+  margin: 0 0 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.pf-col .pf-row {
+  grid-template-columns: minmax(84px, 8.5rem) minmax(0, 1fr);
+  gap: 8px;
+  min-height: 30px;
+  padding: 1px 4px;
+}
+.pf-col .pf-label {
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 1.25;
+}
+.pf-col .pf-main {
+  flex-basis: 100%;
+  max-width: none;
+}
+.pf-col-more {
+  justify-self: start;
+  margin: 4px 4px 0;
+  font-size: 12px;
+}
+
+/* Scope and works: a rail in build order, the chosen entry beside it. */
+.sw-head {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.sw-all {
+  margin-left: auto;
+}
+.sw-body {
+  display: grid;
+  grid-template-columns: 15.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 16px;
+  margin-top: 8px;
+}
+.sw-rail {
+  position: sticky;
+  top: 0;
+  display: grid;
+  gap: 1px;
+  padding-right: 8px;
+  border-right: 1px solid var(--line);
+}
+.sw-entry {
+  display: grid;
+  grid-template-columns: 1.1rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-body);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+.sw-entry:hover {
+  background: var(--ground);
+}
+.sw-entry[aria-current="true"] {
+  background: var(--azure-soft);
+  box-shadow: inset 2px 0 0 var(--azure);
+  color: var(--ink);
+  font-weight: 600;
+}
+.sw-num,
+.sw-count {
+  color: var(--ink-muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 400;
+}
+.sw-check {
+  color: var(--warn);
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.sw-pane {
+  min-width: 0;
+}
+.sw-pane-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  padding: 2px 4px 6px;
+  border-bottom: 1px solid var(--line-strong);
+}
+.pf-section .sw-pane-head h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.sw-group-tick input,
+.sw-name input {
+  margin: 0;
+  accent-color: var(--azure);
+}
+.sw-req {
+  margin-left: auto;
+  font-size: 12px;
+}
+.sw-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6.5rem 11.5rem 4rem 1.75rem;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 1px 4px;
+}
+.sw-th {
+  min-height: 24px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.sw-line {
+  border-bottom: 1px solid var(--line);
+}
+.sw-line > .sw-row:hover,
+.sw-line[data-open] {
+  background: var(--ground);
+}
+.sw-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  min-width: 0;
+  font-size: 13px;
+}
+.sw-name label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.sw-select {
+  width: 100%;
+  height: 26px;
+  font-size: 12px;
+}
+.sw-select[data-default] {
+  color: var(--ink-muted);
+}
+.sw-ev {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sw-more {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.sw-more:hover {
+  background: var(--line);
+}
+.sw-line > .pf-scope-check,
+.sw-line > .pf-scope-note {
+  margin: 0 4px 4px 30px;
+}
+.sw-strip {
+  padding: 4px 8px 10px 30px;
+}
+.sw-strip-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.sw-strip .pf-note {
+  flex: 1 1 14rem;
+  max-width: 24rem;
+}
+.sw-works {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sw-works > li + li {
+  border-top: 1px solid var(--line);
+}
+.sw-work {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+}
+.sw-work .works-open {
+  padding: 4px 6px;
+  font-size: 12.5px;
+}
+.sw-inputs {
+  margin-top: 16px;
+}
+.sw-inputs h4 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 4px;
+  padding: 0 4px;
+  color: var(--ink-body);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.sw-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  column-gap: 16px;
+}
+.sw-grid .pf-row {
+  grid-template-columns: minmax(0, 1fr) 6.5rem;
+}
+.sw-grid .pf-label {
+  font-size: 12.5px;
+  line-height: 1.3;
+}
+
+@media (max-width: 900px) {
+  .sw-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sw-rail {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    padding: 0 0 6px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sw-entry {
+    flex: none;
+    grid-template-columns: auto auto auto;
+  }
+  .sw-num,
+  .sw-th {
+    display: none;
+  }
+  .sw-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+  }
+  .sw-name {
+    grid-column: 1 / -1;
+  }
+  .sw-all {
+    margin-left: 0;
+  }
 }

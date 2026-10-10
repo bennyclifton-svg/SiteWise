@@ -84,7 +84,7 @@ test("source requirements preserve full text, page links, filters and mobile lay
       outcome: "needs_mapping", keys: [], unresolved: [], systems: [],
     }] } });
   });
-  await page.getByRole("button", { name: "Source requirements · View", exact: true }).click();
+  await page.getByRole("button", { name: "Source requirements", exact: true }).click();
   const source = page.locator("#profile-sources");
   await expect(source.getByText("The Contractor must provide spares", { exact: false })).toBeVisible();
   await expect(source.getByRole("link", { name: /Page 83/ })).toHaveAttribute("href", /view=1#page=83$/);
@@ -107,13 +107,14 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
 
   // Layout: left nav with the project, profile sections, register beside them.
   await expect(page.getByRole("navigation", { name: "Projects" })).toContainText("188 Balnarring Road");
-  for (const name of ["Project", "Scope of works", "Compliance"]) {
+  for (const name of ["Project", "Scope and works"]) {
     await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
   }
   await expect(page.getByRole("complementary", { name: "Document register" })).toContainText("Documents");
 
-  // Nothing read yet: compliance says where a value is usually stated.
-  await page.getByText("More detail", { exact: true }).click();
+  // Nothing read yet: a compliance input, under its system, says where it is usually stated.
+  const scope = page.getByRole("region", { name: "Scope and works" });
+  await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
 
   await page.getByLabel("Building category", { exact: true }).selectOption("residential");
@@ -121,21 +122,20 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await page.getByLabel("Work type", { exact: true }).selectOption("new");
 
   // Typical systems are ticked in scope, marked as suggestions rather than evidence.
-  const scope = page.getByRole("region", { name: "Scope of works" });
-  const hydraulic = scope.locator(".pf-scope-group", { hasText: "Hydraulic" });
-  await hydraulic.locator("summary").click();
-  const water = hydraulic.locator("li", { hasText: "Heated water" });
+  await scope.locator(".sw-entry", { hasText: "Hydraulic" }).click();
+  const water = scope.locator(".sw-line", { hasText: "Heated water" });
   await expect(water.getByRole("checkbox", { name: "Heated water" })).toBeChecked();
   await expect(water.locator(".pf-scope-origin")).toHaveText("Typical");
+  await expect(water.getByLabel("Who provides Heated water")).toHaveValue("");
   await water.getByRole("button", { name: "Details for Heated water" }).click();
-  await expect(water.locator(".pf-sys")).toBeVisible();
+  await expect(water.locator(".sw-strip")).toBeVisible();
 
   // The user's word: take it out of scope; it survives a reload.
   await water.getByRole("checkbox", { name: "Heated water" }).uncheck();
   await expect(water.locator(".pf-scope-origin")).toHaveText("Removed by you");
   await page.reload();
-  const again = page.getByRole("region", { name: "Scope of works" }).locator(".pf-scope-group", { hasText: "Hydraulic" });
-  await again.locator("summary").click();
+  const again = page.getByRole("region", { name: "Scope and works" });
+  await again.locator(".sw-entry", { hasText: "Hydraulic" }).click();
   await expect(again.getByRole("checkbox", { name: "Heated water" })).not.toBeChecked();
 
   // Switch projects from the left nav.
@@ -239,34 +239,35 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Sprinkler pump replacement");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("heading", { name: "Scope of works" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Scope and works" })).toBeVisible();
 
   await page.getByLabel("Building category", { exact: true }).selectOption("industrial");
   await page.getByLabel("Building class", { exact: true }).selectOption("warehouse");
   await page.getByLabel("Work type", { exact: true }).selectOption({ label: "Refurbishment / fit-out / upgrade" });
-  const scope = page.getByRole("region", { name: "Scope of works" });
+  const scope = page.getByRole("region", { name: "Scope and works" });
   await expect(scope).toContainText("0 systems");
-  // Nothing in scope yet: no basis to hide a compliance row.
-  await page.getByText("More detail", { exact: true }).click();
+  // Nothing in scope yet: no basis to hide a compliance input.
+  await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
 
-  const fire = scope.locator(".pf-scope-group", { hasText: "Active fire protection" });
-  await fire.locator("summary").click();
-  await fire.getByRole("checkbox", { name: "Automatic fire sprinklers" }).check();
+  await scope.locator(".sw-entry", { hasText: "Active fire protection" }).click();
+  await scope.getByRole("checkbox", { name: "Automatic fire sprinklers" }).check();
   await expect(scope).toContainText("1 system");
-  await expect(fire.locator(".pf-scope-origin")).toHaveText("You");
+  const sprinklers = scope.locator(".sw-line", { hasText: "Automatic fire sprinklers" });
+  await expect(sprinklers.locator(".pf-scope-origin")).toHaveText("You");
 
-  // The checklist and compliance follow the scope.
-  const sprinklers = fire.locator("li", { hasText: "Automatic fire sprinklers" });
-  await expect(sprinklers.locator(".pf-scope-provider")).toHaveText("Contractor");
+  // Who provides it defaults to the contractor, shown but not stored.
+  await expect(sprinklers.getByLabel("Who provides Automatic fire sprinklers").locator("option:checked")).toHaveText("Contractor (default)");
   await sprinklers.getByRole("button", { name: "Details for Automatic fire sprinklers" }).click();
-  await expect(sprinklers.locator(".pf-sys")).toBeVisible();
-  await expect(page.getByText(/Showing \d+ of \d+ compliance items for this scope/)).toBeVisible();
+  await expect(sprinklers.locator(".sw-strip")).toBeVisible();
+  // Compliance inputs follow the scope and sit under their system.
   await expect(page.getByLabel("Top of storage height")).toBeVisible();
+  await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
+  await expect(scope).toContainText(/\d+ not needed for this scope/);
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeHidden();
-  await page.getByLabel("Show everything").check();
+  await page.getByLabel("Show inputs this scope does not need").check();
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
-  await page.getByLabel("Show everything").uncheck();
+  await page.getByLabel("Show inputs this scope does not need").uncheck();
 
   // A preset adds a set at once; Reset hands every choice back.
   await scope.getByRole("button", { name: "Typical fit-out" }).click();
@@ -279,7 +280,7 @@ test("site and project details are answered once in Profile", async ({ browser }
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Project details in Profile");
   await page.getByRole("button", { name: "Create project" }).click();
-  const details = page.getByRole("group", { name: "Site and project details" });
+  const details = page.getByRole("group", { name: "Site and planning" });
   await expect(details).toBeVisible();
   await details.getByLabel("Zone").fill("R2");
   await details.getByLabel("Zone").blur();
@@ -287,12 +288,13 @@ test("site and project details are answered once in Profile", async ({ browser }
   await details.getByLabel("Site address").blur();
   // Zone and the typed address each carry a Reset.
   await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(2);
-  await page.getByText("Site risks and project features").click();
+  // A site risk sits under the system it affects.
+  await page.locator(".sw-entry", { hasText: "Substructure" }).click();
   await page.getByLabel("Basement or deep excavation").selectOption("yes");
   await page.reload();
-  await expect(page.getByRole("group", { name: "Site and project details" }).getByLabel("Zone")).toHaveValue("R2");
+  await expect(page.getByRole("group", { name: "Site and planning" }).getByLabel("Zone")).toHaveValue("R2");
   await expect(page.getByLabel("Site address")).toHaveValue("1 Crystal Street, Petersham");
-  await page.getByText("Site risks and project features").click();
+  await page.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(page.getByLabel("Basement or deep excavation")).toHaveValue("yes");
 });
 
@@ -315,7 +317,7 @@ test("a site address read from documents shows until the user types one", async 
     await route.fulfill({ response, json: body });
   });
   await page.reload();
-  const details = page.getByRole("group", { name: "Site and project details" });
+  const details = page.getByRole("group", { name: "Site and planning" });
   const address = details.getByLabel("Site address");
   await expect(address).toHaveValue("568-572 Parramatta Road Petersham");
   await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(0);

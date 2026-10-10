@@ -57,6 +57,9 @@ type fieldJSON struct {
 	// Relevant is set on compliance rows: the project's scope makes the
 	// determinant relevant, or its sources conflict.
 	Relevant *bool `json:"relevant,omitempty"`
+	// Home is the Profile entry the field is shown under: project, planning
+	// or a top-level system id (knowledge/profile/layout.yaml).
+	Home string `json:"home,omitempty"`
 	cellJSON
 }
 
@@ -325,7 +328,9 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 	}
 	if sk, ok := cat.RFPSkeleton(); ok {
 		for _, f := range rfp.DetailFlags(sk) {
-			out.Details = append(out.Details, field(knowledge.DetailPrefix+"flag."+f.Key, f.Label, "choice", yesNo))
+			fj := field(knowledge.DetailPrefix+"flag."+f.Key, f.Label, "choice", yesNo)
+			fj.Home = cat.Home(fj.Key)
+			out.Details = append(out.Details, fj)
 		}
 	}
 
@@ -356,7 +361,12 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 	// site and ground first and finishes after the structure.
 	for _, top := range cat.BuildingOrderSystems() {
 		groups[top.ID] = &systemGroupJSON{ID: top.ID, Label: top.Label}
-		order = append(order, top.ID)
+	}
+	// Screen order: the sequence a building is built in.
+	for _, id := range cat.BuildOrder() {
+		if groups[id] != nil {
+			order = append(order, id)
+		}
 	}
 	for _, leaf := range cat.Leaves() {
 		g := groups[leaf.Parent]
@@ -395,7 +405,7 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 			// With nothing in scope there is no basis to hide a row.
 			relevant := len(scope) == 0 || relevance.Determinants[d.ID] || c.Band == "red"
 			fj := fieldJSON{Key: key, Label: label, PartID: p.ID, Kind: valueKind(d), Unit: d.Unit,
-				Options: detOptions(d), cellJSON: c, Relevant: &relevant}
+				Options: detOptions(d), cellJSON: c, Relevant: &relevant, Home: cat.Home(key)}
 			for _, s := range d.StatedIn {
 				fj.StatedIn = append(fj.StatedIn, s.Label)
 			}

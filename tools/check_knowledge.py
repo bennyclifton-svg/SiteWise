@@ -622,6 +622,40 @@ def check_profile(report: Report, seed_dir: Path, known: dict, deprecated: dict,
         check_relevance(rel, doc, determinants or {}, rules or [], report)
 
 
+def check_layout(report: Report, known: dict, determinants: dict) -> None:
+    """profile/layout.yaml: screen order only, but a bad entry hides an input."""
+    path = KNOWLEDGE / PROFILE_DIR / "layout.yaml"
+    if not path.is_file():
+        return
+    rel = path.relative_to(ROOT).as_posix()
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(doc, dict) or doc.get("version") != 1:
+        report.error(rel, "must be a mapping with version: 1")
+        return
+    if doc.get("status") not in STATUSES:
+        report.error(rel, "layout needs a status")
+    top = {sid for sid in known["system"] if "." not in sid}
+    order = doc.get("build_order") or []
+    if sorted(order) != sorted(top):
+        report.error(rel, "build_order must list every top-level system once")
+    skeleton = yaml.safe_load((KNOWLEDGE / "rfp" / "skeleton.yaml").read_text(encoding="utf-8")) or {}
+    flags = {f.get("key") for f in skeleton.get("flags") or [] if isinstance(f, dict)}
+    seen = set()
+    for home, keys in (doc.get("homes") or {}).items():
+        if home not in ("project", "planning") and home not in top:
+            report.error(rel, f"home {home} is not project, planning or a top-level system")
+        for key in keys or []:
+            if key in seen:
+                report.error(rel, f"{key} has two homes")
+            seen.add(key)
+            if key.startswith("det.") and key[4:] not in determinants:
+                report.error(rel, f"{key}: no such determinant")
+            elif key.startswith("proj.flag.") and key[10:] not in flags:
+                report.error(rel, f"{key}: no such RFP flag")
+            elif not key.startswith(("det.", "proj.flag.")):
+                report.error(rel, f"{key}: only det.<id> and proj.flag.<key> are placed")
+
+
 def check_derivation_output(where: str, rule: dict, determinants: dict, report: Report) -> None:
     derives = rule.get("derives")
     if not isinstance(derives, dict):
@@ -1466,6 +1500,7 @@ def main() -> int:
     for where, rule in rules:
         check_derivation_output(where, rule, determinants, report)
     check_profile(report, args.seed_dir, known, deprecated, refs, cache, determinants, rules)
+    check_layout(report, known, determinants)
     pending = check_works(report, args.seed_dir, refs, cache, actions_doc, known)
     check_catalogues(report, args.seed_dir, cache, determinants)
     check_rfp(report)

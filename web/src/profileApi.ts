@@ -42,6 +42,8 @@ export interface ProfileField extends Cell {
   stated_in?: string[];
   /** Compliance rows: relevant to the scope of works (or conflicting). */
   relevant?: boolean;
+  /** The Profile entry it is shown under: project, planning or a top-level system id. */
+  home?: string;
 }
 
 export interface SystemRow {

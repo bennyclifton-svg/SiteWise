@@ -1,0 +1,87 @@
+# Where Profile shows things. Screen order only: Jev questions, fingerprints
+# and work items keep the catalogue's own order, so editing this file changes
+# no reading.
+#
+# build_order lists every top-level system (knowledge/systems.yaml) in the
+# sequence a builder or consultant walks a building: the ground, then what
+# holds it up, the skin, the services, then fire separation, fit-out and
+# access. Planning and approvals come before it on screen as their own entry.
+#
+# homes places a profile input under one entry: project (the Project card),
+# planning (Planning and approvals) or a top-level system id. A determinant
+# not listed here goes under the first system in its `systems:` list, and
+# with no systems it stays in the Project card. Every RFP detail flag
+# (proj.flag.<key>) is listed.
+version: 1
+status: draft
+build_order:
+  - site
+  - substructure
+  - structure
+  - envelope
+  - hydraulic
+  - mechanical
+  - electrical
+  - fire-active
+  - comms-security
+  - vertical-transport
+  - fire-passive
+  - interiors
+  - access-egress
+homes:
+  project:
+    # What the building is, read once for the whole project.
+    - det.ncc_class
+    - det.rise_in_storeys
+    - det.floor_area
+    - det.effective_height
+    - det.existing_building
+    - det.existing_building_year
+    - det.ncc_edition
+    - det.state
+    - det.heritage_status
+    # Delivery choices that sit beside the contract and sustainability facts.
+    - proj.flag.contract_admin
+    - proj.flag.sustainability_target
+  planning:
+    - proj.flag.staged
+    - proj.flag.multi_building
+    - proj.flag.cl46
+    - proj.flag.panel
+    - proj.flag.objections
+    - proj.flag.community
+    - proj.flag.country
+    - proj.flag.coastal
+  site:
+    - proj.flag.rail
+    - proj.flag.public_road
+    - proj.flag.state_road
+    - proj.flag.heavy_vehicles
+    - proj.flag.tfnsw_referral
+    - proj.flag.intersection_modelling
+    - proj.flag.gtp_required
+    - proj.flag.osd_existing
+    - proj.flag.osd_required
+    - proj.flag.stormwater_quality
+    - proj.flag.norbe
+  substructure:
+    - proj.flag.groundwater
+    - proj.flag.basement
+    - proj.flag.excavation_adjoining
+  structure:
+    - proj.flag.transfer_structures
+    - proj.flag.super_flat_floor
+  envelope:
+    # Climate, bushfire and external noise set the envelope's performance.
+    - det.climate_zone
+    - det.bal
+    - det.bushfire_prone_land
+    - det.noise_affected_site
+  hydraulic:
+    - proj.flag.authority_asset
+  fire-active:
+    - det.sprinklered
+  fire-passive:
+    - det.type_of_construction
+    - det.max_floor_area_m2
+    - det.max_volume_m3

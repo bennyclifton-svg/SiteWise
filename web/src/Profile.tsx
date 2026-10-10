@@ -1,47 +1,31 @@
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
+//
+// The page reads top down: who and where the project is and how far reading
+// got; the Project card (the building, the site and its approvals, how it is
+// delivered); then scope and works, system by system in build order, each
+// with the risks and compliance inputs that belong to it.
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ProfileSources } from "./ProfileSources";
-import { ScopePicker } from "./ScopePicker";
+import { FieldRow, type Setter } from "./ProfileFields";
+import { PLANNING, ScopeWorks, entryInputs } from "./ScopeWorks";
 import { ApiError } from "./api";
-import { IconCheck, IconConfirmed, IconNotChecked, IconYou } from "./icons";
-import { profileApi, type Cell, type Profile as ProfileData, type ProfileField, type ScopeChoice, type Site, type SystemRow } from "./profileApi";
+import { profileApi, type Profile as ProfileData, type ProfileField, type ScopeChoice, type Site } from "./profileApi";
 
 interface Props {
   projectId: string;
   view?: "all" | "summary" | "systems";
   /** Changes when a profile event arrives; the panel refetches. */
   tick: number;
+  /** Changes when work, packages or reports change elsewhere; saved work reloads. */
+  workTick?: number;
   onJump: (documentId: string) => void;
   onSignedOut: () => void;
   /** Filters the register to documents the profile does not read. */
   onShowNotRead: () => void;
 }
-
-const GROUP_LABELS: Record<string, string> = {
-  classification: "Classification",
-  site: "Site",
-  services: "Services",
-  fire: "Fire",
-};
-
-const ASSERTIONS: Record<string, string> = {
-  stated: "Stated",
-  required: "Required",
-  allowance: "Allowance",
-};
-
-const REASONS: Record<string, string> = {
-  unreviewed: "Awaiting owner review of the rule and table",
-  pending: "Pending: table not verified",
-  missing_evidence: "Needs stated inputs",
-  conflict: "Inputs disagree",
-  mixed_scope: "Inputs belong to different parts",
-  no_row: "No table row for these inputs",
-  not_built: "Not built yet",
-};
 
 const KIND_LABELS: Record<string, string> = {
   drawing: "drawings",
@@ -50,49 +34,96 @@ const KIND_LABELS: Record<string, string> = {
   unknown: "unclassified documents",
 };
 
-// The two columns a user reads first: the building (with the procurement
-// route, which shapes every package), then the site. Pairs that
-// look alike but follow different definitions (building class and NCC class,
-// storeys and NCC rise in storeys, GFA and NCC floor area) sit side by side.
-// A list entry names alternatives because scale fields differ by building class.
-const GLANCE: string[][][] = [
-  [["hdr.building_class"], ["hdr.subclass"], ["det.ncc_class"], ["hdr.work_type"], ["hdr.cond.procurement_route"],
-    ["hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels"], ["det.rise_in_storeys"],
-    ["hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm"], ["det.floor_area"]],
-  [["det.state"], ["det.climate_zone"], ["det.wind_class"], ["det.bal"], ["det.site_class"], ["det.flood_hazard"], ["det.heritage_status"]],
+type Column = "building" | "site" | "delivery";
+
+const COLUMN_LABELS: Record<Column, string> = {
+  building: "The building",
+  site: "Site and planning",
+  delivery: "Delivery",
+};
+
+// The Project card's columns, in reading order. Pairs that look alike but
+// follow different definitions (building class and NCC class, storeys and
+// NCC rise in storeys, GFA and NCC floor area) sit together.
+const COLUMNS: Record<Column, string[]> = {
+  building: [
+    "hdr.building_class", "hdr.subclass", "det.ncc_class", "hdr.work_type",
+    "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "det.rise_in_storeys",
+    "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm", "det.floor_area", "det.effective_height",
+    "hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units",
+    "hdr.scale.car_parks", "hdr.scale.garage_spaces",
+    "det.existing_building", "det.existing_building_year", "det.ncc_edition",
+  ],
+  site: [
+    "site.address", "site.lot", "det.state", "proj.lga", "proj.zone", "hdr.scale.site_sqm",
+    "det.heritage_status", "hdr.cond.planning", "fact.consent_number", "fact.consent_date",
+    "fact.consent_lapse_date", "hdr.cond.access_constraints", "hdr.cond.environmental_sensitivity",
+  ],
+  delivery: [
+    "proj.client", "hdr.cond.procurement_route", "fact.contract_form", "fact.contract_basis",
+    "fact.defects_liability_period", "fact.design_life", "proj.program", "proj.sustainability",
+    "proj.flag.sustainability_target", "proj.regulated_design", "proj.flag.contract_admin",
+    "hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints",
+  ],
+};
+
+// Shown even when empty: what every project needs stated.
+const ESSENTIAL = new Set([
+  "hdr.building_class", "hdr.subclass", "det.ncc_class", "hdr.work_type", "hdr.scale.storeys",
+  "hdr.scale.gfa_sqm", "site.address", "site.lot", "det.state", "proj.lga", "proj.zone",
+  "hdr.cond.planning", "proj.client", "hdr.cond.procurement_route",
+]);
+
+// Scale fields that count the same thing. The first with a value is shown;
+// another is shown only when it says something different.
+const SAME_MEASURE = [
+  ["hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels"],
+  ["hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm"],
+  ["hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units"],
+  ["hdr.scale.car_parks", "hdr.scale.garage_spaces"],
 ];
 
-// Compliance groups whose fields live in the Project section instead.
-const LIFTED_GROUPS = ["classification", "site"];
-
-function arrange(data: ProfileData) {
-  const whole = data.parts.find((p) => p.kind === "whole")?.id;
-  const lifted = data.compliance.filter((g) => LIFTED_GROUPS.includes(g.group)).flatMap((g) => g.rows);
-  const pool = [...data.header, ...lifted.filter((f) => !whole || f.part_id === whole)];
-  const used = new Set<ProfileField>();
-  const glance = GLANCE.map((row) =>
-    row.flatMap((keys) => {
-      const f = keys.map((k) => pool.find((x) => x.key === k)).find(Boolean);
-      if (!f) return [];
-      used.add(f);
-      return [f];
-    }),
-  );
-  return {
-    glance,
-    moreHeader: data.header.filter((f) => !used.has(f)),
-    moreCompliance: lifted.filter((f) => !used.has(f)),
-  };
+function columnOf(key: string): Column {
+  for (const c of Object.keys(COLUMNS) as Column[]) if (COLUMNS[c].includes(key)) return c;
+  if (key.startsWith("site.") || key.startsWith("hdr.scale.site")) return "site";
+  if (key.startsWith("hdr.scale.") || key.startsWith("det.")) return "building";
+  return "delivery";
 }
 
-export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, view = "all" }: Props) {
+const rank = (key: string) => {
+  const c = COLUMNS[columnOf(key)].indexOf(key);
+  return c < 0 ? Number.MAX_SAFE_INTEGER : c;
+};
+
+/** Splits card fields into columns: what shows, and what waits behind "more". */
+function arrangeCard(fields: ProfileField[]) {
+  const dropped = new Set<ProfileField>();
+  for (const group of SAME_MEASURE) {
+    const members = group.map((k) => fields.find((f) => f.key === k)).filter((f): f is ProfileField => !!f);
+    const first = members.find((f) => f.value !== "") ?? members[0];
+    for (const f of members) if (f !== first && (f.value === "" || f.value === first.value) && f.band !== "red") dropped.add(f);
+  }
+  const out: Record<Column, { shown: ProfileField[]; more: ProfileField[] }> = {
+    building: { shown: [], more: [] },
+    site: { shown: [], more: [] },
+    delivery: { shown: [], more: [] },
+  };
+  const sorted = fields.filter((f) => !dropped.has(f)).sort((a, b) => rank(a.key) - rank(b.key));
+  for (const f of sorted) {
+    const needed = ESSENTIAL.has(f.key) || f.value !== "" || f.band === "red";
+    out[columnOf(f.key)][needed ? "shown" : "more"].push(f);
+  }
+  return out;
+}
+
+export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, view = "all" }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
   const [error, setError] = useState("");
-  const [allCompliance, setAllCompliance] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [requestNote, setRequestNote] = useState("");
+  const [entry, setEntry] = useState("");
 
   const fail = useCallback(
     (e: unknown) => {
@@ -160,7 +191,7 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
       const p = await profileApi.read(projectId);
       setData(p);
       setError("");
-      setRequestNote(p.pending_documents > 0 || p.failed_documents > 0 ? "" : "No new reading queued. Check source coverage and unresolved passages below.");
+      setRequestNote(p.pending_documents > 0 || p.failed_documents > 0 ? "" : "No new reading queued. Check source coverage and unresolved passages.");
     } catch (e) {
       fail(e);
     } finally {
@@ -168,29 +199,111 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
     }
   }, [projectId, fail]);
 
+  const site = useSiteFields(projectId, tick, data?.site_details ?? [], fail);
+
   if (!data) {
     return <p className="muted">{error || "Reading the profile…"}</p>;
   }
+
+  const openSources = (system: string) => {
+    setSourceSystem(system);
+    setSourcesOpen(true);
+    requestAnimationFrame(() => document.getElementById("profile-sources")?.scrollIntoView({ block: "start" }));
+  };
+
+  // The card holds the header, project facts and details, the site record,
+  // and every input placed in the Project (layout.yaml home "project").
+  const projectInputs = data.compliance.flatMap((g) => g.rows).filter((f) => f.home === "project");
+  const cardFields = [
+    ...data.header,
+    ...data.facts,
+    ...data.details.filter((f) => !f.key.startsWith("proj.flag.") || f.home === "project"),
+    ...site.fields,
+    ...projectInputs,
+  ];
+  const card = arrangeCard(cardFields);
+  const setField: Setter = (key, body) => (key.startsWith("site.") ? site.set(key, body) : set(key, body));
+
+  // What needs the user's eye: conflicting values, and systems whose
+  // documents disagree or say a ticked system is not included.
+  const cardChecks = cardFields.filter((f) => f.band === "red").length;
+  const entries = [PLANNING, ...data.systems.map((g) => g.id)];
+  const entryChecks = (id: string) => {
+    const rows = data.systems.find((g) => g.id === id)?.rows ?? [];
+    const { flags, inputs } = entryInputs(data, id);
+    return rows.filter((r) => r.presence.band === "red" || (r.in_scope && r.presence.value === "not_included" && !["", "blank", "suggested"].includes(r.presence.band))).length
+      + [...flags, ...inputs].filter((f) => f.band === "red").length;
+  };
+  const firstCheck = entries.find((id) => entryChecks(id) > 0);
+  const checks = cardChecks + entries.reduce((n, id) => n + entryChecks(id), 0);
+  const selected = entry || firstCheck || "site";
+  const goToCheck = () => {
+    const red = document.querySelector<HTMLElement>(".pf-card .pf-row[data-band=red]");
+    if (red && view !== "systems") {
+      red.scrollIntoView({ block: "center" });
+      red.querySelector<HTMLElement>("select, input, button")?.focus();
+    } else if (firstCheck) {
+      setEntry(firstCheck);
+      requestAnimationFrame(() => document.getElementById("pf-scope")?.scrollIntoView({ block: "start" }));
+    }
+  };
+
   const builtAt = data.built_at ? new Date(data.built_at) : null;
-  const complianceRows = data.compliance.flatMap((g) => g.rows);
-  const relevantCount = complianceRows.filter((f) => f.relevant !== false).length;
-  const { glance, moreHeader, moreCompliance } = arrange(data);
+  const coverage = data.coverage ?? [];
+  const unresolved = coverage.reduce((n, d) => n + d.needs_mapping, 0);
+  const identity = [site.fields.find((f) => f.key === "site.address")?.value, data.details.find((f) => f.key === "proj.client")?.value, data.details.find((f) => f.key === "proj.lga")?.value].filter(Boolean);
+  const note = data.failed_documents > 0
+    ? `${data.failed_documents} document${data.failed_documents === 1 ? "" : "s"} could not be processed${data.active_documents > 0 ? ` · ${data.active_documents} still processing` : ""}`
+    : data.unread_documents > 0
+      ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} not read yet`
+      : data.pending_documents > 0
+        ? data.active_documents > 0 ? "Documents are being processed; fields appear as reading finishes" : "Waiting for document processing to start or resume"
+        : requestNote || (coverage.length === 0 ? "Upload documents to start" : coverage.some((d) => !d.current) ? "Update needed to check complete source coverage" : "");
 
   return (
     <div className="profile">
-      <div className="profile-actions">
+      <div className="pf-header">
+        <p className="pf-identity">{identity.length > 0 ? identity.join(" · ") : <span className="muted">Address, client and council not stated yet</span>}</p>
         <button type="button" className="btn btn-primary btn-small" onClick={update} disabled={requesting}>
           {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update project profile"}
         </button>
-        <span className="profile-actions-note">
-          {data.failed_documents > 0
-            ? `${data.failed_documents} document${data.failed_documents === 1 ? "" : "s"} could not be processed${data.active_documents > 0 ? ` · ${data.active_documents} still processing` : ""}`
-            : data.unread_documents > 0
-            ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} not read yet`
-            : data.pending_documents > 0
-              ? data.active_documents > 0 ? "Documents are being processed; fields appear as reading finishes" : "Waiting for document processing to start or resume"
-              : requestNote || ((data.coverage ?? []).length === 0 ? "Upload documents to start" : data.coverage?.some(d => !d.current) ? "Update needed to check complete source coverage" : "Reading finished — review source coverage below")}
-        </span>
+        <p className="profile-reading">
+          {data.read_documents + data.skipped_documents > 0 && (
+            <span>
+              Reading {data.read_documents} of {data.read_documents + data.skipped_documents} document
+              {data.read_documents + data.skipped_documents === 1 ? "" : "s"}
+              {data.skipped_documents > 0 && (
+                <>
+                  {" "}({data.skipped_documents} not read
+                  {data.skipped_kind ? `, mostly ${KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ")}` : ""}{" "}
+                  <button type="button" className="cell-link" onClick={onShowNotRead}>
+                    Show
+                  </button>
+                  )
+                </>
+              )}
+            </span>
+          )}
+          <span>
+            {unresolved > 0 && `${unresolved} passages need review `}
+            <button type="button" className="cell-link" aria-expanded={sourcesOpen} onClick={() => setSourcesOpen(!sourcesOpen)}>
+              Source requirements
+            </button>
+          </span>
+          <span>
+            {builtAt ? `Updated ${builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Not built yet"}
+            {data.pending_documents > 0 && ` · ${data.pending_documents} document${data.pending_documents === 1 ? "" : "s"} pending`}
+          </span>
+          {!data.thresholds.applied
+            ? <span>Readings are stored but not shown until the thresholds are approved</span>
+            : data.thresholds.provisional && <span>Provisional thresholds</span>}
+          {note && <span className="profile-actions-note">{note}</span>}
+          {checks > 0 && (
+            <button type="button" className="pf-checks" onClick={goToCheck}>
+              ⚠ {checks} to check
+            </button>
+          )}
+        </p>
       </div>
       {data.failed_documents > 0 && (
         <p className="banner" role="alert">
@@ -199,230 +312,64 @@ export function Profile({ projectId, tick, onJump, onSignedOut, onShowNotRead, v
             : data.active_documents > 0 ? "Some document processing stopped; other documents are still being processed. Your files are saved. Retry the project profile to try the failed documents again." : "Document processing stopped. Your files are saved. Retry the project profile to try again."}
         </p>
       )}
-      {data.read_documents + data.skipped_documents > 0 && (
-        <p className="profile-reading">
-          Reading {data.read_documents} of {data.read_documents + data.skipped_documents} document
-          {data.read_documents + data.skipped_documents === 1 ? "" : "s"}
-          {data.skipped_documents > 0 && (
-            <>
-              {" · "}
-              {data.skipped_documents} not read
-              {data.skipped_kind ? ` (mostly ${KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ")})` : ""}{" "}
-              <button type="button" className="cell-link" onClick={onShowNotRead}>
-                Show
-              </button>
-            </>
-          )}
-        </p>
-      )}
-      <p className="profile-status">
-        {builtAt ? `Updated ${builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Not built yet"}
-        {data.pending_documents > 0 && ` · ${data.pending_documents} document${data.pending_documents === 1 ? "" : "s"} pending`}
-        {!data.thresholds.applied
-          ? " · Readings are stored but not shown until the thresholds are approved"
-          : data.thresholds.provisional && " · Provisional thresholds"}
-      </p>
       {error && (
         <p className="banner" role="alert">
           {error}
         </p>
       )}
 
-      <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} open={sourcesOpen} onOpen={setSourcesOpen} />
-
-      <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
+      {sourcesOpen && <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} onClose={() => setSourcesOpen(false)} />}
 
       <section className="pf-section" aria-labelledby="pf-project" hidden={view === "systems"}>
-        <h2 id="pf-project">Project</h2>
-        <div className="pf-glance-cols">
-          {glance.map((row, i) => (
-            <div className="pf-glance" key={i} aria-label={i === 0 ? "The building" : "The site"} role="group">
-              {row.map((f) => (
-                <FieldRow key={f.key} field={f} onSet={set} onJump={onJump} compact />
-              ))}
-            </div>
+        <div className="pf-head">
+          <h2 id="pf-project">Project</h2>
+          <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
+        </div>
+        <div className="pf-card">
+          {(Object.keys(COLUMN_LABELS) as Column[]).map((c) => (
+            <CardColumn key={c} label={COLUMN_LABELS[c]} shown={card[c].shown} more={card[c].more} parts={data.parts} onSet={setField} onJump={onJump} />
           ))}
         </div>
-        <ProjectDetails projectId={projectId} tick={tick} details={data.details ?? []} siteDetails={data.site_details ?? []} onSet={set} onJump={onJump} onError={fail} />
-        <details className="pf-more">
-          <summary>More detail</summary>
-          <div className="pf-grid">
-            {[...moreHeader, ...data.facts].map((f) => (
-              <FieldRow key={f.key} field={f} onSet={set} onJump={onJump} />
-            ))}
-            {moreCompliance.filter((f) => allCompliance || f.relevant !== false).map((f) => (
-              <FieldRow key={f.key + f.part_id} field={f} onSet={set} onJump={onJump} parts={data.parts} />
-            ))}
-          </div>
-        </details>
       </section>
 
       <div hidden={view === "summary"}>
-        <ScopePicker
+        <ScopeWorks
+          projectId={projectId}
           data={data}
-          onSet={setScope}
-          detail={(r) => (
-            <SystemDetail key={r.leaf} row={r} onSet={set} onJump={onJump} onSources={() => { setSourceSystem(r.leaf); setSourcesOpen(true); document.getElementById("profile-sources")?.scrollIntoView({ block: "start" }); }} />
-          )}
+          tick={tick + workTick}
+          selected={selected}
+          onSelect={setEntry}
+          onScope={setScope}
+          onSet={set}
+          onJump={onJump}
+          onSources={openSources}
+          onSignedOut={onSignedOut}
         />
       </div>
-
-      <section className="pf-section" aria-labelledby="pf-compliance">
-        <div className="pf-head">
-          <h2 id="pf-compliance">Compliance</h2>
-          {relevantCount < complianceRows.length && (
-            <label className="pf-toggle">
-              <input type="checkbox" checked={allCompliance} onChange={(e) => setAllCompliance(e.target.checked)} /> Show everything
-            </label>
-          )}
-        </div>
-        {relevantCount < complianceRows.length && (
-          <p className="pf-scope-hint">
-            {allCompliance ? `Showing all ${complianceRows.length} compliance items.` : `Showing ${relevantCount} of ${complianceRows.length} compliance items for this scope.`}
-          </p>
-        )}
-        {data.compliance.filter((g) => !LIFTED_GROUPS.includes(g.group)).map((g) => {
-          const rows = g.rows.filter((f) => allCompliance || f.relevant !== false);
-          return rows.length === 0 ? null : (
-            <div key={g.group}>
-              <h3>{GROUP_LABELS[g.group] ?? g.group}</h3>
-              <div className="pf-grid">
-                {rows.map((f) => (
-                  <FieldRow key={f.key + f.part_id} field={f} onSet={set} onJump={onJump} parts={data.parts} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </section>
     </div>
   );
 }
 
-type Setter = (key: string, body: { part_id?: string; value?: string | null; note?: string; reset?: boolean }) => void;
-
-function Mark({ cell }: { cell: Cell }) {
-  switch (cell.band) {
-    case "user":
-      return (
-        <span className="pf-mark" data-band="user" title="Set by you">
-          <IconYou />
-          <span className="sr-only">Set by you</span>
-        </span>
-      );
-    case "green":
-      return (
-        <span className="pf-mark" data-band="green" title="From the documents">
-          <IconConfirmed />
-          <span className="sr-only">From the documents</span>
-        </span>
-      );
-    case "amber":
-      return (
-        <span className="pf-mark" data-band="amber" title={cell.tenders === "consistent" ? "Check: the tenders agree" : "Check: read by Jev"}>
-          <IconCheck />
-          <span className="sr-only">Check</span>
-        </span>
-      );
-    case "red":
-      return (
-        <span className="pf-mark" data-band="red" title={cell.tenders === "differ" ? "Tenderers differ" : "Sources differ"}>
-          <IconCheck />
-          <span className="pf-mark-text">{cell.tenders === "differ" ? "Tenderers differ" : "Sources differ"}</span>
-        </span>
-      );
-    case "suggested":
-      return (
-        <span className="pf-mark" data-band="suggested" title="Typical for this building type; not read from a document">
-          <span className="pf-mark-text">Typical</span>
-        </span>
-      );
-    case "unchecked":
-      return (
-        <span className="pf-mark" data-band="unchecked" title="Not checked: Jev didn't answer in time">
-          <IconNotChecked />
-          <span className="sr-only">Not checked</span>
-        </span>
-      );
-    case "blank":
-      return cell.sources.length > 0 ? (
-        <span className="pf-mark" data-band="blank" title="Read, but not sure enough to fill in">
-          <span className="pf-mark-text">Not sure</span>
-        </span>
-      ) : null;
-    default:
-      return null;
-  }
-}
-
-function Sources({ cell, onJump }: { cell: Cell; onJump: (id: string) => void }) {
-  if (cell.sources.length === 0) return null;
+function CardColumn({ label, shown, more, parts, onSet, onJump }: { label: string; shown: ProfileField[]; more: ProfileField[]; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
   return (
-    <details className="pf-sources">
-      <summary aria-label={`${cell.sources.length} source${cell.sources.length === 1 ? "" : "s"}`}>
-        {cell.sources.length}
-      </summary>
-      <ul>
-        {cell.sources.map((s, i) => (
-          <li key={i}>
-            {s.excerpt ? <q>{s.excerpt}</q> : <span className="muted">No excerpt</span>}{" "}
-            <button type="button" className="cell-link" onClick={() => onJump(s.document_id)}>
-              Show in register
-            </button>
-          </li>
-        ))}
-      </ul>
-    </details>
-  );
-}
-
-function Conflict({ cell, onPick }: { cell: Cell; onPick: (v: string) => void }) {
-  if (cell.band !== "red" || cell.alternatives.length === 0) return null;
-  return (
-    <span className="pf-alts">
-      {cell.alternatives.map((a) => (
-        <button type="button" className="btn btn-small" key={a.value} onClick={() => onPick(a.value)}>
-          Use {a.value} ({a.sources.length})
+    <div className="pf-col" role="group" aria-label={label}>
+      <h3>{label}</h3>
+      {shown.map((f) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact />)}
+      {open && more.map((f) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact />)}
+      {more.length > 0 && (
+        <button type="button" className="cell-link pf-col-more" aria-expanded={open} onClick={() => setOpen(!open)}>
+          {open ? "Fewer" : `+ ${more.length} more`}
         </button>
-      ))}
-    </span>
-  );
-}
-
-// Facts the user states once for the project. Every consultant RFP reads
-// them from here, and an edit made in an RFP lands here too.
-function ProjectDetails({ projectId, tick, details, siteDetails, onSet, onJump, onError }: { projectId: string; tick: number; details: ProfileField[]; siteDetails: ProfileField[]; onSet: Setter; onJump: (id: string) => void; onError: (e: unknown) => void }) {
-  const flags = details.filter((f) => f.key.startsWith("proj.flag."));
-  const stated = details.filter((f) => !f.key.startsWith("proj.flag."));
-  const answered = flags.filter((f) => f.value !== "").length;
-  return (
-    <>
-      <div className="pf-grid pf-details" role="group" aria-label="Site and project details">
-        <SiteRows projectId={projectId} tick={tick} readings={siteDetails} onJump={onJump} onError={onError} />
-        {stated.map((f) => (
-          <FieldRow key={f.key} field={f} onSet={onSet} onJump={onJump} />
-        ))}
-      </div>
-      {flags.length > 0 && (
-        <details className="pf-more">
-          <summary>
-            Site risks and project features <span className="muted">{answered} of {flags.length} answered</span>
-          </summary>
-          <div className="pf-grid">
-            {flags.map((f) => (
-              <FieldRow key={f.key} field={f} onSet={onSet} onJump={onJump} />
-            ))}
-          </div>
-        </details>
       )}
-    </>
+    </div>
   );
 }
 
 // Address and lot live on the site record, which outlasts the project. What
 // the user typed there wins; until then the documents' reading is shown, with
 // its sources, and typing over it or resetting only touches the site record.
-function SiteRows({ projectId, tick, readings, onJump, onError }: { projectId: string; tick: number; readings: ProfileField[]; onJump: (id: string) => void; onError: (e: unknown) => void }) {
+function useSiteFields(projectId: string, tick: number, readings: ProfileField[], onError: (e: unknown) => void) {
   const [site, setSite] = useState<Site | null>(null);
   useEffect(() => {
     let live = true;
@@ -431,7 +378,7 @@ function SiteRows({ projectId, tick, readings, onJump, onError }: { projectId: s
       live = false;
     };
   }, [projectId, tick, onError]);
-  if (!site) return null;
+  if (!site) return { fields: [] as ProfileField[], set: (() => undefined) as Setter };
   const save = async (field: "address" | "lot", value: string) => {
     try {
       setSite(await profileApi.setSite(site.id, site.version, { [field]: value }));
@@ -441,155 +388,12 @@ function SiteRows({ projectId, tick, readings, onJump, onError }: { projectId: s
       else onError(e);
     }
   };
-  const set: Setter = (key, body) => save(key === "site.address" ? "address" : "lot", body.reset || body.value == null ? "" : body.value);
-  return (
-    <>
-      {readings.map((reading) => {
-        const typed = reading.key === "site.address" ? site.address : site.lot;
-        const shown: ProfileField = typed ? { ...reading, value: typed, band: "user", sources: [], alternatives: [], assertion: "" } : reading;
-        return <FieldRow key={reading.key} field={shown} onSet={set} onJump={onJump} />;
-      })}
-    </>
-  );
-}
-
-function FieldRow({
-  field,
-  onSet,
-  onJump,
-  parts,
-  compact,
-}: {
-  field: ProfileField;
-  onSet: Setter;
-  onJump: (id: string) => void;
-  parts?: ProfileData["parts"];
-  /** A glance cell: label over value, no "usually in" hint. */
-  compact?: boolean;
-}) {
-  const [draft, setDraft] = useState(field.value);
-  useEffect(() => setDraft(field.value), [field.value]);
-  const id = `pf-${field.key}-${field.part_id}`;
-  const part = parts && parts.length > 1 ? parts.find((p) => p.id === field.part_id) : undefined;
-  const label = part && part.kind !== "whole" ? `${field.label} · ${part.label}` : field.label;
-  const write = (value: string) =>
-    value === "" ? onSet(field.key, { part_id: field.part_id, reset: true }) : onSet(field.key, { part_id: field.part_id, value });
-  const derived = field.derived;
-
-  let control;
-  if (derived) {
-    control = (
-      <span className="pf-derived">
-        {field.value ? `${field.value}${field.unit ? ` ${field.unit}` : ""}` : REASONS[derived.reason ?? ""] ?? "Unknown"}
-      </span>
-    );
-  } else if (field.kind === "choice" && field.options && field.options.length > 0) {
-    control = (
-      <select id={id} className="select pf-control" value={field.value} onChange={(e) => write(e.target.value)}>
-        <option value="">—</option>
-        {field.options.map((o) => (
-          <option key={o.id} value={o.id}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    );
-  } else {
-    const commit = (e?: FormEvent) => {
-      e?.preventDefault();
-      if (draft.trim() !== field.value) write(draft.trim());
-    };
-    control = (
-      <form onSubmit={commit} className="pf-inline">
-        <input
-          id={id}
-          className="input pf-control"
-          inputMode={field.kind === "number" ? "decimal" : undefined}
-          value={draft}
-          placeholder={field.kind === "multi" ? "e.g. 2, 6" : undefined}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={() => commit()}
-        />
-        {field.unit && <span className="muted">{field.unit === "m2" ? "m²" : field.unit}</span>}
-      </form>
-    );
-  }
-
-  return (
-    <div className="pf-row" data-band={field.band || undefined}>
-      <label htmlFor={derived ? undefined : id} className="pf-label">
-        {label}
-      </label>
-      <div className="pf-value">
-        {control}
-        {field.assertion && ASSERTIONS[field.assertion] && (
-          <span className="pf-assert" data-assertion={field.assertion}>
-            {ASSERTIONS[field.assertion]}
-          </span>
-        )}
-        <Mark cell={field} />
-        <Conflict cell={field} onPick={(v) => onSet(field.key, { part_id: field.part_id, value: v })} />
-        <Sources cell={field} onJump={onJump} />
-        {field.band === "user" && (
-          <button type="button" className="cell-link" onClick={() => onSet(field.key, { part_id: field.part_id, reset: true })}>
-            Reset
-          </button>
-        )}
-        {!compact && !field.value && !derived && field.band !== "user" && field.stated_in && field.stated_in.length > 0 && (
-          <span className="pf-hint">Usually in: {field.stated_in.join(", ")}</span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// What the works include is the Scope of works tick; this strip carries the
-// rest of a system's facts: who provides it, the evidence, and a note.
-function SystemDetail({ row, onSet, onJump, onSources }: { row: SystemRow; onSet: Setter; onJump: (id: string) => void; onSources: () => void }) {
-  const base = `sys.${row.leaf}`;
-  const [note, setNote] = useState(row.note.value);
-  useEffect(() => setNote(row.note.value), [row.note.value]);
-  return (
-    <div className="pf-sys" data-band={row.presence.band || undefined}>
-      <select
-        className="select pf-provider"
-        aria-label={`Who provides ${row.label}`}
-        value={row.provider.value}
-        onChange={(e) =>
-          e.target.value
-            ? onSet(`${base}.provider`, { part_id: row.part_id, value: e.target.value })
-            : onSet(`${base}.provider`, { part_id: row.part_id, reset: true })
-        }
-      >
-        <option value="">Provider —</option>
-        <option value="contractor">Contractor</option>
-        <option value="owner">Owner</option>
-        <option value="others">Others</option>
-      </select>
-      <span className="pf-sys-marks">
-        {row.presence.band !== "suggested" && <Mark cell={row.presence} />}
-        <Mark cell={row.provider.band === "red" ? row.provider : { ...row.provider, band: "" }} />
-        <Conflict cell={row.presence} onPick={(v) => onSet(`${base}.presence`, { part_id: row.part_id, value: v })} />
-        <Conflict cell={row.provider} onPick={(v) => onSet(`${base}.provider`, { part_id: row.part_id, value: v })} />
-        <Sources cell={row.presence} onJump={onJump} />
-        <button type="button" className="cell-link" onClick={onSources} aria-label={`View requirements for ${row.label}`}>Requirements</button>
-        {row.presence.band === "user" && (
-          <button type="button" className="cell-link" onClick={() => onSet(`${base}.presence`, { part_id: row.part_id, reset: true })}>
-            Reset
-          </button>
-        )}
-      </span>
-      <input
-        className="input pf-note"
-        aria-label={`Note for ${row.label}`}
-        maxLength={120}
-        value={note}
-        placeholder={row.presence.note ?? "Note"}
-        onChange={(e) => setNote(e.target.value)}
-        onBlur={() => note !== row.note.value && onSet(`${base}.note`, { part_id: row.part_id, value: note })}
-      />
-    </div>
-  );
+  const set: Setter = (key, body) => void save(key === "site.address" ? "address" : "lot", body.reset || body.value == null ? "" : body.value);
+  const fields = readings.map((reading) => {
+    const typed = reading.key === "site.address" ? site.address : site.lot;
+    return typed ? { ...reading, value: typed, band: "user" as const, sources: [], alternatives: [], assertion: "" } : reading;
+  });
+  return { fields, set };
 }
 
 const KINDS = ["building", "part", "storey", "compartment", "tenancy", "outbuilding"];
@@ -622,6 +426,7 @@ function PartsBar({
   }
   return (
     <div className="pf-parts" aria-label="Parts">
+      <span className="muted">Parts</span>
       {data.parts.map((p) => (
         <span className="pf-part" key={p.id} data-kind={p.kind}>
           {p.label}

@@ -7,6 +7,8 @@ export interface WorkRecord {
   inclusion: string; is_group: boolean; review_status: string; origin: string; version: number;
   layout_change?: "unknown" | "yes" | "no"; existing_condition?: string; existing_condition_note?: string; target: WorkTarget;
   quantity?: string; unit?: string; deprecated?: boolean; source_proposal_key?: string;
+  /** Set on the item a scope tick owns (part|system); the tick is its inclusion. */
+  coarse_key?: string | null;
   provenance: { actor?: string; last_edited_by?: string; last_edited_at?: string; rationale?: string; sources?: unknown };
 }
 export interface WorkCorrection { layout_change?: "unknown" | "yes" | "no"; version: number; title: string; action: string; inclusion: string; existing_condition_note: string; target: WorkTarget; quantity: string | null; unit?: string }

@@ -107,6 +107,7 @@ type Catalog struct {
 	reportTemplates map[string]ReportTemplate
 	costBenchmarks  map[string]CostBenchmark
 	rfp             rfpData
+	layout          layoutData
 }
 
 // Load reads knowledge/ (or a fixture with the same layout).
@@ -206,6 +207,10 @@ func Load(root string) (*Catalog, error) {
 		return nil, err
 	}
 	if err := c.loadRFP(filepath.Join(root, "rfp")); err != nil {
+		return nil, err
+	}
+	// After the RFP skeleton: the layout places its detail flags.
+	if err := c.loadLayout(filepath.Join(root, "profile")); err != nil {
 		return nil, err
 	}
 	sort.Slice(c.evidence, func(i, j int) bool { return c.evidence[i].ID < c.evidence[j].ID })
