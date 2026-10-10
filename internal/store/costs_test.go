@@ -95,13 +95,16 @@ func TestCostNullConcurrentAndInvalidAmounts(t *testing.T) {
 		t.Fatal(e)
 	}
 	id := p.Items[0].ID
-	unknown := costs.Value{ValueState: "unknown", Origin: "user", Meaning: "forecast"}
-	p, e = s.PutCostValue(ctx, orgA, projectA, id, userA, "estimate", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Value: unknown})
+	unknown := costs.Value{ValueState: "unknown", Origin: "user", Meaning: "forecast", Version: p.Items[0].Values["budget"].Version}
+	p, e = s.PutCostValue(ctx, orgA, projectA, id, userA, "budget", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Value: unknown})
 	if e != nil {
 		t.Fatal(e)
 	}
-	if p.Items[0].Values["estimate"].Amount != nil {
+	if p.Items[0].Values["budget"].Amount != nil {
 		t.Fatal("unknown became zero")
+	}
+	if _, e = s.PutCostValue(ctx, orgA, projectA, id, userA, "estimate", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Value: costs.Value{ValueState: "unknown", Origin: "user", Meaning: "forecast"}}); !errors.Is(e, costs.ErrInvalid) {
+		t.Fatal("retired estimate accepted", e)
 	}
 	if _, e = s.PutCostValue(ctx, orgA, projectA, id, userA, "claimed_to_date", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Value: cv("1.00")}); !errors.Is(e, costs.ErrInvalid) {
 		t.Fatal("missing date", e)
@@ -183,11 +186,11 @@ func TestCostCalculationTaxBasisAndRollback(t *testing.T) {
 		t.Fatal(e)
 	}
 	id := p.Items[0].ID
-	p, e = s.PutCostValue(ctx, orgA, projectA, id, userA, "estimate", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Calculate: true, Value: costs.Value{Meaning: "allowance"}})
+	p, e = s.PutCostValue(ctx, orgA, projectA, id, userA, "budget", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Calculate: true, Value: costs.Value{Meaning: "allowance", Version: p.Items[0].Values["budget"].Version}})
 	if e != nil {
 		t.Fatal(e)
 	}
-	v := p.Items[0].Values["estimate"]
+	v := p.Items[0].Values["budget"]
 	if v.Amount == nil || *v.Amount != "1.12" || v.Origin != "calculation" {
 		t.Fatal(v)
 	}
@@ -392,7 +395,7 @@ func TestCostPackageStageAndScopeRetirement(t *testing.T) {
 		t.Fatal("linked scope removed", e)
 	}
 }
-func TestCostMissingBenchmarkDoesNotInventEstimate(t *testing.T) {
+func TestCostMissingBenchmarkDoesNotInventBudget(t *testing.T) {
 	ctx := context.Background()
 	s, _, _ := workStore(t)
 	p, e := s.CreateCostItem(ctx, orgA, projectA, userA, ci("Allowance"))
@@ -408,7 +411,7 @@ func TestCostMissingBenchmarkDoesNotInventEstimate(t *testing.T) {
 		t.Fatal("invented missing benchmark", e)
 	}
 	p, e = s.ReadCostPlan(ctx, orgA, projectA, "")
-	if e != nil || p.Items[0].Values["estimate"].Amount != nil {
+	if b := p.Items[0].Values["budget"]; e != nil || b.Amount == nil || *b.Amount != "100.00" || b.Origin != "user" {
 		t.Fatal(p, e)
 	}
 }
@@ -484,7 +487,7 @@ benchmarks:
 	if e != nil {
 		t.Fatal(e)
 	}
-	v := p.Items[0].Values["estimate"]
+	v := p.Items[0].Values["budget"]
 	if v.Amount == nil || *v.Amount != "37.04" || v.Origin != "calculation" {
 		t.Fatal(v)
 	}

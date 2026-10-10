@@ -19,7 +19,7 @@ func TestPMPUsesCostSummaryAndFreezesLedgerInputs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	p, err = s.PutCostValue(ctx, orgA, projectA, p.Items[0].ID, userA, "estimate", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Value: costs.Value{ValueState: "known", Low: cm("120.00"), High: cm("180.00"), Origin: "user", Meaning: "allowance"}})
+	p, err = s.PutCostValue(ctx, orgA, projectA, p.Items[0].ID, userA, "commitment", store.CostValueInput{PlanVersionID: p.ID, PlanVersion: p.Version, Value: costs.Value{ValueState: "known", Low: cm("120.00"), High: cm("180.00"), Origin: "user", Meaning: "allowance"}})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -6,7 +6,9 @@ import (
 	"time"
 )
 
-var Metrics = []string{"budget", "estimate", "commitment", "claimed_to_date"}
+// Estimate is retired: budget is the one planning figure. Old baselines may still
+// hold estimate rows; they are read, never written.
+var Metrics = []string{"budget", "commitment", "claimed_to_date"}
 
 type Settings struct {
 	Currency                string          `json:"currency"`

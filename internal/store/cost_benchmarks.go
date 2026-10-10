@@ -142,14 +142,14 @@ func (s *Store) ApplyCostBenchmark(ctx context.Context, org, project, item, acto
 		}
 	}
 	if selected == nil {
-		return p, fmt.Errorf("%w: no reviewed applicable benchmark; enter an estimate or leave unknown", costs.ErrInvalid)
+		return p, fmt.Errorf("%w: no reviewed applicable benchmark; enter a budget or leave unknown", costs.ErrInvalid)
 	}
 	value := costs.Value{Amount: &selected.Amount, ValueState: "known", Origin: "user", Meaning: "allowance", Rationale: "Reviewed benchmark applied after basis acknowledgement"}
-	if e = writeCostValue(ctx, tx, org, project, p.ID, item, actor, "estimate", value); e != nil {
+	if e = writeCostValue(ctx, tx, org, project, p.ID, item, actor, "budget", value); e != nil {
 		return p, e
 	}
 	raw, _ := json.Marshal(map[string]any{"method": "reviewed_benchmark", "method_version": 1, "catalogue_version": s.workCatalog().Version(), "benchmark": selected.Benchmark, "quantity": selected.Quantity, "limitations": selected.Limitations, "basis_acknowledged": true})
-	if _, e = tx.Exec(ctx, `UPDATE cost_values SET origin='calculation',provenance=provenance||$4::jsonb WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid AND metric='estimate'`, org, p.ID, item, raw); e != nil {
+	if _, e = tx.Exec(ctx, `UPDATE cost_values SET origin='calculation',provenance=provenance||$4::jsonb WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid AND metric='budget'`, org, p.ID, item, raw); e != nil {
 		return p, e
 	}
 	return s.finishCost(ctx, tx, org, project, p.ID)

@@ -131,3 +131,12 @@ func TestMoneyCoreHasNoBinaryFloats(t *testing.T) {
 		}
 	}
 }
+func TestEstimateIsNotWritable(t *testing.T) {
+	v := val("10.00")
+	if ValidateValue("estimate", &v) == nil {
+		t.Fatal("estimate accepted")
+	}
+	if ValidateValue("budget", &v) != nil {
+		t.Fatal("budget rejected")
+	}
+}

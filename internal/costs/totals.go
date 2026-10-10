@@ -24,6 +24,8 @@ type Totals struct {
 	Variance    *Money                      `json:"variance"`
 }
 
+// Forecast keeps estimate in its order so a baseline frozen before estimate was
+// retired keeps the forecast it was frozen with. Drafts no longer hold one.
 func Forecast(item Item) (Value, string) {
 	for _, m := range []string{"commitment", "estimate", "budget"} {
 		v := item.Values[m]

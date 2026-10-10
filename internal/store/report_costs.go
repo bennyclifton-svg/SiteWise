@@ -35,7 +35,7 @@ func reportCommercial(ctx context.Context, tx pgx.Tx, org, project, pkg, kind st
 		if err != nil {
 			return nil, "", err
 		}
-		for _, metric := range []string{"budget", "estimate", "commitment", "claimed_to_date", "forecast"} {
+		for _, metric := range []string{"budget", "commitment", "claimed_to_date", "forecast"} {
 			t := totals.Overall[metric]
 			text := "Not available"
 			if t.Amount != nil {

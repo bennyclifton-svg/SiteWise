@@ -11,7 +11,7 @@ func calculateCostInput(in *CostValueInput, metric string, item costs.Item) erro
 	if !in.Calculate {
 		return nil
 	}
-	if metric != "budget" && metric != "estimate" {
+	if metric != "budget" {
 		return costs.ErrInvalid
 	}
 	if item.Quantity == nil || item.Rate == nil || in.Amount != nil || in.Low != nil || in.High != nil {
