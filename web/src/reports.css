@@ -180,3 +180,59 @@
 .rfp-advisory li { margin: 6px 0; }
 .rfp-boundary .rfp-control { flex-basis: 140px; }
 
+
+/* Procurement: one compact table, a row per package, grouped Consultants and
+   Trades. Suggested rows are faint with a dashed left rule (the same dashed
+   mark as an RFP suggestion). Narrow screens scroll the table, not the page. */
+/* A grid item takes its content's width unless told otherwise; the table
+   must scroll inside, not widen the page. */
+.project-reports { min-width: 0; }
+.procurement { min-width: 0; max-width: 1200px; padding: 24px 28px 64px; }
+.procurement-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.procurement-head h1 { margin: 0; font-size: 22px; }
+.procurement-head .btn, .draft-form .btn { border-radius: 999px; }
+.procurement-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 10px; color: var(--ink-body); font-size: 13.5px; }
+.procurement-line p { margin: 0; }
+.procurement-scroll { max-width: 100%; overflow-x: auto; margin: 14px 0; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
+.procurement-table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13.5px; }
+.procurement-table th, .procurement-table td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; white-space: nowrap; }
+.procurement-table thead th { font-size: 12px; font-weight: 600; color: var(--ink-muted); background: var(--canvas); border-bottom-color: var(--line-strong); }
+.procurement-table .group-row th { padding-top: 12px; font-size: 11.5px; font-weight: 600; font-variant: all-small-caps; letter-spacing: .04em; color: var(--ink-muted); background: var(--canvas); }
+.discipline-cell { font-weight: 600; color: var(--ink); }
+.novation-mark { display: inline-flex; vertical-align: -3px; margin-right: 6px; color: var(--ink-muted); }
+.suggested-tag { margin-left: 8px; padding: 0 6px; border: 1px dashed var(--azure); border-radius: 999px; font-size: 11px; font-weight: 500; line-height: 16px; color: var(--azure); }
+.row-suggested th, .row-suggested td { color: var(--ink-muted); }
+.row-suggested .discipline-cell { background-image: linear-gradient(var(--azure) 50%, transparent 50%); background-size: 2px 6px; background-repeat: repeat-y; font-weight: 500; }
+.firm-cell input { width: 9rem; height: 26px; padding: 0 8px; font: inherit; font-size: 12.5px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.firm-cell input:disabled { cursor: not-allowed; background: var(--canvas); color: var(--ink-muted); }
+.firm-cell input:disabled::placeholder { color: var(--ink-muted); opacity: .7; }
+.table-action { padding: 2px 0; border: 0; background: transparent; font: inherit; font-weight: 500; color: var(--azure); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.table-action:hover:not(:disabled) { color: var(--ink); }
+.table-action:disabled { color: var(--ink-muted); text-decoration: none; cursor: not-allowed; opacity: .7; }
+.row-menu-cell { width: 1%; text-align: right; }
+.row-menu { position: relative; display: inline-block; }
+.row-menu summary { list-style: none; padding: 0 8px; border-radius: var(--radius-sm); font-weight: 600; line-height: 24px; color: var(--ink-muted); cursor: pointer; }
+.row-menu summary::-webkit-details-marker { display: none; }
+.row-menu summary:hover, .row-menu[open] summary { background: var(--ground); color: var(--ink); }
+.row-menu-items { position: absolute; right: 0; z-index: 5; display: grid; min-width: 120px; margin-top: 4px; padding: 4px; background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); }
+.row-menu-items button { padding: 6px 10px; border: 0; border-radius: var(--radius-sm); background: transparent; font: inherit; text-align: left; color: var(--ink); cursor: pointer; }
+.row-menu-items button:hover:not(:disabled) { background: var(--ground); }
+.row-menu-items button:disabled { cursor: not-allowed; opacity: .55; }
+.draft-row td { background: var(--canvas); }
+.draft-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.draft-form select { min-width: 0; max-width: 100%; height: 28px; padding: 0 8px; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.procurement-empty { color: var(--ink-muted); white-space: normal; }
+.procurement-pmp { margin-top: 6px; }
+.procurement .banner { flex-wrap: wrap; }
+
+/* The report and scope views open full width from a row, with a back link. */
+.reports.report-view { display: block; }
+.report-view .report-reader { max-width: 1100px; }
+.report-back { margin-bottom: 16px; }
+.scope-back { padding: 24px 36px 0; }
+.scope-back .report-back { margin-bottom: 0; }
+.report-view .scope-back + .report-reader { padding-top: 16px; }
+@media (max-width: 760px) {
+  .procurement { padding: 20px 16px 48px; }
+  .scope-back { padding: 20px 20px 0; }
+}
