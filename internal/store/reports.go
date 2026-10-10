@@ -157,15 +157,84 @@ func (s *Store) CreateReport(ctx context.Context, org, project, actor, kind, pkg
 	if err != nil {
 		return r, err
 	}
-	var raw []byte
-	err = tx.QueryRow(ctx, `INSERT INTO reports(org_id,id,project_id,kind,package_id,title) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,'')::uuid,left($6,200)) RETURNING to_jsonb(reports)`, org, newID(), project, kind, pkg, strings.ToUpper(kind)+" — "+name).Scan(&raw)
-	if err != nil {
-		return r, err
-	}
-	if err = json.Unmarshal(raw, &r); err != nil {
+	if r, err = insertReport(ctx, tx, org, project, kind, pkg, name); err != nil {
 		return r, err
 	}
 	return r, s.finishReportWrite(ctx, tx, org, r, "", "drafting")
+}
+
+func insertReport(ctx context.Context, tx pgx.Tx, org, project, kind, pkg, name string) (Report, error) {
+	var r Report
+	var raw []byte
+	err := tx.QueryRow(ctx, `INSERT INTO reports(org_id,id,project_id,kind,package_id,title) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,'')::uuid,left($6,200)) RETURNING to_jsonb(reports)`, org, newID(), project, kind, pkg, strings.ToUpper(kind)+" — "+name).Scan(&raw)
+	if err != nil {
+		return r, err
+	}
+	err = json.Unmarshal(raw, &r)
+	return r, err
+}
+
+// ProcurementCreate makes the RFP or RFT for one Procurement row. A
+// suggested row passes its proposal key, and the proposal is accepted in the
+// same transaction, so Create is one round trip. A package that already has
+// a report returns that report (created=false): a double-click never makes
+// two.
+func (s *Store) ProcurementCreate(ctx context.Context, org, project, actor, packageID, proposalKey, disciplineID string) (procurement.Package, Report, bool, error) {
+	var p procurement.Package
+	var r Report
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return p, r, false, err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return p, r, false, err
+	}
+	if err := packageActor(ctx, tx, org, actor); err != nil {
+		return p, r, false, err
+	}
+	accepted := proposalKey != ""
+	if accepted {
+		p, err = s.acceptProposalTx(ctx, tx, org, project, actor, proposalKey, disciplineID)
+	} else {
+		// Org- and project-scoped; a retired or missing package is ErrNotFound.
+		p, err = readPackage(ctx, tx, org, project, packageID)
+	}
+	if err != nil {
+		return p, r, false, err
+	}
+	if p.RetiredAt != nil {
+		return p, r, false, ErrNotFound
+	}
+	kind := map[string]string{"services": "rfp", "works": "rft"}[p.Kind]
+	if kind == "" {
+		return p, r, false, ErrInvalidReport
+	}
+	var raw []byte
+	err = tx.QueryRow(ctx, `SELECT to_jsonb(r) FROM reports r WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$3::uuid ORDER BY created_at,id LIMIT 1`, org, project, p.ID).Scan(&raw)
+	if err == nil {
+		if err := json.Unmarshal(raw, &r); err != nil {
+			return p, r, false, err
+		}
+		if !accepted {
+			return p, r, false, nil
+		}
+		// Accepting the head contract again can add missing lines to a
+		// package that already has its RFT: keep them.
+		return p, r, false, s.finishPackagesWrite(ctx, tx, org, project)
+	}
+	if !errors.Is(err, pgx.ErrNoRows) {
+		return p, r, false, err
+	}
+	if r, err = insertReport(ctx, tx, org, project, kind, p.ID, p.Title); err != nil {
+		return p, r, false, err
+	}
+	if accepted {
+		if err := s.packagesChanged(ctx, tx, org, project); err != nil {
+			return p, r, false, err
+		}
+	}
+	return p, r, true, s.finishReportWrite(ctx, tx, org, r, "", "drafting")
 }
 
 func (s *Store) RefreshReport(ctx context.Context, org, id, actor, appBuild string, useLastCompleted bool) (ReportDraft, error) {

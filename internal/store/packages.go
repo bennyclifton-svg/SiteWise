@@ -269,6 +269,15 @@ func (s *Store) insertPackageStage(ctx context.Context, tx pgx.Tx, org string, p
 }
 
 func (s *Store) finishPackagesWrite(ctx context.Context, tx pgx.Tx, org, project string) error {
+	if err := s.packagesChanged(ctx, tx, org, project); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}
+
+// packagesChanged bumps the packages revision and tells Packages listeners,
+// without committing, so a write that also touches reports can share it.
+func (s *Store) packagesChanged(ctx context.Context, tx pgx.Tx, org, project string) error {
 	if err := BumpRevision(ctx, tx, org, project, "packages"); err != nil {
 		return err
 	}
@@ -277,8 +286,6 @@ func (s *Store) finishPackagesWrite(ctx context.Context, tx pgx.Tx, org, project
 		return err
 	}
 	payload, _ := json.Marshal(map[string]any{"project_id": project, "revision": revisions.Packages})
-	if _, err := appendEvent(ctx, s.q.WithTx(tx), org, "packages", "", string(payload)); err != nil {
-		return err
-	}
-	return tx.Commit(ctx)
+	_, err = appendEvent(ctx, s.q.WithTx(tx), org, "packages", "", string(payload))
+	return err
 }
