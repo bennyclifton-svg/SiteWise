@@ -13,6 +13,8 @@ import (
 
 var ErrInvalidPackage = errors.New("invalid package")
 
+var ErrDuplicatePackage = errors.New("discipline already has a package")
+
 // PackageOverview is everything the Packages tab proposes, read from one
 // consistent snapshot. Proposals are computed here and never stored.
 type PackageOverview struct {
@@ -62,21 +64,7 @@ func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project str
 	if err != nil {
 		return o, err
 	}
-	rows, err := tx.Query(ctx, `SELECT r.key,COALESCE(r.value,''),r.band,r.origin,r.meaning,r.review_status,r.value_state FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND (r.key='hdr.work_type' OR (p.kind='whole' AND (r.key='hdr.building_class' OR r.key LIKE 'det.%' OR r.key LIKE 'hdr.cond.%')))`, org, project)
-	if err != nil {
-		return o, err
-	}
-	facts := []profile.Row{}
-	for rows.Next() {
-		var row profile.Row
-		if err := rows.Scan(&row.Key, &row.Value, &row.Band, &row.Origin, &row.Meaning, &row.ReviewStatus, &row.ValueState); err != nil {
-			rows.Close()
-			return o, err
-		}
-		facts = append(facts, row)
-	}
-	err = rows.Err()
-	rows.Close()
+	facts, err := readPackageFacts(ctx, tx, org, project)
 	if err != nil {
 		return o, err
 	}
@@ -104,6 +92,24 @@ func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project str
 	}
 	o.ProposedWork = procurement.ProposeHeadContract(o.Gaps, work, items, route)
 	return o, nil
+}
+
+// readPackageFacts reads the profile rows packages are proposed from.
+func readPackageFacts(ctx context.Context, tx pgx.Tx, org, project string) ([]profile.Row, error) {
+	rows, err := tx.Query(ctx, `SELECT r.key,COALESCE(r.value,''),r.band,r.origin,r.meaning,r.review_status,r.value_state FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND (r.key='hdr.work_type' OR (p.kind='whole' AND (r.key='hdr.building_class' OR r.key LIKE 'det.%' OR r.key LIKE 'hdr.cond.%')))`, org, project)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	facts := []profile.Row{}
+	for rows.Next() {
+		var row profile.Row
+		if err := rows.Scan(&row.Key, &row.Value, &row.Band, &row.Origin, &row.Meaning, &row.ReviewStatus, &row.ValueState); err != nil {
+			return nil, err
+		}
+		facts = append(facts, row)
+	}
+	return facts, rows.Err()
 }
 
 func readPackages(ctx context.Context, q rowQuerier, org, project string) ([]procurement.Package, error) {
@@ -185,6 +191,54 @@ func (s *Store) CreatePackage(ctx context.Context, org, project, actor string, p
 		return p, err
 	}
 	return p, nil
+}
+
+// CreateDisciplinePackage saves the package a Procurement row stands for.
+// The caller supplies a package from procurement.DisciplinePackage; novation
+// follows the procurement route, as for accepted proposals. One live
+// package per discipline keeps the table one row per discipline.
+func (s *Store) CreateDisciplinePackage(ctx context.Context, org, project, actor string, p procurement.Package) (procurement.Package, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return p, err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return p, err
+	}
+	var exists, taken bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid),
+ EXISTS(SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND discipline_id=$3 AND retired_at IS NULL)`, org, project, p.DisciplineID).Scan(&exists, &taken); err != nil {
+		return p, err
+	}
+	if !exists {
+		return p, ErrNotFound
+	}
+	if taken {
+		return p, ErrDuplicatePackage
+	}
+	if err := packageActor(ctx, tx, org, actor); err != nil {
+		return p, err
+	}
+	facts, err := readPackageFacts(ctx, tx, org, project)
+	if err != nil {
+		return p, err
+	}
+	p.Novation = p.Kind == "services" && procurement.BuilderDesigns(profile.PackageComplexityFacts(facts)["procurement_route"])
+	if err := procurement.ValidatePackage(p); err != nil {
+		return p, fmt.Errorf("%w: %v", ErrInvalidPackage, err)
+	}
+	p.Stages = procurement.DefaultStages(p, s.workCatalog())
+	provenance, _ := json.Marshal(map[string]string{"actor": actor, "discipline": p.DisciplineID})
+	if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance); err != nil {
+		return p, err
+	}
+	// A discipline the user picked is their choice, not a calculation.
+	if _, err := tx.Exec(ctx, `UPDATE packages SET origin='user' WHERE org_id=$1::uuid AND id=$2::uuid`, org, p.ID); err != nil {
+		return p, err
+	}
+	p.Origin = "user"
+	return p, s.finishPackagesWrite(ctx, tx, org, project)
 }
 
 func packageActor(ctx context.Context, tx pgx.Tx, org, actor string) error {

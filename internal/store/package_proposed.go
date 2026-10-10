@@ -87,7 +87,7 @@ func (s *Store) insertProposedPackage(ctx context.Context, tx pgx.Tx, org, proje
 	}
 	p.ID, p.ProjectID, p.Version = newID(), project, 1
 	p.Origin, p.ReviewStatus, p.Meaning, p.Provenance = "calculation", "accepted_for_planning", "stated", provenance
-	_, err := tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,title,novation,lifecycle_status,origin,review_status,meaning,provenance) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),$6,$7,$8,'calculation','accepted_for_planning','stated',$9::jsonb)`, org, p.ID, project, p.Kind, p.WorksScope, p.Title, p.Novation, p.LifecycleStatus, provenance)
+	_, err := tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,title,novation,lifecycle_status,origin,review_status,meaning,provenance,discipline_id) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),$6,$7,$8,'calculation','accepted_for_planning','stated',$9::jsonb,NULLIF($10,''))`, org, p.ID, project, p.Kind, p.WorksScope, p.Title, p.Novation, p.LifecycleStatus, provenance, p.DisciplineID)
 	if err != nil {
 		return p, err
 	}
