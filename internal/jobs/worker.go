@@ -527,7 +527,7 @@ func labelCall(cat *knowledge.Catalog, passage Passage) (jev.Call, map[string][]
 	}
 	// Profile questions read the same passage, so they join this request
 	// instead of adding a round trip (https://docs.typesafe.ai/patterns/fan-out).
-	extra, candidates := profile.LabelQuestions(passage.Info(), profile.Harvest(passageExcerpt(passage), cat), cat)
+	extra, candidates := profile.LabelQuestions(passage.Info(), profile.HarvestOwn(passageExcerpt(passage), passage.Text, cat), cat)
 	for id, q := range extra {
 		questions[id] = q
 	}

@@ -23,7 +23,7 @@ func TestHarvestProjectDetailCandidates(t *testing.T) {
 		{"PRINCIPAL’S PROJECT REQUIREMENTS JW building: 568-572 Parramatta Road Petersham Principal: Joins Win Pty Ltd ABN 20 098 348 031 DRAFT Revision - E",
 			"site.address", []string{"568-572 Parramatta Road Petersham"}, []string{"568-572 Parramatta Road Petersham Principal"}},
 		{"568-572 Parramatta Rd Petersham – Principal Project Requirements (Rev E– 21.06.2021)",
-			"site.address", []string{"568-572 Parramatta Rd Petersham"}, nil},
+			"site.address", []string{"568-572 Parramatta Road Petersham"}, nil},
 		{"It has two approved street addresses 572 Paramatta Road (commercial) & 82 Queen Street Petersham residential).",
 			"site.address", []string{"572 Paramatta Road", "82 Queen Street Petersham"}, nil},
 		{"Principal: Joins Win Pty Ltd ABN 20 098 348 031 DRAFT Revision - E",
@@ -212,6 +212,51 @@ func TestEveryReadFlagIsARealDetailFlagOfTheSkeleton(t *testing.T) {
 		if _, det := map[string]bool{"bushfire": true, "flood": true, "contamination": true, "acid_sulfate": true, "existing_building": true,
 			"heritage": true, "live_operations": true, "mixed_use": true}[f.Key]; det {
 			t.Errorf("flag %s already has a determinant home; reading it twice would disagree", f.Key)
+		}
+	}
+}
+
+// A passage inherits its section heading and context; a detail must come from
+// the passage's own text. Petersham's list of the contractor's past projects
+// ("81 MacDonald Street Erskineville") rode along into 195 later passages and
+// out-voted the real address.
+func TestDetailsAreFoundInThePassagesOwnTextOnly(t *testing.T) {
+	cat := repoCatalog(t)
+	inherited := "Reference projects\n19-21 Eve Street Erskineville; 81 MacDonald Street Erskineville\n"
+	own := "All bedroom areas to be carpet unless noted otherwise."
+	if h := profile.HarvestOwn(inherited+own, own, cat); h.Has("site.address") {
+		t.Errorf("an inherited address was offered: %+v", h.Candidates["site.address"])
+	}
+	own = "The works are at 568-572 Parramatta Road Petersham."
+	h := profile.HarvestOwn(inherited+own, own, cat)
+	if !h.Has("site.address") || len(h.Candidates["site.address"]) != 1 {
+		t.Errorf("own address missing or mixed with inherited ones: %+v", h.Candidates["site.address"])
+	}
+	// Everything else still reads the whole excerpt.
+	if !profile.HarvestOwn("Design life 50 years", "50 years", cat).Has("fact.design_life") {
+		t.Error("non-detail questions must still read the excerpt")
+	}
+}
+
+func TestAddressStreetTypesAreWrittenOutSoSpellingsAgree(t *testing.T) {
+	cat := repoCatalog(t)
+	for _, text := range []string{"568-572 Parramatta Rd Petersham", "568-572 Parramatta Road Petersham"} {
+		cands := profile.Harvest(text, cat).Candidates["site.address"]
+		if len(cands) != 1 || cands[0].Norm != "568-572 Parramatta Road Petersham" {
+			t.Errorf("%q = %+v", text, cands)
+		}
+		if cands[0].Value != text {
+			t.Errorf("the verbatim text must be kept: %q", cands[0].Value)
+		}
+	}
+}
+
+func TestAddressDoesNotTakeTheNextSentenceAsASuburb(t *testing.T) {
+	cat := repoCatalog(t)
+	for _, word := range []string{"Additional", "Proposed", "Refer", "Principal", "Residential", "Existing"} {
+		cands := profile.Harvest("81 MacDonald Street "+word+" works", cat).Candidates["site.address"]
+		if len(cands) != 1 || cands[0].Norm != "81 MacDonald Street" {
+			t.Errorf("%s: %+v", word, cands)
 		}
 	}
 }

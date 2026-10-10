@@ -72,7 +72,13 @@ var (
 
 // Harvest finds triggered profile questions and candidates in one passage.
 // It over-finds; Jev picks or answers none.
-func Harvest(text string, cat *knowledge.Catalog) Harvested {
+func Harvest(text string, cat *knowledge.Catalog) Harvested { return HarvestOwn(text, text, cat) }
+
+// HarvestOwn is Harvest for a passage that carries its section heading and
+// context. Project details and flags are found only in the passage's own text:
+// an address in an earlier list (a contractor's past projects) must not become
+// a candidate in every passage that follows it. Everything else reads text.
+func HarvestOwn(text, own string, cat *knowledge.Catalog) Harvested {
 	h := Harvested{Candidates: map[string][]Candidate{}}
 	if cat == nil || strings.TrimSpace(text) == "" {
 		return h
@@ -92,14 +98,15 @@ func Harvest(text string, cat *knowledge.Catalog) Harvested {
 	}
 	// Details a document can settle: the client, LGA, zone, site address and
 	// lot (candidates found by code) and the RFP's yes/no flags (keyword gate).
+	ownText := knowledge.NewText(own)
 	for _, d := range cat.ProjectDetails() {
-		h.addDetail(knowledge.DetailPrefix, d, t, text)
+		h.addDetail(knowledge.DetailPrefix, d, ownText, own)
 	}
 	for _, d := range cat.SiteDetails() {
-		h.addDetail(knowledge.SitePrefix, d, t, text)
+		h.addDetail(knowledge.SitePrefix, d, ownText, own)
 	}
 	for _, f := range cat.FlagReadings() {
-		if f.TriggeredIn(t) {
+		if f.TriggeredIn(ownText) {
 			h.add(knowledge.DetailPrefix+"flag."+f.Key, "choice", nil)
 		}
 	}

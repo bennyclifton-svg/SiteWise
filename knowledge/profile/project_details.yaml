@@ -79,7 +79,7 @@ site_details:
     asks: >-
       Using `excerpt` and `candidates`, which candidate is the street address of this project's site, in its
       most complete form? Select none when absent, or when the candidate is a neighbour's address, a
-      consultant's or contractor's office, or an address a document only compares or references.
+      consultant's or contractor's office, an address in a list of past or reference projects, or an address a document only compares or references.
   - key: lot
     label: Lot and DP
     value: text

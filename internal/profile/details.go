@@ -49,6 +49,16 @@ var (
 	sustainRe = regexp.MustCompile(`(?i)\b(?:\d(?:\.\d)?\s*[- ]?star\s+)?(?:Green\s+Star|NABERS|NatHERS|Passive\s*Haus|Passive\s*House|LEED|Net[- ]Zero)\b[^.;\n]{0,60}`)
 )
 
+// streetTypeFull writes abbreviated street types out, so "Parramatta Rd" and
+// "Parramatta Road" in different passages are one address, not a conflict.
+var streetTypeFull = map[string]string{"St": "Street", "Rd": "Road", "Ave": "Avenue", "Pde": "Parade", "Dr": "Drive", "Pl": "Place",
+	"Ln": "Lane", "Hwy": "Highway", "Blvd": "Boulevard", "Cres": "Crescent", "Ct": "Court", "Tce": "Terrace", "Cct": "Circuit"}
+
+// notSuburb are capitalised words that follow a street in running text.
+var notSuburb = map[string]bool{"Additional": true, "Proposed": true, "Refer": true, "Principal": true, "Residential": true,
+	"Commercial": true, "Existing": true, "Note": true, "See": true, "Building": true, "Level": true, "Unit": true,
+	"Project": true, "Contractor": true, "Council": true, "Street": true, "Road": true, "Works": true, "Site": true}
+
 // detailCandidates returns the verbatim candidates for one detail key
 // ("site.address", "proj.client") in a passage.
 func detailCandidates(key, text string) []Candidate {
@@ -101,13 +111,13 @@ func addressCandidates(text string) []Candidate {
 		}
 		// Groups: 1 number, 2 street, 3 and 4 suburb words, 5 state, 6 postcode.
 		end := m[5]
-		if m[6] >= 0 {
+		if m[6] >= 0 && !notSuburb[group(3)] {
 			end = m[7]
 			// A second word is a suburb only after a word that starts two-word
 			// suburbs; otherwise it is the next sentence ("Petersham Principal").
 			if group(4) != "" {
 				if !suburbFirst[group(3)] {
-					spans = append(spans, span{m[0], end, text[m[0]:end]})
+					spans = append(spans, span{m[0], end, writeOutStreetType(text[m[0]:end], text[m[4]:m[5]])})
 					continue
 				}
 				end = m[9]
@@ -118,9 +128,25 @@ func addressCandidates(text string) []Candidate {
 				}
 			}
 		}
-		spans = append(spans, span{m[0], end, text[m[0]:end]})
+		spans = append(spans, span{m[0], end, writeOutStreetType(text[m[0]:end], text[m[4]:m[5]])})
 	}
 	return collect(text, spans)
+}
+
+// writeOutStreetType replaces the abbreviated street type at the end of the
+// street part of an address ("Parramatta Rd") with its full word.
+func writeOutStreetType(address, street string) string {
+	words := strings.Fields(street)
+	last := strings.TrimRight(words[len(words)-1], ".")
+	full, ok := streetTypeFull[last]
+	if !ok {
+		return address
+	}
+	i := strings.Index(address, street)
+	if i < 0 {
+		return address
+	}
+	return address[:i] + strings.TrimSuffix(street, words[len(words)-1]) + full + address[i+len(street):]
 }
 
 func lotCandidates(text string) []Candidate {
