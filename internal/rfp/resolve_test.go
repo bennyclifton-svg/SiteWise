@@ -225,3 +225,18 @@ func consultantTemplate(t *testing.T) knowledge.ReportTemplate {
 	}
 	return tpl
 }
+
+// Owner decision D3: the discipline's default, then the RFP's own value.
+func TestDisciplineTermDefaultsAndPerRFPOverride(t *testing.T) {
+	d, sk := discipline(t, "architecture"), skeleton(t)
+	drivers := facts(t, "class=7b")
+	if f := Resolve(d, sk, drivers, Settings{}).Fields["pi"]; f.Value != "$20 million" || f.Source != "default" {
+		t.Fatalf("architecture PI default = %+v", f)
+	}
+	if f := Resolve(discipline(t, "structural"), sk, drivers, Settings{}).Fields["pi"]; f.Value != "$10 million" {
+		t.Fatalf("structural keeps the skeleton PI default: %+v", f)
+	}
+	if f := Resolve(d, sk, drivers, set("field:pi", `"$5 million"`)).Fields["pi"]; f.Value != "$5 million" || f.Source != "user" {
+		t.Fatalf("a smaller engagement sets its own cover: %+v", f)
+	}
+}

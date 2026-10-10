@@ -211,3 +211,40 @@ func TestLoadRFPReviewedNeedsOwnerRecord(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// Owner decision D3: a discipline sets defaults for its RFP's terms, never
+// for a project fact that lives in Profile.
+func TestLoadRFPFieldDefaultsAreTermsOnly(t *testing.T) {
+	if err := parseWith(t, "field_defaults:\n  pi: \"$5 million\"\n"); err != nil {
+		t.Fatalf("a discipline may set its own PI default: %v", err)
+	}
+	if err := parseWith(t, "field_defaults:\n  client: Someone\n"); err == nil || !strings.Contains(err.Error(), "Profile") {
+		t.Fatalf("client lives in Profile: %v", err)
+	}
+}
+
+func TestSkeletonProfileHomes(t *testing.T) {
+	s := realRFPSkeleton(t)
+	homes := map[string]string{}
+	for _, f := range s.Fields {
+		homes[f.Key] = f.Profile
+	}
+	for key, want := range map[string]string{"client": "proj.client", "address": "site.address", "lot_dp": "site.lot", "zone": "proj.zone", "pi": "", "agreement": "", "design_loads": ""} {
+		if homes[key] != want {
+			t.Fatalf("%s home = %q, want %q", key, homes[key], want)
+		}
+	}
+	bad := strings.Replace(mustRead(t, "../../knowledge/rfp/skeleton.yaml"), "group: issue, help: \"Name the agreement", "group: issue, profile: proj.agreement, help: \"Name the agreement", 1)
+	if _, err := parseRFPSkeleton([]byte(bad)); err == nil {
+		t.Fatal("an issue field cannot have a profile home")
+	}
+}
+
+func mustRead(t *testing.T, path string) string {
+	t.Helper()
+	body, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(body)
+}

@@ -614,9 +614,14 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	if len(d.Boundary) == 0 || len(d.Boundary[len(d.Boundary)-1].When) != 0 {
 		return d, fmt.Errorf("boundary needs a final suggestion with no condition")
 	}
+	// A discipline sets defaults for the RFP's own terms (owner decision D3);
+	// a field with a Profile home belongs to the project, not the discipline.
 	for key := range d.FieldDefaults {
 		found := false
 		for _, f := range s.Fields {
+			if f.Key == key && f.Profile != "" {
+				return d, fmt.Errorf("field default %q: the field lives in Profile (%s)", key, f.Profile)
+			}
 			found = found || f.Key == key
 		}
 		if !found {
