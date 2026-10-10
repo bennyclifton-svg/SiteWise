@@ -140,3 +140,44 @@ func TestEstimateIsNotWritable(t *testing.T) {
 		t.Fatal("budget rejected")
 	}
 }
+func TestGridFigures(t *testing.T) {
+	claimed := val("40.00")
+	date := "2026-10-01"
+	claimed.AsOf = &date
+	ranged := Value{Low: money("80.00"), High: money("120.00"), ValueState: "known", Origin: "user", Meaning: "allowance"}
+	p := Plan{Items: []Item{
+		{ID: "contract", Content: Content{Posting: true, LineKind: "works"}, Values: map[string]Value{"budget": val("100.00"), "commitment": val("90.00"), "claimed_to_date": claimed}},
+		{ID: "budget-only", Content: Content{Posting: true, LineKind: "fee"}, Values: map[string]Value{"budget": val("100.00")}},
+		{ID: "range", Content: Content{Posting: true, LineKind: "project_wide"}, Values: map[string]Value{"budget": ranged}},
+		{ID: "excluded", Content: Content{Posting: true, LineKind: "works", Excluded: true}, Values: map[string]Value{"budget": val("500.00")}},
+		{ID: "group", Content: Content{Posting: false, LineKind: "works"}},
+	}}
+	out, e := Summarize(p, "overall")
+	if e != nil {
+		t.Fatal(e)
+	}
+	is := func(m *Money, want string) bool { return (m == nil && want == "") || (m != nil && string(*m) == want) }
+	f := out.Items["contract"]
+	if f.Basis != "commitment" || !is(f.Forecast.Amount, "90.00") || !is(f.BudgetVariance, "10.00") || !is(f.Remaining, "50.00") {
+		t.Fatal("contract", f)
+	}
+	f = out.Items["budget-only"]
+	if f.Basis != "budget" || !is(f.BudgetVariance, "0.00") || !is(f.Remaining, "") {
+		t.Fatal("budget only; an unclaimed line has unknown remaining", f)
+	}
+	if f = out.Items["range"]; !is(f.BudgetVariance, "") {
+		t.Fatal("range gave a single variance", f)
+	}
+	if f, ok := out.Items["excluded"]; !ok || !is(f.BudgetVariance, "0.00") {
+		t.Fatal("excluded line lost its own figures", f)
+	}
+	if _, ok := out.Items["group"]; ok {
+		t.Fatal("group line has figures; its children hold them")
+	}
+	if b := out.Buckets["works"]; !is(b.BudgetVariance, "10.00") || !is(b.Remaining, "50.00") {
+		t.Fatal("works bucket counted the excluded line", b)
+	}
+	if b := out.Buckets["overall"]; !is(b.BudgetVariance, "") {
+		t.Fatal("overall variance with a range line must stay unknown", b)
+	}
+}

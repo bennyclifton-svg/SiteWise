@@ -21,6 +21,12 @@ func TestCostPlanAPIContractAndIsolation(t *testing.T) {
 	if *p.Items[0].Values["budget"].Amount != "9007199254740993.01" {
 		t.Fatal("precision lost", p)
 	}
+	var totals costs.Totals
+	m.getJSON(t, base+"/totals", &totals)
+	line := totals.Items[p.Items[0].ID]
+	if line.Basis != "budget" || *line.Forecast.Amount != "9007199254740993.01" || *line.BudgetVariance != "0.00" || line.Remaining != nil || *totals.Buckets["project_wide"].BudgetVariance != "0.00" {
+		t.Fatal("grid figures missing or inexact", totals)
+	}
 	foreign := a.member(t, newUUID(t))
 	foreign.call(t, http.MethodGet, base, nil, http.StatusNotFound, nil)
 	for _, route := range []struct{ method, path string }{

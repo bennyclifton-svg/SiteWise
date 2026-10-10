@@ -22,6 +22,41 @@ type Totals struct {
 	Fees        map[string]Total            `json:"fees"`
 	ProjectWide map[string]Total            `json:"project_wide"`
 	Variance    *Money                      `json:"variance"`
+	Items       map[string]Figures          `json:"items"`
+	Buckets     map[string]Derived          `json:"buckets"`
+}
+
+// Derived figures are worked out here so the grid never sums money in the
+// browser. Each is nil when an input is unknown or only a range.
+type Derived struct {
+	BudgetVariance *Money `json:"budget_variance"` // budget − forecast; positive is under budget
+	Remaining      *Money `json:"remaining"`       // forecast − claimed to date
+}
+type Figures struct {
+	Forecast Value  `json:"forecast"`
+	Basis    string `json:"basis"`
+	Derived
+}
+
+func diff(a, b *Money) *Money {
+	if a == nil || b == nil {
+		return nil
+	}
+	n := Sub(*a, *b)
+	return &n
+}
+func exact(v Value) *Money {
+	if v.ValueState != "known" {
+		return nil
+	}
+	return v.Amount
+}
+func lineFigures(item Item) Figures {
+	f, basis := Forecast(item)
+	return Figures{Forecast: f, Basis: basis, Derived: Derived{
+		BudgetVariance: diff(exact(item.Values["budget"]), exact(f)),
+		Remaining:      diff(exact(f), exact(item.Values["claimed_to_date"])),
+	}}
 }
 
 // Forecast keeps estimate in its order so a baseline frozen before estimate was
@@ -91,9 +126,14 @@ func Summarize(plan Plan, by string) (Totals, error) {
 	default:
 		return Totals{}, ErrInvalid
 	}
-	out := Totals{By: by, Currency: plan.Currency, TaxBasis: plan.TaxBasis, Groups: map[string]map[string]Total{}, Overall: emptyTotals(), Works: emptyTotals(), Fees: emptyTotals(), ProjectWide: emptyTotals()}
+	out := Totals{By: by, Currency: plan.Currency, TaxBasis: plan.TaxBasis, Groups: map[string]map[string]Total{}, Overall: emptyTotals(), Works: emptyTotals(), Fees: emptyTotals(), ProjectWide: emptyTotals(), Items: map[string]Figures{}, Buckets: map[string]Derived{}}
 	for _, item := range plan.Items {
-		if !item.Posting || item.Excluded {
+		if !item.Posting {
+			continue
+		}
+		// An excluded line still reads its own figures; it stays out of totals.
+		out.Items[item.ID] = lineFigures(item)
+		if item.Excluded {
 			continue
 		}
 		addLine(out.Overall, item)
@@ -138,6 +178,9 @@ func Summarize(plan Plan, by string) (Totals, error) {
 				bucket[metric] = total
 			}
 		}
+	}
+	for name, bucket := range map[string]map[string]Total{"overall": out.Overall, "works": out.Works, "fees": out.Fees, "project_wide": out.ProjectWide} {
+		out.Buckets[name] = Derived{BudgetVariance: diff(bucket["budget"].Amount, bucket["forecast"].Amount), Remaining: diff(bucket["forecast"].Amount, bucket["claimed_to_date"].Amount)}
 	}
 	if b, f := out.Overall["budget"].Amount, out.Overall["forecast"].Amount; b != nil && f != nil {
 		v := Sub(*f, *b)
