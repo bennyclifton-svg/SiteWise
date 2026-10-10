@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"sitewise/internal/store"
 )
@@ -51,6 +52,57 @@ func writeReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, remov
 	if err != nil {
 		if errors.Is(err, store.ErrInvalidSetting) {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "that value is not allowed for this setting"})
+			return
+		}
+		reportError(w, err)
+		return
+	}
+	if deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	view, err := deps.Store.ReadReport(r.Context(), session.OrgID, r.PathValue("r"), deps.ReportBuild)
+	if err != nil {
+		reportError(w, err)
+		return
+	}
+	view.Draft = &draft
+	writeJSON(w, http.StatusOK, view)
+}
+
+var factNamePattern = regexp.MustCompile(`^[a-z_]{1,40}(\.[a-z0-9_]{1,60})?$`)
+
+// putReportFact saves a project fact edited in a consultant RFP to its one
+// home in Profile and returns the refreshed view (owner decision D1). A
+// null value clears the user's word so the documents show again.
+func putReportFact(w http.ResponseWriter, r *http.Request, deps Deps) {
+	session, ok := reportSession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	name := r.PathValue("fact")
+	if !factNamePattern.MatchString(name) {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "unknown fact"})
+		return
+	}
+	var body struct {
+		Value   *string `json:"value"`
+		Version int64   `json:"version"`
+	}
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if body.Value != nil {
+		v := strings.TrimSpace(*body.Value)
+		body.Value = &v
+		if v == "" {
+			body.Value = nil
+		}
+	}
+	draft, err := deps.Store.SetReportFact(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, deps.ReportBuild, name, body.Value, body.Version)
+	if err != nil {
+		if errors.Is(err, store.ErrInvalidSetting) {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "that value is not allowed for this fact"})
 			return
 		}
 		reportError(w, err)

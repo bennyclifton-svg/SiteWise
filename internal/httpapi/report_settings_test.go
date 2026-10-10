@@ -2,8 +2,11 @@ package httpapi_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"sort"
 	"testing"
+	"time"
 
 	"sitewise/internal/procurement"
 	"sitewise/internal/store"
@@ -85,4 +88,77 @@ func TestConsultantRFPSettingsAPI(t *testing.T) {
 func jsonNumber(n int64) string {
 	raw, _ := json.Marshal(n)
 	return string(raw)
+}
+
+// A project fact edited in an RFP saves to Profile (owner decision D1).
+func TestRFPFactAPI(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "RFP facts")
+	var p procurement.Package
+	m.call(t, http.MethodPost, "/api/projects/"+project+"/packages", []byte(`{"kind":"services","title":"Structural","discipline_id":"consultant.structural"}`), http.StatusCreated, &p)
+	body, _ := json.Marshal(map[string]string{"kind": "rfp", "package_id": p.ID})
+	var r store.Report
+	m.call(t, http.MethodPost, "/api/projects/"+project+"/reports", body, http.StatusCreated, &r)
+	base := "/api/reports/" + r.ID
+	var d store.ReportDraft
+	m.call(t, http.MethodPost, base+"/draft", []byte(`{"use_last_completed":true}`), http.StatusOK, &d)
+	put := func(fact string, value any, version int64, want int, out any) {
+		t.Helper()
+		raw, _ := json.Marshal(map[string]any{"value": value, "version": version})
+		m.call(t, http.MethodPut, base+"/facts/"+fact, raw, want, out)
+	}
+	var view store.ReportView
+	put("zone", "R2", d.Version, http.StatusOK, &view)
+	if view.Draft == nil || view.RFP == nil || view.Draft.Version <= d.Version || len(view.Stale) != 0 {
+		t.Fatalf("a fact returns the refreshed, current view: %+v", view.Stale)
+	}
+	var profile detailsBody
+	m.getJSON(t, "/api/projects/"+project+"/profile", &profile)
+	if v, _ := detailValue(profile, "proj.zone"); v != "R2" {
+		t.Fatalf("Profile zone = %q", v)
+	}
+	put("zone", "R3", d.Version, http.StatusConflict, nil)
+	put("budget", "100", view.Draft.Version, http.StatusBadRequest, nil)
+	put("flag.basement", "maybe", view.Draft.Version, http.StatusBadRequest, nil)
+	put("Bad Fact", "x", view.Draft.Version, http.StatusBadRequest, nil)
+	foreign := a.member(t, newUUID(t))
+	foreign.call(t, http.MethodPut, base+"/facts/zone", []byte(`{"value":"B4","version":1}`), http.StatusNotFound, nil)
+	put("zone", nil, view.Draft.Version, http.StatusOK, &view)
+	m.getJSON(t, "/api/projects/"+project+"/profile", &profile)
+	if v, _ := detailValue(profile, "proj.zone"); v != "" {
+		t.Fatalf("a null value clears the user's word: %q", v)
+	}
+	if a.jevHits.Load() != 0 {
+		t.Fatal("saving a fact never calls Jev")
+	}
+}
+
+// report_fact budget (bench/budgets.json): p50 150 ms, p90 400 ms.
+func TestRFPFactLatencyBudget(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "RFP fact timing")
+	var p procurement.Package
+	m.call(t, http.MethodPost, "/api/projects/"+project+"/packages", []byte(`{"kind":"services","title":"Structural","discipline_id":"consultant.structural"}`), http.StatusCreated, &p)
+	body, _ := json.Marshal(map[string]string{"kind": "rfp", "package_id": p.ID})
+	var r store.Report
+	m.call(t, http.MethodPost, "/api/projects/"+project+"/reports", body, http.StatusCreated, &r)
+	var d store.ReportDraft
+	m.call(t, http.MethodPost, "/api/reports/"+r.ID+"/draft", []byte(`{"use_last_completed":true}`), http.StatusOK, &d)
+	version := d.Version
+	var durations []time.Duration
+	for i := 0; i < 25; i++ {
+		raw, _ := json.Marshal(map[string]any{"value": fmt.Sprintf("Zone %d", i), "version": version})
+		var view store.ReportView
+		start := time.Now()
+		m.call(t, http.MethodPut, "/api/reports/"+r.ID+"/facts/zone", raw, http.StatusOK, &view)
+		durations = append(durations, time.Since(start))
+		version = view.Draft.Version
+	}
+	sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
+	t.Logf("report_fact p50=%s p90=%s (budget 150ms/400ms)", durations[12], durations[22])
+	if durations[12] > 150*time.Millisecond || durations[22] > 400*time.Millisecond {
+		t.Fatal("report_fact exceeded budget")
+	}
 }

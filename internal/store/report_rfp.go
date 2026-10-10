@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/knowledge"
@@ -234,6 +235,115 @@ func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string
 	d.References = refs
 	d.MaterialAssumptions = reports.MaterialAssumptions(refs)
 	return d, s.finishReportWrite(ctx, tx, org, r, d.ID, "ready")
+}
+
+// SetReportFact writes a project fact edited in an RFP to its one home in
+// Profile, then refreshes the draft from the saved project, so derived facts
+// follow and the draft stays current (owner decision D1). A nil value
+// clears the user's word so the documents show again; "unknown" records
+// that it is not known. Other drafts that read the old value go stale.
+func (s *Store) SetReportFact(ctx context.Context, org, id, actor, appBuild, name string, value *string, version int64) (ReportDraft, error) {
+	if s.profileBuild == nil {
+		return ReportDraft{}, fmt.Errorf("profile build configuration unavailable")
+	}
+	project, home, err := s.reportFactHome(ctx, org, id, name, value, version)
+	if err != nil {
+		return ReportDraft{}, err
+	}
+	if home.Kind == rfp.HomeSite {
+		err = s.writeSiteFact(ctx, org, project, home.Key, value)
+	} else {
+		err = s.writeProfileFact(ctx, org, project, actor, home, value)
+	}
+	if err != nil {
+		return ReportDraft{}, err
+	}
+	return s.RefreshReport(ctx, org, id, actor, appBuild, true)
+}
+
+// reportFactHome checks the draft version and the value against the RFP's
+// rules and returns the project and the fact's Profile home.
+func (s *Store) reportFactHome(ctx context.Context, org, id, name string, value *string, version int64) (string, rfp.Home, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return "", rfp.Home{}, err
+	}
+	defer tx.Rollback(ctx)
+	r, err := readReport(ctx, tx, org, id)
+	if err != nil {
+		return "", rfp.Home{}, err
+	}
+	if r.CurrentDraftVersionID == "" {
+		return "", rfp.Home{}, ErrInvalidReport
+	}
+	d, err := readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
+	if err != nil {
+		return "", rfp.Home{}, err
+	}
+	if d.Status != "draft" || d.TemplateID != rfpTemplateID {
+		return "", rfp.Home{}, ErrInvalidReport
+	}
+	if d.Version != version {
+		return "", rfp.Home{}, ErrVersionConflict
+	}
+	_, sk, drivers, _, err := s.storedRFP(d.SourceRevisions, rfp.Settings{})
+	if err != nil {
+		return "", rfp.Home{}, err
+	}
+	home := rfp.FactHome(sk, drivers, name)
+	v := ""
+	if value != nil {
+		v = *value
+	}
+	if !home.Writable() || rfp.ValidateFact(sk, name, v) != nil {
+		return "", rfp.Home{}, rfp.ErrInvalidSetting
+	}
+	return r.ProjectID, home, nil
+}
+
+// writeProfileFact records the user's word on the whole project. A yes/no
+// determinant stores stated_true or stated_false.
+func (s *Store) writeProfileFact(ctx context.Context, org, project, actor string, home rfp.Home, value *string) error {
+	part, err := s.EnsureWholePart(ctx, org, project)
+	if err != nil {
+		return err
+	}
+	scope := s.profileBuild.Catalog.KeyScope(home.Key)
+	if scope == "" {
+		scope = "project"
+	}
+	switch {
+	case value == nil:
+		_, err = s.DeleteUserValue(ctx, org, project, part.ID, home.Key, scope, nil)
+	case *value == "unknown":
+		_, err = s.SetUserValue(ctx, org, project, part.ID, actor, home.Key, UserWrite{State: "unknown", Origin: "user", Meaning: "stated", Scope: scope})
+	default:
+		v := *value
+		if home.Kind == rfp.HomeDeterminant {
+			v = map[string]string{"yes": "stated_true", "no": "stated_false"}[v]
+		}
+		_, err = s.SetUserValue(ctx, org, project, part.ID, actor, home.Key, UserWrite{Value: &v, State: "set", Origin: "user", Meaning: "stated", Scope: scope})
+	}
+	return err
+}
+
+// writeSiteFact sets the site's address or lot; clearing or "unknown"
+// leaves it blank.
+func (s *Store) writeSiteFact(ctx context.Context, org, project, key string, value *string) error {
+	site, err := s.ProjectSite(ctx, org, project)
+	if err != nil {
+		return err
+	}
+	v := ""
+	if value != nil && *value != "unknown" {
+		v = *value
+	}
+	if key == "site.lot" {
+		_, err = s.UpdateSite(ctx, org, site.ID, site.Version, nil, nil, &v)
+	} else {
+		_, err = s.UpdateSite(ctx, org, site.ID, site.Version, nil, &v, nil)
+	}
+	return err
 }
 
 // rfpControls is the editor payload for a consultant RFP draft.

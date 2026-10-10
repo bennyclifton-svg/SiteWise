@@ -33,7 +33,10 @@ const (
 	pathReportAssemble  = "report_assemble"
 	// A consultant RFP setting re-resolves from frozen drivers: no project
 	// reload and no Jev, so it shares report_write's budget.
-	pathReportSetting     = "report_setting"
+	pathReportSetting = "report_setting"
+	// A project fact edited in an RFP writes Profile (a profile edit) and
+	// refreshes the draft from the saved project.
+	pathReportFact        = "report_fact"
 	pathPackagesWrite     = "packages_write"
 	pathPackageScopeRead  = "package_scope_read"
 	pathPackageScopeWrite = "package_scope_write"

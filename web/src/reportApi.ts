@@ -11,7 +11,9 @@ export interface ReportPackage { id: string; title: string; kind: string; retire
 export interface RfpCheck { id: string; label: string; text: string; blocking: boolean; control?: string; changes?: string[] }
 export interface RfpChoice { value: string; label: string }
 export type RfpControlKind = "choice" | "tristate" | "parts" | "number" | "text" | "date" | "money" | "stage" | "element" | "count" | "position" | "weight";
-export interface RfpControl { key: string; label: string; kind: RfpControlKind; value: unknown; options?: RfpChoice[]; source: string; why?: string; help?: string; locked?: boolean; set: boolean; party?: string; owner?: string }
+export interface RfpControl { key: string; label: string; kind: RfpControlKind; value: unknown; options?: RfpChoice[]; source: string; why?: string; help?: string; locked?: boolean; set: boolean; party?: string; owner?: string; home?: RfpHome }
+/** Where a fact: control saves (detail, header, site, determinant), or where it is changed instead (locked). */
+export type RfpHome = "detail" | "header" | "site" | "determinant" | "cost_plan" | "link" | "derived";
 export interface RfpGroup { id: string; title: string; controls: RfpControl[] }
 export interface RfpControls {
   discipline: string; title: string; status: string;
@@ -32,6 +34,8 @@ export const reportApi = {
 	reset: (id: string, target: string, version: number) => request<ReportDraft>("DELETE", `/reports/${id}/edits/${encodeURIComponent(target)}`, { version }),
   setting: (id: string, key: string, value: unknown, version: number) => request<ReportView>("PUT", `/reports/${id}/settings/${encodeURIComponent(key)}`, { value, version }),
   clearSetting: (id: string, key: string, version: number) => request<ReportView>("DELETE", `/reports/${id}/settings/${encodeURIComponent(key)}`, { version }),
+  /** Saves a project fact to Profile and returns the refreshed view; null clears the user's word. */
+  fact: (id: string, fact: string, value: string | null, version: number) => request<ReportView>("PUT", `/reports/${id}/facts/${encodeURIComponent(fact)}`, { value, version }),
   disciplines: () => request<{ items: RfpDiscipline[] }>("GET", "/rfp/disciplines"),
   confirmDiscipline: (project: string, pkg: string, disciplineId: string, version: number) => request<ReportPackage>("PATCH", `/projects/${project}/packages/${pkg}`, { discipline_id: disciplineId, version }),
 };

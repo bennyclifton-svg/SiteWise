@@ -177,8 +177,27 @@ func (a *apiClient) consultantRFP(ctx context.Context, project string, n int) er
 		version = view.Draft.Version
 	}
 	body, _ = json.Marshal(map[string]int64{"version": version})
-	if _, err := a.timed(ctx, "report_setting", http.MethodDelete, key, body, http.StatusOK); err != nil {
+	raw, err = a.timed(ctx, "report_setting", http.MethodDelete, key, body, http.StatusOK)
+	if err != nil {
 		return err
+	}
+	var deleted store.ReportView
+	if err := json.Unmarshal(raw, &deleted); err != nil || deleted.Draft == nil {
+		return fmt.Errorf("delete returned no draft: %v", err)
+	}
+	version = deleted.Draft.Version
+	// A project fact edited in the RFP writes Profile and refreshes the draft.
+	for i := 0; i < max(n, 20); i++ {
+		body, _ := json.Marshal(map[string]any{"value": fmt.Sprintf("Bench zone %d", i), "version": version})
+		raw, err := a.timed(ctx, "report_fact", http.MethodPut, base+"/facts/zone", body, http.StatusOK)
+		if err != nil {
+			return err
+		}
+		var view store.ReportView
+		if err := json.Unmarshal(raw, &view); err != nil || view.Draft == nil || view.RFP == nil {
+			return fmt.Errorf("fact returned no draft or controls: %v", err)
+		}
+		version = view.Draft.Version
 	}
 	if _, err := a.timed(ctx, "report_read", http.MethodGet, base, nil, http.StatusOK); err != nil {
 		return err
