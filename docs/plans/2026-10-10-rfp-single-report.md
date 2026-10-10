@@ -20,6 +20,20 @@ Playwright.
 
 ---
 
+## Status (2026-10-10)
+
+Built and merged to local main (a678a03..52ad177; not pushed). All Go tests
+pass (`go test -p 1 ./...`), `check_knowledge.py` passes, 33/33 Playwright
+specs pass, answer keys pass unchanged and the golden RFPs are
+byte-identical. Bench gate passed: report_fact p50 70.1 ms, p90 71.3 ms
+(budget 150/400). Departures: Task 4 refreshes the draft from the saved
+project instead of patching one frozen driver (a cleared or derived fact
+stays correct, and the draft stays current); Task 5 needed only a guard,
+since `field_defaults` already existed; 28 skeleton flags with no
+determinant (not 11) became `proj.flag.*`, and groundwater moved there
+because its determinant has no profile group. Owner check pending: the
+Petersham structural RFP in the browser.
+
 ## Owner decisions (2026-10-10)
 
 - **D1.** An edit to a project fact made in the RFP saves to Profile. Profile is the one source of truth.
