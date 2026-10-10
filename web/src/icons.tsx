@@ -98,3 +98,10 @@ export const IconBin = () => (
     <path d="M4 4.5l.7 9h6.6l.7-9M6.8 7v4M9.2 7v4" />
   </Icon>
 );
+
+/** Novated: a shield, the consultant carried over to the builder. */
+export const IconShield = () => (
+  <Icon>
+    <path d="M8 1.75l5 2v4c0 3-2.2 5.2-5 6.5-2.8-1.3-5-3.5-5-6.5v-4z" />
+  </Icon>
+);

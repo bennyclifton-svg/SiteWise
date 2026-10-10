@@ -954,3 +954,70 @@ Expected: all specs pass.
   `retired: true`. Any report on that package then shows "This package is
   retired", as today.
 - **No new dependency. No Jev.**
+
+## Completion record — 10 October 2026
+
+Integrated Claude's commits `cd2b1e4` through `829748b` into local main,
+preserving the newer cost-grid changes. Completed the browser migration and
+added the new procurement endpoints to the recorded benchmark. No push.
+
+Finishing corrections:
+
+- Existing head contracts expose newly proposed scope in their Scope view;
+  accepting it uses the existing proposal-accept endpoint.
+- The table's accessibility label stays within its horizontal scroll area on
+  mobile, and the row menu expands within that area instead of being clipped.
+- Removal preserves the existing server safeguards for assigned scope, costs
+  and open delivery records. The UI explains a refusal and refreshes a stale
+  package version; it does not silently discard those assignments.
+- Table load uses three parallel reads (packages, reports and work titles),
+  plus the catalogue. Scope also reads the package overview in parallel so
+  its suggested work is current. This is a deliberate departure from the
+  original two-read outline, with no serial Jev request.
+
+Validation:
+
+- TypeScript and production Vite build pass.
+- All 35 browser scenarios pass across the full run (34 passed) and the
+  final procurement recheck (1 passed). Coverage includes suggestion-to-RFT,
+  discipline-to-RFP, duplicate exclusion, scope acceptance/editing, protected
+  report wording, retirement safeguards, PMP access and 390px layout.
+- `python tools/check_knowledge.py`: zero errors; the two existing unmapped
+  complexity-field warnings remain.
+- `go test -p 1 ./...`: all packages pass except the pre-existing
+  `TestProfilePlacesInputsInBuildOrder` in `internal/httpapi`. It reports
+  93 RFP flags without Profile homes. The same failure was reproduced in an
+  untouched archive of main at `63216bd`; procurement does not change those
+  mappings. The procurement API, store, RFP and golden tests pass.
+- Desktop and mobile screenshots were inspected. The UI scan reports only
+  existing report CSS advisories outside the new table styles. The existing
+  Impeccable design sidecar is stale; refreshing it is separate maintenance.
+
+The actual Petersham structural row remains an owner acceptance check;
+automated checks use synthetic projects and do not change project data.
+
+Recorded local benchmark, 40 files, one round and 40 API iterations (not
+production/VPS evidence):
+
+| Path | p50 ms | p90 ms | Budget p50/p90 ms |
+|---|---:|---:|---:|
+| packages_write | 2.3 | 4.0 | 100 / 250 |
+| report_write | 2.3 | 7.0 | 100 / 250 |
+| packages_read | 3.8 | 7.1 | 100 / 250 |
+| report_read | 1.0 | 21.0 | 100 / 250 |
+| whole_intake | 20.0 | 641.5 | 1000 / 2000 |
+
+These buckets include the existing operations and the new row/create routes,
+including repeated Create and atomic suggestion acceptance. All pass.
+The broader benchmark is **not green**: `spec_home_profile_edit` measured
+52.4 / 58.5 ms against 50 / 150 ms, after a second run without the test
+suites. The initial run measured 56.1 / 66.1 ms. No budget was relaxed.
+Release-only extraction/component warnings are also reported and require
+the intended VPS; they are not procurement release evidence.
+
+Local logs: `.tools/procurement-go-final.log`,
+`.tools/procurement-baseline-test.log`,
+`.tools/procurement-browser-final.log`,
+`.tools/procurement-browser-confirm.log` and
+`.tools/procurement-bench-final.log`. Samples and metadata are in
+`.tools/procurement-bench-final-{samples,results}.json`.

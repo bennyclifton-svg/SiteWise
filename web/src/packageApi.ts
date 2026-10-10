@@ -1,6 +1,6 @@
 import { request } from "./api";
 export interface PackageStage { id: string; label: string; novation_phase: string }
-export interface PackageRecord { id: string; title: string; kind: string; works_scope?: string; lifecycle_status: string; novation: boolean; version: number; stages: PackageStage[] }
+export interface PackageRecord { id: string; title: string; kind: string; works_scope?: string; lifecycle_status: string; novation: boolean; version: number; stages: PackageStage[]; discipline_id?: string; retired_at?: string }
 export interface ScopeRecord { id: string; item_kind: string; user_text?: string; clause_id?: string; clause_version?: number; work_item_id?: string; role?: string; stage_id?: string; inclusion: string; deliverable?: string; version: number; provisional: boolean }
 export interface ScopeWork { id: string; title: string; action: string; inclusion: string; is_group: boolean; review_status: string }
 export interface ScopeInput { item_kind: string; user_text: string; work_item_id?: string; role?: string; stage_id?: string; inclusion: string; deliverable: string; interface_ids: string[] }

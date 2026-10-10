@@ -8,11 +8,12 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await page.getByRole("button", { name: "Create project", exact: true }).click();
   await expect(page.getByRole("button", { name: "Procurement", exact: true })).toBeVisible();
   const project = new URL(page.url()).pathname.split("/").pop();
-  await page.getByRole("button", { name: "Packages", exact: true }).click();
-  await page.getByText("Add a package yourself", { exact: true }).click();
-  await page.getByLabel("Package title", { exact: true }).fill("Fire engineering");
-  await page.getByLabel("Separate stages before and after novation").check();
-  await page.getByRole("button", { name: "Create package", exact: true }).click();
+  // Keep a legacy unclassified package to exercise the generic report editor.
+  const seeded = await page.request.post(`/api/projects/${project}/packages`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { kind: "services", title: "Fire engineering", novation: true } });
+  expect(seeded.ok()).toBeTruthy();
+  await page.getByRole("button", { name: "Procurement", exact: true }).click();
+  await page.getByLabel("More for Fire engineering", { exact: true }).click();
+  await page.getByRole("button", { name: "Scope", exact: true }).click();
   await page.getByLabel("Scope wording", { exact: true }).fill("Review fire strategy and identify required investigations.");
   await page.getByLabel("Deliverable", { exact: true }).fill("Fire strategy report");
   await page.getByRole("button", { name: "Add scope item", exact: true }).click();
@@ -31,15 +32,15 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await page.getByRole("button", { name: "Add scope item", exact: true }).click();
   await expect(page.getByText("Work: Gas service · design", { exact: true })).toBeVisible();
   await expect(page.getByText(`Stage: ${pkg.stages[0].label} · before novation`, { exact: true })).toBeVisible();
-  const packageRegion = page.getByRole("region", { name: "Packages", exact: true });
+  const packageRegion = page.getByRole("region", { name: "Package scope", exact: true });
   await packageRegion.locator(".." ).evaluate(el => { el.scrollTop = 0; });
   await page.screenshot({ path: "../.tools/wp45-packages-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: "../.tools/wp45-packages-mobile.png", fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await page.getByRole("button", { name: "Create RFP draft", exact: true }).click();
+  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  await page.getByRole("button", { name: "Create RFP for Fire engineering", exact: true }).click();
 	let incomplete = true;
 	await page.route("**/api/reports/*/draft", async route => {
 	  if (incomplete) { incomplete = false; expect(route.request().postDataJSON().use_last_completed).toBe(false); await route.fulfill({ status: 409, json: { error: "reading_incomplete" } }); }
@@ -85,7 +86,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   await page.reload();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await page.getByRole("button", { name: "RFP — Fire engineering", exact: true }).click();
+  await page.getByRole("button", { name: "View RFP for Revised fire engineering", exact: true }).click();
   await expect(page.getByText("My unsaved reconciliation.", { exact: true })).toBeVisible();
 	const restoredBlock = page.locator(".report-block").filter({ has: page.getByRole("heading", { name: "Package", exact: true }) });
 	await restoredBlock.getByRole("button", { name: "Restore saved source wording", exact: true }).click();

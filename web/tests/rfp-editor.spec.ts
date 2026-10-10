@@ -36,9 +36,7 @@ test("one RFP report: decide first, edit each section in place, project facts sa
   }
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Procurement", exact: true })).toBeVisible();
-  await page.getByLabel("Services package").selectOption({ label: "Architect · discipline RFP" });
-  await expect(page.getByLabel("Services package").locator("option", { hasText: "Civil · confirm discipline" })).toHaveCount(1);
-  await page.getByRole("button", { name: "Create RFP draft", exact: true }).click();
+  await page.getByRole("button", { name: "Create RFP for Architect", exact: true }).click();
   await page.getByRole("button", { name: "Assemble draft", exact: true }).click();
   const useCompleted = page.getByRole("button", { name: "Use last completed state", exact: true });
   if (await useCompleted.isVisible().catch(() => false)) await useCompleted.click();
@@ -114,7 +112,7 @@ test("a package titled Civil is offered the civil RFP and switches only when con
   const r = await page.request.post(`/api/projects/${project}/packages`, { headers: origin, data: { kind: "services", title: "Civil" } });
   expect(r.ok()).toBeTruthy();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await page.getByRole("button", { name: "Create RFP draft", exact: true }).click();
+  await page.getByRole("button", { name: "Create RFP for Civil", exact: true }).click();
   await expect(page.getByText("This package looks like civil engineering services", { exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Decide before issue" })).toHaveCount(0);
   await page.getByRole("button", { name: "Use the civil engineering services RFP", exact: true }).click();
@@ -138,8 +136,7 @@ test("electrical keeps its allocation schedule beside grouped positions, with se
     expect(response.ok(), await response.text()).toBeTruthy();
   }
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await page.getByLabel("Services package").selectOption({ label: "Electrical · discipline RFP" });
-  await page.getByRole("button", { name: "Create RFP draft", exact: true }).click();
+  await page.getByRole("button", { name: "Create RFP for Electrical", exact: true }).click();
   await page.getByRole("button", { name: "Assemble draft", exact: true }).click();
   const useCompleted = page.getByRole("button", { name: "Use last completed state", exact: true });
   if (await useCompleted.isVisible().catch(() => false)) await useCompleted.click();

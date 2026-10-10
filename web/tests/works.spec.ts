@@ -26,7 +26,7 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   await page.getByRole("button", { name: "Correct work item", exact: true }).click();
   await page.getByLabel("Action", { exact: true }).selectOption("repair");
   await page.getByLabel("Target wording", { exact: true }).fill("Repair and test the existing connection.");
-  await page.getByRole("button", { name: "Packages", exact: true }).click();
+  await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Profile", exact: true }).click();
   await expect(page.getByLabel("Target wording", { exact: true })).toHaveValue("Repair and test the existing connection.");
   const concurrent = await page.request.patch(`${base}/${created.id}`, { headers, data: { version: created.version, title: "Updated synthetic service", target: { text: "Another reviewer's target", values: [{ key: "plan.gross_floor_area", value: 200, unit: "m2" }] } } });

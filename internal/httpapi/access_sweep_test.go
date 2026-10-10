@@ -159,6 +159,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"GET", base + "/works", nil, false}, {"POST", base + "/works", workBody, true}, {"PATCH", base + "/works/" + work.ID, []byte(`{"version":1,"title":"Intrusion"}`), true},
 		{"GET", base + "/gaps", nil, false},
 		{"GET", base + "/packages", nil, false}, {"POST", base + "/packages", pkgBody, false}, {"POST", base + "/packages/proposed/accept", []byte(`{"key":"proposed:works:head_contract"}`), false}, {"PATCH", pkgPath, []byte(`{"version":1,"title":"Intrusion"}`), true},
+		{"POST", base + "/procurement/rows", []byte(`{"discipline_id":"consultant.civil"}`), false}, {"POST", base + "/procurement/create", jsonBody(map[string]any{"package_id": pkg.ID}), true}, {"POST", base + "/procurement/create", []byte(`{"proposal_key":"proposed:works:head_contract"}`), false},
 		{"POST", pkgPath + "/stages", []byte(`{"stage_id":"completion","label":"Intrusion","ordinal":8}`), true}, {"PATCH", pkgPath + "/stages/" + pkg.Stages[0].ID, []byte(`{"version":1,"label":"Intrusion"}`), true},
 		{"GET", pkgPath + "/scope", nil, true}, {"POST", pkgPath + "/scope", scopeBody, true}, {"PATCH", pkgPath + "/scope/" + scope.ID, []byte(`{"version":1,"user_text":"Intrusion"}`), true},
 		{"GET", base + "/delivery", nil, false}, {"POST", base + "/delivery", deliveryBody, true}, {"PATCH", base + "/delivery/" + item.ID, []byte(`{"version":1,"status":"approved"}`), true},

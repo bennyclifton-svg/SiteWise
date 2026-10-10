@@ -83,7 +83,7 @@ test("implication review preserves choices and refuses stale inputs", async ({ p
   const { project, row } = await setup(page, "investigation");
   await row.getByRole("button", { name: /^Dismiss / }).click();
   await page.getByLabel("Reason for dismissal (optional)").fill("Synthetic owner review pending");
-  await page.getByRole("button", { name: "Packages", exact: true }).click();
+  await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Implications", exact: true }).click();
   await expect(page.getByLabel("Reason for dismissal (optional)")).toHaveValue("Synthetic owner review pending");
   await page.route(`**/api/projects/${project}/proposals*`, async route => {

@@ -23,15 +23,27 @@ func (s *Store) AcceptProposedPackage(ctx context.Context, org, project, actor, 
 	if err := lockProject(ctx, tx, org, project); err != nil {
 		return p, err
 	}
+	if err := packageActor(ctx, tx, org, actor); err != nil {
+		return p, err
+	}
+	if p, err = s.acceptProposalTx(ctx, tx, org, project, actor, key, ""); err != nil {
+		return p, err
+	}
+	return p, s.finishPackagesWrite(ctx, tx, org, project)
+}
+
+// acceptProposalTx builds the records for one proposal inside the caller's
+// transaction and does not commit, so Procurement can create the report in
+// the same transaction. disciplineID labels the new package only: an
+// existing head-contract package keeps whatever discipline it has.
+func (s *Store) acceptProposalTx(ctx context.Context, tx pgx.Tx, org, project, actor, key, disciplineID string) (procurement.Package, error) {
+	var p procurement.Package
 	var exists bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
 		return p, err
 	}
 	if !exists {
 		return p, ErrNotFound
-	}
-	if err := packageActor(ctx, tx, org, actor); err != nil {
-		return p, err
 	}
 	o, err := s.packageOverview(ctx, tx, org, project)
 	if err != nil {
@@ -48,7 +60,7 @@ func (s *Store) AcceptProposedPackage(ctx context.Context, org, project, actor, 
 				return p, err
 			}
 		} else {
-			p = procurement.Package{Kind: "works", WorksScope: "head_contract", Title: w.Title, LifecycleStatus: "planned", Stages: []procurement.Stage{}}
+			p = procurement.Package{Kind: "works", WorksScope: "head_contract", DisciplineID: disciplineID, Title: w.Title, LifecycleStatus: "planned", Stages: []procurement.Stage{}}
 			if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance); err != nil {
 				return p, err
 			}
@@ -64,18 +76,18 @@ func (s *Store) AcceptProposedPackage(ctx context.Context, org, project, actor, 
 				return p, err
 			}
 		}
-		return p, s.finishPackagesWrite(ctx, tx, org, project)
+		return p, nil
 	}
 	for _, sug := range o.Suggestions {
 		if sug.Key != key {
 			continue
 		}
-		p = procurement.Package{Kind: "services", Title: sug.Title, Novation: sug.Novation, LifecycleStatus: "planned"}
+		p = procurement.Package{Kind: "services", DisciplineID: disciplineID, Title: sug.Title, Novation: sug.Novation, LifecycleStatus: "planned"}
 		p.Stages = procurement.DefaultStages(p, s.workCatalog())
 		if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance); err != nil {
 			return p, err
 		}
-		return p, s.finishPackagesWrite(ctx, tx, org, project)
+		return p, nil
 	}
 	// Already accepted or no longer proposed: the inputs changed.
 	return p, ErrNotFound
@@ -85,9 +97,21 @@ func (s *Store) insertProposedPackage(ctx context.Context, tx pgx.Tx, org, proje
 	if err := procurement.ValidatePackage(p); err != nil {
 		return p, fmt.Errorf("%w: %v", ErrInvalidPackage, err)
 	}
+	if p.DisciplineID != "" {
+		taken, err := disciplineTaken(ctx, tx, org, project, p.DisciplineID)
+		if err != nil {
+			return p, err
+		}
+		if taken {
+			return p, ErrDuplicatePackage
+		}
+	}
+	if p.Origin == "" {
+		p.Origin = "calculation"
+	}
 	p.ID, p.ProjectID, p.Version = newID(), project, 1
-	p.Origin, p.ReviewStatus, p.Meaning, p.Provenance = "calculation", "accepted_for_planning", "stated", provenance
-	_, err := tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,title,novation,lifecycle_status,origin,review_status,meaning,provenance) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),$6,$7,$8,'calculation','accepted_for_planning','stated',$9::jsonb)`, org, p.ID, project, p.Kind, p.WorksScope, p.Title, p.Novation, p.LifecycleStatus, provenance)
+	p.ReviewStatus, p.Meaning, p.Provenance = "accepted_for_planning", "stated", provenance
+	_, err := tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,title,novation,lifecycle_status,origin,review_status,meaning,provenance,discipline_id) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),$6,$7,$8,$9,'accepted_for_planning','stated',$10::jsonb,NULLIF($11,''))`, org, p.ID, project, p.Kind, p.WorksScope, p.Title, p.Novation, p.LifecycleStatus, p.Origin, provenance, p.DisciplineID)
 	if err != nil {
 		return p, err
 	}
@@ -99,4 +123,14 @@ func (s *Store) insertProposedPackage(ctx context.Context, tx pgx.Tx, org, proje
 		p.Stages[i] = stage
 	}
 	return p, nil
+}
+
+// disciplineTaken keeps the Procurement table one row per discipline: a
+// live package already holds the discipline, or, for Main Works, a live head
+// contract exists (legacy ones have no discipline). Checked under the
+// project lock rather than by a unique index, so retired rows never block.
+func disciplineTaken(ctx context.Context, tx pgx.Tx, org, project, disciplineID string) (bool, error) {
+	var taken bool
+	err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND (discipline_id=$3 OR ($3='trade.main_works' AND works_scope='head_contract')))`, org, project, disciplineID).Scan(&taken)
+	return taken, err
 }

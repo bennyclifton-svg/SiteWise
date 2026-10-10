@@ -17,8 +17,7 @@ import {
 import { type RowModel } from "./DocumentRow";
 import { Profile } from "./Profile";
 import { Register } from "./Register";
-import { Reports } from "./Reports";
-import { Packages } from "./Packages";
+import { Procurement } from "./Procurement";
 import { Delivery } from "./Delivery";
 import { Costs, CostSummary } from "./Costs";
 import { Implications } from "./Implications";
@@ -234,8 +233,6 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   const [profileView, setProfileView] = useState<"all" | "summary" | "systems">("all");
   const [costsOpened, setCostsOpened] = useState(false);
   const [deliveryOpened, setDeliveryOpened] = useState(false);
-  const [showPackages, setShowPackages] = useState(false);
-  const [packagesOpened, setPackagesOpened] = useState(false);
   const [reportsOpened, setReportsOpened] = useState(false);
 	const [reportTick, setReportTick] = useState(0);
   const [notReadOnly, setNotReadOnly] = useState(false);
@@ -576,21 +573,20 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   return (
     <main className="workspace workspace-with-views" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <nav className="project-views" aria-label="Project views">
-        <button type="button" className="btn btn-small" aria-pressed={!showReports && !showPackages && !showDelivery && !showProposals && !showCosts && profileView === "all"} onClick={() => { setProfileView("all"); setShowCosts(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Profile</button>
-        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setShowCosts(false); setProposalsOpened(true); setShowProposals(true); setShowReports(false); setShowPackages(false); setShowDelivery(false); }}>Implications</button>
-        <button type="button" className="btn btn-small" aria-pressed={showPackages} onClick={() => { setShowCosts(false); setPackagesOpened(true); setShowPackages(true); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Packages</button>
-        <button type="button" className="btn btn-small" aria-pressed={showDelivery} onClick={() => { setShowCosts(false); setShowProposals(false); setDeliveryOpened(true); setShowDelivery(true); setShowReports(false); setShowPackages(false); }}>Delivery</button>
-        <button type="button" className="btn btn-small" aria-pressed={showReports} onClick={() => { setShowCosts(false); setReportsOpened(true); setShowReports(true); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Procurement</button>
-        <button type="button" className="btn btn-small" aria-pressed={showCosts} onClick={() => { setCostsOpened(true); setShowCosts(true); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Costs</button>
-        <button type="button" className="btn btn-small" aria-pressed={profileView === "summary" && !showCosts && !showReports && !showPackages && !showDelivery && !showProposals} onClick={() => { setProfileView("summary"); setShowCosts(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Summary</button>
-        <button type="button" className="btn btn-small" aria-pressed={profileView === "systems" && !showCosts && !showReports && !showPackages && !showDelivery && !showProposals} onClick={() => { setProfileView("systems"); setShowCosts(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Systems</button>
+        <button type="button" className="btn btn-small" aria-pressed={!showReports && !showDelivery && !showProposals && !showCosts && profileView === "all"} onClick={() => { setProfileView("all"); setShowCosts(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Profile</button>
+        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setShowCosts(false); setProposalsOpened(true); setShowProposals(true); setShowReports(false); setShowDelivery(false); }}>Implications</button>
+        <button type="button" className="btn btn-small" aria-pressed={showDelivery} onClick={() => { setShowCosts(false); setShowProposals(false); setDeliveryOpened(true); setShowDelivery(true); setShowReports(false); }}>Delivery</button>
+        <button type="button" className="btn btn-small" aria-pressed={showReports} onClick={() => { setShowCosts(false); setReportsOpened(true); setShowReports(true); setShowDelivery(false); setShowProposals(false); }}>Procurement</button>
+        <button type="button" className="btn btn-small" aria-pressed={showCosts} onClick={() => { setCostsOpened(true); setShowCosts(true); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Costs</button>
+        <button type="button" className="btn btn-small" aria-pressed={profileView === "summary" && !showCosts && !showReports && !showDelivery && !showProposals} onClick={() => { setProfileView("summary"); setShowCosts(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Summary</button>
+        <button type="button" className="btn btn-small" aria-pressed={profileView === "systems" && !showCosts && !showReports && !showDelivery && !showProposals} onClick={() => { setProfileView("systems"); setShowCosts(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Systems</button>
       </nav>
-      <section className={`profile-col ${profileView !== "all" ? "profile-focused" : ""}`} aria-label="Project profile" hidden={showReports || showPackages || showDelivery || showProposals || showCosts}>
+      <section className={`profile-col ${profileView !== "all" ? "profile-focused" : ""}`} aria-label="Project profile" hidden={showReports || showDelivery || showProposals || showCosts}>
         <h1 className="project-title">{state.projectName}</h1>
         {profileView === "summary" && <CostSummary projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} />}
         <Profile view={profileView} projectId={projectId} tick={profileTick} workTick={reportTick} onJump={id => { setProfileView("all"); jump(id); }} onSignedOut={onSignedOut} onShowNotRead={() => { setProfileView("all"); setNotReadOnly(true); }} />
       </section>
-      <aside className="register-col" aria-label="Document register" hidden={profileView !== "all" || showReports || showPackages || showDelivery || showProposals || showCosts}>
+      <aside className="register-col" aria-label="Document register" hidden={profileView !== "all" || showReports || showDelivery || showProposals || showCosts}>
         <Register
           rows={rows}
           catalog={catalog}
@@ -610,8 +606,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
       {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Implications projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!showReports}><Reports projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {packagesOpened && <div className="project-reports" hidden={!showPackages}><Packages projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => { setProfileView("all"); setShowPackages(false); }} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => { setProfileView("all"); setShowReports(false); }} /></div>}
       {/* Drop overlay: invisible until files are dragged over the page. */}
       <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>
         <p className="drop-title">Release to file into {state.projectName}</p>
