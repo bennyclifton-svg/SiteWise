@@ -77,6 +77,25 @@ func TestProcurementRowsAndCreate(t *testing.T) {
 	}
 	m.call(t, http.MethodPost, create, []byte(`{"proposal_key":"`+key+`"}`), http.StatusNotFound, nil)
 
+	// Renaming the Structural row brings its suggestion back; accepting it
+	// would make a second consultant.structural row, so Create refuses.
+	m.call(t, http.MethodPatch, "/api/projects/"+project+"/packages/"+p.ID, []byte(`{"version":1,"title":"Structural engineering"}`), http.StatusOK, nil)
+	m.getJSON(t, "/api/projects/"+project+"/packages", &overview)
+	structural := ""
+	for _, s := range overview.Suggestions {
+		if s.Title == "Structural" {
+			structural = s.Key
+		}
+	}
+	if structural == "" {
+		t.Fatalf("renamed row did not bring back the Structural suggestion: %+v", overview.Suggestions)
+	}
+	m.call(t, http.MethodPost, create, []byte(`{"proposal_key":"`+structural+`"}`), http.StatusConflict, nil)
+
+	// A legacy head contract (no discipline) holds Main Works.
+	m.call(t, http.MethodPost, "/api/projects/"+project+"/packages", []byte(`{"kind":"works","title":"Builder","works_scope":"head_contract"}`), http.StatusCreated, nil)
+	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"trade.main_works"}`), http.StatusConflict, nil)
+
 	// A retired row cannot be created from.
 	var civil procurement.Package
 	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"consultant.civil"}`), http.StatusCreated, &civil)

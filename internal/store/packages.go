@@ -206,16 +206,15 @@ func (s *Store) CreateDisciplinePackage(ctx context.Context, org, project, actor
 	if err := lockProject(ctx, tx, org, project); err != nil {
 		return p, err
 	}
-	var exists, taken bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid),
- EXISTS(SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND discipline_id=$3 AND retired_at IS NULL)`, org, project, p.DisciplineID).Scan(&exists, &taken); err != nil {
+	var exists bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
 		return p, err
 	}
 	if !exists {
 		return p, ErrNotFound
 	}
-	if taken {
-		return p, ErrDuplicatePackage
+	if p.DisciplineID == "" {
+		return p, ErrInvalidPackage
 	}
 	if err := packageActor(ctx, tx, org, actor); err != nil {
 		return p, err
@@ -230,14 +229,12 @@ func (s *Store) CreateDisciplinePackage(ctx context.Context, org, project, actor
 	}
 	p.Stages = procurement.DefaultStages(p, s.workCatalog())
 	provenance, _ := json.Marshal(map[string]string{"actor": actor, "discipline": p.DisciplineID})
+	// A discipline the user picked is their choice, not a calculation.
+	// insertProposedPackage refuses a discipline a live package holds.
+	p.Origin = "user"
 	if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance); err != nil {
 		return p, err
 	}
-	// A discipline the user picked is their choice, not a calculation.
-	if _, err := tx.Exec(ctx, `UPDATE packages SET origin='user' WHERE org_id=$1::uuid AND id=$2::uuid`, org, p.ID); err != nil {
-		return p, err
-	}
-	p.Origin = "user"
 	return p, s.finishPackagesWrite(ctx, tx, org, project)
 }
 

@@ -1,7 +1,10 @@
 package httpapi
 
 import (
+	"errors"
 	"net/http"
+
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"sitewise/internal/procurement"
 	"sitewise/internal/store"
@@ -93,7 +96,7 @@ func postProcurementCreate(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	p, report, created, err := deps.Store.ProcurementCreate(r.Context(), session.OrgID, project, session.UserID, body.PackageID, body.ProposalKey, discipline)
 	if err != nil {
-		reportError(w, err)
+		procurementCreateError(w, err)
 		return
 	}
 	status := http.StatusOK
@@ -109,4 +112,15 @@ func postProcurementCreate(w http.ResponseWriter, r *http.Request, deps Deps) {
 		Package procurement.Package `json:"package"`
 		Report  store.Report        `json:"report"`
 	}{p, report})
+}
+
+// procurementCreateError maps the package half of Create (accepting a
+// proposal) like the Packages routes, and the rest like the report routes.
+func procurementCreateError(w http.ResponseWriter, err error) {
+	var pgErr *pgconn.PgError
+	if errors.Is(err, store.ErrInvalidPackage) || errors.Is(err, store.ErrDuplicatePackage) || errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		packageError(w, err)
+		return
+	}
+	reportError(w, err)
 }
