@@ -14,7 +14,7 @@ export type RfpControlKind = "choice" | "tristate" | "parts" | "number" | "text"
 export interface RfpControl { key: string; label: string; kind: RfpControlKind; value: unknown; options?: RfpChoice[]; source: string; why?: string; help?: string; locked?: boolean; set: boolean; party?: string; owner?: string; home?: RfpHome }
 /** Where a fact: control saves (detail, header, site, determinant), or where it is changed instead (locked). */
 export type RfpHome = "detail" | "header" | "site" | "determinant" | "cost_plan" | "link" | "derived";
-export interface RfpGroup { id: string; title: string; controls: RfpControl[] }
+export interface RfpGroup { id: string; title: string; /** The report section these controls edit. */ section: string; controls: RfpControl[] }
 export interface RfpControls {
   discipline: string; title: string; status: string;
   scale: { value: string; source: string; why: string; set: boolean };

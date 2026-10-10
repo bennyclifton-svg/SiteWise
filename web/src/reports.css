@@ -108,46 +108,41 @@
 .report-review summary { cursor: pointer; }
 .report-review li { margin: 4px 0; }
 
-/* Consultant RFP: "Finish this RFP" beside the draft it changes. The panel
-   reuses the Profile row idiom (label, control, source mark, Reset). Ember
-   marks the user's own choices; dashed azure marks a suggestion. */
-.report-reader-wide { max-width: 1440px; container-type: inline-size; }
-/* Side by side only when the draft keeps a readable measure beside the
-   panel; otherwise the panel stacks above the draft it changes. */
-.rfp-workbench { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: start; }
-@container (min-width: 1040px) {
-  .rfp-workbench { grid-template-columns: minmax(320px, 380px) minmax(0, 1fr); }
-  .rfp-workbench .rfp-panel { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; }
-}
-.rfp-draft { min-width: 0; }
-.rfp-panel { background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); box-shadow: var(--shadow-xs); }
-.rfp-panel-head { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); }
-.rfp-panel-head h3 { margin: 0; font-size: 16px; }
-.rfp-status { margin: 4px 0 0; font-weight: 500; color: var(--ink-body); }
-.rfp-rules-note { margin: 8px 0 0; font-size: 12px; color: var(--ink-muted); }
-.rfp-decisions { padding: 12px 16px 6px; background: var(--warn-soft); border-bottom: 1px solid var(--line); }
-.rfp-decisions h4 { margin: 0 0 4px; font-size: 13.5px; }
-.rfp-decisions ol { list-style: none; margin: 0; padding: 0; }
-.rfp-decision { padding: 10px 0; }
-.rfp-decision + .rfp-decision { border-top: 1px solid var(--line-strong); }
+/* Consultant RFP: one report edited in place. Decisions that block issue
+   sit in a warm banner above the draft; each section opens its own controls
+   under its heading on an inset paper surface. Rows reuse the Profile idiom
+   (label, control, source mark, Reset). Ember marks the user's own choices;
+   dashed azure marks a suggestion. */
+.report-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line-strong); }
+.report-section-head h3 { margin: 0; font-size: 19px; }
+.report-section-head .btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.rfp-edit { display: grid; gap: 12px; margin: 12px 0 18px; padding: 12px 12px 14px; background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); box-shadow: var(--shadow-xs); }
+.rfp-edit-group + .rfp-edit-group { padding-top: 12px; border-top: 1px solid var(--line); }
+.rfp-edit-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 6px 2px; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.rfp-saves { padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 11px; font-weight: 500; line-height: 18px; color: var(--ink-muted); }
+.rfp-edit .rfp-group-intro { padding: 0 6px 6px; }
+.rfp-decisions { margin: 20px 0 8px; padding: 14px 16px 6px; background: var(--warn-soft); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.rfp-decisions-clear { padding-bottom: 12px; background: var(--ground); }
+.rfp-decisions-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+.rfp-decisions-head h3 { margin: 0; font-size: 16px; }
+.rfp-status { margin: 0; font-weight: 500; color: var(--ink-body); }
+.rfp-rules-note { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-body); }
+.rfp-decisions ol { list-style: none; margin: 8px 0 0; padding: 0; }
+.rfp-decision { padding: 10px 0; border-top: 1px solid var(--line-strong); }
 .rfp-decision-label { margin: 0; font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
 .rfp-decision-text { margin: 2px 0 6px; font-size: 12.5px; color: var(--ink-body); }
 .rfp-decision-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .rfp-decision-actions .btn { height: auto; min-height: 28px; padding: 4px 10px; white-space: normal; text-align: left; line-height: 1.35; }
-.rfp-decision .rfp-row { padding: 0; }
+.rfp-decision .rfp-row { padding: 0; max-width: 560px; }
 .rfp-decision-fields { display: grid; gap: 8px; }
 .rfp-decision .rfp-row:hover { background: transparent; }
-.rfp-group { border-bottom: 1px solid var(--line); }
-.rfp-group:last-child { border-bottom: 0; }
-.rfp-group > summary { display: flex; align-items: center; gap: 8px; padding: 11px 16px; font-weight: 600; cursor: pointer; list-style-position: inside; }
-.rfp-group > summary:hover { background: var(--ground); }
-.rfp-group > summary:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
-.rfp-group > summary > span:first-of-type { flex: 1; }
 .rfp-count { padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font: 500 11px var(--mono); color: var(--ink-muted); }
 .rfp-count-alert { border-color: var(--alert); color: var(--alert); }
 .rfp-group-intro { margin: 0; padding: 0 16px 8px; font-size: 12px; color: var(--ink-muted); }
-.rfp-rows { display: grid; gap: 2px; padding: 0 10px 12px; }
-.rfp-row { display: grid; gap: 4px; padding: 6px; border-radius: var(--radius-sm); }
+.rfp-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 2px 12px; }
+.rfp-row { display: grid; align-content: start; gap: 4px; padding: 6px; border-radius: var(--radius-sm); }
+/* A fact changed elsewhere (cost plan, Profile) reads as read-only. */
+.rfp-segment:has(input:disabled), .rfp-control:disabled { opacity: 0.62; }
 .rfp-row:hover { background: var(--ground); }
 .rfp-row[aria-busy="true"] { opacity: 0.7; }
 .rfp-label { font-size: 12.5px; font-weight: 500; color: var(--ink-body); overflow-wrap: anywhere; }
@@ -172,7 +167,9 @@
 .rfp-segment-option input:checked + span { background: var(--ink); color: var(--paper); font-weight: 600; }
 .rfp-segment-option input:focus-visible + span { outline: 2px solid var(--ember); outline-offset: -2px; }
 .rfp-parts { display: grid; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; font-size: 12.5px; }
-.rfp-advisory ul { margin: 0; padding: 0 16px 12px 32px; font-size: 12.5px; }
+.rfp-advisory summary { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.rfp-advisory .rfp-group-intro { padding: 6px 0 0; }
+.rfp-advisory ul { margin: 6px 0 0; padding-left: 20px; font-size: 12.5px; }
 .rfp-advisory li { margin: 6px 0; }
 .rfp-boundary .rfp-control { flex-basis: 140px; }
 

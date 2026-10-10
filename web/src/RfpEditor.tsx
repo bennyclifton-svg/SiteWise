@@ -1,11 +1,12 @@
-// "Finish this RFP": the choices a consultant RFP still needs, beside the
-// draft it changes. Decisions that block issue come first; every other
-// control sits in a collapsible group. Each control writes on change and
-// shows where its value came from, as Profile rows do.
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+// A consultant RFP is one report edited in place. Decisions that block
+// issue sit in a banner above the draft; each report section opens its own
+// controls under its heading. Project facts save to Profile, the one home
+// every RFP reads (owner decision D1); the rest belong to this RFP. Each
+// control writes on change and shows where its value came from.
+import { useEffect, useState, type FormEvent } from "react";
 import type { RfpCheck, RfpChoice, RfpControl, RfpControls } from "./reportApi";
 
-type Write = (key: string, value: unknown | null) => Promise<void>;
+export type Write = (key: string, value: unknown | null) => Promise<void>;
 
 const sourceNames: Record<string, string> = {
   user: "You", profile: "Profile", package: "Package", derived: "Profile", cost_plan: "Cost plan",
@@ -13,70 +14,80 @@ const sourceNames: Record<string, string> = {
   unknown: "Not known", conflict: "Sources disagree", none: "Not set",
 };
 const groupIntro: Record<string, string> = {
-  project: "Facts the rules read. Set one here only for this RFP; the profile keeps its own value.",
   stages: "In the base fee, priced as an option, left out, or already done by others.",
   elements: "Elements priced by stage in the R1 grid.",
   allowances: "Quantities every firm prices. Blank client quantities block issue.",
   positions: "I included · O optional, priced on its own · X excluded, done by the party named.",
-  issue: "Printed on the RFP and checked before issue.",
+  issue: "Printed on the RFP and checked before issue. Cover and terms can differ for each appointment.",
+  weights: "How proposals are scored. The weights must total 100%.",
 };
 
-export function RfpEditor({ controls, busyKey, onWrite }: { controls: RfpControls; busyKey: string; onWrite: Write }) {
-  const [openGroup, setOpenGroup] = useState<string>("");
-  const [focusKey, setFocusKey] = useState("");
-  const panel = useRef<HTMLElement>(null);
-  const groupOf = (key: string) => key === "boundary:range" || key === "scale" ? "stages" : controls.groups.find(g => g.controls.some(c => c.key === key))?.id ?? "";
-  // A decision opens its group and focuses its control, so the fix is one
-  // move away from the item that asks for it.
-  function jump(key?: string) {
-    if (!key) return;
-    setOpenGroup(groupOf(key));
-    setFocusKey(key);
-  }
-  useEffect(() => {
-    if (!focusKey || !panel.current) return;
-    const target = panel.current.querySelector<HTMLElement>(`[data-control="${CSS.escape(focusKey)}"]`);
-    if (target) {
-      target.scrollIntoView({ block: "center", behavior: "smooth" });
-      target.querySelector<HTMLElement>("input, select, button")?.focus({ preventScroll: true });
-    }
-    setFocusKey("");
-  }, [focusKey, openGroup]);
-  const advisory = controls.checks.filter(c => !c.blocking);
-  const draftRules = controls.status !== "reviewed";
-  return <aside className="rfp-panel" aria-label="Finish this RFP" ref={panel}>
-    <header className="rfp-panel-head">
-      <h3>Finish this RFP</h3>
-      <p className="rfp-status" role="status">{controls.decisions.length ? `${controls.decisions.length} ${controls.decisions.length === 1 ? "item blocks" : "items block"} issue` : draftRules ? "Choices complete. Issue waits for owner review of the rules." : "Ready to issue."}</p>
-      {draftRules && <p className="rfp-rules-note">The {controls.title.toLowerCase()} rules are a draft. You can prepare and edit this RFP; issue stays blocked until the owner marks the rules reviewed.</p>}
-    </header>
-    {controls.decisions.length > 0 && <section className="rfp-decisions" aria-label="Decisions before issue">
-      <h4>Decide before issue</h4>
-      <ol>{controls.decisions.map(d => <Decision key={d.id} check={d} controls={controls} busyKey={busyKey} onWrite={onWrite} onJump={jump} />)}</ol>
-    </section>}
-    <Group id="stages" title="Appointment and stages" open={openGroup} setOpen={setOpenGroup} count={controls.groups.find(g => g.id === "stages")?.controls.length}>
-      <Boundary controls={controls} busy={busyKey === "boundary:range"} onWrite={onWrite} />
-      <Scale controls={controls} busy={busyKey === "scale"} onWrite={onWrite} />
-      <Rows controls={controls.groups.find(g => g.id === "stages")?.controls ?? []} busyKey={busyKey} onWrite={onWrite} />
-    </Group>
-    {controls.groups.filter(g => g.id !== "stages").map(g => <Group key={g.id} id={g.id} title={g.title} open={openGroup} setOpen={setOpenGroup} count={g.controls.length} extra={g.id === "issue" ? <WeightTotal controls={g.controls} /> : undefined}>
-      <Rows controls={g.controls} busyKey={busyKey} onWrite={onWrite} />
-    </Group>)}
-    {advisory.length > 0 && <details className="rfp-group rfp-advisory">
-      <summary><span>Other checks</span><span className="rfp-count">{advisory.length}</span></summary>
-      <p className="rfp-group-intro">Issue is not blocked by these; review them before you send.</p>
-      <ul>{advisory.map(c => <li key={c.id}><strong>{c.label}.</strong> {c.text} {c.control && <button type="button" className="cell-link" onClick={() => jump(c.control)}>Show</button>}</li>)}</ul>
-    </details>}
-  </aside>;
+/** The report section a control is edited under. */
+export function controlSection(controls: RfpControls, key: string): string {
+  if (key === "boundary:range" || key === "scale") return "stages";
+  return controls.groups.find(g => g.controls.some(c => c.key === key))?.section ?? "";
 }
 
-function Group({ id, title, open, setOpen, count, extra, children }: { id: string; title: string; open: string; setOpen: (id: string) => void; count?: number; extra?: ReactNode; children: ReactNode }) {
-  const ref = useRef<HTMLDetailsElement>(null);
-  useEffect(() => { if (open === id && ref.current) ref.current.open = true; }, [open, id]);
-  return <details className="rfp-group" ref={ref} onToggle={e => { if ((e.target as HTMLDetailsElement).open) setOpen(id); }}>
-    <summary><span>{title}</span>{extra}{count !== undefined && <span className="rfp-count">{count}</span>}</summary>
-    {groupIntro[id] && <p className="rfp-group-intro">{groupIntro[id]}</p>}
-    <div className="rfp-rows">{children}</div>
+/** Sections that have something to edit. */
+export function editableSections(controls: RfpControls): Set<string> {
+  const out = new Set(controls.groups.filter(g => g.controls.length > 0).map(g => g.section));
+  out.add("stages");
+  return out;
+}
+
+export function RfpDecisions({ controls, busyKey, onWrite, onJump }: { controls: RfpControls; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
+  const draftRules = controls.status !== "reviewed";
+  const n = controls.decisions.length;
+  return <section className={n ? "rfp-decisions" : "rfp-decisions rfp-decisions-clear"} aria-label="Decide before issue">
+    <div className="rfp-decisions-head">
+      <h3>{n ? "Decide before issue" : "Ready to issue"}</h3>
+      <p className="rfp-status" role="status">{n ? `${n} ${n === 1 ? "item blocks" : "items block"} issue` : draftRules ? "Choices complete. Issue waits for owner review of the rules." : "No open decisions."}</p>
+    </div>
+    {draftRules && <p className="rfp-rules-note">The {controls.title.toLowerCase()} rules are a draft. You can prepare and edit this RFP; issue stays blocked until the owner marks the rules reviewed.</p>}
+    {n > 0 && <ol>{controls.decisions.map(d => <Decision key={d.id} check={d} controls={controls} busyKey={busyKey} onWrite={onWrite} onJump={onJump} />)}</ol>}
+  </section>;
+}
+
+export function RfpSectionEditor({ controls, section, busyKey, onWrite }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write }) {
+  const groups = controls.groups.filter(g => g.section === section && g.controls.length > 0);
+  return <div className="rfp-edit" role="group" aria-label={`Edit ${section}`}>
+    {section === "stages" && <div className="rfp-rows">
+      <Boundary controls={controls} busy={busyKey === "boundary:range"} onWrite={onWrite} />
+      <Scale controls={controls} busy={busyKey === "scale"} onWrite={onWrite} />
+    </div>}
+    {groups.map(g => g.id === "project" ? <ProjectGroup key={g.id} controls={g.controls} busyKey={busyKey} onWrite={onWrite} /> : <div key={g.id} className="rfp-edit-group">
+      {(groups.length > 1 || section === "stages") && <h5 className="rfp-edit-title">{g.title}{g.id === "weights" && <WeightTotal controls={g.controls} />}</h5>}
+      {groups.length === 1 && g.id === "weights" && <p className="rfp-group-intro"><WeightTotal controls={g.controls} /></p>}
+      {groupIntro[g.id] && <p className="rfp-group-intro">{groupIntro[g.id]}</p>}
+      <Rows controls={g.controls} busyKey={busyKey} onWrite={onWrite} />
+    </div>)}
+  </div>;
+}
+
+// Project facts are answered once in Profile; the rest is this appointment.
+function ProjectGroup({ controls, busyKey, onWrite }: { controls: RfpControl[]; busyKey: string; onWrite: Write }) {
+  const facts = controls.filter(c => c.key.startsWith("fact:"));
+  const own = controls.filter(c => !c.key.startsWith("fact:"));
+  return <>
+    <div className="rfp-edit-group">
+      <h5 className="rfp-edit-title">Project facts <span className="rfp-saves">Saved to Profile</span></h5>
+      <p className="rfp-group-intro">Answered once for the project. A change here updates Profile and every RFP that reads it.</p>
+      <Rows controls={facts} busyKey={busyKey} onWrite={onWrite} />
+    </div>
+    {own.length > 0 && <div className="rfp-edit-group">
+      <h5 className="rfp-edit-title">This appointment</h5>
+      <Rows controls={own} busyKey={busyKey} onWrite={onWrite} />
+    </div>}
+  </>;
+}
+
+export function RfpOtherChecks({ controls, onJump }: { controls: RfpControls; onJump: (key?: string) => void }) {
+  const advisory = controls.checks.filter(c => !c.blocking);
+  if (!advisory.length) return null;
+  return <details className="report-notice rfp-advisory">
+    <summary><strong>Other checks</strong> <span className="rfp-count">{advisory.length}</span></summary>
+    <p className="rfp-group-intro">Issue is not blocked by these; review them before you send.</p>
+    <ul>{advisory.map(c => <li key={c.id}><strong>{c.label}.</strong> {c.text} {c.control && <button type="button" className="cell-link" onClick={() => onJump(c.control)}>Show</button>}</li>)}</ul>
   </details>;
 }
 
@@ -87,15 +98,11 @@ function Decision({ check, controls, busyKey, onWrite, onJump }: { check: RfpChe
     <p className="rfp-decision-label">{check.label}</p>
     <p className="rfp-decision-text">{check.text}</p>
     {check.id === "boundary" && <BoundaryConfirm controls={controls} busy={busyKey === "boundary:range"} onWrite={onWrite} />}
-    {check.id.startsWith("changed:") && check.control && <div className="rfp-decision-actions">
-      <button type="button" className="btn btn-small" disabled={busyKey === check.control} onClick={() => { const c = control; if (c) void onWrite(c.key, c.value); }}>Keep my setting</button>
-      <button type="button" className="btn btn-small" disabled={busyKey === check.control} onClick={() => void onWrite(check.control!, null)}>Use the new value</button>
-    </div>}
     {check.id === "fields" && <div className="rfp-decision-fields">
       {controls.groups.flatMap(g => g.controls).filter(c => c.key.startsWith("field:") && (check.changes ?? []).includes(c.label)).map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} onWrite={onWrite} compact />)}
     </div>}
-    {inline && check.id !== "fields" && !check.id.startsWith("changed:") && <ControlRow control={control!} busy={busyKey === control!.key} onWrite={onWrite} compact />}
-    {!inline && check.id !== "boundary" && check.id !== "fields" && !check.id.startsWith("changed:") && check.control && <button type="button" className="cell-link" onClick={() => onJump(check.control)}>Show the setting</button>}
+    {inline && check.id !== "fields" && <ControlRow control={control!} busy={busyKey === control!.key} onWrite={onWrite} compact />}
+    {!inline && check.id !== "boundary" && check.id !== "fields" && check.control && <button type="button" className="cell-link" onClick={() => onJump(check.control)}>Show the setting</button>}
   </li>;
 }
 
@@ -148,7 +155,7 @@ function Scale({ controls, busy, onWrite }: { controls: RfpControls; busy: boole
 
 function Rows({ controls, busyKey, onWrite }: { controls: RfpControl[]; busyKey: string; onWrite: Write }) {
   if (!controls.length) return <p className="rfp-group-intro">Nothing to set for this RFP.</p>;
-  return <>{controls.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} onWrite={onWrite} />)}</>;
+  return <div className="rfp-rows">{controls.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} onWrite={onWrite} />)}</div>;
 }
 
 function ControlRow({ control: c, busy, onWrite, compact }: { control: RfpControl; busy: boolean; onWrite: Write; compact?: boolean }) {
@@ -159,13 +166,14 @@ function ControlRow({ control: c, busy, onWrite, compact }: { control: RfpContro
       ? <span className="rfp-label" id={labelID}>{c.label}</span>
       : <label className="rfp-label" htmlFor={id}>{c.label}</label>}
     <div className="rfp-value">
-      <Control control={c} id={id} labelID={labelID} busy={busy} onWrite={onWrite} />
+      <Control control={c} id={id} labelID={labelID} busy={busy || (!!c.locked && c.kind !== "stage")} onWrite={onWrite} />
       <Source source={c.set ? "user" : c.source} />
       {c.set && <button type="button" className="cell-link" disabled={busy} onClick={() => void onWrite(c.key, null)}>Reset</button>}
       {c.kind === "position" && c.value === "X" && c.party && <span className="rfp-why">Done by {c.party}.</span>}
       {c.why && c.kind !== "position" && <span className="rfp-why">{c.why}</span>}
       {c.why && c.kind === "position" && c.value !== "X" && <span className="rfp-why">{c.why}</span>}
       {c.kind === "count" && c.owner === "consultant" && <span className="rfp-why">The consultant proposes this one in R2.</span>}
+      {c.help && <span className="rfp-why">{c.help}</span>}
     </div>
   </div>;
 }

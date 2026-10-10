@@ -6,7 +6,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Report review regression");
   await page.getByRole("button", { name: "Create project", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Reports", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Procurement", exact: true })).toBeVisible();
   const project = new URL(page.url()).pathname.split("/").pop();
   await page.getByRole("button", { name: "Packages", exact: true }).click();
   await page.getByText("Add a package yourself", { exact: true }).click();
@@ -38,7 +38,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await page.screenshot({ path: "../.tools/wp45-packages-mobile.png", fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.getByRole("button", { name: "Reports", exact: true }).click();
+  await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP draft", exact: true }).click();
 	let incomplete = true;
 	await page.route("**/api/reports/*/draft", async route => {
@@ -84,7 +84,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await page.screenshot({ path: "../.tools/wp45-reports-mobile.png", fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   await page.reload();
-  await page.getByRole("button", { name: "Reports", exact: true }).click();
+  await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "RFP — Fire engineering", exact: true }).click();
   await expect(page.getByText("My unsaved reconciliation.", { exact: true })).toBeVisible();
 	const restoredBlock = page.locator(".report-block").filter({ has: page.getByRole("heading", { name: "Package", exact: true }) });

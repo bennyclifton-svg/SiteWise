@@ -52,7 +52,7 @@ test("delivery entries preserve unknown dates and reconcile edits before appeari
   await page.getByRole("button", { name: "Edit delivery record", exact: true }).click();
   await page.getByLabel("Approval reference", { exact: true }).fill("SYN-42");
   await page.getByLabel("Target date", { exact: true }).fill("");
-  await page.getByRole("button", { name: "Reports", exact: true }).click();
+  await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Delivery", exact: true }).click();
   await expect(page.getByLabel("Approval reference", { exact: true })).toHaveValue("SYN-42");
   const changed = await page.request.patch(`${base}/${saved.id}`, { headers, data: { version: saved.version, status: "submitted", details: { authority: "Updated synthetic authority", reference: "", submitted_on: "2026-10-05" } } });

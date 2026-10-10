@@ -32,9 +32,11 @@ type BoundaryC struct {
 	Set    bool     `json:"set"`
 }
 
+// Group is a set of controls edited in place under one report section.
 type Group struct {
 	ID       string    `json:"id"`
 	Title    string    `json:"title"`
+	Section  string    `json:"section"`
 	Controls []Control `json:"controls"`
 }
 
@@ -75,7 +77,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		c.Boundary.Stages = append(c.Boundary.Stages, Choice{Value: s.Key, Label: s.Name})
 	}
 	used := usedDrivers(d, sk)
-	project := Group{ID: "project", Title: "Project"}
+	project := Group{ID: "project", Title: "Project", Section: "project"}
 	options := func(list []knowledge.RFPOption) []Choice {
 		out := []Choice{}
 		for _, o := range list {
@@ -152,25 +154,25 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	}
 	c.Groups = append(c.Groups, project)
 
-	stages := Group{ID: "stages", Title: "Stages"}
+	stages := Group{ID: "stages", Title: "Stages", Section: "stages"}
 	stateOptions := []Choice{{Include, "In the base fee"}, {Option, "Priced as an option"}, {Exclude, "Not in this RFP"}, {Done, "Done by others"}}
 	for _, s := range r.Stages {
 		stages.Controls = append(stages.Controls, Control{Key: "stage:" + s.Key, Label: s.Name, Kind: "stage", Value: s.State, Options: stateOptions, Source: s.Source, Why: s.Why, Locked: s.Locked, Set: isSet("stage:" + s.Key), Help: s.ShownWhen})
 	}
 	c.Groups = append(c.Groups, stages)
 	if len(r.Elements) > 0 {
-		elements := Group{ID: "elements", Title: "Priced elements"}
+		elements := Group{ID: "elements", Title: "Priced elements", Section: "stages"}
 		for _, e := range r.Elements {
 			elements.Controls = append(elements.Controls, Control{Key: "element:" + e.Key, Label: e.Code + " " + e.Name, Kind: "element", Value: e.State, Options: stateOptions[:3], Source: e.Source, Why: e.Why, Set: isSet("element:" + e.Key)})
 		}
 		c.Groups = append(c.Groups, elements)
 	}
-	allowances := Group{ID: "allowances", Title: "Allowances"}
+	allowances := Group{ID: "allowances", Title: "Allowances", Section: "allowances"}
 	for _, a := range r.Allowances {
 		allowances.Controls = append(allowances.Controls, Control{Key: "allowance:" + a.Key, Label: a.Label, Kind: "count", Value: a.Value, Source: a.Source, Owner: a.Owner, Set: isSet("allowance:" + a.Key), Help: a.Text})
 	}
 	c.Groups = append(c.Groups, allowances)
-	positions := Group{ID: "positions", Title: "Scope position"}
+	positions := Group{ID: "positions", Title: "Scope position", Section: "positions"}
 	for _, p := range r.Positions {
 		why := p.Why
 		if p.Assumption != "" {
@@ -179,7 +181,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		positions.Controls = append(positions.Controls, Control{Key: "position:" + p.Key, Label: p.Label, Kind: "position", Value: p.Value, Options: []Choice{{"I", "Included"}, {"O", "Optional"}, {"X", "Excluded"}}, Source: p.Source, Why: why, Party: p.Party, Set: isSet("position:" + p.Key)})
 	}
 	c.Groups = append(c.Groups, positions)
-	issue := Group{ID: "issue", Title: "Issue details"}
+	issue := Group{ID: "issue", Title: "Issue details", Section: "terms"}
 	for _, f := range sk.Fields {
 		if f.Group != "issue" {
 			continue
@@ -187,10 +189,12 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		v := r.Fields[f.Key]
 		issue.Controls = append(issue.Controls, Control{Key: "field:" + f.Key, Label: f.Label, Kind: f.Kind, Value: v.Value, Source: v.Source, Help: f.Help, Set: isSet("field:" + f.Key)})
 	}
-	for _, w := range r.Weights {
-		issue.Controls = append(issue.Controls, Control{Key: "weight:" + w.Key, Label: w.Label + " (%)", Kind: "weight", Value: w.Value, Source: w.Source, Set: isSet("weight:" + w.Key)})
-	}
 	c.Groups = append(c.Groups, issue)
+	weights := Group{ID: "weights", Title: "Evaluation weights", Section: "evaluation"}
+	for _, w := range r.Weights {
+		weights.Controls = append(weights.Controls, Control{Key: "weight:" + w.Key, Label: w.Label + " (%)", Kind: "weight", Value: w.Value, Source: w.Source, Set: isSet("weight:" + w.Key)})
+	}
+	c.Groups = append(c.Groups, weights)
 	return c
 }
 

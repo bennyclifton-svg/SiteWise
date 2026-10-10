@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "./api";
 import { reportApi, type SavedReport, type ReportPackage, type ReportView, type ReportReference, type ReportBlock, type PageFit, type RfpDiscipline } from "./reportApi";
-import { RfpEditor } from "./RfpEditor";
+import { RfpDecisions, RfpOtherChecks, RfpSectionEditor, controlSection, editableSections } from "./RfpEditor";
 import "./reports.css";
 import { ConfirmDialog } from "./ConfirmDialog";
 
@@ -37,6 +37,20 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
   const [reload, setReload] = useState(0);
   const [disciplines, setDisciplines] = useState<RfpDiscipline[]>([]);
   const [busyKey, setBusyKey] = useState("");
+  // RFP sections whose controls are open under their heading, and a control
+  // to focus once its section has rendered.
+  const [openEdits, setOpenEdits] = useState<Set<string>>(new Set());
+  const [focusKey, setFocusKey] = useState("");
+  const reader = useRef<HTMLDivElement>(null);
+  useEffect(() => { setOpenEdits(new Set()); }, [selected]);
+  useEffect(() => {
+    if (!focusKey || !reader.current) return;
+    const target = reader.current.querySelector<HTMLElement>(`[data-control="${CSS.escape(focusKey)}"]`);
+    if (!target) return;
+    target.scrollIntoView({ block: "center", behavior: "smooth" });
+    target.querySelector<HTMLElement>("input, select, button")?.focus({ preventScroll: true });
+    setFocusKey("");
+  }, [focusKey, openEdits, view]);
   // The issue error names the open report's own page limit (RFPs allow three).
   const pageLimit = useRef(2);
   const fail = useCallback((e: unknown) => {
@@ -64,7 +78,9 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
   useEffect(() => {
     if (!selected || editor || busy) return;
     let stopped = false;
-    reportApi.read(selected).then(next => { if (!stopped) setView(next); }).catch(e => { if (!stopped) fail(e); });
+    // A read that started before a save can land after it; never replace a
+    // draft with an older version of itself.
+    reportApi.read(selected).then(next => { if (!stopped) setView(old => old?.draft && next.draft && old.draft.id === next.draft.id && next.draft.version < old.draft.version ? old : next); }).catch(e => { if (!stopped) fail(e); });
     return () => { stopped = true; };
   }, [selected, tick, reload, editor, busy, fail]);
   async function create() {
@@ -99,14 +115,27 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
 	  finally { setBusy(false); setResetTarget(null); }
 	}
   // One RFP choice at a time: only the control being saved is disabled, and
-  // the returned view replaces the draft so the change shows at once.
+  // the returned view replaces the draft so the change shows at once. A
+  // project fact (fact:<name>) saves to Profile instead of this RFP.
   async function writeSetting(key: string, value: unknown | null) {
     if (!view?.draft) return;
     setBusyKey(key); setError("");
     try {
-      const next = value === null ? await reportApi.clearSetting(selected, key, view.draft.version) : await reportApi.setting(selected, key, value, view.draft.version);
+      const fact = key.startsWith("fact:") ? key.slice(5) : "";
+      const next = fact ? await reportApi.fact(selected, fact, value === null ? null : String(value), view.draft.version)
+        : value === null ? await reportApi.clearSetting(selected, key, view.draft.version) : await reportApi.setting(selected, key, value, view.draft.version);
       setView(next);
     } catch (e) { fail(e); } finally { setBusyKey(""); }
+  }
+  function toggleEdit(section: string) {
+    setOpenEdits(old => { const next = new Set(old); if (next.has(section)) next.delete(section); else next.add(section); return next; });
+  }
+  // A decision opens the section that holds its control and focuses it.
+  function jump(key?: string) {
+    if (!key || !view?.rfp) return;
+    const section = controlSection(view.rfp, key);
+    if (section) setOpenEdits(old => new Set(old).add(section));
+    setFocusKey(key);
   }
   async function confirmDiscipline() {
     const suggestion = view?.rfp_suggestion;
@@ -139,9 +168,10 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
   const latestBlock = latest?.draft?.sections.flatMap(section => section.blocks).find(block => block.id === editor?.target);
   const draft = view?.draft;
   pageLimit.current = view?.page_fit?.limit ?? 2;
-  return <section className="reports" aria-label="Reports" aria-busy={busy || loading}>
+  const editable = view?.rfp ? editableSections(view.rfp) : new Set<string>();
+  return <section className="reports" aria-label="Procurement" aria-busy={busy || loading}>
     <div className="report-library">
-      <h1>Reports</h1>
+      <h1>Procurement</h1>
       <p className="report-muted">Build reports from the saved project, scope, cost and delivery records.</p>
       <form onSubmit={e => { e.preventDefault(); void create(); }}>
         <label htmlFor="report-kind">Report type</label>
@@ -157,7 +187,7 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
       <h2>Saved reports</h2>
       {loading ? <p role="status">Loading reports…</p> : !items.length ? <p>No reports yet.</p> : <ul className="report-list">{items.map(report => <li key={report.id}><button type="button" aria-current={selected === report.id ? "true" : undefined} disabled={busy || !!editor} onClick={() => { setSelected(report.id); setView(null); setError(""); setReadingChoice(false); }}>{report.title}</button></li>)}</ul>}
     </div>
-    <div className={view?.rfp ? "report-reader report-reader-wide" : "report-reader"}>
+    <div className="report-reader" ref={reader}>
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!selected ? <p className="report-empty">Choose a saved report, or create a draft.</p> : !view ? <p role="status">Opening report…</p> : <>
@@ -167,14 +197,17 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
         {readingChoice && <div className="report-notice" role="alert"><strong>Document reading is incomplete</strong><p>Wait for the project profile to finish updating, or draft from the last completed state. Missing and failed reading will remain visible.</p><div className="report-actions"><button type="button" className="btn" disabled={busy} onClick={() => void refresh(true)}>Use last completed state</button><button type="button" className="btn btn-small" onClick={() => setReadingChoice(false)}>Wait</button></div></div>}
         {!!view.issues?.length && <section className="report-notice" aria-label="Issued reports"><h3>Issued reports</h3><ul>{view.issues.map(item => <li key={item.id}><a href={`/api/reports/${selected}/versions/${item.id}/file`}>Download issue {item.number} — {item.reporting_date}</a></li>)}</ul><p>Issued PDFs retain their saved sources and wording.</p></section>}
         {!!view.changes_since_issue?.length && <details className="report-notice"><summary>Changes since last issue ({view.changes_since_issue.length})</summary><ul>{view.changes_since_issue.map(change => <li key={change.target_id}><strong>{change.kind}</strong>: {change.after || change.before}</li>)}</ul></details>}
-        {draft && <div className={view.rfp ? "rfp-workbench" : undefined}>
-          {view.rfp && <RfpEditor controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} />}
+        {draft && <div>
+          {view.rfp && <RfpDecisions controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump} />}
           <div className="rfp-draft">
           <div className="report-actions"><button type="button" className="btn" disabled={busy || !!editor} onClick={() => { setIssuing(!issuing); setIssueVersion(draft.version); if (!issuing) { setAcceptStale(false); setStaleReason(""); setDiscloseBudget(false); } }}>{issuing ? "Cancel issue" : "Issue report"}</button></div>
           {issuing && <form className="report-notice report-issue-form" onSubmit={e => { e.preventDefault(); void issue(); }}><h3>Issue saved report</h3><p>Issuing freezes the wording, sources and PDF. Later changes belong to a new draft.</p><label htmlFor="issue-date">Reporting date</label><input id="issue-date" type="date" required value={issueDate} onChange={e => setIssueDate(e.target.value)} disabled={busy} />{view.report.kind !== "pmp" && <label><input type="checkbox" checked={discloseBudget} onChange={e => setDiscloseBudget(e.target.checked)} disabled={busy} /> Include internal budget amounts in this external report</label>}{!!view.stale.length && <><label><input type="checkbox" checked={acceptStale} onChange={e => setAcceptStale(e.target.checked)} disabled={busy} /> Issue the saved state despite changed or incomplete sources</label>{acceptStale && <><label htmlFor="issue-reason">Reason for using saved state</label><textarea id="issue-reason" required maxLength={1000} value={staleReason} onChange={e => setStaleReason(e.target.value)} disabled={busy} /></>}</>}{issueVersion !== draft.version && <p role="alert">The draft changed while this issue form was open. Cancel and reopen it to review the current version.</p>}<button className="btn" disabled={busy || issueVersion !== draft.version || (!!view.stale.length && (!acceptStale || !staleReason.trim()))}>Freeze and issue PDF</button></form>}
           {!!draft.material_assumptions?.length && <section className="report-notice" aria-label="Material assumptions"><h3>Material assumptions</h3>{draft.material_assumptions.map(ref => <Citation key={ref.citation_id} reference={ref} />)}</section>}
           {!view.rfp && draft.sections.filter(section => section.internal && section.blocks?.length).map(section => <details className="report-notice report-review" key={section.id}><summary><strong>{section.title} ({section.blocks.length})</strong> — kept out of the issued report</summary><ul>{section.blocks.map(block => <li key={block.id}><strong>{block.label}:</strong> {block.text}</li>)}</ul></details>)}
-          {draft.sections.filter(section => !section.internal).map(section => <section className="report-section" key={section.id}><h3>{section.title}</h3>{(section.blocks ?? []).map(block => <article className="report-block" key={block.id}>
+          {draft.sections.filter(section => !section.internal).map(section => <section className="report-section" key={section.id}>
+            {view.rfp && editable.has(section.id) ? <div className="report-section-head"><h3 id={`rs-${section.id}`}>{section.title}</h3><button type="button" className="btn btn-small" aria-expanded={openEdits.has(section.id)} aria-controls={`rfp-edit-${section.id}`} aria-label={`${openEdits.has(section.id) ? "Done editing" : "Edit"} ${section.title}`} disabled={!!editor} onClick={() => toggleEdit(section.id)}>{openEdits.has(section.id) ? "Done" : "Edit"}</button></div> : <h3>{section.title}</h3>}
+            {view.rfp && openEdits.has(section.id) && <div id={`rfp-edit-${section.id}`}><RfpSectionEditor controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} /></div>}
+            {(section.blocks ?? []).map(block => <article className="report-block" key={block.id}>
             <div className="report-block-heading">{block.label && <h4>{block.label}</h4>}{block.provisional && !view.rfp && <span>Provisional</span>}{block.edited && <span>Protected wording</span>}</div>
             {block.conflict && <p className="report-conflict">{block.source_missing ? "The source is no longer present. Your wording has been kept for review." : "The source changed. Review your protected wording against its updated source."}</p>}
             {editor?.target === block.id ? <form onSubmit={e => { e.preventDefault(); void save(); }}><label htmlFor="report-wording">Report wording</label><textarea id="report-wording" maxLength={20000} rows={5} value={editor.text} onChange={e => setEditor({ ...editor, text: e.target.value })} disabled={busy} autoFocus /><div className="report-actions"><button className="btn" disabled={busy || editConflict}>Save wording</button><button type="button" className="btn btn-small" disabled={busy} onClick={() => { setEditor(null); setLatest(null); setEditConflict(false); setError(""); }}>Cancel edit</button></div></form> : <><p className="report-wording">{block.text}</p><button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button></>}
@@ -182,6 +215,7 @@ export function Reports({ projectId, tick, onSignedOut }: { projectId: string; t
             <BlockReferences block={block} references={draft.references} />
 			{block.edited && !block.source_missing && block.generated_text === undefined && <p>Refresh this draft before restoring its saved source wording.</p>}{block.edited && (block.source_missing || block.generated_text !== undefined) && <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => setResetTarget({ id: block.id, missing: block.source_missing, version: draft.version })}>{block.source_missing ? "Remove orphaned wording" : "Restore saved source wording"}</button>}
           </article>)}</section>)}
+          {view.rfp && <RfpOtherChecks controls={view.rfp} onJump={jump} />}
           </div>
         </div>}
       </>}
