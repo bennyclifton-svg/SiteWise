@@ -352,7 +352,9 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 
 	groups := map[string]*systemGroupJSON{}
 	var order []string
-	for _, top := range cat.TopSystems() {
+	// Groups read in building order so Profile, Works and Implications list
+	// site and ground first and finishes after the structure.
+	for _, top := range cat.BuildingOrderSystems() {
 		groups[top.ID] = &systemGroupJSON{ID: top.ID, Label: top.Label}
 		order = append(order, top.ID)
 	}

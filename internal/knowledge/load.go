@@ -468,6 +468,19 @@ func (c *Catalog) SystemWithin(system, ancestor string) bool {
 	return c.covers(system, ancestor)
 }
 
+// BuildingOrderSystems returns the same systems as TopSystems in
+// systems.yaml order, which is the order a building is built in. It is for
+// display only; Jev options and fingerprints keep TopSystems' id order.
+func (c *Catalog) BuildingOrderSystems() []System {
+	var out []System
+	for _, id := range c.systemIDs {
+		if sys := c.systems[id]; sys.Parent == "" {
+			out = append(out, sys)
+		}
+	}
+	return out
+}
+
 // TopSystems returns systems that have no parent, ordered by id.
 func (c *Catalog) TopSystems() []System {
 	var out []System

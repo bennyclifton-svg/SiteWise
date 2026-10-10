@@ -22,7 +22,7 @@ import { Packages } from "./Packages";
 import { Works } from "./Works";
 import { Delivery } from "./Delivery";
 import { Costs, CostSummary } from "./Costs";
-import { Proposals } from "./Proposals";
+import { Implications } from "./Implications";
 import { ocrStage } from "./OCRStatus";
 
 const STALE_MS = 8000;
@@ -581,7 +581,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
       <nav className="project-views" aria-label="Project views">
         <button type="button" className="btn btn-small" aria-pressed={!showReports && !showPackages && !showWorks && !showDelivery && !showProposals && !showCosts && profileView === "all"} onClick={() => { setProfileView("all"); setShowCosts(false); setShowReports(false); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Profile</button>
         <button type="button" className="btn btn-small" aria-pressed={showWorks} onClick={() => { setShowCosts(false); setWorksOpened(true); setShowWorks(true); setShowReports(false); setShowPackages(false); setShowDelivery(false); setShowProposals(false); }}>Works</button>
-        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setShowCosts(false); setProposalsOpened(true); setShowProposals(true); setShowWorks(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); }}>Proposals</button>
+        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setShowCosts(false); setProposalsOpened(true); setShowProposals(true); setShowWorks(false); setShowReports(false); setShowPackages(false); setShowDelivery(false); }}>Implications</button>
         <button type="button" className="btn btn-small" aria-pressed={showPackages} onClick={() => { setShowCosts(false); setPackagesOpened(true); setShowPackages(true); setShowWorks(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Packages</button>
         <button type="button" className="btn btn-small" aria-pressed={showDelivery} onClick={() => { setShowCosts(false); setShowProposals(false); setDeliveryOpened(true); setShowDelivery(true); setShowWorks(false); setShowReports(false); setShowPackages(false); }}>Delivery</button>
         <button type="button" className="btn btn-small" aria-pressed={showReports} onClick={() => { setShowCosts(false); setReportsOpened(true); setShowReports(true); setShowPackages(false); setShowWorks(false); setShowDelivery(false); setShowProposals(false); }}>Procurement</button>
@@ -612,7 +612,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
         />
       </aside>
       {worksOpened && <div className="project-reports" hidden={!showWorks}><Works projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Proposals projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Implications projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Reports projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}

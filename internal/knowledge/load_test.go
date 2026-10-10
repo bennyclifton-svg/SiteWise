@@ -159,3 +159,20 @@ func mustWrite(t *testing.T, path, body string) {
 		t.Fatal(err)
 	}
 }
+
+func TestBuildingOrderSystemsFollowSystemsFile(t *testing.T) {
+	cat := loadRepo(t)
+	var got []string
+	for _, s := range cat.BuildingOrderSystems() {
+		got = append(got, s.ID)
+	}
+	want := []string{"site", "substructure", "structure", "envelope"}
+	if len(got) != len(cat.TopSystems()) || len(got) < len(want) {
+		t.Fatalf("got %v, want every top system", got)
+	}
+	for i, id := range want {
+		if got[i] != id {
+			t.Fatalf("got %v, want building order starting %v", got, want)
+		}
+	}
+}
