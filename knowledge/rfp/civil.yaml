@@ -39,6 +39,10 @@ role:
     text: "After novation you are engaged by the head contractor. Price the stages before and after novation separately."
     when: [{novation: ["yes"]}]
     provenance: [{kind: evidence, ref: "civil#121"}]
+  - key: novation_option
+    text: "Under design and construct the client may elect to novate this appointment to the head contractor after the tender, or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether to take it up."
+    when: [{novation: ["option"]}]
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", why: "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
 
 stage_intro: "Each design stage is issued as one draft and one final. Design stages are priced by element so firms can be compared line by line."
 element_intro: "Elements priced in the design stages:"
@@ -91,7 +95,7 @@ stages:
     design_responsibility: "The contractor holds the design after novation."
     fee_basis: fixed
     delivery_stage: construction_documentation
-    when: [{novation: ["yes"]}]
+    when: [{novation: ["option", "yes"]}]
     shown_when: Novation
     provenance: [{kind: evidence, ref: "civil#121"}]
   - key: construction_phase

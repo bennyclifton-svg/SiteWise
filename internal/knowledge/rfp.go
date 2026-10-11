@@ -943,7 +943,9 @@ func checkWhen(where string, w RFPWhen, s RFPSkeleton) error {
 					ok = optionKey(s.WorkTypes, v)
 				case "scale":
 					ok = v == "simple" || v == "complex"
-				case "novation", "regulated_design":
+				case "novation":
+					ok = v == "yes" || v == "option" || v == "no"
+				case "regulated_design":
 					ok = v == "yes" || v == "no"
 				default:
 					ok = v != ""

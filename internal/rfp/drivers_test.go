@@ -16,7 +16,7 @@ func arthurSnapshot() reports.Snapshot {
 	return reports.Snapshot{
 		ProjectName:  "Arthur St",
 		ProjectBasis: json.RawMessage(`{"project":{"name":"Arthur St"},"site":{"address":"145-151 Arthur St, Homebush West NSW","lot":"Lot 1 DP 1"}}`),
-		Package:      procurement.Package{ID: "p1", Kind: "services", Title: "Architect", Novation: false},
+		Package:      procurement.Package{ID: "p1", Kind: "services", Title: "Architect", Novation: "no"},
 		Parts: []reports.PartInfo{
 			{ID: "w", Label: "Whole project", Kind: "whole"},
 			{ID: "wh", Label: "Warehouse", Kind: "building", NCCClass: "7b"},

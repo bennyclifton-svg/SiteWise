@@ -17,7 +17,7 @@ type Package struct {
 	WorksScope        string          `json:"works_scope,omitempty"`
 	DisciplineID      string          `json:"discipline_id,omitempty"`
 	Title             string          `json:"title"`
-	Novation          bool            `json:"novation"`
+	Novation          string          `json:"novation"`
 	LifecycleStatus   string          `json:"lifecycle_status"`
 	Origin            string          `json:"origin"`
 	ReviewStatus      string          `json:"review_status"`
@@ -42,6 +42,36 @@ type Stage struct {
 	Version       int64      `json:"version"`
 }
 
+// Novation is "no", "option" (the consultant prices the delivery phase and
+// the client may elect to novate later) or "yes" (the client has elected).
+// Design & Construct proposes an option, never a novation.
+const (
+	NovationNo     = "no"
+	NovationOption = "option"
+	NovationYes    = "yes"
+)
+
+// NovationState reads an unset novation as no.
+func (p Package) NovationState() string {
+	if p.Novation == "" {
+		return NovationNo
+	}
+	return p.Novation
+}
+
+// Novated reports whether the package has stages before and after a
+// possible novation: an elected one, or an option to price.
+func (p Package) Novated() bool { return p.NovationState() != NovationNo }
+
+// DefaultNovation is the state a new consultant package starts in: an option
+// when the route puts design with the builder, otherwise no.
+func DefaultNovation(route string) string {
+	if BuilderDesigns(route) {
+		return NovationOption
+	}
+	return NovationNo
+}
+
 func ValidatePackage(p Package) error {
 	if p.Kind != "services" && p.Kind != "works" && p.Kind != "supply" {
 		return fmt.Errorf("unknown package kind")
@@ -53,7 +83,12 @@ func ValidatePackage(p Package) error {
 	} else if p.WorksScope != "" {
 		return fmt.Errorf("works scope belongs only to works packages")
 	}
-	if p.Novation && p.Kind != "services" {
+	switch p.Novation {
+	case "", "no", "option", "yes":
+	default:
+		return fmt.Errorf("novation must be no, option or yes")
+	}
+	if p.Novated() && p.Kind != "services" {
 		return fmt.Errorf("only services packages can be novated")
 	}
 	if !bounded(p.Title, 200) {
@@ -83,7 +118,7 @@ func ValidateStage(s Stage, p Package, cat *knowledge.Catalog) error {
 	if s.NovationPhase != "none" && s.NovationPhase != "pre" && s.NovationPhase != "post" {
 		return fmt.Errorf("unknown novation phase")
 	}
-	if s.NovationPhase != "none" && (!p.Novation || p.Kind != "services") {
+	if s.NovationPhase != "none" && (!p.Novated() || p.Kind != "services") {
 		return fmt.Errorf("pre/post stages require a novated services package")
 	}
 	return nil
@@ -101,7 +136,7 @@ func DefaultStages(p Package, cat *knowledge.Catalog) []Stage {
 			continue
 		}
 		phase := "none"
-		if p.Novation {
+		if p.Novated() {
 			phase = s.Novation
 		}
 		out = append(out, Stage{StageID: s.ID, Label: s.Label, Ordinal: len(out), NovationPhase: phase, Origin: "calculation", Version: 1})

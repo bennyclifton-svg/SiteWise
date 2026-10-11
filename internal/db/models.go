@@ -229,7 +229,7 @@ type Package struct {
 	WorksScope        *string
 	DisciplineID      *string
 	Title             string
-	Novation          bool
+	Novation          string
 	LifecycleStatus   string
 	Origin            string
 	ReviewStatus      string

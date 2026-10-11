@@ -19,7 +19,7 @@ type PackageSuggestion struct {
 	BuildingClass    string            `json:"building_class"`
 	WorkTypes        []string          `json:"work_types"`
 	MatchedFields    map[string]string `json:"matched_fields,omitempty"`
-	Novation         bool              `json:"novation"`
+	Novation         string            `json:"novation"`
 }
 
 // SuggestionInputs are the applied profile facts packages are proposed from.

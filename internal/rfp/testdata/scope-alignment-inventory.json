@@ -2614,6 +2614,24 @@
         ]
       },
       {
+        "key": "novation_option",
+        "text": "Under design and construct the client may elect to novate this appointment to the head contractor after the tender, or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether to take it up.",
+        "when": [
+          {
+            "novation": [
+              "option"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions",
+            "why": "Owner 2026-10-11: D&C does not mean novated; novation is elected later."
+          }
+        ]
+      },
+      {
         "key": "dnc_handover",
         "text": "After the design and construct tender the contractor's own designers complete the design. Your appointment ends at the handover described for the D&C tender stage.",
         "when": [
@@ -3053,6 +3071,7 @@
         "when": [
           {
             "novation": [
+              "option",
               "yes"
             ]
           }
@@ -5058,6 +5077,24 @@
             "ref": "civil#121"
           }
         ]
+      },
+      {
+        "key": "novation_option",
+        "text": "Under design and construct the client may elect to novate this appointment to the head contractor after the tender, or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether to take it up.",
+        "when": [
+          {
+            "novation": [
+              "option"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions",
+            "why": "Owner 2026-10-11: D&C does not mean novated; novation is elected later."
+          }
+        ]
       }
     ],
     "stage_intro": "Each design stage is issued as one draft and one final. Design stages are priced by element so firms can be compared line by line.",
@@ -5199,6 +5236,7 @@
         "when": [
           {
             "novation": [
+              "option",
               "yes"
             ]
           }
@@ -19565,6 +19603,24 @@
             "ref": "architecture golden draft novation wording"
           }
         ]
+      },
+      {
+        "key": "novation_option",
+        "text": "Under design and construct the client may elect to novate this appointment to the head contractor after the tender, or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether to take it up.",
+        "when": [
+          {
+            "novation": [
+              "option"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions",
+            "why": "Owner 2026-10-11: D&C does not mean novated; novation is elected later."
+          }
+        ]
       }
     ],
     "stage_intro": "Price each stage that applies as a lump sum. Each stage ends at client sign-off.",
@@ -19893,6 +19949,7 @@
         "when": [
           {
             "novation": [
+              "option",
               "yes"
             ]
           }

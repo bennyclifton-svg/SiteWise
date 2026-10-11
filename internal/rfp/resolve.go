@@ -1355,8 +1355,15 @@ func (r *resolver) slot(name string) (string, bool) {
 			return "Not yet decided", true
 		}
 		v := valueLabel(r.sk, "procurement", f.Values[0])
-		if n := r.fact("novation"); name == "procurement" && n.State == Known && n.Values[0] == "yes" {
-			v += "; this appointment is novated to the contractor"
+		// Only an elected novation is stated as fact; under D&C it is an
+		// option the client takes up later, or not.
+		if n := r.fact("novation"); name == "procurement" && n.State == Known {
+			switch n.Values[0] {
+			case "yes":
+				v += "; this appointment is novated to the contractor"
+			case "option":
+				v += "; the client may elect to novate this appointment to the contractor after the tender"
+			}
 		}
 		return v, true
 	case "information":

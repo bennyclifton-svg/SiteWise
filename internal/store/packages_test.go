@@ -51,7 +51,7 @@ func TestPackageComplexitySuggestionsUseWholeSiteAppliedFacts(t *testing.T) {
 func TestPackageCreateStagesAndIsolation(t *testing.T) {
 	ctx := context.Background()
 	s, _, _ := workStore(t)
-	p := procurement.Package{Kind: "services", Title: "Structural engineering", Novation: true, LifecycleStatus: "planned"}
+	p := procurement.Package{Kind: "services", Title: "Structural engineering", Novation: "option", LifecycleStatus: "planned"}
 	if _, err := s.CreatePackage(ctx, orgA, projectA, userB, p); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("foreign actor: %v", err)
 	}
@@ -102,7 +102,7 @@ func TestPackageCreateStagesAndIsolation(t *testing.T) {
 	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, bad); !errors.Is(err, store.ErrInvalidPackage) {
 		t.Fatalf("novation on works %v", err)
 	}
-	p.Novation = false
+	p.Novation = "no"
 	plain, err := s.CreatePackage(ctx, orgA, projectA, userA, p)
 	if err != nil {
 		t.Fatal(err)

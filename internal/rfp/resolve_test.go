@@ -240,3 +240,31 @@ func TestDisciplineTermDefaultsAndPerRFPOverride(t *testing.T) {
 		t.Fatalf("a smaller engagement sets its own cover: %+v", f)
 	}
 }
+
+// Under D&C novation is an option the client elects later: the RFP prices
+// the delivery phase separately and never states that a novation happened.
+func TestNovationOptionPricesDeliveryWithoutStatingNovation(t *testing.T) {
+	d := discipline(t, "architecture")
+	render := func(novation string) string {
+		r := Resolve(d, skeleton(t), facts(t, "class=5", "procurement=design_construct", "pathway=da", "novation="+novation), nil)
+		secs, err := Sections(r, consultantTemplate(t))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return Markdown(secs)
+	}
+	option := render("option")
+	if strings.Contains(option, "this appointment is novated") || strings.Contains(option, "After novation you are engaged") {
+		t.Fatal("an option was stated as a novation")
+	}
+	if !strings.Contains(option, "may elect to novate") || !strings.Contains(option, "separate option") {
+		t.Fatal("option wording missing")
+	}
+	if strings.Contains(option, "contractor's own designers complete the design") {
+		t.Fatal("an option was read as no novation")
+	}
+	yes := render("yes")
+	if !strings.Contains(yes, "After novation you are engaged") || strings.Contains(yes, "separate option") {
+		t.Fatal("an elected novation lost its wording")
+	}
+}

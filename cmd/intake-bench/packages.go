@@ -24,7 +24,11 @@ func (a *apiClient) packages(ctx context.Context, n int) error {
 		}
 	}
 	for i := 0; i < n; i++ {
-		body, _ := json.Marshal(map[string]any{"kind": "services", "title": fmt.Sprintf("Consultant %d", i), "novation": i%2 == 0})
+		novation := "no"
+		if i%2 == 0 {
+			novation = "option"
+		}
+		body, _ := json.Marshal(map[string]any{"kind": "services", "title": fmt.Sprintf("Consultant %d", i), "novation": novation})
 		raw, err := a.timed(ctx, "packages_write", http.MethodPost, base, body, http.StatusCreated)
 		if err != nil {
 			return err

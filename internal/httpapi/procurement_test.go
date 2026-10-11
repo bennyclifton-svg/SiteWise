@@ -148,3 +148,30 @@ func TestProcurementDismissSuggestedRow(t *testing.T) {
 		t.Fatalf("dismissal: %v", got)
 	}
 }
+
+func TestProcurementRowNovationFollowsRoute(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	rows := func(project string) procurement.Package {
+		var p procurement.Package
+		m.call(t, http.MethodPost, "/api/projects/"+project+"/procurement/rows", []byte(`{"discipline_id":"consultant.architect"}`), http.StatusCreated, &p)
+		return p
+	}
+	dnc := m.createProject(t, "D&C")
+	p := rows(dnc)
+	if p.Novation != "option" {
+		t.Fatalf("D&C consultant: %q", p.Novation)
+	}
+	path := "/api/projects/" + dnc + "/packages/" + p.ID
+	m.call(t, http.MethodPatch, path, []byte(`{"version":1,"novation":"maybe"}`), http.StatusUnprocessableEntity, nil)
+	m.call(t, http.MethodPatch, path, []byte(`{"version":1,"novation":true}`), http.StatusBadRequest, nil)
+	m.call(t, http.MethodPatch, path, []byte(`{"version":1,"novation":"yes"}`), http.StatusOK, &p)
+	if p.Novation != "yes" {
+		t.Fatalf("elected novation: %q", p.Novation)
+	}
+	traditional := m.createProject(t, "Traditional")
+	put(t, m, traditional, "hdr.cond.procurement_route", map[string]any{"value": "traditional"}, http.StatusOK, nil)
+	if p := rows(traditional); p.Novation != "no" {
+		t.Fatalf("traditional consultant: %q", p.Novation)
+	}
+}

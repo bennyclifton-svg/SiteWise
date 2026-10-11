@@ -88,7 +88,7 @@ func postPackage(w http.ResponseWriter, r *http.Request, deps Deps) {
 		WorksScope      string `json:"works_scope"`
 		DisciplineID    string `json:"discipline_id"`
 		Title           string `json:"title"`
-		Novation        bool   `json:"novation"`
+		Novation        string `json:"novation"`
 		LifecycleStatus string `json:"lifecycle_status"`
 		Stages          []struct {
 			StageID       string `json:"stage_id"`

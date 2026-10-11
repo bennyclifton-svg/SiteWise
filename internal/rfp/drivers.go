@@ -135,11 +135,7 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 		d.Facts["budget"] = Fact{Values: []string{s.ConstructionBudget}, State: Known, Source: "cost_plan", Detail: s.BudgetBasis}
 	}
 	if s.Package.ID != "" {
-		novation := "no"
-		if s.Package.Novation {
-			novation = "yes"
-		}
-		d.Facts["novation"] = known("package", novation)
+		d.Facts["novation"] = known("package", s.Package.NovationState())
 	}
 	d.Parts = parts(s, byPart, whole)
 	d.Consultants = consultants(s)

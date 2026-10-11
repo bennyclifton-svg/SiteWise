@@ -110,7 +110,7 @@ func (s *Store) PatchPackage(ctx context.Context, org, project, id, actor string
 		return p, fmt.Errorf("%w: retire or reassign package scope before changing this package", ErrInvalidPackage)
 	}
 	var raw []byte
-	err = tx.QueryRow(ctx, `UPDATE packages SET kind=$4,works_scope=NULLIF($5,''),discipline_id=NULLIF($6,''),title=$7,novation=$8,lifecycle_status=$9,version=version+1,origin='user',review_status='accepted_for_planning',verified_by=NULL,verified_at=NULL,verification_basis=NULL,provenance=provenance||jsonb_build_object('last_edited_by',$10::text),retired_at=CASE WHEN $11 THEN now() ELSE retired_at END WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid RETURNING to_jsonb(packages)`, org, project, id, p.Kind, p.WorksScope, p.DisciplineID, p.Title, p.Novation, p.LifecycleStatus, actor, retire).Scan(&raw)
+	err = tx.QueryRow(ctx, `UPDATE packages SET kind=$4,works_scope=NULLIF($5,''),discipline_id=NULLIF($6,''),title=$7,novation=$8,lifecycle_status=$9,version=version+1,origin='user',review_status='accepted_for_planning',verified_by=NULL,verified_at=NULL,verification_basis=NULL,provenance=provenance||jsonb_build_object('last_edited_by',$10::text),retired_at=CASE WHEN $11 THEN now() ELSE retired_at END WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid RETURNING to_jsonb(packages)`, org, project, id, p.Kind, p.WorksScope, p.DisciplineID, p.Title, p.NovationState(), p.LifecycleStatus, actor, retire).Scan(&raw)
 	if err != nil {
 		return p, err
 	}

@@ -10,7 +10,7 @@ type PackagePatch struct {
 	WorksScope      *string `json:"works_scope,omitempty"`
 	DisciplineID    *string `json:"discipline_id,omitempty"`
 	Title           *string `json:"title,omitempty"`
-	Novation        *bool   `json:"novation,omitempty"`
+	Novation        *string `json:"novation,omitempty"`
 	LifecycleStatus *string `json:"lifecycle_status,omitempty"`
 }
 

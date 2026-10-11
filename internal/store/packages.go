@@ -91,9 +91,10 @@ func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project str
 	}
 	o.Suggestions = procurement.SuggestedPackages(s.workCatalog(), procurement.SuggestionInputs{Classes: classes, WorkTypes: workTypes, Scope: scope,
 		Facts: complexity, Existing: append(append([]procurement.Package{}, items...), removed...), Dismissed: dismissed})
-	// Under D&C the consultants are proposed for novation to the builder.
+	// Under D&C a consultant is proposed with novation as an option the
+	// client elects later, never as a novation.
 	for i := range o.Suggestions {
-		o.Suggestions[i].Novation = o.Route.BuilderDesigns
+		o.Suggestions[i].Novation = procurement.DefaultNovation(route)
 	}
 	work, err := readWorkItems(ctx, tx, org, project)
 	if err != nil {
@@ -205,7 +206,7 @@ func (s *Store) CreatePackage(ctx context.Context, org, project, actor string, p
 	p.Origin, p.ReviewStatus, p.Meaning = "user", "accepted_for_planning", "stated"
 	p.SourceProposalKey, p.RetiredAt = "", nil
 	p.Provenance, _ = json.Marshal(map[string]string{"actor": actor})
-	_, err = tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,discipline_id,title,novation,lifecycle_status,origin,review_status,meaning,provenance) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),NULLIF($6,''),$7,$8,$9,'user','accepted_for_planning','stated',$10::jsonb)`, org, p.ID, project, p.Kind, p.WorksScope, p.DisciplineID, p.Title, p.Novation, p.LifecycleStatus, p.Provenance)
+	_, err = tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,discipline_id,title,novation,lifecycle_status,origin,review_status,meaning,provenance) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),NULLIF($6,''),$7,$8,$9,'user','accepted_for_planning','stated',$10::jsonb)`, org, p.ID, project, p.Kind, p.WorksScope, p.DisciplineID, p.Title, p.NovationState(), p.LifecycleStatus, p.Provenance)
 	if err != nil {
 		return p, err
 	}
@@ -259,7 +260,10 @@ func (s *Store) CreateDisciplinePackage(ctx context.Context, org, project, actor
 	if err != nil {
 		return p, err
 	}
-	p.Novation = p.Kind == "services" && procurement.BuilderDesigns(profile.PackageComplexityFacts(facts)["procurement_route"])
+	p.Novation = procurement.NovationNo
+	if p.Kind == "services" {
+		p.Novation = procurement.DefaultNovation(profile.PackageComplexityFacts(facts)["procurement_route"])
+	}
 	if err := procurement.ValidatePackage(p); err != nil {
 		return p, fmt.Errorf("%w: %v", ErrInvalidPackage, err)
 	}

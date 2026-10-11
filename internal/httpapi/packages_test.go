@@ -12,7 +12,7 @@ func TestPackagesCreateAndListAPI(t *testing.T) {
 	m := a.member(t, newUUID(t))
 	project := m.createProject(t, "Packages")
 	path := "/api/projects/" + project + "/packages"
-	body := []byte(`{"kind":"services","title":"Structural engineering","novation":true}`)
+	body := []byte(`{"kind":"services","title":"Structural engineering","novation":"option"}`)
 	var p procurement.Package
 	m.call(t, http.MethodPost, path, body, http.StatusCreated, &p)
 	if p.ID == "" || p.LifecycleStatus != "planned" || p.ReviewStatus != "accepted_for_planning" || len(p.Stages) != 4 {
@@ -29,7 +29,8 @@ func TestPackagesCreateAndListAPI(t *testing.T) {
 	foreign.call(t, http.MethodGet, path, nil, http.StatusNotFound, nil)
 	foreign.call(t, http.MethodPost, path, body, http.StatusNotFound, nil)
 	for _, bad := range []string{
-		`{"kind":"works","title":"Builder","works_scope":"head_contract","novation":true}`,
+		`{"kind":"works","title":"Builder","works_scope":"head_contract","novation":"yes"}`,
+		`{"kind":"services","title":"Design","novation":"maybe"}`,
 		`{"kind":"works","title":"Builder"}`,
 		`{"kind":"services","title":"Design","stages":[{"stage_id":"unknown","label":"Unknown"}]}`,
 		`{"kind":"services","title":"Design","stages":[{"stage_id":"concept_design","label":"Concept","novation_phase":"pre"}]}`,
@@ -54,7 +55,7 @@ func TestPackagesCreateAndListAPI(t *testing.T) {
 		t.Fatal(p)
 	}
 	m.call(t, http.MethodPatch, editPath, []byte(`{"version":1,"title":"Stale"}`), http.StatusConflict, nil)
-	m.call(t, http.MethodPatch, editPath, []byte(`{"version":2,"novation":false}`), http.StatusUnprocessableEntity, nil)
+	m.call(t, http.MethodPatch, editPath, []byte(`{"version":2,"novation":"no"}`), http.StatusUnprocessableEntity, nil)
 	stagePath := editPath + "/stages/" + p.Stages[0].ID
 	var stage procurement.Stage
 	m.call(t, http.MethodPatch, stagePath, []byte(`{"version":1,"label":"Renamed concept"}`), http.StatusOK, &stage)

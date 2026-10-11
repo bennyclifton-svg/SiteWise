@@ -9,7 +9,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await expect(page.getByRole("button", { name: "Procurement", exact: true })).toBeVisible();
   const project = new URL(page.url()).pathname.split("/").pop();
   // Keep a legacy unclassified package to exercise the generic report editor.
-  const seeded = await page.request.post(`/api/projects/${project}/packages`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { kind: "services", title: "Fire engineering", novation: true } });
+  const seeded = await page.request.post(`/api/projects/${project}/packages`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { kind: "services", title: "Fire engineering", novation: "option" } });
   expect(seeded.ok()).toBeTruthy();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByLabel("More for Fire engineering", { exact: true }).click();
@@ -20,7 +20,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await expect(page.locator(".report-block .report-wording")).toHaveText("Review fire strategy and identify required investigations.");
   const packages = await (await page.request.get(`/api/projects/${project}/packages`)).json();
   const pkg = packages.items[0];
-  expect(pkg.novation).toBe(true);
+  expect(pkg.novation).toBe("option");
   const profile = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   const work = await page.request.post(`/api/projects/${project}/works`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { part_id: profile.parts[0].id, system_id: "hydraulic.gas", action: "new", title: "Gas service" } });
   expect(work.ok()).toBeTruthy();
