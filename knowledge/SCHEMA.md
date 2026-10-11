@@ -615,17 +615,21 @@ stages:
 
 Clerk's consultant rosters, copied as data, never code.
 
-- **`baselines`** suggest consultants by building class (taxonomy ids) and work type.
+- **`baselines`** suggest consultants by work type. A baseline with no `building_classes` applies to any class, less `except_building_classes`; one with `building_classes` applies when any known class is listed. Every matching baseline adds its consultants, so a project with two classes gets the union.
+- **`scope_additions`** add a consultant when a listed system, or one below it, is in the scope of works (`scope.<system>` = `in`). List only systems that are in scope when the building needs them (lifts, sprinklers). A system every building has (a facade) belongs in `complexity_additions`, triggered by a reading of how complex it is.
 - **`complexity_additions`** add a consultant when a profile field has one of the listed values. A `field` keeps Clerk's name. The checker warns when it is neither a determinant nor a taxonomy condition, so the owner can map it.
 
-Suggestions are proposals, never appointments.
+Every consultant is a `consultant.*` label in `data/intake/disciplines.json`; the catalogue refuses to load otherwise. Suggestions are proposals, never appointments.
 
 ```yaml
-version: 1
+version: 2
 status: draft
 source: {clerk_file: data/taxonomy/consultant-rosters.json}
 baselines:
-  - {building_classes: [residential], work_types: [new, extend], consultants: [Architect, Structural]}
+  - {work_types: [refurb], consultants: [Architect, Certifier, Electrical, Hydraulic]}
+  - {building_classes: [commercial], work_types: [refurb], consultants: [BCA, Access]}
+scope_additions:
+  - {systems: [vertical-transport], consultants: [Vertical Transport]}
 complexity_additions:
   - {field: heritage_status, values: [state_heritage_register], consultants: [Heritage]}
 ```

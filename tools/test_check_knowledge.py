@@ -45,7 +45,7 @@ class TableValidationTests(unittest.TestCase):
                 'conditions': [{'key': 'planning', 'options': [{'id': 'da'}]}]}), encoding='utf-8')
             path = knowledge / 'works/package_defaults.yaml'
             def check(additions):
-                path.write_text(yaml.safe_dump({'version': 1, 'status': 'draft', 'baselines': [],
+                path.write_text(yaml.safe_dump({'version': 2, 'status': 'draft', 'baselines': [],
                     'source': {'seed': 'seed.md', 'anchor': '# Test'},
                     'complexity_additions': additions}), encoding='utf-8')
                 report = checker.Report()

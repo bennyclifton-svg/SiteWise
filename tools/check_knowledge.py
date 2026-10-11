@@ -707,15 +707,15 @@ def load_datasets(report: Report) -> dict:
     return out
 
 
-def load_works_doc(path: Path, key: str, report: Report):
+def load_works_doc(path: Path, key: str, report: Report, version: int = 1):
     rel = path.relative_to(ROOT).as_posix()
     try:
         doc = yaml.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as exc:
         report.error(rel, f"invalid YAML: {exc}")
         return rel, None
-    if not isinstance(doc, dict) or doc.get("version") != 1:
-        report.error(rel, "must be a mapping with version: 1")
+    if not isinstance(doc, dict) or doc.get("version") != version:
+        report.error(rel, f"must be a mapping with version: {version}")
         return rel, None
     if key and not isinstance(doc.get(key) or [], list):
         report.error(rel, f"{key} must be a list")
@@ -1068,10 +1068,10 @@ BENCHMARK_ID = re.compile(r"^bm\.[a-z0-9-]+$")
 DECIMAL = re.compile(r"^-?\d+(\.\d+)?$")
 
 
-def load_catalogue(path: Path, key: str, report: Report):
+def load_catalogue(path: Path, key: str, report: Report, version: int = 1):
     if not path.is_file():
         return None, None
-    rel, doc = load_works_doc(path, key, report)
+    rel, doc = load_works_doc(path, key, report, version)
     return rel, doc
 
 
@@ -1109,7 +1109,7 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
                     report.error(where, f"duplicate stage id {sub['id']}")
                 seen.add(sub["id"])
 
-    rel, doc = load_catalogue(KNOWLEDGE / WORKS_DIR / "package_defaults.yaml", "baselines", report)
+    rel, doc = load_catalogue(KNOWLEDGE / WORKS_DIR / "package_defaults.yaml", "baselines", report, version=2)
     if doc is not None:
         if doc.get("status") not in STATUSES:
             report.error(rel, "package defaults need a status")
@@ -1119,12 +1119,16 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             if not isinstance(b, dict) or not b.get("consultants"):
                 report.error(where, "baseline needs consultants")
                 continue
-            for c in b.get("building_classes") or []:
+            for c in (b.get("building_classes") or []) + (b.get("except_building_classes") or []):
                 if classes and c not in classes:
                     report.error(where, f"unknown building class {c}")
             for w in b.get("work_types") or []:
                 if work_types and w not in work_types:
                     report.error(where, f"unknown work type {w}")
+        for i, a in enumerate(doc.get("scope_additions") or []):
+            where = f"{rel} [scope_additions {i}]"
+            if not isinstance(a, dict) or not isinstance(a.get("systems"), list) or not a["systems"]                     or any(not isinstance(v, str) or not v.strip() for v in a["systems"]) or not a.get("consultants"):
+                report.error(where, "scope addition needs systems and consultants")
         for i, a in enumerate(doc.get("complexity_additions") or []):
             where = f"{rel} [complexity_additions {i}]"
             if not isinstance(a, dict) or not isinstance(a.get("field"), str) or not a["field"].strip() \

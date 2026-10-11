@@ -58,15 +58,21 @@ func (a *apiClient) packages(ctx context.Context, n int) error {
 		if err := json.Unmarshal(raw, &overview); err != nil {
 			return err
 		}
-		if len(overview.Suggestions) != 12 {
-			return fmt.Errorf("package benchmark expected twelve baseline/complexity suggestions, got %d", len(overview.Suggestions))
+		// Work-type, class, scope and complexity suggestions for the seeded
+		// industrial new build (docs/plans/2026-10-11-procurement-default-disciplines.md).
+		if len(overview.Suggestions) != 17 {
+			return fmt.Errorf("package benchmark expected seventeen suggestions, got %d", len(overview.Suggestions))
 		}
 		matched := 0
 		for _, suggestion := range overview.Suggestions {
 			if !suggestion.Draft || suggestion.ReviewStatus != "proposed" {
 				return fmt.Errorf("package benchmark lost provisional status")
 			}
-			matched += len(suggestion.MatchedFields)
+			for field := range suggestion.MatchedFields {
+				if field != "scope" {
+					matched++
+				}
+			}
 		}
 		if matched != 4 {
 			return fmt.Errorf("package benchmark lost complexity reasons: %d", matched)

@@ -149,15 +149,26 @@ func TestPackageSuggestionsUseEligibleProfileRows(t *testing.T) {
 		}
 	}
 	_, suggestions, err := s.ReadPackageOverview(ctx, orgA, projectA)
-	if err != nil || len(suggestions) != 9 {
+	if err != nil || len(suggestions) != 14 {
 		t.Fatalf("baseline %+v %v", suggestions, err)
+	}
+	for _, sug := range suggestions {
+		if sug.Title == "Services Engineer" {
+			t.Fatal("services suggested as one engineer")
+		}
 	}
 	pool := rawPool(t)
 	if _, err := pool.Exec(ctx, `UPDATE profile_rows SET value_state='unknown' WHERE org_id=$1::uuid AND project_id=$2::uuid AND key='hdr.work_type'`, orgA, projectA); err != nil {
 		t.Fatal(err)
 	}
+	// Without an applied work type only the scope still suggests consultants.
 	_, suggestions, err = s.ReadPackageOverview(ctx, orgA, projectA)
-	if err != nil || len(suggestions) != 0 {
-		t.Fatalf("unknown value used: %+v %v", suggestions, err)
+	if err != nil || len(suggestions) == 0 {
+		t.Fatalf("scope additions lost: %+v %v", suggestions, err)
+	}
+	for _, sug := range suggestions {
+		if sug.MatchedFields["scope"] == "" || len(sug.WorkTypes) != 0 {
+			t.Fatalf("unknown value used: %+v", sug)
+		}
 	}
 }

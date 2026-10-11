@@ -68,12 +68,18 @@ func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project str
 	if err != nil {
 		return o, err
 	}
-	class, workTypes := profile.PackageBaselineFacts(facts)
+	classes, workTypes, scope := profile.PackageBaselineFacts(s.workCatalog(), facts)
 	complexity := profile.PackageComplexityFacts(facts)
 	route := complexity["procurement_route"]
 	o.Route = RouteState{Value: route, BuilderDesigns: procurement.BuilderDesigns(route), Confirm: procurement.RouteNeedsConfirm(route)}
 	o.Items = items
-	o.Suggestions = procurement.SuggestedPackages(s.workCatalog(), class, workTypes, complexity, items)
+	// A consultant the PM removed stays removed, so retired titles count too.
+	removed, err := readRetiredServiceTitles(ctx, tx, org, project)
+	if err != nil {
+		return o, err
+	}
+	o.Suggestions = procurement.SuggestedPackages(s.workCatalog(), procurement.SuggestionInputs{Classes: classes, WorkTypes: workTypes, Scope: scope,
+		Facts: complexity, Existing: append(append([]procurement.Package{}, items...), removed...)})
 	// Under D&C the consultants are proposed for novation to the builder.
 	for i := range o.Suggestions {
 		o.Suggestions[i].Novation = o.Route.BuilderDesigns
@@ -96,7 +102,7 @@ func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project str
 
 // readPackageFacts reads the profile rows packages are proposed from.
 func readPackageFacts(ctx context.Context, tx pgx.Tx, org, project string) ([]profile.Row, error) {
-	rows, err := tx.Query(ctx, `SELECT r.key,COALESCE(r.value,''),r.band,r.origin,r.meaning,r.review_status,r.value_state FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND (r.key='hdr.work_type' OR (p.kind='whole' AND (r.key='hdr.building_class' OR r.key LIKE 'det.%' OR r.key LIKE 'hdr.cond.%')))`, org, project)
+	rows, err := tx.Query(ctx, `SELECT r.key,COALESCE(r.value,''),r.band,r.origin,r.meaning,r.review_status,r.value_state FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND (r.key='hdr.work_type' OR r.key='hdr.building_class' OR (p.kind='whole' AND (r.key LIKE 'det.%' OR r.key LIKE 'hdr.cond.%' OR r.key LIKE 'scope.%')))`, org, project)
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +116,25 @@ func readPackageFacts(ctx context.Context, tx pgx.Tx, org, project string) ([]pr
 		facts = append(facts, row)
 	}
 	return facts, rows.Err()
+}
+
+// readRetiredServiceTitles lists removed consultant packages as packages
+// carrying only kind and title, enough to keep them out of the suggestions.
+func readRetiredServiceTitles(ctx context.Context, q rowQuerier, org, project string) ([]procurement.Package, error) {
+	rows, err := q.Query(ctx, `SELECT DISTINCT title FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND kind='services' AND retired_at IS NOT NULL`, org, project)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := []procurement.Package{}
+	for rows.Next() {
+		p := procurement.Package{Kind: "services"}
+		if err := rows.Scan(&p.Title); err != nil {
+			return nil, err
+		}
+		out = append(out, p)
+	}
+	return out, rows.Err()
 }
 
 func readPackages(ctx context.Context, q rowQuerier, org, project string) ([]procurement.Package, error) {
