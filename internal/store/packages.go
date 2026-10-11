@@ -73,13 +73,24 @@ func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project str
 	route := complexity["procurement_route"]
 	o.Route = RouteState{Value: route, BuilderDesigns: procurement.BuilderDesigns(route), Confirm: procurement.RouteNeedsConfirm(route)}
 	o.Items = items
-	// A consultant the PM removed stays removed, so retired titles count too.
+	// A consultant the PM removed stays removed, so retired titles and
+	// dismissed suggestions count too.
 	removed, err := readRetiredServiceTitles(ctx, tx, org, project)
 	if err != nil {
 		return o, err
 	}
+	decisions, err := readProposalDecisions(ctx, tx, org, project)
+	if err != nil {
+		return o, err
+	}
+	dismissed := map[string]bool{}
+	for key, d := range decisions {
+		if d.Decision == "dismissed" {
+			dismissed[key] = true
+		}
+	}
 	o.Suggestions = procurement.SuggestedPackages(s.workCatalog(), procurement.SuggestionInputs{Classes: classes, WorkTypes: workTypes, Scope: scope,
-		Facts: complexity, Existing: append(append([]procurement.Package{}, items...), removed...)})
+		Facts: complexity, Existing: append(append([]procurement.Package{}, items...), removed...), Dismissed: dismissed})
 	// Under D&C the consultants are proposed for novation to the builder.
 	for i := range o.Suggestions {
 		o.Suggestions[i].Novation = o.Route.BuilderDesigns

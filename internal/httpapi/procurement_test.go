@@ -118,3 +118,33 @@ func TestProcurementRowsAndCreate(t *testing.T) {
 		t.Fatal("procurement rows called Jev")
 	}
 }
+
+func TestProcurementDismissSuggestedRow(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Dismiss")
+	put(t, m, project, "hdr.work_type", map[string]any{"value": "refurb"}, http.StatusOK, nil)
+	dismiss := "/api/projects/" + project + "/procurement/dismiss"
+	suggested := func() map[string]bool {
+		var o struct {
+			Suggestions []procurement.PackageSuggestion `json:"suggestions"`
+		}
+		m.call(t, http.MethodGet, "/api/projects/"+project+"/packages", nil, http.StatusOK, &o)
+		out := map[string]bool{}
+		for _, s := range o.Suggestions {
+			out[s.Title] = true
+		}
+		return out
+	}
+	if !suggested()["Certifier"] || !suggested()["Electrical"] {
+		t.Fatalf("fit-out with no class lists no services: %v", suggested())
+	}
+	m.call(t, http.MethodPost, dismiss, []byte(`{"proposal_key":"default:services:Certifier"}`), http.StatusNoContent, nil)
+	m.call(t, http.MethodPost, dismiss, []byte(`{"proposal_key":"default:services:Certifier"}`), http.StatusNoContent, nil)
+	m.call(t, http.MethodPost, dismiss, []byte(`{"proposal_key":"default:services:Nobody"}`), http.StatusNotFound, nil)
+	m.call(t, http.MethodPost, dismiss, []byte(`{"proposal_key":"proposed:works:head_contract"}`), http.StatusBadRequest, nil)
+	m.call(t, http.MethodPost, dismiss, []byte(`{}`), http.StatusBadRequest, nil)
+	if got := suggested(); got["Certifier"] || !got["Architect"] {
+		t.Fatalf("dismissal: %v", got)
+	}
+}

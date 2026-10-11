@@ -172,3 +172,48 @@ func TestPackageSuggestionsUseEligibleProfileRows(t *testing.T) {
 		}
 	}
 }
+
+// The PM removes a suggested consultant; it stays removed for that project,
+// a second removal is harmless, and another org can neither see nor remove it.
+func TestDismissPackageSuggestion(t *testing.T) {
+	ctx := context.Background()
+	s, _, part := workStore(t)
+	for key, value := range map[string]string{"hdr.building_class": "industrial", "hdr.work_type": "new"} {
+		if _, err := s.SetUserValue(ctx, orgA, projectA, part, userA, key, store.UserWrite{Scope: map[string]string{"hdr.building_class": "site", "hdr.work_type": "project"}[key], Value: &value}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	const key = "default:services:Certifier"
+	has := func() bool {
+		_, suggestions, err := s.ReadPackageOverview(ctx, orgA, projectA)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, sug := range suggestions {
+			if sug.Key == key {
+				return true
+			}
+		}
+		return false
+	}
+	if !has() {
+		t.Fatal("certifier not suggested")
+	}
+	if err := s.DismissPackageSuggestion(ctx, orgB, projectA, userB, key); !errors.Is(err, store.ErrNotFound) {
+		t.Fatalf("wrong org: %v", err)
+	}
+	if !has() {
+		t.Fatal("wrong org removed a suggestion")
+	}
+	if err := s.DismissPackageSuggestion(ctx, orgA, projectA, userA, "default:services:Nobody"); !errors.Is(err, store.ErrNotFound) {
+		t.Fatalf("unknown key: %v", err)
+	}
+	for range 2 {
+		if err := s.DismissPackageSuggestion(ctx, orgA, projectA, userA, key); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if has() {
+		t.Fatal("dismissed suggestion came back")
+	}
+}

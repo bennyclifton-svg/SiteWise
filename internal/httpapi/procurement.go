@@ -3,6 +3,7 @@ package httpapi
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/jackc/pgx/v5/pgconn"
 
@@ -64,6 +65,39 @@ func postProcurementRow(w http.ResponseWriter, r *http.Request, deps Deps) {
 		deps.Broker.Wake(session.OrgID)
 	}
 	writeJSON(w, http.StatusCreated, p)
+}
+
+// postProcurementDismiss removes a suggested row. Only the key is trusted;
+// the store recomputes the suggestion and refuses one not offered now.
+func postProcurementDismiss(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	project := r.PathValue("id")
+	if !uuidPattern.MatchString(project) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		ProposalKey string `json:"proposal_key"`
+	}
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil || !strings.HasPrefix(body.ProposalKey, "default:services:") || len(body.ProposalKey) > 300 {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if err := deps.Store.DismissPackageSuggestion(r.Context(), session.OrgID, project, session.UserID, body.ProposalKey); err != nil {
+		packageError(w, err)
+		return
+	}
+	if deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // postProcurementCreate makes a row's RFP or RFT in one request; the report

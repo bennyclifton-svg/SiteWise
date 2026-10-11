@@ -134,3 +134,60 @@ func disciplineTaken(ctx context.Context, tx pgx.Tx, org, project, disciplineID 
 	err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND (discipline_id=$3 OR ($3='trade.main_works' AND works_scope='head_contract')))`, org, project, disciplineID).Scan(&taken)
 	return taken, err
 }
+
+// DismissPackageSuggestion records that the PM removed a suggested consultant
+// row, so it is not proposed again on this project. The suggestion is
+// recomputed under the project lock; a key that is not suggested now is
+// refused unless it was already dismissed, so a retry is harmless.
+func (s *Store) DismissPackageSuggestion(ctx context.Context, org, project, actor, key string) error {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return err
+	}
+	if err := packageActor(ctx, tx, org, actor); err != nil {
+		return err
+	}
+	var exists bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
+		return err
+	}
+	if !exists {
+		return ErrNotFound
+	}
+	decisions, err := readProposalDecisions(ctx, tx, org, project)
+	if err != nil {
+		return err
+	}
+	if d, ok := decisions[key]; ok && d.Decision == "dismissed" {
+		return nil
+	}
+	o, err := s.packageOverview(ctx, tx, org, project)
+	if err != nil {
+		return err
+	}
+	var sug *procurement.PackageSuggestion
+	for i := range o.Suggestions {
+		if o.Suggestions[i].Key == key {
+			sug = &o.Suggestions[i]
+		}
+	}
+	if sug == nil {
+		return ErrNotFound
+	}
+	snapshot, err := json.Marshal(sug)
+	if err != nil {
+		return err
+	}
+	// The knowledge version is the fingerprint: the lists it came from.
+	if _, err := tx.Exec(ctx, `INSERT INTO proposal_decisions(org_id,id,project_id,proposal_key,record_id,decision,inputs_fingerprint,actor,inputs_snapshot)
+ VALUES($1::uuid,$2::uuid,$3::uuid,$4,$4,'dismissed',$5,$6::uuid,$7::jsonb)
+ ON CONFLICT(org_id,project_id,proposal_key) DO UPDATE SET decision='dismissed',inputs_fingerprint=EXCLUDED.inputs_fingerprint,actor=EXCLUDED.actor,decided_at=now(),inputs_snapshot=EXCLUDED.inputs_snapshot,rationale='',version=proposal_decisions.version+1,undone_at=NULL,created_record_type=NULL,created_record_id=NULL,created_record_version=NULL`,
+		org, newID(), project, key, sug.KnowledgeVersion, actor, snapshot); err != nil {
+		return err
+	}
+	return s.finishPackagesWrite(ctx, tx, org, project)
+}

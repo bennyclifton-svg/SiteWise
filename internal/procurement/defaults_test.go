@@ -1,8 +1,8 @@
 package procurement
 
 import (
-	"slices"
 	"sitewise/internal/knowledge"
+	"slices"
 	"testing"
 	"time"
 )
