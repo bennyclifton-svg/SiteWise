@@ -190,7 +190,6 @@
 .procurement-table thead th { font-size: 12px; font-weight: 600; color: var(--ink-muted); background: var(--canvas); border-bottom-color: var(--line-strong); }
 .procurement-table .group-row th { padding-top: 12px; font-size: 11.5px; font-weight: 600; font-variant: all-small-caps; letter-spacing: .04em; color: var(--ink-muted); background: var(--canvas); }
 .discipline-cell { font-weight: 600; color: var(--ink); }
-.novation-mark { display: inline-flex; vertical-align: -3px; margin-right: 6px; color: var(--ink-muted); }
 .suggested-tag { margin-left: 8px; padding: 0 6px; border: 1px dashed var(--azure); border-radius: 999px; font-size: 11px; font-weight: 500; line-height: 16px; color: var(--azure); }
 .row-suggested th, .row-suggested td { color: var(--ink-muted); }
 .row-suggested .discipline-cell { background-image: linear-gradient(var(--azure) 50%, transparent 50%); background-size: 2px 6px; background-repeat: repeat-y; font-weight: 500; }

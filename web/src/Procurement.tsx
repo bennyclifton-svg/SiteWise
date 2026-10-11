@@ -7,7 +7,6 @@ import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, type Option } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
-import { IconShield } from "./icons";
 import { PackageScope } from "./PackageScope";
 import { packageApi, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
 import { procurementApi } from "./procurementApi";
@@ -26,7 +25,6 @@ interface Row {
   key: string;
   label: string;
   kind: string;
-  novation: boolean;
   pkg?: PackageRecord;
   proposalKey?: string;
   report?: SavedReport;
@@ -125,11 +123,11 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
   const label = (pkg: PackageRecord) => disciplines.find(d => d.id === pkg.discipline_id)?.label ?? pkg.title;
   const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
   const rows: Row[] = data ? [
-    ...live.map(pkg => ({ key: pkg.id, label: label(pkg), kind: pkg.kind, novation: pkg.novation, pkg, report: data.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp") })),
-    ...data.overview.suggestions.map(s => ({ key: s.key, label: s.title, kind: s.kind || "services", novation: s.novation, proposalKey: s.key })),
+    ...live.map(pkg => ({ key: pkg.id, label: label(pkg), kind: pkg.kind, pkg, report: data.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp") })),
+    ...data.overview.suggestions.map(s => ({ key: s.key, label: s.title, kind: s.kind || "services", proposalKey: s.key })),
     // A head-contract proposal that adds lines to an existing package is
     // handled in that package's scope, so only a new one shows as a row.
-    ...(data.overview.proposed_works && !data.overview.proposed_works.package_id ? [{ key: data.overview.proposed_works.key, label: "Main Works", kind: "works", novation: false, proposalKey: data.overview.proposed_works.key }] : []),
+    ...(data.overview.proposed_works && !data.overview.proposed_works.package_id ? [{ key: data.overview.proposed_works.key, label: "Main Works", kind: "works", proposalKey: data.overview.proposed_works.key }] : []),
   ] : [];
   const byTitle = (a: Row, b: Row) => a.label.localeCompare(b.label);
   const consultants = rows.filter(r => r.kind === "services").sort(byTitle);
@@ -149,7 +147,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     const doc = row.kind === "services" ? "RFP" : "RFT";
     return <tr key={row.key} className={row.pkg ? undefined : "row-suggested"}>
       <th scope="row" className="discipline-cell">
-        {row.novation && <span className="novation-mark" title="Novated consultant"><IconShield /><span className="sr-only">Novated: </span></span>}
         {row.label}{!row.pkg && <span className="suggested-tag">suggested</span>}
       </th>
       {[1, 2, 3].map(n => <td key={n} className="firm-cell"><input disabled placeholder="Add firm" aria-label={`Firm ${n} for ${row.label}`} title="Firms come later" /></td>)}
