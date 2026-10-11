@@ -97,6 +97,22 @@ Agent's proposals, for the owner to review (all knowledge stays
   Smoke alarms and portable extinguishers add nothing: the electrician or
   the builder covers them. Comms, security and structure scope add nothing
   yet; that would widen this plan.
+- **D10. Scope adds a consultant only for systems that exist when needed.**
+  A lift or sprinklers are only in scope when the building needs them, so
+  scope alone is the trigger. A facade, by contrast, is in scope on every
+  new build. What calls for a Facade engineer is how complex it is
+  (curtain wall, unitised, bespoke cladding), not whether there is one. So
+  a facade is triggered by a profile reading, as heritage and BAL already
+  are, and never by the scope tick. Owner raised this 2026-10-11 (Slice 5).
+- **D11. Design & Construct does not mean novated** (owner, 2026-10-11).
+  Under D&C the consultant prices the design-finalisation and
+  delivery-phase services as a separate option. The client elects to
+  novate, or not, later. So novation has three states: `no`, `option`
+  (the D&C default) and `yes` (the client has elected). Only `yes` lets
+  the RFP say "this appointment is novated". Today the code sets every
+  consultant to novated under D&C (`internal/store/packages.go:77-79,226`),
+  and the RFP prints that as settled (`internal/rfp/resolve.go:1344`)
+  (Slice 6).
 - **D9. Existing projects:** a live "Services Engineer" package is kept. The
   split suggestions appear beside it, and the PM removes whichever they
   don't want.
@@ -375,6 +391,81 @@ Rebuild `web/dist`.
 
 ---
 
+## Slice 5: complex facade brings a Facade engineer (lane A)
+
+### Task 7: a facade-complexity determinant, read in the existing fan-out
+
+**Files:**
+- Modify: `knowledge/determinants.yaml` (add `facade_type`: `choice`, with options `standard`, `complex`; `complex` describes curtain wall, unitised or bespoke cladding systems, or a facade needing its own design and testing)
+- Modify: `knowledge/works/package_defaults.yaml` (add a complexity addition: `facade_type: [complex]` → `Facade`)
+- Test: `internal/profile` question-compile test, and `internal/procurement/defaults_test.go`
+
+**Step 1: write the failing tests.**
+- The compiled profile questions include one `det.facade_type` question.
+  It joins the same Jev fan-out at reading; no new round trip.
+- Facts `{"facade_type": "complex"}` give a Facade suggestion.
+- `standard`, or no reading at all, gives no Facade suggestion.
+
+**Step 2:** Implement. Follow the question-authoring rules at the end of
+`knowledge/SCHEMA.md`, and the confidence and limitations pages
+(https://docs.typesafe.ai/confidence,
+https://docs.typesafe.ai/model-jaggedness/jev-1.13). The question asks
+only what the documents state, and never infers "complex" from building
+height or use. The user can set the field in Profile. Keep it
+`status: draft`.
+
+**Step 3:** `go test ./internal/... && python tools/check_knowledge.py`.
+Re-run the profile reading benchmark and confirm filing p50 ≤ 1 s and
+p90 ≤ 2 s.
+
+**Step 4:** Commit: `A complex facade reading suggests a Facade engineer (lane A)`.
+
+---
+
+## Slice 6: novation is an option under D&C (lane A)
+
+### Task 8: package novation becomes no / option / yes
+
+**Files:**
+- Create: `internal/db/migrations/0NN_package_novation_state.sql`. Use the next number. Add `novation_state text NOT NULL CHECK (novation_state IN ('no','option','yes'))`, backfilled from `novation`: `true` becomes `option`, because no client has actually elected yet. Then drop the bool. Check `internal/db/migrate_fk_sweep_test.go` and `testdata/next_wave_foreign_keys.json` for anything that lists package columns.
+- Modify: `internal/procurement/packages.go:20`, `defaults.go:22`, and `proposed.go:11` (`BuilderDesigns`: D&C gives `option`, traditional gives `no`)
+- Modify: `internal/store/packages.go:77-79,172,226`, `package_proposed.go:85,114`, and `package_edits.go:60,113`
+- Modify: `internal/httpapi/packages.go:91` (JSON `novation` becomes a string; refuse any other value with 422)
+- Test: store, httpapi and procurement tests that set or read `Novation`
+
+**Step 1: write the failing tests.**
+- A D&C project's new consultant package is `option`.
+- A traditional project's is `no`.
+- PATCH to `yes` is stored; PATCH to `maybe` returns 422.
+- The migration turns an existing `true` row into `option`.
+
+**Step 2:** Implement. The stage `novation_phase` (pre/post) is unchanged.
+It still marks which stages fall after a novation, whenever one happens.
+
+**Step 3:** `go test ./internal/...`. Expect a pass.
+
+### Task 9: the RFP prices the delivery phase as an option
+
+**Files:**
+- Modify: `internal/rfp/drivers.go:137-143` (the `novation` fact carries `no` / `option` / `yes`)
+- Modify: `internal/rfp/resolve.go:1344`
+  - `yes`: "this appointment is novated to the contractor" (as today).
+  - `option`: "the client may elect to novate this appointment to the contractor after the tender".
+- Modify: `knowledge/rfp/*.yaml`. Every `when: [{novation: ["yes"]}]` (architecture, civil and others; grep for it) becomes `["option", "yes"]`, so the post-novation stages are still priced separately. Text that says "after novation you are engaged by the head contractor" gains an `option` variant: "If the client elects to novate…". The `dnc_handover` text keeps `novation: ["no"]`.
+- Modify: `internal/knowledge/rfp.go:946`, so `option` is accepted as a novation value.
+- Test: the RFP golden and answer-key tests (`data/eval/rfp/answer-keys/`). Update an expected output only where it states novation as settled, and list each change in the commit.
+
+**Step 1:** Write a failing resolve test: a D&C package with `option`
+gives the "may elect" wording and a separately priced delivery-phase
+option.
+
+**Step 2:** Implement, then run `go test ./internal/rfp ./internal/knowledge`
+and `python tools/check_knowledge.py`.
+
+**Step 3:** Commit: `Novation is an option the client elects later; RFPs price the delivery phase separately (lane A)`.
+
+---
+
 ## Done looks like
 
 On Petersham (or any fit-out with the building class unread) the
@@ -383,7 +474,10 @@ Procurement table lists, with no clicks:
 - Mechanical and Fire Services when that scope is in.
 - Vertical Transport when a lift is in scope.
 
-There's no shield anywhere. Removing Certifier sticks. All the gates above
+There's no shield anywhere. Removing Certifier sticks. A new commercial
+building whose documents describe a curtain wall also lists Facade. On a
+D&C project, the RFP asks for the delivery phase as a priced option and
+never states that novation has happened. All the gates above
 pass, and `packages_read` p50/p90 is reported against 100/250 ms.
 
 ## Follow-ups (named, not built)
