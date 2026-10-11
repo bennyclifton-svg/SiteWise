@@ -7,5 +7,7 @@ export const procurementApi = {
   addRow: (project: string, disciplineId: string) => request<PackageRecord>("POST", `/projects/${project}/procurement/rows`, { discipline_id: disciplineId }),
   /** Exactly one of package_id or proposal_key. Returns the existing report when the row already has one. */
   create: (project: string, from: { package_id: string } | { proposal_key: string }) => request<{ package: PackageRecord; report: SavedReport }>("POST", `/projects/${project}/procurement/create`, from),
+  /** Removes a suggested consultant row; it is not suggested again on this project. */
+  dismiss: (project: string, proposalKey: string) => request<void>("POST", `/projects/${project}/procurement/dismiss`, { proposal_key: proposalKey }),
   retire: (project: string, pkg: string, version: number, costPlan?: CostPlan) => request<PackageRecord>("PATCH", `/projects/${project}/packages/${pkg}`, { retired: true, version, ...(costPlan ? {remove_cost_lines: true, cost_plan_id: costPlan.id, cost_plan_version: costPlan.version} : {}) }),
 };

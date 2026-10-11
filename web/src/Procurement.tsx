@@ -107,6 +107,13 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
       setRemoving({pkg, label, costPlan: ids.size ? plan : undefined, costLabels: plan.items.filter(i => ids.has(i.cost_item_id)).map(i => i.label)});
     } catch (e) { fail(e, "remove"); } finally { setBusyRow(""); }
   }
+  // A suggested row holds nothing, so it goes without a confirm; Add
+  // discipline brings it back.
+  async function dismiss(row: Row) {
+    setBusyRow(row.key); setError("");
+    try { await procurementApi.dismiss(projectId, row.proposalKey!); setReload(n => n + 1); }
+    catch (e) { fail(e, "create"); } finally { setBusyRow(""); }
+  }
   async function createPmp() {
     setBusyRow("pmp"); setError("");
     try { const report = await reportApi.create(projectId, "", "pmp"); setView({ at: "report", id: report.id }); }
@@ -154,7 +161,12 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? "Creating…" : "Create"}</button>}</td>
       <td><button type="button" className="table-action" disabled title="Tender comparison comes later">Compare</button></td>
-      <td className="row-menu-cell">{row.pkg && <details className="row-menu">
+      <td className="row-menu-cell">{!row.pkg && row.proposalKey?.startsWith("default:services:") && <details className="row-menu">
+        <summary aria-label={`More for ${row.label}`}>⋯</summary>
+        <div className="row-menu-items">
+          <button type="button" disabled={busy} onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); void dismiss(row); }}>Remove</button>
+        </div>
+      </details>}{row.pkg && <details className="row-menu">
         <summary aria-label={`More for ${row.label}`}>⋯</summary>
         <div className="row-menu-items">
           <button type="button" onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); setView({ at: "scope", pkg: row.pkg! }); }}>Scope</button>
