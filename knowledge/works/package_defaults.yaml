@@ -110,6 +110,14 @@ scope_additions:
   - fire-active.emergency-lighting
   consultants:
   - Electrical
+# Exits, stairs and barriers are on every building; accessible design is the
+# Access consultant's work on any class.
+- systems:
+  - access-egress.accessible-access
+  - access-egress.accessible-facilities
+  - access-egress.livable-housing
+  consultants:
+  - Access
 complexity_additions:
 - field: planning
   values:

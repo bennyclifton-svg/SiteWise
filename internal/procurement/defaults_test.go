@@ -100,6 +100,24 @@ func TestScopeAddsSpecialists(t *testing.T) {
 	}
 }
 
+// Every building has exits and stairs, so only accessible-design scope
+// brings an Access consultant to a class (residential) with no Access baseline.
+func TestAccessibleScopeSuggestsAccessConsultant(t *testing.T) {
+	cat := loadCatalog(t)
+	in := SuggestionInputs{Classes: []string{"residential"}, WorkTypes: []string{"new"},
+		Scope: []string{"access-egress.exits", "access-egress.stairs-and-ramps", "access-egress.barriers", "access-egress.egress-doors"}}
+	if slices.Contains(titles(SuggestedPackages(cat, in)), "Access") {
+		t.Fatal("exits and stairs alone suggested an Access consultant")
+	}
+	for _, system := range []string{"access-egress.accessible-access", "access-egress.accessible-facilities", "access-egress.livable-housing"} {
+		got := SuggestedPackages(cat, SuggestionInputs{Classes: []string{"residential"}, WorkTypes: []string{"new"}, Scope: []string{system}})
+		i := slices.Index(titles(got), "Access")
+		if i < 0 || got[i].MatchedFields["scope"] != system {
+			t.Fatalf("%s: %v", system, titles(got))
+		}
+	}
+}
+
 // The PM corrects the list by removing lines: a removed package or a
 // dismissed suggestion is not proposed again.
 func TestRemovedAndDismissedStayGone(t *testing.T) {
