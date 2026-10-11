@@ -77,6 +77,7 @@ homes:
     - det.bal
     - det.bushfire_prone_land
     - det.noise_affected_site
+    - det.facade_type
   hydraulic:
     - proj.flag.authority_asset
   fire-active:

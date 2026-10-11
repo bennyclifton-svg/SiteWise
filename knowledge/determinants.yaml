@@ -832,6 +832,38 @@ determinants:
   sources:
   - seed: as-standards-reference.md
     anchor: '## AS 3671 — Acoustics — Road Traffic Noise Intrusion — Building Siting and Construction'
+- id: facade_type
+  label: Facade system
+  value: choice
+  extraction: choice
+  options:
+  - id: standard
+    describes: The external walls are stated as conventional construction (masonry, render, framed and clad walls
+      with standard windows) with no separately designed facade or cladding system.
+  - id: complex
+    describes: The passage states a curtain wall, unitised, ventilated rainscreen or bespoke facade or cladding
+      system, or a facade that needs its own design, engineering, testing or facade consultant.
+  # Narrow: a facade system named, never building height or use.
+  triggers:
+  - '\bcurtain ?wall'
+  - '\buniti[sz]ed\b'
+  - '\brain ?screen\b'
+  - '\bfa[cç]ade (system|engineer|consultant|design|testing|mock-?up)'
+  - '\bcladding system'
+  stated_in:
+  - {kind: specification, discipline: consultant.architect, label: Architectural specification}
+  - {kind: report, discipline: consultant.facade, label: Facade engineering report}
+  profile_group: site
+  systems: [envelope]
+  status: draft
+  sources:
+  - {seed: commercial-construction-guide.md, anchor: '## Facade and Curtain Wall Systems'}
+  question:
+    type: choice
+    instructions: Using `text`, which facade system does the passage explicitly state for this building? Choose
+      complex only when it names a curtain wall, unitised, rainscreen or bespoke system, or a facade needing its
+      own design or testing; do not infer it from building height or use.
+    criteria: {}
 - id: estimated_works_cost
   label: Estimated cost of the works
   value: number

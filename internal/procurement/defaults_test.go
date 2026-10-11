@@ -111,3 +111,23 @@ func TestRemovedAndDismissedStayGone(t *testing.T) {
 		t.Fatalf("removed or dismissed came back: %v", got)
 	}
 }
+
+// A facade is in scope on every building, so only a complex-facade reading
+// brings a Facade engineer.
+func TestComplexFacadeSuggestsFacadeEngineer(t *testing.T) {
+	cat := loadCatalog(t)
+	in := SuggestionInputs{Classes: []string{"commercial"}, WorkTypes: []string{"new"}, Scope: []string{"envelope.external-walls"}}
+	if slices.Contains(titles(SuggestedPackages(cat, in)), "Facade") {
+		t.Fatal("facade scope alone suggested a Facade engineer")
+	}
+	in.Facts = map[string]string{"facade_type": "standard"}
+	if slices.Contains(titles(SuggestedPackages(cat, in)), "Facade") {
+		t.Fatal("standard facade suggested a Facade engineer")
+	}
+	in.Facts = map[string]string{"facade_type": "complex"}
+	got := SuggestedPackages(cat, in)
+	i := slices.Index(titles(got), "Facade")
+	if i < 0 || got[i].MatchedFields["facade_type"] != "complex" {
+		t.Fatalf("complex facade: %v", titles(got))
+	}
+}

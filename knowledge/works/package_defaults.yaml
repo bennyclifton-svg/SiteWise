@@ -159,3 +159,9 @@ complexity_additions:
   - floodway
   consultants:
   - Civil
+# A facade is in scope on every building; a complex one needs its own engineer.
+- field: facade_type
+  values:
+  - complex
+  consultants:
+  - Facade
