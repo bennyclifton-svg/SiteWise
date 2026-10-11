@@ -54,17 +54,9 @@ At all appointed stages coordinate the selected systems and maintain the design-
 
 Price each base item and option as **fixed fee**, **time to stated ceiling**, or **unit rate with quantity**. Complete counts/durations or authorised priced assumptions before issue. State excess rates and secure written authority before exceeding an allowance or ceiling. Hourly rates alone do not define a construction service. (#10,18-24,29-31,50-52)
 
-| Allowance | Issued quantity / ceiling / responsibility |
-|---|---|
-| Physical extent and loads | [Buildings/parts/tenancies, boards/circuits, meters, lighting zones, generators/PV/EV/storage assets and existing/new/removed boundaries]; load scenarios and future reserve [ ] |
-| Investigation | [Visits, boards/circuits traced, logging points/days, thermal scans, tests/openings, inaccessible areas]; safety/isolation, test contractor, access and reinstatement owners [ ] |
-| Design and studies | [Options, demand/fault/protection/earthing/lighting or specialist calculation packages, control modes, revisions/issues, design maturity and model/native-file requirements] |
-| Coordination and authorities | [Meetings/duration, utility enquiries/applications, submissions/response rounds and interface reviews]; ASP3 appointment, author/submitter/payer [ ] |
-| Tender | [Packages, tenderers/comparisons, RFIs/hours ceiling, addenda and review rounds] |
-| Construction design/support | Duration [ ]; [Submittal/review rounds, RFIs/hours ceiling, design updates, hold-point visits/reports]; notice and response targets [ ] |
-| Testing and energisation | [Factory/site scripts, witness sessions/duration, circuit/point/mode samples, outage/transfer/recovery/integrated tests and retests]; execution, safety authority and test leader [ ] |
-| Completion and defects | [Handovers, as-built/O&M review rounds, training reviews, defects visits, monitoring period and closure reports] |
-| Occupation and staging | [Phases, shutdown windows, out-of-hours attendances, temporary supplies, daily handbacks, aborted visits/cancellation basis] |
+Editable client defaults (#55): four design meetings and one design review round per appointed design stage; one accessible investigation visit when investigation applies. Construction visits require a client quantity only when construction support is included in the base appointment. These are pricing allowances, not measured project quantities.
+
+Consultants separately describe and price physical assets, loads, tests, durations, authority applications, tender support, handover and staging assumptions in R1/R2. A single count must never combine boards, circuits, meters, zones or other unlike units. Agree unresolved scope before dependent work. Unconfirmed authority assistance, generation/EV and ICT are separately priced options; material conflicts and responsibility allocations still require resolution.
 
 R7 lists providers, revisions and dates for architectural/equipment loads, utility advice/connection offers, interval data/bills, existing single-lines/test records, fire strategy/cause-and-effect, mechanical/hydraulic/lift loads, ICT/security/AV brief, energy targets and operator/shutdown approvals. Identify consequences of missing/conflicting inputs and agree the basis before dependent work. Normal coordination and correction of your errors remain within fee. (#9,17,19,21-22,27-29,40-49,51)
 

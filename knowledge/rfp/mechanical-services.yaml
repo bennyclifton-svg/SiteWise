@@ -1,5 +1,5 @@
 id: mechanical-services
-version: 1
+version: 2
 status: draft
 title: Mechanical services
 heading: 'REQUEST FOR PROPOSAL: MECHANICAL SERVICES'
@@ -110,7 +110,7 @@ boundary:
   start: advisory
   end: advisory
 - start: inception
-  end: tender
+  end: design
 stages:
 - key: inception
   name: S1 Evidence
@@ -404,6 +404,7 @@ allowances:
       scope or current requirements.
 positions:
 - key: hvac
+  group: Heating, cooling and ventilation
   label: 'Selected detailed HVAC design: duties/air paths/outdoor air; loads/hours/reserve'
   kind: technical
   provenance:
@@ -429,6 +430,7 @@ positions:
     - tender
     - continuation
 - key: local
+  group: Heating, cooling and ventilation
   label: Toilet/laundry/refuse/car-park/charging exhaust; make-up air/discharge separation
   kind: technical
   provenance:
@@ -457,6 +459,7 @@ positions:
     - mech_local
   if_unknown: ask
 - key: kitchen
+  group: Heating, cooling and ventilation
   label: Kitchen/process exhaust; equipment brief/specialist, not kitchenette
   kind: technical
   provenance:
@@ -485,6 +488,7 @@ positions:
     - mech_kitchen
   if_unknown: ask
 - key: smoke
+  group: Smoke control and building systems
   label: Smoke fans/shafts/dampers/pressurisation under fire-engineer strategy; wet fire separate
   kind: technical
   provenance:
@@ -513,6 +517,7 @@ positions:
     - mech_smoke
   if_unknown: ask
 - key: controls
+  group: Smoke control and building systems
   label: BMS sequences/points/alarms/metering; programming/licences/commissioning owners
   kind: technical
   provenance:
@@ -541,6 +546,7 @@ positions:
     - mech_controls
   if_unknown: ask
 - key: energy
+  group: Smoke control and building systems
   label: Whole-building energy/rating only; mechanical inputs remain in appointed design
   kind: technical
   provenance:
@@ -555,6 +561,7 @@ positions:
   value: X
   responsible: energy assessor
 - key: acoustic
+  group: Smoke control and building systems
   label: Acoustic/envelope design only; mechanical noise inputs remain in appointed design
   kind: technical
   provenance:
@@ -569,6 +576,7 @@ positions:
   value: X
   responsible: acoustic consultant / architect
 - key: interfaces
+  group: Smoke control and building systems
   label: Coordinate supports/plinths/openings/power/refrigerant leak/condensate; respective specialists design
   kind: technical
   provenance:
@@ -597,6 +605,7 @@ positions:
     - mech_interfaces
   if_unknown: ask
 - key: existing
+  group: Existing systems and specialist design
   label: Condition/capacity/controls investigation; operation is not proof; upgrade separate
   kind: technical
   provenance:
@@ -621,6 +630,7 @@ positions:
     - mech_investigation
   if_unknown: ask
 - key: staging
+  group: Existing systems and specialist design
   label: Occupied/phased temporary ventilation/isolation/handback by use/phase
   kind: technical
   provenance:
@@ -634,6 +644,7 @@ positions:
       scope or current requirements.
   value: O
 - key: remediation
+  group: Existing systems and specialist design
   label: Diagnosis/trial/verification; no whole-building conclusion from samples
   kind: technical
   provenance:
@@ -645,6 +656,7 @@ positions:
       scope or current requirements.
   value: O
 - key: specialist
+  group: Existing systems and specialist design
   label: Laboratory/clean-room/medical gases/process refrigeration/hazardous areas
   kind: technical
   provenance:
@@ -659,6 +671,7 @@ positions:
   value: X
   responsible: competent specialist
 - key: declarations
+  group: Existing systems and specialist design
   label: Declarations/lodgement; verify jurisdiction/competence, no approval guarantee
   kind: technical
   provenance:
@@ -687,6 +700,7 @@ positions:
     - mech_declarations
   if_unknown: ask
 - key: continuation
+  group: Later design and verification
   label: Separate continued design/novation
   kind: technical
   provenance:
@@ -708,6 +722,7 @@ positions:
   - stage:
     - continuation
 - key: construction
+  group: Later design and verification
   label: Quantified construction support
   kind: technical
   provenance:
@@ -729,6 +744,7 @@ positions:
   - stage:
     - construction
 - key: witness
+  group: Later design and verification
   label: Selected witnessing/handover
   kind: technical
   provenance:
@@ -750,6 +766,7 @@ positions:
   - stage:
     - handover
 - key: seasonal
+  group: Later design and verification
   label: Seasonal/defects reviews
   kind: technical
   provenance:
@@ -771,6 +788,7 @@ positions:
   - stage:
     - seasonal
 - key: execution
+  group: Later design and verification
   label: Test execution separately priced to named contractors
   kind: technical
   provenance:
@@ -868,7 +886,7 @@ terms:
       before engagement.
   replace: true
 - key: questions
-  text: Questions to {field:contact} by {field:questions_by}; numbered addenda to all, acknowledged in R1.
+  text: Issue numbered addenda to all, acknowledged in R1.
   provenance:
   - kind: client_decision
     ref: mechanical-services#52
@@ -961,7 +979,7 @@ returnable_notes:
       scope or current requirements.
   replace: true
 - key: r6
-  text: 'Sections 3-6/agreement departures: wording/reason/fee/time; exclusion owner; resolve conflicts or
+  text: 'Sections 2–5/agreement departures: wording/reason/fee/time; exclusion owner; resolve conflicts or
     priced assumption with owner/date/consequence/review point.'
   provenance:
   - kind: evidence

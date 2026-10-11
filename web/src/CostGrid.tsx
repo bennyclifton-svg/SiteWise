@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import type { CostItem, CostPlan, CostTotal, CostTotals, CostValue } from "./costApi";
+import type { CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue } from "./costApi";
 import type { PackageRecord } from "./packageApi";
 
 // Money arrives as exact decimal strings. Group digits without parsing to a
@@ -16,62 +16,72 @@ export const subtotal = (t?: CostTotal) => !t || t.lines === 0 || t.unknown === 
 const words = (s: string) => s.replaceAll("_", " ");
 
 const GROUPS = [
-  { kind: "fee", title: "Fees and charges", bucket: "fees" },
-  { kind: "works", title: "Construction", bucket: "works" },
-  { kind: "project_wide", title: "Project-wide", bucket: "project_wide" },
+  { kind: "project_wide", title: "Fees and charges", bucket: "authority", category: "authority_fees" },
+  { kind: "fee", title: "Consultants", bucket: "consultants", category: "" },
+  { kind: "works", title: "Construction", bucket: "construction", category: "" },
+  { kind: "project_wide", title: "Contingency", bucket: "contingency", category: "contingency" },
 ] as const;
 // Placeholder columns keep the cost report's shape until variations and monthly
 // claims are tracked; they never show a figure.
 const COLUMNS = ["Budget", "Approved Contract", "Forecast Variations", "Approved Variations", "Forecast Final Cost", "Budget Variance", "Claimed to Date", "This Month", "Remaining"];
 const PLACEHOLDER = new Set(["Forecast Variations", "Approved Variations", "This Month"]);
-type SortKey = "code" | "category" | "item";
+type SortKey = "category" | "item";
 
-export function CostGrid({ plan, totals, packages, selected, editable, onOpen, onBudget }: {
+export function CostGrid({ plan, totals, packages, selected, editable, busy, onOpen, onValue, onDelete, onItem, quantities }: {
   plan: CostPlan; totals: CostTotals | null; packages: PackageRecord[]; selected: string; editable: boolean;
-  onOpen: (id: string) => void; onBudget: (item: CostItem, amount: string | null) => Promise<boolean>;
+  quantities: boolean; busy: boolean;
+  onDelete: (item: CostItem) => Promise<boolean>;
+  onItem: (content: CostContent, id?: string, calculate?: boolean) => Promise<boolean>;
+  onOpen: (id: string) => void; onValue: (item: CostItem, metric: "budget" | "commitment", amount: string | null) => Promise<boolean>;
 }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 } | null>(null);
-  const category = (i: CostItem) => i.line_kind === "project_wide" ? words(i.category) : packages.find(p => p.id === i.package_id)?.title || "Unassigned";
-  const sortValue = (i: CostItem) => sort?.key === "code" ? i.code : sort?.key === "category" ? category(i) : i.label;
-  const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : list;
-  const ids = new Set(plan.items.map(i => i.cost_item_id));
+  const items = plan.items;
+  const category = (i: CostItem) => i.resolved_category || (i.line_kind === "project_wide" ? words(i.category) : packages.find(p => p.id === i.package_id)?.title || "Unassigned");
+  const sortValue = (i: CostItem) => sort?.key === "category" ? category(i) : i.label;
+  const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : [...list].sort((a,b) => (Number(["other", "exclusions"].includes(a.category)) - Number(["other", "exclusions"].includes(b.category))) || a.code.localeCompare(b.code, undefined, {numeric:true}) || a.label.localeCompare(b.label));
+  const ids = new Set(items.map(i => i.cost_item_id));
+  // Display positions are not identities: links continue to use cost_item_id.
+  let rowNumber = 0;
   // Children follow their group line, indented; sorting applies within a level.
   const tree = (list: CostItem[], depth: number): { item: CostItem; depth: number }[] =>
-    ordered(list).flatMap(i => [{ item: i, depth }, ...tree(plan.items.filter(c => c.parent_item_id === i.cost_item_id), depth + 1)]);
+    ordered(list).flatMap(i => [{ item: i, depth }, ...tree(items.filter(c => c.parent_item_id === i.cost_item_id), depth + 1)]);
   const header = (key: SortKey, label: string) => <th scope="col" className="cost-sticky" data-col={key} aria-sort={sort?.key === key ? (sort.dir === 1 ? "ascending" : "descending") : undefined}>
     <button type="button" onClick={() => setSort(sort?.key === key ? (sort.dir === 1 ? { key, dir: -1 } : null) : { key, dir: 1 })}>{label}</button></th>;
   return <div className="cost-grid-scroll"><table className="cost-grid">
-    <thead><tr>{header("code", "Code")}{header("category", "Category")}{header("item", "Item")}
-      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}</tr></thead>
+    <thead><tr><th scope="col" className="cost-sticky" data-col="code">No.</th>{header("category", "Category")}{header("item", "Item")}
+      {quantities && ["Qty", "Unit", "Rate"].map(c => <th key={c} scope="col">{c}</th>)}
+      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}<th scope="col" className="cost-actions">Actions</th></tr></thead>
     {GROUPS.map(g => {
-      const top = plan.items.filter(i => i.line_kind === g.kind && (!i.parent_item_id || !ids.has(i.parent_item_id)));
-      if (top.length === 0) return null;
-      const t = totals?.[g.bucket], d = totals?.buckets?.[g.bucket];
-      return <tbody key={g.kind}>
-        <tr className="cost-group"><th colSpan={3 + COLUMNS.length} scope="colgroup">{g.title}</th></tr>
+      const top = items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id)));
+      const t = totals?.sections[g.bucket], d = totals?.section_figures[g.bucket];
+      return <tbody key={g.bucket}>
+        <tr className="cost-group"><th colSpan={4 + COLUMNS.length + (quantities ? 3 : 0)} scope="colgroup"><span>{g.title}</span></th></tr>
         {tree(top, 0).map(({ item: i, depth }) => {
           const f = totals?.items?.[i.cost_item_id];
           return <tr key={i.cost_item_id} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} aria-selected={selected === i.cost_item_id} onClick={() => onOpen(i.cost_item_id)}>
-            <td className="cost-sticky" data-col="code">{i.code}</td>
-            <td className="cost-sticky" data-col="category">{category(i)}</td>
-            <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16}px` }}><button type="button" className="cost-open" onClick={e => { e.stopPropagation(); onOpen(i.cost_item_id); }}>{i.label}</button>{i.excluded && <span className="cost-tag">excluded</span>}</td>
+            <td className="cost-sticky" data-col="code">{String(++rowNumber).padStart(2, "0")}</td>
+            <td className="cost-sticky" data-col="category">{editable ? <CategoryCell item={i} plan={plan} packages={packages} label={category(i)} onSave={c => onItem(c, i.cost_item_id)} /> : category(i)}</td>
+            <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16}px` }}><button type="button" className="cost-open" title={i.label} onClick={e => { e.stopPropagation(); onOpen(i.cost_item_id); }}>{i.label}</button>{editable && <TextCell label={`Item for ${i.label}`} value={i.label} compact onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} />}{i.excluded && <span className="cost-tag">excluded</span>}</td>
+            {quantities && <QuantityCells key={i.cost_item_id} item={i} editable={editable && i.posting} onSave={c => onItem(c, i.cost_item_id, true)} />}
             {!i.posting ? <td colSpan={COLUMNS.length} className="cost-note">Group · amounts are on the lines below</td> : <>
-              <td className="cost-num"><BudgetCell item={i} editable={editable && !i.excluded} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onBudget(i, a)} /></td>
-              <td className="cost-num">{cell(i.values.commitment)}</td>
+              <td className="cost-num"><MoneyCell metric="budget" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "budget", a)} /></td>
+              <td className="cost-num"><MoneyCell metric="commitment" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "commitment", a)} /></td>
               <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
               <td className="cost-num">{cell(f?.forecast)}</td>
               <td className="cost-num">{fmt(f?.budget_variance)}</td>
               <td className="cost-num">{cell(i.values.claimed_to_date)}</td>
               <td className="cost-num cost-placeholder">—</td>
               <td className="cost-num">{fmt(f?.remaining)}</td></>}
+            <td className="cost-actions">{editable && <button type="button" className="cost-delete" disabled={busy} aria-label={`Delete ${i.label}`} title={`Delete ${i.label}`} onClick={e => { e.stopPropagation(); void onDelete(i); }}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" /></svg></button>}</td>
           </tr>;
         })}
-        <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">{g.title} subtotal</th>
+        {editable && <AddLineRow key={g.bucket} group={g} plan={plan} packages={packages} columns={4 + COLUMNS.length + (quantities ? 3 : 0)} onSave={onItem} />}
+        <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">{g.title} subtotal</th>{quantities && <td colSpan={3} />}
           <td className="cost-num">{subtotal(t?.budget)}</td><td className="cost-num">{subtotal(t?.commitment)}</td>
           <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
           <td className="cost-num">{subtotal(t?.forecast)}</td><td className="cost-num">{fmt(d?.budget_variance)}</td>
           <td className="cost-num">{subtotal(t?.claimed_to_date)}</td><td className="cost-num cost-placeholder">—</td>
-          <td className="cost-num">{fmt(d?.remaining)}</td></tr>
+          <td className="cost-num">{fmt(d?.remaining)}</td><td /></tr>
       </tbody>;
     })}
   </table></div>;
@@ -79,12 +89,12 @@ export function CostGrid({ plan, totals, packages, selected, editable, onOpen, o
 
 // Typed budgets accept plain amounts only. A range or an as-of date is set in
 // the drawer so a single figure never overwrites it.
-function BudgetCell({ item, editable, onOpen, onSave }: { item: CostItem; editable: boolean; onOpen: () => void; onSave: (amount: string | null) => Promise<boolean> }) {
-  const v = item.values.budget, range = v?.value_state === "known" && v.amount == null;
+function MoneyCell({ item, metric, editable, onOpen, onSave }: { metric: "budget" | "commitment"; item: CostItem; editable: boolean; onOpen: () => void; onSave: (amount: string | null) => Promise<boolean> }) {
+  const v = item.values[metric], range = v?.value_state === "known" && v.amount == null;
   const [draft, setDraft] = useState<string | null>(null), [invalid, setInvalid] = useState(false);
   // One editing session ends once; Enter and the blur that follows must not both save.
   const active = useRef(false), cancelled = useRef(false), saving = useRef(false);
-  const label = `Budget for ${item.label}`;
+  const label = `${metric === "budget" ? "Budget" : "Approved Contract"} for ${item.label}`;
   async function commit() {
     if (draft == null || !active.current || saving.current) return;
     if (cancelled.current) { cancelled.current = false; active.current = false; setDraft(null); setInvalid(false); return; }
@@ -100,6 +110,39 @@ function BudgetCell({ item, editable, onOpen, onSave }: { item: CostItem; editab
   if (draft != null) return <input className="cost-input" aria-label={label} aria-invalid={invalid || undefined} autoFocus inputMode="decimal" value={draft}
     onClick={e => e.stopPropagation()} onChange={e => { setDraft(e.target.value); setInvalid(false); }} onBlur={() => void commit()}
     onKeyDown={e => { if (e.key === "Enter") void commit(); if (e.key === "Escape") { cancelled.current = true; void commit(); } }} />;
-  return <button type="button" className="cost-cell" aria-label={label} disabled={!editable && !range} title={range ? "Range budgets are edited in the line drawer" : undefined}
+  return <button type="button" className="cost-cell" aria-label={label} disabled={!editable && !range} title={range ? "Range values are edited in the line drawer" : undefined}
     onClick={e => { e.stopPropagation(); if (range) onOpen(); else if (editable) { active.current = true; setDraft(v?.value_state === "known" ? v.amount ?? "" : ""); } }}>{cell(v)}</button>;
+}
+
+export function editContent(i: CostItem, changes: Partial<CostContent> = {}): CostContent {
+ const {parent_item_id, code, label, line_kind, category, work_item_id, package_id, package_stage_id, posting, quantity, unit, rate, rate_basis, excluded, origin, meaning, rationale} = i;
+ return {parent_item_id, code, label, line_kind, category, work_item_id, package_id, package_stage_id, posting, quantity, unit, rate, rate_basis, excluded, origin: origin === "calculation" ? "assumption" : origin, meaning, rationale, system_id: work_item_id ? "" : i.system_id, ...changes};
+}
+function TextCell({label, value, compact, onSave}: {label: string; value: string; compact?: boolean; onSave: (v: string) => Promise<boolean>}) {
+ const [draft, setDraft] = useState<string | null>(null); const saving = useRef(false);
+ async function commit() { if (draft === null || saving.current) return; if (draft === value) {setDraft(null); return;} saving.current = true; const ok = await onSave(draft); saving.current = false; if (ok) setDraft(null); }
+ return draft === null ? <button type="button" className="cost-open" aria-label={label} onClick={e => {e.stopPropagation(); setDraft(value);}}>{compact ? "Edit" : value || "—"}</button> : <input autoFocus className="cost-text-input" aria-label={label} value={draft} onClick={e => e.stopPropagation()} onChange={e => setDraft(e.target.value)} onBlur={() => void commit()} onKeyDown={e => {if (e.key === "Enter") void commit(); if (e.key === "Escape") {e.preventDefault(); setDraft(null);}}} />;
+}
+const categories = ["other", "contingency", "escalation", "authority_fees", "exclusions"];
+function CategoryCell({item, packages, label, onSave}: {item: CostItem; plan: CostPlan; packages: PackageRecord[]; label: string; onSave: (c: CostContent) => Promise<boolean>}) {
+ const [editing, setEditing] = useState(false), [saving, setSaving] = useState(false);
+ const isPackage = item.line_kind !== "project_wide";
+ const options = isPackage ? packages.filter(p => !p.retired_at && p.kind === (item.line_kind === "fee" ? "services" : "works")).map(p => ({id:p.id,label:p.title})) : categories.map(id => ({id,label:words(id)}));
+ return editing ? <select autoFocus disabled={saving} aria-label={`Category for ${item.label}`} value={isPackage ? item.package_id : item.category} onClick={e => e.stopPropagation()} onBlur={() => {if(!saving)setEditing(false);}} onKeyDown={e=>{if(e.key==="Escape")setEditing(false);}} onChange={e => {
+  const v=e.target.value;setSaving(true);
+  void onSave(editContent(item, isPackage ? {package_id:v,package_stage_id:""} : {category:v})).then(ok=>{setSaving(false);if(ok)setEditing(false);});
+ }}><option value="">{item.line_kind === "works" ? "Use automatic assignment" : "Choose category"}</option>{isPackage && item.package_id && !options.some(o=>o.id===item.package_id) && <option value={item.package_id} disabled>{label}</option>}{options.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select> : <button type="button" className="cost-open" title={label} aria-label={`Category for ${item.label}`} onClick={e=>{e.stopPropagation();setEditing(true);}}>{label}</button>;
+}
+function QuantityCells({item, editable, onSave}: {item:CostItem;editable:boolean;onSave:(c:CostContent)=>Promise<boolean>}) {
+ const [draft,setDraft]=useState({quantity:item.quantity ?? "",unit:item.unit ?? "",rate:item.rate ?? ""});const saving=useRef(false);const saved=useRef(JSON.stringify(draft));
+ async function commit(){if(saving.current || JSON.stringify(draft)===saved.current || !draft.quantity || !draft.unit || !draft.rate)return;if(draft.quantity===item.quantity && draft.unit===item.unit && draft.rate===item.rate)return;saving.current=true;const ok=await onSave(editContent(item,{quantity:draft.quantity,unit:draft.unit,rate:draft.rate,rate_basis:"User supplied"}));if(ok)saved.current=JSON.stringify(draft);saving.current=false;}
+ return <>{(["quantity","unit","rate"] as const).map(k=><td key={k} className="cost-num">{editable?<input className="cost-input" aria-label={`${k} for ${item.label}`} value={draft[k]} onClick={e=>e.stopPropagation()} onChange={e=>setDraft({...draft,[k]:e.target.value})} onBlur={()=>void commit()} onKeyDown={e=>{if(e.key==="Enter")void commit();if(e.key==="Escape")setDraft({quantity:item.quantity??"",unit:item.unit??"",rate:item.rate??""});}} />:item[k]??"—"}</td>)}</>;
+}
+function AddLineRow({group:g,plan,packages,columns,onSave}:{group:typeof GROUPS[number];plan:CostPlan;packages:PackageRecord[];columns:number;onSave:(c:CostContent)=>Promise<boolean>}){
+ const kind=g.kind;
+ const [draft,setDraft]=useState<CostContent|null>(null);const saving=useRef(false);
+ const options=kind==="fee"?packages.filter(p=>p.kind==="services").map(p=>({id:p.id,label:p.title})):kind==="works"?packages.filter(p=>p.kind==="works"&&!p.retired_at).map(p=>({id:p.id,label:p.title})):categories.map(id=>({id,label:words(id)}));
+ const group=g.title;
+ async function commit(){if(!draft || saving.current || !draft.label.trim() || (kind==="fee"&&!draft.package_id) || (kind==="works"&&!draft.system_id))return;saving.current=true;const ok=await onSave(draft);saving.current=false;if(ok)setDraft(null);}
+ return <tr className="cost-add">{!draft?<td colSpan={columns}><button type="button" className="cost-open" onClick={()=>setDraft({parent_item_id:"",code:"",label:"",line_kind:kind,category:g.category,work_item_id:"",system_id:"",package_id:"",package_stage_id:"",posting:true,quantity:null,unit:"",rate:null,rate_basis:"",excluded:false,origin:"user",meaning:"allowance",rationale:""})}>+ Add line to {group}</button></td>:<><td/><td data-col="category"><select autoFocus={kind==="fee"} aria-label={`New ${group} category`} value={kind!=="project_wide"?draft.package_id:draft.category} onChange={e=>setDraft({...draft,[kind!=="project_wide"?"package_id":"category"]:e.target.value})}><option value="">{kind==="works"?"Use automatic assignment":"Choose category"}</option>{options.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select></td><td>{kind==="works" && <select aria-label="New Construction physical scope" value={draft.system_id} onChange={e=>setDraft({...draft,system_id:e.target.value})}><option value="">Choose physical scope</option>{plan.systems?.map(sys=><option key={sys.id} value={sys.id}>{sys.label}</option>)}</select>}<input autoFocus={kind!=="fee"} aria-label={`New ${group} item`} value={draft.label} maxLength={500} onChange={e=>setDraft({...draft,label:e.target.value})} onBlur={()=>void commit()} onKeyDown={e=>{if(e.key==="Enter")void commit();if(e.key==="Escape")setDraft(null);}}/></td><td colSpan={columns-3}><button type="button" className="btn btn-small" onClick={()=>void commit()}>Save line</button><button type="button" className="btn btn-small" onClick={()=>setDraft(null)}>Cancel</button></td></>}</tr>;
 }

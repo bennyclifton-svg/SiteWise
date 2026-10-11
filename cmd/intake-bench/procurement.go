@@ -40,7 +40,7 @@ func (a *apiClient) procurement(ctx context.Context, n int) error {
 			if err := json.Unmarshal(raw, &result); err != nil {
 				return err
 			}
-			if result.Report.ID == "" || result.Report.Kind != "rfp" || (first.ID != "" && first.ID != result.Report.ID) {
+			if result.Report.CurrentDraftVersionID == "" || (first.ID != "" && first.CurrentDraftVersionID != result.Report.CurrentDraftVersionID) || result.Report.ID == "" || result.Report.Kind != "rfp" || (first.ID != "" && first.ID != result.Report.ID) {
 				return fmt.Errorf("procurement benchmark lost idempotent RFP")
 			}
 			first = result.Report

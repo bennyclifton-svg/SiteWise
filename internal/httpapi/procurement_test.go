@@ -38,6 +38,7 @@ func TestProcurementRowsAndCreate(t *testing.T) {
 		Package procurement.Package `json:"package"`
 		Report  struct {
 			ID        string `json:"id"`
+			DraftID   string `json:"current_draft_version_id"`
 			Kind      string `json:"kind"`
 			PackageID string `json:"package_id"`
 		} `json:"report"`
@@ -48,6 +49,9 @@ func TestProcurementRowsAndCreate(t *testing.T) {
 		t.Fatalf("%+v", first)
 	}
 	m.call(t, http.MethodPost, create, []byte(`{"package_id":"`+p.ID+`"}`), http.StatusOK, &again)
+	if first.Report.DraftID == "" || again.Report.DraftID != first.Report.DraftID {
+		t.Fatal("create must assemble once and reuse the saved draft")
+	}
 	if again.Report.ID != first.Report.ID {
 		t.Fatal("second create made a second report")
 	}

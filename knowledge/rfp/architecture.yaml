@@ -5,7 +5,7 @@
 # technical items selected by facts rather than class. See
 # docs/rfp-golden/phase-a-changes.md. Draft until the owner reviews it.
 id: architecture
-version: 1
+version: 2
 status: draft
 title: Architectural services
 heading: "REQUEST FOR PROPOSAL: ARCHITECTURAL SERVICES"
@@ -41,14 +41,14 @@ role:
     when: [{procurement: [design_construct], novation: ["no"]}]
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
 
-stage_intro: "Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 6)."
+stage_intro: "Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5)."
 
 # Suggested appointment boundary; the user confirms it before issue. Stages
 # after the end that apply are offered as separately priced options.
 boundary:
   - {when: [{procurement: [design_construct]}], start: brief_masterplan, end: dnc_tender}
   - {when: [{work_type: [advisory]}, {pathway: [advice_only]}], start: brief_masterplan, end: concept}
-  - {start: brief_masterplan, end: for_construction}
+  - {start: brief_masterplan, end: interiors}
 
 stages:
   - key: brief_masterplan
@@ -201,45 +201,50 @@ allowances:
   - {key: ca_inspections, label: Construction site inspections, text: "{n}", owner: client, when: [{stage: [construction_support]}], provenance: [{kind: practice, ref: "architectural-services-guide.md (construction and completion)"}]}
 
 positions:
-  - {key: coordination, label: "Coordinating and integrating consultants' work", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "architecture#38"}, {kind: evidence, ref: "architecture#63"}]}
-  - {key: input_schedule, label: "Brief gaps, required-input schedule, responsibility matrix and decisions register", kind: service_level, simple: I, complex: I, provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md (inception, DD, coordination)"}]}
-  - {key: specialist_coordination, label: "Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface", kind: technical, value: I, provenance: [{kind: seed, ref: "architectural-services-guide.md conditional services and common failures"}]}
-  - {key: consultant_selection, label: "Help selecting other consultants", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#4"}]}
-  - {key: bim_model, label: "BIM model issued to the design team (level in section 4)", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "architecture#138-140"}]}
-  - {key: bim_coordination, label: "BIM coordination meetings, clash detection", kind: service_level, simple: X, complex: O, responsible: not_required, provenance: [{kind: evidence, ref: "architecture#136-137"}]}
-  - {key: specification, label: "Architectural specification", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "architecture#75"}]}
-  - {key: door_schedule, label: "Door schedule; hardware schedule by the supplier", kind: technical, value: I, provenance: [{kind: evidence, ref: "architecture#76"}, {kind: evidence, ref: "architecture#93"}]}
-  - {key: finishes_schedules, label: "External and base-building finishes schedules", kind: technical, value: I, provenance: [{kind: evidence, ref: "architecture#72"}]}
-  - {key: typical_interiors, label: "Interior layouts for typical rooms", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "architecture#65"}]}
-  - {key: base_interiors, label: "Base-building and common-area interiors", kind: technical, value: I, when: [{stage: [interiors]}], provenance: [{kind: evidence, ref: "architecture#36"}]}
+  - {group: "Brief and design coordination", key: coordination, label: "Coordinating and integrating consultants' work", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "architecture#38"}, {kind: evidence, ref: "architecture#63"}]}
+  - {group: "Brief and design coordination", key: input_schedule, label: "Brief gaps, required-input schedule, responsibility matrix and decisions register", kind: service_level, simple: I, complex: I, provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md (inception, DD, coordination)"}]}
+  - {group: "Brief and design coordination", key: specialist_coordination, label: "Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface", kind: technical, value: I, provenance: [{kind: seed, ref: "architectural-services-guide.md conditional services and common failures"}]}
+  - {group: "Brief and design coordination", key: consultant_selection, label: "Help selecting other consultants", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#4"}]}
+  - {group: "Design documentation and models", key: bim_model, label: "BIM model issued to the design team (level in section 4)", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "architecture#138-140"}]}
+  - {group: "Design documentation and models", key: bim_coordination, label: "BIM coordination meetings, clash detection", kind: service_level, simple: X, complex: O, responsible: not_required, provenance: [{kind: evidence, ref: "architecture#136-137"}]}
+  - {group: "Design documentation and models", key: specification, label: "Architectural specification", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "architecture#75"}]}
+  - {group: "Design documentation and models", key: door_schedule, label: "Door schedule; hardware schedule by the supplier", kind: technical, value: I, provenance: [{kind: evidence, ref: "architecture#76"}, {kind: evidence, ref: "architecture#93"}]}
+  - {group: "Design documentation and models", key: finishes_schedules, label: "External and base-building finishes schedules", kind: technical, value: I, provenance: [{kind: evidence, ref: "architecture#72"}]}
+  - {group: "Design documentation and models", key: typical_interiors, label: "Interior layouts for typical rooms", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "architecture#65"}]}
+  - {group: "Design documentation and models", key: base_interiors, label: "Base-building and common-area interiors", kind: technical, value: I, when: [{stage: [interiors]}], provenance: [{kind: evidence, ref: "architecture#36"}]}
   - key: tenant_fitout
+    group: Design documentation and models
     label: "Tenant fit-out design"
     kind: technical
     value: {value: I, when: [{work_type: [refurb]}], else: O}
     provenance: [{kind: evidence, ref: "architecture#114"}, {kind: client_decision, ref: "phase-a-changes architecture C3", why: "Resolves the v3 conflict: section 3 offered tenant fit-out while section 5 excluded it. Fit-out work includes it; otherwise it is priced as an option."}]
-  - {key: ffe, label: "Loose furniture and FF&E selection", kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#114"}]}
-  - {key: marketing_renders, label: "Photoreal renders, marketing CGI, models", kind: service_level, simple: X, complex: O, responsible: client, provenance: [{kind: evidence, ref: "architecture#110-113"}]}
-  - {key: value_management, label: "Value management redesign (at R3 rates)", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#68"}]}
-  - {key: tender_evaluation, label: "Tender evaluation input", kind: service_level, simple: X, complex: O, responsible: client, when: [{stage: [tender_traditional, dnc_tender]}], provenance: [{kind: evidence, ref: "architecture#83"}]}
+  - {group: "Design documentation and models", key: ffe, label: "Loose furniture and FF&E selection", kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#114"}]}
+  - {group: "Design documentation and models", key: marketing_renders, label: "Photoreal renders, marketing CGI, models", kind: service_level, simple: X, complex: O, responsible: client, provenance: [{kind: evidence, ref: "architecture#110-113"}]}
+  - {group: "Procurement and approvals", key: value_management, label: "Value management redesign (at R3 rates)", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#68"}]}
+  - {group: "Procurement and approvals", key: tender_evaluation, label: "Tender evaluation input", kind: service_level, simple: X, complex: O, responsible: client, when: [{stage: [tender_traditional, dnc_tender]}], provenance: [{kind: evidence, ref: "architecture#83"}]}
   - key: dnc_performance_brief
+    group: Procurement and approvals
     label: "Performance brief; retained versus contractor design schedule"
     kind: technical
     value: I
     when: [{stage: [dnc_tender]}]
     provenance: [{kind: seed, ref: "architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
   - key: certifier_liaison
+    group: Procurement and approvals
     label: "Liaison with the certifier"
     kind: technical
     value: I
     provenance: [{kind: evidence, ref: "architecture#89"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5", why: "Some golden proposals excluded or charged for certifier liaison; the client includes it so the architect owns certifier coordination."}]
   - key: document_uploads
+    group: Procurement and approvals
     label: "Uploading to the client's document system"
     kind: technical
     value: I
     provenance: [{kind: evidence, ref: "architecture#133"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5", why: "PACE charged uploads as admin (#133); the client includes them in the fee for comparable prices."}]
-  - {key: modifications, label: "Modification applications after approval", kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#54"}]}
-  - {key: court, label: "Court appeals", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "architecture#55"}]}
+  - {group: "Procurement and approvals", key: modifications, label: "Modification applications after approval", kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#54"}]}
+  - {group: "Specialist and additional services", key: court, label: "Court appeals", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "architecture#55"}]}
   - key: community
+    group: Specialist and additional services
     label: "Community consultation"
     kind: technical
     value: {value: O, when: [{flag: [community]}], else: X}
@@ -248,44 +253,50 @@ positions:
     assumption: "Price as an option: needed only if community consultation is required."
     provenance: [{kind: evidence, ref: "architecture#56"}]
   - key: country
+    group: Specialist and additional services
     label: "Connecting with Country input"
     kind: technical
     value: {value: I, when: [{flag: [country]}], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only if Connecting with Country input is required."
     provenance: [{kind: evidence, ref: "architecture#6"}]
-  - {key: extra_declarations, label: "Compliance declarations for extra certificates or variations", kind: technical, value: {value: O, when: [{stage: [regulated_design]}], else: "-"}, provenance: [{kind: evidence, ref: "architecture#103-104"}]}
+  - {group: "Procurement and approvals", key: extra_declarations, label: "Compliance declarations for extra certificates or variations", kind: technical, value: {value: O, when: [{stage: [regulated_design]}], else: "-"}, provenance: [{kind: evidence, ref: "architecture#103-104"}]}
   - key: apartment_design
+    group: Procurement and approvals
     label: "Apartment design-quality submission and panel response, where planning advice confirms it"
     kind: technical
     value: {value: O, when: [{class: ["2"], state: [NSW]}], else: "-"}
     provenance: [{kind: seed, ref: "architectural-services-guide.md pre-DA section"}]
-  - {key: facade_certification, label: "Façade performance certification (NCC Part F3)", kind: technical, value: X, responsible: "façade engineer", provenance: [{kind: evidence, ref: "architecture#67"}]}
-  - {key: performance_solutions, label: "Performance solutions (fire, access, weatherproofing)", kind: technical, value: X, responsible: "fire and access engineers", provenance: [{kind: evidence, ref: "architecture#105"}, {kind: evidence, ref: "architecture#117-118"}]}
+  - {group: "Specialist and additional services", key: facade_certification, label: "Façade performance certification (NCC Part F3)", kind: technical, value: X, responsible: "façade engineer", provenance: [{kind: evidence, ref: "architecture#67"}]}
+  - {group: "Specialist and additional services", key: performance_solutions, label: "Performance solutions (fire, access, weatherproofing)", kind: technical, value: X, responsible: "fire and access engineers", provenance: [{kind: evidence, ref: "architecture#105"}, {kind: evidence, ref: "architecture#117-118"}]}
   - key: sustainability_docs
+    group: Specialist and additional services
     label: "Green Star or NABERS documentation"
     kind: technical
     value: {value: I, when: [{flag: [sustainability_target]}], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only if a Green Star or NABERS target is set."
     provenance: [{kind: evidence, ref: "architecture#115"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5", why: "Proposals excluded sustainability documentation; the client includes it when it sets a target."}]
-  - {key: signage, label: "Signage and wayfinding", kind: service_level, simple: X, complex: O, responsible: "signage designer", provenance: [{kind: evidence, ref: "architecture#119"}]}
-  - {key: outside_boundary, label: "Work outside the site boundary; external hardstands", kind: technical, value: X, responsible: "civil engineer", provenance: [{kind: evidence, ref: "architecture#120-121"}]}
-  - {key: as_built, label: "As-built or record drawings", kind: service_level, simple: X, complex: O, responsible: contractor, provenance: [{kind: evidence, ref: "architecture#92"}]}
-  - {key: others_fees, label: "Authority and other consultants' fees", kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "architecture#123-124"}]}
+  - {group: "Design documentation and models", key: signage, label: "Signage and wayfinding", kind: service_level, simple: X, complex: O, responsible: "signage designer", provenance: [{kind: evidence, ref: "architecture#119"}]}
+  - {group: "Specialist and additional services", key: outside_boundary, label: "Work outside the site boundary; external hardstands", kind: technical, value: X, responsible: "civil engineer", provenance: [{kind: evidence, ref: "architecture#120-121"}]}
+  - {group: "Specialist and additional services", key: as_built, label: "As-built or record drawings", kind: service_level, simple: X, complex: O, responsible: contractor, provenance: [{kind: evidence, ref: "architecture#92"}]}
+  - {group: "Specialist and additional services", key: others_fees, label: "Authority and other consultants' fees", kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "architecture#123-124"}]}
   - key: existing_interfaces
+    group: Brief and design coordination
     label: "Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces"
     kind: technical
     value: I
     module: existing_building
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
   - key: live_staging
+    group: Brief and design coordination
     label: "Staged access, temporary services and occupation inputs agreed with the operator"
     kind: technical
     value: I
     module: live_site
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
   - key: mixed_use_map
+    group: Brief and design coordination
     label: "Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables"
     kind: technical
     value: I

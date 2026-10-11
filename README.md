@@ -22,6 +22,22 @@ http://127.0.0.1:8080/dev/login (it signs you in). Press Ctrl+C to stop.
 
 Check the knowledge files: `python tools/check_knowledge.py`
 
+### Restart after code changes
+
+`dev.ps1 -Build` is broken in PowerShell, so rebuild the web UI by hand, then
+restart. Paste into PowerShell (stop a running server with Ctrl+C first; the
+script also stops its own previous run). The restart rebuilds the Go binary and
+applies new database migrations.
+
+```powershell
+cd "D:\AI Projects\sitewise\web"
+.\node_modules\.bin\tsc.cmd --noEmit
+.\node_modules\.bin\vite.cmd build
+& "D:\AI Projects\sitewise\tools\dev.ps1"
+```
+
+If `tsc.cmd` or `vite.cmd` is not found, use `npm run build` in `web` instead.
+
 ## Run
 
 Locally, with the repo-local PostgreSQL and Go in `.tools/`:

@@ -19,7 +19,8 @@ type CostWrite struct {
 type CostItemInput struct {
 	CostWrite
 	costs.Content
-	Values map[string]costs.Value `json:"values"`
+	CalculateBudget bool                   `json:"calculate_budget"`
+	Values          map[string]costs.Value `json:"values"`
 }
 type CostValueInput struct {
 	PlanVersionID string `json:"plan_version_id"`
@@ -42,10 +43,13 @@ func (s *Store) ReadCostPlan(ctx context.Context, org, project, version string) 
 	if e != nil {
 		return p, e
 	}
+	if e = s.decorateCostPlan(ctx, tx, org, project, &p); e != nil {
+		return p, e
+	}
 	return p, tx.Commit(ctx)
 }
 func readCostPlan(ctx context.Context, tx pgx.Tx, org, project, version string) (costs.Plan, error) {
-	p := costs.Plan{ProjectID: project, Status: "unavailable", Items: []costs.Item{}, Links: []costs.Link{}}
+	p := costs.Plan{ProjectID: project, Status: "unavailable", Items: []costs.Item{}, Links: []costs.Link{}, Suggestions: []costs.Suggestion{}, Dismissed: []costs.Suggestion{}, Systems: []costs.CostSystem{}}
 	var exists bool
 	if e := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); e != nil {
 		return p, e
@@ -73,7 +77,7 @@ func readCostPlan(ctx context.Context, tx pgx.Tx, org, project, version string) 
 	if e = json.Unmarshal(raw, &p); e != nil {
 		return p, e
 	}
-	rows, e := tx.Query(ctx, `SELECT to_jsonb(r)||jsonb_build_object('system_id',CASE WHEN $4 THEN r.system_id ELSE w.system_id END,'part_id',CASE WHEN $4 THEN r.part_id ELSE w.part_id END) FROM cost_item_revisions r LEFT JOIN work_items w ON w.org_id=r.org_id AND w.project_id=r.project_id AND w.id=r.work_item_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.plan_version_id=$3::uuid ORDER BY r.code,r.label,r.cost_item_id`, org, project, p.ID, p.Status != "draft")
+	rows, e := tx.Query(ctx, `SELECT to_jsonb(r)||jsonb_build_object('resolved_package_id',CASE WHEN $4 THEN COALESCE(r.provenance->>'resolved_package_id',r.package_id::text,'') ELSE COALESCE(r.package_id::text,'') END,'system_id',CASE WHEN $4 THEN r.system_id ELSE COALESCE(w.system_id,r.system_id) END,'part_id',CASE WHEN $4 THEN r.part_id ELSE w.part_id END) FROM cost_item_revisions r LEFT JOIN work_items w ON w.org_id=r.org_id AND w.project_id=r.project_id AND w.id=r.work_item_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.plan_version_id=$3::uuid ORDER BY r.code,r.label,r.cost_item_id`, org, project, p.ID, p.Status != "draft")
 	if e != nil {
 		return p, e
 	}
@@ -134,6 +138,11 @@ func readCostPlan(ctx context.Context, tx pgx.Tx, org, project, version string) 
 	return p, rows.Err()
 }
 func (s *Store) costTx(ctx context.Context, org, project, actor string, w CostWrite) (pgx.Tx, costs.Plan, error) {
+	return s.costTxMode(ctx, org, project, actor, w, false)
+}
+
+// Preparation reads the latest draft under the lock; user edits still require a version.
+func (s *Store) costTxMode(ctx context.Context, org, project, actor string, w CostWrite, prepare bool) (pgx.Tx, costs.Plan, error) {
 	tx, e := s.pool.Begin(ctx)
 	if e != nil {
 		return nil, costs.Plan{}, e
@@ -171,7 +180,7 @@ func (s *Store) costTx(ctx context.Context, org, project, actor string, w CostWr
 		if p.Status != "draft" {
 			return fail(ErrFrozenCostPlan)
 		}
-		if w.PlanVersionID == "" || p.Version != w.Version {
+		if !prepare && (w.PlanVersionID == "" || p.Version != w.Version) {
 			return fail(ErrVersionConflict)
 		}
 	}
@@ -192,6 +201,9 @@ func (s *Store) finishCost(ctx context.Context, tx pgx.Tx, org, project, id stri
 	if _, e = appendEvent(ctx, s.q.WithTx(tx), org, "costs", "", string(raw)); e != nil {
 		return p, e
 	}
+	if e = s.decorateCostPlan(ctx, tx, org, project, &p); e != nil {
+		return p, e
+	}
 	return p, tx.Commit(ctx)
 }
 func (s *Store) SaveCostSettings(ctx context.Context, org, project, actor string, in CostSettingsInput) (costs.Plan, error) {
@@ -203,8 +215,18 @@ func (s *Store) SaveCostSettings(ctx context.Context, org, project, actor string
 		return p, e
 	}
 	defer tx.Rollback(ctx)
-	if len(p.Items) > 0 && (p.Currency != in.Currency || p.TaxBasis != in.TaxBasis) {
-		return p, fmt.Errorf("%w: currency and tax basis cannot change after items exist", costs.ErrInvalid)
+	if p.Currency != in.Currency || p.TaxBasis != in.TaxBasis {
+		// Blank defaults must not lock settings simply because Costs was opened.
+		// Preserve the existing protection for manual lines and monetary inputs.
+		for _, item := range p.Items {
+			locked := item.SourceKey == "" || item.Rate != nil
+			for _, value := range item.Values {
+				locked = locked || value.Amount != nil || value.Low != nil || value.High != nil
+			}
+			if locked {
+				return p, fmt.Errorf("%w: currency and tax basis cannot change after manual lines or amounts exist", costs.ErrInvalid)
+			}
+		}
 	}
 	_, e = tx.Exec(ctx, `UPDATE cost_plan_versions SET currency=$3,tax_basis=$4,tax_rate=$5::text::numeric,price_date=$6::text::date,coverage=$7,funding_target=$8::text::numeric,funding_target_provenance=$9::jsonb||jsonb_build_object('actor',$10::text,'at',now()) WHERE org_id=$1::uuid AND id=$2::uuid`, org, p.ID, in.Currency, in.TaxBasis, in.TaxRate, in.PriceDate, in.Coverage, in.FundingTarget, in.FundingTargetProvenance, actor)
 	if e != nil {
@@ -212,7 +234,16 @@ func (s *Store) SaveCostSettings(ctx context.Context, org, project, actor string
 	}
 	return s.finishCost(ctx, tx, org, project, p.ID)
 }
-func costTargets(ctx context.Context, tx pgx.Tx, org, project, version, id string, c costs.Content) error {
+func (s *Store) costTargets(ctx context.Context, tx pgx.Tx, org, project, version, id string, c costs.Content) error {
+	if c.SystemID != "" {
+		cat := s.workCatalog()
+		if cat == nil {
+			return costs.ErrInvalid
+		}
+		if _, ok := cat.System(c.SystemID); !ok {
+			return costs.ErrInvalid
+		}
+	}
 	var u pgtype.UUID
 	for _, v := range []string{id, c.ParentItemID, c.WorkItemID, c.PackageID, c.PackageStageID} {
 		if v != "" && u.Scan(v) != nil {
@@ -233,6 +264,19 @@ func costTargets(ctx context.Context, tx pgx.Tx, org, project, version, id strin
 		}
 		if !ok {
 			return ErrNotFound
+		}
+	}
+	if c.PackageID != "" && (c.LineKind == "fee" || (c.LineKind == "works" && c.WorkItemID == "")) {
+		kind := "works"
+		if c.LineKind == "fee" {
+			kind = "services"
+		}
+		var matches bool
+		if e := tx.QueryRow(ctx, `SELECT kind=$4 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid`, org, project, c.PackageID, kind).Scan(&matches); e != nil {
+			return e
+		}
+		if !matches {
+			return fmt.Errorf("%w: package kind does not match cost line", costs.ErrInvalid)
 		}
 	}
 	if c.PackageStageID != "" {
@@ -271,11 +315,11 @@ func costTargets(ctx context.Context, tx pgx.Tx, org, project, version, id strin
 	}
 	return nil
 }
-func insertCostItem(ctx context.Context, tx pgx.Tx, org, project, version, actor, id string, c costs.Content) error {
+func (s *Store) insertCostItem(ctx context.Context, tx pgx.Tx, org, project, version, actor, id string, c costs.Content) error {
 	if e := costs.ValidateContent(c); e != nil {
 		return e
 	}
-	if e := costTargets(ctx, tx, org, project, version, id, c); e != nil {
+	if e := s.costTargets(ctx, tx, org, project, version, id, c); e != nil {
 		return e
 	}
 	if _, e := tx.Exec(ctx, `INSERT INTO cost_items(org_id,project_id,id,created_in_version_id) VALUES($1::uuid,$2::uuid,$3::uuid,$4::uuid)`, org, project, id, version); e != nil {
@@ -283,12 +327,15 @@ func insertCostItem(ctx context.Context, tx pgx.Tx, org, project, version, actor
 	}
 	return writeCostContent(ctx, tx, org, project, version, actor, id, c, false)
 }
+
+const costContentSQL = `INSERT INTO cost_item_revisions(org_id,project_id,plan_version_id,cost_item_id,parent_item_id,code,label,line_kind,category,work_item_id,package_id,package_stage_id,posting,quantity,unit,rate,rate_basis,excluded,origin,meaning,rationale,provenance,system_id) SELECT $1::uuid,$2::uuid,$3::uuid,$4::uuid,NULLIF(x.parent_item_id,'')::uuid,x.code,x.label,x.line_kind,NULLIF(x.category,''),NULLIF(x.work_item_id,'')::uuid,NULLIF(x.package_id,'')::uuid,NULLIF(x.package_stage_id,'')::uuid,x.posting,x.quantity::numeric,NULLIF(x.unit,''),x.rate::numeric,NULLIF(x.rate_basis,''),x.excluded,x.origin,x.meaning,x.rationale,jsonb_build_object('actor',$6::text,'at',now()),NULLIF(x.system_id,'') FROM jsonb_to_record($5::jsonb) AS x(system_id text,parent_item_id text,code text,label text,line_kind text,category text,work_item_id text,package_id text,package_stage_id text,posting boolean,quantity text,unit text,rate text,rate_basis text,excluded boolean,origin text,meaning text,rationale text)`
+
 func writeCostContent(ctx context.Context, tx pgx.Tx, org, project, version, actor, id string, c costs.Content, update bool) error {
 	raw, _ := json.Marshal(c)
 	// jsonb_populate_record preserves decimal inputs without a binary-number hop.
-	sql := `INSERT INTO cost_item_revisions(org_id,project_id,plan_version_id,cost_item_id,parent_item_id,code,label,line_kind,category,work_item_id,package_id,package_stage_id,posting,quantity,unit,rate,rate_basis,excluded,origin,meaning,rationale,provenance) SELECT $1::uuid,$2::uuid,$3::uuid,$4::uuid,NULLIF(x.parent_item_id,'')::uuid,x.code,x.label,x.line_kind,NULLIF(x.category,''),NULLIF(x.work_item_id,'')::uuid,NULLIF(x.package_id,'')::uuid,NULLIF(x.package_stage_id,'')::uuid,x.posting,x.quantity::numeric,NULLIF(x.unit,''),x.rate::numeric,NULLIF(x.rate_basis,''),x.excluded,x.origin,x.meaning,x.rationale,jsonb_build_object('actor',$6::text,'at',now()) FROM jsonb_to_record($5::jsonb) AS x(parent_item_id text,code text,label text,line_kind text,category text,work_item_id text,package_id text,package_stage_id text,posting boolean,quantity text,unit text,rate text,rate_basis text,excluded boolean,origin text,meaning text,rationale text)`
+	sql := costContentSQL
 	if update {
-		sql += ` ON CONFLICT(org_id,plan_version_id,cost_item_id) DO UPDATE SET parent_item_id=excluded.parent_item_id,code=excluded.code,label=excluded.label,line_kind=excluded.line_kind,category=excluded.category,work_item_id=excluded.work_item_id,package_id=excluded.package_id,package_stage_id=excluded.package_stage_id,posting=excluded.posting,quantity=excluded.quantity,unit=excluded.unit,rate=excluded.rate,rate_basis=excluded.rate_basis,excluded=excluded.excluded,origin=excluded.origin,meaning=excluded.meaning,rationale=excluded.rationale,provenance=cost_item_revisions.provenance||excluded.provenance,version=cost_item_revisions.version+1`
+		sql += ` ON CONFLICT(org_id,plan_version_id,cost_item_id) DO UPDATE SET system_id=excluded.system_id,parent_item_id=excluded.parent_item_id,code=excluded.code,label=excluded.label,line_kind=excluded.line_kind,category=excluded.category,work_item_id=excluded.work_item_id,package_id=excluded.package_id,package_stage_id=excluded.package_stage_id,posting=excluded.posting,quantity=excluded.quantity,unit=excluded.unit,rate=excluded.rate,rate_basis=excluded.rate_basis,excluded=excluded.excluded,origin=excluded.origin,meaning=excluded.meaning,rationale=excluded.rationale,provenance=cost_item_revisions.provenance||excluded.provenance,version=cost_item_revisions.version+1`
 	}
 	_, e := tx.Exec(ctx, sql, org, project, version, id, raw, actor)
 	return e
@@ -300,7 +347,7 @@ func (s *Store) CreateCostItem(ctx context.Context, org, project, actor string, 
 	}
 	defer tx.Rollback(ctx)
 	id := newID()
-	if e = insertCostItem(ctx, tx, org, project, p.ID, actor, id, in.Content); e != nil {
+	if e = s.insertCostItem(ctx, tx, org, project, p.ID, actor, id, in.Content); e != nil {
 		return p, e
 	}
 	for m, v := range in.Values {
@@ -308,6 +355,11 @@ func (s *Store) CreateCostItem(ctx context.Context, org, project, actor string, 
 			return p, costs.ErrInvalid
 		}
 		if e = writeCostValue(ctx, tx, org, project, p.ID, id, actor, m, v); e != nil {
+			return p, e
+		}
+	}
+	if in.CalculateBudget {
+		if e = calculateItemBudget(ctx, tx, org, project, p.ID, id, actor, in.Content); e != nil {
 			return p, e
 		}
 	}
@@ -337,11 +389,16 @@ func (s *Store) PatchCostItem(ctx context.Context, org, project, id, actor strin
 	if e = costs.ValidateContent(in.Content); e != nil {
 		return p, e
 	}
-	if e = costTargets(ctx, tx, org, project, p.ID, id, in.Content); e != nil {
+	if e = s.costTargets(ctx, tx, org, project, p.ID, id, in.Content); e != nil {
 		return p, e
 	}
 	if e = writeCostContent(ctx, tx, org, project, p.ID, actor, id, in.Content, true); e != nil {
 		return p, e
+	}
+	if in.CalculateBudget {
+		if e = calculateItemBudget(ctx, tx, org, project, p.ID, id, actor, in.Content); e != nil {
+			return p, e
+		}
 	}
 	return s.finishCost(ctx, tx, org, project, p.ID)
 }

@@ -41,15 +41,13 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Fire engineering", exact: true }).click();
-	let incomplete = true;
-	await page.route("**/api/reports/*/draft", async route => {
-	  if (incomplete) { incomplete = false; expect(route.request().postDataJSON().use_last_completed).toBe(false); await route.fulfill({ status: 409, json: { error: "reading_incomplete" } }); }
-	  else { expect(route.request().postDataJSON().use_last_completed).toBe(true); await route.continue(); }
-	});
-  await page.getByRole("button", { name: "Assemble draft", exact: true }).click();
-	await expect(page.getByText("Document reading is incomplete", { exact: true })).toBeVisible();
-	await page.getByRole("button", { name: "Use last completed state", exact: true }).click();
-	await page.unroute("**/api/reports/*/draft");
+  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Assemble draft", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Use last completed state", exact: true })).toHaveCount(0);
+  await page.route("**/api/reports/*/draft", async route => {
+    expect(route.request().postDataJSON().use_last_completed).toBe(true);
+    await route.continue();
+  });
   await expect(page.getByRole("heading", { name: "Stages, services and deliverables", exact: true })).toBeVisible();
   await expect(page.getByText("included. Review fire strategy and identify required investigations.. Deliverable: Fire strategy report", { exact: true })).toBeVisible();
   const packageBlock = page.locator(".report-block").filter({ has: page.getByRole("heading", { name: "Package", exact: true }) });

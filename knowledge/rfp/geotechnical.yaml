@@ -1,5 +1,5 @@
 id: geotechnical
-version: 1
+version: 2
 status: draft
 title: Geotechnical services
 heading: 'REQUEST FOR PROPOSAL: GEOTECHNICAL SERVICES'
@@ -299,6 +299,7 @@ allowances:
     - g2_field
 positions:
 - key: plan
+  group: Investigation and access
   label: Investigation plan and issues register reconciled to allowances
   kind: technical
   value: I
@@ -308,6 +309,7 @@ positions:
   - kind: seed
     ref: geotechnical#44,47
 - key: foundation
+  group: Ground design parameters
   label: Foundation/bearing/settlement advice; structural engineer designs
   kind: technical
   value:
@@ -323,6 +325,7 @@ positions:
     ref: geotechnical#44,47,48
   if_unknown: ask
 - key: civil_parameters
+  group: Ground design parameters
   label: Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance
   kind: technical
   value:
@@ -338,6 +341,7 @@ positions:
     ref: geotechnical#45
   if_unknown: ask
 - key: monitoring
+  group: Ground design parameters
   label: Beyond-spot groundwater monitoring / hydrogeology / dewatering; define objective, duration and specialist
   kind: technical
   value: O
@@ -347,6 +351,7 @@ positions:
   - kind: seed
     ref: geotechnical#45
 - key: asset_exposure
+  group: Investigation and access
   label: Buried tank/OSD/services/asset exposure; no integrity certification; civil capacity/structural adequacy
   kind: technical
   value:
@@ -360,6 +365,7 @@ positions:
     ref: geotechnical#15,16,17,18,19,20
   if_unknown: ask
 - key: clearance
+  group: Investigation and access
   label: Locating/clearance before intrusive work; name isolation/potholing party
   kind: technical
   value:
@@ -375,6 +381,7 @@ positions:
     ref: geotechnical#47
   if_unknown: ask
 - key: access
+  group: Investigation and access
   label: Occupied access, tenant liaison and permits
   kind: technical
   value: X
@@ -385,6 +392,7 @@ positions:
     ref: geotechnical#47
   responsible: client access lead (name in R4)
 - key: defects
+  group: Specialist assessment
   label: Defect/distress diagnosis; expert evidence separate, structural engineer designs remedy
   kind: technical
   value: O
@@ -392,6 +400,7 @@ positions:
   - kind: seed
     ref: geotechnical#48,49
 - key: environment
+  group: Specialist assessment
   label: Contamination, waste classification, remediation/validation and independent audit
   kind: technical
   value: X
@@ -402,6 +411,7 @@ positions:
     ref: geotechnical#50
   responsible: separately appointed environmental consultant (name in R4)
 - key: ass
+  group: Specialist assessment
   label: Acid sulfate soil assessment; define desktop/intrusive/management package from evidence
   kind: technical
   value:
@@ -417,6 +427,7 @@ positions:
     ref: geotechnical#50
   if_unknown: ask
 - key: handback
+  group: Investigation and access
   label: Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners
   kind: technical
   value:
@@ -433,6 +444,7 @@ positions:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
   if_unknown: ask
 - key: construction
+  group: Construction and transfer
   label: G6 inspections/tests/scoped completion; contractor books, named others supervise/design temporary works
   kind: technical
   value:
@@ -451,6 +463,7 @@ positions:
     why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the purchased
       stage.
 - key: transfer
+  group: Construction and transfer
   label: G7 novation/transfer; separate appointment and fee, never inferred from route
   kind: technical
   value:

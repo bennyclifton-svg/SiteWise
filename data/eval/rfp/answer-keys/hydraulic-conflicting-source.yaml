@@ -83,7 +83,8 @@ snapshot: false
 expect:
   hydraulic-services:
     positions:
-      sources: ask
+      rainwater: ask
+      alternative_sources: ask
       treatment: ask
       trade: ask
       declarations: ask

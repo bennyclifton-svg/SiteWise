@@ -1,5 +1,7 @@
 # Hydraulic services — request for proposal
 
+The [11 October Hydraulic pilot](../../design/2026-10-11-hydraulic-rfp-pilot.md) supersedes the layout below: combined Scope of services, combined stage/R1 pricing, no evaluation, and release/close dates at the top. This document retains the source wording; the [generated pilot specimen](../../../internal/rfp/testdata/hydraulic-camp-design/hydraulic-services.md) shows the current output.
+
 Status: draft for owner review. Complete project selections and allowances before issue. References (#n) point to the [evidence ledger](ledger.md); source offers are historical evidence, not fee benchmarks. Statutory applicability and identifiers remain unverified until checked for this project.
 
 ## 1. Project and appointment

@@ -20,17 +20,27 @@ type Settings struct {
 	FundingTargetProvenance json.RawMessage `json:"funding_target_provenance"`
 }
 type Plan struct {
-	BaselineVersionID string `json:"baseline_version_id"`
-	ID                string `json:"id"`
-	ProjectID         string `json:"project_id"`
-	Revision          int    `json:"revision"`
-	Version           int64  `json:"version"`
-	Status            string `json:"status"`
+	Totals            *Totals `json:"totals,omitempty"`
+	BaselineVersionID string  `json:"baseline_version_id"`
+	ID                string  `json:"id"`
+	ProjectID         string  `json:"project_id"`
+	Revision          int     `json:"revision"`
+	Version           int64   `json:"version"`
+	Status            string  `json:"status"`
 	Settings
-	Items []Item `json:"items"`
-	Links []Link `json:"links"`
+	Suggestions []Suggestion `json:"suggestions"`
+	Dismissed   []Suggestion `json:"dismissed"`
+	Systems     []CostSystem `json:"systems"`
+	Items       []Item       `json:"items"`
+	Links       []Link       `json:"links"`
 }
+type CostSystem struct {
+	ID    string `json:"id"`
+	Label string `json:"label"`
+}
+
 type Content struct {
+	SystemID       string `json:"system_id"`
 	ParentItemID   string `json:"parent_item_id"`
 	Code           string `json:"code"`
 	Label          string `json:"label"`
@@ -50,12 +60,15 @@ type Content struct {
 	Rationale      string `json:"rationale"`
 }
 type Item struct {
-	ID      string `json:"cost_item_id"`
-	Version int64  `json:"version"`
+	ResolvedPackageID string `json:"resolved_package_id"`
+	ID                string `json:"cost_item_id"`
+	Version           int64  `json:"version"`
 	Content
-	SystemID string           `json:"system_id"`
-	PartID   string           `json:"part_id"`
-	Values   map[string]Value `json:"values"`
+	SourceKey        string           `json:"source_key"`
+	ResolvedCategory string           `json:"resolved_category"`
+	ScopeWorkItems   []ScopeWork      `json:"scope_work_items"`
+	PartID           string           `json:"part_id"`
+	Values           map[string]Value `json:"values"`
 }
 type Value struct {
 	Amount     *Money          `json:"amount"`
@@ -93,15 +106,15 @@ func ValidateContent(c Content) error {
 	}
 	switch c.LineKind {
 	case "works":
-		if c.WorkItemID == "" || c.PackageStageID != "" || c.Category != "" {
+		if (c.WorkItemID == "") == (c.SystemID == "") || c.PackageStageID != "" || c.Category != "" {
 			return ErrInvalid
 		}
 	case "fee":
-		if c.PackageID == "" || c.PackageStageID == "" || c.WorkItemID != "" || c.Category != "" {
+		if c.PackageID == "" || c.SystemID != "" || c.WorkItemID != "" || c.Category != "" {
 			return ErrInvalid
 		}
 	case "project_wide":
-		if c.WorkItemID != "" || c.PackageID != "" || c.PackageStageID != "" {
+		if c.SystemID != "" || c.WorkItemID != "" || c.PackageID != "" || c.PackageStageID != "" {
 			return ErrInvalid
 		}
 		switch c.Category {

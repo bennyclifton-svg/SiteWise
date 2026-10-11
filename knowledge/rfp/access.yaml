@@ -1,5 +1,5 @@
 id: access
-version: 1
+version: 2
 status: draft
 title: Access consulting services
 heading: 'REQUEST FOR PROPOSAL: ACCESS CONSULTING'
@@ -405,6 +405,7 @@ allowances:
       not establish included work or current statutory requirements.
 positions:
 - key: review
+  group: Access strategy and routes
   label: Access review against confirmed basis at appointed stages only
   kind: technical
   value: I
@@ -416,6 +417,7 @@ positions:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
       not establish included work or current statutory requirements.
 - key: existing
+  group: Access strategy and routes
   label: Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade
     or exemption
   kind: technical
@@ -446,6 +448,7 @@ positions:
       legal upgrade trigger.
   if_unknown: ask
 - key: shared_routes
+  group: Access strategy and routes
   label: 'Mixed uses/buildings/tenancies: continuous routes, shared entries/lifts/amenities; resolve adjoining-property/tenancy
     reliance'
   kind: technical
@@ -466,6 +469,7 @@ positions:
       not establish included work or current statutory requirements.
   if_unknown: ask
 - key: housing
+  group: Facilities and housing
   label: 'Housing/SDA targets: named scheme, unit types and assessor; residential label alone does not appoint'
   kind: technical
   value:
@@ -485,6 +489,7 @@ positions:
       not establish included work or current statutory requirements.
   if_unknown: ask
 - key: facilities
+  group: Facilities and housing
   label: Hearing/signage/tactile/lift/facility criteria review; services/AV designs hearing, architect signs, lift
     specialist lifts
   kind: technical
@@ -503,6 +508,7 @@ positions:
       not establish included work or current statutory requirements.
   if_unknown: ask
 - key: solutions
+  group: Specialist assessments
   label: 'Performance departure: brief/method/report/revisions per departure; author/independent assessor, fire/egress
     interfaces and acceptance/completion conditions'
   kind: technical
@@ -517,6 +523,7 @@ positions:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
       not establish included work or current statutory requirements.
 - key: testing
+  group: Specialist assessments
   label: 'Luminance/slip tests: competent named provider, installed-product certificates and field-test extent separately
     priced'
   kind: technical
@@ -529,6 +536,7 @@ positions:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
       not establish included work or current statutory requirements.
 - key: occupied
+  group: Access strategy and routes
   label: Occupied/staged route-continuity review at appointed stages; repeat audits only within selected visit/stage
     allowances; contractor methods/safety, operator management
   kind: technical
@@ -558,6 +566,7 @@ positions:
       legal upgrade trigger.
   if_unknown: ask
 - key: inclusive
+  group: Facilities and housing
   label: Beyond-minimum inclusive/user/operational brief, sensory/cognitive needs and action plan; owner training/ongoing
     management
   kind: technical
@@ -581,6 +590,7 @@ positions:
     why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
       and reliance; no discrimination-immunity promise.
 - key: remediation
+  group: Specialist assessments
   label: Remediation/heritage access options from specialist diagnosis/advice; no structural/fire/conservation/hazardous-material
     design
   kind: technical
@@ -601,6 +611,7 @@ positions:
     why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
       legal upgrade trigger.
 - key: peer
+  group: Specialist assessments
   label: 'Independent peer review/expert evidence: independence, reliance and legal instruction; no transfer of
     design duty'
   kind: technical
@@ -698,7 +709,7 @@ terms:
       not establish included work or current statutory requirements.
   replace: true
 - key: questions
-  text: Questions to {field:contact} by {field:questions_by}; scope answers as numbered addenda to all tenderers;
+  text: Issue scope answers as numbered addenda to all tenderers;
     acknowledge each.
   provenance:
   - kind: client_decision
@@ -793,7 +804,7 @@ returnable_notes:
       and reliance; no discrimination-immunity promise.
   replace: true
 - key: r6
-  text: 'Each sections 3-6/agreement departure or unresolved fact: reason, alternative, fee/time, owner/date/evidence,
+  text: 'Each sections 2-5/agreement departure or unresolved fact: reason, alternative, fee/time, owner/date/evidence,
     or nil. Cover meetings, authority scope, tests/solutions, housing, IP/reliance, liability/payment/insurance.'
   provenance:
   - kind: evidence

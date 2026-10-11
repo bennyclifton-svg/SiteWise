@@ -1,5 +1,5 @@
 id: fire-services
-version: 1
+version: 2
 status: draft
 title: Fire services
 heading: 'REQUEST FOR PROPOSAL: FIRE SERVICES'
@@ -123,7 +123,7 @@ boundary:
   start: advisory
   end: advisory
 - start: inception
-  end: tender
+  end: design
 stages:
 - key: inception
   name: S1 Evidence
@@ -372,6 +372,7 @@ allowances:
       establish universal requirements.
 positions:
 - key: wet
+  group: Water supply and wet fire
   label: Listed sprinklers/hydrants/hose reels/pumps/tanks/boosters by area; concept versus detailed extent
   kind: technical
   provenance:
@@ -402,6 +403,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: supply
+  group: Water supply and wet fire
   label: Demand/storage calculations; pressure statement is not installed performance
   kind: technical
   provenance:
@@ -430,6 +432,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: authority
+  group: Water supply and wet fire
   label: Listed enquiry/test/meter/backflow/connection/augmentation duties; operator/payer named
   kind: technical
   provenance:
@@ -460,6 +463,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: dry
+  group: Detection and systems coordination
   label: Allocated detection/alarms/smoke alarms/monitoring/warning; one designer each
   kind: technical
   provenance:
@@ -490,6 +494,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: controls
+  group: Detection and systems coordination
   label: Matrix coordination; name author/programmer/point-checker/test leader/witness
   kind: technical
   provenance:
@@ -520,6 +525,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: plant
+  group: Detection and systems coordination
   label: Plant interface review; structural/MEP specialists design supports/enclosure/power/ventilation/drainage/penetrations
   kind: technical
   provenance:
@@ -550,6 +556,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: existing
+  group: Existing systems and special hazards
   label: Defined investigation; records are not condition proof; upgrade separate
   kind: technical
   provenance:
@@ -574,6 +581,7 @@ positions:
     - investigation
   if_unknown: ask
 - key: upgrade
+  group: Existing systems and special hazards
   label: Existing upgrade design subject to investigation/accepted strategy
   kind: technical
   provenance:
@@ -602,6 +610,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: staging
+  group: Existing systems and special hazards
   label: Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer strategy
   kind: technical
   provenance:
@@ -613,6 +622,7 @@ positions:
       establish universal requirements.
   value: O
 - key: remediation
+  group: Existing systems and special hazards
   label: 'Orders/defects: evidence, diagnosis, separate remedy/verification; no whole-building conclusion'
   kind: technical
   provenance:
@@ -624,6 +634,7 @@ positions:
       establish universal requirements.
   value: O
 - key: hazards
+  group: Existing systems and special hazards
   label: Special hazards/high storage/process/batteries/special suppression
   kind: technical
   provenance:
@@ -638,6 +649,7 @@ positions:
   value: X
   responsible: hazard / suppression specialist
 - key: strategy
+  group: Detection and systems coordination
   label: Fire strategy and performance solutions
   kind: technical
   provenance:
@@ -650,6 +662,7 @@ positions:
   value: X
   responsible: fire engineer
 - key: declarations
+  group: Declarations and later services
   label: Scoped declarations/lodgement/certification; verify jurisdiction/competence; no approval guarantee
   kind: technical
   provenance:
@@ -680,6 +693,7 @@ positions:
     - handover
   if_unknown: ask
 - key: continuation
+  group: Declarations and later services
   label: Express continued design/novation
   kind: technical
   provenance:
@@ -698,6 +712,7 @@ positions:
       - continuation
     else: O
 - key: construction
+  group: Declarations and later services
   label: Quantified construction support
   kind: technical
   provenance:
@@ -716,6 +731,7 @@ positions:
       - construction
     else: O
 - key: witness
+  group: Declarations and later services
   label: Selected test witnessing/handover evidence
   kind: technical
   provenance:
@@ -734,6 +750,7 @@ positions:
       - handover
     else: O
 - key: execution
+  group: Declarations and later services
   label: Test execution separately priced to named trades
   kind: technical
   provenance:
@@ -835,7 +852,7 @@ terms:
       establish universal requirements.
   replace: true
 - key: questions
-  text: Questions to {field:contact} by {field:questions_by}; numbered addenda to all, acknowledged in R1.
+  text: Issue numbered addenda to all, acknowledged in R1.
   provenance:
   - kind: client_decision
     ref: fire-services#53
@@ -919,7 +936,7 @@ returnable_notes:
       establish universal requirements.
   replace: true
 - key: r6
-  text: 'Sections 3-6/agreement departures: alternative/reason/fee/time; exclusions and parties, conflicts, assumptions
+  text: 'Sections 2–5/agreement departures: alternative/reason/fee/time; exclusions and parties, conflicts, assumptions
     with owner/date/consequence/review point.'
   provenance:
   - kind: evidence

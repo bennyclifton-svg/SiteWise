@@ -1,5 +1,5 @@
 id: arborist
-version: 1
+version: 2
 status: draft
 title: Arboricultural consulting services
 heading: 'REQUEST FOR PROPOSAL: ARBORICULTURAL CONSULTING'
@@ -382,6 +382,7 @@ allowances:
   owner: client
 positions:
 - key: inventory
+  group: Tree evidence and impacts
   label: Onsite tree survey/condition assessment; method, date and uncertainty stated
   kind: technical
   value: I
@@ -393,6 +394,7 @@ positions:
     why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
       or current requirements.
 - key: offsite
+  group: Tree evidence and impacts
   label: Neighbour/street trees; ownership, referrals and access limits; inaccessible trees retained with confidence
     limits
   kind: technical
@@ -416,6 +418,7 @@ positions:
     - arborist_offsite_trees
   if_unknown: ask
 - key: heritage
+  group: Tree evidence and impacts
   label: Significant/heritage tree controls and referrals; confirm current authority and permission owner
   kind: technical
   value:
@@ -434,6 +437,7 @@ positions:
     ref: arborist#29
     why: Confirm current controls without treating advice as permission.
 - key: impacts
+  group: Tree evidence and impacts
   label: Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; civil/structure
     design, surveyor locations
   kind: technical
@@ -458,6 +462,7 @@ positions:
   - flag:
     - arborist_tree_impacts
 - key: pruning
+  group: Recommendations and protection
   label: Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor
     executes/disposes/reinstates
   kind: technical
@@ -476,6 +481,7 @@ positions:
       or current requirements.
   if_unknown: ask
 - key: supervision
+  group: Recommendations and protection
   label: Tree works/protection supervision at scheduled visits/hold points
   kind: technical
   value:
@@ -492,6 +498,7 @@ positions:
     why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
       or current requirements.
 - key: landscape
+  group: Specialist investigations and others
   label: Replacement planting / landscape design
   kind: technical
   value: X
@@ -506,6 +513,7 @@ positions:
       or current requirements.
   responsible: landscape architect
 - key: specialists
+  group: Specialist investigations and others
   label: Ecology, bushfire and heritage assessment
   kind: technical
   value: X
@@ -520,6 +528,7 @@ positions:
       or current requirements.
   responsible: appointed ecology, bushfire and heritage specialists
 - key: existing
+  group: Tree evidence and impacts
   label: Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3
     plan separate; investigate before root attribution, structure/geotech diagnose
   kind: technical
@@ -544,6 +553,7 @@ positions:
       or current requirements.
   if_unknown: ask
 - key: investigation
+  group: Specialist investigations and others
   label: Internal/root/canopy/soil investigation; defined method and limits
   kind: technical
   value:
@@ -562,6 +572,7 @@ positions:
     why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
       or current requirements.
 - key: risk
+  group: Specialist investigations and others
   label: Formal risk assessment; defined method/limits, no freedom-from-failure warranty
   kind: technical
   value:
@@ -580,6 +591,7 @@ positions:
     why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
       or current requirements.
 - key: monitoring
+  group: Recommendations and protection
   label: Ongoing monitoring with finite duration, visits and close-out
   kind: technical
   value:
@@ -676,7 +688,7 @@ terms:
       or current requirements.
   replace: true
 - key: questions
-  text: Numbered questions to {field:contact} by {field:questions_by}; numbered addenda to all tenderers, acknowledged
+  text: Issue numbered addenda to all tenderers, acknowledged
     in proposal.
   provenance:
   - kind: client_decision
@@ -761,7 +773,7 @@ returnable_notes:
       or current requirements.
   replace: true
 - key: r6
-  text: 'Sections 3-6 and agreement departures: reason, alternative, fee/time and decision or nil; unknown/conflicting
+  text: 'Sections 2–5 and agreement departures: reason, alternative, fee/time and decision or nil; unknown/conflicting
     facts or authorised assumption with owner/date/consequence/review point; name excluded-work parties.'
   provenance:
   - kind: evidence

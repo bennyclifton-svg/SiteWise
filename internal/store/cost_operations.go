@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/costs"
@@ -67,7 +68,10 @@ func (s *Store) SubdivideCostItem(ctx context.Context, org, project, item, actor
 			return p, costs.ErrInvalid
 		}
 		id := newID()
-		if e = insertCostItem(ctx, tx, org, project, p.ID, actor, id, child.Content); e != nil {
+		if child.WorkItemID != "" {
+			child.SystemID = ""
+		}
+		if e = s.insertCostItem(ctx, tx, org, project, p.ID, actor, id, child.Content); e != nil {
 			return p, e
 		}
 		for m, v := range child.Values {
@@ -80,6 +84,10 @@ func (s *Store) SubdivideCostItem(ctx context.Context, org, project, item, actor
 		c := parent.Content
 		c.ParentItemID = item
 		c.Label = "Unallocated — " + c.Label
+		if c.LineKind == "works" {
+			c.PackageID = ""
+			c.PackageStageID = ""
+		}
 		c.Code = ""
 		c.Quantity = nil
 		c.Rate = nil
@@ -87,7 +95,10 @@ func (s *Store) SubdivideCostItem(ctx context.Context, org, project, item, actor
 		c.RateBasis = ""
 		c.Meaning = "allowance"
 		id := newID()
-		if e = insertCostItem(ctx, tx, org, project, p.ID, actor, id, c); e != nil {
+		if c.WorkItemID != "" {
+			c.SystemID = ""
+		}
+		if e = s.insertCostItem(ctx, tx, org, project, p.ID, actor, id, c); e != nil {
 			return p, e
 		}
 		for m, v := range residual {
@@ -104,6 +115,22 @@ func (s *Store) BaselineCostPlan(ctx context.Context, org, project, actor string
 		return p, e
 	}
 	defer tx.Rollback(ctx)
+	if _, e = s.prepareCostLines(ctx, tx, org, project, actor, p); e != nil {
+		return p, e
+	}
+	p, e = readCostPlan(ctx, tx, org, project, p.ID)
+	if e != nil {
+		return p, e
+	}
+	if e = s.decorateCostPlan(ctx, tx, org, project, &p); e != nil {
+		return p, e
+	}
+	for _, item := range p.Items {
+		scope, _ := json.Marshal(item.ScopeWorkItems)
+		if _, e = tx.Exec(ctx, `UPDATE cost_item_revisions SET resolved_category=$4,scope_work_items=$5::jsonb,provenance=provenance||jsonb_build_object('resolved_package_id',$6::text) WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, org, p.ID, item.ID, item.ResolvedCategory, scope, item.ResolvedPackageID); e != nil {
+			return p, e
+		}
+	}
 	// Capture dimensions now; later work-item edits cannot rewrite a baseline.
 	if _, e = tx.Exec(ctx, `UPDATE cost_item_revisions r SET system_id=w.system_id,part_id=w.part_id FROM work_items w WHERE r.org_id=$1::uuid AND r.plan_version_id=$2::uuid AND w.org_id=r.org_id AND w.project_id=r.project_id AND w.id=r.work_item_id`, org, p.ID); e != nil {
 		return p, e
@@ -127,7 +154,7 @@ func cloneCostRows(ctx context.Context, tx pgx.Tx, org, old, id string) error {
 	// Explicit columns ensure later schema additions require a conscious snapshot
 	// decision rather than silently disappearing from a baseline clone.
 	queries := []string{
-		`INSERT INTO cost_item_revisions(org_id,project_id,plan_version_id,cost_item_id,parent_item_id,code,label,line_kind,category,work_item_id,package_id,package_stage_id,posting,quantity,unit,rate,rate_basis,excluded,origin,review_status,meaning,rationale,provenance,system_id,part_id,version) SELECT org_id,project_id,$3::uuid,cost_item_id,parent_item_id,code,label,line_kind,category,work_item_id,package_id,package_stage_id,posting,quantity,unit,rate,rate_basis,excluded,origin,review_status,meaning,rationale,provenance,system_id,part_id,version FROM cost_item_revisions WHERE org_id=$1::uuid AND plan_version_id=$2::uuid`,
+		`INSERT INTO cost_item_revisions(org_id,project_id,plan_version_id,cost_item_id,parent_item_id,code,label,line_kind,category,work_item_id,package_id,package_stage_id,posting,quantity,unit,rate,rate_basis,excluded,origin,review_status,meaning,rationale,provenance,system_id,part_id,version,source_key,resolved_category,scope_work_items) SELECT org_id,project_id,$3::uuid,cost_item_id,parent_item_id,code,label,line_kind,category,work_item_id,package_id,package_stage_id,posting,quantity,unit,rate,rate_basis,excluded,origin,review_status,meaning,rationale,provenance,system_id,part_id,version,source_key,resolved_category,scope_work_items FROM cost_item_revisions WHERE org_id=$1::uuid AND plan_version_id=$2::uuid`,
 		`INSERT INTO cost_values(org_id,project_id,plan_version_id,cost_item_id,metric,value_state,amount,low,high,as_of,origin,review_status,meaning,rationale,provenance,version) SELECT org_id,project_id,$3::uuid,cost_item_id,metric,value_state,amount,low,high,as_of,origin,review_status,meaning,rationale,provenance,version FROM cost_values WHERE org_id=$1::uuid AND plan_version_id=$2::uuid`,
 		`INSERT INTO scope_cost_links(org_id,project_id,plan_version_id,package_scope_item_id,cost_item_id) SELECT org_id,project_id,$3::uuid,package_scope_item_id,cost_item_id FROM scope_cost_links WHERE org_id=$1::uuid AND plan_version_id=$2::uuid`,
 	}
@@ -188,22 +215,86 @@ func (s *Store) RemoveCostItem(ctx context.Context, org, project, item, actor st
 		return p, e
 	}
 	defer tx.Rollback(ctx)
+	remove := map[string]bool{item: true}
 	found := false
 	for _, i := range p.Items {
 		if i.ID == item {
 			found = true
 		}
-		if i.ParentItemID == item {
-			return p, fmt.Errorf("%w: remove or reparent children first", costs.ErrInvalid)
-		}
 	}
 	if !found {
 		return p, ErrNotFound
 	}
-	for _, q := range []string{`DELETE FROM scope_cost_links WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, `DELETE FROM cost_values WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, `DELETE FROM cost_item_revisions WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`} {
-		if _, e = tx.Exec(ctx, q, org, p.ID, item); e != nil {
-			return p, e
-		}
+	if e = s.removeCostItems(ctx, tx, org, project, actor, p, remove); e != nil {
+		return p, e
 	}
 	return s.finishCost(ctx, tx, org, project, p.ID)
+}
+
+// Shared by line removal and atomic Procurement removal; retains frozen history.
+func (s *Store) removeCostItems(ctx context.Context, tx pgx.Tx, org, project, actor string, p costs.Plan, remove map[string]bool) error {
+	var e error
+	// Expand by ancestry, including manually added descendants.
+	for changed := true; changed; {
+		changed = false
+		for _, i := range p.Items {
+			if remove[i.ParentItemID] && !remove[i.ID] {
+				remove[i.ID] = true
+				changed = true
+			}
+		}
+	}
+	// A manual fee or works line may have suppressed a default by scope rather
+	// than by source key. Preserve that removal choice when its default is uncovered.
+	remaining := p
+	remaining.Items = nil
+	manual := []costs.Item{}
+	for _, i := range p.Items {
+		if !remove[i.ID] {
+			remaining.Items = append(remaining.Items, i)
+		}
+		if remove[i.ID] && i.SourceKey == "" && (i.LineKind == "fee" || i.LineKind == "works") {
+			manual = append(manual, i)
+		}
+	}
+	if len(manual) > 0 {
+		input, err := s.costSuggestInput(ctx, tx, org, project, remaining)
+		if err != nil {
+			return err
+		}
+		for _, sg := range costs.Suggest(input) {
+			for _, i := range manual {
+				matches := i.LineKind == "fee" && sg.LineKind == "fee" && i.PackageID == sg.PackageID
+				matches = matches || (i.LineKind == "works" && sg.LineKind == "works" && input.Catalog.SystemWithin(sg.SystemID, i.SystemID))
+				if matches {
+					if e = dismissCostKey(ctx, tx, org, project, actor, sg.Key); e != nil {
+						return e
+					}
+					break
+				}
+			}
+		}
+	}
+	ids := []string{}
+	for _, i := range p.Items {
+		if !remove[i.ID] {
+			continue
+		}
+		ids = append(ids, i.ID)
+		if i.SourceKey != "" {
+			if e = dismissCostKey(ctx, tx, org, project, actor, i.SourceKey); e != nil {
+				return e
+			}
+		}
+	}
+	for _, q := range []string{
+		`DELETE FROM scope_cost_links WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=ANY($3::uuid[])`,
+		`DELETE FROM cost_values WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=ANY($3::uuid[])`,
+		`DELETE FROM cost_item_revisions WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=ANY($3::uuid[])`,
+	} {
+		if _, e = tx.Exec(ctx, q, org, p.ID, ids); e != nil {
+			return e
+		}
+	}
+	return nil
 }

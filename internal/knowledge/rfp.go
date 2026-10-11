@@ -133,6 +133,8 @@ type RFPAllowance struct {
 type RFPPosition struct {
 	Key         string          `yaml:"key" json:"key"`
 	Label       string          `yaml:"label" json:"label"`
+	Group       string          `yaml:"group" json:"group,omitempty"`
+	Detail      string          `yaml:"detail" json:"detail,omitempty"`
 	Kind        string          `yaml:"kind" json:"kind"` // technical | service_level
 	Value       *RFPCell        `yaml:"value" json:"value,omitempty"`
 	Simple      *RFPCell        `yaml:"simple" json:"simple,omitempty"`

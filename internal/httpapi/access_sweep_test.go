@@ -137,7 +137,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 	// and events. Checking just the returned status would miss partial writes.
 	snapshot := func() map[string]string {
 		out := map[string]string{}
-		for _, table := range []string{"projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs"} {
+		for _, table := range []string{"cost_plan_versions", "cost_plans", "cost_items", "cost_item_revisions", "cost_values", "cost_suggestion_dismissals", "projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs"} {
 			var raw []byte
 			err := conn.QueryRow(ctx, `SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY to_jsonb(r)::text),'[]'::jsonb) FROM `+pgx.Identifier{table}.Sanitize()+` r WHERE org_id=ANY($1::uuid[])`, []string{m.orgID, foreign.orgID}).Scan(&raw)
 			if err != nil {
@@ -154,6 +154,11 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		foreignTarget bool
 	}
 	routes := []route{
+		{"POST", base + "/cost-plan/prepare", []byte(`{}`), false},
+		{"POST", base + "/cost-plan/suggestions/accept", []byte(`{"version":0}`), false},
+		{"POST", base + "/cost-plan/suggestions/pw:escalation/accept", []byte(`{"version":0}`), false},
+		{"POST", base + "/cost-plan/suggestions/pw:escalation/dismiss", []byte(`{"version":0}`), false},
+		{"DELETE", base + "/cost-plan/suggestions/pw:escalation/dismiss", []byte(`{"version":0}`), false},
 		{"PUT", base + "/documents/profile-read", jsonBody(map[string]any{"document_ids": []string{doc}, "setting": "skip"}), true},
 		{"POST", base + "/documents/delete", jsonBody(map[string]any{"document_ids": []string{doc}}), true},
 		{"GET", base + "/works", nil, false}, {"POST", base + "/works", workBody, true}, {"PATCH", base + "/works/" + work.ID, []byte(`{"version":1,"title":"Intrusion"}`), true},

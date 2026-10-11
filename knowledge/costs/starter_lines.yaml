@@ -1,0 +1,12 @@
+version: 1
+status: draft
+sources:
+  - {design: docs/plans/2026-10-10-cost-plan-autofill.md, anchor: "## Owner decisions (2026-10-10)"}
+lines:
+  - {id: design-contingency, label: Design contingency, category: contingency, applies_when: true}
+  - {id: construction-contingency, label: Construction contingency, category: contingency, applies_when: true}
+  - {id: escalation, label: Escalation, category: escalation, applies_when: true}
+  - {id: da-fees, label: DA fees and contributions, category: authority_fees, applies_when: {field: hdr.cond.planning, in: [da]}}
+  - {id: cc-fees, label: Construction certificate and certifier fees, category: authority_fees, applies_when: true}
+  - {id: service-authority, label: Service authority connection fees, category: authority_fees, applies_when: true}
+  - {id: exclusions, label: Exclusions, category: exclusions, applies_when: true}

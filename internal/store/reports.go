@@ -238,8 +238,18 @@ func (s *Store) ProcurementCreate(ctx context.Context, org, project, actor, pack
 }
 
 func (s *Store) RefreshReport(ctx context.Context, org, id, actor, appBuild string, useLastCompleted bool) (ReportDraft, error) {
+	return s.refreshReport(ctx, org, id, actor, appBuild, useLastCompleted, false)
+}
+
+// EnsureReportDraft assembles saved information only when no draft exists.
+// Retries and concurrent Create requests must never replace an edited draft.
+func (s *Store) EnsureReportDraft(ctx context.Context, org, id, actor, appBuild string) (ReportDraft, error) {
+	return s.refreshReport(ctx, org, id, actor, appBuild, true, true)
+}
+
+func (s *Store) refreshReport(ctx context.Context, org, id, actor, appBuild string, useLastCompleted, onlyMissing bool) (ReportDraft, error) {
 	for attempt := 0; attempt < 3; attempt++ {
-		d, err := s.refreshReportOnce(ctx, org, id, actor, appBuild, useLastCompleted)
+		d, err := s.refreshReportOnce(ctx, org, id, actor, appBuild, useLastCompleted, onlyMissing)
 		var pgErr *pgconn.PgError
 		if !errors.As(err, &pgErr) || pgErr.Code != "40001" {
 			return d, err
@@ -248,7 +258,7 @@ func (s *Store) RefreshReport(ctx context.Context, org, id, actor, appBuild stri
 	return ReportDraft{}, ErrVersionConflict
 }
 
-func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild string, useLastCompleted bool) (ReportDraft, error) {
+func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild string, useLastCompleted, onlyMissing bool) (ReportDraft, error) {
 	var d ReportDraft
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
@@ -264,6 +274,15 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 	}
 	if err := packageActor(ctx, tx, org, actor); err != nil {
 		return d, err
+	}
+	// The project lock serialises writers but does not advance this repeatable-
+	// read snapshot. Lock the report too: a concurrent assembly then causes a
+	// serialization retry instead of inserting a second draft number.
+	if _, err := tx.Exec(ctx, `SELECT id FROM reports WHERE org_id=$1::uuid AND id=$2::uuid FOR UPDATE`, org, id); err != nil {
+		return d, err
+	}
+	if onlyMissing && r.CurrentDraftVersionID != "" {
+		return readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
 	}
 	var pkg procurement.Package
 	if r.Kind != "pmp" {

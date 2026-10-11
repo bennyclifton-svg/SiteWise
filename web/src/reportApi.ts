@@ -11,7 +11,7 @@ export interface ReportPackage { id: string; title: string; kind: string; retire
 export interface RfpCheck { id: string; label: string; text: string; blocking: boolean; control?: string; changes?: string[] }
 export interface RfpChoice { value: string; label: string }
 export type RfpControlKind = "choice" | "tristate" | "parts" | "number" | "text" | "date" | "money" | "stage" | "element" | "count" | "position" | "weight";
-export interface RfpControl { key: string; label: string; kind: RfpControlKind; value: unknown; options?: RfpChoice[]; source: string; why?: string; help?: string; locked?: boolean; set: boolean; party?: string; owner?: string; home?: RfpHome }
+export interface RfpControl { key: string; label: string; kind: RfpControlKind; value: unknown; options?: RfpChoice[]; source: string; why?: string; help?: string; locked?: boolean; set: boolean; party?: string; owner?: string; home?: RfpHome; target?: string }
 /** Where a fact: control saves (detail, header, site, determinant), or where it is changed instead (locked). */
 export type RfpHome = "detail" | "header" | "site" | "determinant" | "cost_plan" | "link" | "derived";
 export interface RfpGroup { id: string; title: string; /** The report section these controls edit. */ section: string; controls: RfpControl[] }
@@ -29,6 +29,7 @@ export const reportApi = {
   create: (project: string, packageId: string, kind = "rfp") => request<SavedReport>("POST", `/projects/${project}/reports`, { kind, package_id: kind === "pmp" ? "" : packageId }),
   issue: (id: string, options: { version: number; reporting_date: string; budget_disclosed: boolean; accept_stale: boolean; stale_reason: string }) => request("POST", `/reports/${id}/issue`, options),
   read: (id: string) => request<ReportView>("GET", `/reports/${id}`),
+  ensure: (id: string) => request<ReportDraft>("POST", `/reports/${id}/draft`, { only_if_missing: true }),
   refresh: (id: string, useLastCompleted = false) => request<ReportDraft>("POST", `/reports/${id}/draft`, { use_last_completed: useLastCompleted }),
   edit: (id: string, target: string, text: string, version: number) => request<ReportDraft>("PUT", `/reports/${id}/edits/${encodeURIComponent(target)}`, { text, version }),
 	reset: (id: string, target: string, version: number) => request<ReportDraft>("DELETE", `/reports/${id}/edits/${encodeURIComponent(target)}`, { version }),

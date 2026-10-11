@@ -1,6 +1,6 @@
-### 1. Project
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
-Ref WASTE-TEST · Issued 2026-10-12 · Closes 2026-10-30 · Contact Project manager
+### 1. Project
 
 Example Client intends to refurbish and fit out Residential floors (Class 2) and Food retail fit-out (Class 6) at 1 Example St, Example NSW.
 
@@ -13,48 +13,68 @@ Conditions that apply: Work to an existing building; Site stays occupied or oper
 
 Information provided: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 
-### 2. Your role
+### 2. Scope of services
 
 Selected waste advice from written instruction/agreed inputs to named final output and response round. Contractor implements; operator contracts collections; specialists classify controlled waste; traffic tests access. No approval, facility acceptance, diversion or savings guarantee.
 Revision-controlled PDFs/plans/calculations and editable registers: input revisions, units/source/date, assumptions, owners/dates, recipients/reliance and closure evidence. Separate observed, reported and estimated conditions.
 Waste basis: Confirm actual uses/occupancy/activity by part, streams, dated quantities/rates, local controls/conditions and mandatory versus voluntary targets; existing contracts, collection vehicles/frequency, rights and gaps. Building labels and absent records prove neither zero waste nor adequate collection.
 
-### 3. Scope by stage
+I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
 
-Select base/options and named end; operational and C&D plans are separate purchases. Later work needs written activation. Options are priced on their own and are not in the base fee.
+| Scope of services | I | O | X | ? |
+|---|---|---|---|---|
+| Waste planning and collection — Operational WMP: actual streams, bins/storage and collection; dated rates/records only | X |  |  |  |
+| C&D plan: separate quantities, reuse/disposal pathways and tracking | X |  |  |  |
+| Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings. By competent environmental/hazardous-waste specialist named in R4 |  |  | X |  |
+| Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator engagement separate | X |  |  |  |
+| Facilities and design interfaces — Vehicle swept paths/clearances; civil/structural confirm grades and loads. By traffic engineer named in R4, not yet engaged |  |  | X |  |
+| Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power | X |  |  |  |
+| Equipment design, supply and commissioning. By equipment supplier or engineer named in R4, not yet engaged |  |  | X |  |
+| Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated assumptions | X |  |  |  |
+| Delivery and verification — Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service |  | X |  |  |
+| Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee |  | X |  |  |
+| Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence |  | X |  |  |
+| Post-occupation records/cost review: separately selected period and operator actions |  | X |  |  |
+| Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer |  | X |  |  |
 
-| Stage | Deliverable at sign-off |
-|---|---|
-| S1 Inception / evidence | Brief, local controls/consents, operator arrangements and agreed visits; input gaps, stream/stakeholder schedule and responsibility map. Existing work: photos, retained/removed extent and safe access; remediation follows specialist diagnosis |
-| S2 Operational concept | Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste, rooms/routes/chutes and collection points. Compare feasibility before space is fixed |
-| S3 Operational plan | Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties; scheduled drafts, council forms/consultation/responses to named milestone. Confirm operator acceptance owner/date |
-| S3 C&D plan | Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage, reuse/recycling/disposal pathways and tracking evidence. Confirm contractor processes/destinations later if unavailable; no hazardous audit |
-| S4 Consent / design review (option) | Conditions and design changes checked against selected plans; space, routes, wash-down/drainage, ventilation/security and fire/acoustic interfaces. Assign/close actions; equipment drawings separately commissioned. A later stage the client may commission. |
-| S5 Tender support (option) | Functional criteria, selected plan updates, waste targets/tracking clauses and counted RFIs. D&C design intent and contractor selections/detailed-design duties explicit; no daily waste management. A later stage the client may commission. |
-| S6 Contractor review (option) | Selected processes/equipment/design changes, plan updates and counted authority responses; retained versus novated role and handover. No automatic novation or supplier design. A later stage the client may commission. |
-| S7 Construction / completion (option) | Sample tracking/destination evidence and counted room/route hold-point visits; deviations, outstanding gaps and qualified completion report for inspected/evidenced scope. Authority/certifier retains approval. A later stage the client may commission. |
-| S8 Advisory review (option) | Defined advice/audit/options/cost decision: evidence cutoff, sampling/inspection limits, calculations/confidence, reliance and prioritised actions; independent peer/expert evidence separately selected. A later stage the client may commission. |
-| S8 Post-occupation review (option) | Review actual collection records/costs over stated period against assumptions; prioritise actions and operator ownership. No ongoing management or savings guarantee. A later stage the client may commission. |
+### 3. Scope by stage and fee proposal
+
+Select base/options and named end; operational and C&D plans are separate purchases. Later work needs written activation.  R1 Fee by stage: Price selected stages/services once: quantities, fixed/ceiling/unit basis, base/options, package dependencies, ex GST/GST/total, milestones and addenda. Confirm authorised signatory and addenda numbers. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
+
+| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
+|---|---|---|---|---|
+| S1 Inception / evidence — Included | Brief, local controls/consents, operator arrangements and agreed visits; input gaps, stream/stakeholder schedule and responsibility map. Existing work: photos, retained/removed extent and safe access; remediation follows specialist diagnosis |  |  |  |
+| S2 Operational concept — Included | Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste, rooms/routes/chutes and collection points. Compare feasibility before space is fixed |  |  |  |
+| S3 Operational plan — Included | Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties; scheduled drafts, council forms/consultation/responses to named milestone. Confirm operator acceptance owner/date |  |  |  |
+| S3 C&D plan — Included | Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage, reuse/recycling/disposal pathways and tracking evidence. Confirm contractor processes/destinations later if unavailable; no hazardous audit |  |  |  |
+| S4 Consent / design review — Option | Conditions and design changes checked against selected plans; space, routes, wash-down/drainage, ventilation/security and fire/acoustic interfaces. Assign/close actions; equipment drawings separately commissioned |  |  |  |
+| S5 Tender support — Option | Functional criteria, selected plan updates, waste targets/tracking clauses and counted RFIs. D&C design intent and contractor selections/detailed-design duties explicit; no daily waste management |  |  |  |
+| S6 Contractor review — Option | Selected processes/equipment/design changes, plan updates and counted authority responses; retained versus novated role and handover. No automatic novation or supplier design |  |  |  |
+| S7 Construction / completion — Option | Sample tracking/destination evidence and counted room/route hold-point visits; deviations, outstanding gaps and qualified completion report for inspected/evidenced scope. Authority/certifier retains approval |  |  |  |
+| S8 Advisory review — Option | Defined advice/audit/options/cost decision: evidence cutoff, sampling/inspection limits, calculations/confidence, reliance and prioritised actions; independent peer/expert evidence separately selected |  |  |  |
+| S8 Post-occupation review — Option | Review actual collection records/costs over stated period against assumptions; prioritise actions and operator ownership. No ongoing management or savings guarantee |  |  |  |
+| Base fee total | Included stages and elements only |  |  |  |
+| Service option | Occupied/staged/heritage/remediation interim plans/checks |  |  |  |
+| Service option | Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee |  |  |  |
+| Service option | Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence |  |  |  |
+| Service option | Post-occupation records/cost review: separately selected period and operator actions |  |  |  |
+| Service option | Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer |  |  |  |
+| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
 Allocate counts to each selected stage/service below, not every category. Complete quantities or authorised assumption with owner/date/consequence; fixed fee, time ceiling or unit/quantity; separate options/package dependencies.
 
-| Item | Allowance | Item | Allowance |
-|---|---|---|---|
-| Physical coverage | 2 buildings/tenancies/uses, rooms, streams, points/routes and staging packages; desktop versus measured evidence | Plans / rounds | 2 operational/C&D plans, draft/final issues, consolidated reviews, revisions, authority forms/responses |
-| Coordination | 2 meetings by stage/duration/location; council/operator consultations, RFI ceiling and tender period | Design / testing | 2 equipment rooms/drawings, vehicle/layout tests and specialist investigations; name separate providers |
-| Site / completion | 2 visits/revisits, areas/hold points, tracking samples/reporting periods, staged handovers and operational reviews | Duration / extras | 2 months; access/travel/out-of-hours, delay/cancellation/remobilisation and extra review/meeting/room/visit units |
+| Item | Allowance |
+|---|---|
+| Physical coverage | 2 buildings/tenancies/uses, rooms, streams, points/routes and staging packages; desktop versus measured evidence |
+| Plans / rounds | 2 operational/C&D plans, draft/final issues, consolidated reviews, revisions, authority forms/responses |
+| Coordination | 2 meetings by stage/duration/location; council/operator consultations, RFI ceiling and tender period |
+| Design / testing | 2 equipment rooms/drawings, vehicle/layout tests and specialist investigations; name separate providers |
+| Site / completion | 2 visits/revisits, areas/hold points, tracking samples/reporting periods, staged handovers and operational reviews |
+| Duration / extras | 2 months; access/travel/out-of-hours, delay/cancellation/remobilisation and extra review/meeting/room/visit units |
 
-### 5. Scope position
-
-Service levels are set for a simple project; technical items follow the project's own facts.
-Included in the fee: Operational WMP: actual streams, bins/storage and collection; dated rates/records only; C&D plan: separate quantities, reuse/disposal pathways and tracking; Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator engagement separate; Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power; Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated assumptions.
-Optional: price each on its own line in R1: Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service; Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee; Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence; Post-occupation records/cost review: separately selected period and operator actions; Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer.
-Excluded: the party named does it: Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings (competent environmental/hazardous-waste specialist named in R4); Vehicle swept paths/clearances; civil/structural confirm grades and loads (traffic engineer named in R4, not yet engaged); Equipment design, supply and commissioning (equipment supplier or engineer named in R4, not yet engaged).
-Tell us in R6 if you disagree with any line. Do not add your own general exclusions; any you add are treated as non-compliant.
-
-### 6. Terms
+### 5. Terms
 
 - Engage under Project waste appointment (attached), scope/fees, addenda and written acceptance; agree precedence and R6 departures before work. No implied acceptance through supplier forms or correspondence.
 - Obtain written authority before extras, ceiling/allowance overruns or fee/time changes; give cause, deliverable, price/basis and program effect.
@@ -62,32 +82,10 @@ Tell us in R6 if you disagree with any line. Do not add your own general exclusi
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - Payment 30 days against agreed milestones. R6 declares deposits/prepayment, release restrictions, surcharges, recovery and suspension terms.
 - Proposal valid 90 days; base/options, ex GST/GST/total and third-party costs separate.
-- Questions to Project manager by 2026-10-23; changed answers issued to all as numbered addenda.
+- Issue changed answers issued to all as numbered addenda.
 - Reasonable professional skill/care; agree project-use/editable-file rights, reliance, retention/handover and confidential disclosure; marketing needs consent. Agreement resolves IP, liability/caps/indemnities, law/disputes and suspension/termination notice/cure.
 
-### 7. Evaluation
-
-Price 40% · Experience 20% · Team 20% · Method/program 10% · Compliance 10%. Compare equivalent plans, stage ends, equipment/traffic interfaces, counts and exclusions before price; lowest fee need not win.
-
 ### Returnable schedules: reply using this structure only
-
-R1 Fee by stage: Price selected stages/services once: quantities, fixed/ceiling/unit basis, base/options, package dependencies, ex GST/GST/total, milestones and addenda. Confirm authorised signatory and addenda numbers.
-
-| Stage | Fee $ excl. GST | Weeks | Hours |
-|---|---|---|---|
-| S1 Inception / evidence |  |  |  |
-| S2 Operational concept |  |  |  |
-| S3 Operational plan |  |  |  |
-| S3 C&D plan |  |  |  |
-| Base fee total |  |  |  |
-| Option: S4 Consent / design review |  |  |  |
-| Option: S5 Tender support |  |  |  |
-| Option: S6 Contractor review |  |  |  |
-| Option: S7 Construction / completion |  |  |  |
-| Option: S8 Advisory review |  |  |  |
-| Option: S8 Post-occupation review |  |  |  |
-| Each optional item in section 5, one line each |  |  |  |
-| Options total |  |  |  |
 
 R2 Deliverables list: Plans, calculations, layouts/forms and condition/decision/completion records: extent/input revisions, formats/editable files, recipients/reliance, rounds/dates and evidence limits.
 R3 Hourly rates: Personnel and extra unit rates; counted rounds/meetings/visits/rooms/tests/reporting periods, travel/delay/cancellation and prior-overrun approval. State rate fixed period/indexation.

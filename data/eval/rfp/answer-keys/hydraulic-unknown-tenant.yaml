@@ -54,16 +54,17 @@ sources:
 - docs/rfp-golden/hydraulic-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/hydraulic-services/ledger.md #1-54'
 scenario: hydraulic-unknown-tenant
-description: Unknown tenant/sources/exterior extent remain open, not assumed industrial scope or exclusions.
+description: Unknown tenant and specialist systems use explicit pricing options; standard rainwater, pump and roof design allowances are included without asserting site facts. Treatment and civil boundaries remain open.
 snapshot: false
 expect:
   hydraulic-services:
     positions:
-      sources: ask
-      pumps: ask
+      rainwater: I
+      alternative_sources: O
+      pumps: I
       treatment: ask
-      roof: ask
+      roof: I
       civil: ask
-      trade: ask
-      gas: ask
-      utility: ask
+      trade: O
+      gas: O
+      utility: O

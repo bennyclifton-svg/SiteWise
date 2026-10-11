@@ -63,7 +63,8 @@ type Control struct {
 	// Home is the kind of Profile home a fact: control writes to (detail,
 	// header, site, determinant), or where it is changed instead
 	// (cost_plan, link, derived; then Locked).
-	Home string `json:"home,omitempty"`
+	Home   string `json:"home,omitempty"`
+	Target string `json:"target,omitempty"` // Scope row that owns the input in the unified editor.
 }
 
 // BuildControls is pure: it reads the resolved RFP, the rules and the
@@ -88,7 +89,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	// Controls sit where their value prints: page one is the project; the
 	// parts covered, scope choices and the discipline's own inputs belong to
 	// the appointment in section 2.
-	appointment := Group{ID: "appointment", Title: "This appointment", Section: "role"}
+	appointment := Group{ID: "appointment", Title: "Scope basis", Section: "positions"}
 	// A project fact is read from Profile and an edit writes it there (D1),
 	// so it is never "set" on the RFP.
 	factControl := func(key, label, kind string, opts []Choice, help string) Control {
@@ -169,7 +170,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	c.Groups = append(c.Groups, project, appointment)
 
 	stages := Group{ID: "stages", Title: "Stages", Section: "stages"}
-	stateOptions := []Choice{{Include, "In the base fee"}, {Option, "Priced as an option"}, {Exclude, "Not in this RFP"}, {Done, "Done by others"}}
+	stateOptions := []Choice{{Include, "In the base fee"}, {Option, "Priced as an option"}, {Exclude, "Not in this RFP"}, {Done, "Done by others"}, {Ask, "Unknown"}}
 	for _, s := range r.Stages {
 		stages.Controls = append(stages.Controls, Control{Key: "stage:" + s.Key, Label: s.Name, Kind: "stage", Value: s.State, Options: stateOptions, Source: s.Source, Why: s.Why, Locked: s.Locked, Set: isSet("stage:" + s.Key), Help: s.ShownWhen})
 	}
@@ -177,7 +178,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	if len(r.Elements) > 0 {
 		elements := Group{ID: "elements", Title: "Priced elements", Section: "stages"}
 		for _, e := range r.Elements {
-			elements.Controls = append(elements.Controls, Control{Key: "element:" + e.Key, Label: e.Code + " " + e.Name, Kind: "element", Value: e.State, Options: stateOptions[:3], Source: e.Source, Why: e.Why, Set: isSet("element:" + e.Key)})
+			elements.Controls = append(elements.Controls, Control{Key: "element:" + e.Key, Label: e.Code + " " + e.Name, Kind: "element", Value: e.State, Options: []Choice{{Include, "In the base fee"}, {Option, "Priced as an option"}, {Exclude, "Not in this RFP"}, {Ask, "Unknown"}}, Source: e.Source, Why: e.Why, Set: isSet("element:" + e.Key)})
 		}
 		c.Groups = append(c.Groups, elements)
 	}
@@ -187,7 +188,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	}
 	c.Groups = append(c.Groups, allowances)
 	positions := Group{ID: "positions", Title: "Scope position", Section: "positions"}
-	for _, p := range r.Positions {
+	for _, p := range r.Scope {
 		why := p.Why
 		if p.Assumption != "" {
 			why = p.Assumption
@@ -195,25 +196,52 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 		positions.Controls = append(positions.Controls, Control{Key: "position:" + p.Key, Label: p.Label, Kind: "position", Value: p.Value, Options: []Choice{{"I", "Included"}, {"O", "Optional"}, {"X", "Excluded"}}, Source: p.Source, Why: why, Party: p.Party, Set: isSet("position:" + p.Key)})
 	}
 	c.Groups = append(c.Groups, positions)
-	// The agreement and commercial terms print in section 6; the issue
-	// details close the RFP, where it is issued (section "issue" is the
-	// screen's own, never printed).
+	{
+		for i := range c.Groups {
+			g := &c.Groups[i]
+			if g.ID == "positions" {
+				g.Title = "Scope of services"
+				for j := range g.Controls {
+					g.Controls[j].Options = append(g.Controls[j].Options, Choice{Ask, "Unknown"})
+				}
+			}
+			if g.ID == "appointment" {
+				// Parts belong with the project. Scope facts remain available for
+				// resolving conflicting evidence inline, not as a second scope list.
+				kept := []Control{}
+				for _, control := range g.Controls {
+					if control.Key == "parts:affected" {
+						c.Groups[0].Controls = append(c.Groups[0].Controls, control)
+					} else {
+						kept = append(kept, control)
+					}
+				}
+				g.Controls = kept
+			}
+		}
+	}
+	// Terms follow allowances; proposal dates lead the document.
 	terms := Group{ID: "terms", Title: "Terms", Section: "terms"}
-	issue := Group{ID: "issue", Title: "Issue details", Section: "issue"}
+	issue := Group{ID: "issue", Title: "Proposal dates", Section: "issue_dates"}
 	for _, f := range sk.Fields {
 		switch f.Group {
 		case "terms":
 			terms.Controls = append(terms.Controls, field(f))
 		case "issue":
+			{
+				if !proposalDateField(f.Key) {
+					continue
+				}
+				if f.Key == "issued" {
+					f.Label = "Release date"
+				}
+			}
 			issue.Controls = append(issue.Controls, field(f))
 		}
 	}
 	c.Groups = append(c.Groups, terms)
-	weights := Group{ID: "weights", Title: "Evaluation weights", Section: "evaluation"}
-	for _, w := range r.Weights {
-		weights.Controls = append(weights.Controls, Control{Key: "weight:" + w.Key, Label: w.Label + " (%)", Kind: "weight", Value: w.Value, Source: w.Source, Set: isSet("weight:" + w.Key)})
-	}
-	c.Groups = append(c.Groups, weights, issue)
+	c.Groups = append(c.Groups, issue)
+	assignScopeInputs(&c, d, sk)
 	return c
 }
 

@@ -13,17 +13,20 @@ type Total struct {
 	Basis         map[string]int `json:"basis,omitempty"`
 }
 type Totals struct {
-	By          string                      `json:"by"`
-	Currency    string                      `json:"currency"`
-	TaxBasis    string                      `json:"tax_basis"`
-	Groups      map[string]map[string]Total `json:"groups"`
-	Overall     map[string]Total            `json:"overall"`
-	Works       map[string]Total            `json:"works"`
-	Fees        map[string]Total            `json:"fees"`
-	ProjectWide map[string]Total            `json:"project_wide"`
-	Variance    *Money                      `json:"variance"`
-	Items       map[string]Figures          `json:"items"`
-	Buckets     map[string]Derived          `json:"buckets"`
+	Sections       map[string]map[string]Total `json:"sections"`
+	SectionItems   map[string]string           `json:"section_items"`
+	SectionFigures map[string]Derived          `json:"section_figures"`
+	By             string                      `json:"by"`
+	Currency       string                      `json:"currency"`
+	TaxBasis       string                      `json:"tax_basis"`
+	Groups         map[string]map[string]Total `json:"groups"`
+	Overall        map[string]Total            `json:"overall"`
+	Works          map[string]Total            `json:"works"`
+	Fees           map[string]Total            `json:"fees"`
+	ProjectWide    map[string]Total            `json:"project_wide"`
+	Variance       *Money                      `json:"variance"`
+	Items          map[string]Figures          `json:"items"`
+	Buckets        map[string]Derived          `json:"buckets"`
 }
 
 // Derived figures are worked out here so the grid never sums money in the
@@ -127,6 +130,12 @@ func Summarize(plan Plan, by string) (Totals, error) {
 		return Totals{}, ErrInvalid
 	}
 	out := Totals{By: by, Currency: plan.Currency, TaxBasis: plan.TaxBasis, Groups: map[string]map[string]Total{}, Overall: emptyTotals(), Works: emptyTotals(), Fees: emptyTotals(), ProjectWide: emptyTotals(), Items: map[string]Figures{}, Buckets: map[string]Derived{}}
+	out.Sections = map[string]map[string]Total{}
+	out.SectionFigures = map[string]Derived{}
+	out.SectionItems = CostSections(plan.Items)
+	for _, section := range []string{"authority", "consultants", "construction", "contingency"} {
+		out.Sections[section] = emptyTotals()
+	}
 	for _, item := range plan.Items {
 		if !item.Posting {
 			continue
@@ -137,6 +146,7 @@ func Summarize(plan Plan, by string) (Totals, error) {
 			continue
 		}
 		addLine(out.Overall, item)
+		addLine(out.Sections[out.SectionItems[item.ID]], item)
 		switch item.LineKind {
 		case "works":
 			addLine(out.Works, item)
@@ -158,7 +168,10 @@ func Summarize(plan Plan, by string) (Totals, error) {
 			}
 			key = item.PartID
 		case "package":
-			key = item.PackageID
+			key = item.ResolvedPackageID
+			if key == "" {
+				key = item.PackageID
+			}
 		}
 		if key == "" {
 			key = "unallocated"
@@ -167,6 +180,18 @@ func Summarize(plan Plan, by string) (Totals, error) {
 			out.Groups[key] = emptyTotals()
 		}
 		addLine(out.Groups[key], item)
+	}
+	for key, bucket := range out.Sections {
+		for metric, total := range bucket {
+			if total.Lines == 0 {
+				total.Amount = nil
+				total.Low = nil
+				total.High = nil
+				total.Complete = false
+				bucket[metric] = total
+			}
+		}
+		out.SectionFigures[key] = Derived{BudgetVariance: diff(bucket["budget"].Amount, bucket["forecast"].Amount), Remaining: diff(bucket["forecast"].Amount, bucket["claimed_to_date"].Amount)}
 	}
 	for _, bucket := range []map[string]Total{out.Overall, out.Works, out.Fees, out.ProjectWide} {
 		for metric, total := range bucket {
@@ -214,4 +239,38 @@ func Residual(parent Value, children []Value) (Value, error) {
 	out.Low = nil
 	out.High = nil
 	return out, nil
+}
+
+// CostSections keeps descendants in their root's display section, including legacy trees.
+func CostSections(items []Item) map[string]string {
+	byID := map[string]Item{}
+	for _, i := range items {
+		byID[i.ID] = i
+	}
+	result := map[string]string{}
+	for _, i := range items {
+		root := i
+		seen := map[string]bool{i.ID: true}
+		for root.ParentItemID != "" {
+			parent, ok := byID[root.ParentItemID]
+			if !ok || seen[parent.ID] {
+				break
+			}
+			seen[parent.ID] = true
+			root = parent
+		}
+		section := "contingency"
+		switch root.LineKind {
+		case "fee":
+			section = "consultants"
+		case "works":
+			section = "construction"
+		case "project_wide":
+			if root.Category == "authority_fees" {
+				section = "authority"
+			}
+		}
+		result[i.ID] = section
+	}
+	return result
 }

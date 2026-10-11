@@ -37,7 +37,7 @@ templates:
         clauses: [{id: cl.rfp-proposal-response, version: 1}]
 
   - id: tpl.rfp-consultant
-    version: 1
+    version: 2
     kind: rfp
     status: draft
     sources:
@@ -45,12 +45,11 @@ templates:
       - {design: docs/plans/2026-10-09-consultant-rfp-build.md, anchor: "## 2. Design decisions"}
     sections:
       - {id: project, title: "1. Project", essential: true, clauses: []}
-      - {id: role, title: "2. Your role", essential: true, clauses: []}
-      - {id: stages, title: "3. Scope by stage", essential: true, clauses: []}
+      - {id: role, title: "Scope obligations", essential: true, clauses: []}
+      - {id: stages, title: "3. Scope by stage and fee proposal", essential: true, clauses: []}
       - {id: allowances, title: "4. Allowances", essential: true, clauses: []}
-      - {id: positions, title: "5. Scope position", essential: true, clauses: []}
-      - {id: terms, title: "6. Terms", essential: true, clauses: []}
-      - {id: evaluation, title: "7. Evaluation", essential: true, clauses: []}
+      - {id: positions, title: "2. Scope of services", essential: true, clauses: []}
+      - {id: terms, title: "5. Terms", essential: true, clauses: []}
       - {id: returnables, title: "Returnable schedules: reply using this structure only", essential: true, clauses: []}
   - id: tpl.rft
     version: 1

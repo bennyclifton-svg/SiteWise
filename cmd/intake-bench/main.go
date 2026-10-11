@@ -391,7 +391,7 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.procurement(ctx, o.apiSamples); err != nil {
 		return 0, err
 	}
-	if err := api.costs(ctx, o.apiSamples); err != nil {
+	if err := api.costs(ctx, st, o.apiSamples); err != nil {
 		return 0, err
 	}
 	if err := api.delivery(ctx, o.apiSamples); err != nil {

@@ -26,11 +26,11 @@ const margin = 42.52 // 15 mm in PDF points.
 var ErrOverflow = errors.New("report exceeds its page limit; shorten the report or identify an attachment")
 
 // PageLimit is the issued length allowed for a report's template. Consultant
-// RFPs carry a schedule of returnables and may run to three pages (owner
-// decision O1, 2026-10-09); every other report keeps two.
+// RFPs retain complete scope and element pricing in up to four pages after
+// the October 2026 template consolidation. Three remains the target; other reports keep two.
 func PageLimit(s reports.IssueSnapshot) (int, float64) {
 	if s.SourceRevisions.TemplateID == "tpl.rfp-consultant" {
-		return 3, 2.5
+		return 4, 3
 	}
 	return 2, 1.5
 }
@@ -155,8 +155,10 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 		leading = 1.2
 	}
 	for _, section := range s.Sections {
-		if err := appendText(section.Title, 11, true, 4); err != nil {
-			return out, err
+		if section.Title != "" {
+			if err := appendText(section.Title, 11, true, 4); err != nil {
+				return out, err
+			}
 		}
 		for _, b := range section.Blocks {
 			document := b.Table != nil && b.Table.Display == "document"
@@ -205,6 +207,9 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 				pad := 10.0
 				if document {
 					widths, pad = columnWidths(*table, width), 4
+					if table.Columns[0] == "Scope of services" || table.Columns[0] == "Stage / position" {
+						pad = 2
+					}
 				}
 				tableRows := append([][]string{table.Columns}, table.Rows...)
 				for rowIndex, row := range tableRows {
@@ -344,6 +349,17 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 // holds, so a long deliverable is not squeezed into an equal share beside a
 // one-letter position. Every column keeps room for a short word.
 func columnWidths(t reports.Table, width float64) []float64 {
+	if len(t.Columns) == 2 && t.Columns[0] == "Item" && t.Columns[1] == "Allowance" {
+		return []float64{width * .25, width * .75}
+	}
+	if len(t.Columns) == 5 && t.Columns[0] == "Scope of services" {
+		return []float64{width * .84, width * .04, width * .04, width * .04, width * .04}
+	}
+	// The consultant stage/fee schedule needs writable fee columns. Text
+	// length alone would squeeze an empty pricing column to a few letters.
+	if len(t.Columns) == 5 && t.Columns[0] == "Stage / position" && t.Columns[1] == "Deliverable at sign-off" {
+		return []float64{width * .18, width * .51, width * .13, width * .09, width * .09}
+	}
 	weights := make([]float64, len(t.Columns))
 	total := 0.0
 	for col := range t.Columns {

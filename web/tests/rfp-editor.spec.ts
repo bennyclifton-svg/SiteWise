@@ -37,14 +37,12 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Procurement", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Create RFP for Architect", exact: true }).click();
-  await page.getByRole("button", { name: "Assemble draft", exact: true }).click();
-  const useCompleted = page.getByRole("button", { name: "Use last completed state", exact: true });
-  if (await useCompleted.isVisible().catch(() => false)) await useCompleted.click();
+  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
 
   // One report: page one is the project, always open in the Profile card's
   // columns; no decisions banner, no stale block.
   await expect(page.getByRole("complementary", { name: "Finish this RFP" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "3. Scope by stage", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "3. Scope by stage and fee proposal", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Decide before issue" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Edit 1. Project", exact: true })).toHaveCount(0);
   const pageOne = page.locator(".rfp-page-one");
@@ -54,14 +52,8 @@ test("one RFP report: page one edited where it prints, checks beside their value
   // A blocking check sits beside what it concerns; the Issue section counts them.
   const issue = page.getByRole("region", { name: "Issue", exact: true });
   await expect(issue.getByRole("button", { name: "Issue report", exact: true })).toBeDisabled();
-  await expect(issue.getByRole("group", { name: "Issue details" }).getByLabel("RFP reference", { exact: true })).toBeVisible();
-  const role = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "2. Your role", exact: true }) });
-  await expect(role.getByText("Appointment not confirmed.", { exact: true })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Proposal dates" }).getByLabel("Release date", { exact: true })).toBeVisible();
   await expect(pageOne.locator('[data-control="fact:client"][data-blocked]')).toBeVisible();
-  await page.screenshot({ path: "../.tools/rfp-report-desktop.png", fullPage: true });
-  await role.locator(".rfp-markers li").filter({ hasText: "Appointment not confirmed" }).getByRole("button", { name: "Show", exact: true }).click();
-  await role.getByRole("button", { name: "Confirm", exact: true }).click();
-  await expect(role.getByText("Appointment not confirmed.", { exact: true })).toHaveCount(0);
 
   // A blank client quantity is marked under section 4 and opens its control.
   const allowances = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "4. Allowances", exact: true }) });
@@ -94,22 +86,16 @@ test("one RFP report: page one edited where it prints, checks beside their value
   expect(saved.details.find((d: { key: string }) => d.key === "proj.client").value).toBe("Inner West Council");
   expect(saved.details.find((d: { key: string }) => d.key === "proj.flag.country").value).toBe("yes");
 
-  // Scope position is this RFP's own choice, edited under section 5.
-  await page.getByRole("button", { name: "Edit 5. Scope position", exact: true }).click();
-  const positions = page.getByRole("group", { name: "Edit positions" });
-  await positions.getByRole("radio", { name: "Help selecting other consultants: excluded" }).check();
-  const scope = page.locator('.report-section').filter({ has: page.getByRole('heading', { name: '5. Scope position', exact: true }) });
-  const excluded = scope.getByRole('table', { name: 'Excluded from this appointment', exact: true });
-  await expect(excluded.getByRole('row').filter({ hasText: 'Help selecting other consultants' })).toContainText('party not named');
-  await expect(scope.locator('.rfp-scope-position .report-wording').filter({ hasText: 'Included in the fee:' })).toHaveCount(0);
-  await expect(positions.locator('[data-control="position:consultant_selection"] .rfp-source')).toHaveText("You");
-
+  const scope = page.locator('.report-section').filter({ has: page.getByRole('heading', { name: '2. Scope of services', exact: true }) });
+  const positions = scope.locator('.hydraulic-service-table');
+  await positions.getByRole('radio', { name: 'Help selecting other consultants: Excluded', exact: true }).check();
+  const selection = positions.locator('tr[data-control="position:consultant_selection"]');
+  await expect(selection).toContainText('party not named');
   await refreshDraft(page);
-  await expect(page.getByRole("group", { name: "Edit positions" }).getByRole("radio", { name: "Help selecting other consultants: excluded" })).toBeChecked();
-  await page.getByRole("group", { name: "Edit positions" }).locator('[data-control="position:consultant_selection"]').getByRole("button", { name: "Reset", exact: true }).click();
-  await expect(page.getByRole("group", { name: "Edit positions" }).getByRole("radio", { name: "Help selecting other consultants: optional" })).toBeChecked();
+  await expect(selection.getByRole('radio', { name: 'Help selecting other consultants: Excluded', exact: true })).toBeChecked();
+  await selection.getByRole('button', { name: 'Reset selection', exact: true }).click();
+  await expect(selection.getByRole('radio', { name: 'Help selecting other consultants: Optional price', exact: true })).toBeChecked();
 
-  await page.getByRole('button', { name: 'Done editing 5. Scope position', exact: true }).click();
   await page.setViewportSize({ width: 1280, height: 2600 });
   await scope.screenshot({ path: '../.tools/rfp-scope-desktop.png' });
   await page.setViewportSize({ width: 390, height: 844 });
@@ -119,14 +105,14 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await page.setViewportSize({ width: 1280, height: 720 });
 
   // Protected wording must never be replaced by tables of old generated scope.
-  await scope.getByRole('button', { name: 'Edit wording:', exact: true }).click();
+  await scope.getByRole('button', { name: 'Edit wording:', exact: true }).last().click();
   await page.getByLabel('Report wording', { exact: true }).fill('Client-approved scope wording; retain this exactly.');
   await page.getByRole('button', { name: 'Save wording', exact: true }).click();
   await expect(scope.getByText('Client-approved scope wording; retain this exactly.', { exact: true })).toBeVisible();
-  await expect(scope.getByRole('table')).toHaveCount(0);
+  await expect(scope.getByRole('table')).toHaveCount(1);
   await refreshDraft(page);
   await expect(scope.getByText('Client-approved scope wording; retain this exactly.', { exact: true })).toBeVisible();
-  await expect(scope.getByRole('table')).toHaveCount(0);
+  await expect(scope.getByRole('table')).toHaveCount(1);
 });
 
 test("a package titled Civil is offered the civil RFP and switches only when confirmed", async ({ page }) => {
@@ -159,17 +145,21 @@ test("electrical keeps its allocation schedule beside grouped positions, with se
   }
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Electrical", exact: true }).click();
-  await page.getByRole("button", { name: "Assemble draft", exact: true }).click();
-  const useCompleted = page.getByRole("button", { name: "Use last completed state", exact: true });
-  if (await useCompleted.isVisible().catch(() => false)) await useCompleted.click();
-  const scope = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "5. Scope position", exact: true }) });
-  const allocation = scope.getByRole("table").filter({ has: page.getByRole("columnheader", { name: "System / interface", exact: true }) });
-  await expect(allocation.getByRole("row")).toHaveCount(8);
+  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Assemble draft", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Use last completed state", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Edit 4. Allowances", exact: true }).click();
+  const allowances = page.getByRole("group", { name: "Edit allowances" });
+  await expect(allowances.getByLabel("Design meetings", { exact: true })).toHaveValue("4");
+  await expect(allowances.getByLabel("Design review rounds", { exact: true })).toHaveValue("1");
+  await page.screenshot({ path: "../.tools/electrical-simplified-desktop.png", fullPage: true });
+  const scope = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "2. Scope of services", exact: true }) });
+  const allocation = scope.locator('.hydraulic-service-table');
   await expect(allocation).toContainText(/smoke alarms/i);
   await expect(allocation).toContainText(/power.*recovery/i);
-  await expect(scope.locator(".rfp-scope-position")).toBeVisible();
+  await expect(allocation).toHaveCount(1);
   await refreshDraft(page);
-  await expect(allocation.getByRole("row")).toHaveCount(8);
+  await expect(allocation).toContainText(/smoke alarms/i);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   await scope.screenshot({ path: "../.tools/rfp-electrical-allocation-mobile.png" });

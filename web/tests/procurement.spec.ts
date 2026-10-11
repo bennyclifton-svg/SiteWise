@@ -62,7 +62,7 @@ test("procurement creates suggested and chosen disciplines, edits scope and remo
   await page.getByRole("dialog").getByRole("button", { name: "Remove", exact: true }).click();
   await expect(page.getByRole("button", { name: "Create RFP for Civil", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Create project management plan", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Assemble draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
   await expect(page.getByRole("button", { name: "View project management plan", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Answer on the profile", exact: true }).click();

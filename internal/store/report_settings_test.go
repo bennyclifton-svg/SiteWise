@@ -106,23 +106,23 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 			}
 		}
 	}
-	if len(visible) == 0 || visible[0] != "1. Project" {
+	if len(visible) < 2 || visible[0] != "" || visible[1] != "1. Project" {
 		t.Fatalf("first visible section %v", visible)
 	}
 	if !strings.Contains(blockText(d, "rfp:role"), "Civil (to be appointed)") {
 		t.Fatalf("other consultants carry their real status: %q", blockText(d, "rfp:role"))
 	}
 	view, err := s.ReadReport(ctx, orgA, r.ID, "test-build")
-	if err != nil || view.RFP == nil || view.PageFit == nil || view.PageFit.Limit != 3 {
-		t.Fatalf("controls and the three-page limit: %+v %v", view.PageFit, err)
+	if err != nil || view.RFP == nil || view.PageFit == nil || view.PageFit.Limit != 4 {
+		t.Fatalf("controls and the four-page limit: %+v %v", view.PageFit, err)
 	}
-	if len(view.RFP.Decisions) == 0 || view.RFP.Decisions[0].ID != "boundary" {
-		t.Fatalf("the appointment boundary is the first decision: %+v", view.RFP.Decisions)
+	if hasCheck(view.RFP.Decisions, "boundary", true) {
+		t.Fatalf("default stage selections need no second confirmation: %+v", view.RFP.Decisions)
 	}
 	frozen, _ := json.Marshal(d.SourceRevisions)
 
 	next := setSetting(t, s, r, d, "position:bim_coordination", `"X"`)
-	if !strings.Contains(blockText(next, "rfp:positions"), "BIM coordination meetings, clash detection (not required)") {
+	if scopeValue(next, "bim_coordination") != "X" {
 		t.Fatalf("setting re-resolves the draft: %q", blockText(next, "rfp:positions"))
 	}
 	after, _ := json.Marshal(next.SourceRevisions)
@@ -149,7 +149,7 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(blockText(refreshed, "rfp:positions"), "BIM coordination meetings, clash detection (not required)") {
+	if scopeValue(refreshed, "bim_coordination") != "X" {
 		t.Fatal("a setting survives refresh")
 	}
 
@@ -174,11 +174,11 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 
 	// Deleting a setting restores the rule.
 	draft := setSetting(t, s, r, *view.Draft, "position:consultant_selection", `"X"`)
-	if !strings.Contains(blockText(draft, "rfp:positions"), "Help selecting other consultants (") {
+	if scopeValue(draft, "consultant_selection") != "X" {
 		t.Fatal("the override excludes the item")
 	}
 	restored, err := s.SetReportSetting(ctx, orgA, r.ID, userA, "position:consultant_selection", nil, draft.Version)
-	if err != nil || strings.Contains(blockText(restored, "rfp:positions"), "Help selecting other consultants (") {
+	if err != nil || scopeValue(restored, "consultant_selection") != "O" {
 		t.Fatalf("delete restores the rule: %v", err)
 	}
 }
@@ -282,7 +282,7 @@ func reviewedCatalog(t *testing.T) *knowledge.Catalog {
 			return err
 		}
 		if filepath.ToSlash(rel) == "rfp/architecture.yaml" {
-			body = []byte(strings.Replace(string(body), "\nstatus: draft\n", "\nstatus: reviewed\nreviewed_by: test owner\nreviewed_on: \"2026-10-10\"\n", 1))
+			body = []byte(strings.Replace(strings.ReplaceAll(string(body), "\r\n", "\n"), "\nstatus: draft\n", "\nstatus: reviewed\nreviewed_by: test owner\nreviewed_on: \"2026-10-10\"\n", 1))
 		}
 		return os.WriteFile(target, body, 0o644)
 	})
@@ -341,7 +341,31 @@ func TestConsultantRFPIssueFreezesAndCarriesForward(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if next.ID == issued.ID || !strings.Contains(blockText(next, "rfp:positions"), "BIM coordination meetings, clash detection (not required)") {
+	if next.ID == issued.ID || scopeValue(next, "bim_coordination") != "X" {
 		t.Fatal("settings carry into the next draft after issue")
 	}
+}
+
+// Scope selections live in the single table's metadata, independently of wording.
+func scopeValue(d store.ReportDraft, key string) string {
+	for _, section := range d.Sections {
+		for _, block := range section.Blocks {
+			if block.ID != "rfp:positions" {
+				continue
+			}
+			var basis struct {
+				Positions []struct {
+					Key   string `json:"key"`
+					Value string `json:"value"`
+				} `json:"positions"`
+			}
+			_ = json.Unmarshal(block.Basis, &basis)
+			for _, p := range basis.Positions {
+				if p.Key == key {
+					return p.Value
+				}
+			}
+		}
+	}
+	return ""
 }

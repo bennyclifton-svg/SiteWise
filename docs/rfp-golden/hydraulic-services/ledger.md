@@ -79,6 +79,9 @@ Seeds are under `data/reference/clerk/data/seed/`. The hydraulic guide was read 
 | 53 | Project-selected PI/PL/workers cover and periods, current competence/registrations/checker, ISO or equivalent QA, named stage team and relevant experience. | Shared skeleton R4/R5/R8 and phase A C2. Proposed client policy |
 | 54 | Evaluation price 40%, experience 20%, team 20%, method/programme 10%, compliance 10%; numbered addenda and R1-R9. Compare equivalent systems, design maturity, authority duties and attendance. | Shared golden defaults and phase A C2. Proposed client policy |
 
+| 55 | Hydraulic pilot: merge role and scope; separate rainwater and unusual sources; use explicit pricing defaults and stage checkboxes; combine stage deliverables and R1 pricing; remove evaluation; release/close dates only, at the top. | Owner direction, 11 October 2026. Draft implementation; no statutory verification or review promotion. |
+| 56 | One interactive scope table with Included, Optional price, Excluded and Unknown; system groups and action-led descriptions; no duplicate fact questionnaire or Rule badges; spell out Water Services Coordinator. | Owner feedback and screenshots, 11 October 2026. Hydraulic pilot only; preserve selections and protected wording. |
+
 ## Preparation boundary
 
 Lane A reference preparation for answer trust and time-to-decision. Only this ledger and RFP change; no runtime, knowledge or dependency changes. Filing budget remains p50 <= 1000 ms and p90 <= 2000 ms; no runtime timing measured for documentation-only work. Draft requires owner review, completed project facts/quantities, current instrument verification and settled agreement before issue.

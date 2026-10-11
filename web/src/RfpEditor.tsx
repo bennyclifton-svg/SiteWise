@@ -18,7 +18,7 @@ const sourceNames: Record<string, string> = {
 const groupIntro: Record<string, string> = {
   stages: "In the base fee, priced as an option, left out, or already done by others.",
   elements: "Elements priced by stage in the R1 grid.",
-  allowances: "Quantities every firm prices. Blank client quantities block issue.",
+  allowances: "Editable quantities every firm prices. Confirm blank quantities for stages included in this appointment.",
   positions: "I included · O optional, priced on its own · X excluded, done by the party named.",
   terms: "Printed in section 6. Terms can differ for each appointment.",
   weights: "How proposals are scored. The weights must total 100%.",
@@ -26,8 +26,8 @@ const groupIntro: Record<string, string> = {
 
 /** The report section a control is edited under ("" when none holds it). */
 export function controlSection(controls: RfpControls, key: string): string {
-  if (key === "boundary:range") return "role";
-  if (key === "scale") return "stages";
+  if (key === "boundary:range") return "stages";
+  if (key === "scale") return "positions";
   return controls.groups.find(g => g.controls.some(c => c.key === key))?.section ?? "";
 }
 
@@ -36,8 +36,10 @@ export function editableSections(controls: RfpControls): Set<string> {
   const out = new Set(controls.groups.filter(g => g.controls.length > 0).map(g => g.section));
   out.add("stages");
   out.add("role");
+  out.delete("role"); out.delete("stages"); out.delete("positions");
   out.delete("project");
   out.delete("issue");
+  out.delete("issue_dates");
   return out;
 }
 
@@ -54,6 +56,7 @@ export function blockedKeys(controls: RfpControls): Set<string> {
 
 /** Blocking checks listed under a section's heading; "" lists those no section holds. */
 export function SectionMarkers({ controls, section, busyKey, onWrite, onJump }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
+  if (section === "positions" || section === "stages") return null;
   const here = controls.decisions.filter(d => (d.control ? controlSection(controls, d.control) : "") === section);
   if (!here.length) return null;
   return <ul className="rfp-markers" aria-label="Blocks issue">
@@ -71,14 +74,14 @@ function CheckAction({ check, controls, busyKey, onWrite, onJump }: { check: Rfp
 }
 
 export function RfpSectionEditor({ controls, section, busyKey, onWrite }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write }) {
-  const groups = controls.groups.filter(g => g.section === section && g.controls.length > 0);
+  const groups = controls.groups.filter(g => g.section === section && g.controls.length > 0 && g.id !== "positions");
   return <div className="rfp-edit" role="group" aria-label={`Edit ${section}`}>
     {section === "role" && <div className="rfp-rows"><Boundary controls={controls} busy={busyKey === "boundary:range"} onWrite={onWrite} /></div>}
     {section === "stages" && <div className="rfp-rows"><Scale controls={controls} busy={busyKey === "scale"} onWrite={onWrite} /></div>}
     {groups.map(g => <div key={g.id} className="rfp-edit-group">
       {(groups.length > 1 || section === "stages" || section === "role") && <h5 className="rfp-edit-title">{g.title}{g.id === "weights" && <WeightTotal controls={g.controls} />}</h5>}
       {groups.length === 1 && g.id === "weights" && <p className="rfp-group-intro"><WeightTotal controls={g.controls} /></p>}
-      {groupIntro[g.id] && <p className="rfp-group-intro">{groupIntro[g.id]}</p>}
+      {groupIntro[g.id] && <p className="rfp-group-intro">{g.id === "terms" ? "Terms for this appointment." : groupIntro[g.id]}</p>}
       <Rows controls={g.controls} busyKey={busyKey} onWrite={onWrite} />
     </div>)}
   </div>;
@@ -103,6 +106,7 @@ export function ProjectPage({ blocks, controls, busyKey, onWrite, onJump, render
   const columns = (block("rfp:project:grid")?.basis?.grid ?? []) as GridColumnData[];
   const conditions = project.filter(c => c.key.startsWith("fact:flag."));
   const information = byKey.get("field:information");
+  const parts = byKey.get("parts:affected");
   const informationText = block("rfp:project:information")?.text.replace(/^Information provided: /, "") || String(information?.value ?? "") || "___";
   return <div className="rfp-page-one">
     {header && <button type="button" className="rfp-strip" title="Change the issue details in the Issue section" onClick={() => onJump("field:ref")}>{header.text}</button>}
@@ -110,6 +114,7 @@ export function ProjectPage({ blocks, controls, busyKey, onWrite, onJump, render
     <div className="pf-card rfp-grid">
       {columns.map(col => <GridColumn key={col.title} column={col} byKey={byKey} busyKey={busyKey} blocked={blocked} onWrite={onWrite} />)}
     </div>
+    {parts && <ControlRow control={parts} busy={busyKey === parts.key} blocked={blocked.has(parts.key)} onWrite={onWrite} />}
     {conditions.length > 0 && <div className="rfp-conditions" role="group" aria-label="Project conditions">
       <h4>Project conditions</h4>
       <div className="rfp-conditions-grid">{conditions.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} blocked={blocked.has(c.key)} onWrite={onWrite} />)}</div>
@@ -161,7 +166,7 @@ function GridValue({ label, text, control, busy, blocked, onWrite }: { label: st
 export function RfpIssue({ controls, busyKey, onWrite, onJump, children }: { controls: RfpControls; busyKey: string; onWrite: Write; onJump: (key?: string) => void; children: ReactNode }) {
   const n = controls.decisions.length;
   const draftRules = controls.status !== "reviewed";
-  const issue = controls.groups.find(g => g.id === "issue")?.controls ?? [];
+  const issue: RfpControl[] = [];
   const blocked = blockedKeys(controls);
   const advisory = controls.checks.filter(c => !c.blocking);
   return <section className="report-section rfp-issue" aria-labelledby="rs-issue">
@@ -173,9 +178,9 @@ export function RfpIssue({ controls, busyKey, onWrite, onJump, children }: { con
     {draftRules && <p className="rfp-rules-note">The {controls.title.toLowerCase()} rules are a draft. You can prepare and edit this RFP; issue stays blocked until the owner marks the rules reviewed.</p>}
     <SectionMarkers controls={controls} section="issue" busyKey={busyKey} onWrite={onWrite} onJump={onJump} />
     <SectionMarkers controls={controls} section="" busyKey={busyKey} onWrite={onWrite} onJump={onJump} />
-    <div className="rfp-issue-grid" role="group" aria-label="Issue details">
+    {issue.length > 0 && <div className="rfp-issue-grid" role="group" aria-label="Issue details">
       {issue.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} blocked={blocked.has(c.key)} onWrite={onWrite} />)}
-    </div>
+    </div>}
     {advisory.length > 0 && <details className="rfp-advisory">
       <summary><strong>Other checks</strong> <span className="rfp-count">{advisory.length}</span></summary>
       <p className="rfp-group-intro">Issue is not blocked by these; review them before you send.</p>
@@ -183,6 +188,13 @@ export function RfpIssue({ controls, busyKey, onWrite, onJump, children }: { con
     </details>}
     {children}
   </section>;
+}
+
+export function RfpReleaseDates({ controls, busyKey, onWrite }: { controls: RfpControls; busyKey: string; onWrite: Write }) {
+  const dates = controls.groups.find(g => g.id === "issue")?.controls ?? [];
+  return <div className="rfp-release-dates" role="group" aria-label="Proposal dates">
+    {dates.map(c => <ControlRow key={c.key} control={c} busy={!!busyKey} onWrite={onWrite} />)}
+  </div>;
 }
 
 
@@ -211,7 +223,7 @@ function Boundary({ controls, busy, onWrite }: { controls: RfpControls; busy: bo
   </div>;
 }
 
-function Scale({ controls, busy, onWrite }: { controls: RfpControls; busy: boolean; onWrite: Write }) {
+export function Scale({ controls, busy, onWrite }: { controls: RfpControls; busy: boolean; onWrite: Write }) {
   const s = controls.scale;
   return <div className="rfp-row" data-control="scale">
     <span className="rfp-label" id="rfp-scale-label">Service level</span>
@@ -229,7 +241,7 @@ function Rows({ controls, busyKey, onWrite }: { controls: RfpControl[]; busyKey:
   return <div className="rfp-rows">{controls.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} onWrite={onWrite} />)}</div>;
 }
 
-function ControlRow({ control: c, busy, blocked, onWrite }: { control: RfpControl; busy: boolean; blocked?: boolean; onWrite: Write }) {
+export function ControlRow({ control: c, busy, blocked, onWrite, showSource = true }: { control: RfpControl; busy: boolean; blocked?: boolean; onWrite: Write; showSource?: boolean }) {
   const id = `rfp-${c.key.replace(/[^a-z0-9]+/gi, "-")}`;
   const labelID = `${id}-label`;
   return <div className="rfp-row" data-control={c.key} data-kind={c.kind} data-blocked={blocked || undefined} aria-busy={busy || undefined}>
@@ -238,7 +250,7 @@ function ControlRow({ control: c, busy, blocked, onWrite }: { control: RfpContro
       : <label className="rfp-label" htmlFor={id}>{c.label}</label>}
     <div className="rfp-value">
       <Control control={c} id={id} labelID={labelID} busy={busy || (!!c.locked && c.kind !== "stage")} onWrite={onWrite} />
-      <Source source={c.set ? "user" : c.source} />
+      {showSource && <Source source={c.set ? "user" : c.source} />}
       {c.set && <button type="button" className="cell-link" disabled={busy} onClick={() => void onWrite(c.key, null)}>Reset</button>}
       {c.kind === "position" && c.value === "X" && c.party && <span className="rfp-why">Done by {c.party}.</span>}
       {c.why && c.kind !== "position" && <span className="rfp-why">{c.why}</span>}
@@ -254,7 +266,7 @@ function Control({ control: c, id, labelID, busy, onWrite }: { control: RfpContr
   switch (c.kind) {
     case "choice":
       return <select id={id} className="select rfp-control" value={value} disabled={busy} onChange={e => e.target.value ? void onWrite(c.key, e.target.value) : void onWrite(c.key, "unknown")}>
-        <option value="">Not established</option>
+        {c.key !== "scale" && <option value="">Not established</option>}
         {(c.options ?? []).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>;
     case "stage":

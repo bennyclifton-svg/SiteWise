@@ -157,6 +157,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["cost_plans"] = row{"org_id": org, "project_id": p, "draft_version_id": costVersion}
 		f["cost_items"] = row{"org_id": org, "project_id": p, "id": costID, "created_in_version_id": costVersion}
 		f["cost_item_revisions"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "label": "Line", "line_kind": "works", "work_item_id": w, "posting": true, "origin": "user", "meaning": "allowance"}
+		f["cost_suggestion_dismissals"] = row{"org_id": org, "project_id": p, "source_key": "pw:escalation", "actor": u}
 		f["cost_values"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "metric": "estimate", "value_state": "unknown", "origin": "user", "meaning": "allowance"}
 		f["scope_cost_links"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "package_scope_item_id": scope}
 		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions"} {

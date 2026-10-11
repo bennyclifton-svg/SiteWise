@@ -12,13 +12,15 @@ flags:
   - {key: hyd_investigation, label: Investigation selected, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_planning, label: Authority inputs selected, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_sources, label: Alternative sources, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
+  - {key: hyd_rainwater, label: Rainwater collection and reuse, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#55, why: Separate rainwater reuse from other water sources for the Hydraulic pilot.}]}
+  - {key: hyd_alternative_sources, label: River/carted/other water sources, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#55, why: Price uncommon sources independently from rainwater reuse.}]}
   - {key: hyd_pumps, label: Domestic pumps/storage, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_treatment, label: Treatment connection, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_roof, label: Roof drainage, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_external, label: External drainage, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_trade, label: Trade waste, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_gas, label: Gas/fluids, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
-  - {key: hyd_utility, label: Utility/WSC, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
+  - {key: hyd_utility, label: Utility and Water Services Coordinator, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_interfaces, label: Building interfaces selected, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_staging, label: Phase/tenancy design selected, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
   - {key: hyd_declarations, label: Declarations selected, scope_decision: true, provenance: [{kind: client_decision, ref: hydraulic-services#50-51, why: 'Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages.'}]}
@@ -253,7 +255,7 @@ terms:
     text: "Your proposal stays valid for {field:validity_days} days."
     provenance: [{kind: evidence, ref: "architecture#155"}]
   - key: questions
-    text: "Questions in writing to {field:contact} by {field:questions_by}; answers go to every tenderer as numbered addenda."
+    text: "Answers to scope questions go to every tenderer as numbered addenda."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-guide.md (numbered addenda and acknowledgement)"}]
 
 returnables:
@@ -274,10 +276,10 @@ returnables:
     text: "Two or three comparable projects in the last five years, each with a referee."
   - key: r6
     title: R6 Departures
-    text: "Each departure from sections 3 to 6 or the agreement: clause or item, proposed change, effect on fee and time; or \"nil\". A general exclusion not listed here is non-compliant."
+    text: "Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or \"nil\". A general exclusion not listed here is non-compliant."
   - key: r7
     title: R7 Program
-    text: "Weeks by stage, separating your time, authority time and the dates you need inputs. Confirm you can start by {field:start_by}."
+    text: "Weeks by stage, separating your time, authority time and the dates you need inputs."
   - key: r8
     title: R8 Insurance and compliance
     text: "PI {field:pi} and PL {field:pl} with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest."
@@ -286,6 +288,6 @@ returnables:
     text: "\"Included in the fee\" (preferred), or each item with its rate."
 
 legend: "I = included in the fee ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· O = optional, price as a separate line ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· X = excluded (the party named does it)."
-allowances: "Price exactly these. Work beyond an allowance needs a written instruction (section 6) and is then charged at your R3 rates."
+allowances: "Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates."
 departures: "Tell us in R6 if you disagree with any line. Do not add your own general exclusions; any you add are treated as non-compliant."
 evaluation_note: "Lowest price does not automatically win."

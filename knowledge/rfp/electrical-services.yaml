@@ -1,5 +1,5 @@
 id: electrical-services
-version: 1
+version: 3
 status: draft
 title: Electrical services
 heading: 'REQUEST FOR PROPOSAL: ELECTRICAL SERVICES'
@@ -10,9 +10,6 @@ title_aliases:
 - electrical services
 - electrical design
 evidence_limit: Historical offers do not establish retained capacity, current instruments or accepted appointments.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Actual loads, use, systems and purchased maturity govern scope.
   complex: []
@@ -110,7 +107,7 @@ boundary:
   start: advisory
   end: advisory
 - start: inception
-  end: tender
+  end: design
 stages:
 - key: inception
   name: S1 Evidence
@@ -176,7 +173,8 @@ stages:
   when:
   - flag:
     - elec_planning
-  if_unknown: ask
+  if_unknown: option
+  assumption: Not confirmed in the base appointment. Price separately as an option, state the scope and assumptions, and obtain client approval before starting.
 - key: design
   name: S5 Design
   deliverable: Demand/fault/protection/earthing/lighting calculations; boards/cables/routes, controls, safety
@@ -295,128 +293,47 @@ stages:
     - advice_only
   if_unknown: ask
 durations: R7 sets utility/input dates, outages, hold-point notice/response and service endpoint.
-allowances_note: Separate item/system/stage quantities and durations; fixed, time ceiling or unit rate. Resolve
-  unknowns under R6 or hold.
+allowances_note: >-
+  Editable client defaults: 4 design meetings per appointed design stage,
+  1 consolidated review round per design stage and 1 investigation visit when
+  commissioned. These are pricing assumptions, not measured project quantities.
+  Price later stages separately. In R1/R2, identify the affected buildings and
+  systems from the supplied project information; list assets, tests, durations,
+  authority fees and specialist services separately, with assumptions and excess
+  rates. Do not apply a single count to different units. Agree unresolved scope
+  before the affected work starts.
 allowances:
-- key: extent
-  label: Extent
-  text: '{n} parts/tenancies/boards/circuits/meters/zones/generation; retained/new/removed'
+- key: design_meetings
+  label: Design meetings
+  text: '{n} per appointed design stage (editable client default)'
+  default: '4'
   owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#1,21,27-28
-  - kind: seed
-    ref: electrical-services#40-43,46
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: investigation
-  label: Investigation
-  text: '{n} visits/circuits/log points/days/scans/tests/openings; safety/access/reinstatement'
+  when: [{stage: [concept, design, tender, continuation]}]
+  provenance: [{kind: client_decision, ref: 'electrical-services#55', why: 'Owner approved a small set of editable pricing defaults on 10 October 2026; these are not measured quantities.'}]
+- key: design_review_rounds
+  label: Design review rounds
+  text: '{n} consolidated client review round per design stage (editable client default)'
+  default: '1'
   owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#17,21,28
-  - kind: seed
-    ref: electrical-services#44-45
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: design
-  label: Design
-  text: '{n} options/studies/control modes/revisions/issues; maturity/native files'
+  when: [{stage: [concept, design, tender, continuation]}]
+  provenance: [{kind: client_decision, ref: 'electrical-services#55', why: 'Explicit editable pricing assumption; correction of consultant errors remains included.'}]
+- key: investigation_visits
+  label: Investigation visits
+  text: '{n} accessible-site visit; specialist tests and openings priced separately'
+  default: '1'
   owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#5,7,9,18-19
-  - kind: seed
-    ref: electrical-services#41-43
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: coordination
-  label: Authorities
-  text: '{n} meetings/hours/enquiries/applications/responses; ASP3 author/submitter/payer'
+  when: [{stage: [investigation]}]
+  provenance: [{kind: client_decision, ref: 'electrical-services#55', why: 'Editable visit allowance only when investigation is appointed or offered as an option.'}]
+- key: construction_visits
+  label: Construction inspections
+  text: '{n} hold-point visits; firm states duration, review support and excess rates separately'
   owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#5,7,17-19,29,33
-  - kind: seed
-    ref: electrical-services#48
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: tender
-  label: Tender
-  text: '{n} packages/tenderers/comparisons/RFI hours/addenda/rounds'
-  owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#18-19,29
-  - kind: seed
-    ref: electrical-services#48
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: construction
-  label: Support
-  text: '{n} months/review rounds/RFI hours/updates/hold-point visits/reports'
-  owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#6-7,20
-  - kind: seed
-    ref: electrical-services#49
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: testing
-  label: Tests
-  text: '{n} scripts/sessions/hours/circuits/points/modes/outages/integrated tests/retests'
-  owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#20
-  - kind: seed
-    ref: electrical-services#49
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: completion
-  label: Completion
-  text: '{n} handovers/record reviews/training/defects visits/monitoring/closure'
-  owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#20-22
-  - kind: seed
-    ref: electrical-services#49
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
-- key: access
-  label: Staging
-  text: '{n} phases/shutdowns/out-of-hours/temporary supplies/handbacks/aborted visits'
-  owner: client
-  provenance:
-  - kind: evidence
-    ref: electrical-services#21,28
-  - kind: seed
-    ref: electrical-services#44,46
-  - kind: client_decision
-    ref: electrical-services#51
-    why: Explicit appointment and pricing policy; historical offers do not establish universal scope or current
-      requirements.
+  when: [{stage: [construction]}]
+  provenance: [{kind: client_decision, ref: 'electrical-services#51,55', why: 'A base construction appointment needs a common attendance allowance; a later option does not block the design RFP.'}]
+
 positions:
 - key: distribution
+  group: Power supply and distribution
   label: Detailed distribution/protection/earthing/containment; fault/voltage/discrimination
   kind: technical
   provenance:
@@ -442,6 +359,7 @@ positions:
     - tender
     - continuation
 - key: utility
+  group: Power supply and distribution
   label: Utility demand application; certified utility design separate
   kind: technical
   provenance:
@@ -471,6 +389,7 @@ positions:
     - tender
     - continuation
 - key: asp3
+  group: Power supply and distribution
   label: Contestable utility design/works/charges/easements/energisation
   kind: technical
   provenance:
@@ -485,6 +404,7 @@ positions:
   value: X
   responsible: ASP3 / utility
 - key: lighting
+  group: Lighting and connected systems
   label: Detailed general/external/emergency/exit lighting/controls; not detection
   kind: technical
   provenance:
@@ -510,6 +430,7 @@ positions:
     - tender
     - continuation
 - key: feature
+  group: Lighting and connected systems
   label: Feature/sports/process lighting, separate brief
   kind: technical
   provenance:
@@ -528,6 +449,7 @@ positions:
     - tender
     - continuation
 - key: controls
+  group: Lighting and connected systems
   label: Metering/energy/BMS interface; programming/licences/cybersecurity owners
   kind: technical
   provenance:
@@ -556,6 +478,7 @@ positions:
     - elec_controls
   if_unknown: ask
 - key: generation
+  group: Power supply and distribution
   label: 'Standby/UPS/storage/PV/EV: capacity/export/islanding/approvals'
   kind: technical
   provenance:
@@ -582,8 +505,10 @@ positions:
     - continuation
     flag:
     - elec_generation
-  if_unknown: ask
+  if_unknown: option
+  assumption: Not confirmed in the base appointment. Price separately as an option, state the scope and assumptions, and obtain client approval before starting.
 - key: ict
+  group: Lighting and connected systems
   label: Passive ICT/security/AV cabling; active/Wi-Fi/carrier/security/AV design separately selected
   kind: technical
   provenance:
@@ -610,8 +535,10 @@ positions:
     - continuation
     flag:
     - elec_ict
-  if_unknown: ask
+  if_unknown: option
+  assumption: Not confirmed in the base appointment. Price separately as an option, state the scope and assumptions, and obtain client approval before starting.
 - key: dry_fire
+  group: Fire detection and interfaces
   label: Detection/alarm/warning/monitoring, allocation below; no duplicate fees
   kind: technical
   provenance:
@@ -640,6 +567,7 @@ positions:
     - elec_dry_fire
   if_unknown: ask
 - key: plant
+  group: Power supply and distribution
   label: Plant/lift/pump/specialist power; process design separate
   kind: technical
   provenance:
@@ -665,6 +593,7 @@ positions:
     - tender
     - continuation
 - key: existing
+  group: Existing services and project coordination
   label: Existing/live condition/demand/circuit/label/route investigation; continuity and isolation owners
   kind: technical
   provenance:
@@ -689,6 +618,7 @@ positions:
     - elec_investigation
   if_unknown: ask
 - key: staging
+  group: Existing services and project coordination
   label: Mixed/staged/shell/fit-out metering, tenancy and energisation gates/tests
   kind: technical
   provenance:
@@ -717,6 +647,7 @@ positions:
     - elec_staging
   if_unknown: ask
 - key: specialist
+  group: Power supply and distribution
   label: Hazardous/process/HV/critical distribution studies
   kind: technical
   provenance:
@@ -729,6 +660,7 @@ positions:
   value: X
   responsible: competent specialist
 - key: continuation
+  group: Later services
   label: Continued design; novation only by separate agreed appointment
   kind: technical
   provenance:
@@ -750,6 +682,7 @@ positions:
   - stage:
     - continuation
 - key: construction
+  group: Later services
   label: Quantified construction support
   kind: technical
   provenance:
@@ -771,6 +704,7 @@ positions:
   - stage:
     - construction
 - key: handover
+  group: Later services
   label: Selected witnessing/handover; execution by named contractors
   kind: technical
   provenance:
@@ -792,6 +726,7 @@ positions:
   - stage:
     - handover
 - key: defects
+  group: Later services
   label: Defects/operational verification
   kind: technical
   provenance:
@@ -813,6 +748,7 @@ positions:
   - stage:
     - defects
 - key: studies
+  group: Power supply and distribution
   label: Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor
   kind: technical
   provenance:
@@ -824,6 +760,7 @@ positions:
       brief.
   value: O
 - key: declarations
+  group: Existing services and project coordination
   label: Selected declarations/lodgement; verify jurisdiction/competence
   kind: technical
   provenance:
@@ -1011,7 +948,7 @@ terms:
       requirements.
   replace: true
 - key: questions
-  text: Questions to {field:contact} by {field:questions_by}; numbered addenda to all, acknowledged in R1.
+  text: Issue numbered addenda to all, acknowledged in R1.
   provenance:
   - kind: client_decision
     ref: electrical-services#52
@@ -1104,7 +1041,7 @@ returnable_notes:
       requirements.
   replace: true
 - key: r6
-  text: 'Sections 3-6/agreement departures: wording/reason/fee/time; exclusion owner. Resolve conflicts or
+  text: 'Sections 2–5/agreement departures: wording/reason/fee/time; exclusion owner. Resolve conflicts or
     authorised assumption: owner/date/consequence/verification/review point.'
   provenance:
   - kind: evidence

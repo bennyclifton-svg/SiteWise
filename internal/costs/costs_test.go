@@ -74,7 +74,7 @@ func TestReconciliationRandomized(t *testing.T) {
 		p := Plan{}
 		for n := 0; n < 100; n++ {
 			m := RoundFromCents(r.Int63n(100000) - 10000)
-			p.Items = append(p.Items, Item{SystemID: string(rune('a' + r.Intn(5))), PartID: string(rune('a' + r.Intn(7))), Content: Content{Posting: true, LineKind: "works"}, Values: map[string]Value{"budget": val(string(m))}})
+			p.Items = append(p.Items, Item{PartID: string(rune('a' + r.Intn(7))), Content: Content{SystemID: string(rune('a' + r.Intn(5))), Posting: true, LineKind: "works"}, Values: map[string]Value{"budget": val(string(m))}})
 		}
 		for _, by := range []string{"system", "part", "package"} {
 			tot, e := Summarize(p, by)

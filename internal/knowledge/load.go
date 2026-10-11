@@ -106,6 +106,8 @@ type Catalog struct {
 	packageDefaults PackageDefaults
 	reportTemplates map[string]ReportTemplate
 	costBenchmarks  map[string]CostBenchmark
+	costElements    []CostElement
+	costStarters    []CostStarter
 	rfp             rfpData
 	layout          layoutData
 }
@@ -201,6 +203,9 @@ func Load(root string) (*Catalog, error) {
 		return nil, err
 	}
 	if err := c.loadReportTemplates(filepath.Join(root, "reports", "templates.yaml")); err != nil {
+		return nil, err
+	}
+	if err := c.loadCostElements(root); err != nil {
 		return nil, err
 	}
 	if err := c.loadCostBenchmarks(root); err != nil {

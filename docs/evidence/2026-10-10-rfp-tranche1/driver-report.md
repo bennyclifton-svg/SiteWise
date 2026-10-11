@@ -581,7 +581,7 @@ Capacity advice does not buy detailed design, upgrade, construction or witnessin
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Alternative sources; Phase/tenancy design selected; Trade waste; Treatment connection; Utility/WSC; Planning pathway; Work type | — | — |
+| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-camp-design
 
@@ -589,7 +589,7 @@ Camp accommodation/kitchen with separately evidenced carted, rain and river sour
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Alternative sources; Phase/tenancy design selected; Trade waste; Treatment connection; Utility/WSC; Planning pathway; Work type | — | — |
+| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-conflicting-source
 
@@ -597,7 +597,7 @@ Conflicting source/treatment, trade and declarations cannot be guessed or absorb
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Phase/tenancy design selected; Utility/WSC; Planning pathway; Work type | — | Declarations selected; Alternative sources; Trade waste; Treatment connection |
+| hydraulic-services | External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Phase/tenancy design selected; Utility and Water Services Coordinator; Planning pathway; Work type | — | River/carted/other water sources; Declarations selected; Rainwater collection and reuse; Trade waste; Treatment connection |
 
 ## hydraulic-house-concept
 
@@ -605,7 +605,7 @@ Residential concept appoints preliminary options; later detailed system design r
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Alternative sources; Phase/tenancy design selected; Trade waste; Treatment connection; Utility/WSC; Planning pathway; Work type | — | — |
+| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-live-investigation
 
@@ -613,7 +613,7 @@ Occupied apartment investigation distinguishes observed/tested/assumed condition
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Alternative sources; Phase/tenancy design selected; Trade waste; Treatment connection; Utility/WSC; Planning pathway; Work type | — | — |
+| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-office-fitout
 
@@ -621,15 +621,15 @@ Internal office kitchenette design buys no whole-site drainage, trade waste, tre
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Alternative sources; Phase/tenancy design selected; Trade waste; Treatment connection; Utility/WSC; Planning pathway; Work type | — | — |
+| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-unknown-tenant
 
-Unknown tenant/sources/exterior extent remain open, not assumed industrial scope or exclusions.
+Unknown tenant and specialist systems use explicit pricing options; standard rainwater, pump and roof design allowances are included without asserting site facts. Treatment and civil boundaries remain open.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Phase/tenancy design selected; Planning pathway; Work type | — | External drainage; Gas/fluids; Domestic pumps/storage; Roof drainage; Alternative sources; Trade waste; Treatment connection; Utility/WSC |
+| hydraulic-services | Declarations selected; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Phase/tenancy design selected; Planning pathway; Work type | — | River/carted/other water sources; External drainage; Gas/fluids; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Trade waste; Treatment connection; Utility and Water Services Coordinator |
 
 ## hydraulic-witness-only
 
@@ -637,7 +637,7 @@ Hospital selected witnessing is not design or contractor execution.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Alternative sources; Phase/tenancy design selected; Trade waste; Treatment connection; Utility/WSC; Planning pathway; Work type | — | — |
+| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## landscape-advisory-only
 

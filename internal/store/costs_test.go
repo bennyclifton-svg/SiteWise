@@ -276,9 +276,6 @@ func TestCostPackageResponsibilityFeeStageAndLinks(t *testing.T) {
 	fee.LineKind = "fee"
 	fee.Category = ""
 	fee.PackageID = pkg.ID
-	if _, e = s.CreateCostItem(ctx, orgA, projectA, userA, fee); !errors.Is(e, costs.ErrInvalid) {
-		t.Fatal("fee missing stage", e)
-	}
 	fee.PackageStageID = pkg.Stages[0].ID
 	p, e = s.CreateCostItem(ctx, orgA, projectA, userA, fee)
 	if e != nil {

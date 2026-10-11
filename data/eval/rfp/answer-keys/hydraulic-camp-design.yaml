@@ -17,6 +17,8 @@ flags:
   hyd_investigation: 'yes'
   hyd_planning: 'yes'
   hyd_sources: 'yes'
+  hyd_rainwater: 'yes'
+  hyd_alternative_sources: 'yes'
   hyd_pumps: 'yes'
   hyd_treatment: 'yes'
   hyd_roof: 'yes'
@@ -81,7 +83,8 @@ expect:
     - defects
     positions:
       domestic: I
-      sources: I
+      rainwater: I
+      alternative_sources: I
       pumps: I
       treatment: X
       roof: I

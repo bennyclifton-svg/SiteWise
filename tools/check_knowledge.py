@@ -1338,6 +1338,64 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             seen.add(b.get("id"))
 
 
+def check_cost_structure(report: Report, seed_dir: Path, cache: dict) -> None:
+    systems = {}
+    for _, kind, items in load_files(Report()):
+        if kind == "systems":
+            systems.update({i["id"]: i for i in items if isinstance(i, dict) and "id" in i})
+    path = KNOWLEDGE / "costs" / "elements.yaml"
+    rel, doc = load_catalogue(path, "elements", report)
+    if doc is None:
+        return
+    for name, key in (("elements", "elements"), ("starter_lines", "lines")):
+        rel, data = load_catalogue(KNOWLEDGE / "costs" / (name + ".yaml"), key, report)
+        if data is None:
+            report.error(str(path), "cost structure needs both files")
+            continue
+        if data.get("status") not in {"draft", "reviewed"}:
+            report.error(rel, "cost structure needs draft or reviewed status")
+        check_sources(rel, data.get("sources"), seed_dir, report, cache)
+        seen, codes = set(), set()
+        for row in data.get(key) or []:
+            if not isinstance(row, dict):
+                report.error(rel, "cost structure row must be a mapping")
+                continue
+            id = row.get("system" if name == "elements" else "id")
+            if not id or id in seen:
+                report.error(rel, f"missing or duplicate cost identity {id}")
+            seen.add(id)
+            if name == "elements":
+                if id not in systems or systems[id].get("parent"):
+                    report.error(rel, f"not a top-level system: {id}")
+                code = row.get("code")
+                if not isinstance(code, str) or not code or code in codes:
+                    report.error(rel, f"missing, non-string or duplicate code: {code}")
+                codes.add(code)
+                for trade in [row.get("trade")] + [o.get("trade") for o in row.get("overrides") or []]:
+                    if trade not in vocab("disciplines") or not str(trade).startswith("trade."):
+                        report.error(rel, f"unknown cost trade {trade}")
+                for section in ("items", "overrides"):
+                    subs = set()
+                    for child in row.get(section) or []:
+                        sub = child.get("sub")
+                        if sub not in systems or systems[sub].get("parent") != id or sub in subs:
+                            report.error(rel, f"invalid or duplicate cost subsystem {sub}")
+                        subs.add(sub)
+                        if section == "items" and (not isinstance(child.get("costed"), bool) or (child.get("costed") is False and not child.get("why"))):
+                            report.error(rel, f"subsystem needs explicit costed and reason when omitted: {sub}")
+            else:
+                if not re.fullmatch(r"[a-z][a-z0-9-]*", str(id)) or not row.get("label") or row.get("category") not in {"contingency", "escalation", "authority_fees", "exclusions", "other"}:
+                    report.error(rel, f"invalid cost starter {id}")
+                pred = row.get("applies_when")
+                if not isinstance(pred, bool):
+                    registry = yaml.safe_load((KNOWLEDGE / "profile" / "taxonomy.yaml").read_text(encoding="utf-8"))
+                    fields = {"hdr.cond." + r["key"] for r in registry.get("conditions", [])}
+                    if not isinstance(pred, dict) or set(pred) != {"field", "in"} or pred.get("field") not in fields or not isinstance(pred.get("in"), list) or not pred["in"] or any(not isinstance(v, str) for v in pred["in"]):
+                        report.error(rel, f"invalid cost starter predicate {id}")
+        if name == "elements" and seen != {id for id, sys in systems.items() if not sys.get("parent")}:
+            report.error(rel, "cost elements must cover every top-level system exactly once")
+
+
 def check_source_archive(archive: Path, report: Report) -> None:
     """Keep cited source bytes reproducible without the original repository."""
     where = "source archive"
@@ -1521,6 +1579,7 @@ def main() -> int:
     pending = check_works(report, args.seed_dir, refs, cache, actions_doc, known)
     check_catalogues(report, args.seed_dir, cache, determinants)
     check_rfp(report)
+    check_cost_structure(report, args.seed_dir, cache)
     check_replacements(deprecated, known, report)
     check_deprecated_refs(refs, deprecated, report)
 

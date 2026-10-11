@@ -1,5 +1,5 @@
 id: cost-planning
-version: 1
+version: 2
 status: draft
 title: Cost planning and quantity surveying services
 heading: 'REQUEST FOR PROPOSAL: COST PLANNING AND QUANTITY SURVEYING'
@@ -399,6 +399,7 @@ allowances:
   owner: client
 positions:
 - key: construction_plan
+  group: Cost planning and budget
   label: Construction cost plan at selected stages; measured/assumed quantities and missing specialist inputs recorded
   kind: technical
   value: I
@@ -406,6 +407,7 @@ positions:
   - kind: seed
     ref: cost-planning#25,26,27,28,31
 - key: total_budget
+  group: Cost planning and budget
   label: 'Total project budget: fees/charges, off-site, FF&E, land/finance/tax; item boundaries and tax adviser
     agreed'
   kind: technical
@@ -420,6 +422,7 @@ positions:
     ref: cost-planning#26
   if_unknown: ask
 - key: contract_allowances
+  group: Cost planning and budget
   label: Contract PC/PS, owner supply and selection dates; no default contract form or contingency percentage
   kind: technical
   value:
@@ -433,6 +436,7 @@ positions:
     ref: cost-planning#25,28,29
   if_unknown: ask
 - key: existing_costs
+  group: Cost planning and budget
   label: Fit-out/refurb/live-site strip-out, make-good, isolation, after-hours and decanting; designers assess retained
     systems
   kind: technical
@@ -452,6 +456,7 @@ positions:
     ref: cost-planning#31,33
   if_unknown: ask
 - key: operator
+  group: Cost planning and budget
   label: Operator equipment/specialist operations; evidenced requirements or explicit allowances only
   kind: technical
   value:
@@ -469,6 +474,7 @@ positions:
       unknown scope remains unresolved.
   if_unknown: ask
 - key: allocation
+  group: Cost planning and budget
   label: Mixed-use/building/stage cost allocation; reconcile shared infrastructure and preliminaries to total
   kind: technical
   value:
@@ -482,6 +488,7 @@ positions:
     ref: cost-planning#33
   if_unknown: ask
 - key: remediation
+  group: Specialist cost studies
   label: Defect/remediation/contamination costing; specialists diagnose, QS prices defined extent/ranges
   kind: technical
   value:
@@ -497,6 +504,7 @@ positions:
     ref: cost-planning#28,32
   if_unknown: ask
 - key: risk
+  group: Cost planning and budget
   label: Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin
   kind: technical
   value: I
@@ -504,6 +512,7 @@ positions:
   - kind: seed
     ref: cost-planning#27,28
 - key: tender
+  group: Procurement and construction advice
   label: Tender/D&C/ECI review; normalise qualifications, PC/PS and alternatives; no novation or superintendent
     role
   kind: technical
@@ -517,6 +526,7 @@ positions:
   - kind: seed
     ref: cost-planning#25,29,30
 - key: claims
+  group: Procurement and construction advice
   label: Progress-claim reports; separate brief/inspection counts and administrator authority
   kind: technical
   value:
@@ -531,6 +541,7 @@ positions:
   - kind: seed
     ref: cost-planning#29
 - key: lender
+  group: Procurement and construction advice
   label: Lender reports; separate brief, inspections and reliance, never implied by progress-claim advice
   kind: technical
   value: O
@@ -544,6 +555,7 @@ positions:
     why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability
       lists do not commission these services.
 - key: valuation
+  group: Specialist cost studies
   label: Valuation, insurance replacement value and tax depreciation
   kind: technical
   value: X
@@ -558,6 +570,7 @@ positions:
       lists do not commission these services.
   responsible: named valuer / insurer / tax adviser (R4)
 - key: lifecycle
+  group: Specialist cost studies
   label: Life-cycle/carbon/LCA analysis; horizon/assumptions stated, designers approve performance effects; no compliance
     certification
   kind: technical
@@ -742,7 +755,7 @@ returnable_notes:
       limits and certificates are not current requirements.
   replace: true
 - key: r6
-  text: 'Sections 3-6/agreement: comply/departure or nil; reason, alternative, fee/time effect, owner/date/evidence.
+  text: 'Sections 2–5/agreement: comply/departure or nil; reason, alternative, fee/time effect, owner/date/evidence.
     Resolve identity/date, meeting/update/rate conflicts and unpriced gaps. Assumptions state extent/quantity, basis
     and consequence; unknown cost is not zero.'
   provenance:

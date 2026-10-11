@@ -1,6 +1,9 @@
 package procurement
 
 type PackagePatch struct {
+	RemoveCostLines bool    `json:"remove_cost_lines,omitempty"`
+	CostPlanID      string  `json:"cost_plan_id,omitempty"`
+	CostPlanVersion int64   `json:"cost_plan_version,omitempty"`
 	Retired         *bool   `json:"retired,omitempty"`
 	Version         int64   `json:"version"`
 	Kind            *string `json:"kind,omitempty"`

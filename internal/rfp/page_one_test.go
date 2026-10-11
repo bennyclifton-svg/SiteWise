@@ -137,23 +137,23 @@ func TestPageOnePrintsTheGridAndConditions(t *testing.T) {
 		return nil, nil
 	}
 	got, blocks := ids("project")
-	if strings.Join(got, ",") != "rfp:header,rfp:project:intro,rfp:project:grid,rfp:project:conditions,rfp:project:information" {
+	if strings.Join(got, ",") != "rfp:project:intro,rfp:project:grid,rfp:project:conditions,rfp:project:information" {
 		t.Fatalf("page one blocks = %v", got)
 	}
-	grid := blocks[2].table
+	grid := blocks[1].table
 	if strings.Join(grid.Columns, "|") != "The building|Site and planning|Delivery" || grid.Rows[0][0] != "Work type: New build" {
 		t.Fatalf("grid = %+v", grid)
 	}
 	// Every answer prints, one line per answer.
-	cond := strings.Split(blocks[3].text, "\n")
+	cond := strings.Split(blocks[2].text, "\n")
 	if len(cond) != 2 || !strings.HasPrefix(cond[0], "Conditions that do not apply: Work to an existing building") || !strings.HasPrefix(cond[1], "Conditions not yet known: ") || !strings.Contains(cond[1], "Groundwater above the base of excavation") {
-		t.Fatalf("conditions = %q", blocks[3].text)
+		t.Fatalf("conditions = %q", blocks[2].text)
 	}
-	if blocks[4].text != "Information provided: Survey and geotechnical report" {
-		t.Fatalf("information = %q", blocks[4].text)
+	if blocks[3].text != "Information provided: Survey and geotechnical report" {
+		t.Fatalf("information = %q", blocks[3].text)
 	}
-	role, roleBlocks := ids("role")
-	if strings.Join(role, ",") != "rfp:role" || !strings.HasSuffix(roleBlocks[0].text, "Design vehicle: 19 m semi-trailer") {
+	role, roleBlocks := ids("positions")
+	if strings.Join(role, ",") != "rfp:role,rfp:positions" || !strings.HasSuffix(roleBlocks[0].text, "Design vehicle: 19 m semi-trailer") {
 		t.Fatalf("role = %v %+v", role, roleBlocks)
 	}
 }
@@ -185,7 +185,7 @@ func TestControlsFollowThePage(t *testing.T) {
 		c := BuildControls(r, d, sk, Settings{})
 		section, project := controlKeys(c, "project")
 		joined := strings.Join(project, ",")
-		if section != "project" || strings.Contains(joined, "parts:affected") || strings.Contains(joined, "design_vehicle") || strings.Contains(joined, "field:agreement") {
+		if section != "project" || !strings.Contains(joined, "parts:affected") || strings.Contains(joined, "design_vehicle") || strings.Contains(joined, "field:agreement") {
 			t.Fatalf("%s project controls = %v", id, project)
 		}
 		flags := []string{}
@@ -202,13 +202,13 @@ func TestControlsFollowThePage(t *testing.T) {
 			t.Fatalf("%s condition controls = %v, want %v", id, flags, want)
 		}
 		section, appointment := controlKeys(c, "appointment")
-		if section != "role" || appointment[0] != "parts:affected" || strings.Contains(strings.Join(appointment, ","), "design_vehicle") != (id == "civil") {
+		if section != "positions" || strings.Contains(strings.Join(appointment, ","), "parts:affected") || strings.Contains(strings.Join(appointment, ","), "design_vehicle") != (id == "civil") {
 			t.Fatalf("%s appointment controls = %s %v", id, section, appointment)
 		}
 		if section, terms := controlKeys(c, "terms"); section != "terms" || !strings.Contains(strings.Join(terms, ","), "field:agreement") || strings.Contains(strings.Join(terms, ","), "field:ref") {
 			t.Fatalf("%s terms controls = %s %v", id, section, terms)
 		}
-		if section, issue := controlKeys(c, "issue"); section != "issue" || !strings.Contains(strings.Join(issue, ","), "field:ref") || strings.Contains(strings.Join(issue, ","), "field:pi") {
+		if section, issue := controlKeys(c, "issue"); section != "issue_dates" || strings.Join(issue, ",") != "field:issued,field:closes" || strings.Contains(strings.Join(issue, ","), "field:pi") {
 			t.Fatalf("%s issue controls = %s %v", id, section, issue)
 		}
 	}

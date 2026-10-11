@@ -82,8 +82,11 @@ type AllowanceResult struct {
 type PositionResult struct {
 	Key        string   `json:"key"`
 	Label      string   `json:"label"`
+	Group      string   `json:"group,omitempty"`
+	Detail     string   `json:"detail,omitempty"`
 	Kind       string   `json:"kind"`
 	Value      string   `json:"value"` // I | O | X | ask
+	Inactive   bool     `json:"inactive,omitempty"`
 	Party      string   `json:"party,omitempty"`
 	Source     string   `json:"source"`
 	Why        string   `json:"why,omitempty"`
@@ -138,6 +141,7 @@ type Resolved struct {
 	Elements      []ElementResult       `json:"elements,omitempty"`
 	Allowances    []AllowanceResult     `json:"allowances"`
 	Positions     []PositionResult      `json:"positions"`
+	Scope         []PositionResult      `json:"scope"` // Every selectable item, including currently inapplicable services.
 	ScopeSchedule []Row                 `json:"scope_schedule,omitempty"`
 	Project       []Row                 `json:"project"`
 	Grid          []GridColumn          `json:"grid"`
@@ -262,6 +266,9 @@ func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Driver
 		r.out.EvalNote = d.EvaluationNote
 	}
 	r.applyFacts()
+	if d.ID == "hydraulic-services" {
+		r.hydraulicSourceFacts()
+	}
 	r.applyParts()
 	r.resolveFields()
 	r.resolveScale()
@@ -273,7 +280,7 @@ func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Driver
 	r.resolvePositions()
 	r.checkConsistency()
 	r.resolveRows()
-	r.resolveWeights()
+	// Evaluation is not part of the consultant RFP template.
 	r.checkPathway()
 	r.finishChecks()
 	r.findOrphans()
@@ -587,7 +594,24 @@ func (r *resolver) resolveBoundary() {
 			break
 		}
 	}
-	r.check(Check{ID: "boundary", Label: "Appointment not confirmed", Text: fmt.Sprintf("Suggested: %s to %s. Confirm the stages this appointment buys; stages after it that apply are priced as options.", r.stageName(r.out.Boundary.Start), r.stageName(r.out.Boundary.End)), Blocking: true, Control: "boundary:range"})
+	// The editor changes individual stages directly. The default
+	// range seeds those selections; it is not a second approval step.
+	r.out.Boundary.Source, r.out.Boundary.Confirmed = "default", true
+	// Advisory and statutory appointments remain independent. Selecting both
+	// needs an explicit range or explicit choices for every statutory stage.
+	if r.d.ID == "bca-certification" && r.eval(knowledge.RFPWhen{{"flag": {"bca_advisory"}}}).t == yes && r.eval(knowledge.RFPWhen{{"flag": {"bca_certification"}}}).t == yes {
+		confirmed := true
+		for _, stage := range r.d.Stages {
+			if strings.HasPrefix(stage.Key, "b") {
+				_, ok := r.settings["stage:"+stage.Key]
+				confirmed = confirmed && ok
+			}
+		}
+		if !confirmed {
+			r.out.Boundary.Confirmed = false
+			r.check(Check{ID: "boundary", Label: "Confirm the statutory appointment stages", Text: "Select each Package B stage explicitly, or confirm the appointment range.", Control: "boundary:range", Blocking: true})
+		}
+	}
 }
 
 func (r *resolver) stageIndex(key string) int {
@@ -658,7 +682,7 @@ func (r *resolver) resolveStages() {
 		}
 		res.Locked = st.Follows != ""
 		if raw, ok := r.setting("stage:" + st.Key); ok {
-			if v := settingString(raw); contains([]string{Include, Option, Exclude, Done}, v) {
+			if v := settingString(raw); contains([]string{Include, Option, Exclude, Done, Ask}, v) {
 				res.State, res.Source, res.Assumption = v, "user", ""
 			}
 		}
@@ -685,6 +709,13 @@ func (r *resolver) unknownState(suggest knowledge.RFPWhen, ifUnknown, assumption
 		}
 		r.ask(unknown, name)
 		return Ask, ""
+	}
+	// Conflicting evidence must not become a default or priced assumption.
+	for _, key := range unknown {
+		if r.fact(key).State == Conflict {
+			r.ask(unknown, name)
+			return Ask, ""
+		}
 	}
 	switch ifUnknown {
 	case "option":
@@ -736,7 +767,7 @@ func (r *resolver) resolveElements() {
 			res.State, res.Assumption = r.unknownState(nil, e.IfUnknown, e.Assumption, "Element "+e.Code+" "+e.Name, o.unknown, &res.Why)
 		}
 		if raw, ok := r.setting("element:" + e.Key); ok {
-			if v := settingString(raw); contains([]string{Include, Option, Exclude}, v) {
+			if v := settingString(raw); contains([]string{Include, Option, Exclude, Ask}, v) {
 				res.State, res.Source, res.Assumption = v, "user", ""
 			}
 		}
@@ -804,7 +835,7 @@ func (r *resolver) andModule(module, row string, when knowledge.RFPWhen) outcome
 
 func (r *resolver) resolvePositions() {
 	for _, p := range r.d.Positions {
-		res := PositionResult{Key: p.Key, Label: p.Label, Kind: p.Kind, Source: "rule"}
+		res := PositionResult{Key: p.Key, Label: p.Label, Group: p.Group, Detail: p.Detail, Kind: p.Kind, Source: "rule"}
 		row := r.andModule(p.Module, p.Label, p.When)
 		var value string
 		switch row.t {
@@ -814,6 +845,11 @@ func (r *resolver) resolvePositions() {
 			res.Unknown = row.unknown
 			state, assumption := r.unknownState(p.Suggest, p.IfUnknown, p.Assumption, p.Label, row.unknown, &res.Why)
 			value, res.Assumption = positionFor(state), assumption
+			// A pricing allowance cannot purchase design beyond the selected
+			// stages. Keep the same assumption, but price it separately.
+			if value == "I" && p.Value != nil && len(p.Value.When) > 0 && r.eval(p.Value.When).t == no {
+				value = p.Value.Else
+			}
 		default:
 			cell := p.Value
 			if p.Kind == "service_level" {
@@ -825,12 +861,20 @@ func (r *resolver) resolvePositions() {
 			}
 			value = r.cell(*cell, p, &res)
 		}
-		if raw, ok := r.setting("position:" + p.Key); ok {
-			if v := settingString(raw); contains([]string{"I", "O", "X"}, v) {
+		raw, ok := r.setting("position:" + p.Key)
+		// The original domestic row bought both water and sanitary plumbing.
+		// Preserve that saved choice until the new sanitary row is set separately.
+		if !ok && r.d.ID == "hydraulic-services" && p.Key == "sanitary" {
+			raw, ok = r.setting("position:domestic")
+		}
+		if ok {
+			if v := settingString(raw); contains([]string{"I", "O", "X", Ask}, v) {
 				value, res.Source, res.Assumption = v, "user", ""
 			}
 		}
 		if value == "-" {
+			res.Value, res.Inactive, res.Party = "X", true, "not required by the current brief"
+			r.out.Scope = append(r.out.Scope, res)
 			continue
 		}
 		res.Value = value
@@ -838,6 +882,7 @@ func (r *resolver) resolvePositions() {
 			res.Party = r.party(p)
 		}
 		r.out.Positions = append(r.out.Positions, res)
+		r.out.Scope = append(r.out.Scope, res)
 	}
 }
 
@@ -995,7 +1040,7 @@ func (r *resolver) checkConsistency() {
 		}
 		for _, item := range st.Items {
 			if p, ok := pos[item]; ok && p.Value == "X" {
-				r.check(Check{ID: "conflict:" + item, Label: "Included and excluded at once: " + p.Label, Text: st.Name + " includes this item, but section 5 excludes it. Change the stage or the position.", Blocking: true, Control: "position:" + item})
+				r.check(Check{ID: "conflict:" + item, Label: "Included and excluded at once: " + p.Label, Text: st.Name + " includes this item, but Scope of services excludes it. Change the stage or the position.", Blocking: true, Control: "position:" + item})
 			}
 		}
 	}
@@ -1168,6 +1213,9 @@ func (r *resolver) resolveRows() {
 	project, projectFirst := []string{}, ""
 	for _, f := range r.sk.Fields {
 		if !f.Required || r.out.Fields[f.Key].Value != "" {
+			continue
+		}
+		if f.Group == "issue" && !proposalDateField(f.Key) {
 			continue
 		}
 		if f.Profile != "" {
@@ -1405,6 +1453,27 @@ func (r *resolver) checkPathway() {
 // finishChecks turns each unknown fact into one decision listing the rows
 // that wait on it, and lists printed assumptions for review.
 func (r *resolver) finishChecks() {
+	{
+		for _, p := range r.out.Positions {
+			if p.Value == Ask && p.Source == "user" {
+				r.check(Check{ID: "scope:" + p.Key, Label: p.Label + ": scope unknown", Text: "Choose Included, Optional price or Excluded before issue.", Control: "position:" + p.Key, Blocking: true})
+			}
+		}
+		for _, e := range r.out.Elements {
+			if e.State == Ask {
+				r.check(Check{ID: "scope-element:" + e.Key, Label: e.Name + ": scope unknown", Text: "Choose a scope position before issue.", Control: "element:" + e.Key, Blocking: true})
+			}
+		}
+		for _, s := range r.out.Stages {
+			if s.State == Ask && s.Source == "user" {
+				r.check(Check{ID: "scope-stage:" + s.Key, Label: s.Name + ": scope unknown", Text: "Choose a scope position before issue.", Control: "stage:" + s.Key, Blocking: true})
+			}
+		}
+		release, close := r.out.Fields["issued"].Value, r.out.Fields["closes"].Value
+		if release != "" && close != "" && close < release {
+			r.check(Check{ID: "proposal_dates", Label: "Proposals close before release", Text: "Set the closing date on or after the release date.", Blocking: true, Control: "field:closes"})
+		}
+	}
 	for _, key := range []string{"gfa", "site_area", "parking", "storeys", "budget", "work_type", "category", "pathway", "procurement", "state"} {
 		if f := r.fact(key); f.State == Conflict {
 			r.check(Check{ID: "fact:" + key, Label: factLabel(r.sk, key) + ": sources disagree (" + strings.Join(f.Values, " vs ") + ")", Text: "Set the one figure every firm prices from.", Blocking: true, Control: "fact:" + key})
@@ -1422,6 +1491,25 @@ func (r *resolver) finishChecks() {
 		r.check(Check{ID: "module:" + m.Key, Label: m.Label + ": not established", Text: "Left out until confirmed: " + strings.Join(rows, "; ") + ".", Control: control, Changes: rows})
 	}
 	for _, u := range r.askOrder {
+		if r.fact(u).State != Conflict {
+			unresolved := []string{}
+			for _, label := range r.asks[u] {
+				settled := false
+				for _, s := range r.out.Stages {
+					settled = settled || (s.Name == label && s.Source == "user")
+				}
+				for _, p := range r.out.Positions {
+					settled = settled || (p.Label == label && p.Source == "user")
+				}
+				if !settled {
+					unresolved = append(unresolved, label)
+				}
+			}
+			if len(unresolved) == 0 {
+				continue
+			}
+			r.asks[u] = unresolved
+		}
 		label := factLabel(r.sk, u)
 		state := "not established"
 		if r.fact(u).State == Conflict {
@@ -1452,7 +1540,14 @@ func (r *resolver) findOrphans() {
 			continue
 		}
 		r.out.Orphans = append(r.out.Orphans, k)
-		r.check(Check{ID: "orphan:" + k, Label: "Setting no longer applies", Text: k + " is not in the current " + strings.ToLower(r.d.Title) + " rules. Remove it once you have checked it.", Control: k})
+		// Old compound electrical counts cannot safely map to the new units.
+		blocking := r.d.ID == "electrical-services" && strings.HasPrefix(k, "allowance:")
+		text := k + " = " + string(r.settings[k].Value) + " is not in the current " + strings.ToLower(r.d.Title) + " rules. Review it against the new allowances before removing it."
+		if r.d.ID == "hydraulic-services" && (k == "position:sources" || k == "responsible:sources") {
+			blocking = true
+			text = "The saved combined water-source choice (" + k + " = " + string(r.settings[k].Value) + ") needs review against the separate rainwater and alternative-source services before removing it."
+		}
+		r.check(Check{ID: "orphan:" + k, Label: "Setting no longer applies", Text: text, Control: k, Blocking: blocking})
 	}
 }
 

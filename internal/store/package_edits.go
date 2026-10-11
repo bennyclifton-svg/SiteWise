@@ -61,6 +61,31 @@ func (s *Store) PatchPackage(ctx context.Context, org, project, id, actor string
 		}
 	}
 	retire := patch.Retired != nil && *patch.Retired
+	changedCostPlan := ""
+	if patch.RemoveCostLines {
+		if !retire || patch.CostPlanID == "" || patch.CostPlanVersion < 1 {
+			return p, ErrInvalidPackage
+		}
+		plan, err := readCostPlan(ctx, tx, org, project, "")
+		if err != nil {
+			return p, err
+		}
+		if plan.ID != patch.CostPlanID || plan.Version != patch.CostPlanVersion {
+			return p, ErrVersionConflict
+		}
+		remove := map[string]bool{}
+		for _, item := range plan.Items {
+			if item.PackageID == id {
+				remove[item.ID] = true
+			}
+		}
+		if len(remove) > 0 {
+			if err := s.removeCostItems(ctx, tx, org, project, actor, plan, remove); err != nil {
+				return p, err
+			}
+			changedCostPlan = plan.ID
+		}
+	}
 	var blocked bool
 	if retire {
 		used, err := liveCostReference(ctx, tx, org, project, "package_id", id)
@@ -91,6 +116,13 @@ func (s *Store) PatchPackage(ctx context.Context, org, project, id, actor string
 	}
 	err = json.Unmarshal(raw, &p)
 	if err != nil {
+		return p, err
+	}
+	if changedCostPlan != "" {
+		if err := s.packagesChanged(ctx, tx, org, project); err != nil {
+			return p, err
+		}
+		_, err := s.finishCost(ctx, tx, org, project, changedCostPlan)
 		return p, err
 	}
 	if err := s.finishPackagesWrite(ctx, tx, org, project); err != nil {

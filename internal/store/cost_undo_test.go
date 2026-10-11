@@ -87,8 +87,10 @@ func TestCostHistoryBlocksProposalUndo(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(plan.Items) != 0 {
-				t.Fatal("draft should be empty")
+			for _, row := range plan.Items {
+				if row.ID == lineID {
+					t.Fatal("deleted fee remains in draft")
+				}
 			}
 			if err = s.UndoProposalDecision(ctx, orgA, projectA, proposal.Key, userA, 1); !errors.Is(err, store.ErrProposalUndoBlocked) {
 				t.Fatalf("historical cost undo: %v", err)

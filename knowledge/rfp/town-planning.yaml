@@ -5,7 +5,7 @@
 # submissions and panel on their own triggers, modification references
 # re-cited to practice. See docs/rfp-golden/phase-a-changes.md. NSW only.
 id: town-planning
-version: 1
+version: 2
 status: draft
 title: Town planning services
 heading: "REQUEST FOR PROPOSAL: TOWN PLANNING SERVICES"
@@ -126,16 +126,18 @@ allowances:
   - {key: panel_meetings, label: Planning panel meetings, text: "{n}", default: "1", owner: client, when: [{flag: [panel]}], provenance: [{kind: evidence, ref: "town-planning#51"}]}
 
 positions:
-  - {key: specialist_review, label: "Review of specialist reports for planning compliance before lodgement", kind: technical, value: I, when: [{pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#58"}]}
-  - {key: certificates, label: "Planning certificate, title and DP searches (fees at cost)", kind: technical, value: I, provenance: [{kind: evidence, ref: "town-planning#4-5"}]}
-  - {key: historic_consents, label: "Historic consents through GIPA", kind: technical, value: O, provenance: [{kind: evidence, ref: "town-planning#3"}]}
+  - {group: "Planning evidence and submission", key: specialist_review, label: "Review of specialist reports for planning compliance before lodgement", kind: technical, value: I, when: [{pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#58"}]}
+  - {group: "Planning evidence and submission", key: certificates, label: "Planning certificate, title and DP searches (fees at cost)", kind: technical, value: I, provenance: [{kind: evidence, ref: "town-planning#4-5"}]}
+  - {group: "Planning evidence and submission", key: historic_consents, label: "Historic consents through GIPA", kind: technical, value: O, provenance: [{kind: evidence, ref: "town-planning#3"}]}
   - key: compliance_matrix
+    group: Planning evidence and submission
     label: "Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner and required date"
     kind: technical
     value: I
     when: [{pathway: [da, ssd]}]
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/town-planning-guide.md (concept and common failures)"}]
   - key: submissions_response
+    group: Assessment and coordination
     label: "Response to public submissions"
     kind: technical
     value: {value: I, when: [{flag: [objections]}], else: O}
@@ -144,6 +146,7 @@ positions:
     assumption: "Price as an option: needed only if notification draws submissions."
     provenance: [{kind: evidence, ref: "town-planning#50"}]
   - key: panel_attendance
+    group: Assessment and coordination
     label: "Attendance at planning panel meetings, to the allowance in section 4"
     kind: technical
     value: {value: I, when: [{flag: [panel]}], else: O}
@@ -151,17 +154,18 @@ positions:
     if_unknown: option
     assumption: "Price as an option: needed only if the application goes to a planning panel."
     provenance: [{kind: evidence, ref: "town-planning#51"}]
-  - {key: ad_hoc_advice, label: "Ad hoc planning advice and consultant coordination, within the meeting allowance", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "town-planning#55-57"}]}
-  - {key: lodgement_format, label: "Pre-lodgement plans in council's required format", kind: technical, value: I, when: [{stage: [pre_lodgement]}], provenance: [{kind: evidence, ref: "town-planning#23"}]}
+  - {group: "Assessment and coordination", key: ad_hoc_advice, label: "Ad hoc planning advice and consultant coordination, within the meeting allowance", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "town-planning#55-57"}]}
+  - {group: "Planning evidence and submission", key: lodgement_format, label: "Pre-lodgement plans in council's required format", kind: technical, value: I, when: [{stage: [pre_lodgement]}], provenance: [{kind: evidence, ref: "town-planning#23"}]}
   - key: modification
+    group: Separate services and costs
     label: "Modification application after approval"
     kind: technical
     value: O
     when: [{pathway: [da, ssd]}]
     provenance: [{kind: practice, ref: "town-planning-guide.md post-approval; replaces the v1 citation of ledger #62-63 (phase-a-changes C1.2)"}]
-  - {key: court, label: "Land and Environment Court appeal or expert witness", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "town-planning#54"}]}
-  - {key: authority_fees, label: "Council, agency and panel fees; contributions", kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "town-planning#24"}, {kind: evidence, ref: "town-planning#42"}]}
-  - {key: specialist_reports, label: "Specialist reports (traffic, acoustic and others)", kind: technical, value: X, responsible: "specialist consultants engaged by the client", provenance: [{kind: evidence, ref: "town-planning#59"}]}
+  - {group: "Separate services and costs", key: court, label: "Land and Environment Court appeal or expert witness", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "town-planning#54"}]}
+  - {group: "Separate services and costs", key: authority_fees, label: "Council, agency and panel fees; contributions", kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "town-planning#24"}, {kind: evidence, ref: "town-planning#42"}]}
+  - {group: "Separate services and costs", key: specialist_reports, label: "Specialist reports (traffic, acoustic and others)", kind: technical, value: X, responsible: "specialist consultants engaged by the client", provenance: [{kind: evidence, ref: "town-planning#59"}]}
 
 terms:
   - {key: documents, text: "Final draft plans and reports reach you at least 3 weeks before target lodgement; state in R7 the working days you need from final documents to a draft report.", when: [{stage: [planning_report]}], provenance: [{kind: evidence, ref: "town-planning#33-35"}]}

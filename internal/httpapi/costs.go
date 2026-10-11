@@ -54,6 +54,12 @@ func costResult(w http.ResponseWriter, d Deps, org string, p costs.Plan, e error
 		costError(w, e)
 		return
 	}
+	totals, err := costs.Summarize(p, "overall")
+	if err != nil {
+		costError(w, err)
+		return
+	}
+	p.Totals = &totals
 	if d.Broker != nil {
 		d.Broker.Wake(org)
 	}
@@ -191,4 +197,52 @@ func postCostBenchmark(w http.ResponseWriter, r *http.Request, d Deps) {
 	}
 	p, e := d.Store.ApplyCostBenchmark(r.Context(), s.OrgID, r.PathValue("id"), r.PathValue("item"), s.UserID, in)
 	costResult(w, d, s.OrgID, p, e)
+}
+
+func postCostSuggestion(w http.ResponseWriter, r *http.Request, d Deps) {
+	session, ok := deliverySession(w, r, d, true)
+	if !ok {
+		return
+	}
+	var in store.CostSuggestionInput
+	if readProposalJSON(w, r, d.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", 400)
+		return
+	}
+	p, e := d.Store.AcceptCostSuggestions(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, r.PathValue("key"), in)
+	costResult(w, d, session.OrgID, p, e)
+}
+func dismissCostSuggestion(w http.ResponseWriter, r *http.Request, d Deps) {
+	session, ok := deliverySession(w, r, d, true)
+	if !ok {
+		return
+	}
+	var in store.CostWrite
+	if readProposalJSON(w, r, d.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", 400)
+		return
+	}
+	p, e := d.Store.DismissCostSuggestion(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, r.PathValue("key"), r.Method == "DELETE", in)
+	costResult(w, d, session.OrgID, p, e)
+}
+
+func prepareCostPlan(w http.ResponseWriter, r *http.Request, d Deps) {
+	session, ok := deliverySession(w, r, d, true)
+	if !ok {
+		return
+	}
+	var in struct{}
+	if readProposalJSON(w, r, d.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", 400)
+		return
+	}
+	result, e := d.Store.PrepareCostPlan(r.Context(), session.OrgID, r.PathValue("id"), session.UserID)
+	if e != nil {
+		costError(w, e)
+		return
+	}
+	if result.Changed && d.Broker != nil {
+		d.Broker.Wake(session.OrgID)
+	}
+	writeJSON(w, 200, result)
 }

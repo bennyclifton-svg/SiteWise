@@ -5,7 +5,7 @@
 # confirmed requirement; a road safety audit is independent of the design role.
 # See docs/rfp-golden/phase-a-changes.md. NSW only.
 id: traffic
-version: 1
+version: 2
 status: draft
 title: Traffic and parking services
 heading: "REQUEST FOR PROPOSAL: TRAFFIC AND PARKING SERVICES"
@@ -146,24 +146,27 @@ allowances:
 
 positions:
   - key: vehicle_schedule
+    group: Transport access and parking
     label: "Vehicle schedule (waste, emergency, service and operator vehicles); ramps, gradients, headroom, sight lines and pedestrian conflicts checked against the current architect and civil layouts"
     kind: technical
     value: I
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/traffic-transport-guide.md (evidence sweep, common failures)"}, {kind: seed, ref: "data/reference/clerk/data/seed/industrial-construction-guide.md (operational brief)"}]
-  - {key: consultation, label: "Consultation with council traffic engineers and TfNSW while preparing the report", kind: technical, value: I, when: [{stage: [report]}], provenance: [{kind: evidence, ref: "traffic#27"}]}
-  - {key: end_of_trip, label: "Bicycle parking and end-of-trip assessment", kind: technical, value: I, when: [{stage: [report]}], provenance: [{kind: evidence, ref: "traffic#22"}]}
-  - {key: demand_reduction, label: "Parking demand reduction measures", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "traffic#16"}]}
-  - {key: alternative_schemes, label: "Alternative schemes tested", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "traffic#30"}]}
-  - {key: swept_paths, label: "Swept paths for every loading dock and design vehicle", kind: technical, value: I, provenance: [{kind: evidence, ref: "traffic#20"}]}
+  - {group: "Assessment and consultation", key: consultation, label: "Consultation with council traffic engineers and TfNSW while preparing the report", kind: technical, value: I, when: [{stage: [report]}], provenance: [{kind: evidence, ref: "traffic#27"}]}
+  - {group: "Transport access and parking", key: end_of_trip, label: "Bicycle parking and end-of-trip assessment", kind: technical, value: I, when: [{stage: [report]}], provenance: [{kind: evidence, ref: "traffic#22"}]}
+  - {group: "Transport access and parking", key: demand_reduction, label: "Parking demand reduction measures", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "traffic#16"}]}
+  - {group: "Assessment and consultation", key: alternative_schemes, label: "Alternative schemes tested", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "traffic#30"}]}
+  - {group: "Transport access and parking", key: swept_paths, label: "Swept paths for every loading dock and design vehicle", kind: technical, value: I, provenance: [{kind: evidence, ref: "traffic#20"}]}
   - key: microsimulation
+    group: Assessment and consultation
     label: "Microsimulation beyond SIDRA"
     kind: technical
     value: {value: O, when: [{flag: [intersection_modelling]}], else: X}
     responsible: not_required
     if_unknown: option
     assumption: "Price as an option: needed only if the authority asks for network modelling beyond SIDRA."
-    provenance: [{kind: practice, ref: "traffic golden draft v1 section 5"}]
+    provenance: [{kind: practice, ref: "traffic golden draft v1 section 2"}]
   - key: road_safety_audit
+    group: Independent and separate services
     label: "Road safety audit by an auditor independent of the design team; state its stage and scope in R2"
     kind: technical
     value: {value: O, when: [{flag: [public_road]}], else: X}
@@ -171,9 +174,9 @@ positions:
     if_unknown: option
     assumption: "Price as an option: an audit is needed only for works in a public road."
     provenance: [{kind: practice, ref: "peer-review-2026-10-09 traffic: road safety audit independence"}]
-  - {key: public_road_design, label: "Design of works in the public road (signals, intersections)", kind: technical, value: X, responsible: "civil engineer (separate engagement)", provenance: [{kind: practice, ref: "traffic golden draft v1 section 5"}]}
-  - {key: court, label: "Expert witness, Land and Environment Court", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "traffic#37"}]}
-  - {key: survey_costs, label: "Survey costs", kind: technical, value: I, when: [{stage: [surveys]}], provenance: [{kind: evidence, ref: "traffic#10"}, {kind: evidence, ref: "traffic#38"}]}
+  - {group: "Independent and separate services", key: public_road_design, label: "Design of works in the public road (signals, intersections)", kind: technical, value: X, responsible: "civil engineer (separate engagement)", provenance: [{kind: practice, ref: "traffic golden draft v1 section 2"}]}
+  - {group: "Independent and separate services", key: court, label: "Expert witness, Land and Environment Court", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "traffic#37"}]}
+  - {group: "Independent and separate services", key: survey_costs, label: "Survey costs", kind: technical, value: I, when: [{stage: [surveys]}], provenance: [{kind: evidence, ref: "traffic#10"}, {kind: evidence, ref: "traffic#38"}]}
 
 terms:
   - {key: payment_hold, text: "No commencement payment; the final report is not held back pending payment.", provenance: [{kind: evidence, ref: "traffic#40-41"}]}

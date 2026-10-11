@@ -2,6 +2,7 @@ package rfp
 
 import (
 	"sitewise/internal/knowledge"
+	"sitewise/internal/reports"
 	"strings"
 	"testing"
 )
@@ -63,12 +64,14 @@ func TestScopeScheduleSurvivesSeparateFromPositions(t *testing.T) {
 		if section.ID != "positions" {
 			continue
 		}
-		if len(section.Blocks) != 2 || section.Blocks[0].ID != "rfp:positions" {
-			t.Fatalf("positions overwritten: %+v", section.Blocks)
+		text := Markdown([]reports.Section{section})
+		for _, row := range r.ScopeSchedule {
+			if !strings.Contains(text, row.Text) {
+				t.Fatalf("allocation lost: %s", row.Key)
+			}
 		}
-		b := section.Blocks[1]
-		if b.ID != "rfp:scope_schedule" || b.Text != d.ScopeSchedule[0].Text || b.Table == nil || len(b.Table.Rows) != 1 || b.Table.Rows[0][1] != d.ScopeSchedule[1].Text {
-			t.Fatalf("allocation schedule lost: %+v", b)
+		if len(section.Blocks) != 2 || section.Blocks[1].ID != "rfp:positions" {
+			t.Fatal("role and allocation not integrated")
 		}
 		return
 	}
@@ -148,10 +151,10 @@ func TestDisciplineContractOverrides(t *testing.T) {
 				t.Fatalf("contradictory returnable: %s", row.Text)
 			}
 		}
-		if len(r.Weights) != 2 || r.Weights[0].Key != "independence" || r.Weights[0].Value != 75 {
+		if len(r.Weights) != 0 {
 			t.Fatalf("discipline weights: %+v", r.Weights)
 		}
-		if r.EvalNote != d.EvaluationNote || r.AllowNote != d.AllowancesNote {
+		if r.AllowNote != d.AllowancesNote {
 			t.Fatal("discipline notes ignored")
 		}
 	}

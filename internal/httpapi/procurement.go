@@ -99,6 +99,14 @@ func postProcurementCreate(w http.ResponseWriter, r *http.Request, deps Deps) {
 		procurementCreateError(w, err)
 		return
 	}
+	if report.CurrentDraftVersionID == "" {
+		draft, err := deps.Store.EnsureReportDraft(r.Context(), session.OrgID, report.ID, session.UserID, deps.ReportBuild)
+		if err != nil {
+			reportError(w, err)
+			return
+		}
+		report.CurrentDraftVersionID = draft.ID
+	}
 	status := http.StatusOK
 	if created {
 		status = http.StatusCreated

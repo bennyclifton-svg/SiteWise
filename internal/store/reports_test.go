@@ -35,7 +35,22 @@ func TestReportDraftRefreshEditsIsolationAndPending(t *testing.T) {
 	if _, err := s.ReadReport(ctx, orgB, r.ID, "test-build"); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("foreign read %v", err)
 	}
-	d, err := s.RefreshReport(ctx, orgA, r.ID, userA, "test-build", true)
+	type draftResult struct {
+		draft store.ReportDraft
+		err   error
+	}
+	ready := make(chan draftResult, 2)
+	for i := 0; i < 2; i++ {
+		go func() {
+			draft, err := s.EnsureReportDraft(ctx, orgA, r.ID, userA, "test-build")
+			ready <- draftResult{draft, err}
+		}()
+	}
+	first, second := <-ready, <-ready
+	if first.err != nil || second.err != nil || first.draft.ID != second.draft.ID || first.draft.Version != second.draft.Version {
+		t.Fatalf("concurrent create: %s v%d (%v), %s v%d (%v)", first.draft.ID, first.draft.Version, first.err, second.draft.ID, second.draft.Version, second.err)
+	}
+	d, err := first.draft, first.err
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,6 +127,13 @@ func TestReportDraftRefreshEditsIsolationAndPending(t *testing.T) {
 	}
 	if !strings.Contains(strings.Join(view.Stale, ","), "packages") {
 		t.Fatal("package change not stale", view.Stale)
+	}
+	reused, err := s.EnsureReportDraft(ctx, orgA, r.ID, userA, "test-build")
+	if err != nil || reused.ID != edited.ID || reused.Version != edited.Version {
+		t.Fatalf("ensure replaced saved draft: %+v %v", reused, err)
+	}
+	if _, err := s.EnsureReportDraft(ctx, orgB, r.ID, userB, "test-build"); !errors.Is(err, store.ErrNotFound) {
+		t.Fatalf("foreign ensure: %v", err)
 	}
 	d, err = s.RefreshReport(ctx, orgA, r.ID, userA, "test-build", true)
 	if err != nil {

@@ -204,9 +204,9 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 		}
 		return nil
 	case prefix == "stage":
-		return oneOf(Include, Option, Exclude, Done)
+		return oneOf(Include, Option, Exclude, Done, Ask)
 	case prefix == "element":
-		return oneOf(Include, Option, Exclude)
+		return oneOf(Include, Option, Exclude, Ask)
 	case prefix == "allowance":
 		s, ok := str()
 		if !ok || !countRE.MatchString(s) {
@@ -214,7 +214,7 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 		}
 		return nil
 	case prefix == "position":
-		return oneOf("I", "O", "X")
+		return oneOf("I", "O", "X", Ask)
 	case prefix == "responsible":
 		s, ok := str()
 		if !ok || strings.TrimSpace(s) == "" || utf8.RuneCountInString(s) > 120 || !printable(s) {

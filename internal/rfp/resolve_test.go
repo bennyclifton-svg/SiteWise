@@ -151,10 +151,10 @@ func TestStaleSettingIsKeptAsCheck(t *testing.T) {
 	}
 }
 
-func TestWeightsMustTotal100(t *testing.T) {
+func TestRetiredWeightsDoNotBlockIssue(t *testing.T) {
 	r := Resolve(discipline(t, "traffic"), skeleton(t), facts(t, "class=7b"), set("weight:price", "60"))
-	if !r.HasCheck("weights") {
-		t.Fatal("weights totalling 120% must block issue")
+	if r.HasCheck("weights") || len(r.Weights) != 0 {
+		t.Fatal("retired evaluation must not block issue")
 	}
 	r = Resolve(discipline(t, "traffic"), skeleton(t), facts(t, "class=7b"), set("weight:price", "60", "weight:experience", "0"))
 	if r.HasCheck("weights") {
@@ -173,11 +173,11 @@ func TestStageSettingOverridesBoundary(t *testing.T) {
 	}
 }
 
-func TestBoundaryUnconfirmedBlocks(t *testing.T) {
+func TestDefaultBoundaryReadyForReview(t *testing.T) {
 	d := discipline(t, "architecture")
 	r := Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=design_construct", "pathway=da", "novation=no"), nil)
-	if r.Boundary.Confirmed || r.Boundary.End != "dnc_tender" || !r.HasCheck("boundary") {
-		t.Fatalf("D&C suggests a boundary ending at the D&C tender, unconfirmed: %+v", r.Boundary)
+	if !r.Boundary.Confirmed || r.Boundary.End != "dnc_tender" || r.HasCheck("boundary") {
+		t.Fatalf("D&C default ends at the tender: %+v", r.Boundary)
 	}
 	r = Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=traditional"), set("boundary:range", `{"start":"brief_masterplan","end":"for_construction"}`))
 	if !r.Boundary.Confirmed || r.HasCheck("boundary") {
@@ -195,13 +195,13 @@ func TestOptionsNeverEnterTheBaseFee(t *testing.T) {
 	var fee *[][]string
 	for _, s := range secs {
 		for _, b := range s.Blocks {
-			if b.ID == "rfp:returnables:r1" {
+			if b.ID == "rfp:stages" {
 				fee = &b.Table.Rows
 			}
 		}
 	}
 	if fee == nil {
-		t.Fatal("R1 table missing")
+		t.Fatal("combined stage pricing missing")
 	}
 	base := -1
 	for i, row := range *fee {

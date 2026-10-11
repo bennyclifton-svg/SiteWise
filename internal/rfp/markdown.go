@@ -14,7 +14,9 @@ func Markdown(sections []reports.Section) string {
 		if len(s.Blocks) == 0 {
 			continue
 		}
-		b.WriteString("### " + s.Title + "\n\n")
+		if s.Title != "" {
+			b.WriteString("### " + s.Title + "\n\n")
+		}
 		for _, block := range s.Blocks {
 			text := strings.TrimSpace(block.Text)
 			if block.Label != "" {

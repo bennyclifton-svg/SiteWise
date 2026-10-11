@@ -13,8 +13,8 @@
 
 .cost-grid-scroll { max-width: 100%; max-height: calc(100vh - 250px); overflow: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
 .cost-grid { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: 13px; }
-.cost-grid th, .cost-grid td { padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--paper); }
-.cost-grid thead th { position: sticky; top: 0; z-index: 2; border-bottom: 1px solid var(--line-strong); background: var(--canvas); color: var(--ink-muted); font-weight: 500; font-size: 12px; text-align: left; white-space: normal; vertical-align: bottom; min-width: 84px; }
+.cost-grid th, .cost-grid td { padding: 3px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--paper); }
+.cost-grid thead th { position: sticky; top: 0; z-index: 2; border-bottom: 1px solid var(--line-strong); background: var(--canvas); color: var(--ink-muted); font-weight: 500; font-size: 12px; text-align: left; white-space: normal; vertical-align: bottom; min-width: 72px; }
 .cost-grid thead th.cost-sticky { z-index: 3; }
 .cost-grid thead button { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
 .cost-grid th[aria-sort="ascending"] button::after { content: " \25B2"; font-size: 8px; }
@@ -24,9 +24,9 @@
 
 /* Code, category and item stay in view while figures scroll sideways. */
 .cost-sticky { position: sticky; z-index: 1; }
-.cost-sticky[data-col="code"] { left: 0; width: 52px; min-width: 52px; }
-.cost-sticky[data-col="category"] { left: 52px; width: 150px; min-width: 150px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
-.cost-sticky[data-col="item"] { left: 202px; min-width: 220px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--line-strong); }
+.cost-sticky[data-col="code"] { left: 0; width: 42px; min-width: 42px; }
+.cost-sticky[data-col="category"] { left: 42px; width: 130px; min-width: 130px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+.cost-sticky[data-col="item"] { left: 172px; min-width: 180px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--line-strong); }
 .cost-sticky[data-col="subtotal"] { left: 0; border-right: 1px solid var(--line-strong); }
 
 .cost-group th { padding-top: 12px; background: var(--ground); color: var(--ink); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; text-align: left; }
@@ -45,7 +45,7 @@
 .cost-cell { width: 100%; padding: 2px 4px; border: 1px solid transparent; border-radius: var(--radius-sm); background: none; color: var(--azure); font: inherit; text-align: right; cursor: text; }
 .cost-cell:hover:not(:disabled) { border-color: var(--line-strong); background: var(--paper); }
 .cost-cell:disabled { color: var(--ink-body); cursor: default; opacity: 1; }
-.cost-input { width: 110px; padding: 2px 4px; border: 1px solid var(--azure); border-radius: var(--radius-sm); font: inherit; text-align: right; font-variant-numeric: tabular-nums; }
+.cost-input { width: 88px; padding: 2px 4px; border: 1px solid var(--azure); border-radius: var(--radius-sm); font: inherit; text-align: right; font-variant-numeric: tabular-nums; }
 .cost-input[aria-invalid="true"] { border-color: var(--alert); background: var(--alert-soft); }
 
 .cost-drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 20; width: min(440px, 100vw); overflow-y: auto; padding: 16px 20px 40px; border-left: 1px solid var(--line-strong); background: var(--paper); box-shadow: var(--shadow-sm); }
@@ -57,10 +57,36 @@
   .costs-toolbar { margin-left: 0; }
   .cost-grid-scroll { max-height: none; }
   .cost-sticky[data-col="category"] { position: static; }
-  .cost-sticky[data-col="item"] { left: 52px; min-width: 160px; }
+  .cost-sticky[data-col="item"] { left: 42px; min-width: 160px; }
 }
 /* On a phone the group heading already names the kind; give the width to figures. */
 @media (max-width: 600px) {
   .cost-grid [data-col="category"] { display: none; }
   .cost-sticky[data-col="item"] { min-width: 140px; max-width: 160px; }
 }
+
+.cost-text-input { width: 100%; min-width: 60px; font: inherit; }
+.cost-add td { padding-top: 10px; padding-bottom: 10px; }
+.cost-add input { min-width: 160px; font: inherit; }
+.cost-add select { max-width: 170px; font: inherit; }
+.cost-open + .cost-open { margin-left: 8px; font-size: 11px; }
+@media (max-width: 600px) {
+ .cost-grid .cost-add [data-col="category"] { display: table-cell; }
+}
+
+
+.cost-grid .cost-actions { min-width: 48px; text-align: center; }
+.cost-delete { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink-muted); background: transparent; cursor: pointer; }
+.cost-delete:hover { color: var(--alert); border-color: var(--line-strong); background: var(--alert-soft); }
+.cost-delete:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
+
+.cost-delete:disabled { opacity: .5; cursor: wait; }
+
+.cost-group th > span, .cost-add td > .cost-open { position: sticky; left: 8px; }
+
+.cost-row { height: 30px; }
+.cost-grid input, .cost-grid select { max-width: 100%; }
+.cost-grid .cost-actions { min-width: 32px; }
+@media (pointer: coarse) { .cost-delete { width: 36px; height: 36px; } .cost-cell, .cost-open { min-height: 28px; } }
+
+.cost-add td > input, .cost-add td > select { display: block; width: 100%; }

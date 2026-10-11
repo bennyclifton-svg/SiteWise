@@ -1,6 +1,12 @@
 # Cost plan autofill: lines from the profile and procurement
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> Follow-up: the owner has confirmed four ledger sections and default inclusion
+> without Keep/Dismiss. See the [implementation proposal](2026-10-10-cost-plan-default-inclusion.md).
+> The follow-up was approved and implemented locally. It supersedes C1 and the
+> acceptance/section workflow below; this document retains the original design
+> and implementation record for context.
+
+> Implementation follows this repository’s AGENTS.md and docs/developing.md.
 
 **Goal:** A user opens Costs on a profiled project and the plan already has
 its shape: every consultant fee, every building system and the usual
@@ -24,7 +30,7 @@ in the database. **No Jev** (see §Jev).
 **Tech stack:**
 - Go: `internal/costs`, `internal/knowledge`, `internal/store`,
   `internal/httpapi`.
-- Migrations: `021p`, `021q`.
+- Migration: `021p_cost_line_sources.sql` (both line-shape changes together).
 - Knowledge: `knowledge/costs/elements.yaml` and
   `knowledge/costs/starter_lines.yaml`, both `status: draft`.
 - React: `web/src/CostGrid.tsx`, `web/src/Costs.tsx`, `web/src/costApi.ts`.
@@ -71,27 +77,69 @@ in the database. **No Jev** (see §Jev).
   - Petersham shows the suggested lines in the browser, and Add all
     suggested turns them into lines.
 
-## Precondition: merge the Procurement table first
+## Implementation review (10 October 2026)
 
-Owner decision C5. `procurement/table` is mid-build in
-`../sitewise-procurement`:
-- Tasks 1–6 of `2026-10-10-procurement-table.md` are committed.
-- Edits to `Reports.tsx` and `reportApi.ts` are uncommitted.
-- `main` has moved past its base.
+The following corrections supersede conflicting task details below:
 
-That session finishes Tasks 7–11, rebases and fast-forwards into local
-main. This plan starts from that main.
+- **Snapshots:** `system_id` already holds frozen work-item dimensions. The SQL
+  constraint must allow both work_item_id and its captured system_id on historical
+  rows. API inputs still require exactly one target. Clone source_key into the
+  next draft; preserve resolved category and scope in frozen rows. Never rewrite
+  historical baselines. New system-targeted lines retain their system at freeze.
+- **Retry contract:** project locking and the unique source index prevent duplicates.
+  A repeated acceptance with the current version is a no-op (200); stale requests
+  return 409, including lost-response retries. Reload before retrying. Never let
+  idempotency overwrite a budget or bypass the frozen/version guards.
+- **Scope and double counting:** aggregate all included, live, non-group work items
+  across project parts. Itemised children target their subsystem, not one arbitrary
+  work-item UUID. A trade split on a new system uses a non-posting parent, a
+  remaining-scope child and override children. If an existing posting system line
+  already covers the scope, do not auto-suggest extra trade amounts; the user must
+  subdivide it explicitly. Existing manual works/fee lines suppress overlapping
+  suggestions as well as keyed lines. No title-based matching of allowances.
+- **Stable identity:** keys use source IDs, never labels, list position or codes.
+  Ordinals are assigned before dismissal filtering. Package ties resolve by title
+  then UUID. Dismissing a group hides its children; restoring the group exposes
+  only children not independently dismissed. Unknown but well-formed historical
+  dismissals remain restorable. Invalid/unbounded keys are rejected.
+- **Trust:** draft catalogue structure may suggest labels only, never money or
+  reviewed status. Accepted lines use origin assumption; user-entered budgets use
+  origin user. Both fit current provenance validation. Draft state and unknown
+  applicability are visible in the rationale. Conditional profile values must be
+  known and unambiguous; conflicting or missing values remain unknown.
+- **Category versus allocation:** the inferred trade category is a planning
+  display, not a contract award or scope responsibility. Package-specific tender
+  schedules and contractual totals continue to use explicit package assignments;
+  the map must never silently allocate an allowance to a contract.
+- **Quantity editing:** the existing server calculates only on a separate value
+  operation. Add an explicit calculate_budget flag to item writes so quantity,
+  unit, rate and budget commit atomically. Keep incomplete quantity edits locally
+  until both numbers and a unit are supplied; do not write fabricated zeroes.
+- **UI:** preserve readable contrast; suggested is a textual state, not opacity
+  alone. Groups cannot receive money. Inputs retain failed edits; Enter plus blur
+  saves once. Baselines have no write controls. Suggestions never enter totals,
+  reports or pricing schedules before acceptance.
+- **Verification:** include first-ever plan reads (no DB writes), multi-part scope,
+  group suppression/restore, manual overlap, frozen snapshot/clone, stale retry,
+  invalid budget rollback, wrong-org writes and quantity atomicity. Benchmark
+  read, one acceptance and accept-all with representative populated projects.
 
-This plan doesn't edit the Procurement files. It only **reads**
-`packages.discipline_id`, `kind`, `works_scope` and `retired_at`, which
-exist on main today. If the merge slips, Parts 1–3 can still be built and
-tested against Petersham's existing consultant packages.
+The checkout already contains Procurement changes. Preserve those edits and
+integrate against their current package schema; do not reset, rebase or merge
+someone else's work as a side effect of this task. No new runtime dependency.
+
+## Procurement integration
+
+The Procurement table is present in this checkout. Autofill reads its existing
+package identity, discipline, kind, works scope and retirement fields. No package
+creation workflow is changed. Preserve concurrent Procurement work; no rebase or
+reset is required to implement this feature.
 
 ---
 
 ## Owner decisions (2026-10-10)
 
-- **C1. Suggest and accept, never write behind the user's back.**
+- **C1 (superseded by the approved default-inclusion follow-up). Suggest and accept, never write behind the user's back.**
   Suggestions are faint rows.
   - Typing a budget into one keeps the line and the amount in one request.
   - **Add all suggested** keeps every suggestion in one request.
@@ -130,7 +178,7 @@ tested against Petersham's existing consultant packages.
 |---|---|---|---|---|
 | Fees | `packages` where `kind='services'`, not retired | consultant package | `fee:<package_id>` | `fee`, package set, stage empty (Part 1) |
 | Construction | top-level systems with at least one **included** work item, in building order | building system | `works:<system_id>` | `works`, `system_id` set, no work item (Part 1) |
-| Construction, access and egress | `access-egress.*` sub-items that are included and `costed: true` in `elements.yaml` | sub-item | `works:<system_id>` on the group, `works:<sub_id>` on each child | group: non-posting; child: posting `works` line with its `work_item_id` (today's shape) |
+| Construction, access and egress | `access-egress.*` sub-items that are included and `costed: true` in `elements.yaml` | sub-item | `works:<system_id>` on the group, `works:<sub_id>` on each child | group: non-posting; child: posting `works` line targeting the subsystem across all project parts |
 | Project-wide | `starter_lines.yaml`, filtered by `applies_when` against profile values | starter line | `pw:<starter_id>` | `project_wide`, category from the file |
 
 **Not suggested:**
@@ -195,9 +243,9 @@ Codes are suggestions only and are editable once kept.
 
 The migration:
 - Replaces the line-kind `CHECK` on `cost_item_revisions`:
-  - **works**: `(work_item_id IS NOT NULL AND system_id IS NULL) OR
-    (work_item_id IS NULL AND system_id IS NOT NULL)`, with no stage and no
-    category.
+  - **works**: at least one of `work_item_id` or `system_id`, with no stage
+    and no category. The API requires exactly one; frozen work-item rows
+    legitimately carry both their target and the captured system dimension.
   - **fee**: `package_id IS NOT NULL`, with `package_stage_id` now
     optional (Task 2).
   - **project_wide**: unchanged.
@@ -282,8 +330,9 @@ func Suggest(in SuggestInput) []Suggestion
 - `ScopeWorkItems` (ids), shown in the drawer.
 - `Category`: the resolved package title (see the resolution order above).
 
-The same resolver also gives `Category` for kept works lines, so the grid
-reads one rule.
+The same resolver gives `resolved_category` for kept works lines. Freeze
+captures that display category and scope; the next editable draft resolves them
+again from live project inputs. The explicit package_id always wins.
 
 **Failing tests** (table-driven, Petersham-shaped fixture):
 - Three consultant packages give three fee suggestions, sorted by title,
@@ -373,9 +422,9 @@ Commit: `Cost plan read carries its suggestions; costs_read within budget (lane 
   one version bump.
 - Keeping a child whose group isn't kept yet keeps the group first, in the
   same transaction.
-- Keeping the same key twice (double click, retry) returns the existing
-  line with 200. That's guaranteed by the unique index and `ON CONFLICT DO
-  NOTHING` followed by a read.
+- Keeping the same key with a current version is a no-op with 200. A stale
+  version returns 409; reload before retrying. Project locking and the unique
+  index guarantee one line per key.
 
 **Tests:**
 - Keep with and without a budget.
@@ -402,7 +451,7 @@ for a separate path: about 25 inserts in one transaction.
 
 **Tests:**
 - Petersham-shaped seed gives the expected line count.
-- A second call adds nothing and returns 200.
+- A second call with the returned current version adds nothing and returns 200.
 - Dismissed keys aren't written.
 - Frozen: 409.
 - Wrong org: 404.
@@ -419,8 +468,8 @@ Commit: `Keep all suggested cost lines in one request (lane A)`
 
 Both use `costs_write`.
 
-- Dismissing a key that is no longer suggested still records the
-  dismissal. It's harmless.
+- Dismissing a well-formed key that is no longer suggested still records the
+  dismissal. Invalid keys and keys longer than 200 characters return 422.
 - Removing a kept line that has a `source_key` (existing
   `RemoveCostItem`) also records a dismissal in the same transaction.
   Otherwise the line would immediately come back as a suggestion.
@@ -441,8 +490,8 @@ Commit: `Dismiss or restore a suggested cost line (lane A)`
 
 **Files:** `web/src/CostGrid.tsx`, `web/src/costApi.ts`, `web/src/costs.css`.
 
-- Suggested rows sit in their group, in code order, at reduced opacity, with
-  a small "suggested" tag.
+- Suggested rows sit in their group, in code order, on the existing subdued surface, with
+  a readable "suggested" tag. Text keeps its contrast.
 - Columns:
   - Code, Category and Item show as described above.
   - Budget is an input cell exactly like today's `BudgetCell`. Saving calls
@@ -479,9 +528,12 @@ The "Add cost line" drawer form is removed.
   PATCH.
 - **Budget** works as today.
 - A **Quantities** toggle in the toolbar shows Qty, Unit and Rate columns
-  after Item. Editing Qty or Rate PATCHes the line. When both are set the
-  server's existing quantity × rate writes the budget. The toggle is
-  remembered per viewer in `localStorage`, wrapped in try/catch.
+  after Item. Incomplete quantity/unit/rate edits stay in the row. Once all three are
+  supplied, one PATCH with `calculate_budget: true` saves them and writes
+  quantity × rate to the budget in the same transaction. A successful save
+  must not repeat on blur merely because PostgreSQL normalised decimal scale. The toggle is
+  a browser-local display preference in `localStorage`, wrapped in try/catch.
+  It stores no project or monetary data and requires no new session request.
 - Rationale, ranges, as-of date, exclusion, approved contract and claimed
   to date stay in the drawer. Clicking the row opens it as today.
 - Each cell commit is one request, using today's 409/422 handling and kept
@@ -596,8 +648,11 @@ lines:
 - **Labels only. No percentages and no amounts.** Rule numbers (for
   example contingency bands or levy rates) wait for an instrument and stay
   `verified: false` when added later (non-negotiable 5).
-- `applies_when` uses the existing works predicate vocabulary and is
-  validated by `checkWorksRefs` / `validateCostPredicate`.
+- `applies_when` supports booleans and exact `{field: hdr.cond.<key>, in: [...]}`
+  conditions. The original works evaluator does not implement this shape;
+  `validateCostStarter` and `CostStarterHolds` explicitly validate/evaluate it.
+  `check_knowledge.py` checks the same structure. Broader predicate syntax is
+  out of scope.
 - Residential and commercial share this list for now. A class-specific
   list (for example the HIA Schedule of Allowances groupings for houses)
   is an owner call after Petersham is reviewed.
@@ -636,13 +691,14 @@ existing Subdivide:
 - Each child carries `source_key = tender:<report_id>:<row>`.
 - The awarded total becomes the commitment.
 
-This plan's `source_key` and stage-optional fee lines are the seam. Nothing
+This plan's `source_key` and stage-optional fee lines are the seam. New tender sources
+will need their own validated source-key namespace when that module is built. Nothing
 else needs to change.
 
 That module will look at reading tender submissions with a model. AGENTS.md
 allows Jev only. Whether Jev's pick-from-options (for example "which
-nominated breakdown row does this tender line belong to") is enough, or the
-rule has to change, gets decided in that module's design. It isn't assumed
+nominated breakdown row does this tender line belong to") is sufficient gets
+decided in that module's design. The Jev-only runtime rule remains binding. It isn't assumed
 here.
 
 **Other later work:**
@@ -660,7 +716,8 @@ here.
 - **Wrong org:** 404 on every new route, and covered by the access sweep.
 - **Frozen plan, or viewing the baseline:** no suggestions, no add rows,
   and keep, keep-all and dismiss return 409.
-- **Double click on Keep or Keep all:** one line per key (unique index).
+- **Double click on Keep or Keep all:** one line per key (project lock plus
+  unique index). Stale requests get 409; current-version repeats are no-ops.
 - **Suggestion vanishes between read and keep** (package retired, work item
   excluded): 404, and the grid reloads.
 - **Package retired after its fee line was kept:** the line stays and shows
@@ -680,3 +737,59 @@ here.
 - **Legacy duplicate package** (Petersham's "Structural Design" alongside
   "Structural"): both are suggested. The user dismisses one. This plan
   doesn't de-duplicate packages; Procurement owns that.
+
+
+## Implementation record (10 October 2026)
+
+Implemented locally:
+
+- Draft elements and starter catalogue, validated by Go and the knowledge checker.
+- System-targeted lines, optional fee stages, source identity and dismissals in
+  migration 021p. Existing frozen work-item dimensions survive migration.
+- Suggestions and mapped display categories in the plan read, including a plan
+  that has not been created yet. Reading does not initialise database rows.
+- Atomic accept-with-budget, batched accept-all, dismiss/restore and removal
+  suppression, with project locks, version checks, tenant isolation and SSE.
+- Frozen category/scope snapshots and source identity copied to the next draft.
+- Suggested grid rows and read-only rationale/scope; inline add, code, item and
+  category edits; atomic quantity/unit/rate calculation. Amounts remain unknown
+  until entered. Draft structure never becomes reviewed evidence.
+- Regression tests for multipart scope, manual overlap, trade splits, parent-first
+  dependencies, repeated acceptance, rollback, migration, snapshots and access.
+
+Verification:
+
+- `npm --prefix web run build`: passed.
+- `python tools/check_knowledge.py --strict`: passed, with the two existing
+  package-default mapping warnings and no new warnings.
+- Cost lifecycle, catalogue, migration, foreign-key and route-access tests pass.
+- Both Playwright cost tests pass against the real Go server and dedicated test
+  database on port 4287; desktop and 390 px layouts were inspected. No page-wide
+  horizontal overflow. Screenshot paths now use Playwright's test output folder.
+- The browser test exposed a duplicate quantity save on blur after PostgreSQL
+  normalised rate precision. Successful input is now tracked so leaving that
+  cell cannot swallow the next button click.
+- The representative store benchmark uses 13 systems, eight consultants and 20
+  real accept/remove/restore cycles. Reads, single acceptance and accept-all are
+  gated at the stated budgets. The endpoint benchmark also exercises autofill
+  and has its own `costs_accept_all` samples and committed budget.
+- No new third-party dependency, service, AI call or automatic monetary value.
+
+Release follow-up: run the same paths on the target VPS and inspect the live
+Petersham project after deployment. This local implementation did not deploy or
+edit the live project's cost plan. The draft catalogue still requires owner
+review; no record was promoted to reviewed.
+
+Final local latency run (20 samples per path, dedicated PostgreSQL test DB):
+
+| Path | Measured p50 / p90 | Budget p50 / p90 |
+|---|---|---|
+| costs_read | 0.76 / 1.78 ms | 100 / 250 ms |
+| costs_write (accept one) | 3.14 / 6.26 ms | 100 / 250 ms |
+| costs_accept_all | 17.93 / 20.51 ms | 250 / 500 ms |
+
+The final `go test -p 1 ./...` run passes every package except `internal/httpapi`:
+`TestProfilePlacesInputsInBuildOrder` reports existing profile flags with no
+layout home (hydraulic, electrical and other discipline flags). Cost API tests
+and the expanded route-access sweep pass. This failure is outside the cost
+plan change; it is not hidden or treated as a passing full-suite result.

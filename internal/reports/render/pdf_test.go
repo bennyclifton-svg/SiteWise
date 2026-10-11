@@ -147,7 +147,7 @@ func TestPDFDocumentTables(t *testing.T) {
 }
 
 func TestPDFPageLimitFollowsTemplate(t *testing.T) {
-	if limit, target := PageLimit(documentFixture(1)); limit != 3 || target != 2.5 {
+	if limit, target := PageLimit(documentFixture(1)); limit != 4 || target != 3 {
 		t.Fatalf("consultant RFP limit %d/%v", limit, target)
 	}
 	if limit, _ := PageLimit(fixture()); limit != 2 {
@@ -155,8 +155,8 @@ func TestPDFPageLimitFollowsTemplate(t *testing.T) {
 	}
 	long := documentFixture(140)
 	r, err := PDF(long)
-	if err == nil || !errors.Is(err, ErrOverflow) || r.Pages <= 3 {
-		t.Fatalf("a consultant RFP over three pages is refused, got %d pages: %v", r.Pages, err)
+	if err == nil || !errors.Is(err, ErrOverflow) || r.Pages <= 4 {
+		t.Fatalf("a consultant RFP over four pages is refused, got %d pages: %v", r.Pages, err)
 	}
 	fits := documentFixture(60)
 	r, err = PDF(fits)
@@ -168,7 +168,7 @@ func TestPDFPageLimitFollowsTemplate(t *testing.T) {
 	if _, err := PDF(other); !errors.Is(err, ErrOverflow) {
 		t.Fatal("the same length is refused for a two-page report", err)
 	}
-	if fit := Fit(fits); fit.Limit != 3 || !fit.Fits {
+	if fit := Fit(fits); fit.Limit != 4 || !fit.Fits {
 		t.Fatalf("the draft screen uses the same limit: %+v", fit)
 	}
 }

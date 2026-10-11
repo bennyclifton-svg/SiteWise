@@ -5,7 +5,7 @@
 # of existing structure is separate from strengthening design; certification
 # follows the inspections made. See docs/rfp-golden/phase-a-changes.md.
 id: structural
-version: 1
+version: 2
 status: draft
 title: Structural engineering services
 heading: "REQUEST FOR PROPOSAL: STRUCTURAL ENGINEERING SERVICES"
@@ -47,7 +47,7 @@ stage_intro: "Price each stage that applies as a lump sum. Each stage ends at cl
 boundary:
   - {when: [{procurement: [design_construct]}], start: concept_schematic, end: dnc_tender}
   - {when: [{work_type: [advisory]}], start: concept_schematic, end: existing_assessment}
-  - {start: concept_schematic, end: construction_phase}
+  - {start: concept_schematic, end: construction_documents}
 
 stages:
   - key: concept_schematic
@@ -158,25 +158,29 @@ allowances:
 
 positions:
   - key: design_basis
+    group: Design basis and coordination
     label: "Design-basis schedule: geotechnical reliance, design life, importance level, loads, wind and earthquake inputs, durability and fire-resistance coordination; missing values referred to the responsible engineer"
     kind: technical
     value: I
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md"}]
-  - {key: geotech_brief, label: "Geotechnical brief for the client to commission", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#4"}]}
+  - {group: "Design basis and coordination", key: geotech_brief, label: "Geotechnical brief for the client to commission", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#4"}]}
   - key: residential_framing
+    group: Permanent structural design
     label: "Footing, framing, bracing and tie-down design; review of site and wind classification and of supplier truss and frame design"
     kind: technical
     value: {value: I, when: [{class: [1a, 1b, 10a, 10b]}], else: "-"}
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md#services-by-stage"}]
-  - {key: shared_model, label: "Revit model shared with the design team", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "structural#39-40"}]}
-  - {key: safety_in_design, label: "Safety in design report", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#34"}]}
-  - {key: value_management, label: "Value management participation", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "structural#36"}]}
+  - {group: "Design basis and coordination", key: shared_model, label: "Revit model shared with the design team", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "structural#39-40"}]}
+  - {group: "Design basis and coordination", key: safety_in_design, label: "Safety in design report", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#34"}]}
+  - {group: "Design basis and coordination", key: value_management, label: "Value management participation", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "structural#36"}]}
   - key: delegated_design
+    group: Permanent structural design
     label: "Performance specifications and a delegated-design schedule for contractor-designed elements (piles, post-tensioned slabs, specialist floors): criteria, submission, review, acceptance and certificates"
     kind: technical
     value: I
     provenance: [{kind: evidence, ref: "structural#41-43"}, {kind: seed, ref: "structural-commercial-industrial-guide.md documentation and construction"}]
   - key: specialist_element_design
+    group: Permanent structural design
     label: "Detailed design of post-tensioned slabs and piles"
     kind: technical
     value: {value: X, when: [{procurement: [design_construct]}], else: O}
@@ -185,6 +189,7 @@ positions:
     assumption: "Priced as an option until the procurement route is decided."
     provenance: [{kind: evidence, ref: "structural#41-42"}]
   - key: retention_design
+    group: Excavation and temporary works
     label: "Shoring and piled retention design"
     kind: technical
     value: {value: I, when: [{flag: [basement]}, {flag: [excavation_adjoining]}], else: "-"}
@@ -192,6 +197,7 @@ positions:
     assumption: "Price as an option: needed only for a basement or excavation next to adjoining structures."
     provenance: [{kind: evidence, ref: "structural#58"}]
   - key: temporary_works_interfaces
+    group: Excavation and temporary works
     label: "Retention, underpinning, temporary works and monitoring interfaces: designer and reviewer named, permanent and temporary loads stated"
     kind: technical
     value: {value: I, when: [{flag: [basement]}, {flag: [excavation_adjoining]}], else: "-"}
@@ -199,19 +205,22 @@ positions:
     assumption: "Price as an option: needed only where temporary support or adjoining structures are affected."
     provenance: [{kind: seed, ref: "structural-commercial-industrial-guide.md concept and common failures"}]
   - key: temporary_works_design
+    group: Excavation and temporary works
     label: "Temporary works and propping design"
     kind: technical
     value: X
     responsible: "contractor's temporary works designer"
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md (structural intervention)"}]
   - key: strengthening
+    group: Permanent structural design
     label: "Strengthening design found necessary by the existing structure assessment"
     kind: technical
     value: {value: O, when: [{stage: [existing_assessment]}], else: "-"}
     provenance: [{kind: evidence, ref: "structural#56-57"}]
-  - {key: services_fixings, label: "Fixing design for services and equipment, including seismic restraint", kind: technical, value: O, provenance: [{kind: evidence, ref: "structural#53"}, {kind: client_decision, ref: "phase-a-changes structural C3", why: "v1 excluded this on simple jobs; a small project can still need it, so it is always priced as an option."}]}
-  - {key: metalwork, label: "Miscellaneous metalwork: balustrades, screens, sunshades, fences", kind: technical, value: O, provenance: [{kind: evidence, ref: "structural#55"}, {kind: client_decision, ref: "phase-a-changes structural C3", why: "Selected by what the project has, not by class; always priced as an option."}]}
+  - {group: "Permanent structural design", key: services_fixings, label: "Fixing design for services and equipment, including seismic restraint", kind: technical, value: O, provenance: [{kind: evidence, ref: "structural#53"}, {kind: client_decision, ref: "phase-a-changes structural C3", why: "v1 excluded this on simple jobs; a small project can still need it, so it is always priced as an option."}]}
+  - {group: "Permanent structural design", key: metalwork, label: "Miscellaneous metalwork: balustrades, screens, sunshades, fences", kind: technical, value: O, provenance: [{kind: evidence, ref: "structural#55"}, {kind: client_decision, ref: "phase-a-changes structural C3", why: "Selected by what the project has, not by class; always priced as an option."}]}
   - key: dilapidation
+    group: Excavation and temporary works
     label: "Dilapidation surveys of adjoining structures"
     kind: technical
     value: {value: O, when: [{flag: [excavation_adjoining]}, {flag: [basement]}], else: X}
@@ -219,11 +228,12 @@ positions:
     if_unknown: option
     assumption: "Price as an option: needed where excavation is next to adjoining structures."
     provenance: [{kind: evidence, ref: "structural#50"}]
-  - {key: super_flat_floor, label: "Super-flat floor design", kind: technical, value: {value: O, when: [{flag: [super_flat_floor]}], else: "-"}, if_unknown: option, assumption: "Price as an option: needed only if the use needs a super-flat floor.", provenance: [{kind: evidence, ref: "structural#59"}]}
-  - {key: compaction, label: "Ground compaction inspections", kind: technical, value: X, responsible: "geotechnical engineer", provenance: [{kind: evidence, ref: "structural#54"}]}
-  - {key: demolition_drawings, label: "Demolition drawings (engineering demolition and propping design is not replaced by them)", kind: technical, value: X, responsible: architect, provenance: [{kind: evidence, ref: "structural#52"}]}
-  - {key: services_footings, label: "Footings affected by in-ground services", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#49"}]}
+  - {group: "Permanent structural design", key: super_flat_floor, label: "Super-flat floor design", kind: technical, value: {value: O, when: [{flag: [super_flat_floor]}], else: "-"}, if_unknown: option, assumption: "Price as an option: needed only if the use needs a super-flat floor.", provenance: [{kind: evidence, ref: "structural#59"}]}
+  - {group: "Inspection and verification", key: compaction, label: "Ground compaction inspections", kind: technical, value: X, responsible: "geotechnical engineer", provenance: [{kind: evidence, ref: "structural#54"}]}
+  - {group: "Excavation and temporary works", key: demolition_drawings, label: "Demolition drawings (engineering demolition and propping design is not replaced by them)", kind: technical, value: X, responsible: architect, provenance: [{kind: evidence, ref: "structural#52"}]}
+  - {group: "Permanent structural design", key: services_footings, label: "Footings affected by in-ground services", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#49"}]}
   - key: inspection_schedule
+    group: Inspection and verification
     label: "Inspection schedule by element and hold point, with notification lead time and the basis for reinspection"
     kind: technical
     value: {value: I, when: [{stage: [construction_phase]}], else: "-"}

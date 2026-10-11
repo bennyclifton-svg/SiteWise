@@ -44,15 +44,6 @@ settings:
     boundary:range:
       start: inception
       end: tender
-    allowance:extent: '2'
-    allowance:investigation: '2'
-    allowance:design: '2'
-    allowance:coordination: '2'
-    allowance:tender: '2'
-    allowance:construction: '2'
-    allowance:testing: '2'
-    allowance:completion: '2'
-    allowance:access: '2'
 sources:
 - docs/rfp-golden/electrical-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/electrical-services/ledger.md #1-54'

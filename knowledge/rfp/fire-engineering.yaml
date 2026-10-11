@@ -1,5 +1,5 @@
 id: fire-engineering
-version: 1
+version: 2
 status: draft
 title: Fire safety engineering
 heading: 'REQUEST FOR PROPOSAL: FIRE SAFETY ENGINEERING'
@@ -400,6 +400,7 @@ allowances:
   owner: client
 positions:
 - key: brief
+  group: Fire strategy and evidence
   label: Brief for scheduled solutions
   kind: technical
   value:
@@ -419,6 +420,7 @@ positions:
     - fe_solutions
   if_unknown: ask
 - key: fer
+  group: Fire strategy and evidence
   label: FER for scheduled solutions
   kind: technical
   value:
@@ -438,6 +440,7 @@ positions:
     - fe_solutions
   if_unknown: ask
 - key: existing
+  group: Fire strategy and evidence
   label: Scheduled existing FER/evidence reconciliation; BCA/certifier upgrade interface; adjacent buildings by
     schedule
   kind: technical
@@ -464,6 +467,7 @@ positions:
     - fe_existing_reconciliation
   if_unknown: ask
 - key: interim
+  group: Fire strategy and evidence
   label: Interim strategies/shutdowns/staged occupation; each phase priced separately
   kind: technical
   value:
@@ -481,6 +485,7 @@ positions:
     ref: fire-engineering#45
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: occupants
+  group: Fire strategy and evidence
   label: 'Mixed/vulnerable/assisted occupants: population/evacuation/staffing basis at purchased stages'
   kind: technical
   value:
@@ -504,6 +509,7 @@ positions:
     - fire_vulnerable_occupants
   if_unknown: ask
 - key: wet_design
+  group: Design ownership and verification
   label: Sprinklers, hydrants, pumps, tanks and pipework design
   kind: technical
   value: X
@@ -517,6 +523,7 @@ positions:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   responsible: fire-services designer
 - key: dry_design
+  group: Design ownership and verification
   label: Detection, alarm and warning design
   kind: technical
   value: X
@@ -530,6 +537,7 @@ positions:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   responsible: fire-services or electrical designer
 - key: strategy_review
+  group: Systems and specialist assessments
   label: Smoke-control/cause-and-effect and selected services strategy review
   kind: technical
   value:
@@ -548,6 +556,7 @@ positions:
     ref: fire-engineering#47,48
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: witnessing
+  group: Design ownership and verification
   label: Selected script review/test witnessing; evidence/defects/retests, trades close defects
   kind: technical
   value:
@@ -565,6 +574,7 @@ positions:
     ref: fire-engineering#47
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: matrix_design
+  group: Design ownership and verification
   label: Matrix design, controls programming and test execution
   kind: technical
   value: X
@@ -576,6 +586,7 @@ positions:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   responsible: matrix designer, controls programmer and test contractors
 - key: specialist
+  group: Systems and specialist assessments
   label: Scheduled facade/timber/modular/tested-system/structural-fire assessment; insured competence, assembly
     acceptance checked
   kind: technical
@@ -598,6 +609,7 @@ positions:
     - fire_specialist_systems
   if_unknown: ask
 - key: hazards
+  group: Systems and specialist assessments
   label: Scheduled hazard/storage/EV/battery scenarios; inventory/insurer targets and process specialist
   kind: technical
   value:
@@ -619,6 +631,7 @@ positions:
     - fire_special_hazards
   if_unknown: ask
 - key: remediation
+  group: Systems and specialist assessments
   label: 'Orders/defects: preserve evidence, diagnose extent, temporary controls, insured rectification designer/verifier
     and closure evidence'
   kind: technical
@@ -632,6 +645,7 @@ positions:
     ref: fire-engineering#45
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: peer
+  group: Design ownership and verification
   label: Independent peer review; designer retains duty
   kind: technical
   value:
@@ -649,6 +663,7 @@ positions:
     ref: fire-engineering#47
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: other_roles
+  group: Design ownership and verification
   label: Bushfire, legal/expert-witness and statutory BCA certification
   kind: technical
   value: X
@@ -729,7 +744,7 @@ terms:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   replace: true
 - key: questions
-  text: Questions to {field:contact} by {field:questions_by}; numbered addenda to all, acknowledged in R1.
+  text: Issue numbered addenda to all, acknowledged in R1.
   provenance:
   - kind: client_decision
     ref: fire-engineering#45,49
@@ -813,7 +828,7 @@ returnable_notes:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   replace: true
 - key: r6
-  text: 'Sections 3-6/agreement departures: reason, alternative, fee/time/decision; unknown/conflicting evidence,
+  text: 'Sections 2–5/agreement departures: reason, alternative, fee/time/decision; unknown/conflicting evidence,
     priced assumptions with owner/date/consequence/review point; excluded-work parties.'
   provenance:
   - kind: evidence

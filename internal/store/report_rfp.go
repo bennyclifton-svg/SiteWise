@@ -178,9 +178,23 @@ func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string
 	if err != nil {
 		return d, err
 	}
-	disc, sk, drivers, _, err := s.storedRFP(d.SourceRevisions, settings)
+	disc, sk, drivers, current, err := s.storedRFP(d.SourceRevisions, settings)
 	if err != nil {
 		return d, err
+	}
+	// Older Hydraulic drafts had one water/sanitary choice. Once either
+	// service is edited, keep the other at the position the user saw.
+	if disc.ID == "hydraulic-services" && key == "position:domestic" {
+		if _, set := settings["position:sanitary"]; !set {
+			if p := current.Position("sanitary"); p.Value != "" {
+				raw, _ := json.Marshal(p.Value)
+				_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,'position:sanitary',$3::jsonb,'{}'::jsonb,$4::uuid)`, org, d.ID, raw, actor)
+				if err != nil {
+					return d, err
+				}
+				settings["position:sanitary"] = rfp.Setting{Value: raw}
+			}
+		}
 	}
 	if value == nil {
 		if _, ok := settings[key]; !ok {

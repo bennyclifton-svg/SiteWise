@@ -265,3 +265,44 @@
   [data-blocked] { box-shadow: none; background: none; }
   .rfp-cell { text-decoration: none; }
 }
+
+/* Hydraulic pilot: stable service order and pricing beside stage deliverables. */
+.hydraulic-service-table { position: relative; table-layout: fixed; width: 100%; }
+.hydraulic-service-table th:first-child { width: 56%; }
+.hydraulic-service-table th[scope="row"], .hydraulic-stage-table th[scope="row"] { font-weight: 500; background: transparent; }
+.hydraulic-service-table .hydraulic-group th { width: auto; padding-top: 1.25rem; background: var(--paper); font-weight: 600; }
+.hydraulic-detail { margin: .35rem 0 0; font-weight: 400; font-size: .9em; color: var(--ink-muted); }
+.hydraulic-unresolved { margin: .35rem 0; color: var(--ink); font-weight: 500; }
+.hydraulic-choice { text-align: center; vertical-align: top; }
+.hydraulic-choice label { display: flex; justify-content: center; align-items: center; min-height: 36px; cursor: pointer; }
+.hydraulic-choice input, .hydraulic-stage-check input { width: 18px; height: 18px; margin: 0; accent-color: var(--ember); flex-shrink: 0; }
+.hydraulic-mobile-label { display: none; }
+.report-block .hydraulic-stage-check { display: flex; gap: .5rem; align-items: flex-start; }
+.hydraulic-stage-table { min-width: 640px; }
+.hydraulic-stage-table th:first-child { width: 22%; }
+.hydraulic-stage-table th:nth-child(2) { width: 47%; }
+.hydraulic-stage-table select { max-width: 100%; margin-top: .5rem; font: inherit; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 3px; padding: .25rem; }
+.hydraulic-stage-table .cell-link { display: block; margin-top: .4rem; }
+.hydraulic-fee-blank { min-width: 3rem; }
+.hydraulic-owner { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; font-weight: 400; }
+.hydraulic-owner input { width: 100%; }
+@media (max-width: 600px) {
+  .hydraulic-service-table, .hydraulic-service-table tbody { display: block; }
+  .hydraulic-service-table thead { display: block; top: 0; left: 0; position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .hydraulic-service-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); padding: .7rem 0; }
+  .hydraulic-service-table th:first-child { width: auto; grid-column: 1 / -1; }
+  .hydraulic-service-table th, .hydraulic-service-table td { border: 0; padding: .3rem; }
+  .hydraulic-mobile-label { display: inline; font-size: .8rem; }
+  .hydraulic-choice label { gap: .3rem; }
+}
+
+.rfp-release-dates { display: flex; flex-wrap: wrap; gap: 1rem 3rem; padding: .5rem 0 1.5rem; }
+.rfp-release-dates .rfp-row { display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; border: 0; }
+.rfp-release-dates .rfp-source { display: none; }
+
+.rfp-scope-inputs { margin-top: .6rem; font-weight: 400; }
+.rfp-scope-inputs summary { cursor: pointer; font-size: .9em; }
+.rfp-scope-inputs .rfp-row { margin-top: .5rem; }
+.rfp-element-fee th, .rfp-element-fee td { background: var(--paper); font-size: .9em; }
+@media (max-width: 600px) { .hydraulic-service-table td[colspan] { grid-column: 1 / -1; } }
+@media print { .rfp-scope-inputs { display: none; } }

@@ -1,5 +1,5 @@
 id: landscape-architecture
-version: 1
+version: 2
 status: draft
 title: Landscape architectural services
 heading: 'REQUEST FOR PROPOSAL: LANDSCAPE ARCHITECTURE'
@@ -423,6 +423,7 @@ allowances:
   owner: client
 positions:
 - key: design
+  group: Landscape and planting design
   label: Planting/hardscape/external design only in enabled stages
   kind: technical
   value:
@@ -451,6 +452,7 @@ positions:
     - s6_dnc
   if_unknown: ask
 - key: trees
+  group: Landscape and planting design
   label: 'Retained/street/neighbouring trees: condition/impact/protection; survey locates; no removal authority'
   kind: technical
   value: X
@@ -465,6 +467,7 @@ positions:
       quantities or current terms.
   responsible: arborist
 - key: civil_structure
+  group: Irrigation and design interfaces
   label: Levels/runoff/WSUD by civil; retaining structure by structural; geotechnical soil advice
   kind: technical
   value: X
@@ -477,6 +480,7 @@ positions:
       quantities or current terms.
   responsible: civil engineer and structural engineer
 - key: podium
+  group: Landscape and planting design
   label: Podium/roof/planter build-up and loads; structure verifies, architect/waterproofing and drainage owners named
   kind: technical
   value:
@@ -507,6 +511,7 @@ positions:
     - landscape_podium
   if_unknown: ask
 - key: irrigation_brief
+  group: Irrigation and design interfaces
   label: Irrigation notation/performance brief; hydraulic/electrical interfaces named
   kind: technical
   value:
@@ -539,6 +544,7 @@ positions:
     - landscape_irrigation_brief
   if_unknown: ask
 - key: irrigation_detail
+  group: Irrigation and design interfaces
   label: Detailed irrigation design only by expressly selected competent designer
   kind: technical
   value:
@@ -567,6 +573,7 @@ positions:
     - landscape_irrigation_detail
   if_unknown: ask
 - key: public
+  group: Public realm and delivery
   label: Public-domain manuals/approvals/bonds/handover; extent and authority lead agreed
   kind: technical
   value:
@@ -597,6 +604,7 @@ positions:
     - landscape_public
   if_unknown: ask
 - key: special
+  group: Irrigation and design interfaces
   label: 'Special external uses: name play/access, lighting/electrical, ecology/heritage/bushfire/horticulture specialists'
   kind: technical
   value:
@@ -627,6 +635,7 @@ positions:
     - landscape_special
   if_unknown: ask
 - key: staging
+  group: Public realm and delivery
   label: 'Existing/occupied/mixed/staged work: retained-condition/tie-ins, access and separate acceptance/establishment
     dates'
   kind: technical
@@ -664,6 +673,7 @@ positions:
     - landscape_staging
   if_unknown: ask
 - key: environment
+  group: Irrigation and design interfaces
   label: 'Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose
     cause; assign opening-up/testing/reinstatement'
   kind: technical
@@ -677,6 +687,7 @@ positions:
       quantities or current terms.
   responsible: environmental consultant and relevant cause specialist
 - key: establishment
+  group: Public realm and delivery
   label: Plant establishment/maintenance inspections; contractor/operator maintains, quantified visits/end criteria
   kind: technical
   value:
@@ -697,6 +708,7 @@ positions:
     - s8_establishment
   if_unknown: ask
 - key: construction
+  group: Public realm and delivery
   label: Construction visits/completion report against selected evidenced scope; contract PC remains administrator
   kind: technical
   value:
@@ -789,7 +801,7 @@ terms:
       quantities or current terms.
   replace: true
 - key: questions
-  text: Questions to {field:contact} by {field:questions_by}; changes as numbered addenda to all.
+  text: Issue changes as numbered addenda to all.
   provenance:
   - kind: client_decision
     ref: landscape-architecture#34,35
@@ -871,7 +883,7 @@ returnable_notes:
       quantities or current terms.
   replace: true
 - key: r6
-  text: 'Sections 3-6/agreement departures: reason, alternative, fee/time; unresolved evidence or authorised assumption
+  text: 'Sections 2–5/agreement departures: reason, alternative, fee/time; unresolved evidence or authorised assumption
     with owner/date/consequence/review; name excluded-work owners.'
   provenance:
   - kind: evidence

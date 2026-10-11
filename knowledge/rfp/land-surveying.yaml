@@ -1,5 +1,5 @@
 id: land-surveying
-version: 1
+version: 2
 status: draft
 title: Land surveying services
 heading: 'REQUEST FOR PROPOSAL: LAND SURVEYING SERVICES'
@@ -329,6 +329,7 @@ allowances:
     - s7_completion
 positions:
 - key: boundary
+  group: Survey control and boundaries
   label: Boundary identification for setback/easement design; surveyor reports geometry, solicitor advises rights
   kind: technical
   value:
@@ -347,6 +348,7 @@ positions:
   - flag:
     - survey_boundary
 - key: titling
+  group: Survey control and boundaries
   label: Subdivision, strata and easement creation; separately selected/priced
   kind: technical
   value: O
@@ -354,6 +356,7 @@ positions:
   - kind: seed
     ref: land-surveying#23,24,25
 - key: control
+  group: Survey control and boundaries
   label: Agreed horizontal/vertical control and threshold/slab/outlet/retained levels; record accuracy, resolve
     datum conflicts before merging
   kind: technical
@@ -367,6 +370,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: adjoining
+  group: Survey control and boundaries
   label: Neighbour heights/windows/trees/roof; permissions, inferred labels; arborist owns tree health, architect
     privacy/shadow
   kind: technical
@@ -389,6 +393,7 @@ positions:
   - flag:
     - survey_adjoining
 - key: records
+  group: Services and measured building evidence
   label: Underground services records and visible features; locator states methods/limits, surveyed paint is not
     proof
   kind: technical
@@ -402,6 +407,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: exposure
+  group: Services and measured building evidence
   label: Exposure, potholing, isolation and surface restoration
   kind: technical
   value: X
@@ -415,6 +421,7 @@ positions:
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
   responsible: client-appointed exposure/isolation and reinstatement contractors (name each in R4)
 - key: buried
+  group: Services and measured building evidence
   label: Buried tanks/drainage/sealed pits; measured/inferred separated, name opening party; civil owns capacity,
     structural adequacy
   kind: technical
@@ -435,6 +442,7 @@ positions:
   - flag:
     - survey_buried
 - key: sewer
+  group: Services and measured building evidence
   label: Sewer/main peg-out versus condition report; provider/method named, CCTV/cleaning/tracing/approvals separately
     selected
   kind: technical
@@ -455,6 +463,7 @@ positions:
   - flag:
     - survey_sewer
 - key: interior
+  group: Services and measured building evidence
   label: Interior measure-up/scan/point cloud; select rooms/levels, name scan-to-model party; boundaries only if
     needed
   kind: technical
@@ -466,6 +475,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: access
+  group: Access and construction surveys
   label: Occupied/staged site permissions/hours/daily handback; client obtains occupier/neighbour consent, return
     inaccessible register
   kind: technical
@@ -483,6 +493,7 @@ positions:
     ref: land-surveying#27
   if_unknown: ask
 - key: monitoring
+  group: Access and construction surveys
   label: Movement monitoring/repeat observations; structural/geotechnical lead supplies triggers and interpretation
   kind: technical
   value: O
@@ -493,6 +504,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: setout
+  group: Access and construction surveys
   label: Construction set-out; builder provides approved revisions, protects control and books
   kind: technical
   value:
@@ -508,6 +520,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: asbuilt
+  group: Access and construction surveys
   label: Work-as-executed checks; missed hold points not certified later
   kind: technical
   value:
@@ -650,7 +663,7 @@ returnable_notes:
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
   replace: true
 - key: r6
-  text: 'Sections 3-6/agreement: comply/departure, reason, alternative, owner and fee/time effect, or nil. Include
+  text: 'Sections 2–5/agreement: comply/departure, reason, alternative, owner and fee/time effect, or nil. Include
     extent/datum conflicts, boundaries/hidden assets/methods, duplicate scope/markups/reliance. Assumptions state
     quantity, consequence, decision owner/date.'
   provenance:

@@ -811,3 +811,25 @@ Jev-extracted fact. Split children start unknown unless explicitly authored.
 ANDed with action/system on the same item. Missing/unknown remains Unknown,
 explicit opposite is False. Traces/fingerprints preserve this input. Existing
 work origin/version/provenance, org scope and report snapshots apply.
+
+### Cost structure (`costs/elements.yaml`, `costs/starter_lines.yaml`)
+
+Draft structure can suggest labels only, never amounts, percentages or reviewed
+status. Both files require version 1, status and sources. Elements cover every
+current top-level system once, use unique string codes and valid intake trade
+IDs. Overrides and itemised items name direct children; non-costed children
+require a reason. Unknown new child systems remain visible using their label.
+Starter IDs are stable lowercase slugs, with a label and one of the cost
+project-wide categories. `applies_when` is a boolean or exactly
+`{field: hdr.cond.<key>, in: [<choice>, ...]}` using a known profile condition.
+Missing or conflicting profile values keep the suggestion and disclose unknown
+applicability. These structural predicates are intentionally narrower than the
+works-rule predicates. Suggestions have no effect on totals before acceptance.
+
+### Hydraulic RFP pilot presentation
+
+RFP positions optionally carry `group` (a stable display subheading) and
+`detail` (service boundaries / qualifications). These are authored text, not
+selection predicates. They travel with the resolved position into the saved
+report basis and export. The Hydraulic pilot uses them in the combined scope
+table; other disciplines retain their existing presentation.

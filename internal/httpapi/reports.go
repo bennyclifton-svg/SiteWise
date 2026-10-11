@@ -98,12 +98,19 @@ func refreshReport(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	var body struct {
 		UseLastCompleted bool `json:"use_last_completed"`
+		OnlyMissing      bool `json:"only_if_missing"`
 	}
 	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
-	draft, err := deps.Store.RefreshReport(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, deps.ReportBuild, body.UseLastCompleted)
+	var draft store.ReportDraft
+	var err error
+	if body.OnlyMissing {
+		draft, err = deps.Store.EnsureReportDraft(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, deps.ReportBuild)
+	} else {
+		draft, err = deps.Store.RefreshReport(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, deps.ReportBuild, body.UseLastCompleted)
+	}
 	if err != nil {
 		reportError(w, err)
 		return

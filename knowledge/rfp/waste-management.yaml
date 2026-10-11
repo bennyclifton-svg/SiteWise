@@ -1,5 +1,5 @@
 id: waste-management
-version: 1
+version: 2
 status: draft
 title: Waste management consulting services
 heading: 'REQUEST FOR PROPOSAL: WASTE MANAGEMENT'
@@ -434,6 +434,7 @@ allowances:
   owner: client
 positions:
 - key: operational
+  group: Waste planning and collection
   label: 'Operational WMP: actual streams, bins/storage and collection; dated rates/records only'
   kind: technical
   value:
@@ -459,6 +460,7 @@ positions:
   - flag:
     - waste_operational
 - key: cd
+  group: Waste planning and collection
   label: 'C&D plan: separate quantities, reuse/disposal pathways and tracking'
   kind: technical
   value:
@@ -488,6 +490,7 @@ positions:
   - flag:
     - waste_cd
 - key: hazardous
+  group: Waste planning and collection
   label: Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings
   kind: technical
   value: X
@@ -505,6 +508,7 @@ positions:
     why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
   responsible: competent environmental/hazardous-waste specialist named in R4
 - key: collection
+  group: Waste planning and collection
   label: Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator
     engagement separate
   kind: technical
@@ -529,6 +533,7 @@ positions:
   - flag:
     - waste_operational
 - key: swept_paths
+  group: Facilities and design interfaces
   label: Vehicle swept paths/clearances; civil/structural confirm grades and loads
   kind: technical
   value: X
@@ -543,6 +548,7 @@ positions:
       current requirements.
   responsible: traffic engineer named in R4
 - key: rooms
+  group: Facilities and design interfaces
   label: Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power
   kind: technical
   value:
@@ -566,6 +572,7 @@ positions:
   - flag:
     - waste_operational
 - key: equipment
+  group: Facilities and design interfaces
   label: Equipment design, supply and commissioning
   kind: technical
   value: X
@@ -580,6 +587,7 @@ positions:
       current requirements.
   responsible: equipment supplier or engineer named in R4
 - key: shared
+  group: Facilities and design interfaces
   label: 'Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated
     assumptions'
   kind: technical
@@ -614,6 +622,7 @@ positions:
     - mixed_use
     - waste_shared
 - key: interim
+  group: Delivery and verification
   label: Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service
   kind: technical
   value: O
@@ -637,6 +646,7 @@ positions:
     ref: waste-management#37
     why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
 - key: targets
+  group: Delivery and verification
   label: 'Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee'
   kind: technical
   value: O
@@ -650,6 +660,7 @@ positions:
     why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
       current requirements.
 - key: completion
+  group: Delivery and verification
   label: 'Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence'
   kind: technical
   value:
@@ -671,6 +682,7 @@ positions:
     ref: waste-management#37
     why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
 - key: postoccupation
+  group: Delivery and verification
   label: 'Post-occupation records/cost review: separately selected period and operator actions'
   kind: technical
   value:
@@ -689,6 +701,7 @@ positions:
     why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
       current requirements.
 - key: independent
+  group: Delivery and verification
   label: 'Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer'
   kind: technical
   value: O
@@ -766,7 +779,7 @@ terms:
       current requirements.
   replace: true
 - key: questions
-  text: Questions to {field:contact} by {field:questions_by}; changed answers issued to all as numbered addenda.
+  text: Issue changed answers issued to all as numbered addenda.
   provenance:
   - kind: client_decision
     ref: waste-management#43,45

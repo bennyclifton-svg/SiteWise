@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, type Option } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { costApi, type CostPlan } from "./costApi";
 import { IconShield } from "./icons";
 import { PackageScope } from "./PackageScope";
 import { packageApi, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
@@ -41,7 +42,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
   const [error, setError] = useState("");
   const [busyRow, setBusyRow] = useState("");
   const [draft, setDraft] = useState<string | null>(null);
-  const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string } | null>(null);
+  const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
 
   // The three reads go out together, so the table waits for one round trip.
   useEffect(() => {
@@ -67,7 +68,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     if (e instanceof ApiError && e.status === 404 && conflict === "create") { setError("This suggestion changed. The table has been refreshed."); setReload(n => n + 1); return; }
     if (e instanceof ApiError && e.status === 409 && conflict === "row") { setError("That discipline already has a row."); setReload(n => n + 1); return; }
     if (e instanceof ApiError && conflict === "remove") {
-      if (e.status === 409) { setError("This package changed. The table has been refreshed; review it before removing the row."); setReload(n => n + 1); return; }
+      if (e.status === 409) { setError("The package or cost plan changed. The table has been refreshed; review removal again."); setReload(n => n + 1); return; }
       if (e.status === 422) { setError("This package still has scope, costs or open delivery records. Resolve those assignments before removing it."); return; }
     }
     setError("Could not save. Try again.");
@@ -89,8 +90,24 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
   async function remove() {
     if (!removing) return;
     setBusyRow(removing.pkg.id); setError("");
-    try { await procurementApi.retire(projectId, removing.pkg.id, removing.pkg.version); setReload(n => n + 1); }
+    try { await procurementApi.retire(projectId, removing.pkg.id, removing.pkg.version, removing.costPlan); setReload(n => n + 1); }
     catch (e) { fail(e, "remove"); } finally { setBusyRow(""); setRemoving(null); }
+  }
+  async function reviewRemoval(pkg: PackageRecord, label: string) {
+    setBusyRow(pkg.id); setError("");
+    try {
+      const plan = await costApi.read(projectId);
+      const ids = new Set(plan.items.filter(i => i.package_id === pkg.id).map(i => i.cost_item_id));
+      for (let changed = true; changed;) {
+        changed = false;
+        for (const item of plan.items) {
+          if (ids.has(item.parent_item_id) && !ids.has(item.cost_item_id)) {
+            ids.add(item.cost_item_id); changed = true;
+          }
+        }
+      }
+      setRemoving({pkg, label, costPlan: ids.size ? plan : undefined, costLabels: plan.items.filter(i => ids.has(i.cost_item_id)).map(i => i.label)});
+    } catch (e) { fail(e, "remove"); } finally { setBusyRow(""); }
   }
   async function createPmp() {
     setBusyRow("pmp"); setError("");
@@ -144,7 +161,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
         <summary aria-label={`More for ${row.label}`}>⋯</summary>
         <div className="row-menu-items">
           <button type="button" onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); setView({ at: "scope", pkg: row.pkg! }); }}>Scope</button>
-          <button type="button" disabled={busy} onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); setRemoving({ pkg: row.pkg!, label: row.label }); }}>Remove</button>
+          <button type="button" disabled={busy} onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); void reviewRemoval(row.pkg!, row.label); }}>Remove</button>
         </div>
       </details>}</td>
     </tr>;
@@ -190,6 +207,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     {data && <p className="procurement-line procurement-pmp">Project management plan:{" "}
       {pmp ? <button type="button" className="table-action" aria-label="View project management plan" onClick={() => setView({ at: "report", id: pmp.id })}>View</button>
         : <button type="button" className="table-action" aria-label="Create project management plan" disabled={busyRow === "pmp"} onClick={() => void createPmp()}>{busyRow === "pmp" ? "Creating…" : "Create"}</button>}</p>}
-    {removing && <ConfirmDialog title={`Remove ${removing.label}?`} message="The row leaves the table. Any RFP or RFT made from it will show its package as retired." confirmLabel="Remove" busy={busyRow === removing.pkg.id} busyLabel="Removing…" onConfirm={() => void remove()} onCancel={() => setRemoving(null)} />}
+    {removing && <ConfirmDialog title={`Remove ${removing.label}?`} message={removing.costLabels.length ? `Also delete ${removing.costLabels.length} linked cost-plan line(s), including any subdivisions and their amounts: ${removing.costLabels.join(", ")}? Frozen baselines are kept. Any RFP or RFT will show the package as retired.` : "The row leaves the table. Any RFP or RFT made from it will show its package as retired."} confirmLabel={removing.costLabels.length ? "Remove and delete cost lines" : "Remove"} busy={busyRow === removing.pkg.id} busyLabel="Removing…" onConfirm={() => void remove()} onCancel={() => setRemoving(null)} />}
   </section>;
 }
