@@ -68,7 +68,20 @@ func TestHeaderQuestionsOnlyOnRoutedPassages(t *testing.T) {
 		t.Fatal("late fire section must not get header questions")
 	}
 	if _, ok := drawing["hdr.subclass"]; ok {
-		t.Fatal("drawings never get header questions")
+		t.Fatal("an automatically read drawing never gets header questions")
+	}
+	// The user chose to read this drawing: its notes ("UPGRADE THE EXISTING
+	// RING MAIN", "WAREHOUSE A") are where the header is stated, anywhere on
+	// the sheet.
+	chosen, _ := profile.LabelQuestions(profile.PassageInfo{Kind: "drawing", Read: profile.ReadYes, Ordinal: 30}, h, cat)
+	for _, id := range []string{"hdr.building_class", "hdr.subclass", "hdr.work_type"} {
+		if _, ok := chosen[id]; !ok {
+			t.Fatalf("a drawing the user chose to read must get %s", id)
+		}
+	}
+	lateRead, _ := profile.LabelQuestions(profile.PassageInfo{Kind: "design_brief", Read: profile.ReadYes, Ordinal: 40, Section: "9.0 Fire Services"}, h, cat)
+	if _, ok := lateRead["hdr.subclass"]; ok {
+		t.Fatal("a header kind keeps its position routing when read by choice")
 	}
 	if _, ok := quote["hdr.work_type"]; !ok {
 		t.Fatal("a quote's description section is header-routed")

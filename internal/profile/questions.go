@@ -18,7 +18,7 @@ const QuestionVersion = "profile-5"
 // changing existing wording (so QuestionVersion stays): finished documents are
 // read again on the next "Update project profile", and a passage whose
 // questions did not change is answered from the call cache without a Jev call.
-const ReadRevision = "read-3"
+const ReadRevision = "read-4"
 
 // PassageInfo is what header routing reads about a passage.
 type PassageInfo struct {
@@ -26,6 +26,7 @@ type PassageInfo struct {
 	Section string
 	Ordinal int
 	Text    string
+	Read    string // the document's reading setting: auto, read or skip
 }
 
 var (
@@ -40,8 +41,15 @@ const headerOrdinals = 12
 // early or descriptive passage of a brief, specification, report, contract
 // or quote. Code routes; Jev answers only where the header is likely stated
 // (https://docs.typesafe.ai/patterns/intent-routing).
+//
+// A document of another kind that the user chose to read (typically a drawing
+// whose notes say "upgrade the hydrants") is routed on every passage: a sheet
+// has no early description section, so position says nothing there.
 func HeaderRouted(p PassageInfo) bool {
-	return (headerKinds[p.Kind] || p.Kind == "") && (p.Ordinal <= headerOrdinals || headerSection.MatchString(p.Section) || projectDescription.MatchString(p.Text))
+	if !headerKinds[p.Kind] && p.Kind != "" {
+		return p.Read == ReadYes
+	}
+	return p.Ordinal <= headerOrdinals || headerSection.MatchString(p.Section) || projectDescription.MatchString(p.Text)
 }
 
 const notStatedCriterion = "The passage does not state it."

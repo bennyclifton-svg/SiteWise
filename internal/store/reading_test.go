@@ -164,3 +164,20 @@ func TestReadingSettingOnADrawingSetAppliesToItsSheets(t *testing.T) {
 		}
 	}
 }
+
+func TestDocumentReadSettingIsTheUsersChoiceAndOrgScoped(t *testing.T) {
+	ctx := context.Background()
+	st := profileStore(t)
+	if s, err := st.DocumentReadSetting(ctx, orgA, docA); err != nil || s != "auto" {
+		t.Fatalf("got %q, %v; want auto", s, err)
+	}
+	if _, err := st.SetProfileReading(ctx, orgA, projectA, []string{docA}, "read", readKinds); err != nil {
+		t.Fatal(err)
+	}
+	if s, err := st.DocumentReadSetting(ctx, orgA, docA); err != nil || s != "read" {
+		t.Fatalf("got %q, %v; want read", s, err)
+	}
+	if _, err := st.DocumentReadSetting(ctx, orgB, docA); !errors.Is(err, store.ErrNotFound) {
+		t.Fatalf("another org read the setting: %v", err)
+	}
+}

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // ErrBadReadSetting rejects a reading setting other than auto, read or skip.
@@ -67,6 +69,18 @@ WHERE j.org_id = $1::uuid AND d.org_id = j.org_id AND d.id = j.document_id AND d
 		return 0, err
 	}
 	return int(tag.RowsAffected()), s.finishProfileWrite(ctx, tx, orgID, projectID)
+}
+
+// DocumentReadSetting returns one document's reading setting in orgID. Header
+// routing reads it: a document the user chose to read is asked header
+// questions whatever its kind.
+func (s *Store) DocumentReadSetting(ctx context.Context, orgID, documentID string) (string, error) {
+	var setting string
+	err := s.pool.QueryRow(ctx, `SELECT profile_read FROM documents WHERE org_id = $1::uuid AND id = $2::uuid`, orgID, documentID).Scan(&setting)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", ErrNotFound
+	}
+	return setting, err
 }
 
 func unique(ids []string) []string {

@@ -42,6 +42,7 @@ type Passage struct {
 	Kind       string
 	Discipline string
 	Title      string
+	Read       string // the document's reading setting; header routing reads it
 	Labels     []string
 	Parts      []profile.Part
 	PartLabel  string // applied location from the label stage
@@ -370,6 +371,10 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 	kind := decisionValue(decisions, "kind")
 	discipline := decisionValue(decisions, "discipline")
 	title := decisionValue(decisions, "title")
+	read, err := w.Store.DocumentReadSetting(ctx, job.OrgID, job.DocumentID)
+	if err != nil {
+		return nil, err
+	}
 	out := make([]storedPassage, len(rows))
 	section := ""
 	metadata, err := w.Store.SourceUnits(ctx, job.OrgID, job.DocumentID)
@@ -397,6 +402,7 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 				Kind:       kind,
 				Discipline: discipline,
 				Title:      title,
+				Read:       read,
 			},
 		}
 	}
@@ -545,7 +551,7 @@ func labelCall(cat *knowledge.Catalog, passage Passage) (jev.Call, map[string][]
 
 // Info is what profile header routing reads about a passage.
 func (p Passage) Info() profile.PassageInfo {
-	return profile.PassageInfo{Kind: p.Kind, Section: p.Section, Ordinal: p.Ordinal, Text: p.Text}
+	return profile.PassageInfo{Kind: p.Kind, Section: p.Section, Ordinal: p.Ordinal, Text: p.Text, Read: p.Read}
 }
 
 // EvidenceCall is one fan-out of the knowledge nouls that match the passage
