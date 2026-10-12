@@ -18,7 +18,7 @@ const QuestionVersion = "profile-5"
 // changing existing wording (so QuestionVersion stays): finished documents are
 // read again on the next "Update project profile", and a passage whose
 // questions did not change is answered from the call cache without a Jev call.
-const ReadRevision = "read-4"
+const ReadRevision = "read-5"
 
 // PassageInfo is what header routing reads about a passage.
 type PassageInfo struct {

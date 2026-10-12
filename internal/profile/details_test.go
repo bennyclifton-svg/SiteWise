@@ -296,3 +296,26 @@ func TestAddressDoesNotTakeTheNextSentenceAsASuburb(t *testing.T) {
 		}
 	}
 }
+
+// Title blocks print the site address in capitals (Hydrant Sprinkler 02:
+// "40-88 FORRESTER RD" over "ST MARYS, NSW 2760").
+func TestAddressInCapitalsIsACandidate(t *testing.T) {
+	cat := repoCatalog(t)
+	for text, want := range map[string]string{
+		"L E G E N D\n40-88 FORRESTER RD\n":     "40-88 Forrester Road",
+		"40-88 FORRESTER RD, ST MARYS NSW 2760": "40-88 Forrester Road, St Marys NSW 2760",
+		"PROJECT: 12 SMITH STREET PETERSHAM":    "12 Smith Street Petersham",
+	} {
+		cands := profile.Harvest(text, cat).Candidates["site.address"]
+		if len(cands) != 1 || cands[0].Norm != want {
+			t.Errorf("%q = %+v, want %q", text, cands, want)
+			continue
+		}
+		if !strings.Contains(text, cands[0].Value) {
+			t.Errorf("the verbatim text must be kept: %q", cands[0].Value)
+		}
+	}
+	if cands := profile.Harvest("CV6 CV5 Ø 200 EXISTING TOWNS MAIN Ø 200 TANK FILL LINE", cat).Candidates["site.address"]; len(cands) != 0 {
+		t.Errorf("pipe notes are not addresses: %+v", cands)
+	}
+}

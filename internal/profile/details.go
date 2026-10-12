@@ -100,14 +100,35 @@ func collect(text string, spans []span) []Candidate {
 	return capped(out)
 }
 
+// capsWord is an ASCII word in capitals; titleCaseCaps rewrites it in place.
+var capsWord = regexp.MustCompile(`\b[A-Z]{2,}\b`)
+
+// stateCodes stay in capitals: the address pattern reads them as states.
+var stateCodes = map[string]bool{"NSW": true, "VIC": true, "QLD": true, "SA": true, "WA": true, "TAS": true, "NT": true, "ACT": true}
+
+// titleCaseCaps writes capitalised words in title case ("FORRESTER RD" to
+// "Forrester Rd") so a title block address reads like running text. ASCII
+// only, so every byte offset still points into the original text.
+func titleCaseCaps(text string) string {
+	return capsWord.ReplaceAllStringFunc(text, func(w string) string {
+		if stateCodes[w] {
+			return w
+		}
+		return w[:1] + strings.ToLower(w[1:])
+	})
+}
+
 func addressCandidates(text string) []Candidate {
 	var spans []span
-	for _, m := range addressRe.FindAllStringSubmatchIndex(text, -1) {
+	// Offsets come from the title-cased copy; the candidate keeps the
+	// verbatim text and the written-out form is its norm.
+	titled := titleCaseCaps(text)
+	for _, m := range addressRe.FindAllStringSubmatchIndex(titled, -1) {
 		group := func(g int) string {
 			if m[2*g] < 0 {
 				return ""
 			}
-			return text[m[2*g]:m[2*g+1]]
+			return titled[m[2*g]:m[2*g+1]]
 		}
 		// Groups: 1 number, 2 street, 3 and 4 suburb words, 5 state, 6 postcode.
 		end := m[5]
@@ -117,7 +138,7 @@ func addressCandidates(text string) []Candidate {
 			// suburbs; otherwise it is the next sentence ("Petersham Principal").
 			if group(4) != "" {
 				if !suburbFirst[group(3)] {
-					spans = append(spans, span{m[0], end, writeOutStreetType(text[m[0]:end], text[m[4]:m[5]])})
+					spans = append(spans, span{m[0], end, writeOutStreetType(titled[m[0]:end], titled[m[4]:m[5]])})
 					continue
 				}
 				end = m[9]
@@ -128,7 +149,7 @@ func addressCandidates(text string) []Candidate {
 				}
 			}
 		}
-		spans = append(spans, span{m[0], end, writeOutStreetType(text[m[0]:end], text[m[4]:m[5]])})
+		spans = append(spans, span{m[0], end, writeOutStreetType(titled[m[0]:end], titled[m[4]:m[5]])})
 	}
 	return collect(text, spans)
 }
