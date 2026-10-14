@@ -1,16 +1,34 @@
-// Left navigation on a project page: the wordmark and a project switcher,
-// after the Clerk project nav. More destinations join here later.
+// Left navigation: wordmark, project switcher, and the working views.
+// Accessible names stay the short labels the tests and existing calls use
+// ("Profile", "Costs"); the visible labels match the Clerk shell.
 
 import { useEffect, useRef, useState } from "react";
 import { DevStatus } from "./DevStatus";
+import { Wordmark } from "./Wordmark";
+
+export type WorkbenchView = "profile" | "summary" | "systems" | "implications" | "delivery" | "procurement" | "costs";
 
 interface Props {
   projects: { id: string; name: string }[] | null;
   currentId: string;
   navigate: (path: string) => void;
+  view: WorkbenchView;
+  onView: (view: WorkbenchView) => void;
 }
 
-export function LeftNav({ projects, currentId, navigate }: Props) {
+const VIEWS: { id: WorkbenchView | "plan" | "program"; label: string; name?: string; icon: string; idle?: boolean }[] = [
+  { id: "profile", label: "Project Profile", name: "Profile", icon: "M4 8h16M4 16h16M8 8v8M16 8v8" },
+  { id: "plan", label: "Project Plan", icon: "M7 3h8l4 4v14H7zM15 3v5h5", idle: true },
+  { id: "costs", label: "Cost Plan", name: "Costs", icon: "M12 3v18M7 8h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h8" },
+  { id: "program", label: "Program", icon: "M4 6h16M4 12h10M4 18h13", idle: true },
+  { id: "procurement", label: "Procurement", icon: "M8 4h8v3H8zM6 7h12v13H6z" },
+  { id: "delivery", label: "Delivery", icon: "M3 7h11v10H3zM14 10h4l3 3v4h-7zM7 19a1.5 1.5 0 1 0 0.01 0M17 19a1.5 1.5 0 1 0 0.01 0" },
+  { id: "implications", label: "Implications", icon: "M12 4l8 14H4zM12 10v4M12 16h.01" },
+  { id: "summary", label: "Summary", icon: "M5 6h14M5 12h14M5 18h9" },
+  { id: "systems", label: "Systems", icon: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" },
+];
+
+export function LeftNav({ projects, currentId, navigate, view, onView }: Props) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const current = projects?.find((p) => p.id === currentId);
@@ -34,12 +52,13 @@ export function LeftNav({ projects, currentId, navigate }: Props) {
       <a
         className="leftnav-logo"
         href="/"
+        aria-label="SiteWise, all projects"
         onClick={(e) => {
           e.preventDefault();
           go("/");
         }}
       >
-        <img src="/sitewise-logo.png" alt="SiteWise, all projects" width="118" height="28" />
+        <Wordmark height={30} />
       </a>
       <div className="switcher" ref={box} onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
         <span className="switcher-label">Project</span>
@@ -51,6 +70,7 @@ export function LeftNav({ projects, currentId, navigate }: Props) {
           onClick={() => setOpen((o) => !o)}
           title={current?.name}
         >
+          <FolderIcon />
           <span className="switcher-name">{current?.name ?? "Project"}</span>
           <span aria-hidden="true">▾</span>
         </button>
@@ -73,7 +93,50 @@ export function LeftNav({ projects, currentId, navigate }: Props) {
           </ul>
         )}
       </div>
+      <div className="nav-views" role="group" aria-label="Project views">
+        {VIEWS.map((item) => {
+          const active = !item.idle && item.id === view;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className="nav-item"
+              aria-current={active ? "page" : undefined}
+              aria-label={item.name}
+              aria-disabled={item.idle || undefined}
+              disabled={item.idle}
+              title={item.idle ? "Not in this build yet" : undefined}
+              onClick={() => {
+                if (!item.idle) onView(item.id as WorkbenchView);
+              }}
+            >
+              <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d={item.icon} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="nav-spacer" />
+      <section className="nav-chats" aria-label="Chats">
+        <div className="nav-chats-label">
+          <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 6h14v9H8l-3 3z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+          </svg>
+          <span>Chats</span>
+        </div>
+        <p>No chats in this build.</p>
+      </section>
       <DevStatus />
     </nav>
+  );
+}
+
+function FolderIcon() {
+  return (
+    <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 7h6l2 2h10v9H3z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+    </svg>
   );
 }

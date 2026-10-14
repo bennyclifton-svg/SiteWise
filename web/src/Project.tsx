@@ -15,6 +15,8 @@ import {
   type StreamEvent,
 } from "./api";
 import { type RowModel } from "./DocumentRow";
+import { CockpitFrame } from "./CockpitFrame";
+import { LeftNav, type WorkbenchView } from "./LeftNav";
 import { Profile } from "./Profile";
 import { Register } from "./Register";
 import { Procurement } from "./Procurement";
@@ -212,11 +214,13 @@ function reducer(state: State, action: Action): State {
 interface Props {
   projectId: string;
   catalog: Catalog | null;
+  projects: { id: string; name: string }[] | null;
+  navigate: (path: string) => void;
   onSignedOut: () => void;
   onHome: () => void;
 }
 
-export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
+export function Project({ projectId, catalog, projects, navigate, onSignedOut, onHome }: Props) {
   const [state, dispatch] = useReducer(reducer, initial);
   const [cursor, setCursor] = useState<number | null>(null);
   const [live, setLive] = useState<"live" | "reconnecting" | "offline">("reconnecting");
@@ -236,6 +240,7 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
   const [reportsOpened, setReportsOpened] = useState(false);
 	const [reportTick, setReportTick] = useState(0);
   const [notReadOnly, setNotReadOnly] = useState(false);
+  const [address, setAddress] = useState("");
   const lastId = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const queue = useRef<{ key: string; file: File }[]>([]);
@@ -535,16 +540,91 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
     [state, now, flash],
   );
 
+  const view: WorkbenchView = showCosts
+    ? "costs"
+    : showReports
+      ? "procurement"
+      : showDelivery
+        ? "delivery"
+        : showProposals
+          ? "implications"
+          : profileView === "summary"
+            ? "summary"
+            : profileView === "systems"
+              ? "systems"
+              : "profile";
+
+  const showView = (next: WorkbenchView) => {
+    if (next === "implications") {
+      setShowCosts(false);
+      setProposalsOpened(true);
+      setShowProposals(true);
+      setShowReports(false);
+      setShowDelivery(false);
+      return;
+    }
+    if (next === "delivery") {
+      setShowCosts(false);
+      setShowProposals(false);
+      setDeliveryOpened(true);
+      setShowDelivery(true);
+      setShowReports(false);
+      return;
+    }
+    if (next === "procurement") {
+      setShowCosts(false);
+      setReportsOpened(true);
+      setShowReports(true);
+      setShowDelivery(false);
+      setShowProposals(false);
+      return;
+    }
+    if (next === "costs") {
+      setCostsOpened(true);
+      setShowCosts(true);
+      setShowReports(false);
+      setShowDelivery(false);
+      setShowProposals(false);
+      return;
+    }
+    setShowCosts(false);
+    setShowReports(false);
+    setShowDelivery(false);
+    setShowProposals(false);
+    setProfileView(next === "profile" ? "all" : next);
+  };
+
+  const nav = (
+    <LeftNav projects={projects} currentId={projectId} navigate={navigate} view={view} onView={showView} />
+  );
+  const repository = (
+    <Register
+      rows={rows}
+      catalog={catalog}
+      live={live}
+      priorLabel={priorLabel}
+      onCorrect={correct}
+      onRetry={retry}
+      onJump={jump}
+      onDismiss={(key) => dispatch({ type: "dismiss", key })}
+      onAddFiles={() => fileInput.current?.click()}
+      onSetReading={setReading}
+      notReadOnly={notReadOnly}
+      onClearFilter={() => setNotReadOnly(false)}
+      onDelete={remove}
+    />
+  );
+
   if (state.phase === "loading") {
     return (
-      <main className="page" aria-busy="true">
+      <CockpitFrame nav={nav} title="Opening project…" subtitle="Site address TBC" repository={<p className="reg-empty">Opening documents…</p>}>
         <p className="drop-sub">Opening project…</p>
-      </main>
+      </CockpitFrame>
     );
   }
   if (state.phase === "missing") {
     return (
-      <main className="page">
+      <CockpitFrame nav={nav} title="Project" subtitle="This project isn't available." repository={repository}>
         <div className="empty">
           <strong>This project isn't available.</strong>
           It may belong to another organisation, or the link is wrong.
@@ -554,60 +634,41 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
             </button>
           </p>
         </div>
-      </main>
+      </CockpitFrame>
     );
   }
   if (state.phase === "error") {
     return (
-      <main className="page">
+      <CockpitFrame nav={nav} title={state.projectName || "Project"} subtitle={address || "Site address TBC"} repository={repository}>
         <div className="banner" role="alert">
           {state.error}
           <button type="button" className="btn btn-small" onClick={() => location.reload()}>
             Try again
           </button>
         </div>
-      </main>
+      </CockpitFrame>
     );
   }
 
   return (
-    <main className="workspace workspace-with-views" onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-      <nav className="project-views" aria-label="Project views">
-        <button type="button" className="btn btn-small" aria-pressed={!showReports && !showDelivery && !showProposals && !showCosts && profileView === "all"} onClick={() => { setProfileView("all"); setShowCosts(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Profile</button>
-        <button type="button" className="btn btn-small" aria-pressed={showProposals} onClick={() => { setShowCosts(false); setProposalsOpened(true); setShowProposals(true); setShowReports(false); setShowDelivery(false); }}>Implications</button>
-        <button type="button" className="btn btn-small" aria-pressed={showDelivery} onClick={() => { setShowCosts(false); setShowProposals(false); setDeliveryOpened(true); setShowDelivery(true); setShowReports(false); }}>Delivery</button>
-        <button type="button" className="btn btn-small" aria-pressed={showReports} onClick={() => { setShowCosts(false); setReportsOpened(true); setShowReports(true); setShowDelivery(false); setShowProposals(false); }}>Procurement</button>
-        <button type="button" className="btn btn-small" aria-pressed={showCosts} onClick={() => { setCostsOpened(true); setShowCosts(true); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Costs</button>
-        <button type="button" className="btn btn-small" aria-pressed={profileView === "summary" && !showCosts && !showReports && !showDelivery && !showProposals} onClick={() => { setProfileView("summary"); setShowCosts(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Summary</button>
-        <button type="button" className="btn btn-small" aria-pressed={profileView === "systems" && !showCosts && !showReports && !showDelivery && !showProposals} onClick={() => { setProfileView("systems"); setShowCosts(false); setShowReports(false); setShowDelivery(false); setShowProposals(false); }}>Systems</button>
-      </nav>
+    <CockpitFrame
+      nav={nav}
+      title={state.projectName}
+      subtitle={address || "Site address TBC"}
+      repository={repository}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
       <section className={`profile-col ${profileView !== "all" ? "profile-focused" : ""}`} aria-label="Project profile" hidden={showReports || showDelivery || showProposals || showCosts}>
-        <h1 className="project-title">{state.projectName}</h1>
         {profileView === "summary" && <CostSummary projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} />}
-        <Profile view={profileView} projectId={projectId} tick={profileTick} workTick={reportTick} onJump={id => { setProfileView("all"); jump(id); }} onSignedOut={onSignedOut} onShowNotRead={() => { setProfileView("all"); setNotReadOnly(true); }} />
+        <Profile view={profileView} projectId={projectId} tick={profileTick} workTick={reportTick} onJump={id => { setProfileView("all"); jump(id); }} onSignedOut={onSignedOut} onShowNotRead={() => { setProfileView("all"); setNotReadOnly(true); }} onIdentity={setAddress} />
       </section>
-      <aside className="register-col" aria-label="Document register" hidden={profileView !== "all" || showReports || showDelivery || showProposals || showCosts}>
-        <Register
-          rows={rows}
-          catalog={catalog}
-          live={live}
-          priorLabel={priorLabel}
-          onCorrect={correct}
-          onRetry={retry}
-          onJump={jump}
-          onDismiss={(key) => dispatch({ type: "dismiss", key })}
-          onAddFiles={() => fileInput.current?.click()}
-          onSetReading={setReading}
-          notReadOnly={notReadOnly}
-          onClearFilter={() => setNotReadOnly(false)}
-          onDelete={remove}
-        />
-      </aside>
       {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Implications projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => { setProfileView("all"); setShowReports(false); }} /></div>}
-      {/* Drop overlay: invisible until files are dragged over the page. */}
+      {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} /></div>}
       <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>
         <p className="drop-title">Release to file into {state.projectName}</p>
       </div>
@@ -626,6 +687,6 @@ export function Project({ projectId, catalog, onSignedOut, onHome }: Props) {
       <p className="sr-only" aria-live="polite">
         {announcement}
       </p>
-    </main>
+    </CockpitFrame>
   );
 }

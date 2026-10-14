@@ -25,6 +25,8 @@ interface Props {
   onSignedOut: () => void;
   /** Filters the register to documents the profile does not read. */
   onShowNotRead: () => void;
+  /** Address line for the project banner. Empty when the site address is blank. */
+  onIdentity?: (line: string) => void;
 }
 
 const KIND_LABELS: Record<string, string> = {
@@ -117,7 +119,7 @@ function arrangeCard(fields: ProfileField[]) {
   return out;
 }
 
-export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, view = "all" }: Props) {
+export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, onIdentity, view = "all" }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
@@ -201,6 +203,10 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   }, [projectId, fail]);
 
   const site = useSiteFields(projectId, tick, data?.site_details ?? [], fail);
+  const addressLine = site.fields.find((f) => f.key === "site.address")?.value ?? "";
+  useEffect(() => {
+    onIdentity?.(addressLine);
+  }, [addressLine, onIdentity]);
 
   if (!data) {
     return <p className="muted">{error || "Reading the profile…"}</p>;
@@ -265,9 +271,6 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
     <div className="profile">
       <div className="pf-header">
         <p className="pf-identity">{identity.length > 0 ? identity.join(" · ") : <span className="muted">Address, client and council not stated yet</span>}</p>
-        <button type="button" className="btn btn-primary btn-small" onClick={update} disabled={requesting}>
-          {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update project profile"}
-        </button>
         <p className="profile-reading">
           {data.read_documents + data.skipped_documents > 0 && (
             <span>
@@ -324,7 +327,12 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
       <section className="pf-section" aria-labelledby="pf-project" hidden={view === "systems"}>
         <div className="pf-head">
           <h2 id="pf-project">Project</h2>
-          <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
+          <div className="pf-head-actions">
+            <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
+            <button type="button" className="btn btn-primary btn-small" onClick={update} disabled={requesting}>
+              {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update project profile"}
+            </button>
+          </div>
         </div>
         <div className="pf-card">
           {(Object.keys(COLUMN_LABELS) as Column[]).map((c) => (

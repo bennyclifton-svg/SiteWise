@@ -94,7 +94,7 @@ export function Costs({ projectId, tick, onSignedOut }: { projectId: string; tic
   const overall = totals?.overall, derived = totals?.buckets?.overall;
   const status = plan?.status === "unavailable" ? "not started" : plan?.status;
   return <section className="costs" aria-label="Costs" aria-busy={busy}>
-    <div className="costs-head"><h1>Costs</h1>{plan && <span className="costs-chip">Cost Plan r{plan.revision || 1} · {status}</span>}
+    <div className="costs-head"><h1>Cost Plan</h1>{plan && <span className="costs-chip">Cost Plan r{plan.revision || 1} · {status}</span>}
       <div className="costs-toolbar">
       <label><input type="checkbox" checked={quantities} onChange={e => {setQuantities(e.target.checked);try{localStorage.setItem("sitewise.costs.quantities",String(e.target.checked));}catch{/* Storage is optional. */}}} /> Quantities</label>
       <button className="btn" disabled={!plan || busy || editing || frozen} onClick={() => { const p = plan!; setSelected(""); setSettings({ base: p, input: { currency: p.currency || "AUD", tax_basis: p.tax_basis || "ex_tax", tax_rate: p.tax_rate ?? null, price_date: p.price_date ?? null, coverage: p.coverage || "", funding_target: p.funding_target ?? null, funding_target_provenance: p.funding_target_provenance || {} } }); }}>Cost settings</button>

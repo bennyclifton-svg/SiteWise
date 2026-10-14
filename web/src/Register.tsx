@@ -188,9 +188,8 @@ export function Register({
             {live === "live" ? "Live" : live === "reconnecting" ? "Reconnecting…" : "Offline, retrying"}
           </span>
         </span>
-        <button type="button" className="btn btn-small" onClick={onAddFiles}>
+        <button type="button" className="reg-tool" onClick={onAddFiles} aria-label="Add files" title="Add files">
           <IconUpload />
-          Add files
         </button>
       </div>
       {notReadOnly && (

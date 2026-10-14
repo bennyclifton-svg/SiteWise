@@ -3,8 +3,10 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, type Catalog, type Project as ProjectRow } from "./api";
-import { LeftNav } from "./LeftNav";
+import { ThemeButton } from "./ThemeButton";
+import { Wordmark } from "./Wordmark";
 import { Project } from "./Project";
+import { ShellPreview } from "./ShellPreview";
 
 type Route = { name: "home" } | { name: "project"; id: string };
 
@@ -82,6 +84,7 @@ export function App() {
     api.catalog().then(setCatalog, () => setCatalog(null));
   }, [auth, loadProjects]);
 
+  if (location.hash === "#shell-preview") return <ShellPreview />;
   if (auth === "checking") return null;
   if (auth === "out") return <SignIn initialError={authError} onSignedIn={() => setAuth("in")} />;
 
@@ -91,30 +94,31 @@ export function App() {
         Skip to content
       </a>
       {route.name === "project" ? (
-        <div className="shell" id="main">
-          <LeftNav projects={projects} currentId={route.id} navigate={navigate} />
-          <Project
-            key={route.id}
-            projectId={route.id}
-            catalog={catalog}
-            onSignedOut={signedOut}
-            onHome={() => navigate("/")}
-          />
-        </div>
+        <Project
+          key={route.id}
+          projectId={route.id}
+          catalog={catalog}
+          projects={projects}
+          navigate={navigate}
+          onSignedOut={signedOut}
+          onHome={() => navigate("/")}
+        />
       ) : (
         <>
-          <header className="bar">
+          <header className="bar home-bar">
             <a
               className="bar-logo-link"
               href="/"
+              aria-label="SiteWise, all projects"
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/");
               }}
             >
-              <img className="bar-logo" src="/sitewise-logo.png" alt="SiteWise, all projects" width="118" height="28" />
+              <Wordmark height={28} />
             </a>
             <span className="bar-spacer" />
+            <ThemeButton />
           </header>
           <div id="main">
             <Projects
@@ -165,7 +169,8 @@ function SignIn({ initialError, onSignedIn }: { initialError: string; onSignedIn
   return (
     <main className="entry">
       <div className="entry-panel">
-        <img className="bar-logo" src="/sitewise-logo.png" alt="SiteWise" width="134" height="32" />
+        <Wordmark height={32} />
+        <span className="sr-only">SiteWise</span>
         <h1>Sign in with your invite</h1>
         <p>SiteWise is invite only. Open the link in your invite email, or paste its token here.</p>
         <form className="stack-form" onSubmit={submit} noValidate>

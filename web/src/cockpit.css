@@ -1,0 +1,866 @@
+/* Clerk cockpit chrome. Tokens come from clerk-colours.css; this file maps
+   them onto the existing workbench variables and draws the three-panel shell.
+   Evidence colours (ember, bands) stay so a filed value still reads as one. */
+
+:root {
+  --paper: var(--sw-surface);
+  --canvas: var(--sw-canvas);
+  --ground: var(--sw-surface-inset);
+  --header: var(--sw-surface);
+  --line: var(--sw-border-default);
+  --line-strong: var(--sw-border-strong);
+  --frame: var(--sw-border-strong);
+  --ink: var(--sw-text-primary);
+  --ink-body: var(--sw-text-secondary);
+  --ink-muted: var(--sw-text-tertiary);
+  --azure: var(--sw-link);
+  --azure-soft: var(--sw-selection-bg);
+  --ok: var(--sw-success-text);
+  --warn: var(--sw-warning-text);
+  --warn-soft: var(--sw-warning-bg);
+  --alert: var(--sw-error-text);
+  --alert-soft: var(--sw-error-bg);
+  --hatch: var(--sw-surface-inset);
+  --radius-sm: 8px;
+  --radius-control: 0.875rem;
+  --shadow-xs: none;
+  --shadow-sm: 0 16px 36px color-mix(in oklab, var(--sw-p-neutral-950) 18%, transparent);
+  --sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --cockpit-ribbon-height: 7.25rem;
+  --cockpit-shell-gutter: 0.875rem;
+  --cockpit-radius: 1.25rem;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--sw-canvas);
+  color: var(--sw-text-secondary);
+  font-family: var(--sans);
+  font-size: 16px;
+}
+
+:focus-visible {
+  outline-color: var(--sw-action-focus);
+}
+
+.input:focus-visible,
+.select:focus-visible {
+  outline-color: var(--sw-action-focus);
+  border-color: var(--sw-selection-border);
+}
+
+.btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border-color: var(--sw-border-default);
+  background: var(--sw-surface);
+  color: var(--sw-text-primary);
+  box-shadow: none;
+}
+
+.btn:hover {
+  background: var(--sw-hover-bg);
+  border-color: var(--sw-border-strong);
+}
+
+.btn-primary {
+  background: var(--sw-p-neutral-900);
+  border-color: var(--sw-p-neutral-900);
+  color: var(--sw-p-neutral-50);
+}
+
+.btn-primary:hover,
+.btn-primary:active {
+  background: var(--sw-p-neutral-800);
+  border-color: var(--sw-p-neutral-800);
+}
+
+:root[data-theme="dark"] .btn-primary {
+  background: var(--sw-p-neutral-100);
+  border-color: var(--sw-p-neutral-100);
+  color: var(--sw-p-neutral-950);
+}
+
+:root[data-theme="dark"] .btn-primary:hover,
+:root[data-theme="dark"] .btn-primary:active {
+  background: var(--sw-p-neutral-50);
+  border-color: var(--sw-p-neutral-50);
+}
+
+.wordmark {
+  display: inline-block;
+  position: relative;
+}
+
+.wordmark-ink {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--sw-text-primary);
+  -webkit-mask: url("/brand/sitewise-lockup-dark.png") center / contain no-repeat;
+  mask: url("/brand/sitewise-lockup-dark.png") center / contain no-repeat;
+}
+
+/* ---------- three-panel shell ---------- */
+
+.cockpit-page {
+  box-sizing: border-box;
+  height: 100vh;
+  min-height: 100vh;
+  padding: var(--cockpit-shell-gutter);
+  background: var(--sw-canvas);
+}
+
+.cockpit-shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 268px) minmax(0, 1fr) 368px;
+  grid-template-rows: auto minmax(0, 1fr);
+  column-gap: var(--cockpit-shell-gutter);
+  height: 100%;
+  min-height: 0;
+}
+
+.cockpit-shell > .leftnav {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.cockpit-shell-header {
+  grid-column: 2 / span 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: var(--cockpit-ribbon-height);
+  min-height: var(--cockpit-ribbon-height);
+  padding: 0 8px 0 4px;
+}
+
+.cockpit-title-block {
+  min-width: 0;
+}
+
+.cockpit-title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--sw-text-primary);
+  font-size: clamp(1.75rem, 2.2vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cockpit-address {
+  margin: 4px 0 0;
+  color: var(--sw-text-secondary);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.theme-button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 999px;
+  background: var(--sw-surface);
+  color: var(--sw-text-secondary);
+  cursor: pointer;
+  box-shadow: 0 16px 36px color-mix(in oklab, var(--sw-p-neutral-950) 24%, transparent);
+}
+
+.theme-button:hover {
+  border-color: var(--sw-selection-border);
+  background: var(--sw-selection-bg);
+  color: var(--sw-text-primary);
+}
+
+.theme-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.project-main-panel {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cockpit-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.cockpit-scroll:hover {
+  scrollbar-color: var(--sw-border-strong) transparent;
+}
+
+.cockpit-scroll [hidden] {
+  display: none !important;
+}
+
+.project-side-panel {
+  grid-column: 3;
+  grid-row: 2;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 0.75rem 0.75rem;
+}
+
+.cockpit-shell .drop {
+  position: absolute;
+  inset: 12px;
+  z-index: 30;
+  display: none;
+  place-items: center;
+  border: 2px dashed var(--sw-link);
+  border-radius: var(--cockpit-radius);
+  background: color-mix(in srgb, var(--sw-canvas) 88%, var(--sw-link));
+  pointer-events: none;
+}
+
+.cockpit-shell .drop[data-over="true"] {
+  display: grid;
+}
+
+/* ---------- left navigation ---------- */
+
+.cockpit-shell > .leftnav {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 0 12px;
+  overflow: hidden;
+  border: 1px solid var(--sw-border-default);
+  border-radius: var(--cockpit-radius);
+  background: var(--sw-surface);
+  box-shadow: 4px 2px 14px color-mix(in oklab, var(--sw-p-neutral-950) 16%, transparent);
+}
+
+.leftnav-logo {
+  display: flex;
+  align-items: center;
+  height: var(--cockpit-ribbon-height);
+  padding: 0 28px;
+}
+
+.cockpit-shell .switcher {
+  margin: 0 18px;
+  padding: 0 0 8px;
+  border: 0;
+}
+
+.cockpit-shell .switcher-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.cockpit-shell .switcher-button {
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 0.75rem;
+  font-weight: 500;
+}
+
+.cockpit-shell .switcher-button:hover,
+.cockpit-shell .switcher-button[aria-expanded="true"] {
+  border-color: transparent;
+  background: var(--sw-hover-bg);
+}
+
+.nav-views {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 8px 0 0;
+  padding: 8px 18px 12px;
+}
+
+.nav-item {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--sw-text-secondary);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav-item:hover:not(:disabled) {
+  background: var(--sw-selection-bg);
+  color: var(--sw-text-primary);
+}
+
+.nav-item[aria-current="page"] {
+  background: var(--sw-selection-bg);
+  color: var(--sw-text-primary);
+  font-weight: 500;
+}
+
+.nav-item:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--sw-text-tertiary);
+}
+
+.nav-item[aria-current="page"] .nav-icon {
+  color: var(--sw-link);
+}
+
+.nav-spacer {
+  min-height: 12px;
+  flex: 1;
+}
+
+.nav-chats {
+  display: flex;
+  max-height: 42%;
+  min-height: 0;
+  flex-direction: column;
+  padding: 4px 18px 8px;
+}
+
+.nav-chats-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  color: var(--sw-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nav-chats p {
+  margin: 0;
+  padding: 0 12px 8px;
+  color: var(--sw-text-tertiary);
+  font-size: 13px;
+}
+
+.leftnav .devstatus {
+  margin: 8px 18px 0;
+}
+
+/* ---------- document repository ---------- */
+
+/* Clerk document repository: 0.7rem rows, px-1 py-2 cells, 0.875rem card.
+   Columns stay SiteWise's (number, title, rev, date, discipline, kind, read). */
+.project-side-panel .register {
+  display: flex;
+  flex: 1;
+  height: auto;
+  min-height: 0;
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 0.875rem;
+  background: var(--sw-surface);
+  font-size: 0.7rem;
+  line-height: 1.25;
+}
+
+.project-side-panel .reg-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  flex: none;
+  gap: 0.5rem;
+  min-height: 0;
+  padding: 0.5rem 0.375rem;
+  border-bottom: 1px solid var(--sw-border-subtle);
+  background: var(--sw-surface);
+}
+
+.project-side-panel .reg-head h2 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--sw-text-tertiary);
+}
+
+.project-side-panel .reg-tool {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sw-text-tertiary);
+  cursor: pointer;
+}
+
+.project-side-panel .reg-tool svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.project-side-panel .reg-tool:hover {
+  background: var(--sw-selection-bg);
+  color: var(--sw-text-primary);
+}
+
+.project-side-panel .reg-table {
+  min-width: 36rem;
+  table-layout: fixed;
+  font-size: 0.7rem;
+}
+
+.project-side-panel .reg-table col.reg-sel { width: 1.25rem; }
+.project-side-panel .reg-table col.reg-no { width: 3.75rem; }
+.project-side-panel .reg-table col.reg-rev { width: 2rem; }
+.project-side-panel .reg-table col.reg-date { width: 5rem; }
+.project-side-panel .reg-table col.reg-disc { width: 4.5rem; }
+.project-side-panel .reg-table col.reg-kind { width: 4.25rem; }
+.project-side-panel .reg-table col.reg-prof { width: 2.25rem; }
+.project-side-panel .reg-table col.reg-mark { width: 1.25rem; }
+.project-side-panel .reg-table col.reg-bin { width: 1.5rem; }
+
+.project-side-panel .reg-table thead th {
+  top: 41px;
+  padding: 0;
+  background: var(--sw-surface);
+  color: var(--sw-text-tertiary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.project-side-panel .reg-table thead button {
+  height: auto;
+  padding: 8px 2px;
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
+
+.project-side-panel .reg-th-text {
+  padding: 8px 4px;
+}
+
+.project-side-panel .reg-line td {
+  height: auto;
+  max-width: none;
+  padding: 8px 4px;
+  overflow: hidden;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  vertical-align: middle;
+}
+
+.project-side-panel .reg-line td.reg-no {
+  padding-right: 0.125rem;
+  padding-left: 0.125rem;
+}
+
+.project-side-panel .ocr-summary,
+.project-side-panel .reg-text-status,
+.project-side-panel .reg-file-hint {
+  display: inline;
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.project-side-panel .ocr-summary {
+  margin-left: 0.35rem;
+}
+
+.project-side-panel .reg-text-status {
+  margin-left: 0.35rem;
+  color: var(--sw-text-tertiary);
+}
+
+.project-side-panel .ocr-summary svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  vertical-align: -0.125rem;
+}
+
+.project-side-panel .reg-read,
+.project-side-panel .reg-del {
+  width: 1rem;
+  min-height: 0;
+  height: 1rem;
+  padding: 0;
+}
+
+.project-side-panel .reg-del svg,
+.project-side-panel .reg-flag svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.project-side-panel .reg-doc[data-selected] .reg-line td {
+  background: var(--sw-selection-bg);
+  color: var(--sw-text-primary);
+}
+
+.project-side-panel .reg-line:hover td {
+  background: color-mix(in oklch, var(--sw-selection-bg) 72%, transparent);
+  color: var(--sw-text-primary);
+}
+
+.project-side-panel .register > .reg-table,
+.project-side-panel .reg-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+
+.reg-table thead th {
+  background: var(--sw-surface);
+  color: var(--sw-text-tertiary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.reg-line td {
+  border-bottom: 1px solid var(--sw-border-subtle);
+  color: var(--sw-text-secondary);
+}
+
+.reg-line:hover td {
+  background: var(--sw-hover-bg);
+}
+
+/* ---------- main surfaces: profile, procurement, costs ---------- */
+
+.cockpit-scroll .profile-col,
+.cockpit-scroll .project-reports {
+  height: auto;
+  max-width: 100%;
+  min-height: 100%;
+  padding: 4px 8px 28px;
+  overflow: visible;
+}
+
+.cockpit-scroll .pf-card {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 16px;
+}
+
+.cockpit-scroll .pf-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cockpit-scroll .profile .pf-section,
+.cockpit-scroll .procurement,
+.cockpit-scroll .costs,
+.cockpit-scroll .reports,
+.cockpit-scroll .delivery,
+.cockpit-scroll .implications,
+.cockpit-scroll .project-reports > section {
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid var(--sw-border-default);
+  border-radius: var(--cockpit-radius);
+  background: var(--sw-surface);
+}
+
+.profile .pf-header .btn-primary,
+.pf-head-actions .btn-primary {
+  border-radius: 999px;
+}
+
+.cockpit-scroll .procurement,
+.cockpit-scroll .costs {
+  max-width: none;
+  margin: 0;
+  padding: 16px 18px 28px;
+}
+
+.procurement-head h1,
+.costs-head h1 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.cockpit-scroll .procurement-scroll,
+.cockpit-scroll .cost-grid-scroll {
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.cockpit-scroll .procurement-table thead th,
+.cockpit-scroll .cost-grid thead th {
+  background: transparent;
+  color: var(--sw-text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.cockpit-scroll .procurement-table .group-row th {
+  padding-top: 18px;
+  background: transparent;
+  color: var(--sw-text-tertiary);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.procurement-table th,
+.procurement-table td,
+.cost-grid th,
+.cost-grid td {
+  border-bottom-color: var(--sw-border-subtle);
+}
+
+.cockpit-scroll .firm-cell input,
+.cockpit-scroll .firm-cell input:disabled {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sw-text-tertiary);
+  box-shadow: none;
+}
+
+.cockpit-scroll .table-action {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  margin-right: 4px;
+  padding: 0 10px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 0.7rem;
+  background: var(--sw-surface-inset);
+  color: var(--sw-text-secondary);
+  text-decoration: none;
+}
+
+.cockpit-scroll .table-action:hover:not(:disabled) {
+  border-color: var(--sw-selection-border);
+  background: var(--sw-selection-bg);
+  color: var(--sw-text-primary);
+}
+
+.cockpit-scroll .cost-grid td,
+.cockpit-scroll .cost-grid th {
+  background: transparent;
+}
+
+.cockpit-scroll .cost-grid td.cost-num,
+.cockpit-scroll .cost-grid td.cost-num .cost-cell {
+  color: var(--sw-link);
+  font-variant-numeric: tabular-nums;
+}
+
+.cockpit-scroll .cost-grid .cost-placeholder,
+.cockpit-scroll .cost-grid td.cost-placeholder {
+  color: var(--sw-text-tertiary);
+}
+
+.cockpit-scroll .cost-subtotal th,
+.cockpit-scroll .cost-subtotal td {
+  background: transparent;
+  border-top: 1px solid var(--sw-border-default);
+  font-weight: 600;
+}
+
+.cockpit-scroll .cost-row:hover td {
+  background: var(--sw-hover-bg);
+}
+
+.costs-chip {
+  border-radius: 999px;
+}
+
+/* ---------- inactive question bar (no model is connected) ---------- */
+
+.ask-bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 8px 4px;
+  padding: 8px 8px 8px 16px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 1.1rem;
+  background: var(--sw-surface);
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--sw-p-neutral-950) 16%, transparent);
+}
+
+.ask-bar input {
+  min-width: 0;
+  flex: 1;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--sw-text-primary);
+  font: inherit;
+}
+
+.ask-bar input::placeholder {
+  color: var(--sw-text-tertiary);
+}
+
+.ask-modes {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--sw-surface-inset);
+}
+
+.ask-modes button,
+.ask-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--sw-text-secondary);
+  font: inherit;
+  font-size: 13px;
+}
+
+.ask-modes button {
+  padding: 0 10px;
+  border-radius: 999px;
+}
+
+.ask-modes button[aria-pressed="true"] {
+  background: var(--sw-surface);
+  color: var(--sw-text-primary);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--sw-p-neutral-950) 18%, transparent);
+}
+
+.ask-icon {
+  width: 36px;
+  border-radius: 0.7rem;
+}
+
+.ask-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ask-send {
+  background: var(--sw-p-cyan-700);
+  color: var(--sw-p-neutral-50);
+}
+
+:root[data-theme="dark"] .ask-send {
+  background: var(--sw-p-charcoal-700);
+  color: var(--sw-text-tertiary);
+}
+
+.home-bar,
+.entry {
+  background: var(--sw-canvas);
+}
+
+.entry-panel {
+  border-radius: var(--cockpit-radius);
+  border-color: var(--sw-border-default);
+}
+
+.entry-panel .wordmark {
+  margin-bottom: 28px;
+}
+
+@media (max-width: 1100px) {
+  .cockpit-page {
+    height: auto;
+    min-height: 100vh;
+    padding: 8px;
+  }
+
+  .cockpit-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(24rem, auto) minmax(20rem, 50vh);
+    height: auto;
+    row-gap: 8px;
+  }
+
+  .cockpit-shell > .leftnav,
+  .cockpit-shell-header,
+  .project-main-panel,
+  .project-side-panel {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .cockpit-shell > .leftnav {
+    height: auto;
+  }
+
+  .project-main-panel {
+    min-height: 24rem;
+  }
+
+  .project-side-panel {
+    min-height: 20rem;
+  }
+
+  .cockpit-title {
+    font-size: 1.6rem;
+    white-space: normal;
+  }
+}
