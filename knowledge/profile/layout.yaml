@@ -44,6 +44,7 @@ homes:
     - proj.flag.contract_admin
     - proj.flag.sustainability_target
   planning:
+    - proj.flag.architect_lodges
     - proj.flag.staged
     - proj.flag.multi_building
     - proj.flag.cl46

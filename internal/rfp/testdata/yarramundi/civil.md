@@ -120,6 +120,7 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - Invoice monthly against stage progress; payment within 30 days, not dependent on any authority approval.
 - Your proposal stays valid for 90 days.
+- Send questions in writing to Project manager, pm@example.com by 2026-10-23.
 - Answers to scope questions go to every tenderer as numbered addenda.
 - Acceptance by conduct does not adopt your terms.
 - No provisional sums: price the allowances. Work that depends on an uninvestigated condition is priced as an option.

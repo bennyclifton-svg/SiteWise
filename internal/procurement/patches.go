@@ -11,6 +11,7 @@ type PackagePatch struct {
 	DisciplineID    *string `json:"discipline_id,omitempty"`
 	Title           *string `json:"title,omitempty"`
 	Novation        *string `json:"novation,omitempty"`
+	EngagedBy       *string `json:"engaged_by,omitempty"`
 	LifecycleStatus *string `json:"lifecycle_status,omitempty"`
 }
 
@@ -29,6 +30,9 @@ func (p PackagePatch) Apply(to *Package) {
 	}
 	if p.Novation != nil {
 		to.Novation = *p.Novation
+	}
+	if p.EngagedBy != nil {
+		to.EngagedBy = *p.EngagedBy
 	}
 	if p.LifecycleStatus != nil {
 		to.LifecycleStatus = *p.LifecycleStatus

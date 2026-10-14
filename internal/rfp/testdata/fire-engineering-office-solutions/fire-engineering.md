@@ -82,6 +82,7 @@ Counts by solution/stage, unit/duration; fixed fee, time ceiling or unit rate. A
 - Payment 30 days from correct milestone invoices. R6 declares inspection prepayment, release restrictions, interest/recovery/suspension or shorter terms; verify statutory requirements.
 - State rates/hold period/escalation; extras/disbursements require prior authority.
 - Validity 90 days from closing; ex GST/GST/total, base/options separate.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue numbered addenda to all, acknowledged in R1.
 - Agree team/authority/operator project/maintenance/future-use rights, third-party reliance, native models/licences/retention/handover. Confidentiality permits authorised/lawful disclosure; marketing needs consent.
 - Settle caps/indemnities, law/disputes, notice/cure/suspension/termination, assignment/novation/subcontracts. Insurance is not a cap; disclose conflicts, agree team changes.

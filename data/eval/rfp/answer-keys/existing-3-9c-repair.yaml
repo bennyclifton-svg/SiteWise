@@ -39,7 +39,7 @@ expect:
   architecture:
     stages_ask: [regulated_design]
     positions: {existing_interfaces: I}
-    blocking: ["fact:regulated_design"]
+    blocking: ["fact:budget", "fact:regulated_design"]
     blocking_only: true
   structural:
     stages_ask: [regulated_design]
@@ -48,4 +48,5 @@ expect:
     blocking: ["fact:regulated_design"]
     blocking_only: true
 sources:
+  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
   - "Peer review: the regime for existing Class 3/9c repair is decided from verified applicability, not class alone (NSW guidance: alterations to existing Class 3 and 9c enter the regime from 1 July 2028, with exemptions)."

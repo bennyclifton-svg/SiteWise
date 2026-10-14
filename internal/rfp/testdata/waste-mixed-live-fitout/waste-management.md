@@ -82,6 +82,7 @@ Allocate counts to each selected stage/service below, not every category. Comple
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - Payment 30 days against agreed milestones. R6 declares deposits/prepayment, release restrictions, surcharges, recovery and suspension terms.
 - Proposal valid 90 days; base/options, ex GST/GST/total and third-party costs separate.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue changed answers issued to all as numbered addenda.
 - Reasonable professional skill/care; agree project-use/editable-file rights, reliance, retention/handover and confidential disclosure; marketing needs consent. Agreement resolves IP, liability/caps/indemnities, law/disputes and suspension/termination notice/cure.
 

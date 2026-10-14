@@ -77,6 +77,7 @@ Client completes the reconciled plan and quantities. Guaranteed work is separate
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - Monthly itemised invoices payable within 30 days; disclose deposits/report withholding/licence suspension departures.
 - Your proposal stays valid for 90 days.
+- Send questions in writing to Project manager by 2026-10-23.
 - Answers to scope questions go to every tenderer as numbered addenda.
 - Client supplies inputs/access; report gaps. Manage agreed work/subcontractors without blanket service waiver. Disclose caps/time bars/indemnities/transfer/IP departures; agree notice/cure, safe handback, records and disputes.
 - Dated PDFs, logs/lab certificates and editable data/registers; agree project use/reliance, confidentiality, sample retention/evidence preservation, instrument ownership and handover. State storage cost before disposal.

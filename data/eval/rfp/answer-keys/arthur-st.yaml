@@ -25,11 +25,11 @@ parts:
 address: "145-151 Arthur St, Homebush West NSW"
 documents: 12
 consultants:
-  - {title: Architect, status: to be appointed}
-  - {title: Structural, status: to be appointed}
-  - {title: Civil, status: to be appointed}
-  - {title: Traffic, status: to be appointed}
-  - {title: Town Planner, status: to be appointed}
+  - {title: Architect, status: to be appointed, engaged_by: client}
+  - {title: Structural, status: to be appointed, engaged_by: client}
+  - {title: Civil, status: to be appointed, engaged_by: client}
+  - {title: Traffic, status: to be appointed, engaged_by: client}
+  - {title: Town Planner, status: to be appointed, engaged_by: client}
 fields:
   ref: HC-ARTHUR-RFP
   issued: "2026-10-12"
@@ -66,7 +66,7 @@ expect:
     positions: {existing_interfaces: I, mixed_use_map: I, tenant_fitout: O, community: O, apartment_design: absent, live_staging: absent}
     party: {outside_boundary: "civil engineer, to be appointed"}
     scale: complex
-    blocking: ["fact:gfa"]
+    blocking: ["fact:budget", "fact:gfa"]
     blocking_only: true
   structural:
     stages_include: [concept_schematic, existing_assessment, planning_approval, authority_asset, design_development, tender_traditional, construction_documents, construction_phase]
@@ -103,6 +103,7 @@ expect:
     blocking: ["fact:gfa"]
     blocking_only: true
 sources:
+  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
   - "Parts and areas: architecture ledger header (nettletontribe: warehouse 2,135 m², mezzanine office 215 m², site 31,720 m²)."
   - "GFA dispute: traffic ledger note (BG&E 2,895 m² vs 2,135 m² elsewhere); the project table must carry one figure, so the conflict blocks issue."
   - "Existing OSD and Sydney Water asset: civil ledger (keep existing OSD; option to design a new OSD) and structural ledger #47-48."

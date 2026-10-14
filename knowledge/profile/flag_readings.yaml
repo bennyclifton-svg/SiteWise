@@ -77,6 +77,9 @@ flags:
   - key: community
     triggers: ['community (?:consultation|engagement)', 'public exhibition', 'consultation plan']
     asks: does the passage state that community consultation is required?
+  - key: architect_lodges
+    triggers: ['\blodge(?:d|s|ment)?\b', '\blodging\b']
+    asks: does the passage state that the architect lodges the development application or complying development application for this project?
   - key: sustainability_target
     triggers: ['green star', 'nabers', 'passive ?haus|passive ?house', '\bleed\b', 'net[- ]zero']
     asks: does the passage state that a Green Star, NABERS or similar rating target is set for this project?

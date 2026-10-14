@@ -95,6 +95,7 @@ flags:
   - {key: sustainability_target, label: Green Star or NABERS target set}
   - {key: super_flat_floor, label: Super-flat floor needed for the use}
   - {key: contract_admin, label: Client wants the consultant to administer the construction contract}
+  - {key: architect_lodges, scope_decision: true, label: Architect lodges the planning application, help: "Yes if the architect lodges, no if the owner does. The certifier assesses a CDC; it never lodges one.", provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: who lodges is a question; the architect or the owner, never the certifier."}]}
   # BCA package and extent decisions: bca-certification ledger #1,38,47-53.
   # Kept separate from building labels; silence never appoints a statutory role.
   - {key: bca_advisory, scope_decision: true, label: BCA advisory requested, help: "Package A only; does not appoint a statutory certifier (bca-certification#1,53).", provenance: [{kind: client_decision, ref: "bca-certification#53", why: "Explicit package/extent decision; not inferred from building type or silence."}]}
@@ -187,8 +188,8 @@ fields:
   - {key: ref, label: RFP reference, kind: text, required: true, group: issue}
   - {key: issued, label: Issue date, kind: date, required: true, group: issue}
   - {key: closes, label: Proposals close, kind: date, required: true, group: issue}
-  - {key: contact, label: Contact for questions, kind: text, required: true, group: issue}
-  - {key: questions_by, label: Questions in writing by, kind: date, required: true, group: issue}
+  - {key: contact, label: Contact for questions, kind: text, required: false, group: issue}
+  - {key: questions_by, label: Questions in writing by, kind: date, required: false, group: issue}
   - {key: agreement, label: Client agreement, kind: text, required: true, group: terms, help: "Name the agreement attached to this RFP. A missing agreement is an open question, never acceptance of the consultant's terms."}
   - {key: start_by, label: Start by, kind: date, required: false, group: issue}
   - {key: rates_hold_until, label: Rates hold until, kind: date, required: false, group: terms}
@@ -254,6 +255,9 @@ terms:
   - key: validity
     text: "Your proposal stays valid for {field:validity_days} days."
     provenance: [{kind: evidence, ref: "architecture#155"}]
+  - key: questions_to
+    text: "Send questions in writing to {field:contact} by {field:questions_by}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: firms need a contact and a date for questions; printed only when both are set."}]
   - key: questions
     text: "Answers to scope questions go to every tenderer as numbered addenda."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-guide.md (numbered addenda and acknowledgement)"}]

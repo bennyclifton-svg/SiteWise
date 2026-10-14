@@ -78,6 +78,7 @@ Complete quantities or authorised assumption with owner/date/consequence. Fixed 
 - Payment 30 days after correct invoice for agreed services; GST/stage milestones separate. Declare deposits, final-report release, interest and suspension departures.
 - State fixed rate period and proposed changes; disclose travel, portals/invoice formats, cancellation/remobilisation before appointment; no hidden uplift.
 - Valid 90 days; reconcile conflicting offered validity, program, meeting and liability terms. Missing agreement or revised attachment is not acceptance.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue scope answers as numbered addenda to all tenderers; acknowledge each.
 - Agree project/team/authority/operator use and explicit third-party reliance, editable files/retention/handover and confidentiality. R6 declares caps/time bars, indemnities, IP limits, caveat/security and retrospective terms; agree law/disputes/cure/termination.
 

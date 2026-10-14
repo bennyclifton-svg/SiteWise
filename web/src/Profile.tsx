@@ -51,6 +51,7 @@ const COLUMNS: Record<Column, string[]> = {
     "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "det.rise_in_storeys",
     "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm", "det.floor_area", "det.effective_height",
     "hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units",
+    "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.cond.quality_level",
     "hdr.scale.car_parks", "hdr.scale.garage_spaces",
     "det.existing_building", "det.existing_building_year", "det.ncc_edition",
   ],
@@ -60,7 +61,7 @@ const COLUMNS: Record<Column, string[]> = {
     "fact.consent_lapse_date", "hdr.cond.access_constraints", "hdr.cond.environmental_sensitivity",
   ],
   delivery: [
-    "proj.client", "hdr.cond.procurement_route", "fact.contract_form", "fact.contract_basis",
+    "proj.client", "proj.budget_stated", "hdr.cond.procurement_route", "fact.contract_form", "fact.contract_basis",
     "fact.defects_liability_period", "fact.design_life", "proj.program", "proj.sustainability",
     "proj.flag.sustainability_target", "proj.regulated_design", "proj.flag.contract_admin",
     "hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints",

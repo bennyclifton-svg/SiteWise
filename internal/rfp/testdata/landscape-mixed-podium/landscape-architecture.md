@@ -75,6 +75,7 @@ Complete a separate quantity/basis for each listed item by selected stage; group
 - Payment 30 days for correct agreed-service invoice, subject to law/settled agreement; disclose deposits, release/interest/suspension departures.
 - State rate fixed period, review/indexation dates and approved extra-work basis.
 - Valid 90 days; base/options/disbursements and ex GST/GST/total separate.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue changes as numbered addenda to all.
 - Reasonable skill/care; project-use/native/third-party rights, reliance, retention and confidentiality; marketing needs consent. Set liability/indemnities, law/disputes, novation and suspension/termination notice/cure.
 

@@ -25,7 +25,9 @@ func rfpProject(t *testing.T, s *store.Store, b store.ProfileBuild, part string)
 	ctx := context.Background()
 	// Project facts live in Profile (D1), including those an RFP requires.
 	for key, value := range map[string]string{"hdr.work_type": "extend", "hdr.cond.planning": "da", "hdr.cond.procurement_route": "traditional", "det.state": "NSW", "det.ncc_class": "7b",
-		"proj.client": "Client", "proj.regulated_design": "no", "proj.flag.staged": "no", "proj.flag.multi_building": "no"} {
+		"proj.client": "Client", "proj.regulated_design": "no", "proj.flag.staged": "no", "proj.flag.multi_building": "no",
+		// The architect RFP prints a budget (owner decision, 13 October 2026).
+		"proj.budget_stated": "$5 million excluding GST"} {
 		v := value
 		scope := b.Catalog.KeyScope(key)
 		if scope == "" {
@@ -47,7 +49,7 @@ func rfpProject(t *testing.T, s *store.Store, b store.ProfileBuild, part string)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Civil", LifecycleStatus: "proposed"}); err != nil {
+	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Civil", LifecycleStatus: "proposed", EngagedBy: procurement.EngagedByClient}); err != nil {
 		t.Fatal(err)
 	}
 	if err := s.RebuildProfile(ctx, orgA, projectA, "", b.Compute); err != nil {

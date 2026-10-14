@@ -80,6 +80,7 @@ Allocate counts by service/stage; each quantity needs its own unit/duration. Com
 - Payment 30 days after correct invoice for agreed services; state milestones/GST. Declare deposits, report-release restrictions, interest, recovery, security and suspension departures.
 - State rates/fixed period and all third-party/travel/access costs; agree changes before work. Historical prices are not the budget.
 - Proposal valid 90 days from closing. Set project insurance and agreement choices before appointment.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue numbered addenda to all tenderers, acknowledged in proposal.
 - Agree project/team/authority/operator use, third-party reliance, native files/retention/handover and confidentiality; marketing needs consent. Resolve IP, caps/indemnities, law/disputes, assignment/novation and notice/cure/suspension/termination in agreement.
 

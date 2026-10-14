@@ -18,7 +18,7 @@ const QuestionVersion = "profile-5"
 // changing existing wording (so QuestionVersion stays): finished documents are
 // read again on the next "Update project profile", and a passage whose
 // questions did not change is answered from the call cache without a Jev call.
-const ReadRevision = "read-5"
+const ReadRevision = "read-6"
 
 // PassageInfo is what header routing reads about a passage.
 type PassageInfo struct {
@@ -310,6 +310,14 @@ func headerQuestions(t knowledge.Taxonomy) map[string]jev.Question {
 			crit["partial_occupation"] = "Part of the works area remains occupied, with staged possession or an explicitly partly occupied building."
 			crit["vacant"] = "The site or works area is expressly vacant or unoccupied."
 			crit["24_7_occupied"] = "The facility is explicitly occupied or operating 24 hours a day, seven days a week."
+		}
+		if c.Key == "quality_level" {
+			// A level is chosen only when the passage states it or describes the
+			// finishes range it is built from (2026-10-13).
+			crit["project_home"] = "The passage describes a project, volume, display or spec home built from a builder's standard or pre-selected ranges."
+			crit["mid"] = "The passage states a mid-range or standard quality level for a custom-designed home."
+			crit["high"] = "The passage states a high-end, premium or architect-designed custom home with premium finishes."
+			crit["prestige"] = "The passage states a luxury or prestige home."
 		}
 		ask("hdr.cond."+c.Key, strings.ToLower(c.Label), crit)
 	}

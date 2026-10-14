@@ -37,6 +37,8 @@ expect:
   architecture:
     stages_absent: [regulated_design]
     positions: {extra_declarations: absent}
+    blocking: ["fact:budget"]
     blocking_only: true
 sources:
+  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
   - "A recorded decision clears the regulated-design question; the stage then follows the decision, not the class."

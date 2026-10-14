@@ -184,6 +184,7 @@ func buildingYearCandidates(text string, currentYear int) []Candidate {
 
 var unitCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+(?:sole\s+occupancy\s+)?(?:units|apartments|dwellings)\b`)
 var bedroomCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+bedrooms?\b`)
+var bathroomCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+bath(?:room)?s?\b`)
 var parkingCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+(?:car\s*(?:parking|park)?\s*spaces|parking\s+(?:spaces|bays)|car\s*parks)\b`)
 var dockCountRe = regexp.MustCompile(`(?i)(?:^|[^\d.])(\d+)\s+(?:no\.?\s+)?(?:(?:loading\s+)?dock|roller\s+shutter)\s+doors?\b`)
 var tenancyCountRe = regexp.MustCompile(`(?i)(?:^|[^\d.])(\d+)\s+(?:separate\s+)?tenancies\b`)
@@ -196,6 +197,8 @@ func scaleCandidates(f knowledge.ScaleField, text string) []Candidate {
 		return verbatim(tenancyCountRe, text, func(m []string) string { return m[1] })
 	case f.Key == "bedrooms":
 		return verbatim(bedroomCountRe, text, func(m []string) string { return m[1] })
+	case f.Key == "bathrooms":
+		return verbatim(bathroomCountRe, text, func(m []string) string { return m[1] })
 	case f.Key == "units" || f.Key == "residential_units":
 		return verbatim(unitCountRe, text, func(m []string) string { return m[1] })
 	case f.Key == "car_parks":

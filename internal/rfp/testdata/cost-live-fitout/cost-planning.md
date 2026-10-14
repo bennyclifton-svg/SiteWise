@@ -74,6 +74,7 @@ Complete counts before issue. Fixed fee, time ceiling or unit rate with quantity
 - Correct invoices for completed work payable within 30 days, subject to agreement/applicable requirements. Disclose advance payment, interest, suspension, minimums and withholding.
 - Agree rate-validity date and escalation, unused allowances, cancellation/standby and remobilisation; no inherited annual increase.
 - Your proposal stays valid for 90 days.
+- Send questions in writing to Project manager by 2026-10-23.
 - Answers to scope questions go to every tenderer as numbered addenda.
 - Dated PDFs/editable quantity/rate/reconciliation workbooks; source cutoff, units, rate evidence, preliminaries/margin, PC/PS, gaps, risk/escalation/tax and confidence limits. Agree project distribution licence, separate lender reliance, proprietary-data limits, confidentiality/security/retention and handover.
 - Competent resources/independent review, substitutions/conflicts and selected insurance; disclose liability/indemnity/loss/novation/IP/contamination departures. Agree notice/cure, completed/committed costs, records transfer, negotiation/mediation and urgent relief.

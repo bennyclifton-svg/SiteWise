@@ -63,6 +63,14 @@ building_classes:
       triggers:
       - \bbed(room)?s?\b
       typical: 2-6
+    # A house brief states bathrooms beside bedrooms; the architect RFP
+    # prints both (owner critique of the Custom Home 2 RFP, 2026-10-13).
+    - key: bathrooms
+      label: Bathrooms
+      type: integer
+      triggers:
+      - \bbath(room)?s?\b
+      typical: 1-4
     - key: garage_spaces
       label: Garage spaces
       type: integer
@@ -1596,6 +1604,23 @@ conditions:
     label: Live Environment
   - id: 24_7_occupied
     label: 24/7 Occupied
+# The quality a house brief or specification describes. Jev picks only a
+# stated level or a described range; silence is not stated. Owner critique of
+# the Custom Home 2 RFP, 2026-10-13; golden specification: a spec home from a
+# builder's pre-selected ranges (Newham on York).
+- key: quality_level
+  label: Quality level
+  applies_to:
+  - residential
+  options:
+  - id: project_home
+    label: Project or volume home (builder's standard range)
+  - id: mid
+    label: Mid-range custom home
+  - id: high
+    label: High-end custom home
+  - id: prestige
+    label: Prestige home
 - key: stakeholder_complexity
   label: Stakeholder complexity
   options:

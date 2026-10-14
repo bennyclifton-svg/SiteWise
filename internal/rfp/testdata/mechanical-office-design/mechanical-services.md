@@ -88,6 +88,7 @@ Separate quantities/durations for each item/system/stage. Fixed fee, time ceilin
 - Payment 30 days from correct milestone invoices; R6 declares prepayment/release conditions, interest/recovery/suspension.
 - State rate hold/escalation; preapprove extras/expenses; no duplicate package fees.
 - Valid 90 days after closing; ex GST/GST/total, base/options separate.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue numbered addenda to all, acknowledged in R1.
 - Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination handover; confidentiality permits authorised/lawful disclosure; marketing by consent.
 - Settle caps/indemnities, law/disputes, notices/cure/suspension/termination, assignment/novation/subcontracts; insurance is not a cap; conflicts/staff changes agreed.

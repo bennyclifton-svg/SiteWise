@@ -28,3 +28,16 @@ modules:
     label: Staged or multi-building delivery
     when: [{flag: [staged]}, {flag: [multi_building]}]
     provenance: [{kind: evidence, ref: "architecture#1-14"}]
+  # A house is Class 1 (a Class 10 garage or pool beside it is still a
+  # house); anything with another class is beyond a house. Owner critique of
+  # the Custom Home 2 architect RFP, 13 October 2026.
+  - key: house
+    label: House (Class 1, with any Class 10 outbuilding)
+    when: [{only_class: ["1a", "1b", "10a", "10b"], class: ["1a", "1b"]}]
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: a house RFP prices the brief a house needs, not commercial scope."}]
+  - key: beyond_house
+    label: Building other than a house
+    when: [{class: ["2", "3", "4", "5", "6", "7a", "7b", "8", "9a", "9b", "9c"]}]
+    # Until the class is known, commercial rows stay with their own positions.
+    if_unknown: include
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: tenant fit-out, signage, façade certification, BIM and similar rows leave a house RFP."}]

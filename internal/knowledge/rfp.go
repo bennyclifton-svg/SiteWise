@@ -20,8 +20,10 @@ import (
 // select scope (docs/plans/2026-10-09-consultant-rfp-build.md §2.2).
 
 // RFPDrivers is the closed condition vocabulary. Numeric keys end in _over.
+// only_class holds when every part's classes are among its values; module
+// holds when a skeleton module is active (modules may not test modules).
 var RFPDrivers = map[string]bool{
-	"class": true, "category": true, "work_type": true, "pathway": true,
+	"class": true, "only_class": true, "module": true, "category": true, "work_type": true, "pathway": true,
 	"procurement": true, "novation": true, "state": true, "flag": true,
 	"regulated_design": true, "scale": true, "stage": true, "stage_included": true, "element": true,
 	"budget_over": true, "site_area_over": true, "gfa_over": true, "parking_over": true,
@@ -29,7 +31,7 @@ var RFPDrivers = map[string]bool{
 
 // rawFactDrivers are the facts a statutory threshold is about. A row tied to
 // an unverified statutory threshold must not test them in its when.
-var rawFactDrivers = []string{"class", "category", "state", "budget_over", "site_area_over", "gfa_over", "parking_over"}
+var rawFactDrivers = []string{"class", "only_class", "category", "state", "budget_over", "site_area_over", "gfa_over", "parking_over"}
 
 type RFPWhen []map[string][]string
 
@@ -206,8 +208,23 @@ type RFPDiscipline struct {
 	ReturnableNotes []RFPRow `yaml:"returnable_notes" json:"returnable_notes,omitempty"`
 	// FieldDefaults overrides a skeleton field default for this discipline.
 	FieldDefaults map[string]string `yaml:"field_defaults" json:"field_defaults,omitempty"`
-	Durations     string            `yaml:"durations" json:"durations"`
+	// FieldDefaultsWhen overrides FieldDefaults for projects its condition
+	// holds for; the first entry that holds wins.
+	FieldDefaultsWhen []RFPFieldDefaults `yaml:"field_defaults_when" json:"field_defaults_when,omitempty"`
+	// RequiredFacts are project facts this RFP cannot be issued without.
+	RequiredFacts []string `yaml:"required_facts" json:"required_facts,omitempty"`
+	Durations     string   `yaml:"durations" json:"durations"`
 }
+
+// RFPFieldDefaults sets field defaults for the projects When holds for.
+type RFPFieldDefaults struct {
+	When       RFPWhen           `yaml:"when" json:"when"`
+	Values     map[string]string `yaml:"values" json:"values"`
+	Provenance []RFPProvenance   `yaml:"provenance" json:"provenance"`
+}
+
+// requiredFacts is the closed list of facts a discipline may require.
+var requiredFacts = []string{"budget"}
 
 type RFPOption struct {
 	Provenance []RFPProvenance `yaml:"provenance" json:"provenance,omitempty"`
@@ -250,7 +267,10 @@ var ProjectGrid = []GridRow{
 	{"parts", "Building", "The building", true},
 	{"storeys", "Storeys", "The building", false},
 	{"gfa", "Gross floor area", "The building", false},
+	{"bedrooms", "Bedrooms", "The building", false},
+	{"bathrooms", "Bathrooms", "The building", false},
 	{"parking", "Car parks", "The building", false},
+	{"quality", "Quality level", "The building", false},
 	{"address", "Site address", "Site and planning", true},
 	{"lot_dp", "Lot and DP", "Site and planning", false},
 	{"lga", "Local government area", "Site and planning", false},
@@ -525,6 +545,11 @@ func checkModules(s RFPSkeleton) error {
 		if err := checkWhen("module "+m.Key, m.When, s); err != nil {
 			return err
 		}
+		for _, clause := range m.When {
+			if _, ok := clause["module"]; ok {
+				return fmt.Errorf("module %q may not test another module", m.Key)
+			}
+		}
 		if err := checkProvenance("module "+m.Key, m.Provenance); err != nil {
 			return err
 		}
@@ -743,6 +768,35 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 			return d, fmt.Errorf("field default %q names no skeleton field", key)
 		}
 	}
+	for i, fd := range d.FieldDefaultsWhen {
+		where := fmt.Sprintf("field_defaults_when %d", i+1)
+		if len(fd.When) == 0 || len(fd.Values) == 0 || len(fd.Provenance) == 0 {
+			return d, fmt.Errorf("%s needs a when, values and provenance", where)
+		}
+		if err := checkWhen(where, fd.When, s); err != nil {
+			return d, err
+		}
+		if err := checkProvenance(where, fd.Provenance); err != nil {
+			return d, err
+		}
+		for key := range fd.Values {
+			found := false
+			for _, f := range s.Fields {
+				if f.Key == key && f.Profile != "" {
+					return d, fmt.Errorf("%s: the field %q lives in Profile (%s)", where, key, f.Profile)
+				}
+				found = found || f.Key == key
+			}
+			if !found {
+				return d, fmt.Errorf("%s names no skeleton field %q", where, key)
+			}
+		}
+	}
+	for _, f := range d.RequiredFacts {
+		if !slices.Contains(requiredFacts, f) {
+			return d, fmt.Errorf("required fact %q is not one of %v", f, requiredFacts)
+		}
+	}
 	for key := range d.Returnables {
 		if !regexp.MustCompile(`^r[1-9]$`).MatchString(key) {
 			return d, fmt.Errorf("returnable %q must be r1-r9", key)
@@ -947,6 +1001,8 @@ func checkWhen(where string, w RFPWhen, s RFPSkeleton) error {
 					ok = v == "yes" || v == "option" || v == "no"
 				case "regulated_design":
 					ok = v == "yes" || v == "no"
+				case "module":
+					ok = v != "" && checkModule("", v, s) == nil
 				default:
 					ok = v != ""
 				}

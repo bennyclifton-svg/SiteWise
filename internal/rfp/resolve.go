@@ -270,9 +270,10 @@ func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Driver
 		r.hydraulicSourceFacts()
 	}
 	r.applyParts()
-	r.resolveFields()
 	r.resolveScale()
 	r.resolveModules()
+	// Field defaults may depend on a module (a house), so they follow it.
+	r.resolveFields()
 	r.resolveBoundary()
 	r.resolveStages()
 	r.resolveElements()
@@ -282,6 +283,7 @@ func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Driver
 	r.resolveRows()
 	// Evaluation is not part of the consultant RFP template.
 	r.checkPathway()
+	r.checkRequiredFacts()
 	r.finishChecks()
 	r.findOrphans()
 	return r.out
@@ -431,6 +433,41 @@ func (r *resolver) driver(key string, values []string) outcome {
 			return outcome{t: unk, unknown: []string{"class"}}
 		}
 		return outcome{t: no}
+	case "only_class":
+		// Every part's classes must be among the values: a house with a
+		// Class 10 garage is a house; a house over a shop is not.
+		if len(r.out.Parts) == 0 {
+			return outcome{t: unk, unknown: []string{"class"}}
+		}
+		for _, p := range r.out.Parts {
+			if len(p.Classes) == 0 {
+				return outcome{t: unk, unknown: []string{"class"}}
+			}
+		}
+		for _, p := range r.out.Parts {
+			for _, c := range p.Classes {
+				if !contains(values, c) {
+					return outcome{t: no}
+				}
+			}
+		}
+		return outcome{t: yes, why: "Class " + strings.Join(r.out.Parts[0].Classes, ", ")}
+	case "module":
+		res := outcome{t: no}
+		for _, v := range values {
+			switch r.out.Modules[v] {
+			case "on":
+				return outcome{t: yes}
+			case "unknown":
+				for _, m := range r.sk.Modules {
+					if m.Key == v {
+						res.t = unk
+						res.unknown = appendUnique(res.unknown, r.eval(m.When).unknown...)
+					}
+				}
+			}
+		}
+		return res
 	case "flag":
 		res := outcome{t: no}
 		for _, v := range values {
@@ -1054,6 +1091,12 @@ func (r *resolver) resolveFields() {
 		if d, ok := r.d.FieldDefaults[f.Key]; ok {
 			v.Value = d
 		}
+		for _, fd := range r.d.FieldDefaultsWhen {
+			if d, ok := fd.Values[f.Key]; ok && r.eval(fd.When).t == yes {
+				v.Value = d
+				break
+			}
+		}
 		if v.Value == "" {
 			v.Source = "none"
 		}
@@ -1370,10 +1413,15 @@ func (r *resolver) slot(name string) (string, bool) {
 		if v := r.out.Fields["information"].Value; v != "" {
 			return v, true
 		}
+		if v := r.drivers.Text["register"]; v != "" {
+			return v + "; each is listed in the issue record", true
+		}
 		if r.drivers.Documents > 0 {
 			return fmt.Sprintf("%d current documents in the project register, listed in the issue record", r.drivers.Documents), true
 		}
 		return "", false
+	case "engagement":
+		return r.engagement(), true
 	case "consultants":
 		names := []string{}
 		for _, c := range r.drivers.Consultants {
@@ -1455,6 +1503,51 @@ func (r *resolver) checkPathway() {
 	if f.State == Known && contains(r.d.UnsupportedPathways, f.Values[0]) {
 		r.check(Check{ID: "pathway_unsupported", Label: "No reviewed " + strings.ToLower(r.d.Title) + " stages for " + valueLabel(r.sk, "pathway", f.Values[0]), Text: "This pathway's stage bundle has not been written and reviewed. It does not fall back to another pathway's wording.", Blocking: true, Control: "fact:pathway"})
 	}
+}
+
+// checkRequiredFacts blocks issue while a fact the discipline prices
+// against is missing. The budget lives in the cost plan.
+func (r *resolver) checkRequiredFacts() {
+	for _, key := range r.d.RequiredFacts {
+		if key == "budget" && r.fact("budget").State != Known {
+			r.check(Check{ID: "fact:budget", Label: "Construction budget not set", Text: "This RFP prints the construction budget and firms price against it. Set it in Costs.", Blocking: true, Control: "fact:budget"})
+		}
+	}
+}
+
+// engagement says who engages each other consultant: the client directly,
+// or this consultant as a subconsultant whose fee is in this price. A live
+// package with no answer is one decision naming every such package.
+func (r *resolver) engagement() string {
+	client, subs, open := []string{}, []string{}, []string{}
+	for _, c := range r.drivers.Consultants {
+		switch c.EngagedBy {
+		case EngagedByClient:
+			client = append(client, c.Title+" ("+c.Status+")")
+		case EngagedByLead:
+			subs = append(subs, c.Title)
+		default:
+			open = append(open, c.Title)
+		}
+	}
+	if len(open) > 0 {
+		r.check(Check{ID: "engagement", Label: "Who engages " + strings.Join(open, ", ") + ": not decided", Text: "Decide in Procurement whether the client engages each directly or this consultant engages them as subconsultants. Their fees are in this price only if they are subconsultants.", Blocking: true, Changes: open})
+	}
+	lines := []string{}
+	if len(client) > 0 || len(subs) == 0 && len(open) == 0 {
+		names := strings.Join(client, ", ")
+		if names == "" {
+			names = "none recorded yet"
+		}
+		lines = append(lines, "The client engages the other consultants directly: "+names+".")
+	}
+	if len(subs) > 0 {
+		lines = append(lines, "You engage these consultants as your subconsultants and include their fees in your price; name them in R4: "+strings.Join(subs, ", ")+".")
+	}
+	if len(open) > 0 {
+		lines = append(lines, "Who engages these consultants is still to be decided: "+strings.Join(open, ", ")+".")
+	}
+	return strings.Join(lines, " ")
 }
 
 // finishChecks turns each unknown fact into one decision listing the rows
@@ -1682,8 +1775,14 @@ func (r *resolver) gridText(key string) (string, bool) {
 			lines = append(lines, line)
 		}
 		return strings.Join(lines, "; "), len(lines) > 0
-	case "storeys", "parking":
+	case "storeys", "parking", "bedrooms", "bathrooms":
 		return number(key, "")
+	case "quality":
+		f := r.fact("quality")
+		if f.State != Known {
+			return "", false
+		}
+		return qualityLabels[f.Values[0]], qualityLabels[f.Values[0]] != ""
 	case "gfa", "site_area":
 		return number(key, " m²")
 	case "address":

@@ -2580,7 +2580,7 @@
     "role": [
       {
         "key": "lead",
-        "text": "Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. The client engages the other consultants directly: {consultants}.",
+        "text": "Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. {engagement}",
         "provenance": [
           {
             "kind": "evidence",
@@ -2593,6 +2593,11 @@
           {
             "kind": "evidence",
             "ref": "architecture#158"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner 2026-10-13: the client engages each consultant directly or the architect engages it as a subconsultant; the RFP says which."
           }
         ]
       },
@@ -2765,7 +2770,7 @@
       {
         "key": "planning_approval",
         "name": "Planning approval",
-        "deliverable": "Architectural drawings and input to the {planning_report}: one preliminary and one final issue; lodged by others",
+        "deliverable": "Architectural drawings and input to the {planning_report}: one preliminary and one final issue; who lodges is set in section 2",
         "fee_basis": "fixed",
         "delivery_stage": "approval_documentation",
         "when": [
@@ -2856,6 +2861,7 @@
             ]
           }
         ],
+        "module": "beyond_house",
         "if_unknown": "option",
         "assumption": "Price as an option: interiors are needed for a fit-out or a Class 3, 5, 6 or 9 part.",
         "shown_when": "Fit-out, or a Class 3, 5, 6 or 9 part",
@@ -2875,6 +2881,39 @@
         ]
       },
       {
+        "key": "house_documents",
+        "name": "Tender and construction documents",
+        "items": [
+          "house_interiors",
+          "house_selections"
+        ],
+        "deliverable": "One documentation set for a lump-sum price and for construction: drawings, door and window schedules, joinery details, the finishes and fixtures schedule and the specification. One tender issue, then one construction issue with the agreed tender changes and any construction certificate set",
+        "design_responsibility": "You hold the whole architectural design.",
+        "fee_basis": "fixed",
+        "delivery_stage": "construction_documentation",
+        "module": "house",
+        "when": [
+          {
+            "procurement": [
+              "traditional",
+              "managing_contractor"
+            ]
+          }
+        ],
+        "shown_when": "A house under a traditional or managing contract",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner decision 4, 13 October 2026: a Class 1 house gets one documentation set for tender and construction."
+          },
+          {
+            "kind": "evidence",
+            "ref": "golden specification: Newham on York builder's project specification (end of design, pre-tender)"
+          }
+        ]
+      },
+      {
         "key": "tender_traditional",
         "name": "Tender documents",
         "deliverable": "Documents complete enough to price as a lump sum: drawings, schedules and specification; one tender issue",
@@ -2889,6 +2928,7 @@
             ]
           }
         ],
+        "module": "beyond_house",
         "shown_when": "Traditional or managing contractor",
         "provenance": [
           {
@@ -3003,6 +3043,7 @@
             ]
           }
         ],
+        "module": "beyond_house",
         "shown_when": "Not design and construct",
         "provenance": [
           {
@@ -3320,6 +3361,7 @@
     ],
     "positions": [
       {
+        "group": "Brief and design coordination",
         "key": "coordination",
         "label": "Coordinating and integrating consultants' work",
         "kind": "service_level",
@@ -3337,6 +3379,7 @@
         ]
       },
       {
+        "group": "Brief and design coordination",
         "key": "input_schedule",
         "label": "Brief gaps, required-input schedule, responsibility matrix and decisions register",
         "kind": "service_level",
@@ -3350,6 +3393,7 @@
         ]
       },
       {
+        "group": "Brief and design coordination",
         "key": "specialist_coordination",
         "label": "Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface",
         "kind": "technical",
@@ -3362,6 +3406,7 @@
         ]
       },
       {
+        "group": "Brief and design coordination",
         "key": "consultant_selection",
         "label": "Help selecting other consultants",
         "kind": "service_level",
@@ -3375,7 +3420,9 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "bim_model",
+        "module": "beyond_house",
         "label": "BIM model issued to the design team (level in section 4)",
         "kind": "service_level",
         "simple": "I",
@@ -3388,7 +3435,9 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "bim_coordination",
+        "module": "beyond_house",
         "label": "BIM coordination meetings, clash detection",
         "kind": "service_level",
         "simple": "X",
@@ -3403,18 +3452,67 @@
       },
       {
         "key": "specification",
+        "group": "Design documentation and models",
         "label": "Architectural specification",
         "kind": "service_level",
-        "simple": "O",
+        "simple": {
+          "value": "I",
+          "when": [
+            {
+              "module": [
+                "house"
+              ]
+            }
+          ],
+          "else": "O"
+        },
         "complex": "I",
+        "if_unknown": "option",
+        "assumption": "Price as an option until the building class is known.",
         "provenance": [
           {
             "kind": "evidence",
             "ref": "architecture#75"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner 2026-10-13: the specification is the golden end product of a house's design phase, so a house includes it."
           }
         ]
       },
       {
+        "key": "house_interiors",
+        "group": "Design documentation and models",
+        "label": "Kitchen, bathroom, laundry and joinery design: layouts, elevations and joinery details",
+        "kind": "technical",
+        "value": "I",
+        "module": "house",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner 2026-10-13: kitchen, bathroom and joinery design is core architect work on a house; the golden specification details it."
+          }
+        ]
+      },
+      {
+        "key": "house_selections",
+        "group": "Design documentation and models",
+        "label": "Finishes, fixtures, fittings and appliances schedule, internal and external, with colour schemes",
+        "kind": "technical",
+        "value": "I",
+        "module": "house",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner 2026-10-13: the golden specification's inclusions schedule and colour schemes are the architect's on a house."
+          }
+        ]
+      },
+      {
+        "group": "Design documentation and models",
         "key": "door_schedule",
         "label": "Door schedule; hardware schedule by the supplier",
         "kind": "technical",
@@ -3431,7 +3529,9 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "finishes_schedules",
+        "module": "beyond_house",
         "label": "External and base-building finishes schedules",
         "kind": "technical",
         "value": "I",
@@ -3443,7 +3543,9 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "typical_interiors",
+        "module": "beyond_house",
         "label": "Interior layouts for typical rooms",
         "kind": "service_level",
         "simple": "O",
@@ -3456,6 +3558,7 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "base_interiors",
         "label": "Base-building and common-area interiors",
         "kind": "technical",
@@ -3476,8 +3579,10 @@
       },
       {
         "key": "tenant_fitout",
+        "group": "Design documentation and models",
         "label": "Tenant fit-out design",
         "kind": "technical",
+        "module": "beyond_house",
         "value": {
           "value": "I",
           "when": [
@@ -3502,6 +3607,7 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "ffe",
         "label": "Loose furniture and FF&E selection",
         "kind": "technical",
@@ -3514,6 +3620,7 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "marketing_renders",
         "label": "Photoreal renders, marketing CGI, models",
         "kind": "service_level",
@@ -3528,6 +3635,7 @@
         ]
       },
       {
+        "group": "Procurement and approvals",
         "key": "value_management",
         "label": "Value management redesign (at R3 rates)",
         "kind": "service_level",
@@ -3541,6 +3649,7 @@
         ]
       },
       {
+        "group": "Procurement and approvals",
         "key": "tender_evaluation",
         "label": "Tender evaluation input",
         "kind": "service_level",
@@ -3564,6 +3673,7 @@
       },
       {
         "key": "dnc_performance_brief",
+        "group": "Procurement and approvals",
         "label": "Performance brief; retained versus contractor design schedule",
         "kind": "technical",
         "value": "I",
@@ -3583,6 +3693,7 @@
       },
       {
         "key": "certifier_liaison",
+        "group": "Procurement and approvals",
         "label": "Liaison with the certifier",
         "kind": "technical",
         "value": "I",
@@ -3600,6 +3711,7 @@
       },
       {
         "key": "document_uploads",
+        "group": "Procurement and approvals",
         "label": "Uploading to the client's document system",
         "kind": "technical",
         "value": "I",
@@ -3616,6 +3728,7 @@
         ]
       },
       {
+        "group": "Procurement and approvals",
         "key": "modifications",
         "label": "Modification applications after approval",
         "kind": "technical",
@@ -3628,6 +3741,67 @@
         ]
       },
       {
+        "key": "lodgement",
+        "group": "Procurement and approvals",
+        "label": "Lodging the planning application: a DA with the consent authority, or a CDC with the certifier, who assesses it",
+        "kind": "technical",
+        "value": {
+          "value": "I",
+          "when": [
+            {
+              "flag": [
+                "architect_lodges"
+              ]
+            }
+          ],
+          "else": "X"
+        },
+        "responsible": "client",
+        "when": [
+          {
+            "stage": [
+              "planning_approval"
+            ]
+          }
+        ],
+        "module": "house",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner decision 5, 13 October 2026: the architect or the owner lodges; the certifier never lodges a CDC. Unknown blocks issue."
+          }
+        ]
+      },
+      {
+        "key": "water_asset",
+        "group": "Procurement and approvals",
+        "label": "Water authority approval to build over or next to its asset: drawings and submission",
+        "kind": "technical",
+        "value": {
+          "value": "O",
+          "when": [
+            {
+              "flag": [
+                "authority_asset"
+              ]
+            }
+          ],
+          "else": "-"
+        },
+        "module": "house",
+        "if_unknown": "option",
+        "assumption": "Price as an option: needed only if the building is over or next to a water authority asset.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner 2026-10-13: the water asset flag must say who seeks the authority approval; priced as an option because who prepares it varies."
+          }
+        ]
+      },
+      {
+        "group": "Specialist and additional services",
         "key": "court",
         "label": "Court appeals",
         "kind": "technical",
@@ -3642,8 +3816,10 @@
       },
       {
         "key": "community",
+        "group": "Specialist and additional services",
         "label": "Community consultation",
         "kind": "technical",
+        "module": "beyond_house",
         "value": {
           "value": "O",
           "when": [
@@ -3667,6 +3843,7 @@
       },
       {
         "key": "country",
+        "group": "Specialist and additional services",
         "label": "Connecting with Country input",
         "kind": "technical",
         "value": {
@@ -3690,6 +3867,7 @@
         ]
       },
       {
+        "group": "Procurement and approvals",
         "key": "extra_declarations",
         "label": "Compliance declarations for extra certificates or variations",
         "kind": "technical",
@@ -3713,6 +3891,7 @@
       },
       {
         "key": "apartment_design",
+        "group": "Procurement and approvals",
         "label": "Apartment design-quality submission and panel response, where planning advice confirms it",
         "kind": "technical",
         "value": {
@@ -3737,7 +3916,9 @@
         ]
       },
       {
+        "group": "Specialist and additional services",
         "key": "facade_certification",
+        "module": "beyond_house",
         "label": "Façade performance certification (NCC Part F3)",
         "kind": "technical",
         "value": "X",
@@ -3750,7 +3931,9 @@
         ]
       },
       {
+        "group": "Specialist and additional services",
         "key": "performance_solutions",
+        "module": "beyond_house",
         "label": "Performance solutions (fire, access, weatherproofing)",
         "kind": "technical",
         "value": "X",
@@ -3768,6 +3951,7 @@
       },
       {
         "key": "sustainability_docs",
+        "group": "Specialist and additional services",
         "label": "Green Star or NABERS documentation",
         "kind": "technical",
         "value": {
@@ -3796,7 +3980,9 @@
         ]
       },
       {
+        "group": "Design documentation and models",
         "key": "signage",
+        "module": "beyond_house",
         "label": "Signage and wayfinding",
         "kind": "service_level",
         "simple": "X",
@@ -3810,7 +3996,9 @@
         ]
       },
       {
+        "group": "Specialist and additional services",
         "key": "outside_boundary",
+        "module": "beyond_house",
         "label": "Work outside the site boundary; external hardstands",
         "kind": "technical",
         "value": "X",
@@ -3823,6 +4011,7 @@
         ]
       },
       {
+        "group": "Specialist and additional services",
         "key": "as_built",
         "label": "As-built or record drawings",
         "kind": "service_level",
@@ -3837,6 +4026,7 @@
         ]
       },
       {
+        "group": "Specialist and additional services",
         "key": "others_fees",
         "label": "Authority and other consultants' fees",
         "kind": "technical",
@@ -3851,6 +4041,7 @@
       },
       {
         "key": "existing_interfaces",
+        "group": "Brief and design coordination",
         "label": "Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces",
         "kind": "technical",
         "value": "I",
@@ -3864,6 +4055,7 @@
       },
       {
         "key": "live_staging",
+        "group": "Brief and design coordination",
         "label": "Staged access, temporary services and occupation inputs agreed with the operator",
         "kind": "technical",
         "value": "I",
@@ -3877,6 +4069,7 @@
       },
       {
         "key": "mixed_use_map",
+        "group": "Brief and design coordination",
         "label": "Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables",
         "kind": "technical",
         "value": "I",

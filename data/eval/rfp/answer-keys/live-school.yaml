@@ -38,6 +38,8 @@ expect:
     stages_include: [interiors]
     stages_absent: [regulated_design, brief_masterplan]
     positions: {live_staging: I, tenant_fitout: O, existing_interfaces: I}
+    blocking: ["fact:budget"]
     blocking_only: true
 sources:
+  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
   - "Same live-site module as the hospital; the rows are the operator interfaces, not hospital-specific requirements."

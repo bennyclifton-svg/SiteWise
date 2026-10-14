@@ -65,7 +65,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |---|---|---|---|---|
 | Concept — Included | Site inspection; review of existing information and brief gaps; up to 2 options; preferred concept; area schedule; check against budget |  |  |  |
 | Schematic design — Included | Preferred scheme resolved for planning and the cost plan; outline materials and systems; pre-application meeting where the pathway has one |  |  |  |
-| Planning approval — Included | Architectural drawings and input to the Statement of Environmental Effects: one preliminary and one final issue; lodged by others |  |  |  |
+| Planning approval — Included | Architectural drawings and input to the Statement of Environmental Effects: one preliminary and one final issue; who lodges is set in section 2 |  |  |  |
 | Planning response — Included | Authority information requests and design changes during assessment; actual time at R3 rates up to 20 hours. Fee ceiling: hours × R3 rate |  |  |  |
 | Design development — Included | Coordinated design to the approval and consent conditions; finishes and typical details; BCA strategy with the BCA consultant |  |  |  |
 | Interiors — Included | Interior layouts, finishes and joinery for the base building and common areas |  |  |  |
@@ -117,6 +117,7 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - Invoice monthly against stage progress; payment within 30 days, not dependent on any authority approval.
 - Your proposal stays valid for 90 days.
+- Send questions in writing to Project manager, pm@example.com by 2026-10-23.
 - Answers to scope questions go to every tenderer as numbered addenda.
 
 ### Returnable schedules: reply using this structure only
@@ -133,6 +134,8 @@ R9 Reimbursables: "Included in the fee" (preferred), or each item with its rate.
 ### Before issue — resolve or accept
 
 **Rules await owner review**: The architectural services rules are a draft. Drafting and editing work; issue stays blocked until the owner marks them reviewed.
+
+**Blocks issue — Construction budget not set**: This RFP prints the construction budget and firms price against it. Set it in Costs.
 
 **Blocks issue — Gross floor area: sources disagree (2135 vs 2895)**: Set the one figure every firm prices from.
 

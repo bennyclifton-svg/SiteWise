@@ -80,6 +80,7 @@ Price these quantities; identify insufficiency before engagement. Allowances nev
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - A: monthly itemised invoices, 30 days; no automatic final-report withholding. B: separate verified statutory payment milestones before issue/appointment. Agree advance-fee refunds/reconciliation.
 - Your proposal stays valid for 90 days.
+- Send questions in writing to Project manager, pm@example.com by 2026-10-23.
 - Answers to scope questions go to every tenderer as numbered addenda.
 - Disclose fee dependencies, escalation and liability/time-bar/indemnity/insurance/transfer departures. Maintain eligibility; notify conflicts/substitutions. Agree notice/cure, fee reconciliation, records/replacement and disputes under the agreement; required duties continue.
 - Client supplies inputs/safe access; report gaps and reliance limits without blanket waiver. Agree project-team/authority/operator use licence, editable registers/native outputs, confidentiality with statutory disclosure, retention and handover.

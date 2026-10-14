@@ -206,7 +206,7 @@ func (s *Store) CreatePackage(ctx context.Context, org, project, actor string, p
 	p.Origin, p.ReviewStatus, p.Meaning = "user", "accepted_for_planning", "stated"
 	p.SourceProposalKey, p.RetiredAt = "", nil
 	p.Provenance, _ = json.Marshal(map[string]string{"actor": actor})
-	_, err = tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,discipline_id,title,novation,lifecycle_status,origin,review_status,meaning,provenance) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),NULLIF($6,''),$7,$8,$9,'user','accepted_for_planning','stated',$10::jsonb)`, org, p.ID, project, p.Kind, p.WorksScope, p.DisciplineID, p.Title, p.NovationState(), p.LifecycleStatus, p.Provenance)
+	_, err = tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,works_scope,discipline_id,title,novation,lifecycle_status,origin,review_status,meaning,provenance,engaged_by) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,''),NULLIF($6,''),$7,$8,$9,'user','accepted_for_planning','stated',$10::jsonb,NULLIF($11,''))`, org, p.ID, project, p.Kind, p.WorksScope, p.DisciplineID, p.Title, p.NovationState(), p.LifecycleStatus, p.Provenance, p.EngagedBy)
 	if err != nil {
 		return p, err
 	}

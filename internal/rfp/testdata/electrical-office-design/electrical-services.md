@@ -82,6 +82,7 @@ Editable client defaults: 4 design meetings per appointed design stage, 1 consol
 - Pay 30 days from correct milestone invoices; R6 declares prepayment/release, interest/recovery/suspension.
 - State rate hold/escalation; preapprove extras/expenses; no duplicate fees.
 - Valid 90 days after closing; R1 separates tax/base/options.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue numbered addenda to all, acknowledged in R1.
 - Agree project copying/use/alteration/native-file/reliance/retention/handover rights; authorised/lawful disclosure allowed, marketing by consent.
 - Settle caps/indemnities, law/disputes, notices/cure/termination, assignment/novation/subcontracts; insurance is not a cap.

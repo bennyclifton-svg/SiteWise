@@ -81,6 +81,7 @@ Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate
 - Pay 30 days from correct milestone invoice; declare prepayment/release/interest/recovery/suspension in R6.
 - State rate hold/escalation; preapprove extras/expenses; no duplicate fees.
 - Valid 90 days after closing; ex GST/GST/total for base/options.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue numbered addenda to all invited consultants; acknowledge them with the fee proposal.
 - Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination handover; authorised/lawful disclosure allowed, marketing by consent.
 - Settle caps/indemnities/law/disputes/notices/cure/termination/suspension/novation/subcontracts; insurance not a cap; agree conflicts/staff changes.

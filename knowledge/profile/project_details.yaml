@@ -66,6 +66,24 @@ details:
       rating this project must achieve? Select none when absent, when it only names a tool or standard
       without a target, or when it describes a different project.
   - {key: regulated_design, label: Regulated design applies, value: yes_no, scope: project, help: "Record the professional advice or verified rule you relied on. The class alone does not decide it."}
+  # The budget a brief or report states, kept as its verbatim span. Money
+  # totals belong to the cost plan; this stands in for the RFP until the cost
+  # plan holds a budget (owner decision 1, 2026-10-13).
+  - key: budget_stated
+    label: Construction budget (as stated)
+    value: text
+    scope: project
+    help: "As a document states it. Set the budget in Costs; the cost plan's figure wins."
+    extraction: pre_parsed
+    triggers:
+      - '\bbudget\b'
+      - 'construction cost'
+      - 'cost of (?:the )?(?:works|construction|building)'
+      - 'cost (?:limit|cap|target)'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as the construction budget
+      or target construction cost for this project? Select none when absent, or when the candidate is a fee,
+      a contingency, an allowance for one item, a land or total development cost, or a cost of a different project.
 
 # Stored on the site record (internal/store/sites.go). A reading is shown
 # only until the user types a value there.

@@ -83,6 +83,7 @@ Separate quantity/duration by item, system and stage (not one pooled count). Fix
 - Payment 30 days from correct milestone invoices; R6 declares prepayment/release conditions, interest/recovery/suspension.
 - State rate hold/escalation; preapprove extras/expenses and no duplicated package fees.
 - Valid 90 days after closing; ex GST/GST/total, base/options separate.
+- Send questions in writing to Project manager by 2026-10-23.
 - Issue numbered addenda to all, acknowledged in R1.
 - Agree project distribution/operation/future-use rights, native files/reliance/retention/termination handover; authorised/lawful disclosure permitted, marketing by consent.
 - Settle caps/indemnity, law/disputes, notice/cure/suspension/termination, assignment/novation/subcontracts; insurance is not a cap. Declare conflicts/agree team changes.

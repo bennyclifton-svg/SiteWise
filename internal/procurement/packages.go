@@ -11,13 +11,15 @@ import (
 )
 
 type Package struct {
-	ID                string          `json:"id"`
-	ProjectID         string          `json:"project_id"`
-	Kind              string          `json:"kind"`
-	WorksScope        string          `json:"works_scope,omitempty"`
-	DisciplineID      string          `json:"discipline_id,omitempty"`
-	Title             string          `json:"title"`
-	Novation          string          `json:"novation"`
+	ID           string `json:"id"`
+	ProjectID    string `json:"project_id"`
+	Kind         string `json:"kind"`
+	WorksScope   string `json:"works_scope,omitempty"`
+	DisciplineID string `json:"discipline_id,omitempty"`
+	Title        string `json:"title"`
+	Novation     string `json:"novation"`
+	// EngagedBy is EngagedByClient, EngagedByLead or "" (not decided).
+	EngagedBy         string          `json:"engaged_by,omitempty"`
 	LifecycleStatus   string          `json:"lifecycle_status"`
 	Origin            string          `json:"origin"`
 	ReviewStatus      string          `json:"review_status"`
@@ -41,6 +43,13 @@ type Stage struct {
 	RetiredAt     *time.Time `json:"retired_at,omitempty"`
 	Version       int64      `json:"version"`
 }
+
+// Who engages a services package: the client directly, or the lead design
+// consultant as a subconsultant (owner decision, 13 October 2026).
+const (
+	EngagedByClient = "client"
+	EngagedByLead   = "lead_consultant"
+)
 
 // Novation is "no", "option" (the consultant prices the delivery phase and
 // the client may elect to novate later) or "yes" (the client has elected).
@@ -90,6 +99,14 @@ func ValidatePackage(p Package) error {
 	}
 	if p.Novated() && p.Kind != "services" {
 		return fmt.Errorf("only services packages can be novated")
+	}
+	switch p.EngagedBy {
+	case "", EngagedByClient, EngagedByLead:
+	default:
+		return fmt.Errorf("engaged_by must be client or lead_consultant")
+	}
+	if p.EngagedBy != "" && p.Kind != "services" {
+		return fmt.Errorf("only a consultant is engaged by the client or the lead consultant")
 	}
 	if !bounded(p.Title, 200) {
 		return fmt.Errorf("package title must contain 1–200 characters")

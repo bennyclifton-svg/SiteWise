@@ -136,7 +136,7 @@ New residential development lacks offsite extent, tree-impact and pruning eviden
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
+| architecture | Building class; Building over or next to a water authority asset; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
 | civil | Building class; Work to an existing building; Existing on-site detention to keep or modify; Novation; Procurement route; Site area; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling; Regulated design applies |
 | structural | Building class; Building over or next to a water authority asset; Work to an existing building; Existing on-site detention to keep or modify; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 | town-planning | Planning pathway; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
@@ -364,7 +364,7 @@ Remediation of an existing residential care building (Class 9c), DA, traditional
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
+| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
 | structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 
 ## existing-9c-repair-decided
@@ -373,7 +373,7 @@ As existing-3-9c-repair, after the user records professional advice that the reg
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
+| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
 
 ## fire-engineering-advisory-only
 
@@ -575,6 +575,22 @@ Missing appointment selections remain blocking questions, never exclusions or au
 |---|---|---|---|
 | geotechnical | Work type | — | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected |
 
+## house-cdc-new
+
+New two-storey detached house (Class 1a, 4 bedrooms, 250 m2 on 380 m2) under a CDC, traditional lump sum, next to a Sydney Water asset. The owner lodges the CDC; the architect engages the structural engineer; the client engages the surveyor and geotechnical engineer.
+
+| Discipline | From the profile or package | Set for this RFP | Unknown |
+|---|---|---|---|
+| architecture | Construction budget; Building class; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Work to an existing building; Heritage item or conservation area; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Green Star or NABERS target set; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | — |
+
+## house-cdc-unknowns
+
+The Custom Home 2 case: a new Class 1a house under a CDC with no source documents, no budget, no decision on who lodges, and consultant packages whose engagement is not yet decided.
+
+| Discipline | From the profile or package | Set for this RFP | Unknown |
+|---|---|---|---|
+| architecture | Building class; Building over or next to a water authority asset; Client wants the consultant to administer the construction contract; Work to an existing building; Heritage item or conservation area; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Architect lodges the planning application; Community consultation required; Connecting with Country input required; Site stays occupied or operating during the works; Green Star or NABERS target set |
+
 ## hydraulic-advice-only
 
 Capacity advice does not buy detailed design, upgrade, construction or witnessing.
@@ -717,7 +733,7 @@ Staged refurbishment of a ward in an operating hospital (Class 9a), DA, traditio
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Green Star or NABERS target set; Regulated design applies |
+| architecture | Building class; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Green Star or NABERS target set; Regulated design applies |
 
 ## live-school
 
@@ -725,7 +741,7 @@ Classroom extension at an operating school (Class 9b), DA, traditional.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Green Star or NABERS target set; Regulated design applies |
+| architecture | Building class; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Green Star or NABERS target set; Regulated design applies |
 
 ## mechanical-advice-only
 
@@ -797,7 +813,7 @@ New mixed-use building: apartments (Class 2) over retail (Class 6) and a car par
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
+| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
 | civil | Building class; Work to an existing building; Novation; Procurement route; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); Existing on-site detention to keep or modify; On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling; Regulated design applies; Site area |
 | structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 
@@ -815,7 +831,7 @@ Office building (Class 5), DA. The client buys design only to planning approval;
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
+| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
 | structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 
 ## ref-town-planning
@@ -832,8 +848,8 @@ Rear extension to a detached house (Class 1a) under a CDC, traditional contract.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
-| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
+| architecture | Construction budget; Building class; Architect lodges the planning application; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
+| structural | Construction budget; Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 
 ## survey-advice-only
 
@@ -913,7 +929,7 @@ Early project with no pathway, no procurement route, no class on the building pa
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Work to an existing building; Work type | — | Construction budget; Building class; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Green Star or NABERS target set; Novation; Planning pathway; Procurement route; Regulated design applies; State |
+| architecture | Work to an existing building; Work type | — | Construction budget; Building class; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Green Star or NABERS target set; Novation; Planning pathway; Procurement route; Regulated design applies; State |
 | town-planning | Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel; Planning pathway |
 
 ## warehouse-dnc-no-novation
@@ -922,7 +938,7 @@ New warehouse (Class 7b), DA, design and construct without novation.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
+| architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
 | civil | Building class; Work to an existing building; Novation; Procurement route; Site area; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); Existing on-site detention to keep or modify; On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling; Regulated design applies |
 | structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 
@@ -1004,6 +1020,6 @@ Camp Yarramundi stage 1 redevelopment (Hawkesbury, 21.6 ha): masterplan plus new
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| architecture | Building class; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Green Star or NABERS target set |
+| architecture | Building class; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Green Star or NABERS target set |
 | civil | Building class; Work to an existing building; Flood-affected site; Drinking water catchment (neutral or beneficial effect); Works in a public road or intersection; Novation; Procurement route; Regulated design applies; Site area; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Groundwater above the base of excavation; Existing on-site detention to keep or modify; On-site detention required by council; Council requires stormwater quality modelling |
 

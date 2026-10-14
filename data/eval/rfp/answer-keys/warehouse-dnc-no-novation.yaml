@@ -19,9 +19,9 @@ parts:
   - {id: warehouse, label: Warehouse, classes: [7b]}
 address: "1 Logistics Way, Example NSW"
 consultants:
-  - {title: Architect, status: to be appointed}
-  - {title: Structural, status: to be appointed}
-  - {title: Civil, status: to be appointed}
+  - {title: Architect, status: to be appointed, engaged_by: client}
+  - {title: Structural, status: to be appointed, engaged_by: client}
+  - {title: Civil, status: to be appointed, engaged_by: client}
 fields:
   ref: RFP-TEST
   issued: "2026-10-12"
@@ -47,6 +47,7 @@ expect:
     positions: {dnc_performance_brief: I, existing_interfaces: absent}
     role: [lead, dnc_handover]
     role_absent: [novation]
+    blocking: ["fact:budget"]
     blocking_only: true
   civil:
     stages_include: [schematic, dnc_tender]
@@ -60,4 +61,5 @@ expect:
     party: {specialist_element_design: "specialist contractor"}
     blocking_only: true
 sources:
+  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
   - "Peer review scenario: D&C without novation gets a client-side tender and performance brief; contractor completion is not sold as client consultant scope."

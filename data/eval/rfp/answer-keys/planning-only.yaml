@@ -18,7 +18,7 @@ parts:
   - {id: office, label: Office, classes: ["5"]}
 address: "5 Example St, Example NSW"
 consultants:
-  - {title: Structural, status: to be appointed}
+  - {title: Structural, status: to be appointed, engaged_by: client}
 fields:
   ref: RFP-TEST
   issued: "2026-10-12"
@@ -42,10 +42,12 @@ expect:
     stages_include: [concept, schematic, planning_approval, planning_response]
     stages_option: [design_development, interiors, tender_traditional, bidding, for_construction, construction_support]
     stages_absent: [dnc_tender, brief_masterplan]
+    blocking: ["fact:budget"]
     blocking_only: true
   structural:
     stages_include: [concept_schematic, planning_approval]
     stages_option: [design_development, tender_traditional, construction_documents, construction_phase]
     blocking_only: true
 sources:
+  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
   - "Peer review scenario: a planning-only appointment never acquires design development or construction documentation as included scope."

@@ -193,6 +193,7 @@
 .suggested-tag { margin-left: 8px; padding: 0 6px; border: 1px dashed var(--azure); border-radius: 999px; font-size: 11px; font-weight: 500; line-height: 16px; color: var(--azure); }
 .row-suggested th, .row-suggested td { color: var(--ink-muted); }
 .row-suggested .discipline-cell { background-image: linear-gradient(var(--azure) 50%, transparent 50%); background-size: 2px 6px; background-repeat: repeat-y; font-weight: 500; }
+.engaged-cell select { height: 26px; padding: 0 6px; font: inherit; font-size: 12.5px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .firm-cell input { width: 9rem; height: 26px; padding: 0 8px; font: inherit; font-size: 12.5px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .firm-cell input:disabled { cursor: not-allowed; background: var(--canvas); color: var(--ink-muted); }
 .firm-cell input:disabled::placeholder { color: var(--ink-muted); opacity: .7; }

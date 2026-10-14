@@ -19,13 +19,17 @@ const staleNames: Record<string,string> = { not_assembled: "Draft not yet assemb
 
 export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: string; tick: number; onBack: () => void; onSignedOut: () => void }) {
   const [issueDate, setIssueDate] = useState(localDate);
-  const [discloseBudget, setDiscloseBudget] = useState(false);
+  // null until the user ticks or clears it: a consultant RFP prints the
+  // budget by default (owner decision, 13 October 2026); a tender to
+  // contractors and the PMP do not.
+  const [discloseChoice, setDiscloseBudget] = useState<boolean | null>(null);
   const [acceptStale, setAcceptStale] = useState(false);
   const [staleReason, setStaleReason] = useState("");
   const [issuing, setIssuing] = useState(false);
   const [issueVersion, setIssueVersion] = useState(0);
-  useEffect(() => { setIssuing(false); setIssueVersion(0); setIssueDate(localDate()); setDiscloseBudget(false); setAcceptStale(false); setStaleReason(""); }, [reportId]);
+  useEffect(() => { setIssuing(false); setIssueVersion(0); setIssueDate(localDate()); setDiscloseBudget(null); setAcceptStale(false); setStaleReason(""); }, [reportId]);
   const [view, setView] = useState<ReportView | null>(null);
+  const discloseBudget = () => discloseChoice ?? view?.report.kind === "rfp";
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [editor, setEditor] = useState<{ target: string; text: string; version: number } | null>(null);
@@ -143,7 +147,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
   async function issue(version = issueVersion) {
     if (!view?.draft) return;
     setBusy(true); setError("");
-    try { await reportApi.issue(reportId, { version, reporting_date: view.rfp ? String(view.rfp.groups.find(g => g.id === "issue")?.controls.find(c => c.key === "field:issued")?.value ?? "") : issueDate, budget_disclosed: discloseBudget, accept_stale: acceptStale, stale_reason: staleReason }); setIssuing(false); setAcceptStale(false); setStaleReason(""); setReload(n => n + 1); }
+    try { await reportApi.issue(reportId, { version, reporting_date: view.rfp ? String(view.rfp.groups.find(g => g.id === "issue")?.controls.find(c => c.key === "field:issued")?.value ?? "") : issueDate, budget_disclosed: discloseBudget(), accept_stale: acceptStale, stale_reason: staleReason }); setIssuing(false); setAcceptStale(false); setStaleReason(""); setReload(n => n + 1); }
     catch (e) { fail(e); } finally { setBusy(false); }
   }
   const latestBlock = latest?.draft?.sections.flatMap(section => section.blocks).find(block => block.id === editor?.target);
@@ -165,7 +169,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
     {!view.rfp && <h3>Issue saved report</h3>}
     <p>Issuing freezes the wording, sources and PDF. Later changes belong to a new draft.</p>
     {!view.rfp && <><label htmlFor="issue-date">Reporting date</label><input id="issue-date" type="date" required value={issueDate} onChange={e => setIssueDate(e.target.value)} disabled={busy} /></>}
-    {view.report.kind !== "pmp" && <label><input type="checkbox" checked={discloseBudget} onChange={e => setDiscloseBudget(e.target.checked)} disabled={busy} /> Include internal budget amounts in this external report</label>}
+    {view.report.kind !== "pmp" && <label><input type="checkbox" checked={discloseBudget()} onChange={e => setDiscloseBudget(e.target.checked)} disabled={busy} /> Include internal budget amounts in this external report</label>}
     {!!view.stale.length && <><label><input type="checkbox" checked={acceptStale} onChange={e => setAcceptStale(e.target.checked)} disabled={busy} /> Issue the saved state despite changed or incomplete sources</label>{acceptStale && <><label htmlFor="issue-reason">Reason for using saved state</label><textarea id="issue-reason" required maxLength={1000} value={staleReason} onChange={e => setStaleReason(e.target.value)} disabled={busy} /></>}</>}
     {version !== draft.version && <p role="alert">The draft changed while this issue form was open. Cancel and reopen it to review the current version.</p>}
     <button className="btn" disabled={busy || blocked || version !== draft.version || (!!view.stale.length && (!acceptStale || !staleReason.trim()))}>{view.rfp ? "Issue report" : "Freeze and issue PDF"}</button>

@@ -1,0 +1,88 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: house-cdc-new
+snapshot: true
+description: "New two-storey detached house (Class 1a, 4 bedrooms, 250 m2 on 380 m2) under a CDC, traditional lump sum, next to a Sydney Water asset. The owner lodges the CDC; the architect engages the structural engineer; the client engages the surveyor and geotechnical engineer."
+facts:
+  work_type: new
+  category: residential
+  pathway: cdc
+  procurement: traditional
+  novation: "no"
+  state: NSW
+  regulated_design: "no"
+  site_area: "380"
+  gfa: "250"
+  storeys: "2"
+  bedrooms: "4"
+  parking: "1"
+  budget: "1800000"
+flags:
+  authority_asset: "yes"
+  heritage: "no"
+  staged: "no"
+  multi_building: "no"
+  community: "no"
+  country: "no"
+  sustainability_target: "no"
+  contract_admin: "no"
+  live_operations: "no"
+  architect_lodges: "no"
+parts:
+  - {id: house, label: Whole project, kind: whole, classes: [1a], gfa: "250"}
+address: "357 Catherine Street Lilyfield NSW 2040"
+consultants:
+  - {title: Architect, status: to be appointed, engaged_by: client}
+  - {title: Structural, status: to be appointed, engaged_by: lead_consultant}
+  - {title: Surveyor, status: to be appointed, engaged_by: client}
+  - {title: Geotechnical, status: to be appointed, engaged_by: client}
+fields:
+  issued: "2026-10-20"
+  closes: "2026-11-07"
+  agreement: "AIA Client and Architect Agreement (attached)"
+  client: Example Owner
+  lga: Inner West
+settings:
+  architecture:
+    "allowance:client_presentations": "2"
+    "allowance:ca_inspections": "6"
+expect:
+  architecture:
+    stages_include: [concept, schematic, planning_approval, design_development, house_documents]
+    stages_option: [bidding, construction_support]
+    stages_absent: [brief_masterplan, planning_response, interiors, tender_traditional, for_construction, dnc_tender, regulated_design, contract_admin, post_novation]
+    positions:
+      house_interiors: I
+      house_selections: I
+      specification: I
+      lodgement: X
+      water_asset: O
+      coordination: I
+      tenant_fitout: absent
+      signage: absent
+      facade_certification: absent
+      performance_solutions: absent
+      outside_boundary: absent
+      bim_model: absent
+      bim_coordination: absent
+      typical_interiors: absent
+      finishes_schedules: absent
+      base_interiors: absent
+      existing_interfaces: absent
+      mixed_use_map: absent
+      apartment_design: absent
+    party: {lodgement: client}
+    allowances_present: [design_meetings, concept_options, client_presentations, drawing_sheets, bidding_cap, ca_inspections]
+    allowances_absent: [bim_lod, qs_reviews, workshops, planning_cap]
+    scale: simple
+    role: [lead]
+    blocking_only: true
+    no_checks: ["unallocated:signage", "unallocated:facade_certification", "unallocated:performance_solutions", "unallocated:outside_boundary", "engagement", "fact:budget", "scale"]
+sources:
+  - "Owner critique of the Custom Home 2 architect RFP, 13 October 2026 (docs/plans/2026-10-13-house-rfp-brief.md): commercial rows leave a house RFP and the unallocated façade, signage, performance-solution and civil checks go with them."
+  - "Owner decision 4 (13 October 2026): a Class 1 house gets one documentation set for tender and construction, so tender_traditional and for_construction give way to house_documents, which the base fee includes."
+  - "Owner decision 5: who lodges is a question; here the owner lodges, so lodgement is excluded and the client does it."
+  - "Golden specification (Newham on York builder's project specification) is produced by the architect at the end of design: kitchen, bathroom and joinery design, the finishes and fixtures schedule and the specification are included for a house."
+  - "The Sydney Water asset flag prices the building-plan approval as an option; who prepares it varies."

@@ -45,6 +45,23 @@ type Consultant struct {
 	Title        string `json:"title"`
 	DisciplineID string `json:"discipline_id,omitempty"`
 	Status       string `json:"status"` // appointed | to be appointed
+	// EngagedBy is client, lead_consultant or "" (not decided).
+	EngagedBy string `json:"engaged_by,omitempty" yaml:"engaged_by"`
+}
+
+// Who engages a consultant (owner decision 3, 13 October 2026).
+const (
+	EngagedByClient = procurement.EngagedByClient
+	EngagedByLead   = procurement.EngagedByLead
+)
+
+// qualityLabels mirror the quality_level condition in
+// knowledge/profile/taxonomy.yaml (TestQualityLabelsMatchTaxonomy).
+var qualityLabels = map[string]string{
+	"project_home": "Project or volume home (builder's standard range)",
+	"mid":          "Mid-range custom home",
+	"high":         "High-end custom home",
+	"prestige":     "Prestige home",
 }
 
 // DriverSet is read once at refresh and frozen in the draft, so a setting
@@ -115,13 +132,19 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	choice("procurement", "hdr.cond.procurement_route")
 	choice("state", "det.state")
 	choice("regulated_design", knowledge.DetailPrefix+"regulated_design")
-	for fact, key := range map[string]string{"site_area": "hdr.scale.site_sqm", "storeys": "hdr.scale.storeys", "parking": "hdr.scale.car_parks"} {
-		if v, ok := value(key); ok {
-			if _, err := strconv.ParseFloat(v, 64); err == nil {
-				d.Facts[fact] = known("profile", v)
+	// A house counts garage spaces where other buildings count car parks.
+	for fact, keys := range map[string][]string{"site_area": {"hdr.scale.site_sqm"}, "storeys": {"hdr.scale.storeys"}, "parking": {"hdr.scale.car_parks", "hdr.scale.garage_spaces"},
+		"bedrooms": {"hdr.scale.bedrooms"}, "bathrooms": {"hdr.scale.bathrooms"}} {
+		for _, key := range keys {
+			if v, ok := value(key); ok {
+				if _, err := strconv.ParseFloat(v, 64); err == nil {
+					d.Facts[fact] = known("profile", v)
+					break
+				}
 			}
 		}
 	}
+	choice("quality", "hdr.cond.quality_level")
 	for _, key := range []string{"hdr.scale.total_gfa_sqm", "hdr.scale.gfa_sqm"} {
 		if v, ok := value(key); ok {
 			if _, err := strconv.ParseFloat(v, 64); err == nil {
@@ -131,8 +154,12 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 		}
 	}
 	if s.ConstructionBudget != "" {
-		d.Facts["budget"] = known("cost_plan", s.ConstructionBudget)
 		d.Facts["budget"] = Fact{Values: []string{s.ConstructionBudget}, State: Known, Source: "cost_plan", Detail: s.BudgetBasis}
+	} else if v, ok := value(knowledge.DetailPrefix + "budget_stated"); ok {
+		// A budget a document states stands in until the cost plan holds one.
+		if n, ok := parseMoney(v); ok {
+			d.Facts["budget"] = Fact{Values: []string{n}, State: Known, Source: "profile", Detail: statedBasis(v)}
+		}
 	}
 	if s.Package.ID != "" {
 		d.Facts["novation"] = known("package", s.Package.NovationState())
@@ -140,6 +167,7 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	d.Parts = parts(s, byPart, whole)
 	d.Consultants = consultants(s)
 	d.Documents = len(s.Documents)
+	d.Text["register"] = registerSummary(s.Documents)
 	readFlags(d.Facts, value)
 	// A flag stored as a project detail is the user's word; it replaces
 	// any reading of the same flag rather than disagreeing with it.
@@ -333,7 +361,7 @@ func consultants(s reports.Snapshot) []Consultant {
 		if status == "" {
 			continue
 		}
-		out = append(out, Consultant{PackageID: p.ID, Title: p.Title, DisciplineID: p.DisciplineID, Status: status})
+		out = append(out, Consultant{PackageID: p.ID, Title: p.Title, DisciplineID: p.DisciplineID, Status: status, EngagedBy: p.EngagedBy})
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Title < out[j].Title })
 	return out

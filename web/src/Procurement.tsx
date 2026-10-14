@@ -8,7 +8,7 @@ import { api, ApiError, type Option } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
 import { PackageScope } from "./PackageScope";
-import { packageApi, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
+import { packageApi, type EngagedBy, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
 import { procurementApi } from "./procurementApi";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
@@ -114,6 +114,13 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     try { await procurementApi.dismiss(projectId, row.proposalKey!); setReload(n => n + 1); }
     catch (e) { fail(e, "create"); } finally { setBusyRow(""); }
   }
+  // Who engages a consultant decides whether its fee sits in the lead
+  // consultant's price; the architect RFP asks until every row answers.
+  async function engage(pkg: PackageRecord, value: EngagedBy | "") {
+    setBusyRow(pkg.id); setError("");
+    try { await packageApi.engagedBy(projectId, pkg.id, pkg.version, value); setReload(n => n + 1); }
+    catch (e) { if (e instanceof ApiError && e.status === 409) { setError("This package changed. The table has been refreshed."); setReload(n => n + 1); return; } fail(e); } finally { setBusyRow(""); }
+  }
   async function createPmp() {
     setBusyRow("pmp"); setError("");
     try { const report = await reportApi.create(projectId, "", "pmp"); setView({ at: "report", id: report.id }); }
@@ -156,6 +163,12 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
       <th scope="row" className="discipline-cell">
         {row.label}{!row.pkg && <span className="suggested-tag">suggested</span>}
       </th>
+      <td className="engaged-cell">{row.kind !== "services" || !row.pkg || row.pkg.discipline_id === "consultant.architect" ? "—"
+        : <select aria-label={`Who engages ${row.label}`} value={row.pkg.engaged_by ?? ""} disabled={busy} onChange={e => void engage(row.pkg!, e.target.value as EngagedBy | "")}>
+          <option value="">Not decided</option>
+          <option value="client">Client</option>
+          <option value="lead_consultant">Lead consultant</option>
+        </select>}</td>
       {[1, 2, 3].map(n => <td key={n} className="firm-cell"><input disabled placeholder="Add firm" aria-label={`Firm ${n} for ${row.label}`} title="Firms come later" /></td>)}
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
@@ -176,7 +189,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     </tr>;
   }
   const group = (title: string, list: Row[]) => list.length > 0 && <tbody>
-    <tr className="group-row"><th colSpan={7} scope="rowgroup">{title}</th></tr>
+    <tr className="group-row"><th colSpan={8} scope="rowgroup">{title}</th></tr>
     {list.map(rowView)}
   </tbody>;
 
@@ -196,10 +209,10 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
       : <>{gapItems} work item{gapItems === 1 ? " has" : "s have"} a gap: {gaps.map(g => `${workTitle(g.work_item_id)} (${g.state === "overlap" ? `two packages hold ${words(g.role ?? "")}` : gapWords[g.role ?? ""] ?? words(g.role ?? "")})`).join(", ")}</>}</p>}
     {!data ? !error && <p role="status">Loading procurement…</p> : <div className="procurement-scroll">
       <table className="procurement-table">
-        <thead><tr><th scope="col">Discipline</th><th scope="col">Firm 1</th><th scope="col">Firm 2</th><th scope="col">Firm 3</th><th scope="col">RFP / RFT</th><th scope="col">Comparison</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
+        <thead><tr><th scope="col">Discipline</th><th scope="col" title="The client engages the consultant directly, or the lead design consultant engages it as a subconsultant and includes its fee">Engaged by</th><th scope="col">Firm 1</th><th scope="col">Firm 2</th><th scope="col">Firm 3</th><th scope="col">RFP / RFT</th><th scope="col">Comparison</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
         {group("Consultants", consultants)}
         {group("Trades", trades)}
-        {draft !== null && <tbody><tr className="draft-row"><td colSpan={7}>
+        {draft !== null && <tbody><tr className="draft-row"><td colSpan={8}>
           <form className="draft-form" onSubmit={e => { e.preventDefault(); void addRow(); }}>
             <select aria-label="Discipline" value={draft} disabled={busyRow === "draft"} onChange={e => setDraft(e.target.value)} autoFocus>
               <option value="">Choose a discipline</option>
@@ -210,7 +223,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
             <button type="button" className="table-action" disabled={busyRow === "draft"} onClick={() => setDraft(null)}>Cancel</button>
           </form>
         </td></tr></tbody>}
-        {!rows.length && draft === null && <tbody><tr><td colSpan={7} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
+        {!rows.length && draft === null && <tbody><tr><td colSpan={8} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
       </table>
     </div>}
     {data && <p className="procurement-line procurement-pmp">Project management plan:{" "}

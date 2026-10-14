@@ -229,6 +229,12 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 			terms.Controls = append(terms.Controls, field(f))
 		case "issue":
 			{
+				// The contact and questions date print one optional line in
+				// Terms, so their controls sit there.
+				if f.Key == "contact" || f.Key == "questions_by" {
+					terms.Controls = append(terms.Controls, field(f))
+					continue
+				}
 				if !proposalDateField(f.Key) {
 					continue
 				}
@@ -274,9 +280,23 @@ func sourceOf(f Fact) string {
 // only the flags and facts that can change this RFP.
 func usedDrivers(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton) map[string]bool {
 	used := map[string]bool{}
-	visit := func(w knowledge.RFPWhen) {
+	var visit func(w knowledge.RFPWhen)
+	visit = func(w knowledge.RFPWhen) {
 		for _, clause := range w {
 			for key, values := range clause {
+				if key == "module" {
+					// A module condition reads the facts that switch the module.
+					for _, m := range sk.Modules {
+						if contains(values, m.Key) {
+							visit(m.When)
+						}
+					}
+					continue
+				}
+				if key == "only_class" {
+					used["class"] = true
+					continue
+				}
 				if key == "flag" {
 					for _, v := range values {
 						used["flag."+v] = true

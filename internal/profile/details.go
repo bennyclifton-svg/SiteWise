@@ -46,6 +46,10 @@ var (
 	zoneCode = `(?:R[1-5]|B[1-8]|E[1-5]|MU1|IN[1-4]|SP[1-3]|RE[12]|RU[1-6]|SU[1-2]|W[1-4]|C[1-4])`
 	zoneRe   = regexp.MustCompile(`\b(` + zoneCode + `)\b((?:\s+(?:[A-Z][a-z]+|and|&)){0,3})`)
 
+	// An amount with its unit and any GST basis, so the stored span carries
+	// both: "$1.8 million excluding GST".
+	moneyRe = regexp.MustCompile(`(?i)(?:\$|\bAUD\s*)\s*\d[\d,]*(?:\.\d+)?(?:\s*(?:million|m|k)\b)?(?:\s*\(?(?:excl(?:uding|\.)?|ex\.?|incl(?:uding|\.)?|inc\.?)\s*(?:of\s+)?GST\)?)?`)
+
 	sustainRe = regexp.MustCompile(`(?i)\b(?:\d(?:\.\d)?\s*[- ]?star\s+)?(?:Green\s+Star|NABERS|NatHERS|Passive\s*Haus|Passive\s*House|LEED|Net[- ]Zero)\b[^.;\n]{0,60}`)
 )
 
@@ -75,6 +79,8 @@ func detailCandidates(key, text string) []Candidate {
 		return zoneCandidates(text)
 	case "proj.sustainability":
 		return sustainabilityCandidates(text)
+	case "proj.budget_stated":
+		return budgetCandidates(text)
 	}
 	return nil
 }
@@ -300,6 +306,16 @@ func sustainabilityCandidates(text string) []Candidate {
 		}
 		name := strings.TrimRight(text[m[0]:end], " ,:;")
 		spans = append(spans, span{m[0], m[0] + len(name), name})
+	}
+	return collect(text, spans)
+}
+
+// budgetCandidates lists every dollar amount; Jev picks the one the passage
+// states as the construction budget, or none. Code parses the amount later.
+func budgetCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range moneyRe.FindAllStringIndex(text, -1) {
+		spans = append(spans, span{m[0], m[1], strings.TrimSpace(text[m[0]:m[1]])})
 	}
 	return collect(text, spans)
 }

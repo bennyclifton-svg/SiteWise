@@ -1,0 +1,49 @@
+# Draft answer key. Unreviewed: only the owner sets reviewed: true.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+scenario: house-cdc-unknowns
+description: "The Custom Home 2 case: a new Class 1a house under a CDC with no source documents, no budget, no decision on who lodges, and consultant packages whose engagement is not yet decided."
+facts:
+  work_type: new
+  category: residential
+  pathway: cdc
+  procurement: traditional
+  novation: "no"
+  state: NSW
+  regulated_design: "no"
+  site_area: "380"
+  gfa: "250"
+flags:
+  authority_asset: "yes"
+  heritage: "no"
+  staged: "no"
+  multi_building: "no"
+  contract_admin: "no"
+parts:
+  - {id: house, label: Whole project, kind: whole, classes: [1a], gfa: "250"}
+address: "357 Catherine Street Lilyfield NSW 2040"
+consultants:
+  - {title: Architect, status: to be appointed}
+  - {title: Hydraulic, status: to be appointed}
+  - {title: Structural, status: to be appointed, engaged_by: client}
+fields:
+  issued: "2026-10-20"
+  closes: "2026-11-07"
+  agreement: "AIA Client and Architect Agreement (attached)"
+  client: Example Owner
+settings:
+  architecture:
+    "allowance:client_presentations": "2"
+expect:
+  architecture:
+    stages_include: [concept, schematic, planning_approval, design_development, house_documents]
+    stages_absent: [tender_traditional, for_construction, interiors]
+    positions: {lodgement: ask, house_interiors: I, specification: I, signage: absent, tenant_fitout: absent}
+    blocking: ["fact:flag.architect_lodges", "fact:budget", "engagement"]
+    blocking_only: true
+    no_checks: ["unallocated:signage", "unallocated:facade_certification"]
+sources:
+  - "Owner decision 1 (13 October 2026): the architect RFP prints the construction budget, so a missing budget blocks issue."
+  - "Owner decision 3: who engages each consultant is a question; an undecided live package blocks issue, once, naming every undecided package."
+  - "Owner decision 5: who lodges the planning application is a question; unknown blocks issue."
