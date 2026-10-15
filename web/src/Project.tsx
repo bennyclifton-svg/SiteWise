@@ -21,8 +21,9 @@ import { Profile } from "./Profile";
 import { Register } from "./Register";
 import { Procurement } from "./Procurement";
 import { Delivery } from "./Delivery";
-import { Costs, CostSummary } from "./Costs";
+import { Costs } from "./Costs";
 import { Implications } from "./Implications";
+import { SpecificationSchedule as Specifications } from "./SpecificationSchedule";
 import { ocrStage } from "./OCRStatus";
 
 const STALE_MS = 8000;
@@ -234,7 +235,9 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [proposalsOpened, setProposalsOpened] = useState(false);
   const [showDelivery, setShowDelivery] = useState(false);
   const [showCosts, setShowCosts] = useState(false);
-  const [profileView, setProfileView] = useState<"all" | "summary" | "systems">("all");
+  const [showSpecifications, setShowSpecifications] = useState(false);
+  const [specificationsOpened, setSpecificationsOpened] = useState(false);
+  const [specificationTick, setSpecificationTick] = useState(0);
   const [costsOpened, setCostsOpened] = useState(false);
   const [deliveryOpened, setDeliveryOpened] = useState(false);
   const [reportsOpened, setReportsOpened] = useState(false);
@@ -301,6 +304,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
           const ev = JSON.parse((msg as MessageEvent<string>).data) as StreamEvent;
           if (ev.id <= lastId.current) return;
           lastId.current = ev.id;
+          if (ev.kind === "specification") {
+            if (ev.payload?.project_id === projectId) setSpecificationTick(n => n + 1);
+            return;
+          }
 		  if (ev.kind === "report" || ev.kind === "works" || ev.kind === "packages" || ev.kind === "delivery" || ev.kind === "costs") {
 		    if (ev.payload?.project_id === projectId) setReportTick(n => n + 1);
 		    return;
@@ -540,21 +547,29 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     [state, now, flash],
   );
 
-  const view: WorkbenchView = showCosts
-    ? "costs"
-    : showReports
-      ? "procurement"
-      : showDelivery
-        ? "delivery"
-        : showProposals
-          ? "implications"
-          : profileView === "summary"
-            ? "summary"
-            : profileView === "systems"
-              ? "systems"
-              : "profile";
+  const view: WorkbenchView = showSpecifications
+    ? "specifications"
+    : showCosts
+      ? "costs"
+      : showReports
+        ? "procurement"
+        : showDelivery
+          ? "delivery"
+          : showProposals
+            ? "implications"
+            : "profile";
 
   const showView = (next: WorkbenchView) => {
+    if (next === "specifications") {
+      setSpecificationsOpened(true);
+      setShowSpecifications(true);
+      setShowCosts(false);
+      setShowProposals(false);
+      setShowDelivery(false);
+      setShowReports(false);
+      return;
+    }
+    setShowSpecifications(false);
     if (next === "implications") {
       setShowCosts(false);
       setProposalsOpened(true);
@@ -591,7 +606,6 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     setShowReports(false);
     setShowDelivery(false);
     setShowProposals(false);
-    setProfileView(next === "profile" ? "all" : next);
   };
 
   const nav = (
@@ -656,17 +670,18 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
+      wideWorkspace={showSpecifications}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <section className={`profile-col ${profileView !== "all" ? "profile-focused" : ""}`} aria-label="Project profile" hidden={showReports || showDelivery || showProposals || showCosts}>
-        {profileView === "summary" && <CostSummary projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} />}
-        <Profile view={profileView} projectId={projectId} tick={profileTick} workTick={reportTick} onJump={id => { setProfileView("all"); jump(id); }} onSignedOut={onSignedOut} onShowNotRead={() => { setProfileView("all"); setNotReadOnly(true); }} onIdentity={setAddress} />
+      <section className="profile-col" aria-label="Project profile" hidden={showSpecifications || showReports || showDelivery || showProposals || showCosts}>
+        <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} />
       </section>
       {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Implications projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} /></div>}
       <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>

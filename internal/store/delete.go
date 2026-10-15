@@ -3,6 +3,9 @@ package store
 import (
 	"context"
 	"encoding/json"
+	"errors"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // DeleteResult is what a deletion removed. Unreferenced holds the content
@@ -98,6 +101,93 @@ RETURNING f.sha256`, orgID, projectID, fileIDs)
 		}
 	}
 	return res, s.finishProfileWrite(ctx, tx, orgID, projectID)
+}
+
+// DeleteProject permanently removes one project and everything that belongs
+// to it: documents, files, profile, cost plan (including a frozen baseline),
+// procurement, delivery, specifications (including an issue and its history),
+// reports (including an issued version) and the project's events. Version 1
+// gives each project its own site, so the site and its parts go too when no
+// project still uses them. Bytes shared with another project stay. Frozen
+// and issued rows stay immutable outside this transaction.
+func (s *Store) DeleteProject(ctx context.Context, orgID, projectID string) (DeleteResult, error) {
+	var res DeleteResult
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return res, err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1 || '/' || $2, 0))`, orgID, projectID); err != nil {
+		return res, err
+	}
+	var siteID string
+	err = tx.QueryRow(ctx, `
+SELECT site_id::text FROM projects WHERE org_id = $1::uuid AND id = $2::uuid FOR UPDATE`, orgID, projectID).Scan(&siteID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return res, ErrNotFound
+	}
+	if err != nil {
+		return res, err
+	}
+	// The immutability triggers allow this transaction to remove frozen and
+	// issued rows. The setting is local, so it ends with the transaction.
+	if _, err := tx.Exec(ctx, `SELECT set_config('sitewise.deleting_project', '1', true)`); err != nil {
+		return res, err
+	}
+	rows, err := tx.Query(ctx, `SELECT sha256 FROM files WHERE org_id = $1::uuid AND project_id = $2::uuid`, orgID, projectID)
+	if err != nil {
+		return res, err
+	}
+	for rows.Next() {
+		var sum []byte
+		if err := rows.Scan(&sum); err != nil {
+			rows.Close()
+			return res, err
+		}
+		res.Unreferenced = append(res.Unreferenced, sum)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return res, err
+	}
+	// Cost rows reference the project without ON DELETE CASCADE, and a frozen
+	// baseline refuses an ordinary delete. They go before the project row.
+	for _, q := range []string{
+		`DELETE FROM scope_cost_links WHERE org_id = $1::uuid AND project_id = $2::uuid`,
+		`DELETE FROM cost_values WHERE org_id = $1::uuid AND project_id = $2::uuid`,
+		`DELETE FROM cost_item_revisions WHERE org_id = $1::uuid AND project_id = $2::uuid`,
+		`DELETE FROM cost_items WHERE org_id = $1::uuid AND project_id = $2::uuid`,
+		`DELETE FROM cost_plans WHERE org_id = $1::uuid AND project_id = $2::uuid`,
+		`DELETE FROM cost_plan_versions WHERE org_id = $1::uuid AND project_id = $2::uuid`,
+	} {
+		if _, err := tx.Exec(ctx, q, orgID, projectID); err != nil {
+			return res, err
+		}
+	}
+	if _, err := tx.Exec(ctx, `
+DELETE FROM events e
+WHERE e.org_id = $1::uuid
+  AND (
+    e.document_id IN (SELECT d.id FROM documents d WHERE d.org_id = e.org_id AND d.project_id = $2::uuid)
+    OR (left(e.payload, 1) = '{' AND e.payload::jsonb->>'project_id' = $2::text)
+  )`, orgID, projectID); err != nil {
+		return res, err
+	}
+	tag, err := tx.Exec(ctx, `DELETE FROM projects WHERE org_id = $1::uuid AND id = $2::uuid`, orgID, projectID)
+	if err != nil {
+		return res, err
+	}
+	if tag.RowsAffected() != 1 {
+		return res, ErrNotFound
+	}
+	if _, err := tx.Exec(ctx, `
+DELETE FROM sites s
+WHERE s.org_id = $1::uuid AND s.id = $2::uuid
+  AND NOT EXISTS (SELECT 1 FROM projects p WHERE p.org_id = s.org_id AND p.site_id = s.id)`, orgID, siteID); err != nil {
+		return res, err
+	}
+	res.Deleted = []string{projectID}
+	return res, tx.Commit(ctx)
 }
 
 // BlobReferenced reports whether any file row in any org has this content

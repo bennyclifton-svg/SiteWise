@@ -41,6 +41,7 @@ const (
 	pathPackageScopeRead  = "package_scope_read"
 	pathPackageScopeWrite = "package_scope_write"
 	pathDocumentDelete    = "document_delete"
+	pathProjectDelete     = "project_delete"
 )
 
 // speedWindow is how many recent observations each path keeps. The speed

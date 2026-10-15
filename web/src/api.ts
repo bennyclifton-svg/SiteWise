@@ -105,6 +105,8 @@ export const api = {
   signIn: (token: string) => request<void>("POST", "/session", { token }),
   projects: () => request<Project[]>("GET", "/projects"),
   createProject: (name: string) => request<{ id: string }>("POST", "/projects", { name }),
+  /** Permanent. Removes the project, its rows and its files. */
+  deleteProject: (id: string) => request<void>("DELETE", `/projects/${id}`),
   documents: (projectId: string) => request<DocumentList>("GET", `/projects/${projectId}/documents`),
   catalog: () => request<Catalog>("GET", "/catalog"),
   correct: (docId: string, field: string, value: string) =>
@@ -155,7 +157,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted", "report", "works", "packages", "delivery", "costs"] as const;
+export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted", "report", "works", "packages", "delivery", "costs", "specification"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {

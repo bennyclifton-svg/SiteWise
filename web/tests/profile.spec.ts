@@ -55,7 +55,7 @@ test("profile update clears its pending state when completion SSE is missed", as
   await page.getByRole("button", { name: "Update project profile", exact: true }).click();
   await expect(page.getByRole("button", { name: "Updating project profile…", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible({ timeout: 10000 });
-  await expect(page.getByLabel("Work type", { exact: true })).toHaveValue("new");
+  await expect(page.getByRole("radiogroup", { name: "Work type" }).getByRole("radio", { name: "New build" })).toBeChecked();
   expect(completionReads).toBeGreaterThan(0);
 });
 
@@ -117,9 +117,9 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
 
-  await page.getByLabel("Building category", { exact: true }).selectOption("residential");
-  await page.getByLabel("Building class", { exact: true }).selectOption("house");
-  await page.getByLabel("Work type", { exact: true }).selectOption("new");
+  await page.getByRole("radiogroup", { name: "Building category" }).getByText("Residential", { exact: true }).click();
+  await page.getByRole("radiogroup", { name: "Building class" }).getByText("House (Class 1a)", { exact: true }).click();
+  await page.getByRole("radiogroup", { name: "Work type" }).getByText("New build", { exact: true }).click();
 
   // Typical systems are ticked in scope, marked as suggestions rather than evidence.
   await scope.locator(".sw-entry", { hasText: "Hydraulic" }).click();
@@ -163,13 +163,13 @@ test("choose which documents the profile reads, in bulk", async ({ browser }) =>
   const bulk = page.getByRole("toolbar", { name: "Selected documents" });
   await expect(bulk).toContainText("3 selected");
 
-  await bulk.getByRole("button", { name: "Don't read" }).click();
+  await bulk.getByRole("button", { name: "Exclude from profile" }).click();
   for (let i = 0; i < 3; i++) {
     const read = rows.nth(i).locator(".reg-read");
     await expect(read).toHaveAttribute("aria-pressed", "false");
     await expect(read).toHaveAttribute("data-override", "true");
   }
-  await expect(page.locator(".profile-reading")).toContainText("Reading 0 of 3 documents");
+  await expect(page.locator(".profile-reading")).toContainText("Included for profile: 0 of 3 documents");
 
   // The profile line filters the register to what it does not read.
   await page.locator(".profile-reading").getByRole("button", { name: "Show" }).click();
@@ -180,7 +180,7 @@ test("choose which documents the profile reads, in bulk", async ({ browser }) =>
   // One row's own toggle reads it; Reset returns everything to automatic.
   await rows.nth(0).locator(".reg-read").click();
   await expect(rows.nth(0).locator(".reg-read")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".profile-reading")).toContainText("Reading 1 of 3 documents");
+  await expect(page.locator(".profile-reading")).toContainText("Included for profile: 1 of 3 documents");
   await bulk.getByRole("button", { name: "Reset to automatic" }).click();
   for (let i = 0; i < 3; i++) await expect(rows.nth(i).locator(".reg-read")).not.toHaveAttribute("data-override", "true");
 
@@ -241,9 +241,9 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await page.getByRole("button", { name: "Create project" }).click();
   await expect(page.getByRole("heading", { name: "Scope and works" })).toBeVisible();
 
-  await page.getByLabel("Building category", { exact: true }).selectOption("industrial");
-  await page.getByLabel("Building class", { exact: true }).selectOption("warehouse");
-  await page.getByLabel("Work type", { exact: true }).selectOption({ label: "Refurbishment / fit-out / upgrade" });
+  await page.getByRole("radiogroup", { name: "Building category" }).getByText("Industrial", { exact: true }).click();
+  await page.getByRole("radiogroup", { name: "Building class" }).getByText(/^Warehouse/).click();
+  await page.getByRole("radiogroup", { name: "Work type" }).getByText("Refurbishment / fit-out / upgrade", { exact: true }).click();
   const scope = page.getByRole("region", { name: "Scope and works" });
   await expect(scope).toContainText("0 systems");
   // Nothing in scope yet: no basis to hide a compliance input.
@@ -280,7 +280,7 @@ test("site and project details are answered once in Profile", async ({ browser }
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Project details in Profile");
   await page.getByRole("button", { name: "Create project" }).click();
-  const details = page.getByRole("group", { name: "Site and planning" });
+  const details = page.locator(".pf-tiers");
   await expect(details).toBeVisible();
   await details.getByLabel("Zone").fill("R2");
   await details.getByLabel("Zone").blur();
@@ -292,7 +292,7 @@ test("site and project details are answered once in Profile", async ({ browser }
   await page.locator(".sw-entry", { hasText: "Substructure" }).click();
   await page.getByLabel("Basement or deep excavation").selectOption("yes");
   await page.reload();
-  await expect(page.getByRole("group", { name: "Site and planning" }).getByLabel("Zone")).toHaveValue("R2");
+  await expect(page.locator(".pf-tiers").getByLabel("Zone")).toHaveValue("R2");
   await expect(page.getByLabel("Site address")).toHaveValue("1 Crystal Street, Petersham");
   await page.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(page.getByLabel("Basement or deep excavation")).toHaveValue("yes");
@@ -317,7 +317,7 @@ test("a site address read from documents shows until the user types one", async 
     await route.fulfill({ response, json: body });
   });
   await page.reload();
-  const details = page.getByRole("group", { name: "Site and planning" });
+  const details = page.locator(".pf-tiers");
   const address = details.getByLabel("Site address");
   await expect(address).toHaveValue("568-572 Parramatta Road Petersham");
   await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(0);
@@ -331,4 +331,42 @@ test("a site address read from documents shows until the user types one", async 
   await expect(details.getByLabel("Site address")).toHaveValue("1 Crystal Street, Petersham");
   await details.getByRole("button", { name: "Reset" }).click();
   await expect(details.getByLabel("Site address")).toHaveValue("568-572 Parramatta Road Petersham");
+});
+
+test("profile distinguishes inclusion, queued reading, progress and completion", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Reading progress regression");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  let counts = { read_documents: 3, skipped_documents: 1, completed_documents: 0, unread_documents: 3, pending_documents: 0, active_documents: 0, failed_documents: 0 };
+  await page.route("**/api/projects/*/profile", async route => {
+    const response = await route.fetch();
+    await route.fulfill({ response, json: { ...await response.json(), ...counts } });
+  });
+  await page.reload();
+  await expect(page.locator(".profile-reading")).toContainText("Included for profile: 3 of 4 documents");
+  await expect(page.getByRole("status").filter({ hasText: "Ready to read" })).toHaveText("Ready to read · 0 of 3 documents read");
+  await expect(page.getByText("3 documents ready to read. Select Update project profile to start.")).toBeVisible();
+  const progress = page.getByRole("progressbar", { name: "Documents read for profile" });
+  await expect(progress).toHaveAttribute("value", "0");
+  counts = { ...counts, unread_documents: 0, pending_documents: 3 };
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Profile update queued", exact: true })).toBeEnabled();
+  await expect(page.locator(".profile-progress")).toContainText("Reading queued · 0 of 3 documents read");
+  counts = { ...counts, completed_documents: 1, pending_documents: 2, active_documents: 1 };
+  await expect(progress).toHaveAttribute("value", "1");
+  await expect(page.locator(".profile-progress")).toContainText("Reading documents · 1 of 3 documents read");
+  await page.screenshot({ path: resolve(import.meta.dirname, "../../tmp/profile-progress-desktop.png") });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await page.screenshot({ path: resolve(import.meta.dirname, "../../tmp/profile-progress-mobile.png") });
+  counts = { ...counts, failed_documents: 1, active_documents: 0 };
+  await expect(page.locator(".profile-progress")).toContainText("Reading needs attention · 1 of 3 documents read");
+  await expect(page.getByRole("button", { name: "Retry project profile", exact: true })).toBeEnabled();
+  counts = { ...counts, completed_documents: 3, pending_documents: 0, failed_documents: 0 };
+  await expect(progress).toHaveAttribute("value", "3");
+  await expect(page.locator(".profile-progress")).toContainText("Reading complete · 3 of 3 documents read");
+  await expect(page.getByText("not read yet", { exact: false })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeEnabled();
+  await page.context().close();
 });

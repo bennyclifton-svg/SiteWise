@@ -293,8 +293,18 @@ select {
   background: var(--paper);
 }
 
+.project-list li {
+  display: flex;
+  align-items: center;
+}
+
 .project-list li + li {
   border-top: 1px solid var(--line-strong);
+}
+
+.project-delete {
+  flex: none;
+  margin-right: 10px;
 }
 
 .project-link {
@@ -2133,3 +2143,10 @@ button.cell[data-state="check"]:hover {
     margin-left: 0;
   }
 }
+
+.profile-progress { grid-column: 1 / -1; margin-top: 8px; }
+.profile-progress p { margin: 0 0 4px; font-size: 13px; color: var(--ink-body); }
+.profile-progress progress { display: block; width: 100%; height: 6px; accent-color: var(--azure); }
+.profile-progress progress::-webkit-progress-bar { background: var(--ground); }
+.profile-progress progress::-webkit-progress-value { background: var(--azure); }
+.profile-progress progress::-moz-progress-bar { background: var(--azure); }

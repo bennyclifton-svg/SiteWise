@@ -56,6 +56,64 @@ func TestDeleteDocuments(t *testing.T) {
 	m.call(t, http.MethodPost, path, body(gone.ID), http.StatusNotFound, nil)
 }
 
+func TestDeleteProject(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	keep := m.createProject(t, "Keep")
+	gone := m.createProject(t, "Remove me")
+	uploaded := m.upload(t, gone, "identity-page.pdf", http.StatusCreated)
+	other := a.member(t, newUUID(t))
+
+	if code := other.status(t, http.MethodDelete, "/api/projects/"+gone, nil); code != http.StatusNotFound {
+		t.Fatalf("cross-org delete = %d", code)
+	}
+	if code := m.status(t, http.MethodDelete, "/api/projects/not-a-uuid", nil); code != http.StatusNotFound {
+		t.Fatalf("bad id = %d", code)
+	}
+	m.call(t, http.MethodDelete, "/api/projects/"+gone, nil, http.StatusNoContent, nil)
+	if code := m.status(t, http.MethodGet, "/api/projects/"+gone, nil); code != http.StatusNotFound {
+		t.Fatalf("deleted project still readable: %d", code)
+	}
+	if code := m.status(t, http.MethodGet, "/api/documents/"+uploaded.ID, nil); code != http.StatusNotFound {
+		t.Fatalf("deleted document still readable: %d", code)
+	}
+	if code := m.status(t, http.MethodGet, "/api/documents/"+uploaded.ID+"/file", nil); code != http.StatusNotFound {
+		t.Fatalf("deleted file still downloadable: %d", code)
+	}
+	if code := m.status(t, http.MethodDelete, "/api/projects/"+gone, nil); code != http.StatusNotFound {
+		t.Fatalf("second delete = %d", code)
+	}
+	var listed []struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+	m.getJSON(t, "/api/projects", &listed)
+	if len(listed) != 1 || listed[0].ID != keep || listed[0].Name != "Keep" {
+		t.Fatalf("projects after delete: %+v", listed)
+	}
+}
+
+func TestDeleteProjectLatencyBudget(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	var ids []string
+	for i := 0; i < 20; i++ {
+		ids = append(ids, m.createProject(t, fmt.Sprintf("Timed %d", i)))
+	}
+	var durations []time.Duration
+	for _, id := range ids {
+		start := time.Now()
+		m.call(t, http.MethodDelete, "/api/projects/"+id, nil, http.StatusNoContent, nil)
+		durations = append(durations, time.Since(start))
+	}
+	sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
+	p50, p90 := durations[9], durations[17]
+	t.Logf("project_delete p50=%s p90=%s (budget 500ms/1000ms)", p50, p90)
+	if p50 > 500*time.Millisecond || p90 > time.Second {
+		t.Fatal("project_delete exceeded budget")
+	}
+}
+
 func TestDeleteLatencyBudget(t *testing.T) {
 	a := newApp(t, withProfile(t))
 	m := a.member(t, newUUID(t))

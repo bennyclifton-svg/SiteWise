@@ -127,6 +127,7 @@ export function FieldRow({
   onJump,
   parts,
   compact,
+  stacked,
 }: {
   field: ProfileField;
   onSet: Setter;
@@ -134,6 +135,8 @@ export function FieldRow({
   parts?: Profile["parts"];
   /** A card cell: no "usually in" hint beside the value. */
   compact?: boolean;
+  /** Label above the value, how it was decided at the label's end. */
+  stacked?: boolean;
 }) {
   const [draft, setDraft] = useState(field.value);
   useEffect(() => setDraft(field.value), [field.value]);
@@ -156,7 +159,7 @@ export function FieldRow({
   } else if (field.kind === "choice" && field.options && field.options.length > 0) {
     control = (
       <select id={id} className="select pf-control" value={field.value} onChange={(e) => write(e.target.value)} title={compact ? hint || undefined : undefined}>
-        <option value="">—</option>
+        <option value="">{stacked ? "Not stated" : "—"}</option>
         {field.options.map((o) => (
           <option key={o.id} value={o.id}>
             {o.label}
@@ -176,12 +179,41 @@ export function FieldRow({
           className="input pf-control"
           inputMode={field.kind === "number" ? "decimal" : undefined}
           value={draft}
-          placeholder={field.kind === "multi" ? "e.g. 2, 6" : compact && hint ? hint : undefined}
+          placeholder={field.kind === "multi" ? "e.g. 2, 6" : field.typical && !field.value ? field.typical : compact && hint ? hint : undefined}
           onChange={(e) => setDraft(e.target.value)}
           onBlur={() => commit()}
         />
         {field.unit && <span className="pf-unit">{field.unit === "m2" ? "m²" : field.unit}</span>}
       </form>
+    );
+  }
+
+  const why = (
+    <span className="pf-why">
+      {field.assertion && ASSERTIONS[field.assertion] && (
+        <span className="pf-assert" data-assertion={field.assertion}>
+          {ASSERTIONS[field.assertion]}
+        </span>
+      )}
+      <Mark cell={field} />
+      <Sources cell={field} onJump={onJump} />
+      {field.band === "user" && <ResetButton onClick={() => onSet(field.key, { part_id: field.part_id, reset: true })} />}
+    </span>
+  );
+  const pick = (v: string) => onSet(field.key, { part_id: field.part_id, value: v });
+
+  if (stacked) {
+    return (
+      <div className="pf-row pf-stack" data-band={field.band || undefined}>
+        <div className="pf-stack-head">
+          <label htmlFor={derived ? undefined : id} className="pf-label">
+            {label}
+          </label>
+          {why}
+        </div>
+        {control}
+        <Conflict cell={field} onPick={pick} />
+      </div>
     );
   }
 
@@ -193,20 +225,56 @@ export function FieldRow({
       <div className="pf-value">
         <span className="pf-main">
           {control}
-          <span className="pf-why">
-            {field.assertion && ASSERTIONS[field.assertion] && (
-              <span className="pf-assert" data-assertion={field.assertion}>
-                {ASSERTIONS[field.assertion]}
-              </span>
-            )}
-            <Mark cell={field} />
-            <Sources cell={field} onJump={onJump} />
-            {field.band === "user" && <ResetButton onClick={() => onSet(field.key, { part_id: field.part_id, reset: true })} />}
-          </span>
+          {why}
         </span>
-        <Conflict cell={field} onPick={(v) => onSet(field.key, { part_id: field.part_id, value: v })} />
+        <Conflict cell={field} onPick={pick} />
         {!compact && hint && <span className="pf-hint">{hint}</span>}
       </div>
+    </div>
+  );
+}
+
+/**
+ * A choice with every option in view: chips for class and work type, a list
+ * for subclass. Seeing what the project is not is part of reading what it is.
+ * Native radios keep arrow-key movement; the chosen option carries the band.
+ */
+export function ChoiceGroup({
+  field,
+  variant,
+  title,
+  onSet,
+  onJump,
+}: {
+  field: ProfileField;
+  variant: "chips" | "list";
+  title: string;
+  onSet: Setter;
+  onJump: (id: string) => void;
+}) {
+  const name = `pf-${field.key}-${field.part_id}`;
+  return (
+    <div className={`pf-choice pf-choice-${variant}`} data-band={field.band || undefined} role="radiogroup" aria-label={field.label}>
+      <div className="pf-stack-head">
+        <span className="pf-rule">{title}</span>
+        <span className="pf-why">
+          <Mark cell={field} />
+          <Sources cell={field} onJump={onJump} />
+          {field.band === "user" && <ResetButton onClick={() => onSet(field.key, { part_id: field.part_id, reset: true })} />}
+        </span>
+      </div>
+      <div className="pf-options">
+        {(field.options ?? []).map((o) => {
+          const on = field.value === o.id;
+          return (
+            <label key={o.id} className="pf-option" data-on={on || undefined} data-band={on ? field.band || undefined : undefined}>
+              <input type="radio" name={name} value={o.id} checked={on} onChange={() => onSet(field.key, { part_id: field.part_id, value: o.id })} />
+              <span>{o.label}</span>
+            </label>
+          );
+        })}
+      </div>
+      <Conflict cell={field} onPick={(v) => onSet(field.key, { part_id: field.part_id, value: v })} />
     </div>
   );
 }

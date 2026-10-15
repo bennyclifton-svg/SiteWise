@@ -131,6 +131,10 @@ func TestCommittedBudgets(t *testing.T) {
 		t.Fatalf("min_samples = %d", budgets.MinSamples)
 	}
 	want := map[string][2]int64{
+		"specification_read":        {100_000, 250_000},
+		"specification_write":       {100_000, 250_000},
+		"specification_issue":       {100_000, 250_000},
+		"specification_export":      {100_000, 250_000},
 		"works_read":                {100_000, 250_000},
 		"packages_read":             {100_000, 250_000},
 		"package_scope_read":        {100_000, 250_000},
@@ -180,6 +184,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"profile_edit":              {50_000, 150_000},
 		"spec_home_profile_edit":    {50_000, 150_000},
 		"document_delete":           {500_000, 1_000_000},
+		"project_delete":            {500_000, 1_000_000},
 	}
 	if len(budgets.Paths) != len(want) {
 		t.Fatalf("paths = %d", len(budgets.Paths))

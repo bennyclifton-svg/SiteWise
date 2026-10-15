@@ -123,7 +123,7 @@ body {
 .cockpit-shell {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(220px, 268px) minmax(0, 1fr) 368px;
+  grid-template-columns: minmax(220px, 268px) minmax(0, 1fr) minmax(280px, 760px);
   grid-template-rows: auto minmax(0, 1fr);
   column-gap: var(--cockpit-shell-gutter);
   height: 100%;
@@ -223,6 +223,7 @@ body {
 }
 
 .project-side-panel {
+  position: relative;
   grid-column: 3;
   grid-row: 2;
   display: flex;
@@ -231,6 +232,46 @@ body {
   flex-direction: column;
   overflow: hidden;
   padding: 0 0.75rem 0.75rem;
+  container: repo / inline-size;
+}
+
+.repo-resize {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0.75rem;
+  left: 0;
+  width: 0.625rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.repo-resize::after {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: 0;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--sw-border-strong);
+  opacity: 0.7;
+}
+
+.repo-resize:hover::after,
+.repo-resize:focus-visible::after,
+.cockpit-shell.is-resizing .repo-resize::after {
+  background: var(--sw-selection-border);
+  opacity: 1;
+}
+
+.cockpit-shell.is-resizing,
+.cockpit-shell.is-resizing * {
+  cursor: col-resize;
+  user-select: none;
 }
 
 .cockpit-shell .drop {
@@ -396,7 +437,8 @@ body {
   height: auto;
   min-height: 0;
   flex-direction: column;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 1px solid var(--sw-border-default);
   border-radius: 0.875rem;
   background: var(--sw-surface);
@@ -449,20 +491,48 @@ body {
 }
 
 .project-side-panel .reg-table {
-  min-width: 36rem;
+  width: 100%;
+  min-width: 0;
   table-layout: fixed;
   font-size: 0.7rem;
 }
 
 .project-side-panel .reg-table col.reg-sel { width: 1.25rem; }
-.project-side-panel .reg-table col.reg-no { width: 3.75rem; }
-.project-side-panel .reg-table col.reg-rev { width: 2rem; }
-.project-side-panel .reg-table col.reg-date { width: 5rem; }
-.project-side-panel .reg-table col.reg-disc { width: 4.5rem; }
-.project-side-panel .reg-table col.reg-kind { width: 4.25rem; }
+.project-side-panel .reg-table col.reg-no { width: 5.5rem; }
+.project-side-panel .reg-table col.reg-rev { width: 2.5rem; }
+.project-side-panel .reg-table col.reg-date { width: 6.75rem; }
+.project-side-panel .reg-table col.reg-disc { width: 6.25rem; }
+.project-side-panel .reg-table col.reg-kind { width: 4.75rem; }
 .project-side-panel .reg-table col.reg-prof { width: 2.25rem; }
 .project-side-panel .reg-table col.reg-mark { width: 1.25rem; }
-.project-side-panel .reg-table col.reg-bin { width: 1.5rem; }
+.project-side-panel .reg-table col.reg-bin { width: 1.75rem; }
+
+/* Narrow rail: drop date and the two classifications together, then Use and
+   State. Drawing number, title, revision and the bin stay. */
+@container repo (max-width: 39rem) {
+  .project-side-panel col.reg-date,
+  .project-side-panel col.reg-disc,
+  .project-side-panel col.reg-kind,
+  .project-side-panel th.reg-date,
+  .project-side-panel th.reg-disc,
+  .project-side-panel th.reg-kind,
+  .project-side-panel td.reg-date,
+  .project-side-panel td.reg-disc,
+  .project-side-panel td.reg-kind {
+    display: none;
+  }
+}
+
+@container repo (max-width: 26rem) {
+  .project-side-panel col.reg-prof,
+  .project-side-panel col.reg-mark,
+  .project-side-panel th.reg-prof,
+  .project-side-panel th.reg-mark,
+  .project-side-panel td.reg-prof,
+  .project-side-panel td.reg-mark {
+    display: none;
+  }
+}
 
 .project-side-panel .reg-table thead th {
   top: 41px;
@@ -496,7 +566,7 @@ body {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow-wrap: normal;
-  vertical-align: middle;
+  vertical-align: top;
 }
 
 .project-side-panel .reg-line td.reg-no {
@@ -554,11 +624,18 @@ body {
   color: var(--sw-text-primary);
 }
 
-.project-side-panel .register > .reg-table,
+/* The table stays as tall as its rows. flex-grow would stretch the one
+   body row through the card and park its text in the middle. */
+.project-side-panel .register > .reg-table {
+  flex: none;
+  width: 100%;
+}
+
 .project-side-panel .reg-scroll {
   min-height: 0;
+  min-width: 0;
   flex: 1;
-  overflow: auto;
+  overflow: visible;
 }
 
 .reg-table thead th {
@@ -859,8 +936,225 @@ body {
     min-height: 20rem;
   }
 
+  .repo-resize {
+    display: none;
+  }
+
   .cockpit-title {
     font-size: 1.6rem;
     white-space: normal;
   }
 }
+
+/* ---------- profile card in tiers ----------
+   Reads like a brief: who and where, class, work and budget, then subclass,
+   scale and complexity side by side, then approvals and delivery. Labels sit
+   above values; how a value was decided sits at the label's end so the
+   control line stays clean. Colour on a chosen option is the band, with the
+   mark beside the title carrying it in text. */
+
+.profile .pf-card.pf-tiers {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+.pf-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--sw-text-tertiary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.pf-rule::before {
+  content: "";
+  width: 12px;
+  border-top: 1px solid var(--sw-selection-border);
+}
+.pf-section .pf-panel h3.pf-rule { margin: 0; padding: 0; border: 0; }
+
+.pf-stack-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 20px;
+}
+
+/* A stacked field: label line, then the control at full width. */
+.profile .pf-row.pf-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 4px;
+  min-height: 0;
+  padding: 0;
+  background: none;
+}
+.pf-stack .pf-label {
+  color: var(--sw-text-tertiary);
+  font-size: 12px;
+  line-height: 1.3;
+}
+.pf-stack > .pf-control,
+.pf-stack > .pf-inline,
+.pf-stack > .pf-derived {
+  width: 100%;
+  max-width: none;
+}
+.pf-stack .pf-control {
+  height: 36px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.pf-stack > .pf-derived {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px dashed var(--sw-border-default);
+  border-radius: 10px;
+}
+.pf-stack[data-band="red"] .pf-control { border-color: var(--alert); }
+.pf-stack .pf-alts { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.pf-identity-grid,
+.pf-place-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.pf-identity-grid .pf-control { height: 40px; font-size: 15px; color: var(--sw-text-primary); }
+.pf-place-grid { margin-top: -8px; }
+.pf-place-grid .pf-control { height: 32px; font-size: 13px; }
+
+/* Choices with every option in view. */
+.pf-choice { display: grid; gap: 8px; min-width: 0; }
+.pf-options { display: flex; flex-wrap: wrap; gap: 6px; }
+.pf-choice-chips .pf-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+}
+.pf-work-line .pf-choice-chips .pf-options { display: flex; }
+.pf-option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 10px;
+  color: var(--sw-text-primary);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.pf-option:hover { background: var(--sw-hover-bg); }
+.pf-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.pf-option:has(input:focus-visible) {
+  outline: 2px solid var(--sw-action-focus);
+  outline-offset: 2px;
+}
+.pf-option[data-on] {
+  border-color: var(--sw-selection-border);
+  background: var(--sw-selection-bg);
+  color: var(--sw-link);
+}
+.pf-option[data-on][data-band="amber"] { border-color: var(--warn); }
+.pf-option[data-on][data-band="red"] { border-color: var(--alert); }
+.pf-choice[data-band="red"]:not(:has([data-on])) .pf-options { outline: 1px dashed var(--alert); outline-offset: 4px; border-radius: 10px; }
+
+/* Subclass as a radio list. */
+.pf-choice-list .pf-stack-head .pf-rule { display: none; }
+.pf-choice-list .pf-options { display: grid; gap: 2px; }
+.pf-choice-list .pf-option {
+  min-height: 26px;
+  padding: 0 6px;
+  gap: 8px;
+  border-color: transparent;
+  font-size: 13px;
+}
+.pf-choice-list .pf-option::before {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--sw-border-strong);
+  border-radius: 50%;
+}
+.pf-choice-list .pf-option[data-on] { background: none; border-color: transparent; }
+.pf-choice-list .pf-option[data-on]::before {
+  border: 4px solid var(--sw-selection-border);
+}
+.pf-choice-list .pf-option[data-on][data-band="amber"]::before { border-color: var(--warn); }
+.pf-choice-list .pf-option[data-on][data-band="red"]::before { border-color: var(--alert); }
+
+.pf-work-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(11rem, 14rem);
+  align-items: end;
+  gap: 16px;
+}
+.pf-budget .pf-control { height: 40px; font-size: 15px; text-align: right; }
+
+/* Subclass · Scale · Complexity, then the quieter approvals and delivery. */
+.pf-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr);
+  gap: 12px;
+  align-items: start;
+}
+.pf-panel {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 14px;
+}
+.pf-panel-body { display: grid; gap: 10px; min-width: 0; }
+.pf-panel-wide .pf-panel-body { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+.pf-panel .pf-col-more { margin: 0; }
+
+.pf-strips {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--sw-border-subtle);
+}
+.pf-panel-flat { padding: 0; border: 0; border-radius: 0; }
+.pf-strips .pf-panel-flat:last-child .pf-panel-body { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+
+@media (max-width: 1100px) {
+  .pf-cards { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .pf-panel-wide { grid-column: 1 / -1; }
+  .pf-strips { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .pf-identity-grid,
+  .pf-place-grid,
+  .pf-work-line,
+  .pf-cards,
+  .pf-panel-wide .pf-panel-body,
+  .pf-strips .pf-panel-flat:last-child .pf-panel-body { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Field sources reuse the class name of the Source requirements panel; keep
+   that panel's rules off the small per-field disclosure. */
+.pf-tiers details.pf-sources { padding: 0; border: 0; }
+
+/* Labels wrap to different heights; controls in a row still share a line. */
+.pf-identity-grid,
+.pf-place-grid,
+.pf-panel-wide .pf-panel-body,
+.pf-strips .pf-panel-flat:last-child .pf-panel-body { align-items: end; }

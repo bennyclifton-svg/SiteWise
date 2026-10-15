@@ -40,3 +40,47 @@ func TestProfileReadCountsPreservePoliciesMissingKindsAndSkippedTie(t *testing.T
 		t.Fatalf("explicit override %+v %v", got, err)
 	}
 }
+
+func TestProfileCompletedCountsRequireFinishedReading(t *testing.T) {
+	ctx := context.Background()
+	st := profileStore(t)
+	pool := rawPool(t)
+	textReady(t, st, orgA, docA)
+	check := func(want int) {
+		t.Helper()
+		v, err := st.ReadProfile(ctx, orgA, projectA, nil)
+		if err != nil || v.CompletedDocuments != want {
+			t.Fatalf("completed=%d want=%d err=%v", v.CompletedDocuments, want, err)
+		}
+	}
+	check(0) // Selected and text-ready is not read.
+	for _, kind := range []string{"label", "evidence"} {
+		if err := st.EnqueueStage(ctx, orgA, docA, kind); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='done' WHERE org_id=$1 AND document_id=$2 AND kind='label'`, orgA, docA); err != nil {
+		t.Fatal(err)
+	}
+	check(0) // Evidence still queued.
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='done' WHERE org_id=$1 AND document_id=$2 AND kind='evidence'`, orgA, docA); err != nil {
+		t.Fatal(err)
+	}
+	check(1)
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='failed' WHERE org_id=$1 AND document_id=$2 AND kind='label'`, orgA, docA); err != nil {
+		t.Fatal(err)
+	}
+	check(0) // A failed reread must not appear complete.
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET status='done' WHERE org_id=$1 AND document_id=$2 AND kind='label'`, orgA, docA); err != nil {
+		t.Fatal(err)
+	}
+	check(1)
+	if _, err := st.SetProfileReading(ctx, orgA, projectA, []string{docA}, "skip", nil); err != nil {
+		t.Fatal(err)
+	}
+	check(0)
+	v, err := st.ReadProfile(ctx, orgB, projectA, nil)
+	if err == nil || v.CompletedDocuments != 0 {
+		t.Fatal("cross-org profile exposed")
+	}
+}

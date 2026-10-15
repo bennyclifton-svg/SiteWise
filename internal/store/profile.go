@@ -35,7 +35,9 @@ type ProfileView struct {
 	Rows                  []profile.Row
 	BuiltAt               *time.Time
 	ThresholdsVersion     string
-	PendingDocuments      int
+	// CompletedDocuments counts included documents with every reading stage finished.
+	CompletedDocuments int
+	PendingDocuments   int
 	// ActiveDocuments counts live leases, never merely queued or expired work.
 	ActiveDocuments int
 	// UnreadDocuments have their text split but have not been asked for
@@ -802,15 +804,18 @@ SELECT EXISTS (SELECT 1 FROM projects WHERE org_id = $1::uuid AND id = $2::uuid)
 	}
 	if err = tx.QueryRow(ctx, `
 WITH readable_documents AS MATERIALIZED (
- SELECT d.id, `+readableSQL("$3")+` AS readable
+ SELECT d.id, `+readableSQL("$3")+` AS readable,
+ EXISTS (SELECT 1 FROM jobs j WHERE j.org_id=d.org_id AND j.document_id=d.id AND j.kind='evidence' AND j.status='done')
+ AND EXISTS (SELECT 1 FROM jobs j WHERE j.org_id=d.org_id AND j.document_id=d.id AND j.kind='label' AND j.status='done')
+ AND NOT EXISTS (SELECT 1 FROM jobs j WHERE j.org_id=d.org_id AND j.document_id=d.id AND j.kind IN ('full_text','label','evidence') AND j.status<>'done') AS completed
  FROM documents d WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid
 )
-SELECT count(*) FILTER (WHERE readable), count(*) FILTER (WHERE NOT readable),
+SELECT count(*) FILTER (WHERE readable AND completed), count(*) FILTER (WHERE readable), count(*) FILTER (WHERE NOT readable),
        COALESCE((SELECT k.value FROM decisions k WHERE k.org_id=$1::uuid AND k.field='kind'
                  AND k.document_id = ANY(ARRAY(SELECT id FROM readable_documents WHERE NOT readable))
                  GROUP BY k.value ORDER BY count(*) DESC, k.value LIMIT 1), '')
 FROM readable_documents`,
-		orgID, projectID, nilIfEmpty(readKinds)).Scan(&v.ReadDocuments, &v.SkippedDocuments, &v.SkippedKind); err != nil {
+		orgID, projectID, nilIfEmpty(readKinds)).Scan(&v.CompletedDocuments, &v.ReadDocuments, &v.SkippedDocuments, &v.SkippedKind); err != nil {
 		return v, err
 	}
 	if err = readBuildState(ctx, tx, orgID, projectID, &v); err != nil {

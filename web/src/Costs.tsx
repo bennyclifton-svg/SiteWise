@@ -131,10 +131,3 @@ export function Costs({ projectId, tick, onSignedOut }: { projectId: string; tic
   </section>;
 }
 
-export function CostSummary({projectId,tick,onSignedOut}:{projectId:string;tick:number;onSignedOut:()=>void}) {
- const [data,setData]=useState<{plan:CostPlan;totals:CostTotals}|null>(null);
- const [error,setError]=useState(false);
- useEffect(()=>{let stopped=false;setError(false);Promise.all([costApi.read(projectId),costApi.totals(projectId)]).then(([plan,totals])=>{if(!stopped)setData({plan,totals});}).catch(e=>{if(stopped)return;if(e instanceof ApiError&&e.status===401)onSignedOut();else setError(true);});return()=>{stopped=true;};},[projectId,tick]);
- const display=(metric:string)=>{const v=data?.totals.overall[metric];return v?.amount??(v?.low!=null&&v.high!=null?`${v.low}–${v.high}`:"Unknown");};
- return <section className="report-section" aria-label="Cost summary"><h2>Cost summary</h2>{error?<p role="status">Cost summary unavailable. Open Costs to retry.</p>:!data?<p>Loading cost summary…</p>:<><p>{data.plan.currency||"Currency not set"} · Coverage: {data.plan.coverage||"Unknown"}</p><dl><dt>Budget</dt><dd>{display("budget")}</dd><dt>Forecast</dt><dd>{display("forecast")}</dd><dt>Variance</dt><dd>{data.totals.variance??"Unknown"}</dd></dl><p>Saved cost plan totals. Incomplete values remain unknown; edit the shared ledger in Costs.</p></>}</section>;
-}

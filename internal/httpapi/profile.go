@@ -47,11 +47,13 @@ type cellJSON struct {
 }
 
 type fieldJSON struct {
-	Key      string       `json:"key"`
-	Label    string       `json:"label"`
-	PartID   string       `json:"part_id"`
-	Kind     string       `json:"kind"` // choice | multi | number | text
-	Unit     string       `json:"unit,omitempty"`
+	Key    string `json:"key"`
+	Label  string `json:"label"`
+	PartID string `json:"part_id"`
+	Kind   string `json:"kind"` // choice | multi | number | text
+	Unit   string `json:"unit,omitempty"`
+	// Typical is the taxonomy's usual range for a scale field, a placeholder only.
+	Typical  string       `json:"typical,omitempty"`
 	Options  []optionJSON `json:"options,omitempty"`
 	StatedIn []string     `json:"stated_in,omitempty"`
 	// Relevant is set on compliance rows: the project's scope makes the
@@ -104,22 +106,23 @@ type partJSON struct {
 }
 
 type profileJSON struct {
-	Revision         int64                  `json:"revision"`
-	InputFingerprint string                 `json:"input_fingerprint"`
-	KnowledgeVersion string                 `json:"knowledge_version"`
-	QuestionVersion  string                 `json:"question_version"`
-	StaleFor         []string               `json:"stale_for"`
-	Coverage         []store.SourceCoverage `json:"coverage"`
-	ProjectID        string                 `json:"project_id"`
-	BuiltAt          *time.Time             `json:"built_at"`
-	PendingDocuments int                    `json:"pending_documents"`
-	ActiveDocuments  int                    `json:"active_documents"`
-	UnreadDocuments  int                    `json:"unread_documents"`
-	ReadDocuments    int                    `json:"read_documents"`
-	SkippedDocuments int                    `json:"skipped_documents"`
-	SkippedKind      string                 `json:"skipped_kind"`
-	FailedDocuments  int                    `json:"failed_documents"`
-	PaymentRequired  bool                   `json:"payment_required"`
+	Revision           int64                  `json:"revision"`
+	InputFingerprint   string                 `json:"input_fingerprint"`
+	KnowledgeVersion   string                 `json:"knowledge_version"`
+	QuestionVersion    string                 `json:"question_version"`
+	StaleFor           []string               `json:"stale_for"`
+	Coverage           []store.SourceCoverage `json:"coverage"`
+	ProjectID          string                 `json:"project_id"`
+	BuiltAt            *time.Time             `json:"built_at"`
+	PendingDocuments   int                    `json:"pending_documents"`
+	ActiveDocuments    int                    `json:"active_documents"`
+	UnreadDocuments    int                    `json:"unread_documents"`
+	CompletedDocuments int                    `json:"completed_documents"`
+	ReadDocuments      int                    `json:"read_documents"`
+	SkippedDocuments   int                    `json:"skipped_documents"`
+	SkippedKind        string                 `json:"skipped_kind"`
+	FailedDocuments    int                    `json:"failed_documents"`
+	PaymentRequired    bool                   `json:"payment_required"`
 	// Queued answers a profile read request: documents it sent to Jev.
 	Queued     *int64         `json:"queued,omitempty"`
 	Thresholds map[string]any `json:"thresholds"`
@@ -214,7 +217,7 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 	whole := ""
 	out := profileJSON{Revision: view.Revision, InputFingerprint: view.InputFingerprint, KnowledgeVersion: view.KnowledgeVersion, QuestionVersion: view.QuestionVersion, StaleFor: view.StaleFor(profileBuild(deps)), Coverage: view.Coverage, ProjectID: projectID, BuiltAt: view.BuiltAt, PendingDocuments: view.PendingDocuments, UnreadDocuments: view.UnreadDocuments,
 		ActiveDocuments: view.ActiveDocuments, FailedDocuments: view.FailedDocuments, PaymentRequired: view.PaymentRequired,
-		ReadDocuments: view.ReadDocuments, SkippedDocuments: view.SkippedDocuments, SkippedKind: view.SkippedKind,
+		CompletedDocuments: view.CompletedDocuments, ReadDocuments: view.ReadDocuments, SkippedDocuments: view.SkippedDocuments, SkippedKind: view.SkippedKind,
 		Thresholds: map[string]any{"version": deps.ProfileThresholds.Version, "provisional": !deps.ProfileThresholds.Approved,
 			"applied": len(deps.ProfileThresholds.Amber) > 0}}
 	for _, p := range view.Parts {
@@ -296,6 +299,7 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		}
 		sf := field("hdr.scale."+f.Key, f.Label, kind, nil)
 		sf.Unit = f.Unit
+		sf.Typical = f.Typical
 		out.Header = append(out.Header, sf)
 	}
 	for _, c := range tax.Conditions {

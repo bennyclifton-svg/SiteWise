@@ -62,11 +62,13 @@ func (d Determinant) Deprecated() bool { return d.Status == statusDeprecated }
 
 // ScaleField is one size measure of a subclass (storeys, GFA, units).
 type ScaleField struct {
-	Key             string   `yaml:"key"`
-	Label           string   `yaml:"label"`
-	Type            string   `yaml:"type"`
-	Unit            string   `yaml:"unit"`
-	BasisRequired   bool     `yaml:"basis_required"`
+	Key           string `yaml:"key"`
+	Label         string `yaml:"label"`
+	Type          string `yaml:"type"`
+	Unit          string `yaml:"unit"`
+	BasisRequired bool   `yaml:"basis_required"`
+	// Typical is a usual range for this kind of building, shown as a hint.
+	Typical         string   `yaml:"typical"`
 	TriggerPatterns []string `yaml:"triggers"`
 
 	triggers []trigger

@@ -400,6 +400,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.reports(ctx, o.apiSamples); err != nil {
 		return 0, err
 	}
+	if err := api.specifications(ctx, o.apiSamples); err != nil {
+		return 0, err
+	}
 	if err := api.workItems(ctx, st, o.apiSamples); err != nil {
 		return 0, err
 	}
@@ -443,6 +446,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	// Deletion is timed last, after every outcome is counted, because it
 	// removes filings the other measurements read.
 	if err := api.deleteDocuments(ctx, st, documents, o.apiSamples); err != nil {
+		return 0, err
+	}
+	if err := api.deleteProjects(ctx, st, o.apiSamples); err != nil {
 		return 0, err
 	}
 
@@ -1052,6 +1058,21 @@ func (a *apiClient) deleteDocuments(ctx context.Context, st *store.Store, docume
 		}
 		body, _ := json.Marshal(map[string][]string{"document_ids": {id}})
 		if _, err := a.timed(ctx, "document_delete", http.MethodPost, "/projects/"+doc.ProjectID+"/documents/delete", body, http.StatusOK); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// deleteProjects times n deletions of otherwise empty projects. The rows are
+// created through the store so project creation is not mixed into this path.
+func (a *apiClient) deleteProjects(ctx context.Context, st *store.Store, n int) error {
+	for i := 0; i < n; i++ {
+		id := fmt.Sprintf("be4cde10-0000-4000-8000-%012x", i+1)
+		if err := st.CreateProject(ctx, benchOrg, id, fmt.Sprintf("Delete bench %d", i+1)); err != nil {
+			return err
+		}
+		if _, err := a.timed(ctx, "project_delete", http.MethodDelete, "/projects/"+id, nil, http.StatusNoContent); err != nil {
 			return err
 		}
 	}

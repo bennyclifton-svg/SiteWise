@@ -12,10 +12,21 @@ import (
 const SourceVersion = "source-3"
 
 type SourcePage struct {
-	Page     int    `json:"page"`
-	Location string `json:"location"`
-	Text     string `json:"text"`
-	Context  string `json:"context,omitempty"`
+	Regions  []SourceRegion `json:"regions,omitempty"`
+	Page     int            `json:"page"`
+	Location string         `json:"location"`
+	Text     string         `json:"text"`
+	Context  string         `json:"context,omitempty"`
+}
+
+// SourceRegion keeps native extraction geometry for schedule row associations.
+// Coordinates use the PDF's bottom-left origin; zero size means unavailable.
+type SourceRegion struct {
+	Text   string  `json:"text"`
+	X      float64 `json:"x"`
+	Y      float64 `json:"y"`
+	Width  float64 `json:"width"`
+	Height float64 `json:"height"`
 }
 type SourceUnit struct {
 	Category                   string

@@ -1,0 +1,6 @@
+-- Scope links restrict individual deletes, but whole-project/tenant cascades
+-- must finish before checking references to other branches of that cascade.
+ALTER TABLE specification_applications ALTER CONSTRAINT specification_applications_org_id_part_id_fkey DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE specification_applications ALTER CONSTRAINT specification_applications_org_id_project_id_work_item_id_fkey DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE specification_imports ALTER CONSTRAINT specification_imports_org_id_project_id_target_type_id_fkey DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE specification_coverage ALTER CONSTRAINT specification_coverage_org_id_project_id_type_id_fkey DEFERRABLE INITIALLY DEFERRED;

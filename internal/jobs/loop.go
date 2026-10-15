@@ -15,7 +15,7 @@ func RunBackground(ctx context.Context, w *Worker, poll time.Duration, logf func
 	extraction, reading, ocr := *w, *w, *w
 	extraction.Kinds = []string{store.JobKindFullText}
 	extraction.Since = time.Time{}
-	reading.Kinds = []string{store.JobKindLabel, store.JobKindEvidence}
+	reading.Kinds = []string{store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification}
 	ocr.Kinds = []string{store.JobKindOCR}
 	ocr.Since = time.Time{}
 	var done sync.WaitGroup

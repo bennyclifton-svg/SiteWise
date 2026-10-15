@@ -2,21 +2,20 @@
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
 //
-// The page reads top down: who and where the project is and how far reading
-// got; the Project card (the building, the site and its approvals, how it is
-// delivered); then scope and works, system by system in build order, each
+// The page reads top down: how far reading got; the Project card (who and
+// where, class, work, then subclass, scale and complexity, approvals and
+// delivery); then scope and works, system by system in build order, each
 // with the risks and compliance inputs that belong to it.
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { ProfileSources } from "./ProfileSources";
-import { FieldRow, type Setter } from "./ProfileFields";
+import { ChoiceGroup, FieldRow, type Setter } from "./ProfileFields";
 import { PLANNING, ScopeWorks, entryInputs } from "./ScopeWorks";
 import { ApiError } from "./api";
 import { profileApi, type Profile as ProfileData, type ProfileField, type ScopeChoice, type Site } from "./profileApi";
 
 interface Props {
   projectId: string;
-  view?: "all" | "summary" | "systems";
   /** Changes when a profile event arrives; the panel refetches. */
   tick: number;
   /** Changes when work, packages or reports change elsewhere; saved work reloads. */
@@ -36,46 +35,55 @@ const KIND_LABELS: Record<string, string> = {
   unknown: "unclassified documents",
 };
 
-type Column = "building" | "site" | "delivery";
+// The Project card reads top down, as a brief does: who and where, the class
+// of building, the work, then that kind of building's subclass, size and
+// conditions. Approvals and delivery follow. A key not placed here falls to
+// delivery so a new field is never hidden.
+type Tier = "identity" | "place" | "class" | "work" | "budget" | "subclass" | "scale" | "complexity" | "approvals" | "delivery";
 
-const COLUMN_LABELS: Record<Column, string> = {
-  building: "The building",
-  site: "Site and planning",
-  delivery: "Delivery",
-};
-
-// The Project card's columns, in reading order. Pairs that look alike but
-// follow different definitions (building class and NCC class, storeys and
-// NCC rise in storeys, GFA and NCC floor area) sit together.
-const COLUMNS: Record<Column, string[]> = {
-  building: [
-    "hdr.building_class", "hdr.subclass", "det.ncc_class", "hdr.work_type",
-    "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "det.rise_in_storeys",
+const TIERS: Record<Tier, string[]> = {
+  identity: ["site.address", "proj.client", "det.state"],
+  place: ["site.lot", "proj.lga", "proj.zone"],
+  class: ["hdr.building_class"],
+  work: ["hdr.work_type"],
+  budget: ["proj.budget_stated"],
+  subclass: ["hdr.subclass", "det.ncc_class"],
+  // Pairs that look alike but follow different definitions sit together.
+  scale: [
+    "hdr.scale.site_sqm", "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "det.rise_in_storeys",
     "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm", "det.floor_area", "det.effective_height",
     "hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units",
-    "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.cond.quality_level",
-    "hdr.scale.car_parks", "hdr.scale.garage_spaces",
-    "det.existing_building", "det.existing_building_year", "det.ncc_edition",
+    "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces",
+    "det.existing_building", "det.existing_building_year",
   ],
-  site: [
-    "site.address", "site.lot", "det.state", "proj.lga", "proj.zone", "hdr.scale.site_sqm",
-    "det.heritage_status", "hdr.cond.planning", "fact.consent_number", "fact.consent_date",
-    "fact.consent_lapse_date", "hdr.cond.access_constraints", "hdr.cond.environmental_sensitivity",
+  complexity: [
+    "hdr.cond.planning", "hdr.cond.procurement_route", "hdr.cond.quality_level",
+    "hdr.cond.access_constraints", "hdr.cond.operational_constraints",
+    "hdr.cond.stakeholder_complexity", "hdr.cond.environmental_sensitivity", "det.heritage_status",
   ],
+  approvals: ["fact.consent_number", "fact.consent_date", "fact.consent_lapse_date", "det.ncc_edition"],
   delivery: [
-    "proj.client", "proj.budget_stated", "hdr.cond.procurement_route", "fact.contract_form", "fact.contract_basis",
-    "fact.defects_liability_period", "fact.design_life", "proj.program", "proj.sustainability",
-    "proj.flag.sustainability_target", "proj.regulated_design", "proj.flag.contract_admin",
-    "hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints",
+    "fact.contract_form", "fact.contract_basis", "fact.defects_liability_period", "fact.design_life",
+    "proj.program", "proj.sustainability", "proj.flag.sustainability_target", "proj.regulated_design", "proj.flag.contract_admin",
   ],
 };
 
-// Shown even when empty: what every project needs stated.
-const ESSENTIAL = new Set([
-  "hdr.building_class", "hdr.subclass", "det.ncc_class", "hdr.work_type", "hdr.scale.storeys",
-  "hdr.scale.gfa_sqm", "site.address", "site.lot", "det.state", "proj.lga", "proj.zone",
-  "hdr.cond.planning", "proj.client", "hdr.cond.procurement_route",
-]);
+function tierOf(key: string): Tier {
+  for (const t of Object.keys(TIERS) as Tier[]) if (TIERS[t].includes(key)) return t;
+  if (key.startsWith("hdr.scale.")) return "scale";
+  if (key.startsWith("hdr.cond.")) return "complexity";
+  return "delivery";
+}
+
+const rank = (key: string) => {
+  const i = TIERS[tierOf(key)].indexOf(key);
+  return i < 0 ? Number.MAX_SAFE_INTEGER : i;
+};
+
+// Shown even when empty. Scale shows every measure the building type asks
+// for and complexity every condition, as a brief form would.
+const ESSENTIAL = new Set(["det.ncc_class"]);
+const ALWAYS: Tier[] = ["identity", "place", "class", "work", "budget", "subclass", "complexity"];
 
 // Scale fields that count the same thing. The first with a value is shown;
 // another is shown only when it says something different.
@@ -86,40 +94,28 @@ const SAME_MEASURE = [
   ["hdr.scale.car_parks", "hdr.scale.garage_spaces"],
 ];
 
-function columnOf(key: string): Column {
-  for (const c of Object.keys(COLUMNS) as Column[]) if (COLUMNS[c].includes(key)) return c;
-  if (key.startsWith("site.") || key.startsWith("hdr.scale.site")) return "site";
-  if (key.startsWith("hdr.scale.") || key.startsWith("det.")) return "building";
-  return "delivery";
-}
+type Arranged = Record<Tier, { shown: ProfileField[]; more: ProfileField[] }>;
 
-const rank = (key: string) => {
-  const c = COLUMNS[columnOf(key)].indexOf(key);
-  return c < 0 ? Number.MAX_SAFE_INTEGER : c;
-};
-
-/** Splits card fields into columns: what shows, and what waits behind "more". */
-function arrangeCard(fields: ProfileField[]) {
+/** Splits card fields into tiers: what shows, and what waits behind "more". */
+function arrangeCard(fields: ProfileField[]): Arranged {
   const dropped = new Set<ProfileField>();
   for (const group of SAME_MEASURE) {
     const members = group.map((k) => fields.find((f) => f.key === k)).filter((f): f is ProfileField => !!f);
     const first = members.find((f) => f.value !== "") ?? members[0];
     for (const f of members) if (f !== first && (f.value === "" || f.value === first.value) && f.band !== "red") dropped.add(f);
   }
-  const out: Record<Column, { shown: ProfileField[]; more: ProfileField[] }> = {
-    building: { shown: [], more: [] },
-    site: { shown: [], more: [] },
-    delivery: { shown: [], more: [] },
-  };
+  const out = {} as Arranged;
+  for (const t of Object.keys(TIERS) as Tier[]) out[t] = { shown: [], more: [] };
   const sorted = fields.filter((f) => !dropped.has(f)).sort((a, b) => rank(a.key) - rank(b.key));
   for (const f of sorted) {
-    const needed = ESSENTIAL.has(f.key) || f.value !== "" || f.band === "red";
-    out[columnOf(f.key)][needed ? "shown" : "more"].push(f);
+    const t = tierOf(f.key);
+    const needed = ALWAYS.includes(t) || f.key.startsWith("hdr.scale.") || ESSENTIAL.has(f.key) || f.value !== "" || f.band === "red";
+    out[t][needed ? "shown" : "more"].push(f);
   }
   return out;
 }
 
-export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, onIdentity, view = "all" }: Props) {
+export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, onIdentity }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
@@ -209,7 +205,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   }, [addressLine, onIdentity]);
 
   if (!data) {
-    return <p className="muted">{error || "Reading the profile…"}</p>;
+    return <p className="muted">{error || "Loading the profile…"}</p>;
   }
 
   const openSources = (system: string) => {
@@ -245,8 +241,8 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   const checks = cardChecks + entries.reduce((n, id) => n + entryChecks(id), 0);
   const selected = entry || firstCheck || "site";
   const goToCheck = () => {
-    const red = document.querySelector<HTMLElement>(".pf-card .pf-row[data-band=red]");
-    if (red && view !== "systems") {
+    const red = document.querySelector<HTMLElement>(".pf-card .pf-row[data-band=red], .pf-card .pf-choice[data-band=red]");
+    if (red) {
       red.scrollIntoView({ block: "center" });
       red.querySelector<HTMLElement>("select, input, button")?.focus();
     } else if (firstCheck) {
@@ -258,27 +254,27 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   const builtAt = data.built_at ? new Date(data.built_at) : null;
   const coverage = data.coverage ?? [];
   const unresolved = coverage.reduce((n, d) => n + d.needs_mapping, 0);
-  const identity = [site.fields.find((f) => f.key === "site.address")?.value, data.details.find((f) => f.key === "proj.client")?.value, data.details.find((f) => f.key === "proj.lga")?.value].filter(Boolean);
+  const completed = data.completed_documents ?? 0;
+  const total = data.read_documents;
   const note = data.failed_documents > 0
     ? `${data.failed_documents} document${data.failed_documents === 1 ? "" : "s"} could not be processed${data.active_documents > 0 ? ` · ${data.active_documents} still processing` : ""}`
     : data.unread_documents > 0
-      ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} not read yet`
+      ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} ready to read. Select Update project profile to start.`
       : data.pending_documents > 0
         ? data.active_documents > 0 ? "Documents are being processed; fields appear as reading finishes" : "Waiting for document processing to start or resume"
-        : requestNote || (coverage.length === 0 ? "Upload documents to start" : coverage.some((d) => !d.current) ? "Update needed to check complete source coverage" : "");
+        : requestNote || (total + data.skipped_documents === 0 ? "Upload documents to start" : coverage.some((d) => !d.current) ? "Update needed to check complete source coverage" : "");
 
   return (
     <div className="profile">
       <div className="pf-header">
-        <p className="pf-identity">{identity.length > 0 ? identity.join(" · ") : <span className="muted">Address, client and council not stated yet</span>}</p>
         <p className="profile-reading">
           {data.read_documents + data.skipped_documents > 0 && (
             <span>
-              Reading {data.read_documents} of {data.read_documents + data.skipped_documents} document
+              Included for profile: {data.read_documents} of {data.read_documents + data.skipped_documents} document
               {data.read_documents + data.skipped_documents === 1 ? "" : "s"}
               {data.skipped_documents > 0 && (
                 <>
-                  {" "}({data.skipped_documents} not read
+                  {" "}({data.skipped_documents} excluded
                   {data.skipped_kind ? `, mostly ${KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ")}` : ""}{" "}
                   <button type="button" className="cell-link" onClick={onShowNotRead}>
                     Show
@@ -296,7 +292,6 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
           </span>
           <span>
             {builtAt ? `Updated ${builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Not built yet"}
-            {data.pending_documents > 0 && ` · ${data.pending_documents} document${data.pending_documents === 1 ? "" : "s"} pending`}
           </span>
           {!data.thresholds.applied
             ? <span>Readings are stored but not shown until the thresholds are approved</span>
@@ -308,6 +303,12 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
             </button>
           )}
         </p>
+        {total > 0 && (
+          <div className="profile-progress">
+            <p role="status">{completed === total ? "Reading complete" : data.failed_documents > 0 ? "Reading needs attention" : data.pending_documents > 0 ? data.active_documents > 0 ? "Reading documents" : "Reading queued" : "Ready to read"} · {completed} of {total} document{total === 1 ? "" : "s"} read</p>
+            <progress aria-label="Documents read for profile" max={total} value={completed} />
+          </div>
+        )}
       </div>
       {data.failed_documents > 0 && (
         <p className="banner" role="alert">
@@ -324,7 +325,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
 
       {sourcesOpen && <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} onClose={() => setSourcesOpen(false)} />}
 
-      <section className="pf-section" aria-labelledby="pf-project" hidden={view === "systems"}>
+      <section className="pf-section" aria-labelledby="pf-project">
         <div className="pf-head">
           <h2 id="pf-project">Project</h2>
           <div className="pf-head-actions">
@@ -334,38 +335,80 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
             </button>
           </div>
         </div>
-        <div className="pf-card">
-          {(Object.keys(COLUMN_LABELS) as Column[]).map((c) => (
-            <CardColumn key={c} label={COLUMN_LABELS[c]} shown={card[c].shown} more={card[c].more} parts={data.parts} onSet={setField} onJump={onJump} />
-          ))}
-        </div>
+        <ProjectCard card={card} parts={data.parts} onSet={setField} onJump={onJump} />
       </section>
 
-      <div hidden={view === "summary"}>
-        <ScopeWorks
-          projectId={projectId}
-          data={data}
-          tick={tick + workTick}
-          selected={selected}
-          onSelect={setEntry}
-          onScope={setScope}
-          onSet={set}
-          onJump={onJump}
-          onSources={openSources}
-          onSignedOut={onSignedOut}
-        />
+      <ScopeWorks
+        projectId={projectId}
+        data={data}
+        tick={tick + workTick}
+        selected={selected}
+        onSelect={setEntry}
+        onScope={setScope}
+        onSet={set}
+        onJump={onJump}
+        onSources={openSources}
+        onSignedOut={onSignedOut}
+      />
+    </div>
+  );
+}
+
+function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void }) {
+  const row = (f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact stacked />;
+  const one = (t: Tier, key: string) => card[t].shown.find((f) => f.key === key);
+  const chips = (f: ProfileField | undefined, title: string) =>
+    f && (f.options?.length ? <ChoiceGroup field={f} title={title} variant="chips" onSet={onSet} onJump={onJump} /> : row(f));
+  const subclass = one("subclass", "hdr.subclass");
+  // Before a category is chosen the subclass options span every category;
+  // a dropdown keeps that long list out of the way until then.
+  const listSubclass = !!one("class", "hdr.building_class")?.value && (subclass?.options?.length ?? 0) > 0 && (subclass?.options?.length ?? 0) <= 14;
+  return (
+    <div className="pf-card pf-tiers">
+      <div className="pf-identity-grid" role="group" aria-label="Who and where">
+        {card.identity.shown.map(row)}
+      </div>
+      <div className="pf-place-grid" role="group" aria-label="Lot and council">
+        {card.place.shown.map(row)}
+      </div>
+      {chips(one("class", "hdr.building_class"), "Class")}
+      <div className="pf-work-line">
+        {chips(one("work", "hdr.work_type"), "Work type")}
+        <div className="pf-budget">{card.budget.shown.map(row)}</div>
+      </div>
+      <div className="pf-cards">
+        <Panel title="Subclass">
+          {subclass && (listSubclass ? <ChoiceGroup field={subclass} title={subclass.label} variant="list" onSet={onSet} onJump={onJump} /> : row(subclass))}
+          {card.subclass.shown.filter((f) => f !== subclass).map(row)}
+        </Panel>
+        <Panel title="Scale" more={card.scale.more} render={row}>
+          {card.scale.shown.length > 0 ? card.scale.shown.map(row) : <p className="muted">Choose a subclass to see its measures.</p>}
+        </Panel>
+        <Panel title="Complexity" className="pf-panel-wide">
+          {card.complexity.shown.map(row)}
+        </Panel>
+      </div>
+      <div className="pf-strips">
+        <Panel title="Approvals" more={card.approvals.more} render={row} flat>
+          {card.approvals.shown.map(row)}
+        </Panel>
+        <Panel title="Delivery" more={card.delivery.more} render={row} flat>
+          {card.delivery.shown.map(row)}
+        </Panel>
       </div>
     </div>
   );
 }
 
-function CardColumn({ label, shown, more, parts, onSet, onJump }: { label: string; shown: ProfileField[]; more: ProfileField[]; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void }) {
+function Panel({ title, className = "", more = [], render, flat, children }: { title: string; className?: string; more?: ProfileField[]; render?: (f: ProfileField) => ReactNode; flat?: boolean; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="pf-col" role="group" aria-label={label}>
-      <h3>{label}</h3>
-      {shown.map((f) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact />)}
-      {open && more.map((f) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact />)}
+    <div className={`pf-panel${flat ? " pf-panel-flat" : ""}${className ? ` ${className}` : ""}`} role="group" aria-label={title}>
+      <h3 className="pf-rule">{title}</h3>
+      <div className="pf-panel-body">
+        {children}
+        {open && render && more.map(render)}
+      </div>
       {more.length > 0 && (
         <button type="button" className="cell-link pf-col-more" aria-expanded={open} onClick={() => setOpen(!open)}>
           {open ? "Fewer" : `+ ${more.length} more`}

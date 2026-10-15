@@ -3,6 +3,8 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, type Catalog, type Project as ProjectRow } from "./api";
+import { ConfirmDialog } from "./ConfirmDialog";
+import { IconBin } from "./icons";
 import { ThemeButton } from "./ThemeButton";
 import { Wordmark } from "./Wordmark";
 import { Project } from "./Project";
@@ -128,6 +130,7 @@ export function App() {
                 loadProjects();
                 navigate(`/projects/${id}`);
               }}
+              onDeleted={(id) => setProjects((cur) => cur?.filter((p) => p.id !== id) ?? cur)}
               onSignedOut={signedOut}
             />
           </div>
@@ -203,17 +206,38 @@ function Projects({
   projects,
   onOpen,
   onCreated,
+  onDeleted,
   onSignedOut,
 }: {
   projects: ProjectRow[] | null;
   onOpen: (id: string) => void;
   onCreated: (id: string) => void;
+  onDeleted: (id: string) => void;
   onSignedOut: () => void;
 }) {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirm, setConfirm] = useState<ProjectRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  async function remove() {
+    if (!confirm) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await api.deleteProject(confirm.id);
+      onDeleted(confirm.id);
+      setConfirm(null);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) return onSignedOut();
+      setError(err instanceof Error ? err.message : "Couldn't delete the project.");
+      setConfirm(null);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   async function create(e: FormEvent) {
     e.preventDefault();
@@ -260,9 +284,31 @@ function Projects({
                 {p.name}
                 <span>Open</span>
               </a>
+              <button
+                type="button"
+                className="reg-del project-delete"
+                aria-label={`Delete ${p.name}`}
+                title={`Delete ${p.name}`}
+                onClick={() => setConfirm(p)}
+              >
+                <IconBin />
+              </button>
             </li>
           ))}
         </ul>
+      )}
+      {confirm && (
+        <ConfirmDialog
+          title={`Delete ${confirm.name}?`}
+          message="This permanently removes the project and everything in it: documents, files, the cost plan, specifications, procurement and issued records. This cannot be undone."
+          confirmLabel="Delete project"
+          busy={deleting}
+          busyLabel="Deleting…"
+          onConfirm={() => void remove()}
+          onCancel={() => {
+            if (!deleting) setConfirm(null);
+          }}
+        />
       )}
       <form className="stack-form" onSubmit={create} noValidate>
         <label htmlFor="new-project">New project</label>

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { DevStatus } from "./DevStatus";
 import { Wordmark } from "./Wordmark";
 
-export type WorkbenchView = "profile" | "summary" | "systems" | "implications" | "delivery" | "procurement" | "costs";
+export type WorkbenchView = "profile" | "specifications" | "implications" | "delivery" | "procurement" | "costs";
 
 interface Props {
   projects: { id: string; name: string }[] | null;
@@ -22,10 +22,9 @@ const VIEWS: { id: WorkbenchView | "plan" | "program"; label: string; name?: str
   { id: "costs", label: "Cost Plan", name: "Costs", icon: "M12 3v18M7 8h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h8" },
   { id: "program", label: "Program", icon: "M4 6h16M4 12h10M4 18h13", idle: true },
   { id: "procurement", label: "Procurement", icon: "M8 4h8v3H8zM6 7h12v13H6z" },
+  { id: "specifications", label: "Specifications", icon: "M7 3h8l4 4v14H7zM9 13h6M9 17h6" },
   { id: "delivery", label: "Delivery", icon: "M3 7h11v10H3zM14 10h4l3 3v4h-7zM7 19a1.5 1.5 0 1 0 0.01 0M17 19a1.5 1.5 0 1 0 0.01 0" },
   { id: "implications", label: "Implications", icon: "M12 4l8 14H4zM12 10v4M12 16h.01" },
-  { id: "summary", label: "Summary", icon: "M5 6h14M5 12h14M5 18h9" },
-  { id: "systems", label: "Systems", icon: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" },
 ];
 
 export function LeftNav({ projects, currentId, navigate, view, onView }: Props) {

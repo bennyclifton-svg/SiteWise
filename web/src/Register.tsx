@@ -194,7 +194,7 @@ export function Register({
       </div>
       {notReadOnly && (
         <p className="reg-filter">
-          Showing documents the profile does not read.{" "}
+          Showing documents excluded from profile reading.{" "}
           <button type="button" className="cell-link" onClick={onClearFilter}>
             Show all
           </button>
@@ -230,7 +230,7 @@ export function Register({
               {COLUMNS.map((c) => {
                 const active = (sort?.col ?? "number") === c.col;
                 return (
-                  <th key={c.col} scope="col" aria-sort={active ? ((sort?.dir ?? 1) === 1 ? "ascending" : "descending") : "none"}>
+                  <th key={c.col} scope="col" className={c.className} aria-sort={active ? ((sort?.dir ?? 1) === 1 ? "ascending" : "descending") : "none"}>
                     <button
                       type="button"
                       onClick={() => setSort((s) => (s && s.col === c.col ? { col: c.col, dir: s.dir === 1 ? -1 : 1 } : { col: c.col, dir: 1 }))}
@@ -240,11 +240,11 @@ export function Register({
                   </th>
                 );
               })}
-              <th scope="col" className="reg-prof" title="Read by the project profile">
-                <span className="reg-th-text" aria-hidden>Read</span>
-                <span className="sr-only">Read by the project profile</span>
+              <th scope="col" className="reg-prof" title="Included for profile reading">
+                <span className="reg-th-text" aria-hidden>Use</span>
+                <span className="sr-only">Included for profile reading</span>
               </th>
-              <th scope="col">
+              <th scope="col" className="reg-mark">
                 <span className="sr-only">State</span>
               </th>
               <th scope="col" className="reg-bin">
@@ -287,10 +287,10 @@ export function Register({
         <div className="reg-bulk" role="toolbar" aria-label="Selected documents">
           <span className="reg-bulk-count">{selected.size} selected</span>
           <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "read")}>
-            Read for profile
+            Include for profile
           </button>
           <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "skip")}>
-            Don&apos;t read
+            Exclude from profile
           </button>
           <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "auto")}>
             Reset to automatic
@@ -408,6 +408,8 @@ function RegisterRow({
 }) {
   const doc = row.doc;
   const title = fieldValue(doc, "title");
+  const titleNeedsReview = doc?.fields.some((f) => f.field === "title" && f.decided_by === "jev" && f.band === "blank");
+  const missingTitle = titleNeedsReview ? "Title needs review" : "Title not extracted";
   const discipline = fieldValue(doc, "discipline");
   const kind = fieldValue(doc, "kind");
   const kindLabel = catalog?.kinds.find((k) => k.id === kind)?.label ?? kind;
@@ -432,7 +434,7 @@ function RegisterRow({
     onToggle();
   };
   const override = doc?.profile_read === "read" || doc?.profile_read === "skip";
-  const readLabel = reads ? "Read by the project profile" : "Not read by the project profile";
+  const readLabel = reads ? "Included for profile reading" : "Excluded from profile reading";
   return (
     <tbody
       className="reg-doc"
@@ -466,10 +468,10 @@ function RegisterRow({
         <td className="reg-no" title={fieldValue(doc, "number")} data-user={userSet("number") || undefined}>
           {fieldValue(doc, "number")}
         </td>
-        <td className="reg-title" title={`${title || "Title not extracted"}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
+        <td className="reg-title" title={`${title || (titleNeedsReview ? "No title accepted automatically. Open this row to enter the title from the document." : missingTitle)}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
           {row.uploadError ? <span className="error-text">{row.uploadError}</span> : title || (
             <>
-              <span className="muted">{ocrStage(doc) ? "Recovering document details" : !doc || doc.status === "pending" ? "Reading title…" : "Title not extracted"}</span>
+              <span className="muted">{ocrStage(doc) ? "Recovering document details" : !doc || doc.status === "pending" ? "Reading title…" : missingTitle}</span>
               <span className="reg-file-hint">File: {row.filename}</span>
             </>
           )}
@@ -504,7 +506,7 @@ function RegisterRow({
               data-reads={reads ? "true" : undefined}
               data-override={override ? "true" : undefined}
               aria-pressed={reads}
-              title={`${readLabel}${override ? " (your choice)" : " (automatic for this kind)"}. Click to ${reads ? "stop reading it" : "read it"}.`}
+              title={`${readLabel}${override ? " (your choice)" : " (automatic for this kind)"}. This is a selection, not reading progress. Click to ${reads ? "exclude it" : "include it"}; use Update project profile to start reading.`}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleRead(doc, reads);

@@ -150,6 +150,16 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			"report_references":       {"org_id": org, "report_version_id": version, "citation_id": "U1", "label": "U", "anchor_id": "seed", "basis": row{}},
 		}
 		f["passages"] = row{"org_id": org, "id": id(2400 + n), "document_id": id(1900 + n), "ordinal": 0, "body": "Source"}
+		specType, specApp := id(2500+n), id(2600+n)
+		f["specification_types"] = row{"org_id": org, "project_id": p, "id": specType, "content": row{}, "created_by": u}
+		f["specification_applications"] = row{"org_id": org, "project_id": p, "id": specApp, "type_id": specType, "part_id": part, "work_item_id": w, "content": row{}}
+		f["specification_assertions"] = row{"org_id": org, "project_id": p, "id": id(2700 + n), "type_id": specType, "application_id": specApp, "attribute_key": "notes", "meaning": "selection", "value": row{"state": "unknown"}, "origin": "user", "status": "proposed", "actor": u}
+		f["specification_relationships"] = row{"org_id": org, "project_id": p, "id": id(2800 + n), "from_id": specType, "to_id": id(2550 + n), "kind": "component_of", "content": row{}}
+		f["specification_history"] = row{"org_id": org, "project_id": p, "entity_id": specType, "entity_kind": "type", "actor": u, "content": row{}}
+		f["specification_issues"] = row{"org_id": org, "project_id": p, "id": id(2900 + n), "number": 1, "title": "Schedule", "purpose": "preliminary", "snapshot": row{}, "created_by": u}
+		f["specification_imports"] = row{"org_id": org, "project_id": p, "document_id": id(1900 + n), "requested_by": u, "target_type_id": specType, "version": "fixture"}
+		f["specification_import_readings"] = row{"org_id": org, "document_id": id(1900 + n), "candidate_key": "fixture", "fingerprint": "fixture", "result": row{}}
+		f["specification_coverage"] = row{"org_id": org, "project_id": p, "id": id(3000 + n), "system_id": "interiors", "type_id": specType, "content": row{}, "updated_by": u}
 		f["passage_sources"] = row{"org_id": org, "passage_id": id(2400 + n), "document_id": id(1900 + n)}
 		f["passage_calls"] = row{"org_id": org, "passage_id": id(2400 + n), "document_id": id(1900 + n), "stage": "evidence", "fingerprint": "fixture", "result": map[string]any{}}
 		costVersion, costID, unusedCostID := id(2100+n), id(2200+n), id(2300+n)
@@ -160,12 +170,30 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["cost_suggestion_dismissals"] = row{"org_id": org, "project_id": p, "source_key": "pw:escalation", "actor": u}
 		f["cost_values"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "metric": "estimate", "value_state": "unknown", "origin": "user", "meaning": "allowance"}
 		f["scope_cost_links"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "package_scope_item_id": scope}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions"} {
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
 		}
 		unusedCost := maps.Clone(f["cost_items"])
+		secondType := maps.Clone(f["specification_types"])
+		secondType["id"] = id(2550 + n)
+		if err := insert(tx, "specification_types", secondType); err != nil {
+			t.Fatal(err)
+		}
+		unusedDocument := maps.Clone(f["documents"])
+		unusedFile := maps.Clone(f["files"])
+		unusedFile["id"] = id(1850 + n)
+		unusedFile["sha256"] = "\\x" + strings.Repeat("02", 32)
+		if err := insert(tx, "files", unusedFile); err != nil {
+			t.Fatal(err)
+		}
+		unusedDocument["id"] = id(1950 + n)
+		unusedDocument["file_id"] = id(1850 + n)
+		if err := insert(tx, "documents", unusedDocument); err != nil {
+			t.Fatal(err)
+		}
+		f["specification_source_documents"] = unusedDocument
 		unusedCost["id"] = unusedCostID
 		if err := insert(tx, "cost_items", unusedCost); err != nil {
 			t.Fatal(err)
@@ -218,6 +246,8 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 				base["id"] = id(9999)
 			}
 			switch f.table {
+			case "specification_imports":
+				base["document_id"] = id(1951)
 			case "cost_plan_versions":
 				base["revision"] = 2
 				base["status"] = "baseline"
@@ -273,6 +303,9 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			for _, foreign := range targets {
 				matched := false
 				parent, ok := foreign[f.parent]
+				if f.table == "specification_imports" && f.parent == "documents" {
+					parent, ok = foreign["specification_source_documents"]
+				}
 				if !ok {
 					t.Fatalf("missing parent fixture %s", f.parent)
 				}

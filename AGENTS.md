@@ -2,8 +2,9 @@
 
 SiteWise is a construction-project app built from first principles on the
 physical building, with **Jev (TypeSafe System One) as the only AI** and
-**speed as the first objective**. Read `docs/design/2026-09-29-foundation-design.md`
-before changing anything.
+**speed as the first objective**. Read `PRODUCT.md` for the current surfaces.
+Read `docs/design/2026-09-29-foundation-design.md` for the binding rules:
+speed, Jev only, the building as the model, and the intake budget.
 
 ## Non-negotiables
 
@@ -24,6 +25,46 @@ before changing anything.
    Consultant disciplines are a view over it, not its structure.
 5. **Rule numbers come from the instrument itself** (NCC 2022, the standard),
    never from seed prose alone. Unverified numbers stay `verified: false`.
+
+## Current product
+
+`PRODUCT.md` names the workbench. The foundation design is the origin of the
+rules above and describes the intake slice. The workbench also includes
+Profile, Cost Plan, Procurement, Specifications, Delivery and Implications.
+Project Plan and Program are navigation placeholders.
+
+When a task does not name a budget, use the budget already recorded for that
+path in `bench/budgets.json`. Filing stays p50 ≤ 1 s and p90 ≤ 2 s. Profile
+edit stays at its existing tighter budget. Cost, procurement and specification
+reads and writes stay at p50 ≤ 100 ms and p90 ≤ 250 ms unless that named path
+is tighter.
+
+These paths do not call Jev: cost reads and writes, procurement row create,
+report create, and specification direct edit, review, schedule and issue.
+Specification import is a background job in the existing worker: one fan-out
+per candidate, cached by source. A reading is a proposal. Navigation and
+typing do not call Jev.
+
+Money is computed in Go. Unknown stays unknown. Do not invent a rate, a price,
+a rule number or a product selection. An upload leaves an accepted
+specification value and a frozen cost baseline as they were. Removing a
+procurement package may delete linked draft cost lines only through the
+existing confirmation, and leaves frozen baselines and issued history intact.
+
+Before changing one of these surfaces, read its current note:
+
+- Profile: `docs/design/2026-10-03-project-profile.md`
+- Cost plan: `docs/plans/2026-10-10-cost-plan-grid.md`,
+  `docs/plans/2026-10-10-cost-plan-default-inclusion.md`,
+  `docs/plans/2026-10-11-cost-plan-direct-editing.md`
+- Procurement: `docs/plans/2026-10-10-procurement-table.md`,
+  `docs/plans/2026-10-11-procurement-cost-removal.md`,
+  `docs/plans/2026-10-11-procurement-default-disciplines.md`.
+  That plan's header still says nothing is built; the knowledge file, the
+  loader and the browser test are in the tree. Trust the code.
+- Specifications: `docs/design/2026-10-14-specification-workspace.md`,
+  `docs/plans/2026-10-14-coordinated-specification-workspace.md`,
+  `docs/evidence/2026-10-14-specification-implementation.md`
 
 ## Stack
 
@@ -58,9 +99,11 @@ The why, the three lanes, and the prompt run sheets live in
 
 A change is one lane:
 
-- **A, product core** (filing, org isolation, rule numbers, anything a user
-  trusts). An existing test or answer key must still pass, and the speed
-  budget must still pass. Unverified rule numbers stay `verified: false`.
+- **A, product core** (filing, org isolation, rule numbers, cost figures,
+  procurement packages, issued specifications, accepted specification values,
+  anything a user trusts). An existing test or answer key must still pass, and
+  the speed budget must still pass. Unverified rule numbers stay
+  `verified: false`.
 - **B, edge** (a label, an empty state, a layout). Move fast. Do not break
   filing.
 - **C, security and dependencies** (login, file access, anything new in the
@@ -72,8 +115,9 @@ Before coding a new feature, the task states the user outcome, why it
 serves filing speed, answer trust, or time-to-decision, the lane, what is
 out of scope, the p50/p90 budget in milliseconds, what "done" looks like,
 and the edge cases. When those are missing, apply these defaults and do
-not invent a wider task: filing stays p50 ≤ 1 s and p90 ≤ 2 s, one Jev
-fan-out, every row scoped to `org_id`, no new service or dependency
+not invent a wider task: use the budget already recorded for the path in
+`bench/budgets.json`; filing stays p50 ≤ 1 s and p90 ≤ 2 s; one Jev
+fan-out per state; every row scoped to `org_id`; no new service or dependency
 without a stated reason.
 
 A clear defect is fixed only as far as that defect. A direction choice

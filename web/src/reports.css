@@ -1,6 +1,8 @@
 /* Reports inherit the existing paper/IBM Plex workbench. Citation colours
    follow the report specification; letter and word labels survive greyscale. */
 .workspace-with-views { grid-template-rows: auto minmax(0, 1fr); }
+/* Allow long project names to truncate within the mobile project header. */
+.leftnav .switcher, .leftnav .switcher-button { min-width: 0; }
 .project-views { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 20px; border-bottom: 1px solid var(--line); background: var(--paper); }
 .project-views [aria-pressed="true"] { color: var(--ink); background: var(--ground); border-color: var(--line-strong); }
 .workspace-with-views .profile-col, .workspace-with-views .register-col { height: 100%; }
@@ -74,8 +76,6 @@
 .report-issue-form label { display: block; }
 .report-issue-form input:not([type="checkbox"]), .report-issue-form textarea { box-sizing: border-box; width: 100%; min-width: 0; padding: 8px; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
 .report-issue-form textarea { min-height: 90px; resize: vertical; }
-
-.workspace-with-views .profile-focused { grid-column: 1 / -1; max-width: 1100px; width: 100%; }
 
 .report-table-scroll { max-width: 100%; overflow-x: auto; margin: .75rem 0; }
 .report-table { border-collapse: collapse; width: 100%; font-size: .9rem; }

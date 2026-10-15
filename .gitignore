@@ -24,3 +24,7 @@ data/eval/profile/private/
 # Local agent worktrees and raw diagnostic samples.
 .claude/
 bench/samples-*.json
+
+# Classification source documents (NATSPEC, ANZSMM). Licensed or third-party
+# PDFs stay local; transcribed codes and titles live beside them as YAML.
+data/reference/classifications/*.pdf

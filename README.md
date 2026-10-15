@@ -2,7 +2,7 @@
 
 A fast construction-project app built on the physical building (systems, the
 rules that govern them, and the interfaces between them), with Jev as its only
-AI.
+AI. The workbench is described in [PRODUCT.md](PRODUCT.md).
 
 ## Launch
 
@@ -15,6 +15,7 @@ Paste into PowerShell:
 It opens the app in your browser, signed in. Next time, bookmark
 http://127.0.0.1:8080/dev/login (it signs you in). Press Ctrl+C to stop.
 
+- Product: [PRODUCT.md](PRODUCT.md)
 - Design: [docs/design/2026-09-29-foundation-design.md](docs/design/2026-09-29-foundation-design.md)
 - Knowledge model: [knowledge/SCHEMA.md](knowledge/SCHEMA.md)
 - Agent rules: [AGENTS.md](AGENTS.md)
@@ -51,8 +52,10 @@ It starts PostgreSQL on port 5433 if needed, uses its own `sitewise_dev`
 database and `.tools/dev-files`, builds the web UI once, serves on
 `http://127.0.0.1:8080` with `-dev-login`, and opens `/dev/login`, which signs
 you in as the local owner. `serve` refuses `-dev-login` in production or on
-any non-loopback address. `-Build` rebuilds the UI. Until `intake-eval -fit` finds supported cut-offs, fields only
-Jev could decide show blank; rule-settled fields show green.
+any non-loopback address. `-Build` rebuilds the UI. Green automatic acceptance
+is withheld. Kind and discipline may show a provisional amber review; other
+fields only Jev could decide stay blank. Rule-settled fields show as settled.
+See `data/intake/thresholds.json`.
 
 By hand: the Go binary embeds the web build, so build the SPA first.
 

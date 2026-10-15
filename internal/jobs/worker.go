@@ -85,7 +85,7 @@ func (w *Worker) Once(ctx context.Context, orgID string) error {
 	}
 	kinds := w.Kinds
 	if len(kinds) == 0 {
-		kinds = []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence}
+		kinds = []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification}
 	}
 	job, err := w.Store.ClaimJobSince(ctx, orgID, lease, kinds, w.Since)
 	if err != nil {
@@ -148,6 +148,8 @@ func (w *Worker) retryAfter(err error) time.Duration {
 // the same stage replaces passages and labels instead of appending them.
 func (w *Worker) Perform(ctx context.Context, job store.ClaimedJob) error {
 	switch job.Kind {
+	case store.JobKindSpecification:
+		return w.specification(ctx, job)
 	case store.JobKindOCR:
 		if w.OCR == nil {
 			return errors.New("OCR worker unavailable")

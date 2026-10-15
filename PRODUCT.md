@@ -8,28 +8,66 @@ web
 
 ## Users
 
-Project and design managers on Australian construction projects, working at a
-desk on a laptop or large monitor. Their recurring job is filing consultant
-packages (drawings, reports, specifications, schedules) into the right project
-in batches, then trusting that each file's identity (number, revision, title,
-kind, discipline, lifecycle area, what it supersedes) is right.
+Project and design managers, and builders, on Australian construction projects,
+working at a desk on a laptop or large monitor. They file consultant packages,
+read the building, set a cost plan, appoint consultants and trades, and keep a
+specification they can issue. Filing stays a core job: each file's identity
+(number, revision, title, kind, discipline, lifecycle area, what it supersedes)
+has to be right.
 
 ## Product Purpose
 
-SiteWise is a construction-project app built from first principles on the
-physical building. It replaces the old sitewise.au app, which nobody used and
-which was too slow. The first slice is instant intake: drop a PDF, DOCX or XLSX
-into a chosen project and it is filed within about a second (gate: p50 ≤ 1 s,
-p90 ≤ 2 s after upload). Success is a filing the user can trust at a glance and
-correct in one move.
+SiteWise is the workbench for one building: what it is, what it is expected to
+cost, who is appointed, and what is specified, with the document repository
+beside that work. It replaces the old sitewise.au app, which nobody used and
+which was too slow.
+
+A dropped PDF, DOCX or XLSX is filed within about a second (p50 ≤ 1 s, p90 ≤ 2 s
+after upload). Saved reads and writes on the cost plan, procurement and
+specifications stay within p50 ≤ 100 ms and p90 ≤ 250 ms, except where a named
+path is already tighter. Success is a project a manager can read and decide
+from, and a filing they can trust at a glance and correct in one move.
+
+The workbench, in navigation order:
+
+- **Project Profile.** The determinants and project facts.
+- **Project Plan.** A navigation placeholder.
+- **Cost Plan.** Four sections: fees and charges, consultants, construction,
+  contingency. Budget is the planning figure. The user enters the approved
+  contract and the amount claimed. Forecast, variance and remaining are
+  computed. An unpriced line stays unknown. Lines are prepared from the
+  profile, the work items and the procurement packages. No price is invented.
+- **Program.** A navigation placeholder.
+- **Procurement.** One table of consultant and trade packages. Choosing a
+  discipline saves the package. Create writes an RFP for a consultant and an
+  RFT for a trade. The table proposes the disciplines the profile and scope
+  imply. Removing a package can remove its draft cost lines in the same
+  confirmation. Firms, tender comparison and a project-management-plan tab are
+  later work; an existing project management plan stays reachable.
+- **Specifications.** An editable six-column schedule of materials, products,
+  finishes, assemblies and equipment, organised by the Profiler's building
+  hierarchy. Scope, work action and provider read through from Profiler; the
+  schedule owns detailed requirements and choices. The user edits cells, adds
+  rows, records explicit unknowns, marks coverage, and issues a frozen PDF or
+  CSV. Update specification reads filed documents in the background; readings
+  remain proposals for review. Consultant documents retain authority until an
+  explicit maintenance transfer with a reason. The browser table is built;
+  designed PDF tables, images and automatic application assignment remain ahead.
+- **Delivery, Implications.** The existing project views.
+  The document repository stays beside every view.
 
 ## Positioning
 
-Jev (TypeSafe System One) is the only AI, and it only picks. Code parses,
-harvests candidates, computes, orders revisions and controls flow. Every field
-states how it was decided (read by rule, picked by Jev, or set by the user) and
-how sure that decision is. Uncertainty is shown, never hidden, and a user value
-is never overwritten.
+Jev (TypeSafe System One) is the only AI, and it only picks. It is used where
+a document must be read: filing, profile evidence, and the background
+specification import (one fan-out per candidate). Code parses, harvests
+candidates, computes, orders revisions and controls flow. Cost arithmetic,
+package suggestions, procurement creates and specification acceptance are code
+and user acts. Typing and navigation do not call Jev.
+
+Every field states how it was decided (read by rule, picked by Jev, or set by
+the user) and how sure that decision is. Uncertainty is shown, and a user
+value is never overwritten.
 
 ## Operating Context
 
@@ -43,25 +81,35 @@ spreadsheets. Scanned PDFs without a text layer are stored but not filed.
 
 - Speed is the first objective. Every user-facing path has a p50/p90 budget and
   a benchmark that fails the build.
-- One Jev fan-out per filing; nothing judged while the user waits if it can be
+- One Jev fan-out per filing, and one background fan-out per specification
+  import candidate. Nothing is judged while the user waits if it can be
   precomputed. Grey means Jev did not answer in time; rule values stand and the
   rest stays unjudged.
 - Bands per field: green (above that question's threshold), amber (applied,
   flagged), blank (below band, not applied), grey (Jev timed out).
-- Thresholds are uncalibrated at launch, so Jev answers stay blank until the
-  calibration run sets them. The UI must make that honest, not alarming.
-- Supersession is a link to an immutable prior filing; nothing is deleted or
-  overwritten.
+- Green automatic acceptance is withheld. Kind and discipline may show a
+  provisional amber review. Other Jev identity fields stay blank until their
+  own cut-offs exist. Rule-settled fields show as settled. Profile bands are
+  provisional and await owner approval; profile green stays withheld. The UI
+  keeps that honest.
+- Cost and specification status is written in words. An empty money cell, an
+  unstated specification and a missing date stay unknown.
+- Supersession is a link to an immutable prior filing. A user value, an
+  accepted specification decision, an issued specification and a frozen cost
+  baseline stay as they were. A later upload can flag them for review.
 - Stack changes need a stated reason (see AGENTS.md).
 
 ## Brand Commitments
 
-- Keep the sitewise.au product look (confirmed by the owner, 30 Sep 2026): the
-  blue S mark and "Sitewise" wordmark, the warm paper workbench, tight radii and
-  IBM Plex type recorded in `../clerk/DESIGN.md` (product/operate register, not
-  the landing).
-- Evidence vs inference: ember marks evidenced or user-owned values, azure marks
-  model inference. Do not swap those meanings.
+- Keep the Sitewise mark and wordmark and the owner-approved Clerk cockpit
+  adaptation: Instrument Sans, shared semantic surfaces and compact working
+  controls. `web/DESIGN.md` is the shared visual authority; current shell tokens
+  govern light and dark appearance. The earlier warm-paper/IBM Plex register
+  in `../clerk/DESIGN.md` records the product's origin, not a separate identity
+  for new workbench surfaces.
+- Evidence vs inference: on filing and profile, ember marks evidenced or
+  user-owned values, azure marks model inference. Keep those meanings. Cost
+  and specification status is written in words as well as colour.
 - Voice: ordinary Australian built-environment professional; plain, specific,
   no AI theatre.
 
@@ -80,6 +128,12 @@ spreadsheets. Scanned PDFs without a text layer are stored but not filed.
    errors.
 4. The user's word is final. Corrections win over any later judgement.
 5. The building is the model; disciplines are a filing view.
+6. Unknown is a value. An empty money cell, an unstated specification and a
+   missing date stay unknown.
+7. An issue freezes the record. Later uploads and edits can flag review; the
+   issued package and the frozen baseline stay as they were.
+8. A filed document is evidence until someone accepts it. Coverage and adoption
+   are user decisions.
 
 ## Accessibility & Inclusion
 

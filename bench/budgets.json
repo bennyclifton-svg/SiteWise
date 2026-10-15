@@ -1,6 +1,10 @@
 {
   "min_samples": 20,
   "paths": [
+	{"name":"specification_read","p50_us":100000,"p90_us":250000},
+	{"name":"specification_write","p50_us":100000,"p90_us":250000},
+	{"name":"specification_issue","p50_us":100000,"p90_us":250000},
+	{"name":"specification_export","p50_us":100000,"p90_us":250000},
     {
       "name": "identity_text_extraction",
       "p50_us": 80000,
@@ -78,6 +82,11 @@
     },
     {
       "name": "document_delete",
+      "p50_us": 500000,
+      "p90_us": 1000000
+    },
+    {
+      "name": "project_delete",
       "p50_us": 500000,
       "p90_us": 1000000
     },

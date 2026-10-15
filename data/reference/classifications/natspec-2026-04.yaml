@@ -1,0 +1,631 @@
+# NATSPEC National Classification List, April 2026.
+# Transcribed by script from the free PDF at
+# https://natspec.com.au/images/PDF/National_Classification_List.pdf
+# Codes and titles exactly as printed. Workgroup titles are printed in capitals.
+# no_generic: true = printed in [square brackets]: NATSPEC has no generic worksection,
+# a branded one may exist. aus_spec: true = AUS-SPEC civil/maintenance workgroup.
+# Parents follow the document's order, not the code prefix (0001 sits under 001;
+# 1420-1423 under 141; 1620-1623 under 161).
+version: 1
+scheme: natspec
+name: NATSPEC
+edition: "NATSPEC National Classification List, April 2026"
+status: draft
+sources:
+  - {reference: natspec-national-classification-list-2026-04.pdf, url: "https://natspec.com.au/images/PDF/National_Classification_List.pdf"}
+groups:
+  - {code: "00", label: "PLANNING AND DESIGN (AUS-SPEC)", aus_spec: true}
+  - {code: "01", label: "GENERAL"}
+  - {code: "02", label: "SITE, URBAN AND OPEN SPACES"}
+  - {code: "03", label: "STRUCTURE"}
+  - {code: "04", label: "ENCLOSURE"}
+  - {code: "05", label: "INTERIOR"}
+  - {code: "06", label: "FINISH"}
+  - {code: "07", label: "MECHANICAL"}
+  - {code: "08", label: "HYDRAULIC"}
+  - {code: "09", label: "ELECTRICAL"}
+  - {code: "10", label: "FIRE"}
+  - {code: "11", label: "CONSTRUCTION - ROAD RESERVE (AUS-SPEC)", aus_spec: true}
+  - {code: "13", label: "CONSTRUCTION - PUBLIC UTILITIES (AUS-SPEC)", aus_spec: true}
+  - {code: "14", label: "MAINTENANCE AND OPERATIONS - URBAN AND OPEN SPACES (AUS-SPEC)", aus_spec: true}
+  - {code: "15", label: "MAINTENANCE AND OPERATIONS - BUILDINGS (AUS-SPEC)", aus_spec: true}
+  - {code: "16", label: "MAINTENANCE AND OPERATIONS - ROAD RESERVE (AUS-SPEC)", aus_spec: true}
+  - {code: "17", label: "MAINTENANCE AND OPERATIONS - BRIDGES (AUS-SPEC)", aus_spec: true}
+  - {code: "18", label: "MAINTENANCE AND OPERATIONS - PUBLIC UTILITIES (AUS-SPEC)", aus_spec: true}
+  - {code: "20", label: "CONVEYING"}
+subgroups:
+  - {code: "001", label: "General", group: "00"}
+  - {code: "002", label: "Open space", group: "00"}
+  - {code: "004", label: "Road reserve", group: "00"}
+  - {code: "005", label: "Road reserve - rural", group: "00"}
+  - {code: "006", label: "Bridges", group: "00"}
+  - {code: "007", label: "Public utilities", group: "00"}
+  - {code: "011", label: "Documentation", group: "01"}
+  - {code: "012", label: "Tendering", group: "01"}
+  - {code: "013", label: "Generic preliminaries", group: "01"}
+  - {code: "014", label: "Contract preliminaries", group: "01"}
+  - {code: "015", label: "Schedule of rates (AUS-SPEC)", group: "01"}
+  - {code: "016", label: "Quality assurance", group: "01"}
+  - {code: "017", label: "General requirements", group: "01"}
+  - {code: "018", label: "Common requirements", group: "01"}
+  - {code: "019", label: "Sundry installations", group: "01"}
+  - {code: "020", label: "Demolition", group: "02"}
+  - {code: "022", label: "Preparation and groundwork", group: "02"}
+  - {code: "024", label: "Landscape structures", group: "02"}
+  - {code: "025", label: "Landscape cultivation", group: "02"}
+  - {code: "026", label: "Landscape finishes", group: "02"}
+  - {code: "027", label: "Pavements", group: "02"}
+  - {code: "028", label: "Pathways (AUS-SPEC)", group: "02"}
+  - {code: "029", label: "Retaining walls (AUS-SPEC)", group: "02"}
+  - {code: "030", label: "Foundations", group: "03"}
+  - {code: "031", label: "Concrete - in situ", group: "03"}
+  - {code: "032", label: "Concrete - systems", group: "03"}
+  - {code: "033", label: "Masonry", group: "03"}
+  - {code: "034", label: "Steel", group: "03"}
+  - {code: "036", label: "Earth", group: "03"}
+  - {code: "038", label: "Timber", group: "03"}
+  - {code: "041", label: "Tanking and damp-proofing", group: "04"}
+  - {code: "042", label: "Roofing", group: "04"}
+  - {code: "043", label: "Cladding", group: "04"}
+  - {code: "045", label: "Doors and windows", group: "04"}
+  - {code: "046", label: "Glass", group: "04"}
+  - {code: "047", label: "Insulation", group: "04"}
+  - {code: "051", label: "Linings", group: "05"}
+  - {code: "052", label: "Partitions", group: "05"}
+  - {code: "053", label: "Ceilings", group: "05"}
+  - {code: "054", label: "Access floors", group: "05"}
+  - {code: "055", label: "Fixtures", group: "05"}
+  - {code: "057", label: "Furniture and furnishings", group: "05"}
+  - {code: "058", label: "Signs and features", group: "05"}
+  - {code: "061", label: "Trowelled and sprayed coatings", group: "06"}
+  - {code: "062", label: "Wet areas", group: "06"}
+  - {code: "063", label: "Tiling", group: "06"}
+  - {code: "064", label: "Wall surfacing", group: "06"}
+  - {code: "065", label: "Floor surfacing", group: "06"}
+  - {code: "067", label: "Painting", group: "06"}
+  - {code: "070", label: "Mechanical general", group: "07"}
+  - {code: "071", label: "Water plant", group: "07"}
+  - {code: "072", label: "Air plant", group: "07"}
+  - {code: "073", label: "Air handling components", group: "07"}
+  - {code: "074", label: "Ductwork and components", group: "07"}
+  - {code: "075", label: "Piping", group: "07"}
+  - {code: "076", label: "Refrigeration", group: "07"}
+  - {code: "077", label: "Control", group: "07"}
+  - {code: "078", label: "Mechanical electrical", group: "07"}
+  - {code: "079", label: "Mechanical commissioning and maintenance", group: "07"}
+  - {code: "080", label: "Hydraulic general", group: "08"}
+  - {code: "081", label: "Hydraulic components", group: "08"}
+  - {code: "082", label: "Hydraulic systems", group: "08"}
+  - {code: "088", label: "Hydraulic electrical", group: "08"}
+  - {code: "089", label: "Hydraulic commissioning and maintenance", group: "08"}
+  - {code: "090", label: "Electrical general", group: "09"}
+  - {code: "091", label: "Electrical equipment", group: "09"}
+  - {code: "092", label: "Power systems", group: "09"}
+  - {code: "093", label: "Power supply equipment", group: "09"}
+  - {code: "094", label: "Power distribution equipment", group: "09"}
+  - {code: "095", label: "Lighting systems", group: "09"}
+  - {code: "096", label: "Communication systems", group: "09"}
+  - {code: "097", label: "Safety systems", group: "09"}
+  - {code: "098", label: "Security systems", group: "09"}
+  - {code: "099", label: "Electrical commissioning and maintenance", group: "09"}
+  - {code: "100", label: "Fire general", group: "10"}
+  - {code: "101", label: "Fire components", group: "10"}
+  - {code: "103", label: "Wet fire suppression systems", group: "10"}
+  - {code: "104", label: "Dry fire suppression systems", group: "10"}
+  - {code: "105", label: "Chemical fire suppression system", group: "10"}
+  - {code: "107", label: "Fire safety systems", group: "10"}
+  - {code: "108", label: "Fire electrical", group: "10"}
+  - {code: "109", label: "Fire commissioning and maintenance", group: "10"}
+  - {code: "110", label: "General", group: "11"}
+  - {code: "111", label: "Formation preparation", group: "11"}
+  - {code: "112", label: "Rainwater collection", group: "11"}
+  - {code: "113", label: "Rigid pavements", group: "11"}
+  - {code: "114", label: "Flexible pavements", group: "11"}
+  - {code: "115", label: "Road openings and restorations", group: "11"}
+  - {code: "116", label: "Pavement stabilisation", group: "11"}
+  - {code: "117", label: "Pavement moisture control", group: "11"}
+  - {code: "119", label: "Traffic facilities", group: "11"}
+  - {code: "134", label: "Water supply", group: "13"}
+  - {code: "135", label: "Water cycle management", group: "13"}
+  - {code: "136", label: "Sewerage systems", group: "13"}
+  - {code: "139", label: "Others", group: "13"}
+  - {code: "140", label: "General", group: "14"}
+  - {code: "141", label: "Horticultural", group: "14"}
+  - {code: "143", label: "Pathways", group: "14"}
+  - {code: "144", label: "Pavements", group: "14"}
+  - {code: "146", label: "Enclosures", group: "14"}
+  - {code: "147", label: "Equipment", group: "14"}
+  - {code: "148", label: "Operation - open spaces", group: "14"}
+  - {code: "149", label: "Operation - cleaning and waste management", group: "14"}
+  - {code: "150", label: "General", group: "15"}
+  - {code: "153", label: "Structure", group: "15"}
+  - {code: "157", label: "Services", group: "15"}
+  - {code: "158", label: "Operation - buildings", group: "15"}
+  - {code: "160", label: "General", group: "16"}
+  - {code: "161", label: "Pavement", group: "16"}
+  - {code: "163", label: "Shoulder", group: "16"}
+  - {code: "164", label: "Roadside", group: "16"}
+  - {code: "165", label: "Pavement moisture control", group: "16"}
+  - {code: "167", label: "Traffic facitilities", group: "16"}
+  - {code: "168", label: "Operation - road reserve", group: "16"}
+  - {code: "169", label: "Operation - cleaning and waste management", group: "16"}
+  - {code: "170", label: "Structure", group: "17"}
+  - {code: "184", label: "Water supply", group: "18"}
+  - {code: "185", label: "Water cycle management", group: "18"}
+  - {code: "200", label: "Conveying general", group: "20"}
+  - {code: "201", label: "Conveying equipment", group: "20"}
+  - {code: "202", label: "Other conveying equipment", group: "20"}
+codes:
+  - {code: "0001", label: "Design reference and checklist", group: "00", subgroup: "001", verified: false}
+  - {code: "0010", label: "Quality requirements for design", group: "00", subgroup: "001", verified: false}
+  - {code: "0012", label: "Waterfront development", group: "00", subgroup: "001", verified: false}
+  - {code: "0013", label: "Bushfire protection (Design)", group: "00", subgroup: "001", verified: false}
+  - {code: "0021", label: "Site regrading", group: "00", subgroup: "002", verified: false}
+  - {code: "0022", label: "Control of erosion and sedimentation (Design)", group: "00", subgroup: "002", verified: false}
+  - {code: "0041", label: "Geometric road design", group: "00", subgroup: "004", verified: false}
+  - {code: "0042", label: "Pavement design", group: "00", subgroup: "004", verified: false}
+  - {code: "0043", label: "Subsurface drainage (Design)", group: "00", subgroup: "004", verified: false}
+  - {code: "0044", label: "Pathways and cycleways (Design)", group: "00", subgroup: "004", verified: false}
+  - {code: "0051", label: "Geometric rural road design - sealed", group: "00", subgroup: "005", verified: false}
+  - {code: "0052", label: "Geometric rural road design - unsealed", group: "00", subgroup: "005", verified: false}
+  - {code: "0053", label: "Rural pavement design - sealed", group: "00", subgroup: "005", verified: false}
+  - {code: "0054", label: "Rural pavement design - unsealed", group: "00", subgroup: "005", verified: false}
+  - {code: "0061", label: "Bridges and related structures", group: "00", subgroup: "006", verified: false}
+  - {code: "0071", label: "Water supply - reticulation (Design)", group: "00", subgroup: "007", verified: false}
+  - {code: "0072", label: "Water supply - pump stations (Design)", group: "00", subgroup: "007", verified: false}
+  - {code: "0074", label: "Stormwater drainage (Design)", group: "00", subgroup: "007", verified: false}
+  - {code: "0076", label: "Sewerage systems - reticulation (Design)", group: "00", subgroup: "007", verified: false}
+  - {code: "0077", label: "Sewerage systems - pump stations (Design)", group: "00", subgroup: "007", verified: false}
+  - {code: "0120", label: "Pre-tendering contract preparation (AUS-SPEC)", group: "01", subgroup: "012", verified: false}
+  - {code: "0121", label: "Tendering", group: "01", subgroup: "012", verified: false}
+  - {code: "0122", label: "Information for tenderers (AUS-SPEC)", group: "01", subgroup: "012", verified: false}
+  - {code: "0123", label: "Conditions of tendering (AUS-SPEC)", group: "01", subgroup: "012", verified: false}
+  - {code: "0124", label: "Tender submission documents (AUS-SPEC)", group: "01", subgroup: "012", verified: false}
+  - {code: "0125", label: "Standard contract checklists (AUS-SPEC)", group: "01", subgroup: "012", verified: false}
+  - {code: "0126", label: "Period supply and service checklists (AUS-SPEC)", group: "01", subgroup: "012", verified: false}
+  - {code: "0131", label: "Preliminaries (Generic)", group: "01", subgroup: "013", verified: false}
+  - {code: "0133", label: "Preliminaries (Interior and alterations)", group: "01", subgroup: "013", verified: false}
+  - {code: "0134", label: "General requirements (Supply) (AUS-SPEC)", group: "01", subgroup: "013", verified: false}
+  - {code: "0135", label: "General requirements (Services) (AUS-SPEC)", group: "01", subgroup: "013", verified: false}
+  - {code: "0136", label: "General requirements (Construction) (AUS-SPEC)", group: "01", subgroup: "013", verified: false}
+  - {code: "0138", label: "Multiple contracts", group: "01", subgroup: "013", verified: false}
+  - {code: "0140", label: "Preliminaries - ABIC BW-2018C", group: "01", subgroup: "014", verified: false}
+  - {code: "0141", label: "Preliminaries - ABIC MW-2018", group: "01", subgroup: "014", verified: false}
+  - {code: "0142", label: "Preliminaries - ABIC SW-2018", group: "01", subgroup: "014", verified: false}
+  - {code: "0143", label: "Preliminaries - AS 2124 (1992)", group: "01", subgroup: "014", verified: false}
+  - {code: "0144", label: "Preliminaries - AS 4000 (2025)", group: "01", subgroup: "014", verified: false}
+  - {code: "0145", label: "Preliminaries - AS 4905 (2002)", group: "01", subgroup: "014", verified: false}
+  - {code: "0146", label: "Preliminaries - AS 4902 (2000)", group: "01", subgroup: "014", verified: false}
+  - {code: "0147", label: "Conditions of contract (AUS-SPEC)", group: "01", subgroup: "014", verified: false}
+  - {code: "0149", label: "Preliminaries - NCW4 (2019)", group: "01", subgroup: "014", verified: false}
+  - {code: "0152", label: "Schedule of rates (Construction)", group: "01", subgroup: "015", verified: false}
+  - {code: "0153", label: "Schedules - period supply and service", group: "01", subgroup: "015", verified: false}
+  - {code: "0160", label: "Quality", group: "01", subgroup: "016", verified: false}
+  - {code: "0161", label: "Quality management (Construction) (AUS-SPEC)", group: "01", subgroup: "016", verified: false}
+  - {code: "0162", label: "Quality (Supply) (AUS-SPEC)", group: "01", subgroup: "016", verified: false}
+  - {code: "0163", label: "Quality (Delivery) (AUS-SPEC)", group: "01", subgroup: "016", verified: false}
+  - {code: "0164", label: "Commissioning", group: "01", subgroup: "016", verified: false}
+  - {code: "0167", label: "Integrated management (AUS-SPEC)", group: "01", subgroup: "016", verified: false}
+  - {code: "0171", label: "General requirements", group: "01", subgroup: "017", verified: false}
+  - {code: "0172", label: "Environmental management", group: "01", subgroup: "017", verified: false}
+  - {code: "0173", label: "Environmental management (AUS-SPEC)", group: "01", subgroup: "017", verified: false}
+  - {code: "0181", label: "Adhesives, sealants and fasteners", group: "01", subgroup: "018", verified: false}
+  - {code: "0182", label: "Fire-stopping", group: "01", subgroup: "018", verified: false}
+  - {code: "0183", label: "Metals and prefinishes", group: "01", subgroup: "018", verified: false}
+  - {code: "0184", label: "Termite management", group: "01", subgroup: "018", verified: false}
+  - {code: "0185", label: "Timber products, finishes and treatment", group: "01", subgroup: "018", verified: false}
+  - {code: "0191", label: "Sundry items", group: "01", subgroup: "019", verified: false}
+  - {code: "0192", label: "Structural components", group: "01", subgroup: "019", no_generic: true, verified: false}
+  - {code: "0193", label: "Building access safety systems", group: "01", subgroup: "019", verified: false}
+  - {code: "0194", label: "Door seals and window seals", group: "01", subgroup: "019", no_generic: true, verified: false}
+  - {code: "0195", label: "Tactile indicators and stair edgings", group: "01", subgroup: "019", no_generic: true, verified: false}
+  - {code: "0196", label: "Prefabricated fire stair systems", group: "01", subgroup: "019", no_generic: true, verified: false}
+  - {code: "0201", label: "Demolition", group: "02", subgroup: "020", verified: false}
+  - {code: "0202", label: "Demolition (Interior and alterations)", group: "02", subgroup: "020", verified: false}
+  - {code: "0221", label: "Site preparation", group: "02", subgroup: "022", verified: false}
+  - {code: "0222", label: "Earthwork", group: "02", subgroup: "022", verified: false}
+  - {code: "0223", label: "Service trenching", group: "02", subgroup: "022", verified: false}
+  - {code: "0224", label: "Stormwater - site", group: "02", subgroup: "022", verified: false}
+  - {code: "0225", label: "Water bores", group: "02", subgroup: "022", verified: false}
+  - {code: "0241", label: "Landscape - walling and edging", group: "02", subgroup: "024", verified: false}
+  - {code: "0242", label: "Landscape - fences and barriers", group: "02", subgroup: "024", verified: false}
+  - {code: "0243", label: "Landscape - water features", group: "02", subgroup: "024", verified: false}
+  - {code: "0245", label: "Landscape - external access automation", group: "02", subgroup: "024", no_generic: true, verified: false}
+  - {code: "0250", label: "Landscape - combined", group: "02", subgroup: "025", verified: false}
+  - {code: "0251", label: "Landscape - soils", group: "02", subgroup: "025", verified: false}
+  - {code: "0252", label: "Landscape - natural grass surfaces", group: "02", subgroup: "025", verified: false}
+  - {code: "0253", label: "Landscape - planting", group: "02", subgroup: "025", verified: false}
+  - {code: "0254", label: "Irrigation", group: "02", subgroup: "025", verified: false}
+  - {code: "0255", label: "Landscape - plant procurement", group: "02", subgroup: "025", verified: false}
+  - {code: "0256", label: "Landscape - establishment", group: "02", subgroup: "025", verified: false}
+  - {code: "0257", label: "Landscape - road reserve and street trees (AUS-SPEC)", group: "02", subgroup: "025", verified: false}
+  - {code: "0259", label: "Landscape - maintenance", group: "02", subgroup: "025", verified: false}
+  - {code: "0261", label: "Landscape - furniture and fixtures", group: "02", subgroup: "026", verified: false}
+  - {code: "0262", label: "External sports and playground surfacing", group: "02", subgroup: "026", verified: false}
+  - {code: "0271", label: "Pavement base and subbase", group: "02", subgroup: "027", verified: false}
+  - {code: "0272", label: "Asphalt", group: "02", subgroup: "027", verified: false}
+  - {code: "0273", label: "Sprayed bituminous surfacing", group: "02", subgroup: "027", verified: false}
+  - {code: "0274", label: "Concrete pavement", group: "02", subgroup: "027", verified: false}
+  - {code: "0275", label: "Paving - mortar and adhesive bed", group: "02", subgroup: "027", verified: false}
+  - {code: "0276", label: "Paving - sand bed", group: "02", subgroup: "027", verified: false}
+  - {code: "0277", label: "Pavement ancillaries", group: "02", subgroup: "027", verified: false}
+  - {code: "0278", label: "Granular surfaces", group: "02", subgroup: "027", verified: false}
+  - {code: "0279", label: "Paving - on pedestals", group: "02", subgroup: "027", verified: false}
+  - {code: "0281", label: "Fire access and fire trails", group: "02", subgroup: "028", verified: false}
+  - {code: "0282", label: "Pathways and cycleways (Construction)", group: "02", subgroup: "028", verified: false}
+  - {code: "0292", label: "Masonry walls", group: "02", subgroup: "029", verified: false}
+  - {code: "0293", label: "Crib retaining walls", group: "02", subgroup: "029", verified: false}
+  - {code: "0294", label: "Gabion walls and rock filled mattresses", group: "02", subgroup: "029", verified: false}
+  - {code: "0301", label: "Piling", group: "03", subgroup: "030", verified: false}
+  - {code: "0305", label: "Foundation isolation systems", group: "03", subgroup: "030", no_generic: true, verified: false}
+  - {code: "0310", label: "Concrete - combined", group: "03", subgroup: "031", verified: false}
+  - {code: "0311", label: "Concrete formwork", group: "03", subgroup: "031", verified: false}
+  - {code: "0312", label: "Concrete reinforcement", group: "03", subgroup: "031", verified: false}
+  - {code: "0313", label: "Concrete post-tensioned", group: "03", subgroup: "031", verified: false}
+  - {code: "0314", label: "Concrete in situ", group: "03", subgroup: "031", verified: false}
+  - {code: "0315", label: "Concrete finishes", group: "03", subgroup: "031", verified: false}
+  - {code: "0318", label: "Shotcrete", group: "03", subgroup: "031", verified: false}
+  - {code: "0319", label: "Auxiliary concrete works (AUS-SPEC)", group: "03", subgroup: "031", verified: false}
+  - {code: "0321", label: "Precast concrete", group: "03", subgroup: "032", verified: false}
+  - {code: "0322", label: "Tilt-up concrete", group: "03", subgroup: "032", verified: false}
+  - {code: "0325", label: "Concrete protection", group: "03", subgroup: "032", no_generic: true, verified: false}
+  - {code: "0331", label: "Brick and block construction", group: "03", subgroup: "033", verified: false}
+  - {code: "0332", label: "Stone masonry", group: "03", subgroup: "033", verified: false}
+  - {code: "0333", label: "Stone repair", group: "03", subgroup: "033", verified: false}
+  - {code: "0334", label: "Block construction", group: "03", subgroup: "033", verified: false}
+  - {code: "0335", label: "Brick construction", group: "03", subgroup: "033", verified: false}
+  - {code: "0341", label: "Structural steelwork", group: "03", subgroup: "034", verified: false}
+  - {code: "0342", label: "Light steel framing", group: "03", subgroup: "034", verified: false}
+  - {code: "0343", label: "Tensioned membrane structures", group: "03", subgroup: "034", verified: false}
+  - {code: "0344", label: "Steel - hot dip galvanized coatings", group: "03", subgroup: "034", verified: false}
+  - {code: "0345", label: "Steel - protective paint coatings", group: "03", subgroup: "034", verified: false}
+  - {code: "0346", label: "Structural fire protection systems", group: "03", subgroup: "034", verified: false}
+  - {code: "0361", label: "Monolithic stabilised rammed earth walls", group: "03", subgroup: "036", verified: false}
+  - {code: "0362", label: "Mud brick and pressed earth block walls", group: "03", subgroup: "036", verified: false}
+  - {code: "0363", label: "Straw bale walls", group: "03", subgroup: "036", verified: false}
+  - {code: "0381", label: "Structural timber", group: "03", subgroup: "038", verified: false}
+  - {code: "0382", label: "Light timber framing", group: "03", subgroup: "038", verified: false}
+  - {code: "0383", label: "Decking, sheet and panel flooring", group: "03", subgroup: "038", verified: false}
+  - {code: "0385", label: "Cross-laminated timber (CLT)", group: "03", subgroup: "038", verified: false}
+  - {code: "0411", label: "Waterproofing - external and tanking", group: "04", subgroup: "041", verified: false}
+  - {code: "0420", label: "Roofing - combined", group: "04", subgroup: "042", verified: false}
+  - {code: "0422", label: "Roofing - daylighting devices", group: "04", subgroup: "042", no_generic: true, verified: false}
+  - {code: "0423", label: "Roofing - profiled sheet metal", group: "04", subgroup: "042", verified: false}
+  - {code: "0424", label: "Roofing - seamed sheet metal", group: "04", subgroup: "042", verified: false}
+  - {code: "0425", label: "Roofing - shingles and shakes", group: "04", subgroup: "042", verified: false}
+  - {code: "0426", label: "Roofing - slate", group: "04", subgroup: "042", verified: false}
+  - {code: "0427", label: "Roofing - tiles", group: "04", subgroup: "042", verified: false}
+  - {code: "0428", label: "Roofing - insulated panel systems", group: "04", subgroup: "042", verified: false}
+  - {code: "0429", label: "Roofing - glazed", group: "04", subgroup: "042", verified: false}
+  - {code: "0430", label: "Cladding - combined", group: "04", subgroup: "043", verified: false}
+  - {code: "0432", label: "Curtain walls", group: "04", subgroup: "043", verified: false}
+  - {code: "0433", label: "Stone cladding", group: "04", subgroup: "043", verified: false}
+  - {code: "0434", label: "Cladding - flat sheets and panels", group: "04", subgroup: "043", verified: false}
+  - {code: "0435", label: "Cladding - planks and weatherboards", group: "04", subgroup: "043", verified: false}
+  - {code: "0436", label: "Cladding - profiled and seamed sheet metal", group: "04", subgroup: "043", verified: false}
+  - {code: "0437", label: "Cladding - insulated panel systems", group: "04", subgroup: "043", verified: false}
+  - {code: "0438", label: "Cladding - cement board", group: "04", subgroup: "043", no_generic: true, verified: false}
+  - {code: "0439", label: "Cladding - systems", group: "04", subgroup: "043", no_generic: true, verified: false}
+  - {code: "0451", label: "Windows and glazed doors", group: "04", subgroup: "045", verified: false}
+  - {code: "0453", label: "Doors and access panels", group: "04", subgroup: "045", verified: false}
+  - {code: "0454", label: "Overhead doors", group: "04", subgroup: "045", verified: false}
+  - {code: "0455", label: "Door hardware", group: "04", subgroup: "045", verified: false}
+  - {code: "0456", label: "Louvre windows", group: "04", subgroup: "045", verified: false}
+  - {code: "0457", label: "External screens", group: "04", subgroup: "045", verified: false}
+  - {code: "0458", label: "Automatic doors", group: "04", subgroup: "045", no_generic: true, verified: false}
+  - {code: "0461", label: "Glazing", group: "04", subgroup: "046", verified: false}
+  - {code: "0462", label: "Structural silicone glazing", group: "04", subgroup: "046", verified: false}
+  - {code: "0463", label: "Glass blockwork", group: "04", subgroup: "046", verified: false}
+  - {code: "0466", label: "Structural glass assemblies", group: "04", subgroup: "046", verified: false}
+  - {code: "0467", label: "Glass components", group: "04", subgroup: "046", verified: false}
+  - {code: "0471", label: "Thermal insulation and pliable membranes", group: "04", subgroup: "047", verified: false}
+  - {code: "0472", label: "Acoustic insulation", group: "04", subgroup: "047", verified: false}
+  - {code: "0473", label: "Acoustic floor underlays", group: "04", subgroup: "047", no_generic: true, verified: false}
+  - {code: "0511", label: "Lining", group: "05", subgroup: "051", verified: false}
+  - {code: "0520", label: "Partitions - combined", group: "05", subgroup: "052", verified: false}
+  - {code: "0521", label: "Partitions - demountable", group: "05", subgroup: "052", verified: false}
+  - {code: "0522", label: "Partitions - framed and lined", group: "05", subgroup: "052", verified: false}
+  - {code: "0523", label: "Partitions - brick and block", group: "05", subgroup: "052", verified: false}
+  - {code: "0524", label: "Partitions - glazed", group: "05", subgroup: "052", verified: false}
+  - {code: "0525", label: "Cubicle systems", group: "05", subgroup: "052", verified: false}
+  - {code: "0526", label: "Terrazzo precast", group: "05", subgroup: "052", verified: false}
+  - {code: "0527", label: "Room dividers", group: "05", subgroup: "052", verified: false}
+  - {code: "0528", label: "Partitions - composite systems", group: "05", subgroup: "052", no_generic: true, verified: false}
+  - {code: "0530", label: "Suspended ceilings - combined", group: "05", subgroup: "053", verified: false}
+  - {code: "0532", label: "Suspended ceilings - flush lined", group: "05", subgroup: "053", verified: false}
+  - {code: "0533", label: "Suspended ceilings - ceiling units", group: "05", subgroup: "053", verified: false}
+  - {code: "0541", label: "Access floors", group: "05", subgroup: "054", verified: false}
+  - {code: "0551", label: "Joinery", group: "05", subgroup: "055", verified: false}
+  - {code: "0552", label: "Metalwork - fabricated", group: "05", subgroup: "055", verified: false}
+  - {code: "0553", label: "Stainless steel benching", group: "05", subgroup: "055", verified: false}
+  - {code: "0554", label: "Handrails, guardrails, balustrades and other barriers", group: "05", subgroup: "055", no_generic: true, verified: false}
+  - {code: "0571", label: "Workstations", group: "05", subgroup: "057", verified: false}
+  - {code: "0572", label: "Miscellaneous furniture", group: "05", subgroup: "057", verified: false}
+  - {code: "0573", label: "Fire extinguishers and blankets", group: "05", subgroup: "057", verified: false}
+  - {code: "0574", label: "Window coverings", group: "05", subgroup: "057", verified: false}
+  - {code: "0575", label: "Tapestries", group: "05", subgroup: "057", verified: false}
+  - {code: "0581", label: "Signage", group: "05", subgroup: "058", verified: false}
+  - {code: "0611", label: "Rendering and plastering", group: "06", subgroup: "061", verified: false}
+  - {code: "0612", label: "Cementitious toppings", group: "06", subgroup: "061", verified: false}
+  - {code: "0613", label: "Terrazzo in situ", group: "06", subgroup: "061", verified: false}
+  - {code: "0621", label: "Waterproofing - wet areas", group: "06", subgroup: "062", verified: false}
+  - {code: "0631", label: "Ceramic tiling", group: "06", subgroup: "063", verified: false}
+  - {code: "0632", label: "Stone and terrazzo tiling", group: "06", subgroup: "063", verified: false}
+  - {code: "0641", label: "Applied wall finishes", group: "06", subgroup: "064", verified: false}
+  - {code: "0642", label: "Wallcoverings", group: "06", subgroup: "064", verified: false}
+  - {code: "0651", label: "Resilient finishes", group: "06", subgroup: "065", verified: false}
+  - {code: "0652", label: "Carpets", group: "06", subgroup: "065", verified: false}
+  - {code: "0654", label: "Multilayered board flooring", group: "06", subgroup: "065", verified: false}
+  - {code: "0655", label: "Timber flooring", group: "06", subgroup: "065", verified: false}
+  - {code: "0656", label: "Floor sanding and finishing", group: "06", subgroup: "065", verified: false}
+  - {code: "0657", label: "Resin based seamless flooring", group: "06", subgroup: "065", verified: false}
+  - {code: "0671", label: "Painting", group: "06", subgroup: "067", verified: false}
+  - {code: "0672", label: "Textured and membrane coatings", group: "06", subgroup: "067", verified: false}
+  - {code: "0673", label: "Powder coatings", group: "06", subgroup: "067", verified: false}
+  - {code: "0700", label: "Reference - Mechanical services", group: "07", subgroup: "070", verified: false}
+  - {code: "0701", label: "Mechanical systems", group: "07", subgroup: "070", verified: false}
+  - {code: "0702", label: "Mechanical design and install", group: "07", subgroup: "070", verified: false}
+  - {code: "0710", label: "Mechanical services tanks, vessels and heat exchangers", group: "07", subgroup: "071", verified: false}
+  - {code: "0711", label: "Water heaters - air-to-water", group: "07", subgroup: "071", verified: false}
+  - {code: "0712", label: "Water heaters - gas-fired", group: "07", subgroup: "071", verified: false}
+  - {code: "0713", label: "Cooling towers", group: "07", subgroup: "071", verified: false}
+  - {code: "0714", label: "Mechanical pumps", group: "07", subgroup: "071", verified: false}
+  - {code: "0715", label: "Vapour compression cycle plant", group: "07", subgroup: "071", verified: false}
+  - {code: "0716", label: "Chillers - water-cooled centrifugal", group: "07", subgroup: "071", verified: false}
+  - {code: "0717", label: "Chillers - water-cooled screw", group: "07", subgroup: "071", verified: false}
+  - {code: "0718", label: "Chillers - air-cooled", group: "07", subgroup: "071", verified: false}
+  - {code: "0719", label: "Chillers - absorption", group: "07", subgroup: "071", verified: false}
+  - {code: "0721", label: "Packaged air conditioning", group: "07", subgroup: "072", verified: false}
+  - {code: "0722", label: "Room air conditioners", group: "07", subgroup: "072", verified: false}
+  - {code: "0723", label: "Evaporative air coolers", group: "07", subgroup: "072", verified: false}
+  - {code: "0724", label: "Air handling plant - combined", group: "07", subgroup: "072", verified: false}
+  - {code: "0725", label: "Air handling plant - built up", group: "07", subgroup: "072", verified: false}
+  - {code: "0726", label: "Air handling plant - minor", group: "07", subgroup: "072", verified: false}
+  - {code: "0727", label: "Air handling plant - packaged", group: "07", subgroup: "072", verified: false}
+  - {code: "0731", label: "Fans", group: "07", subgroup: "073", verified: false}
+  - {code: "0732", label: "Air filters", group: "07", subgroup: "073", verified: false}
+  - {code: "0733", label: "Air coils", group: "07", subgroup: "073", verified: false}
+  - {code: "0734", label: "Humidifiers", group: "07", subgroup: "073", verified: false}
+  - {code: "0735", label: "Natural ventilation and smoke management", group: "07", subgroup: "073", no_generic: true, verified: false}
+  - {code: "0736", label: "Space heating", group: "07", subgroup: "073", verified: false}
+  - {code: "0737", label: "Fireplaces", group: "07", subgroup: "073", no_generic: true, verified: false}
+  - {code: "0741", label: "Ductwork", group: "07", subgroup: "074", verified: false}
+  - {code: "0744", label: "Ductwork insulation", group: "07", subgroup: "074", verified: false}
+  - {code: "0745", label: "Attenuators and acoustic louvres", group: "07", subgroup: "074", verified: false}
+  - {code: "0746", label: "Air grilles", group: "07", subgroup: "074", verified: false}
+  - {code: "0747", label: "Variable air volume terminals", group: "07", subgroup: "074", verified: false}
+  - {code: "0748", label: "Chilled beams", group: "07", subgroup: "074", verified: false}
+  - {code: "0751", label: "Mechanical piping", group: "07", subgroup: "075", verified: false}
+  - {code: "0752", label: "Mechanical piping insulation", group: "07", subgroup: "075", verified: false}
+  - {code: "0753", label: "Water treatment", group: "07", subgroup: "075", verified: false}
+  - {code: "0754", label: "Liquid fuels", group: "07", subgroup: "075", verified: false}
+  - {code: "0755", label: "Medical gas systems", group: "07", subgroup: "075", verified: false}
+  - {code: "0756", label: "Industrial gas systems", group: "07", subgroup: "075", no_generic: true, verified: false}
+  - {code: "0757", label: "Compressed air", group: "07", subgroup: "075", no_generic: true, verified: false}
+  - {code: "0761", label: "Refrigeration", group: "07", subgroup: "076", verified: false}
+  - {code: "0762", label: "Cool rooms", group: "07", subgroup: "076", verified: false}
+  - {code: "0771", label: "Automatic controls", group: "07", subgroup: "077", verified: false}
+  - {code: "0772", label: "Automatic controls - minor", group: "07", subgroup: "077", verified: false}
+  - {code: "0773", label: "Building management systems", group: "07", subgroup: "077", verified: false}
+  - {code: "0781", label: "Mechanical electrical", group: "07", subgroup: "078", verified: false}
+  - {code: "0782", label: "Mechanical electrical - minor", group: "07", subgroup: "078", verified: false}
+  - {code: "0784", label: "Motors and starters", group: "07", subgroup: "078", verified: false}
+  - {code: "0791", label: "Mechanical commissioning", group: "07", subgroup: "079", verified: false}
+  - {code: "0792", label: "Mechanical maintenance", group: "07", subgroup: "079", verified: false}
+  - {code: "0800", label: "Reference - Hydraulic services", group: "08", subgroup: "080", verified: false}
+  - {code: "0801", label: "Hydraulic systems", group: "08", subgroup: "080", verified: false}
+  - {code: "0802", label: "Hydraulic design and install", group: "08", subgroup: "080", verified: false}
+  - {code: "0811", label: "Sanitary fixtures", group: "08", subgroup: "081", verified: false}
+  - {code: "0812", label: "Tapware", group: "08", subgroup: "081", verified: false}
+  - {code: "0813", label: "Water heaters", group: "08", subgroup: "081", verified: false}
+  - {code: "0814", label: "Hydraulic pumps", group: "08", subgroup: "081", verified: false}
+  - {code: "0815", label: "Drinking water dispensers", group: "08", subgroup: "081", verified: false}
+  - {code: "0816", label: "Hydraulic services tanks", group: "08", subgroup: "081", verified: false}
+  - {code: "0821", label: "Stormwater - buildings", group: "08", subgroup: "082", verified: false}
+  - {code: "0822", label: "Wastewater", group: "08", subgroup: "082", verified: false}
+  - {code: "0823", label: "Cold and heated water", group: "08", subgroup: "082", verified: false}
+  - {code: "0824", label: "Fuel gas", group: "08", subgroup: "082", verified: false}
+  - {code: "0825", label: "Rainwater storage systems", group: "08", subgroup: "082", verified: false}
+  - {code: "0826", label: "Greywater systems", group: "08", subgroup: "082", verified: false}
+  - {code: "0827", label: "Processed water", group: "08", subgroup: "082", no_generic: true, verified: false}
+  - {code: "0882", label: "Hydraulic electrical - minor", group: "08", subgroup: "088", verified: false}
+  - {code: "0891", label: "Hydraulic maintenance", group: "08", subgroup: "089", verified: false}
+  - {code: "0900", label: "Reference - Electrical services", group: "09", subgroup: "090", verified: false}
+  - {code: "0901", label: "Electrical systems", group: "09", subgroup: "090", verified: false}
+  - {code: "0902", label: "Electrical design and install", group: "09", subgroup: "090", verified: false}
+  - {code: "0911", label: "Cable support and duct systems", group: "09", subgroup: "091", verified: false}
+  - {code: "0921", label: "Low voltage power systems", group: "09", subgroup: "092", verified: false}
+  - {code: "0925", label: "Electric vehicle charging systems", group: "09", subgroup: "092", verified: false}
+  - {code: "0931", label: "Power generation - engine driven", group: "09", subgroup: "093", verified: false}
+  - {code: "0933", label: "Power generation - photovoltaic", group: "09", subgroup: "093", verified: false}
+  - {code: "0937", label: "Uninterruptible power supply", group: "09", subgroup: "093", verified: false}
+  - {code: "0941", label: "Switchboards - proprietary", group: "09", subgroup: "094", verified: false}
+  - {code: "0942", label: "Switchboards - custom-built", group: "09", subgroup: "094", verified: false}
+  - {code: "0943", label: "Switchboard components", group: "09", subgroup: "094", verified: false}
+  - {code: "0947", label: "Power factor correction", group: "09", subgroup: "094", verified: false}
+  - {code: "0951", label: "Lighting", group: "09", subgroup: "095", verified: false}
+  - {code: "0961", label: "Information and communications technology (ICT) systems", group: "09", subgroup: "096", verified: false}
+  - {code: "0962", label: "Television distribution systems", group: "09", subgroup: "096", verified: false}
+  - {code: "0963", label: "Sound systems", group: "09", subgroup: "096", verified: false}
+  - {code: "0971", label: "Emergency evacuation lighting", group: "09", subgroup: "097", verified: false}
+  - {code: "0979", label: "Lightning protection", group: "09", subgroup: "097", verified: false}
+  - {code: "0981", label: "Electronic security", group: "09", subgroup: "098", verified: false}
+  - {code: "0991", label: "Electrical maintenance", group: "09", subgroup: "099", verified: false}
+  - {code: "1000", label: "Reference - Fire services", group: "10", subgroup: "100", verified: false}
+  - {code: "1001", label: "Fire services systems", group: "10", subgroup: "100", verified: false}
+  - {code: "1002", label: "Fire services design and install", group: "10", subgroup: "100", verified: false}
+  - {code: "1014", label: "Fire services pumps", group: "10", subgroup: "101", verified: false}
+  - {code: "1016", label: "Fire services tanks", group: "10", subgroup: "101", verified: false}
+  - {code: "1018", label: "Fire services piping", group: "10", subgroup: "101", verified: false}
+  - {code: "1030", label: "Combined wet fire suppression systems", group: "10", subgroup: "103", verified: false}
+  - {code: "1031", label: "Hydrants", group: "10", subgroup: "103", verified: false}
+  - {code: "1032", label: "Hose reels", group: "10", subgroup: "103", verified: false}
+  - {code: "1033", label: "Sprinklers", group: "10", subgroup: "103", verified: false}
+  - {code: "1041", label: "Gaseous fire suppression systems", group: "10", subgroup: "104", verified: false}
+  - {code: "1051", label: "Liquid chemical fire suppression systems", group: "10", subgroup: "105", verified: false}
+  - {code: "1072", label: "Fire detection and alarms", group: "10", subgroup: "107", verified: false}
+  - {code: "1073", label: "Emergency warning and intercommunication", group: "10", subgroup: "107", verified: false}
+  - {code: "1082", label: "Fire services electrical - minor", group: "10", subgroup: "108", verified: false}
+  - {code: "1091", label: "Fire services maintenance", group: "10", subgroup: "109", verified: false}
+  - {code: "1100", label: "Construction reference and schedules", group: "11", subgroup: "110", verified: false}
+  - {code: "1101", label: "Traffic management", group: "11", subgroup: "110", verified: false}
+  - {code: "1102", label: "Control of erosion and sedimentation (Construction)", group: "11", subgroup: "110", verified: false}
+  - {code: "1111", label: "Clearing and grubbing", group: "11", subgroup: "111", verified: false}
+  - {code: "1112", label: "Earthworks (Road reserve)", group: "11", subgroup: "111", verified: false}
+  - {code: "1113", label: "Subgrade and formation stabilisation", group: "11", subgroup: "111", verified: false}
+  - {code: "1121", label: "Open drains", group: "11", subgroup: "112", verified: false}
+  - {code: "1122", label: "Kerbs and channels (gutters)", group: "11", subgroup: "112", verified: false}
+  - {code: "1130", label: "Rural concrete base", group: "11", subgroup: "113", verified: false}
+  - {code: "1131", label: "Roller compacted concrete subbase", group: "11", subgroup: "113", verified: false}
+  - {code: "1132", label: "Lean mix concrete subbase", group: "11", subgroup: "113", verified: false}
+  - {code: "1133", label: "Plain and reinforced concrete base", group: "11", subgroup: "113", verified: false}
+  - {code: "1134", label: "Steel fibre reinforced concrete base", group: "11", subgroup: "113", verified: false}
+  - {code: "1135", label: "Continuously reinforced concrete base", group: "11", subgroup: "113", verified: false}
+  - {code: "1140", label: "Wearing course, base and sub-base - unsealed", group: "11", subgroup: "114", verified: false}
+  - {code: "1141", label: "Flexible pavement base and subbase", group: "11", subgroup: "114", verified: false}
+  - {code: "1142", label: "Cold mix asphalt", group: "11", subgroup: "114", verified: false}
+  - {code: "1143", label: "Sprayed bituminous surfacing", group: "11", subgroup: "114", verified: false}
+  - {code: "1144", label: "Asphalt (Roadways)", group: "11", subgroup: "114", verified: false}
+  - {code: "1145", label: "Segmental paving", group: "11", subgroup: "114", verified: false}
+  - {code: "1146", label: "Microsurfacing", group: "11", subgroup: "114", verified: false}
+  - {code: "1147", label: "Sprayed preservation surfacing", group: "11", subgroup: "114", verified: false}
+  - {code: "1148", label: "Cold milling of asphalt and base course", group: "11", subgroup: "114", verified: false}
+  - {code: "1151", label: "Road openings and restoration", group: "11", subgroup: "115", verified: false}
+  - {code: "1152", label: "Road openings and restoration (Utilities)", group: "11", subgroup: "115", verified: false}
+  - {code: "1161", label: "In situ pavement stabilisation using cementitous binders", group: "11", subgroup: "116", verified: false}
+  - {code: "1162", label: "In situ pavement stabilisation using bituminous binders", group: "11", subgroup: "116", verified: false}
+  - {code: "1163", label: "Ex situ (plant mix) pavement stabilisation", group: "11", subgroup: "116", verified: false}
+  - {code: "1164", label: "In situ pavement stabilisation of unsealed roads", group: "11", subgroup: "116", verified: false}
+  - {code: "1171", label: "Subsurface drainage", group: "11", subgroup: "117", verified: false}
+  - {code: "1172", label: "Subsoil and formation drains", group: "11", subgroup: "117", verified: false}
+  - {code: "1173", label: "Pavement drains", group: "11", subgroup: "117", verified: false}
+  - {code: "1174", label: "Drainage blankets", group: "11", subgroup: "117", verified: false}
+  - {code: "1191", label: "Pavement markings", group: "11", subgroup: "119", verified: false}
+  - {code: "1192", label: "Signposting", group: "11", subgroup: "119", verified: false}
+  - {code: "1193", label: "Guide posts", group: "11", subgroup: "119", verified: false}
+  - {code: "1194", label: "Non-rigid road safety barrier systems", group: "11", subgroup: "119", verified: false}
+  - {code: "1195", label: "Rigid concrete safety barrier systems", group: "11", subgroup: "119", verified: false}
+  - {code: "1196", label: "Boundary fencing for road reserves", group: "11", subgroup: "119", verified: false}
+  - {code: "1197", label: "Street and public lighting", group: "11", subgroup: "119", verified: false}
+  - {code: "1341", label: "Water supply - reticulation (Construction)", group: "13", subgroup: "134", verified: false}
+  - {code: "1342", label: "Water supply - pump stations (Construction)", group: "13", subgroup: "134", verified: false}
+  - {code: "1351", label: "Stormwater drainage (Construction)", group: "13", subgroup: "135", verified: false}
+  - {code: "1352", label: "Pipe drainage", group: "13", subgroup: "135", verified: false}
+  - {code: "1353", label: "Precast box culverts", group: "13", subgroup: "135", verified: false}
+  - {code: "1354", label: "Drainage structures", group: "13", subgroup: "135", verified: false}
+  - {code: "1361", label: "Sewerage systems - reticulation (Construction)", group: "13", subgroup: "136", verified: false}
+  - {code: "1362", label: "Sewerage systems - pump stations (Construction)", group: "13", subgroup: "136", verified: false}
+  - {code: "1391", label: "Service conduits", group: "13", subgroup: "139", verified: false}
+  - {code: "1392", label: "Trenchless conduit installation", group: "13", subgroup: "139", verified: false}
+  - {code: "1393", label: "CCTV inspection for drainage conduits", group: "13", subgroup: "139", verified: false}
+  - {code: "1401", label: "General requirements - parks and open space (Maintenance)", group: "14", subgroup: "140", verified: false}
+  - {code: "1402", label: "Maintenance schedules - parks and open space", group: "14", subgroup: "140", verified: false}
+  - {code: "1403", label: "Parks and open space maintenance plan (PMP)", group: "14", subgroup: "140", verified: false}
+  - {code: "1404", label: "Annexures to parks and open space maintenance plan (PMP)", group: "14", subgroup: "140", verified: false}
+  - {code: "1411", label: "Street landscaping", group: "14", subgroup: "141", verified: false}
+  - {code: "1412", label: "Grass mowing in road reserves", group: "14", subgroup: "141", verified: false}
+  - {code: "1413", label: "Tree and vegetation control in road reserves", group: "14", subgroup: "141", verified: false}
+  - {code: "1414", label: "Weed control in road reserves", group: "14", subgroup: "141", verified: false}
+  - {code: "1415", label: "Weed control", group: "14", subgroup: "141", verified: false}
+  - {code: "1416", label: "Planting of annuals and trees", group: "14", subgroup: "141", verified: false}
+  - {code: "1417", label: "Care of trees and shrubs", group: "14", subgroup: "141", verified: false}
+  - {code: "1418", label: "Gardens", group: "14", subgroup: "141", verified: false}
+  - {code: "1419", label: "Care of grass and turf", group: "14", subgroup: "141", verified: false}
+  - {code: "1420", label: "Grass mowing", group: "14", subgroup: "141", verified: false}
+  - {code: "1421", label: "Native bushland", group: "14", subgroup: "141", verified: false}
+  - {code: "1422", label: "Dunal areas", group: "14", subgroup: "141", verified: false}
+  - {code: "1423", label: "Pest control", group: "14", subgroup: "141", verified: false}
+  - {code: "1431", label: "Pathway paving repairs", group: "14", subgroup: "143", verified: false}
+  - {code: "1432", label: "Gravel footpath repairs", group: "14", subgroup: "143", verified: false}
+  - {code: "1433", label: "Footpath and kerb ramp repairs", group: "14", subgroup: "143", verified: false}
+  - {code: "1434", label: "Fire access and fire trails repairs", group: "14", subgroup: "143", verified: false}
+  - {code: "1441", label: "Bituminous surfacing repairs", group: "14", subgroup: "144", verified: false}
+  - {code: "1442", label: "Boat ramps", group: "14", subgroup: "144", verified: false}
+  - {code: "1461", label: "Swimming enclosures", group: "14", subgroup: "146", verified: false}
+  - {code: "1462", label: "Boundary fence repair", group: "14", subgroup: "146", verified: false}
+  - {code: "1471", label: "Barbecues", group: "14", subgroup: "147", verified: false}
+  - {code: "1472", label: "Drinking fountains", group: "14", subgroup: "147", verified: false}
+  - {code: "1473", label: "Barriers", group: "14", subgroup: "147", verified: false}
+  - {code: "1474", label: "Lighting", group: "14", subgroup: "147", verified: false}
+  - {code: "1475", label: "Playground equipment", group: "14", subgroup: "147", verified: false}
+  - {code: "1476", label: "Park furniture", group: "14", subgroup: "147", verified: false}
+  - {code: "1477", label: "Sport ground facilities", group: "14", subgroup: "147", verified: false}
+  - {code: "1478", label: "Public art", group: "14", subgroup: "147", verified: false}
+  - {code: "1481", label: "Accident repairs (Recoverable)", group: "14", subgroup: "148", verified: false}
+  - {code: "1482", label: "Accident repairs (Non-recoverable)", group: "14", subgroup: "148", verified: false}
+  - {code: "1483", label: "Emergency call out", group: "14", subgroup: "148", verified: false}
+  - {code: "1484", label: "Storm damage response", group: "14", subgroup: "148", verified: false}
+  - {code: "1491", label: "Open space litter collection", group: "14", subgroup: "149", verified: false}
+  - {code: "1492", label: "Open space graffiti removal", group: "14", subgroup: "149", verified: false}
+  - {code: "1493", label: "Beach cleaning", group: "14", subgroup: "149", verified: false}
+  - {code: "1500", label: "NATSPEC Maintenance reference", group: "15", subgroup: "150", verified: false}
+  - {code: "1501", label: "General requirements - building and facility (Maintenance)", group: "15", subgroup: "150", verified: false}
+  - {code: "1502", label: "Maintenance schedules - building and facility", group: "15", subgroup: "150", verified: false}
+  - {code: "1503", label: "Building and facility maintenance plan (BFMP)", group: "15", subgroup: "150", verified: false}
+  - {code: "1504", label: "Annexures to building and facility maintenance plan (BFMP)", group: "15", subgroup: "150", verified: false}
+  - {code: "1530", label: "External works", group: "15", subgroup: "153", verified: false}
+  - {code: "1531", label: "Floors", group: "15", subgroup: "153", verified: false}
+  - {code: "1532", label: "Walls", group: "15", subgroup: "153", verified: false}
+  - {code: "1533", label: "Doorways and windows", group: "15", subgroup: "153", verified: false}
+  - {code: "1534", label: "Ceilings", group: "15", subgroup: "153", verified: false}
+  - {code: "1535", label: "Roofing", group: "15", subgroup: "153", verified: false}
+  - {code: "1571", label: "Mechanical systems - maintenance", group: "15", subgroup: "157", verified: false}
+  - {code: "1572", label: "Hydraulic systems - maintenance", group: "15", subgroup: "157", verified: false}
+  - {code: "1573", label: "Electrical systems - maintenance", group: "15", subgroup: "157", verified: false}
+  - {code: "1574", label: "Fire systems - maintenance", group: "15", subgroup: "157", verified: false}
+  - {code: "1581", label: "External building surveillance", group: "15", subgroup: "158", verified: false}
+  - {code: "1582", label: "Accident repairs (Recoverable)", group: "15", subgroup: "158", verified: false}
+  - {code: "1583", label: "Emergency call out", group: "15", subgroup: "158", verified: false}
+  - {code: "1584", label: "Storm damage response", group: "15", subgroup: "158", verified: false}
+  - {code: "1585", label: "External cleaning", group: "15", subgroup: "158", verified: false}
+  - {code: "1586", label: "Internal cleaning", group: "15", subgroup: "158", verified: false}
+  - {code: "1587", label: "Sanitary cleaning", group: "15", subgroup: "158", verified: false}
+  - {code: "1588", label: "Window cleaning", group: "15", subgroup: "158", verified: false}
+  - {code: "1589", label: "Cleaning - blinds and fire proofing of curtains", group: "15", subgroup: "158", verified: false}
+  - {code: "1601", label: "General requirements - road reserve (Maintenance)", group: "16", subgroup: "160", verified: false}
+  - {code: "1602", label: "Maintenance schedules - road reserve", group: "16", subgroup: "160", verified: false}
+  - {code: "1603", label: "Road reserve maintenance plan (RMP)", group: "16", subgroup: "160", verified: false}
+  - {code: "1604", label: "Annexures to road reserve maintenance plan (RMP)", group: "16", subgroup: "160", verified: false}
+  - {code: "1611", label: "Pavement sweeping", group: "16", subgroup: "161", verified: false}
+  - {code: "1612", label: "Auxiliary work for reseals", group: "16", subgroup: "161", verified: false}
+  - {code: "1613", label: "Repairs to bituminous surfacing", group: "16", subgroup: "161", verified: false}
+  - {code: "1614", label: "Crack sealing", group: "16", subgroup: "161", verified: false}
+  - {code: "1615", label: "Local shape correction", group: "16", subgroup: "161", verified: false}
+  - {code: "1616", label: "Grading unsealed roads", group: "16", subgroup: "161", verified: false}
+  - {code: "1617", label: "Resheeting unsealed roads", group: "16", subgroup: "161", verified: false}
+  - {code: "1618", label: "Heavy patching", group: "16", subgroup: "161", verified: false}
+  - {code: "1619", label: "Minor patching", group: "16", subgroup: "161", verified: false}
+  - {code: "1620", label: "Pothole repair", group: "16", subgroup: "161", verified: false}
+  - {code: "1621", label: "Concrete pavement repairs", group: "16", subgroup: "161", verified: false}
+  - {code: "1622", label: "Concrete slab stabilisation", group: "16", subgroup: "161", verified: false}
+  - {code: "1623", label: "Emergency pavement repairs", group: "16", subgroup: "161", verified: false}
+  - {code: "1631", label: "Edge break repairs", group: "16", subgroup: "163", verified: false}
+  - {code: "1632", label: "Grading unsealed shoulders", group: "16", subgroup: "163", verified: false}
+  - {code: "1633", label: "Resheeting unsealed shoulders", group: "16", subgroup: "163", verified: false}
+  - {code: "1634", label: "Local scour repairs", group: "16", subgroup: "163", verified: false}
+  - {code: "1641", label: "Kerb and channel (gutter) repairs", group: "16", subgroup: "164", verified: false}
+  - {code: "1642", label: "Traffic islands", group: "16", subgroup: "164", verified: false}
+  - {code: "1651", label: "Clear road reserve subsoil drains", group: "16", subgroup: "165", verified: false}
+  - {code: "1652", label: "Clear road reserve open drains", group: "16", subgroup: "165", verified: false}
+  - {code: "1671", label: "Road reserve boundary fence repair", group: "16", subgroup: "167", verified: false}
+  - {code: "1672", label: "Road reserve fences and handrails", group: "16", subgroup: "167", verified: false}
+  - {code: "1673", label: "Street seats and bus shelters", group: "16", subgroup: "167", verified: false}
+  - {code: "1674", label: "Carriageway delineators", group: "16", subgroup: "167", verified: false}
+  - {code: "1675", label: "Road reserve guard fence", group: "16", subgroup: "167", verified: false}
+  - {code: "1676", label: "Road reserve signs", group: "16", subgroup: "167", verified: false}
+  - {code: "1677", label: "Road reserve guide signs", group: "16", subgroup: "167", verified: false}
+  - {code: "1681", label: "Accident repairs (Recoverable)", group: "16", subgroup: "168", verified: false}
+  - {code: "1682", label: "Road reserve emergency call out", group: "16", subgroup: "168", verified: false}
+  - {code: "1683", label: "Storm damage response for road safety", group: "16", subgroup: "168", verified: false}
+  - {code: "1684", label: "Traffic facilities - road traffic control", group: "16", subgroup: "168", verified: false}
+  - {code: "1691", label: "Road reserve litter collection", group: "16", subgroup: "169", verified: false}
+  - {code: "1692", label: "Removal of graffiti visible from roads", group: "16", subgroup: "169", verified: false}
+  - {code: "1701", label: "Wharves and decks maintenance", group: "17", subgroup: "170", verified: false}
+  - {code: "1841", label: "Water supply - irrigation systems", group: "18", subgroup: "184", verified: false}
+  - {code: "1851", label: "Clear open space drains", group: "18", subgroup: "185", verified: false}
+  - {code: "1852", label: "Clear open space drainage culverts", group: "18", subgroup: "185", verified: false}
+  - {code: "1853", label: "Clear road reserve culverts and pits", group: "18", subgroup: "185", verified: false}
+  - {code: "1854", label: "Minor repair of lined drains in road reserves", group: "18", subgroup: "185", verified: false}
+  - {code: "2011", label: "Lifts design and install", group: "20", subgroup: "201", verified: false}
+  - {code: "2012", label: "Escalators and moving walkways", group: "20", subgroup: "201", no_generic: true, verified: false}
+  - {code: "2021", label: "Pneumatic tube systems", group: "20", subgroup: "202", no_generic: true, verified: false}

@@ -96,6 +96,9 @@ func SourceFromText(text identity.Text) store.DocumentSource {
 		}
 		active = key
 		lastIndex = i
+		if r.Source.Page > 0 && r.Source.Width > 0 {
+			out.Source[i].Regions = append(out.Source[i].Regions, store.SourceRegion{Text: r.Text, X: r.Source.X, Y: r.Source.Y, Width: r.Source.Width, Height: r.Source.Height})
+		}
 		part := r.Text
 		sep := "\n"
 		if tableKey != "" {

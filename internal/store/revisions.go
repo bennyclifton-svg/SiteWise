@@ -55,7 +55,7 @@ type Revisions struct {
 // domain stores use this same bounded list; identifiers never come from SQL input.
 func BumpRevision(ctx context.Context, tx pgx.Tx, orgID, projectID, domain string) error {
 	switch domain {
-	case "profile_inputs", "works", "packages", "delivery", "costs", "reports":
+	case "profile_inputs", "works", "packages", "delivery", "costs", "reports", "specifications":
 	default:
 		return fmt.Errorf("unknown revision domain %q", domain)
 	}
@@ -68,7 +68,7 @@ func BumpRevision(ctx context.Context, tx pgx.Tx, orgID, projectID, domain strin
 // bumpRevisionLocked requires this transaction to hold the project advisory lock.
 func bumpRevisionLocked(ctx context.Context, tx pgx.Tx, orgID, projectID, domain string) error {
 	switch domain {
-	case "profile_inputs", "works", "packages", "delivery", "costs", "reports":
+	case "profile_inputs", "works", "packages", "delivery", "costs", "reports", "specifications":
 	default:
 		return fmt.Errorf("unknown revision domain %q", domain)
 	}

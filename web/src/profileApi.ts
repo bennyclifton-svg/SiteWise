@@ -38,6 +38,8 @@ export interface ProfileField extends Cell {
   part_id: string;
   kind: "choice" | "multi" | "number" | "text";
   unit?: string;
+  /** Usual range for a scale field; a placeholder, never a value. */
+  typical?: string;
   options?: ProfileOption[];
   stated_in?: string[];
   /** Compliance rows: relevant to the scope of works (or conflicting). */
@@ -98,6 +100,8 @@ export interface Profile {
   unread_documents: number;
   /** Documents the profile reads and does not read; skipped_kind is the most common kind not read. */
   read_documents: number;
+  /** Included documents whose reading jobs all finished successfully. */
+  completed_documents: number;
   skipped_documents: number;
   skipped_kind: string;
   failed_documents: number;

@@ -29,6 +29,9 @@ var ErrOverflow = errors.New("report exceeds its page limit; shorten the report 
 // RFPs retain complete scope and element pricing in up to four pages after
 // the October 2026 template consolidation. Three remains the target; other reports keep two.
 func PageLimit(s reports.IssueSnapshot) (int, float64) {
+	if s.SourceRevisions.TemplateID == "tpl.specifications" {
+		return 100, 20
+	}
 	if s.SourceRevisions.TemplateID == "tpl.rfp-consultant" {
 		return 4, 3
 	}
