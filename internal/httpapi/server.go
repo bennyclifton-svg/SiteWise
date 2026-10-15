@@ -17,6 +17,7 @@ import (
 	"sitewise/internal/files"
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
+	"sitewise/internal/invoices"
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
@@ -58,6 +59,12 @@ type Options struct {
 	// ProfileReading decides which documents the profile reads.
 	ProfileReading    profile.ReadPolicy
 	ProposalShowCount int
+	// InvoiceThresholds band Jev's invoice answers (data/invoice). The zero
+	// value applies none: every Jev answer stays blank for review.
+	InvoiceThresholds invoices.Thresholds
+	// InvoiceJev answers invoice questions; nil uses Jev. The bench sets a
+	// latency model here because its recordings hold filing calls only.
+	InvoiceJev invoices.Asker
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -65,6 +72,7 @@ type Server struct {
 	handler   http.Handler
 	store     *store.Store
 	filer     *filer
+	invoices  *invoiceReader
 	closing   chan struct{}
 	closeOnce sync.Once
 }
@@ -131,6 +139,25 @@ func New(opts Options) (*Server, error) {
 			return err == nil && strings.HasPrefix(doc.Reason, "ocr_")
 		}
 	}
+	reader := &invoiceReader{
+		store:      opts.Store,
+		blobs:      opts.Blobs,
+		ask:        opts.Jev,
+		thresholds: opts.InvoiceThresholds,
+		broker:     broker,
+		log:        opts.Log,
+		observe:    speed.Observe,
+		timeout:    opts.FilingTimeout,
+		slots:      make(chan struct{}, defaultFilingSlots),
+		now:        time.Now,
+		inflight:   map[string]struct{}{},
+	}
+	if opts.InvoiceJev != nil {
+		reader.ask = opts.InvoiceJev
+	}
+	if reader.thresholds.QuestionVersion == "" {
+		reader.thresholds.QuestionVersion = invoices.QuestionVersion
+	}
 	closing := make(chan struct{})
 	api := Handler(Deps{
 		Store:          opts.Store,
@@ -144,6 +171,7 @@ func New(opts Options) (*Server, error) {
 		Catalog:        opts.Catalog,
 		Broker:         broker,
 		Filer:          f,
+		InvoiceReader:  reader,
 		Closing:        closing,
 		Health:         checker,
 		Speed:          speed,
@@ -165,7 +193,7 @@ func New(opts Options) (*Server, error) {
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
-	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, closing: closing}, nil
+	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, closing: closing}, nil
 }
 
 // CloseStreams ends open event streams. Clients reconnect from their cursor.
@@ -200,7 +228,14 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 	for _, p := range expansions {
 		s.filer.startExpansion(p.OrgID, p.DocumentID)
 	}
-	return len(pending) + len(expansions), nil
+	unread, err := s.store.PendingInvoiceReads(ctx)
+	if err != nil {
+		return len(pending) + len(expansions), err
+	}
+	for _, p := range unread {
+		s.invoices.Start(p.OrgID, p.InvoiceID, time.Time{}, false)
+	}
+	return len(pending) + len(expansions) + len(unread), nil
 }
 
 // Wait blocks until started filings finish or ctx ends.
@@ -208,6 +243,7 @@ func (s *Server) Wait(ctx context.Context) error {
 	done := make(chan struct{})
 	go func() {
 		s.filer.wg.Wait()
+		s.invoices.wg.Wait()
 		close(done)
 	}()
 	select {

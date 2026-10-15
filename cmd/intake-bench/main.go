@@ -43,6 +43,7 @@ import (
 	"sitewise/internal/httpapi"
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
+	"sitewise/internal/invoices"
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
@@ -304,7 +305,17 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err != nil {
 		return 0, err
 	}
+	invoiceTh, err := invoices.LoadThresholds(filepath.Join(repo, "data", "invoice"))
+	if err != nil {
+		return 0, err
+	}
+	var invoiceAsk invoices.Asker
+	if !o.live {
+		invoiceAsk = newInvoiceModel(records)
+	}
 	srv, err := httpapi.New(httpapi.Options{
+		InvoiceThresholds: invoiceTh,
+		InvoiceJev:        invoiceAsk,
 		Store:             st,
 		Blobs:             blobs,
 		Jev:               client,
@@ -402,6 +413,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	}
 	if err := api.specifications(ctx, o.apiSamples); err != nil {
 		return 0, err
+	}
+	if err := api.invoices(ctx, st, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench invoices: %w", err)
 	}
 	if err := api.workItems(ctx, st, o.apiSamples); err != nil {
 		return 0, err

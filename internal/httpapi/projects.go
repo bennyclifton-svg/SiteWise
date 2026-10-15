@@ -35,6 +35,9 @@ type Deps struct {
 	Catalog        intake.Catalog
 	Broker         *events.Broker
 	Filer          Filer
+	// InvoiceReader reads an uploaded invoice outside the request. Nil
+	// leaves new invoices waiting to be read when the server resumes.
+	InvoiceReader InvoiceReader
 	// Closing ends event streams when the server shuts down.
 	Closing <-chan struct{}
 	// Health and Speed serve the owner-only status views. Budgets are what
@@ -50,6 +53,11 @@ type Deps struct {
 	ProfileReading    profile.ReadPolicy
 	ProposalShowCount int
 	ReportBuild       string
+}
+
+// InvoiceReader starts reading an invoice that outlives the upload request.
+type InvoiceReader interface {
+	Start(orgID, invoiceID string, began time.Time, recheck bool)
 }
 
 // Filer starts a foreground filing that outlives the upload request.
@@ -95,6 +103,12 @@ func Handler(deps Deps) http.Handler {
 		"GET /projects/{id}/specifications/export":                         exportSpecification,
 		"GET /projects/{id}/specifications/issues/{issue}/export":          exportSpecification,
 		"DELETE /projects/{id}/cost-plan/items/{item}":                     deleteCostItem,
+		"POST /projects/{id}/invoices":                                     uploadInvoice,
+		"GET /projects/{id}/invoices":                                      getInvoices,
+		"GET /projects/{id}/invoices/export":                               exportInvoices,
+		"PATCH /projects/{id}/invoices/{inv}":                              patchInvoice,
+		"PUT /projects/{id}/invoices/{inv}/allocations":                    putInvoiceAllocations,
+		"GET /projects/{id}/invoices/{inv}/file":                           downloadInvoice,
 		"GET /projects/{id}/delivery/dependencies":                         getDeliveryDependencies,
 		"POST /projects/{id}/delivery/dependencies":                        writeDeliveryDependency,
 		"DELETE /projects/{id}/delivery/dependencies":                      writeDeliveryDependency,
@@ -221,6 +235,10 @@ var routePaths = map[string]string{
 	"GET /projects/{id}/specifications/export":                         "specification_export",
 	"GET /projects/{id}/specifications/issues/{issue}/export":          "specification_export",
 	"DELETE /projects/{id}/cost-plan/items/{item}":                     "costs_delete",
+	"GET /projects/{id}/invoices":                                      pathInvoicesRead,
+	"GET /projects/{id}/invoices/export":                               pathInvoiceExport,
+	"PATCH /projects/{id}/invoices/{inv}":                              pathInvoiceWrite,
+	"PUT /projects/{id}/invoices/{inv}/allocations":                    pathInvoiceWrite,
 	"GET /projects/{id}/delivery/dependencies":                         pathDeliveryRead,
 	"POST /projects/{id}/delivery/dependencies":                        pathDeliveryWrite,
 	"DELETE /projects/{id}/delivery/dependencies":                      pathDeliveryWrite,

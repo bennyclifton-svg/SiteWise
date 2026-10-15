@@ -37,6 +37,12 @@ The workbench, in navigation order:
   contract and the amount claimed. Forecast, variance and remaining are
   computed. An unpriced line stays unknown. Lines are prepared from the
   profile, the work items and the procurement packages. No price is invented.
+  An Invoices tab beside the plan takes dropped invoices into one ledger:
+  each is read in about a second, mapped to a supplier package and an
+  activity line, and checked in code (duplicates, arithmetic, GST, ABN,
+  splits). The plan's invoiced to date, budget remaining and % spent come
+  from that ledger, with an Unallocated row so the totals always add up.
+  Both views export to Excel and CSV and print. Variations is a placeholder.
 - **Program.** A navigation placeholder.
 - **Procurement.** One table of consultant and trade packages. Choosing a
   discipline saves the package. Create writes an RFP for a consultant and an

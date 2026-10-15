@@ -5,6 +5,11 @@
 	{"name":"specification_write","p50_us":100000,"p90_us":250000},
 	{"name":"specification_issue","p50_us":100000,"p90_us":250000},
 	{"name":"specification_export","p50_us":100000,"p90_us":250000},
+	{"name":"invoice_intake","p50_us":1000000,"p90_us":2000000,"note":"one invoice, upload start to its ledger row event (same gate as filing)"},
+	{"name":"invoice_batch","p50_us":2500000,"p90_us":4000000,"note":"20 invoices dropped together, last row read (proposed, owner sign-off pending)"},
+	{"name":"invoices_read","p50_us":150000,"p90_us":300000,"note":"Invoices tab load with 1,000 invoices (proposed)"},
+	{"name":"invoice_write","p50_us":50000,"p90_us":100000,"note":"re-map or edit, recomputed summary returned (proposed: p90 100 ms)"},
+	{"name":"invoice_export","p50_us":1000000,"p90_us":2000000,"note":"Excel export of 1,000 invoices (proposed: p90 2,000 ms)"},
     {
       "name": "identity_text_extraction",
       "p50_us": 80000,

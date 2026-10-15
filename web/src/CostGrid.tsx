@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import type { CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue } from "./costApi";
 import type { PackageRecord } from "./packageApi";
+import type { Ledger, LedgerLine } from "./invoiceApi";
 
 // Money arrives as exact decimal strings. Group digits without parsing to a
 // float so the grid shows what the ledger holds.
@@ -27,8 +28,20 @@ const COLUMNS = ["Budget", "Approved Contract", "Forecast Variations", "Approved
 const PLACEHOLDER = new Set(["Forecast Variations", "Approved Variations", "This Month"]);
 type SortKey = "category" | "item";
 
-export function CostGrid({ plan, totals, packages, selected, editable, busy, onOpen, onValue, onDelete, onItem, quantities }: {
+// Ledger columns come from the invoice ledger, computed on the server: the
+// same figures the Invoices tab sums, so the two views cannot disagree.
+const LEDGER = ["Invoiced to Date", "Budget Remaining", "% Spent"];
+function LedgerCells({ line, onInvoices }: { line?: LedgerLine; onInvoices?: (id: string) => void }) {
+  if (!line) return <><td className="cost-num cost-ledger">—</td><td className="cost-num cost-ledger">—</td><td className="cost-num cost-ledger">—</td></>;
+  const over = line.over_budget ? " cost-over" : "";
+  return <><td className={`cost-num cost-ledger${over}`}>{onInvoices && line.invoices > 0 ? <button type="button" className="cost-open" title={`Show the ${line.invoices} invoice${line.invoices === 1 ? "" : "s"} on ${line.label}`} onClick={e => { e.stopPropagation(); onInvoices(line.id || "unallocated"); }}>{fmt(line.invoiced)}</button> : fmt(line.invoiced)}</td>
+    <td className={`cost-num cost-ledger${over}`}>{fmt(line.remaining)}{line.over_budget && <span className="cost-tag">over budget</span>}</td>
+    <td className={`cost-num cost-ledger${over}`}>{line.percent_spent ? `${line.percent_spent}%` : "—"}</td></>;
+}
+
+export function CostGrid({ plan, totals, packages, selected, editable, busy, onOpen, onValue, onDelete, onItem, quantities, ledger, onInvoices }: {
   plan: CostPlan; totals: CostTotals | null; packages: PackageRecord[]; selected: string; editable: boolean;
+  ledger?: Ledger | null; onInvoices?: (lineId: string) => void;
   quantities: boolean; busy: boolean;
   onDelete: (item: CostItem) => Promise<boolean>;
   onItem: (content: CostContent, id?: string, calculate?: boolean) => Promise<boolean>;
@@ -40,6 +53,9 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
   const sortValue = (i: CostItem) => sort?.key === "category" ? category(i) : i.label;
   const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : [...list].sort((a,b) => (Number(["other", "exclusions"].includes(a.category)) - Number(["other", "exclusions"].includes(b.category))) || a.code.localeCompare(b.code, undefined, {numeric:true}) || a.label.localeCompare(b.label));
   const ids = new Set(items.map(i => i.cost_item_id));
+  const ledgerLine = new Map((ledger?.summary.lines ?? []).map(l => [l.id, l]));
+  const archived = (ledger?.summary.lines ?? []).filter(l => l.archived);
+  const width = 4 + COLUMNS.length + LEDGER.length + (quantities ? 3 : 0);
   // Display positions are not identities: links continue to use cost_item_id.
   let rowNumber = 0;
   // Children follow their group line, indented; sorting applies within a level.
@@ -50,12 +66,13 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
   return <div className="cost-grid-scroll"><table className="cost-grid">
     <thead><tr><th scope="col" className="cost-sticky" data-col="code">No.</th>{header("category", "Category")}{header("item", "Item")}
       {quantities && ["Qty", "Unit", "Rate"].map(c => <th key={c} scope="col">{c}</th>)}
-      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}<th scope="col" className="cost-actions">Actions</th></tr></thead>
+      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}
+      {LEDGER.map(c => <th key={c} scope="col" className="cost-num cost-ledger" title="From the invoice ledger, ex GST">{c}</th>)}<th scope="col" className="cost-actions">Actions</th></tr></thead>
     {GROUPS.map(g => {
       const top = items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id)));
       const t = totals?.sections[g.bucket], d = totals?.section_figures[g.bucket];
       return <tbody key={g.bucket}>
-        <tr className="cost-group"><th colSpan={4 + COLUMNS.length + (quantities ? 3 : 0)} scope="colgroup"><span>{g.title}</span></th></tr>
+        <tr className="cost-group"><th colSpan={width} scope="colgroup"><span>{g.title}</span></th></tr>
         {tree(top, 0).map(({ item: i, depth }) => {
           const f = totals?.items?.[i.cost_item_id];
           return <tr key={i.cost_item_id} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} aria-selected={selected === i.cost_item_id} onClick={() => onOpen(i.cost_item_id)}>
@@ -63,7 +80,7 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
             <td className="cost-sticky" data-col="category">{editable ? <CategoryCell item={i} plan={plan} packages={packages} label={category(i)} onSave={c => onItem(c, i.cost_item_id)} /> : category(i)}</td>
             <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16}px` }}><button type="button" className="cost-open" title={i.label} onClick={e => { e.stopPropagation(); onOpen(i.cost_item_id); }}>{i.label}</button>{editable && <TextCell label={`Item for ${i.label}`} value={i.label} compact onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} />}{i.excluded && <span className="cost-tag">excluded</span>}</td>
             {quantities && <QuantityCells key={i.cost_item_id} item={i} editable={editable && i.posting} onSave={c => onItem(c, i.cost_item_id, true)} />}
-            {!i.posting ? <td colSpan={COLUMNS.length} className="cost-note">Group · amounts are on the lines below</td> : <>
+            {!i.posting ? <td colSpan={COLUMNS.length + LEDGER.length} className="cost-note">Group · amounts are on the lines below</td> : <>
               <td className="cost-num"><MoneyCell metric="budget" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "budget", a)} /></td>
               <td className="cost-num"><MoneyCell metric="commitment" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "commitment", a)} /></td>
               <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
@@ -71,19 +88,28 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
               <td className="cost-num">{fmt(f?.budget_variance)}</td>
               <td className="cost-num">{cell(i.values.claimed_to_date)}</td>
               <td className="cost-num cost-placeholder">—</td>
-              <td className="cost-num">{fmt(f?.remaining)}</td></>}
+              <td className="cost-num">{fmt(f?.remaining)}</td>
+              <LedgerCells line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} /></>}
             <td className="cost-actions">{editable && <button type="button" className="cost-delete" disabled={busy} aria-label={`Delete ${i.label}`} title={`Delete ${i.label}`} onClick={e => { e.stopPropagation(); void onDelete(i); }}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" /></svg></button>}</td>
           </tr>;
         })}
-        {editable && <AddLineRow key={g.bucket} group={g} plan={plan} packages={packages} columns={4 + COLUMNS.length + (quantities ? 3 : 0)} onSave={onItem} />}
+        {editable && <AddLineRow key={g.bucket} group={g} plan={plan} packages={packages} columns={width} onSave={onItem} />}
         <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">{g.title} subtotal</th>{quantities && <td colSpan={3} />}
           <td className="cost-num">{subtotal(t?.budget)}</td><td className="cost-num">{subtotal(t?.commitment)}</td>
           <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
           <td className="cost-num">{subtotal(t?.forecast)}</td><td className="cost-num">{fmt(d?.budget_variance)}</td>
           <td className="cost-num">{subtotal(t?.claimed_to_date)}</td><td className="cost-num cost-placeholder">—</td>
-          <td className="cost-num">{fmt(d?.remaining)}</td><td /></tr>
+          <td className="cost-num">{fmt(d?.remaining)}</td>
+          <td className="cost-num cost-ledger">{ledger ? fmt(ledger.summary.sections[g.bucket] ?? "0.00") : "—"}</td><td className="cost-ledger" /><td className="cost-ledger" /><td /></tr>
       </tbody>;
     })}
+    {ledger && <tbody className="cost-ledger-foot">
+      <tr className="cost-ledger-group"><th colSpan={width} scope="colgroup"><span>Invoices not on a current line</span></th></tr>
+      {archived.map(l => <tr key={l.id} className="cost-row"><td className="cost-sticky" data-col="code" /><td className="cost-sticky" data-col="category">{l.category || "—"}</td><td className="cost-sticky" data-col="item">{l.label} <span className="cost-tag">removed from the plan</span></td>{quantities && <td colSpan={3} />}<td colSpan={COLUMNS.length} className="cost-note">Spend still counts</td><LedgerCells line={l} onInvoices={onInvoices} /><td /></tr>)}
+      <tr className="cost-row" data-testid="unallocated-row"><td className="cost-sticky" data-col="code" /><td className="cost-sticky" data-col="category">—</td><th scope="row" className="cost-sticky" data-col="item">Unallocated</th>{quantities && <td colSpan={3} />}<td colSpan={COLUMNS.length} className="cost-note">Invoices with no activity line</td><LedgerCells line={ledger.summary.unallocated} onInvoices={onInvoices} /><td /></tr>
+      <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Invoiced to date (all lines)</th>{quantities && <td colSpan={3} />}<td colSpan={COLUMNS.length} />
+        <td className="cost-num cost-ledger" data-testid="ledger-total">{fmt(ledger.summary.invoiced)}</td><td className="cost-num cost-ledger">{fmt(ledger.summary.remaining)}</td><td className="cost-num cost-ledger">{ledger.summary.percent_spent ? `${ledger.summary.percent_spent}%` : "—"}</td><td /></tr>
+    </tbody>}
   </table></div>;
 }
 

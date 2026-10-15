@@ -21,6 +21,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -31,6 +32,8 @@ import (
 	"sitewise/internal/httpapi"
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
+	"sitewise/internal/invoices"
+	"sitewise/internal/invoices/sample"
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
@@ -137,6 +140,7 @@ func run(addr, data string) error {
 		Jev:               client,
 		Catalog:           cat,
 		Thresholds:        thresholds(cat),
+		InvoiceThresholds: invoiceThresholds(),
 		Static:            web.Dist(),
 		PublicOrigin:      "http://" + addr,
 		MaxUploadBytes:    50 << 20,
@@ -153,6 +157,16 @@ func run(addr, data string) error {
 	})
 	mux.HandleFunc("POST /__e2e/invite", func(w http.ResponseWriter, r *http.Request) {
 		invite(w, r, st)
+	})
+	// Synthetic tax invoices for the ledger suite; no real supplier.
+	mux.HandleFunc("GET /__e2e/invoice.pdf", func(w http.ResponseWriter, r *http.Request) {
+		n, err := strconv.Atoi(r.URL.Query().Get("n"))
+		if err != nil || n < 0 || n > 100000 {
+			http.Error(w, "n is required", http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/pdf")
+		_, _ = w.Write(sample.PDF(sample.Batch(n, 1)[0]))
 	})
 	mux.HandleFunc("POST /__e2e/drop-streams", func(w http.ResponseWriter, r *http.Request) {
 		cut.dropAll()
@@ -267,6 +281,16 @@ func invite(w http.ResponseWriter, r *http.Request, st *store.Store) {
 
 // thresholds are test data only: production cut-offs stay unknown until the
 // calibration run. Option counts match each catalog question exactly.
+// invoiceThresholds make the recorded middling answers amber, so the
+// ledger suite sees Jev's picks as values to check.
+func invoiceThresholds() invoices.Thresholds {
+	lo, hi := 2, 255
+	g, a := 0.9, 0.4
+	cut := []invoices.Threshold{{Options: &lo, MaxOptions: &hi, Green: &g, Amber: &a}}
+	return invoices.Thresholds{QuestionVersion: invoices.QuestionVersion, Calibration: "e2e fixture thresholds; not calibrated",
+		Questions: map[string][]invoices.Threshold{invoices.FieldABN: cut, invoices.FieldSupplier: cut, invoices.FieldLine: cut, invoices.FieldDate: cut}}
+}
+
 func thresholds(cat intake.Catalog) intake.Thresholds {
 	cut := func(n int) intake.Threshold {
 		g, a := 0.9, 0.6

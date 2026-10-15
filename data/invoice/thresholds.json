@@ -1,0 +1,157 @@
+{
+ "question_version": "invoice-1",
+ "calibration": "cmd/invoice-eval -fit, 412 calibration answers, 2026-10-15",
+ "policy": {
+  "z": 1.645,
+  "min_samples": 20,
+  "min_band_samples": 10,
+  "green_lower": 0.95,
+  "amber_lower": 0.7,
+  "max_errors": -1
+ },
+ "questions": {
+  "date": [
+   {
+    "options": 2,
+    "max_options": 2,
+    "green": null,
+    "amber": null,
+    "n": 8,
+    "reason": "8 calibration answers, need 20"
+   },
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": null,
+    "amber": 0.88,
+    "n": 43,
+    "reason": "review only; no cut-off meets the green bound"
+   }
+  ],
+  "gst": [
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": null,
+    "amber": 0.86,
+    "n": 34,
+    "reason": "review only; no cut-off meets the green bound"
+   },
+   {
+    "options": 9,
+    "max_options": 255,
+    "green": null,
+    "amber": null,
+    "n": 17,
+    "reason": "17 calibration answers, need 20"
+   }
+  ],
+  "issuer_abn": [
+   {
+    "options": 2,
+    "max_options": 2,
+    "green": null,
+    "amber": 0.08,
+    "n": 24,
+    "reason": "review only; no cut-off meets the green bound"
+   },
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": null,
+    "amber": 0.56,
+    "n": 26,
+    "reason": "review only; no cut-off meets the green bound"
+   }
+  ],
+  "kind": [
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": 0.89,
+    "amber": 0.89,
+    "n": 59
+   }
+  ],
+  "line": [
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": null,
+    "amber": null,
+    "n": 15,
+    "reason": "15 calibration answers, need 20"
+   },
+   {
+    "options": 9,
+    "max_options": 255,
+    "green": null,
+    "amber": 0.24,
+    "n": 34,
+    "reason": "review only; no cut-off meets the green bound"
+   }
+  ],
+  "number": [
+   {
+    "options": 2,
+    "max_options": 2,
+    "green": null,
+    "amber": 0.86,
+    "n": 42,
+    "reason": "review only; no cut-off meets the green bound"
+   },
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": null,
+    "amber": null,
+    "n": 8,
+    "reason": "8 calibration answers, need 20"
+   }
+  ],
+  "supplier": [
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": null,
+    "amber": null,
+    "n": 15,
+    "reason": "15 calibration answers, need 20"
+   },
+   {
+    "options": 9,
+    "max_options": 255,
+    "green": null,
+    "amber": 0.24,
+    "n": 36,
+    "reason": "review only; no cut-off meets the green bound"
+   }
+  ],
+  "total": [
+   {
+    "options": 2,
+    "max_options": 2,
+    "green": null,
+    "amber": null,
+    "n": 1,
+    "reason": "1 calibration answers, need 20"
+   },
+   {
+    "options": 3,
+    "max_options": 8,
+    "green": null,
+    "amber": 0.98,
+    "n": 37,
+    "reason": "review only; no cut-off meets the green bound"
+   },
+   {
+    "options": 9,
+    "max_options": 255,
+    "green": null,
+    "amber": null,
+    "n": 13,
+    "reason": "13 calibration answers, need 20"
+   }
+  ]
+ }
+}

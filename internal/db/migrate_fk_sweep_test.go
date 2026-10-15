@@ -170,7 +170,11 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["cost_suggestion_dismissals"] = row{"org_id": org, "project_id": p, "source_key": "pw:escalation", "actor": u}
 		f["cost_values"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "metric": "estimate", "value_state": "unknown", "origin": "user", "meaning": "allowance"}
 		f["scope_cost_links"] = row{"org_id": org, "project_id": p, "plan_version_id": costVersion, "cost_item_id": costID, "package_scope_item_id": scope}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports"} {
+		invoice := id(3100 + n)
+		f["invoices"] = row{"org_id": org, "id": invoice, "project_id": p, "file_id": id(1800 + n), "filename": "invoice.pdf", "status": "filed", "period": "2026-10-01", "package_id": pkg}
+		f["invoice_allocations"] = row{"org_id": org, "id": id(3200 + n), "project_id": p, "invoice_id": invoice, "cost_item_id": costID, "decided_by": "rule", "band": "green", "ordinal": 0}
+		f["invoice_decisions"] = row{"org_id": org, "project_id": p, "invoice_id": invoice, "field": "kind", "band": "green", "decided_by": "rule"}
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
@@ -260,6 +264,17 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 					base["package_id"] = fixtures[0]["packages"]["id"]
 					base["package_stage_id"] = fixtures[0]["package_stages"]["id"]
 				}
+			case "invoices":
+				// One invoice per file per project: the control uses the spare file.
+				base["file_id"] = id(1851)
+				if strings.Contains(f.definition, "superseded_by") {
+					base["superseded_by"] = fixtures[0]["invoices"]["id"]
+					base["status"] = "superseded"
+				}
+			case "invoice_allocations":
+				base["ordinal"] = 1
+			case "invoice_decisions":
+				base["field"] = "number"
 			case "projects":
 				base["site_id"] = id(9900)
 			case "project_parts":

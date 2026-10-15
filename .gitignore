@@ -28,3 +28,6 @@ bench/samples-*.json
 # Classification source documents (NATSPEC, ANZSMM). Licensed or third-party
 # PDFs stay local; transcribed codes and titles live beside them as YAML.
 data/reference/classifications/*.pdf
+
+# Invoice answer key and Jev recordings name real projects and fees.
+data/eval/invoice/private/

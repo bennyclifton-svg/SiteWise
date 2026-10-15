@@ -1,0 +1,123 @@
+/* Invoice ledger beside the cost plan: one table of every invoice, the PDF
+   beside its fields, and chips that say how each value was decided. */
+.costs-export { margin-left: auto; }
+.costs-export a.btn { text-decoration: none; }
+.print-only { display: none; }
+.costs-export + .costs-toolbar { margin-left: 0; }
+.costs-tabs { display: flex; gap: 2px; margin: 0 0 14px; border-bottom: 1px solid var(--line-strong); }
+.costs-tab { position: relative; padding: 8px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-muted); font: inherit; font-weight: 500; cursor: pointer; }
+.costs-tab[aria-selected="true"] { border-bottom-color: var(--ember); color: var(--ink); }
+.costs-tab:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
+.costs-tab-count { margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--ground); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+.cost-ledger { background-color: var(--canvas) !important; }
+.cost-ledger-group th { padding-top: 12px; background: var(--ground); color: var(--ink); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; text-align: left; }
+.cost-grid thead .cost-ledger { color: var(--ink); }
+.cost-over { color: var(--alert); }
+.cost-over .cost-tag { border-color: var(--alert); color: var(--alert); }
+
+.invoices { position: relative; }
+.inv-drop { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; margin-bottom: 12px; padding: 14px 16px; border: 1.5px dashed var(--line-strong); border-radius: var(--radius-sm); background: var(--ground); }
+.inv-drop[data-over="true"], .invoices[data-over="true"] .inv-drop { border-style: solid; border-color: var(--ember); background: var(--ember-soft); }
+.inv-drop .drop-title { margin: 0; }
+.inv-drop-hint { margin: 2px 0 0; color: var(--ink-muted); font-size: 13px; }
+
+.inv-uploads { display: grid; gap: 4px; margin: 0 0 12px; padding: 0; list-style: none; font-size: 13px; }
+.inv-uploads li { display: flex; align-items: center; gap: 12px; padding: 5px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); }
+.inv-uploads li[data-state="failed"] { border-color: var(--alert); background: var(--alert-soft); }
+.inv-uploads li[data-state="already"] { background: var(--azure-soft); }
+.inv-upload-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+
+.inv-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 14px; margin-bottom: 10px; font-size: 12px; color: var(--ink-muted); }
+.inv-filters label { display: grid; gap: 2px; }
+.inv-filters select { min-width: 150px; max-width: 240px; padding: 4px 6px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: 13px; }
+
+.inv-table-scroll { max-width: 100%; max-height: calc(100vh - 330px); overflow: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
+.inv-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+.inv-table th, .inv-table td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; background: var(--paper); }
+.inv-table thead th { position: sticky; top: 0; z-index: 1; background: var(--canvas); color: var(--ink-muted); font-weight: 500; font-size: 12px; white-space: nowrap; }
+.inv-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.inv-table tbody tr { cursor: pointer; }
+.inv-table tbody tr:hover td { background: var(--ground); }
+.inv-table tbody tr[aria-selected="true"] td { background: var(--azure-soft); }
+.inv-table tbody tr[data-status="void"] td, .inv-table tbody tr[data-status="superseded"] td { color: var(--ink-muted); text-decoration: line-through; text-decoration-color: var(--line-strong); }
+.inv-open { padding: 0; border: 0; background: none; color: var(--azure); font: inherit; font-weight: 500; text-align: left; cursor: pointer; }
+.inv-open:hover { text-decoration: underline; }
+.inv-share { display: block; color: var(--ink-muted); font-size: 11px; }
+
+/* A chip carries words and an icon; the colour only repeats them. */
+.inv-chip { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 11px; color: var(--ink-muted); white-space: nowrap; text-decoration: none; }
+.inv-table .num .inv-chip { justify-content: flex-end; }
+.inv-chip svg { flex: none; width: 12px; height: 12px; }
+.inv-chip[data-state="confirmed"] { color: var(--ok); }
+.inv-chip[data-state="check"] { color: var(--warn); }
+.inv-chip[data-state="user"] { color: var(--ember-hot); }
+.inv-chip[data-state="unchecked"] { background: repeating-linear-gradient(135deg, transparent 0 4px, var(--hatch) 4px 5px); }
+
+.inv-status { display: inline-block; padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 11.5px; white-space: nowrap; }
+.inv-status[data-status="filed"] { border-color: var(--ok); color: var(--ok); }
+.inv-status[data-status="needs_review"] { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
+.inv-status[data-status="not_read"] { border-style: dashed; }
+.inv-status[data-status="reading"] { border-style: dotted; color: var(--ink-muted); }
+.inv-out { display: block; margin-top: 2px; color: var(--ink-muted); font-size: 11px; }
+.inv-flag { display: block; margin-top: 2px; color: var(--warn); font-size: 11px; white-space: normal; max-width: 220px; }
+
+.inv-empty { padding: 20px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); color: var(--ink-body); }
+.inv-empty h2 { font-size: 16px; margin: 0 0 6px; }
+.inv-empty p { margin: 0; }
+
+.inv-panel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 25; display: flex; flex-direction: column; width: min(1040px, 100vw); border-left: 1px solid var(--line-strong); background: var(--paper); box-shadow: var(--shadow-sm); }
+.inv-panel-head { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+.inv-panel-head h2 { flex: 1; margin: 0; font-size: 17px; overflow-wrap: anywhere; }
+.inv-panel-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1fr); min-height: 0; }
+.inv-pdf { min-height: 0; border-right: 1px solid var(--line); background: var(--ground); }
+.inv-pdf iframe { width: 100%; height: 100%; border: 0; }
+.inv-pdf p { padding: 16px; }
+.inv-fields { overflow-y: auto; padding: 14px 18px 32px; }
+.inv-field { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); align-items: center; gap: 2px 10px; margin-bottom: 8px; }
+.inv-field label { color: var(--ink-muted); font-size: 12.5px; }
+.inv-field input, .inv-field select { width: 100%; padding: 5px 7px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: 13.5px; }
+.inv-field .inv-chip { grid-column: 2; margin-top: 0; }
+.inv-flags { margin: 0 0 12px; padding: 8px 10px 8px 26px; border: 1px solid var(--warn); border-radius: var(--radius-sm); background: var(--warn-soft); font-size: 13px; color: var(--ink); }
+.inv-flags li[data-info="true"] { color: var(--ink-muted); }
+.inv-note { margin: 0 0 12px; padding: 8px 10px; border: 1px dashed var(--line-strong); font-size: 13px; }
+.inv-error { margin: 0 0 12px; color: var(--alert); font-size: 13px; }
+.inv-split { margin: 12px 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.inv-split legend { padding: 0 4px; color: var(--ink-muted); font-size: 12.5px; }
+.inv-split ul { margin: 0 0 8px; padding-left: 18px; font-size: 13px; }
+.inv-split .btn { margin: 4px 6px 0 0; }
+.inv-split-row { display: flex; gap: 6px; margin-bottom: 6px; }
+.inv-split-row select { flex: 1; min-width: 0; }
+.inv-split-row input { width: 110px; text-align: right; }
+.inv-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.inv-file { color: var(--ink-muted); font-size: 12px; overflow-wrap: anywhere; }
+
+@media (max-width: 900px) {
+  .inv-drop { grid-template-columns: 1fr; }
+  .inv-drop .drop-mark { display: none; }
+  .inv-panel-body { grid-template-columns: 1fr; grid-template-rows: 45vh auto; overflow-y: auto; }
+  .inv-table-scroll { max-height: none; }
+}
+
+/* Print: A4 landscape, header rows repeat on every page, no controls, and a
+   chip prints its words so no meaning rides on colour. */
+@media print {
+  @page { size: A4 landscape; margin: 12mm; }
+  .leftnav, .project-side-panel, .ask-bar, .cockpit-shell-header .btn, .costs-toolbar, .costs-tabs, .inv-drop, .inv-uploads, .inv-filters, .inv-panel, .cost-drawer, .cost-actions, .cost-add, .banner { display: none !important; }
+  .cockpit-shell { display: block !important; }
+  .cost-grid-scroll, .inv-table-scroll { max-height: none !important; overflow: visible !important; border: 0; }
+  .cost-sticky { position: static !important; }
+  .cost-grid thead th, .inv-table thead th { position: static !important; }
+  .cost-grid thead, .inv-table thead { display: table-header-group; }
+  .cost-grid tr, .inv-table tr { break-inside: avoid; }
+  .cost-grid, .inv-table { font-size: 9pt; }
+  /* Paper is white whatever the screen theme. */
+  html, body, .cockpit-page, .cockpit-shell, .project-main-panel, .cockpit-scroll, .costs, .cost-grid-scroll, .inv-table-scroll,
+  .cost-grid th, .cost-grid td, .inv-table th, .inv-table td, .costs-totals { background: #fff !important; color: #000 !important; box-shadow: none !important; }
+  .inv-chip, .inv-status, .inv-flag, .inv-out, .cost-ledger, .cost-placeholder, .cost-open, .inv-open { background: none !important; color: #000 !important; border-color: #000 !important; }
+  .inv-chip { color: #333 !important; }
+  .inv-chip svg { display: none; }
+  .print-only { display: block; margin: 0 0 8px; font-size: 9pt; color: #000; }
+  .cockpit-shell-header button { display: none !important; }
+  .cockpit-title, .cockpit-address, .costs-head h1, .costs-chip { color: #000 !important; background: none !important; border-color: #000 !important; }
+}

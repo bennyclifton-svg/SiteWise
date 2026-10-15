@@ -238,6 +238,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [showSpecifications, setShowSpecifications] = useState(false);
   const [specificationsOpened, setSpecificationsOpened] = useState(false);
   const [specificationTick, setSpecificationTick] = useState(0);
+  const [invoiceTick, setInvoiceTick] = useState(0);
   const [costsOpened, setCostsOpened] = useState(false);
   const [deliveryOpened, setDeliveryOpened] = useState(false);
   const [reportsOpened, setReportsOpened] = useState(false);
@@ -304,6 +305,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
           const ev = JSON.parse((msg as MessageEvent<string>).data) as StreamEvent;
           if (ev.id <= lastId.current) return;
           lastId.current = ev.id;
+          if (ev.kind === "invoices") {
+            if (ev.payload?.project_id === projectId) setInvoiceTick(n => n + 1);
+            return;
+          }
           if (ev.kind === "specification") {
             if (ev.payload?.project_id === projectId) setSpecificationTick(n => n + 1);
             return;
@@ -680,7 +685,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} />
       </section>
       {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Implications projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
+      {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} /></div>}

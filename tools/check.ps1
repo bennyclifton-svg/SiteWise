@@ -64,6 +64,11 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & go run ./cmd/profile-eval -cases data/eval/profile/private/hale-cases.json -recording data/eval/profile/private/hale-recording.json
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+# Invoice reading: replay of the recorded live run over the private invoice
+# answer key. A changed file, a replay miss or any wrong green value fails.
+& go run ./cmd/invoice-eval
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 # Latency: every budgeted path through the real server, gated by
 # bench/budgets.json. The release gate is the same command with -live on the
 # intended VPS; replayed provider latency is a timing model, not evidence.

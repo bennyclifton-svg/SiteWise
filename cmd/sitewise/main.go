@@ -21,6 +21,7 @@ import (
 	"sitewise/internal/httpapi"
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
+	"sitewise/internal/invoices"
 	"sitewise/internal/jev"
 	"sitewise/internal/jobs"
 	"sitewise/internal/knowledge"
@@ -75,6 +76,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	profileThresholds := fs.String("profile-thresholds", "data/profile/thresholds.json", "project profile thresholds")
 	profileReading := fs.String("profile-reading", "data/profile/reading.json", "document kinds the project profile reads automatically")
 	proposalPolicy := fs.String("proposal-policy", "data/profile/proposals.json", "proposal visibility policy")
+	invoiceData := fs.String("invoice-data", "data/invoice", "invoice question thresholds directory")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
@@ -140,6 +142,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		fmt.Fprintln(stderr, "proposal policy: "+err.Error())
 		return 1
 	}
+	invoiceTh, err := invoices.LoadThresholds(*invoiceData)
+	if err != nil {
+		fmt.Fprintln(stderr, "invoice thresholds: "+err.Error())
+		return 1
+	}
 	client, err := jev.New(jev.Options{APIKey: cfg.JevAPIKey, Model: cfg.JevModel, Logger: slog.New(slog.NewJSONHandler(stderr, nil))})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -191,6 +198,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		ProfileThresholds: profileTh,
 		ProfileReading:    reading,
 		ProposalShowCount: proposals.ShowCount,
+		InvoiceThresholds: invoiceTh,
 	})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -214,6 +222,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		logger.Printf("background: old profile reading stays queued; text extraction always resumes")
 	}
 	go jobs.RunBackground(ctx, worker, 2*time.Second, logger.Printf)
+	go srv.RunInvoiceRechecks(ctx, 10*time.Second)
 	if n, err := srv.Resume(ctx); err != nil {
 		logger.Printf("resume failed: %v", err)
 	} else if n > 0 {

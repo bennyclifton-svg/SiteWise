@@ -77,6 +77,7 @@ RETURNING d.id::text, d.file_id::text`, orgID, projectID, ids)
 DELETE FROM files f
 WHERE f.org_id = $1::uuid AND f.project_id = $2::uuid AND f.id::text = ANY($3::text[])
   AND NOT EXISTS (SELECT 1 FROM documents d WHERE d.org_id = f.org_id AND d.file_id = f.id)
+  AND NOT EXISTS (SELECT 1 FROM invoices i WHERE i.org_id = f.org_id AND i.file_id = f.id)
 RETURNING f.sha256`, orgID, projectID, fileIDs)
 	if err != nil {
 		return res, err

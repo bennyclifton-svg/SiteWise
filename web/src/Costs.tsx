@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { ApiError } from "./api";
 import { costApi, type CostPlan, type CostItem, type CostContent, type CostSettings, type CostValue, type CostTotals, type BenchmarkSuggestion } from "./costApi";
 import { packageApi, type PackageRecord, type ScopeWork, type ScopeRecord } from "./packageApi";
 import { CostGrid, editContent, fmt, subtotal } from "./CostGrid";
+import { InvoicesTab, VariationsTab } from "./Invoices";
+import { invoiceApi, type InvoiceFilter, type Ledger } from "./invoiceApi";
+import "./invoices.css";
 import "./reports.css";
 import "./costs.css";
 // Budget is the one planning figure; estimate was retired (2026-10-10).
@@ -12,7 +15,30 @@ const words = (s: string) => s.replaceAll("_", " ");
 
 const content = editContent;
 const valueBlank = (): CostValue => ({ amount: null, low: null, high: null, value_state: "unknown", as_of: null, origin: "user", meaning: "allowance", rationale: "" });
-export function Costs({ projectId, tick, onSignedOut }: { projectId: string; tick: number; onSignedOut: () => void }) {
+type CostTab = "plan" | "invoices" | "variations";
+const NO_FILTER: InvoiceFilter = { supplier: "", month: "", line: "", status: "" };
+export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { projectId: string; tick: number; invoiceTick?: number; onSignedOut: () => void }) {
+  const [tab, setTab] = useState<CostTab>("plan");
+  const [ledger, setLedger] = useState<Ledger | null>(null), [ledgerReload, setLedgerReload] = useState(0), [ledgerError, setLedgerError] = useState(false);
+  const [filter, setFilter] = useState<InvoiceFilter>(NO_FILTER), [invoice, setInvoice] = useState("");
+  const [incoming, setIncoming] = useState<File[] | null>(null);
+  // One ledger feeds both tabs, so a change in one shows in the other.
+  useEffect(() => {
+    let stop = false;
+    const t = setTimeout(() => {
+      invoiceApi.ledger(projectId).then(l => { if (!stop) { setLedger(l); setLedgerError(false); } }).catch(e => { if (stop) return; if (e instanceof ApiError && e.status === 401) onSignedOut(); else setLedgerError(true); });
+    }, ledger ? 120 : 0);
+    return () => { stop = true; clearTimeout(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, tick, invoiceTick, ledgerReload]);
+  function showInvoices(line: string) { setFilter({ ...NO_FILTER, line }); setInvoice(""); setTab("invoices"); }
+  // Files dropped anywhere on the cost plan are invoices for the ledger.
+  const dropFiles = {
+    onDragEnter: (e: DragEvent) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); e.stopPropagation(); } },
+    onDragOver: (e: DragEvent) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = "copy"; } },
+    onDragLeave: (e: DragEvent) => { e.stopPropagation(); },
+    onDrop: (e: DragEvent) => { if (!e.dataTransfer.types.includes("Files")) return; e.preventDefault(); e.stopPropagation(); setIncoming(Array.from(e.dataTransfer.files)); setTab("invoices"); },
+  };
   const saving = useRef(false);
   const loadSequence = useRef(0);
   const pendingLoad = useRef<Promise<void> | null>(null);
@@ -93,29 +119,52 @@ export function Costs({ projectId, tick, onSignedOut }: { projectId: string; tic
   }
   const overall = totals?.overall, derived = totals?.buckets?.overall;
   const status = plan?.status === "unavailable" ? "not started" : plan?.status;
-  return <section className="costs" aria-label="Costs" aria-busy={busy}>
+  const ls = ledger?.summary;
+  return <section className="costs" aria-label="Costs" aria-busy={busy} {...(tab === "invoices" ? {} : dropFiles)}>
     <div className="costs-head"><h1>Cost Plan</h1>{plan && <span className="costs-chip">Cost Plan r{plan.revision || 1} · {status}</span>}
-      <div className="costs-toolbar">
+      <div className="costs-toolbar costs-export">
+        <a className="btn" href={invoiceApi.exportURL(projectId, tab === "invoices" ? filter : NO_FILTER)} download>Export to Excel</a>
+        <a className="btn" href={invoiceApi.exportURL(projectId, NO_FILTER, "csv", "cost_plan")} download>Cost plan CSV</a>
+        <a className="btn" href={invoiceApi.exportURL(projectId, tab === "invoices" ? filter : NO_FILTER, "csv", "invoices")} download>Invoices CSV</a>
+        <button type="button" className="btn" onClick={() => window.print()}>Print</button>
+      </div>
+      <div className="costs-toolbar" hidden={tab !== "plan"}>
       <label><input type="checkbox" checked={quantities} onChange={e => {setQuantities(e.target.checked);try{localStorage.setItem("sitewise.costs.quantities",String(e.target.checked));}catch{/* Storage is optional. */}}} /> Quantities</label>
       <button className="btn" disabled={!plan || busy || editing || frozen} onClick={() => { const p = plan!; setSelected(""); setSettings({ base: p, input: { currency: p.currency || "AUD", tax_basis: p.tax_basis || "ex_tax", tax_rate: p.tax_rate ?? null, price_date: p.price_date ?? null, coverage: p.coverage || "", funding_target: p.funding_target ?? null, funding_target_provenance: p.funding_target_provenance || {} } }); }}>Cost settings</button>
         {plan?.id && <button className="btn" disabled={busy || editing || frozen} onClick={() => setBaseline(true)}>Freeze baseline</button>}
         {plan?.baseline_version_id && <button className="btn" disabled={busy || editing} onClick={() => { close(); setHistory(history ? "" : plan?.baseline_version_id!); }}>{history ? "Return to current draft" : "View frozen baseline"}</button>}</div></div>
     {baseline && plan && <div className="report-notice"><p>Freeze this revision and continue in a new editable draft?</p><button className="btn" disabled={busy} onClick={() => { void save(async () => { const p = await costApi.baseline(projectId, plan); setBaseline(false); return p; }); }}>Confirm baseline</button><button className="btn" onClick={() => setBaseline(false)}>Cancel baseline</button></div>}
     {error && <div className="banner" role="alert"><p>{error}</p><button className="btn" disabled={busy} onClick={() => { setError(""); setReload(n => n + 1); }}>Reload cost plan</button></div>}
+    <p className="print-only">{ledger?.project ?? ""} · {tab === "invoices" ? "Invoices" : tab === "variations" ? "Variations" : "Cost plan"} · printed {new Date().toLocaleString("en-AU", { timeZone: "Australia/Sydney", dateStyle: "long", timeStyle: "short" })} · filters: {tab === "invoices" && (filter.supplier || filter.month || filter.line || filter.status) ? [filter.supplier && `supplier ${ledger?.packages.find(p => p.id === filter.supplier)?.title ?? ""}`, filter.month && `month ${filter.month}`, filter.line && `line ${filter.line === "unallocated" ? "Unallocated" : ledger?.lines.find(l => l.id === filter.line)?.label ?? ""}`, filter.status && `status ${filter.status.replace("_", " ")}`].filter(Boolean).join("; ") : "none"}</p>
+    <div className="costs-tabs" role="tablist" aria-label="Cost plan views">
+      {([["plan", "Cost plan"], ["invoices", "Invoices"], ["variations", "Variations"]] as [CostTab, string][]).map(([id, label]) =>
+        <button key={id} type="button" role="tab" id={`cost-tab-${id}`} aria-controls={`cost-panel-${id}`} aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
+          onKeyDown={e => { const order: CostTab[] = ["plan", "invoices", "variations"]; const i = order.indexOf(tab); if (e.key === "ArrowRight") setTab(order[(i + 1) % 3]); if (e.key === "ArrowLeft") setTab(order[(i + 2) % 3]); }}
+          onClick={() => setTab(id)}>{label}{id === "invoices" && ledger ? <span className="costs-tab-count">{ledger.invoices.length}</span> : null}</button>)}
+    </div>
+    {ledgerError && <div className="banner" role="alert"><p>Could not load the invoice ledger. The cost plan is unaffected.</p><button className="btn" onClick={() => setLedgerReload(n => n + 1)}>Reload invoices</button></div>}
+    <div role="tabpanel" id="cost-panel-invoices" aria-labelledby="cost-tab-invoices" hidden={tab !== "invoices"}>
+      {tab === "invoices" && <InvoicesTab projectId={projectId} ledger={ledger} filter={filter} onFilter={setFilter} selected={invoice} onSelect={setInvoice} onLedger={setLedger} onSignedOut={onSignedOut} reload={() => setLedgerReload(n => n + 1)} incoming={incoming} onIncoming={() => setIncoming(null)} />}
+    </div>
+    <div role="tabpanel" id="cost-panel-variations" aria-labelledby="cost-tab-variations" hidden={tab !== "variations"}><VariationsTab /></div>
+    <div role="tabpanel" id="cost-panel-plan" aria-labelledby="cost-tab-plan" hidden={tab !== "plan"}>
     {!plan ? <p role="status">Loading cost plan…</p> : <>
       <dl className="costs-totals" aria-label="Cost totals">
         <div><dt>Funding target</dt><dd>{fmt(plan.funding_target)}</dd></div>
         <div><dt>Budget</dt><dd>{subtotal(overall?.budget)}</dd></div>
         <div><dt>Forecast final cost</dt><dd>{subtotal(overall?.forecast)}</dd></div>
         <div><dt>Budget variance</dt><dd>{fmt(derived?.budget_variance)}</dd></div>
+        <div><dt>Invoiced to date</dt><dd data-testid="invoiced-to-date">{ls ? fmt(ls.invoiced) : "—"}</dd></div>
+        <div><dt>Budget remaining</dt><dd>{ls ? (ls.comparable ? (ls.remaining != null ? fmt(ls.remaining) : `— (${ls.budget_unknown} line${ls.budget_unknown === 1 ? "" : "s"} unpriced)`) : "— (budgets include GST)") : "—"}</dd></div>
         <div><dt>Basis</dt><dd>{plan.currency || "AUD"} · {plan.tax_basis === "inc_tax" ? "including tax" : "excluding tax"} · price date {plan.price_date || "not recorded"}</dd></div>
         <div><dt>Coverage</dt><dd>{plan.coverage || "Not recorded"}</dd></div>
       </dl>
       <CostGrid plan={plan} totals={totals} packages={packages} selected={selected} editable={!frozen && !editing} busy={busy} quantities={quantities} onOpen={choose} onValue={saveAmount}
-        onDelete={remove}
+        onDelete={remove} ledger={history ? null : ledger} onInvoices={showInvoices}
         onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} />
     </>}
-    {open && <aside className="cost-drawer" aria-label="Cost line">
+    </div>
+    {open && tab === "plan" && <aside className="cost-drawer" aria-label="Cost line">
       <button type="button" className="btn btn-small cost-drawer-close" onClick={close}>Close</button>
       {item && !editing && <section className="report-section"><h2>{item.label}</h2><p>{item.system_id || "No system assignment"} · {item.part_id || "No part assignment"}</p><p>{item.rationale}</p>{item.line_kind === "works" && <><h3>Included work items</h3>{item.scope_work_items?.length ? <ul>{item.scope_work_items.map(w => <li key={w.id}>{w.title}</li>)}</ul> : <p>No included work items.</p>}</>}<div className="report-actions"><button className="btn" disabled={busy || frozen} onClick={() => setLine({ id: item.cost_item_id, input: content(item), base: plan! })}>Edit cost line</button><button className="btn" disabled={busy || frozen || !item.posting || item.excluded} onClick={() => setSplit({ base: plan!, item, names: ["", ""], amounts: ["", ""], metric: "budget", residual: "explicit" })}>Subdivide allowance</button></div>{!item.posting && <p>Grouping line. Amounts are held on its posting children and included once in totals.</p>}{item.posting && metrics.map(m => <div key={m}><p>{metricLabel[m]}: {item.values[m]?.value_state === "known" ? (item.values[m].amount ?? `${item.values[m].low}–${item.values[m].high}`) : "Unknown"}{item.values[m]?.as_of ? ` · as of ${item.values[m].as_of}` : ""}</p><button className="btn btn-small" disabled={busy || frozen || !item.posting} onClick={() => { setCalculate(false); setMetric({ name: m, input: { ...valueBlank(), ...item.values[m] }, base: plan! }); }}>Edit {metricLabel[m]}</button></div>)}<h3>Reviewed benchmarks</h3><p>Look up only matching reviewed benchmarks; missing evidence remains unknown. An applied benchmark sets the budget.</p><form className="package-scope-form" onSubmit={e => { e.preventDefault(); setBusy(true); setAcknowledged(""); void costApi.benchmarks(projectId, item.cost_item_id, geography, quality).then(result => { setSuggestions(result.suggestions); setBenchmarkMessage(result.message); }).catch(fail).finally(() => setBusy(false)); }}><label htmlFor="benchmark-geography">Benchmark geography</label><input id="benchmark-geography" required value={geography} onChange={e => { setGeography(e.target.value); setSuggestions([]); setAcknowledged(""); }} /><label htmlFor="benchmark-quality">Benchmark quality</label><input id="benchmark-quality" required value={quality} onChange={e => { setQuality(e.target.value); setSuggestions([]); setAcknowledged(""); }} /><button className="btn" disabled={busy || frozen}>Find reviewed benchmarks</button></form>{benchmarkMessage && <p role="status">{benchmarkMessage}</p>}{suggestions.map(s => <div key={s.benchmark.id}><p>{s.amount} · {s.benchmark.geography} · {s.benchmark.quality} · {s.benchmark.price_date}</p><p>Includes: {JSON.stringify(s.benchmark.inclusions)}</p><p>Excludes: {JSON.stringify(s.benchmark.exclusions)}</p><p>Sources: {JSON.stringify(s.benchmark.sources)}</p><p>Limitations: {JSON.stringify(s.limitations)}</p><label><input type="checkbox" checked={acknowledged === s.benchmark.id} onChange={e => setAcknowledged(e.target.checked ? s.benchmark.id : "")} /> I reviewed the date, location, quality and scope basis</label><button className="btn" disabled={acknowledged !== s.benchmark.id || busy || frozen} onClick={() => void save(() => costApi.applyBenchmark(projectId, plan!, item.cost_item_id, s, geography, quality))}>Apply benchmark allowance</button></div>)}<h3>Scope references</h3>{!scopes ? <p role="status">Loading scope…</p> : <>{references.map(l => <p key={`${l.cost_item_id}:${l.package_scope_item_id}`}>{l.cost_item_id !== item.cost_item_id ? "Inherited from parent group · " : ""}{scopes.find(s => s.id === l.package_scope_item_id)?.user_text || l.package_scope_item_id}<button className="btn btn-small" disabled={busy || frozen || l.cost_item_id !== item.cost_item_id} onClick={() => void save(() => costApi.link(projectId, plan!, item.cost_item_id, l.package_scope_item_id, true))}>Remove reference</button></p>)}<div className="package-scope-form"><label htmlFor="cost-scope">Package scope reference</label><select id="cost-scope" value={scope} onChange={e => setScope(e.target.value)}><option value="">Choose scope</option>{scopes.map(s => <option key={s.id} value={s.id}>{s.packageTitle} · {s.user_text || s.deliverable || s.item_kind}</option>)}</select><button className="btn" disabled={busy || frozen || !scope} onClick={() => void save(() => costApi.link(projectId, plan!, item.cost_item_id, scope, false))}>Link scope</button></div></>}</section>}
       {line && <section className="report-section"><h2>{line.id ? "Edit cost line" : "Add cost line"}</h2><form className="package-scope-form" onSubmit={e => { e.preventDefault(); void save(() => costApi.item(projectId, line.base, line.input, line.id)); }}><fieldset disabled={busy || stale(line.base)}><label htmlFor="cost-label">Cost label</label><input id="cost-label" required maxLength={500} value={line.input.label} onChange={e => setLine({ ...line, input: { ...line.input, label: e.target.value } })} /><label htmlFor="cost-kind">Line type</label><select id="cost-kind" value={line.input.line_kind} onChange={e => setLine({ ...line, input: { ...line.input, line_kind: e.target.value, category: e.target.value === "project_wide" ? "other" : "", work_item_id: "", system_id: "", package_id: "", package_stage_id: "" } })}>{["works", "fee", "project_wide"].map(k => <option key={k} value={k}>{words(k)}</option>)}</select>

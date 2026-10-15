@@ -658,14 +658,21 @@ func (s *Store) CommitIntake(ctx context.Context, orgID string, in CommitIntake)
 		MediaType: in.MediaType,
 	})
 	if errors.Is(err, pgx.ErrNoRows) {
-		existing, err := loadIntake(ctx, q, orgID, in)
-		if err != nil {
-			return CommittedIntake{}, err
+		existing, lerr := loadIntake(ctx, q, orgID, in)
+		var bare fileWithoutDocument
+		switch {
+		case errors.As(lerr, &bare):
+			// The bytes are already stored for an invoice; the register files
+			// them as a document of their own.
+			insertedID, err = bare.fileID, nil
+		case lerr != nil:
+			return CommittedIntake{}, lerr
+		default:
+			if err := tx.Commit(ctx); err != nil {
+				return CommittedIntake{}, err
+			}
+			return existing, nil
 		}
-		if err := tx.Commit(ctx); err != nil {
-			return CommittedIntake{}, err
-		}
-		return existing, nil
 	}
 	if err != nil {
 		return CommittedIntake{}, err
@@ -684,6 +691,11 @@ func (s *Store) CommitIntake(ctx context.Context, orgID string, in CommitIntake)
 	return filed, nil
 }
 
+// fileWithoutDocument is a stored file that only an invoice uses so far.
+type fileWithoutDocument struct{ fileID string }
+
+func (e fileWithoutDocument) Error() string { return "file association has no document" }
+
 func loadIntake(ctx context.Context, q *db.Queries, orgID string, in CommitIntake) (CommittedIntake, error) {
 	row, err := q.LockFileByHash(ctx, db.LockFileByHashParams{
 		OrgID:     orgID,
@@ -701,7 +713,7 @@ func loadIntake(ctx context.Context, q *db.Queries, orgID string, in CommitIntak
 	}
 	doc, err := q.DocumentByFile(ctx, db.DocumentByFileParams{OrgID: orgID, FileID: row.ID})
 	if errors.Is(err, pgx.ErrNoRows) {
-		return CommittedIntake{}, errors.New("file association has no document")
+		return CommittedIntake{}, fileWithoutDocument{fileID: row.ID}
 	}
 	if err != nil {
 		return CommittedIntake{}, err
