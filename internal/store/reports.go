@@ -392,11 +392,6 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 }
 
 func (s *Store) finishReportWrite(ctx context.Context, tx pgx.Tx, org string, r Report, versionID, state string) error {
-	// The schedule rows follow every RFP write, so a proposal is read into
-	// exactly the fee rows the RFP prints.
-	if err := s.writeRFPSchedule(ctx, tx, org, r, versionID); err != nil {
-		return err
-	}
 	if err := BumpRevision(ctx, tx, org, r.ProjectID, "reports"); err != nil {
 		return err
 	}

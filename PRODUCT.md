@@ -48,8 +48,16 @@ The workbench, in navigation order:
   discipline saves the package. Create writes an RFP for a consultant and an
   RFT for a trade. The table proposes the disciplines the profile and scope
   imply. Removing a package can remove its draft cost lines in the same
-  confirmation. Firms, tender comparison and a project-management-plan tab are
-  later work; an existing project management plan stays reachable.
+  confirmation. Each RFP carries a returnable schedule (stages, options,
+  rates, criteria) and a response form workbook. A proposal dropped on a
+  row is filed and read in a few seconds: firm, prices against the schedule,
+  rates, exclusions and departures. The price table compares firms line by
+  line on the RFP's own rows, flags what needs a look, and takes a
+  correction in one click. Award writes the chosen firm's lines under the
+  package in the cost plan as the contract, and can be undone until an
+  invoice is allocated. A one-page comparison report holds price, non-price
+  ratings the user sets, a recommendation and sign-off, and prints A4.
+  An existing project management plan stays reachable.
 - **Specifications.** An editable six-column schedule of materials, products,
   finishes, assemblies and equipment, organised by the Profiler's building
   hierarchy. Scope, work action and provider read through from Profiler; the
@@ -65,8 +73,9 @@ The workbench, in navigation order:
 ## Positioning
 
 Jev (TypeSafe System One) is the only AI, and it only picks. It is used where
-a document must be read: filing, profile evidence, and the background
-specification import (one fan-out per candidate). Code parses, harvests
+a document must be read: filing, profile evidence, invoices, proposals (one
+fan-out after filing), and the background specification import (one fan-out
+per candidate). Code parses, harvests
 candidates, computes, orders revisions and controls flow. Cost arithmetic,
 package suggestions, procurement creates and specification acceptance are code
 and user acts. Typing and navigation do not call Jev.

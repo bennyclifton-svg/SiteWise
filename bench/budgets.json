@@ -10,6 +10,11 @@
 	{"name":"invoices_read","p50_us":150000,"p90_us":300000,"note":"Invoices tab load with 1,000 invoices (proposed)"},
 	{"name":"invoice_write","p50_us":50000,"p90_us":100000,"note":"re-map or edit, recomputed summary returned (proposed: p90 100 ms)"},
 	{"name":"invoice_export","p50_us":1000000,"p90_us":2000000,"note":"Excel export of 1,000 invoices (proposed: p90 2,000 ms)"},
+	{"name":"proposal_read","p50_us":3000000,"p90_us":6000000,"note":"proposal dropped on a package row, upload to its column read: filing plus one proposal fan-out (proposed, owner sign-off pending)"},
+	{"name":"price_table","p50_us":150000,"p90_us":300000,"note":"price table for one package with five firms (proposed)"},
+	{"name":"submission_write","p50_us":100000,"p90_us":250000,"note":"cell correction, recomputed table returned (proposed)"},
+	{"name":"award_write","p50_us":200000,"p90_us":500000,"note":"award or undo: cost lines, sources and statuses in one transaction (proposed)"},
+	{"name":"procurement_report","p50_us":150000,"p90_us":300000,"note":"one-page comparison report read (proposed)"},
     {
       "name": "identity_text_extraction",
       "p50_us": 80000,

@@ -48,6 +48,7 @@ import (
 	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
 	"sitewise/internal/profile"
+	"sitewise/internal/proposals"
 	"sitewise/internal/store"
 	"sitewise/web"
 )
@@ -310,25 +311,33 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		return 0, err
 	}
 	var invoiceAsk invoices.Asker
+	var proposalAsk proposals.Asker
 	if !o.live {
 		invoiceAsk = newInvoiceModel(records)
+		proposalAsk = newProposalModel(repo)
+	}
+	proposalTh, err := proposals.LoadThresholds(filepath.Join(repo, "data", "proposal"))
+	if err != nil {
+		return 0, err
 	}
 	srv, err := httpapi.New(httpapi.Options{
-		InvoiceThresholds: invoiceTh,
-		InvoiceJev:        invoiceAsk,
-		Store:             st,
-		Blobs:             blobs,
-		Jev:               client,
-		Catalog:           cat,
-		Thresholds:        thresholds,
-		Static:            web.Dist(),
-		PublicOrigin:      origin,
-		MaxUploadBytes:    200 << 20,
-		Log:               log.New(io.Discard, "", 0),
-		Observe:           samples.Add,
-		Knowledge:         building,
-		ProfileThresholds: profileTh,
-		ProfileReading:    reading,
+		InvoiceThresholds:  invoiceTh,
+		InvoiceJev:         invoiceAsk,
+		ProposalThresholds: proposalTh,
+		ProposalJev:        proposalAsk,
+		Store:              st,
+		Blobs:              blobs,
+		Jev:                client,
+		Catalog:            cat,
+		Thresholds:         thresholds,
+		Static:             web.Dist(),
+		PublicOrigin:       origin,
+		MaxUploadBytes:     200 << 20,
+		Log:                log.New(io.Discard, "", 0),
+		Observe:            samples.Add,
+		Knowledge:          building,
+		ProfileThresholds:  profileTh,
+		ProfileReading:     reading,
 	})
 	if err != nil {
 		return 0, err
@@ -416,6 +425,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	}
 	if err := api.invoices(ctx, st, o.apiSamples); err != nil {
 		return 0, fmt.Errorf("bench invoices: %w", err)
+	}
+	if err := api.procurementAward(ctx, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench procurement award: %w", err)
 	}
 	if err := api.workItems(ctx, st, o.apiSamples); err != nil {
 		return 0, err

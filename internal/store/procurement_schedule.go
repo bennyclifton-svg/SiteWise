@@ -2,11 +2,13 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/knowledge"
+	"sitewise/internal/reports"
 	"sitewise/internal/rfp"
 )
 
@@ -18,31 +20,41 @@ const (
 	ScheduleGeneric     = "generic"
 )
 
-// writeRFPSchedule stores the schedule an RFP draft prints. A report that is
-// not a consultant RFP (no discipline knowledge) leaves the rows alone.
-func (s *Store) writeRFPSchedule(ctx context.Context, tx pgx.Tx, org string, r Report, versionID string) error {
-	if r.Kind != "rfp" || r.PackageID == "" || versionID == "" {
-		return nil
+// syncRFPSchedule makes the package's rows the schedule its current RFP
+// draft prints, so a proposal is read into exactly the fee rows the RFP
+// asked for. It runs where the rows are used (price table, proposal read,
+// added firm), not on each RFP edit: a setting change is a click the PM
+// waits on, and its budget has no room for the extra reads and upsert.
+// synced is false when the package has no consultant RFP draft.
+func (s *Store) syncRFPSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg string) (synced bool, err error) {
+	var versionID, template string
+	var raw []byte
+	err = tx.QueryRow(ctx, `SELECT v.id::text, v.template_id, v.source_revisions FROM reports r
+JOIN report_versions v ON v.org_id = r.org_id AND v.id = r.current_draft_version_id
+WHERE r.org_id = $1::uuid AND r.package_id = $2::uuid AND r.kind = 'rfp'
+ORDER BY r.updated_at DESC LIMIT 1`, org, pkg).Scan(&versionID, &template, &raw)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, nil
 	}
-	d, err := readReportDraft(ctx, tx, org, versionID)
-	if err != nil {
-		return err
+	if err != nil || template != rfpTemplateID {
+		return false, err
 	}
-	if d.TemplateID != rfpTemplateID {
-		return nil
+	var state reports.SourceState
+	if json.Unmarshal(raw, &state) != nil {
+		return false, nil
 	}
 	settings, err := readReportSettings(ctx, tx, org, versionID)
 	if err != nil {
-		return err
+		return false, err
 	}
-	_, _, _, res, err := s.storedRFP(d.SourceRevisions, settings)
+	_, _, _, res, err := s.storedRFP(state, settings)
 	if errors.Is(err, ErrInvalidReport) {
-		return nil
+		return false, nil
 	}
 	if err != nil {
-		return err
+		return false, err
 	}
-	return upsertSchedule(ctx, tx, org, r.ProjectID, r.PackageID, rfp.Schedule(res), ScheduleFromRFP)
+	return true, upsertSchedule(ctx, tx, org, project, pkg, rfp.Schedule(res), ScheduleFromRFP)
 }
 
 // upsertSchedule makes the package's live rows exactly items. A row the
@@ -103,10 +115,13 @@ FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid ORDER BY r
 }
 
 // ensureSchedule gives a package rows to read a proposal into. A package
-// with an RFP already has them; otherwise the discipline's RFP resolved with
-// no settings supplies a default, and a discipline with no RFP knowledge the
-// generic lump sum.
+// with an RFP takes its draft's schedule; otherwise the discipline's RFP
+// resolved with no settings supplies a default, and a discipline with no RFP
+// knowledge the generic lump sum.
 func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg string) error {
+	if synced, err := s.syncRFPSchedule(ctx, tx, org, project, pkg); err != nil || synced {
+		return err
+	}
 	var have bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL)`, org, pkg).Scan(&have); err != nil || have {
 		return err

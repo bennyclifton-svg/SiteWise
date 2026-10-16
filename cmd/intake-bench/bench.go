@@ -50,9 +50,27 @@ func (c *collector) Snapshot() map[string][]int64 {
 // the recording; its answer is then rejected by validation and stays blank.
 // Only the timing claim depends on the recording. A miss fails the bench: an
 // instant error would make filings look faster than the provider is.
+//
+// A document the bench made itself (benchFilePrefix) has no recording; it
+// is served a recorded filing in turn, latency and all, so its filing costs
+// what a real one does. Its answer does not fit and stays blank.
 type stateReplayer struct {
 	byState map[string]eval.Record
+	ordered []eval.Record
 	misses  atomic.Int64
+	stand   atomic.Int64
+}
+
+// benchFilePrefix starts the filename of every document the bench writes.
+const benchFilePrefix = "Bench "
+
+func benchMade(body []byte) bool {
+	var req struct {
+		State struct {
+			Filename string `json:"filename"`
+		} `json:"state"`
+	}
+	return json.Unmarshal(body, &req) == nil && strings.HasPrefix(req.State.Filename, benchFilePrefix)
 }
 
 func newStateReplayer(records []eval.Record) (*stateReplayer, error) {
@@ -63,6 +81,7 @@ func newStateReplayer(records []eval.Record) (*stateReplayer, error) {
 			return nil, fmt.Errorf("recording for %s: %w", rec.Case, err)
 		}
 		r.byState[key] = rec
+		r.ordered = append(r.ordered, rec)
 	}
 	return r, nil
 }
@@ -92,8 +111,11 @@ func (r *stateReplayer) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 	rec, ok := r.byState[key]
 	if !ok {
-		r.misses.Add(1)
-		return nil, eval.ErrReplayMiss
+		if !benchMade(body) || len(r.ordered) == 0 {
+			r.misses.Add(1)
+			return nil, eval.ErrReplayMiss
+		}
+		rec = r.ordered[int(r.stand.Add(1))%len(r.ordered)]
 	}
 	t := time.NewTimer(time.Duration(rec.LatencyUS) * time.Microsecond)
 	defer t.Stop()

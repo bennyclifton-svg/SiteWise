@@ -10,7 +10,7 @@ marked **assumed** can be reversed without a migration unless noted.
 
 | Plan asks | Found | Consequence |
 |---|---|---|
-| How the RFP stores the returnable schedules and the scope by stage | Not stored as rows. `rfp.Resolve` (pure) turns discipline knowledge + frozen drivers + `report_settings` into `Resolved`; `rfp.Sections` prints stages, options and returnables as text blocks. Settings are per report draft. | Phase 0 adds `rfp.Schedule(Resolved)` and persists its rows per package (`schedule_items`) on every RFP draft write. The stage table is printed from the same rows. |
+| How the RFP stores the returnable schedules and the scope by stage | Not stored as rows. `rfp.Resolve` (pure) turns discipline knowledge + frozen drivers + `report_settings` into `Resolved`; `rfp.Sections` prints stages, options and returnables as text blocks. Settings are per report draft. | Phase 0 adds `rfp.Schedule(Resolved)` and persists its rows per package (`schedule_items`), synced from the current RFP draft where they are used. The stage table is printed from the same rows. |
 | Is there a firms or suppliers table | No. `packages.supplier_abn` only (invoice spec). | New org-wide `firms`. Award writes `packages.supplier_abn` so the invoice supplier rule settles by ABN. |
 | Do cost lines support a parent link | Yes: `cost_item_revisions.parent_item_id`; a parent is `posting=false` and the grid shows it as a group. The posting trigger forbids any value on a group. | Award turns the package's fee line into a group that keeps its **budget**; a migration lets a group hold a budget only. Children hold the contract value (`commitment`). |
 | Kind "commercial document" | `data/intake/kinds.json` already has `commercial` ("pricing or payments"). | No kind change. The subtype (fee proposal / tender / not a proposal) is a proposal question. |
@@ -119,12 +119,21 @@ drop (register or package row)
          → code: leftovers → other items, ex GST, sum check, flags
          → store.CommitSubmissionRead (decisions never over a user's;
            supersede an earlier submission from the same firm; event)
-GET  /projects/{p}/procurement/packages/{pkg}/comparison   price table
-PATCH /projects/{p}/submissions/{s}                        firm, status, package
-PUT  /projects/{p}/submissions/{s}/prices/{item}           a user's cell
-POST /projects/{p}/procurement/packages/{pkg}/award        two-step: preview, then commit
-DELETE .../award                                           undo (refused once invoiced)
-GET  .../comparison/report  · PUT ratings / recommendation · export xlsx
+As built (routes under /api/projects/{p}):
+POST  /procurement/packages/{pkg}/submissions?name=   drop on a row
+GET   /procurement/board                              firm chips per row
+GET   /procurement/packages/{pkg}/prices              price table (+ /export xlsx)
+PUT   /submissions/{s}/cells/{key}                    a user's cell
+PATCH /submissions/{s}                                firm, package, status, date
+GET   /submissions/{s}/file                           the PDF, inline
+POST  /procurement/packages/{pkg}/firms               add a firm by hand
+POST  /procurement/packages/{pkg}/award/preview       step one: the lines
+POST  /procurement/packages/{pkg}/award               step two: commit
+DELETE /procurement/packages/{pkg}/award              undo (refused once invoiced)
+GET|PUT /procurement/packages/{pkg}/report            report, recommendation
+PUT   .../submissions/{s}/ratings/{criterion}         a user's rating
+GET   /api/reports/{r}/response-form                  the RFP's response form
+GET   /api/firms?q=                                   the org's firm directory
 ```
 
 ## 5. Budgets (bench/budgets.json; proposed ones need owner sign-off)
@@ -141,48 +150,50 @@ GET  .../comparison/report  · PUT ratings / recommendation · export xlsx
 ## 6. Tasks
 
 Phase 0
-- [ ] P0.1 `rfp.Schedule(Resolved)`: stage, element, option, reimbursable,
+- [x] P0.1 `rfp.Schedule(Resolved)`: stage, element, option, reimbursable,
       rate and criterion items with stable keys; tests incl. "changing a stage
       or option changes the items with no code change".
-- [ ] P0.2 Stage table printed from the schedule rows (same rows = same scope).
-- [ ] P0.3 Returnables as tables (R2–R9), wording aligned with the report rows;
+- [x] P0.2 Stage table printed from the schedule rows (same rows = same scope).
+- [x] P0.3 Returnables as tables (R2–R9), wording aligned with the report rows;
       page-count limit (O1, three pages) still holds; goldens refreshed.
-- [ ] P0.4 Migration + `schedule_items` written on every RFP draft write;
-      default schedule for a package without an RFP.
+- [x] P0.4 Migration + `schedule_items` synced from the package's current
+      RFP draft where the rows are used (writing them on every RFP edit cost
+      the setting click ~8 ms against a 100 ms budget); default schedule for
+      a package without an RFP.
 
 Phase 1
-- [ ] P1.1 Migration: firms, submissions, decisions, passages; isolation test.
-- [ ] P1.2 `internal/proposals`: cues, harvest (firm candidates, money rows,
+- [x] P1.1 Migration: firms, submissions, decisions, passages; isolation test.
+- [x] P1.2 `internal/proposals`: cues, harvest (firm candidates, money rows,
       sections), rules, questions, apply, finish.
-- [ ] P1.3 Runner.AfterFile hook, proposal reader, retry sweep, resume.
-- [ ] P1.4 Store: open/commit submission, supersede, firm directory match.
-- [ ] P1.5 API + Procurement page firm columns, Add firm, drop on row,
+- [x] P1.3 Runner.AfterFile hook, proposal reader, retry sweep, resume.
+- [x] P1.4 Store: open/commit submission, supersede, firm directory match.
+- [x] P1.5 API + Procurement page firm columns, Add firm, drop on row,
       Review/Compare, proposal side panel (PDF beside fields).
 
 Phase 2
-- [ ] P2.1 Price harvest, mapping questions, leftovers, GST and sum checks,
+- [x] P2.1 Price harvest, mapping questions, leftovers, GST and sum checks,
       percentage and rates-only cases (unit tests).
-- [ ] P2.2 Price table API + screen (review with one firm, compare with
+- [x] P2.2 Price table API + screen (review with one firm, compare with
       several), user correction, totals recomputed in Go, xlsx export.
-- [ ] P2.3 Answer key from real fee proposals (≥ 30, private), live run,
+- [x] P2.3 Answer key from real fee proposals (≥ 30, private), live run,
       thresholds.
 
 Phase 3
-- [ ] P3.1 Migration: awards, cost_line_sources, package award columns, group
+- [x] P3.1 Migration: awards, cost_line_sources, package award columns, group
       budget trigger.
-- [ ] P3.2 `costs.Summarize` and the invoice summary roll children up to a
+- [x] P3.2 `costs.Summarize` and the invoice summary roll children up to a
       budgeted group; grid shows group budget, contract, variance.
-- [ ] P3.3 Award preview + commit in one transaction; combine rows; undo
+- [x] P3.3 Award preview + commit in one transaction; combine rows; undo
       refused once an invoice is allocated; other submissions unsuccessful.
-- [ ] P3.4 Invoice: awarded ABN settles the package; line options are the
+- [x] P3.4 Invoice: awarded ABN settles the package; line options are the
       package's child lines, described with the schedule items they hold.
 
 Phase 4
-- [ ] P4.1 Criteria passages (Jev, in the same proposal fan-out), departures.
-- [ ] P4.2 Report page (A4 landscape print), ratings, recommendation drafted
+- [x] P4.1 Criteria passages (Jev, in the same proposal fan-out), departures.
+- [x] P4.2 Report page (A4 landscape print), ratings, recommendation drafted
       by code from facts, sign-off; cached by input hash.
-- [ ] P4.3 Validator for a future model draft, tested with planted failures.
+- [x] P4.3 Validator for a future model draft, tested with planted failures.
 
 Gate
-- [ ] Bench paths, Playwright (drop three, compare, correct a cell, award,
+- [x] Bench paths, Playwright (drop three, compare, correct a cell, award,
       cost plan shows children, undo), full Go suite, evidence note.

@@ -45,7 +45,10 @@ Specification import is a background job in the existing worker: one fan-out
 per candidate, cached by source. A reading is a proposal. Navigation and
 typing do not call Jev. An uploaded invoice is read with one interactive
 fan-out for the fields rules leave open; invoice edits, splits, the ledger
-read and export do not call Jev.
+read and export do not call Jev. A proposal dropped on a procurement row is
+read with one fan-out after filing; the price table, cell corrections,
+award, undo, ratings and the comparison report do not call Jev. Award writes
+contract values only from the firm's priced cells; it never writes a budget.
 
 Money is computed in Go. Unknown stays unknown. Do not invent a rate, a price,
 a rule number or a product selection. An upload leaves an accepted
@@ -67,6 +70,9 @@ Before changing one of these surfaces, read its current note:
 - Specifications: `docs/design/2026-10-14-specification-workspace.md`,
   `docs/plans/2026-10-14-coordinated-specification-workspace.md`,
   `docs/evidence/2026-10-14-specification-implementation.md`
+- Procurement to award: `docs/plans/2026-10-16-procurement-process-to-award`,
+  `docs/plans/2026-10-16-procurement-to-award-implementation.md`,
+  `docs/evidence/2026-10-16-procurement-to-award.md`
 - Invoices (Cost Plan panel): `docs/plans/2026-10-15-invoice-intake.md`,
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,
   `docs/evidence/2026-10-16-invoice-intake.md`
