@@ -31,3 +31,5 @@ data/reference/classifications/*.pdf
 
 # Invoice answer key and Jev recordings name real projects and fees.
 data/eval/invoice/private/
+# Real fee proposals and their recorded Jev answers.
+data/eval/proposal/private/

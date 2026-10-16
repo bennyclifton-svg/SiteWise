@@ -39,8 +39,17 @@ func (i ScheduleItem) Price() bool {
 const ReimbursablesKey = "reimbursables"
 
 // DefaultRoles are the hourly-rate roles for a discipline whose R3 note does
-// not list its own.
+// not list its own. roleDetail says who each covers, so a firm's own titles
+// ("Senior Access Consultant", "Engineer") can be read into them.
 var DefaultRoles = []string{"Principal or director", "Senior professional", "Professional", "Graduate or technical", "Administration"}
+
+var roleDetail = map[string]string{
+	"Principal or director": "The firm's director, principal, partner or technical director.",
+	"Senior professional":   "A senior engineer, senior consultant, senior surveyor, associate or senior associate.",
+	"Professional":          "An engineer, consultant, surveyor, planner, scientist or designer at practising level, below senior.",
+	"Graduate or technical": "A graduate, technician, drafter, CAD or BIM operator, or field technician.",
+	"Administration":        "Administration, secretarial or project support staff.",
+}
 
 // criterionKeys are the non-price returnables, in the order the report
 // prints them. R1 is the fee table, R3 the rates and R9 the reimbursables.
@@ -92,7 +101,11 @@ func Schedule(r Resolved) []ScheduleItem {
 		add("option:"+p.Key, ItemOption, shortLabel(p.Label), p.Detail, false)
 	}
 	for _, role := range Roles(r) {
-		add("rate:"+slug(role), ItemRate, role, "Hourly rate excl. GST", false)
+		detail := roleDetail[role]
+		if detail == "" {
+			detail = "Hourly rate excl. GST"
+		}
+		add("rate:"+slug(role), ItemRate, role, detail, false)
 	}
 	byKey := map[string]Row{}
 	for _, ret := range r.Returnables {

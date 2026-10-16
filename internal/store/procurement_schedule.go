@@ -1,0 +1,186 @@
+package store
+
+import (
+	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5"
+	"sitewise/internal/knowledge"
+	"sitewise/internal/rfp"
+)
+
+// Schedule sources: the package's RFP, the discipline's RFP with no
+// settings, or the generic lump-sum schedule.
+const (
+	ScheduleFromRFP     = "rfp"
+	ScheduleFromDefault = "default"
+	ScheduleGeneric     = "generic"
+)
+
+// writeRFPSchedule stores the schedule an RFP draft prints. A report that is
+// not a consultant RFP (no discipline knowledge) leaves the rows alone.
+func (s *Store) writeRFPSchedule(ctx context.Context, tx pgx.Tx, org string, r Report, versionID string) error {
+	if r.Kind != "rfp" || r.PackageID == "" || versionID == "" {
+		return nil
+	}
+	d, err := readReportDraft(ctx, tx, org, versionID)
+	if err != nil {
+		return err
+	}
+	if d.TemplateID != rfpTemplateID {
+		return nil
+	}
+	settings, err := readReportSettings(ctx, tx, org, versionID)
+	if err != nil {
+		return err
+	}
+	_, _, _, res, err := s.storedRFP(d.SourceRevisions, settings)
+	if errors.Is(err, ErrInvalidReport) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	return upsertSchedule(ctx, tx, org, r.ProjectID, r.PackageID, rfp.Schedule(res), ScheduleFromRFP)
+}
+
+// upsertSchedule makes the package's live rows exactly items. A row the
+// schedule no longer has is retired, so prices and cost lines that name it
+// keep their label.
+func upsertSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg string, items []rfp.ScheduleItem, source string) error {
+	keys := make([]string, len(items))
+	kinds := make([]string, len(items))
+	labels := make([]string, len(items))
+	details := make([]string, len(items))
+	bases := make([]bool, len(items))
+	ordinals := make([]int32, len(items))
+	for i, it := range items {
+		keys[i], kinds[i], labels[i], details[i], bases[i], ordinals[i] = it.Key, it.Kind, clipText(it.Label, 500), clipText(it.Detail, 4000), it.Base, int32(i)
+	}
+	if _, err := tx.Exec(ctx, `
+INSERT INTO schedule_items (org_id, project_id, package_id, key, kind, label, detail, base, ordinal, source)
+SELECT $1::uuid, $2::uuid, $3::uuid, k, kd, l, d, b, o, $10
+FROM unnest($4::text[], $5::text[], $6::text[], $7::text[], $8::bool[], $9::int[]) AS t(k, kd, l, d, b, o)
+ON CONFLICT (org_id, package_id, key) DO UPDATE SET kind = EXCLUDED.kind, label = EXCLUDED.label, detail = EXCLUDED.detail,
+  base = EXCLUDED.base, ordinal = EXCLUDED.ordinal, source = EXCLUDED.source, retired_at = NULL, updated_at = now()
+WHERE (schedule_items.kind, schedule_items.label, schedule_items.detail, schedule_items.base, schedule_items.ordinal, schedule_items.source, schedule_items.retired_at IS NULL)
+  IS DISTINCT FROM (EXCLUDED.kind, EXCLUDED.label, EXCLUDED.detail, EXCLUDED.base, EXCLUDED.ordinal, EXCLUDED.source, true)`,
+		org, project, pkg, keys, kinds, labels, details, bases, ordinals, source); err != nil {
+		return err
+	}
+	_, err := tx.Exec(ctx, `UPDATE schedule_items SET retired_at = now(), updated_at = now()
+WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL AND NOT (key = ANY($3::text[]))`, org, pkg, keys)
+	return err
+}
+
+// ScheduleItem is one stored row; Retired rows are kept for history.
+type ScheduleItem struct {
+	rfp.ScheduleItem
+	Source  string `json:"source"`
+	Retired bool   `json:"retired"`
+}
+
+// readSchedule is a package's rows in print order, live first.
+func readSchedule(ctx context.Context, q querier, org, pkg string) ([]ScheduleItem, error) {
+	rows, err := q.Query(ctx, `SELECT key, kind, label, detail, base, ordinal, source, retired_at IS NOT NULL
+FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid ORDER BY retired_at IS NOT NULL, ordinal, key`, org, pkg)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []ScheduleItem
+	for rows.Next() {
+		var it ScheduleItem
+		var ord int32
+		if err := rows.Scan(&it.Key, &it.Kind, &it.Label, &it.Detail, &it.Base, &ord, &it.Source, &it.Retired); err != nil {
+			return nil, err
+		}
+		it.Ordinal = int(ord)
+		out = append(out, it)
+	}
+	return out, rows.Err()
+}
+
+// ensureSchedule gives a package rows to read a proposal into. A package
+// with an RFP already has them; otherwise the discipline's RFP resolved with
+// no settings supplies a default, and a discipline with no RFP knowledge the
+// generic lump sum.
+func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg string) error {
+	var have bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL)`, org, pkg).Scan(&have); err != nil || have {
+		return err
+	}
+	cat := s.workCatalog()
+	var sk knowledge.RFPSkeleton
+	skOK := false
+	if cat != nil {
+		sk, skOK = cat.RFPSkeleton()
+	}
+	var returnables []rfp.Row
+	if skOK {
+		for _, r := range sk.Returnables {
+			returnables = append(returnables, rfp.Row{Key: r.Key, Label: r.Title, Text: r.Text})
+		}
+	}
+	items := rfp.GenericSchedule(returnables)
+	source := ScheduleGeneric
+	template, terr := s.reportTemplate("rfp")
+	if cat != nil && skOK && terr == nil {
+		if t, ok := cat.CurrentReportTemplate(rfpTemplateID); ok {
+			template = t
+		}
+		snap, _, err := s.reportSnapshot(ctx, tx, org, project, pkg, "", template)
+		if err != nil {
+			return err
+		}
+		if d, ok := cat.RFPForDiscipline(snap.Package.DisciplineID); ok {
+			items = rfp.Schedule(rfp.Resolve(d, sk, rfp.Drivers(snap, sk), rfp.Settings{}))
+			source = ScheduleFromDefault
+		}
+	}
+	return upsertSchedule(ctx, tx, org, project, pkg, items, source)
+}
+
+func clipText(s string, max int) string {
+	if len(s) <= max {
+		return s
+	}
+	cut := max
+	for cut > 0 && s[cut]&0xC0 == 0x80 {
+		cut--
+	}
+	return s[:cut]
+}
+
+// PackageSchedule is a package's returnable schedule, creating the default
+// one when the package has no RFP yet.
+func (s *Store) PackageSchedule(ctx context.Context, org, project, pkg string) ([]ScheduleItem, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	if err := packageInProject(ctx, tx, org, project, pkg); err != nil {
+		return nil, err
+	}
+	if err := s.ensureSchedule(ctx, tx, org, project, pkg); err != nil {
+		return nil, err
+	}
+	items, err := readSchedule(ctx, tx, org, pkg)
+	if err != nil {
+		return nil, err
+	}
+	return items, tx.Commit(ctx)
+}
+
+// packageInProject is ErrNotFound for a package of another project or org.
+func packageInProject(ctx context.Context, q querier, org, project, pkg string) error {
+	var ok bool
+	if err := q.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM packages WHERE org_id = $1::uuid AND project_id = $2::uuid AND id::text = $3)`, org, project, pkg).Scan(&ok); err != nil {
+		return err
+	}
+	if !ok {
+		return ErrNotFound
+	}
+	return nil
+}
