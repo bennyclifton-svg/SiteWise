@@ -43,7 +43,7 @@ async function dropFile(page: Page, name: string, bytes: Buffer, type: string) {
     { name, b64: bytes.toString("base64"), type },
   );
   await page.dispatchEvent("main", "dragenter", { dataTransfer });
-  await expect(page.locator(".drop")).toHaveAttribute("data-over", "true");
+  await expect(page.locator(".project-side-panel .register")).toHaveAttribute("data-over", "true");
   await page.dispatchEvent("main", "drop", { dataTransfer });
 }
 

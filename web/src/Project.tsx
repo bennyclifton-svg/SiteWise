@@ -421,7 +421,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     [pump],
   );
 
-  // The whole page is a drop target once a project is chosen.
+  // The page accepts a drop once a project is chosen. Only the repository highlights.
   function onDragEnter(e: DragEvent) {
     if (!e.dataTransfer.types.includes("Files")) return;
     e.preventDefault();
@@ -631,6 +631,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       notReadOnly={notReadOnly}
       onClearFilter={() => setNotReadOnly(false)}
       onDelete={remove}
+      fileOver={over}
     />
   );
 
@@ -689,9 +690,6 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} /></div>}
-      <div className="drop" data-over={over ? "true" : undefined} aria-hidden={!over}>
-        <p className="drop-title">Release to file into {state.projectName}</p>
-      </div>
       <input
         ref={fileInput}
         type="file"

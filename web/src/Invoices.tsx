@@ -117,7 +117,7 @@ export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onS
   const reading = invoices.filter(i => i.status === "reading").length;
 
   return <section className="invoices" aria-label="Invoices" {...drag} data-over={over || undefined}>
-    <div className="inv-drop" data-over={over || undefined}>
+    <div className="inv-drop file-drop" data-over={over || undefined}>
       <span className="drop-mark" aria-hidden="true"><IconUpload /></span>
       <div><p className="drop-title">Drop invoices here</p><p className="inv-drop-hint">PDF tax invoices from any consultant or contractor. Drop several at once; each is read on its own and lands in the ledger.</p></div>
       <button type="button" className="btn" onClick={() => input.current?.click()}>Choose invoices</button>

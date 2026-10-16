@@ -416,7 +416,9 @@ select {
     border-color 150ms var(--ease-out);
 }
 
-.drop[data-over="true"] {
+/* One highlight for every file drop target: the invoice zone and the document repository. */
+.drop[data-over="true"],
+.file-drop[data-over="true"] {
   border-color: var(--ember);
   border-style: solid;
   background: var(--ember-soft);

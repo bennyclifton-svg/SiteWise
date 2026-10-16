@@ -27,6 +27,8 @@ interface Props {
   onClearFilter: () => void;
   /** Permanently deletes documents after the user confirmed; resolves true when done. */
   onDelete: (ids: string[]) => Promise<boolean>;
+  /** A file is being dragged onto the page. Highlights this panel with the shared drop treatment. */
+  fileOver?: boolean;
 }
 
 const COLUMNS: { col: Col; label: string; className: string }[] = [
@@ -78,6 +80,7 @@ export function Register({
   notReadOnly,
   onClearFilter,
   onDelete,
+  fileOver = false,
 }: Props) {
   const [sort, setSort] = useState<{ col: Col; dir: 1 | -1 } | null>(null);
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -178,7 +181,7 @@ export function Register({
   const disciplineLabel = (id: string) => catalog?.disciplines.find((d) => d.id === id)?.label ?? id;
 
   return (
-    <div className="register">
+    <div className="register file-drop" data-over={fileOver ? "true" : undefined}>
       <div className="reg-head">
         <h2>
           Documents <span className="muted">{rows.filter((r) => r.doc).length}</span>

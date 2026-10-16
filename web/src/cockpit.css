@@ -274,22 +274,6 @@ body {
   user-select: none;
 }
 
-.cockpit-shell .drop {
-  position: absolute;
-  inset: 12px;
-  z-index: 30;
-  display: none;
-  place-items: center;
-  border: 2px dashed var(--sw-link);
-  border-radius: var(--cockpit-radius);
-  background: color-mix(in srgb, var(--sw-canvas) 88%, var(--sw-link));
-  pointer-events: none;
-}
-
-.cockpit-shell .drop[data-over="true"] {
-  display: grid;
-}
-
 /* ---------- left navigation ---------- */
 
 .cockpit-shell > .leftnav {
@@ -439,11 +423,17 @@ body {
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
-  border: 1px solid var(--sw-border-default);
+  border-width: 1px;
   border-radius: 0.875rem;
-  background: var(--sw-surface);
   font-size: 0.7rem;
   line-height: 1.25;
+}
+
+/* Resting chrome. A file drag uses .file-drop[data-over] in styles.css. */
+.project-side-panel .register:not([data-over="true"]) {
+  border-style: solid;
+  border-color: var(--sw-border-default);
+  background: var(--sw-surface);
 }
 
 .project-side-panel .reg-head {
