@@ -30,8 +30,9 @@ speed, Jev only, the building as the model, and the intake budget.
 
 `PRODUCT.md` names the workbench. The foundation design is the origin of the
 rules above and describes the intake slice. The workbench also includes
-Profile, Cost Plan, Procurement, Specifications, Delivery and Implications.
-Project Plan and Program are navigation placeholders.
+Profile, Cost Plan, Procurement and Specifications.
+Project Plan and Program are navigation placeholders. Delivery records and
+implication proposals stay on the project and are off the left nav.
 
 When a task does not name a budget, use the budget already recorded for that
 path in `bench/budgets.json`. Filing stays p50 ≤ 1 s and p90 ≤ 2 s. Profile

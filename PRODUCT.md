@@ -67,8 +67,10 @@ The workbench, in navigation order:
   remain proposals for review. Consultant documents retain authority until an
   explicit maintenance transfer with a reason. The browser table is built;
   designed PDF tables, images and automatic application assignment remain ahead.
-- **Delivery, Implications.** The existing project views.
   The document repository stays beside every view.
+
+Delivery records and implication proposals stay on the project. They are not
+in the left nav. Consultant suggestions still appear on Procurement.
 
 ## Positioning
 

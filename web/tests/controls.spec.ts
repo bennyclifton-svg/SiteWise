@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
-test('delivery dependency editor shows cycles and preserves lag',async({page})=>{
+// Delivery is off the left nav. The records stay; this screen is not opened.
+test.skip('delivery dependency editor shows cycles and preserves lag',async({page})=>{
  const {token}=await(await page.request.post('/__e2e/invite?org=a')).json();await page.goto(`/#token=${token}`);await page.getByLabel('New project').fill('Delivery sequences');await page.getByRole('button',{name:'Create project',exact:true}).click();await page.getByRole('button',{name:'Delivery',exact:true}).click();
  for(const title of ['First activity','Second activity']){await page.getByRole('button',{name:'Add delivery record',exact:true}).click();await page.getByLabel('Record type',{exact:true}).selectOption('activity');await page.getByLabel('Record title',{exact:true}).fill(title);await page.getByRole('button',{name:'Save delivery record',exact:true}).click();await expect(page.getByRole('button',{name:'Edit delivery record',exact:true})).toBeVisible();}
  await page.getByLabel('Predecessor',{exact:true}).selectOption({label:'First activity'});await page.getByLabel('Lag in calendar days').fill('3');await page.getByRole('button',{name:'Save dependency',exact:true}).click();await expect(page.getByText(/First activity · 3 day lag/)).toBeVisible();

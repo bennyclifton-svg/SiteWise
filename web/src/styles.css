@@ -284,9 +284,13 @@ select {
   margin-bottom: 20px;
 }
 
+.projects .stack-form {
+  margin-bottom: 28px;
+}
+
 .project-list {
   list-style: none;
-  margin: 0 0 32px;
+  margin: 0;
   padding: 0;
   border: 1.5px solid var(--frame);
   border-radius: var(--radius-sm);
@@ -294,7 +298,8 @@ select {
 }
 
 .project-list li {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.75rem;
   align-items: center;
 }
 
@@ -303,15 +308,17 @@ select {
 }
 
 .project-delete {
-  flex: none;
-  margin-right: 10px;
+  justify-self: center;
+  margin: 0;
 }
 
 .project-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  gap: 24px;
+  min-width: 0;
+  padding: 14px 12px 14px 16px;
   color: var(--ink);
   font-size: 15px;
   font-weight: 500;
@@ -322,9 +329,18 @@ select {
   background: var(--ground);
 }
 
-.project-link span {
+.project-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-open {
+  flex: none;
   font-family: var(--mono);
   font-size: 11px;
+  font-weight: 400;
   color: var(--ink-muted);
 }
 

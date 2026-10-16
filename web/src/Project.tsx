@@ -20,9 +20,7 @@ import { LeftNav, type WorkbenchView } from "./LeftNav";
 import { Profile } from "./Profile";
 import { Register } from "./Register";
 import { Procurement } from "./Procurement";
-import { Delivery } from "./Delivery";
 import { Costs } from "./Costs";
-import { Implications } from "./Implications";
 import { SpecificationSchedule as Specifications } from "./SpecificationSchedule";
 import { ocrStage } from "./OCRStatus";
 
@@ -231,16 +229,12 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [now, setNow] = useState(() => Date.now());
   const [profileTick, setProfileTick] = useState(0);
   const [showReports, setShowReports] = useState(false);
-  const [showProposals, setShowProposals] = useState(false);
-  const [proposalsOpened, setProposalsOpened] = useState(false);
-  const [showDelivery, setShowDelivery] = useState(false);
   const [showCosts, setShowCosts] = useState(false);
   const [showSpecifications, setShowSpecifications] = useState(false);
   const [specificationsOpened, setSpecificationsOpened] = useState(false);
   const [specificationTick, setSpecificationTick] = useState(0);
   const [invoiceTick, setInvoiceTick] = useState(0);
   const [costsOpened, setCostsOpened] = useState(false);
-  const [deliveryOpened, setDeliveryOpened] = useState(false);
   const [reportsOpened, setReportsOpened] = useState(false);
 	const [reportTick, setReportTick] = useState(0);
   const [notReadOnly, setNotReadOnly] = useState(false);
@@ -558,59 +552,31 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       ? "costs"
       : showReports
         ? "procurement"
-        : showDelivery
-          ? "delivery"
-          : showProposals
-            ? "implications"
-            : "profile";
+        : "profile";
 
   const showView = (next: WorkbenchView) => {
     if (next === "specifications") {
       setSpecificationsOpened(true);
       setShowSpecifications(true);
       setShowCosts(false);
-      setShowProposals(false);
-      setShowDelivery(false);
       setShowReports(false);
       return;
     }
     setShowSpecifications(false);
-    if (next === "implications") {
-      setShowCosts(false);
-      setProposalsOpened(true);
-      setShowProposals(true);
-      setShowReports(false);
-      setShowDelivery(false);
-      return;
-    }
-    if (next === "delivery") {
-      setShowCosts(false);
-      setShowProposals(false);
-      setDeliveryOpened(true);
-      setShowDelivery(true);
-      setShowReports(false);
-      return;
-    }
     if (next === "procurement") {
       setShowCosts(false);
       setReportsOpened(true);
       setShowReports(true);
-      setShowDelivery(false);
-      setShowProposals(false);
       return;
     }
     if (next === "costs") {
       setCostsOpened(true);
       setShowCosts(true);
       setShowReports(false);
-      setShowDelivery(false);
-      setShowProposals(false);
       return;
     }
     setShowCosts(false);
     setShowReports(false);
-    setShowDelivery(false);
-    setShowProposals(false);
   };
 
   const nav = (
@@ -682,13 +648,11 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <section className="profile-col" aria-label="Project profile" hidden={showSpecifications || showReports || showDelivery || showProposals || showCosts}>
+      <section className="profile-col" aria-label="Project profile" hidden={showSpecifications || showReports || showCosts}>
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} />
       </section>
-      {proposalsOpened && <div className="project-reports" hidden={!showProposals}><Implications projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
-      {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} onOpenCostPlan={() => showView("costs")} /></div>}
       <input
         ref={fileInput}

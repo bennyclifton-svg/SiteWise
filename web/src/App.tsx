@@ -262,12 +262,36 @@ function Projects({
   return (
     <main className="projects">
       <h1>Projects</h1>
+      <form className="stack-form" onSubmit={create} noValidate>
+        <label htmlFor="new-project">New project</label>
+        <div className="inline-form">
+          <input
+            id="new-project"
+            ref={inputRef}
+            className="input"
+            placeholder="e.g. 14 Hale Street, Petersham"
+            value={name}
+            maxLength={200}
+            onChange={(e) => setName(e.target.value)}
+            aria-invalid={error ? "true" : undefined}
+            aria-describedby={error ? "new-project-error" : undefined}
+          />
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? "Creating…" : "Create project"}
+          </button>
+        </div>
+        {error && (
+          <span id="new-project-error" className="error-text" role="alert">
+            {error}
+          </span>
+        )}
+      </form>
       {projects === null ? (
         <p className="drop-sub">Loading projects…</p>
       ) : projects.length === 0 ? (
-        <div className="empty" style={{ marginBottom: 28 }}>
+        <div className="empty">
           <strong>No projects yet.</strong>
-          Name your first project below, then drop its documents in.
+          Name your first project above, then drop its documents in.
         </div>
       ) : (
         <ul className="project-list">
@@ -281,8 +305,8 @@ function Projects({
                   onOpen(p.id);
                 }}
               >
-                {p.name}
-                <span>Open</span>
+                <span className="project-name">{p.name}</span>
+                <span className="project-open">Open</span>
               </a>
               <button
                 type="button"
@@ -310,30 +334,6 @@ function Projects({
           }}
         />
       )}
-      <form className="stack-form" onSubmit={create} noValidate>
-        <label htmlFor="new-project">New project</label>
-        <div className="inline-form">
-          <input
-            id="new-project"
-            ref={inputRef}
-            className="input"
-            placeholder="e.g. 14 Hale Street, Petersham"
-            value={name}
-            maxLength={200}
-            onChange={(e) => setName(e.target.value)}
-            aria-invalid={error ? "true" : undefined}
-            aria-describedby={error ? "new-project-error" : undefined}
-          />
-          <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? "Creating…" : "Create project"}
-          </button>
-        </div>
-        {error && (
-          <span id="new-project-error" className="error-text" role="alert">
-            {error}
-          </span>
-        )}
-      </form>
     </main>
   );
 }

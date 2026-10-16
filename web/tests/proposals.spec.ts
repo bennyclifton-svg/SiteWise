@@ -1,5 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// Implications is off the left nav. Proposal records stay; this screen is not opened.
+test.beforeEach(() => { test.skip(true, "Implications is off the left nav"); });
+
 const headers = { Origin: "http://127.0.0.1:4173" };
 const proposalLabel = (kind: string) => kind === "investigation"
   ? "Capacity of the existing structure or ground for the new load"

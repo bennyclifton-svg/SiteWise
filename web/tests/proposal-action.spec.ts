@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+// Implications is off the left nav. Proposal records stay; this screen is not opened.
+test.beforeEach(() => { test.skip(true, "Implications is off the left nav"); });
+
 test("physical make-good implication requires an explicit action", async ({ page }) => {
  const {token}=await(await page.request.post("/__e2e/invite?org=a")).json();
  await page.goto(`/#token=${token}`);await page.getByLabel("New project").fill("Explicit make-good action");await page.getByRole("button",{name:"Create project",exact:true}).click();
