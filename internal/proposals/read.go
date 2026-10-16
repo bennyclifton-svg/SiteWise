@@ -144,6 +144,9 @@ type question struct {
 	Family       string
 	Instructions any
 	Options      []choice
+	// AmberAtMost holds the answer below green: the question is ambiguous
+	// by construction, whatever Jev's confidence.
+	AmberAtMost bool
 }
 
 // roleQuestion names the role the value plays and what it is not.
@@ -510,6 +513,7 @@ func (d *Draft) ask() {
 		add(question{Field: FieldGSTBasis, Family: FieldGSTBasis, Instructions: instructions[FieldGSTBasis], Options: []choice{{ID: "ex", Value: "ex", Describe: "Excluding GST."}, {ID: "inc", Value: "inc", Describe: "Including GST."}}})
 	}
 	fees, rates, totals := d.candidates()
+	lump := lumpSum(fees, d.items)
 	if _, ok := d.by[FieldStatedTotal]; !ok && len(totals) > 0 {
 		add(question{Field: FieldStatedTotal, Family: FieldStatedTotal, Instructions: instructions[FieldStatedTotal], Options: append(amountOptions(totals), choice{ID: choiceNone, Describe: noneDescribe})})
 	}
@@ -520,7 +524,7 @@ func (d *Draft) ask() {
 			opts := append(amountOptions(fees),
 				choice{ID: choiceNotPrice, Value: choiceNotPrice, Describe: map[string]string{"what": "The proposal gives no fee for this item."}},
 				choice{ID: choiceIncluded, Value: choiceIncluded, Describe: map[string]string{"what": "The proposal says this item is included in another fee."}})
-			add(question{Field: field, Family: "price", Instructions: priceQuestion(it), Options: opts})
+			add(question{Field: field, Family: "price", Instructions: priceQuestion(it), Options: opts, AmberAtMost: lump})
 		case it.Kind == rfp.ItemRate && len(rates) > 0:
 			opts := append(amountOptions(rates), choice{ID: choiceNotPrice, Value: choiceNotPrice, Describe: map[string]string{"what": "No rate is given for this role."}})
 			add(question{Field: field, Family: "rate", Instructions: rateQuestion(it), Options: opts})
@@ -605,6 +609,25 @@ func limit(as []Amount, n int) []Amount {
 
 // amountOptions name each amount by its id and figure; the words around it
 // are in the state once, not repeated in every question.
+// lumpSum is a proposal that prints one fee against a schedule of several
+// priced items. Which stage that one figure covers is a judgement the page
+// does not settle (a "full plan" fee may be one stage or all of them), so
+// every stage answer stays for the user to confirm. Seen 16 October 2026: a
+// $1,800 "Full Waste Management Plan" read as S3 not priced at 0.96.
+func lumpSum(fees []Amount, items []rfp.ScheduleItem) bool {
+	cents := map[int64]bool{}
+	for _, a := range fees {
+		cents[a.Cents] = true
+	}
+	priced := 0
+	for _, it := range items {
+		if it.Price() && it.Base {
+			priced++
+		}
+	}
+	return len(cents) == 1 && priced > 1
+}
+
 func amountOptions(as []Amount) []choice {
 	out := make([]choice, len(as))
 	for i, a := range as {
@@ -726,6 +749,9 @@ func (d *Draft) Apply(res jev.Result, err error, th Thresholds) (grey bool) {
 				}
 				dec.Confidence = a.Confidence
 				if band, apply := th.Band(q.Family, a.Confidence, len(q.Options)); apply && o.ID != choiceNone {
+					if band == BandGreen && q.AmberAtMost {
+						band = BandAmber
+					}
 					dec.Band, dec.Value = band, o.Value
 				}
 			}

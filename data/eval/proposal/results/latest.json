@@ -51,24 +51,24 @@
   {
    "family": "price",
    "scored": 348,
-   "correct": 246,
-   "wrong": 16,
-   "blank": 86,
+   "correct": 288,
+   "wrong": 20,
+   "blank": 40,
    "rule_correct": 0,
    "rule_wrong": 0,
    "green_wrong": 0,
-   "amber_wrong": 16,
+   "amber_wrong": 20,
    "raw_answers": 348,
-   "raw_correct": 324,
+   "raw_correct": 321,
    "held_out_scored": 111,
-   "held_out_correct": 66
+   "held_out_correct": 95
   },
   {
    "family": "rate",
    "scored": 113,
-   "correct": 96,
+   "correct": 94,
    "wrong": 8,
-   "blank": 9,
+   "blank": 11,
    "rule_correct": 0,
    "rule_wrong": 0,
    "green_wrong": 0,
@@ -76,7 +76,7 @@
    "raw_answers": 113,
    "raw_correct": 103,
    "held_out_scored": 41,
-   "held_out_correct": 32
+   "held_out_correct": 34
   },
   {
    "family": "stated_total",

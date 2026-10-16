@@ -61,8 +61,8 @@
     "options": 13,
     "max_options": 255,
     "green": null,
-    "amber": 0.27,
-    "n": 52,
+    "amber": 0.34,
+    "n": 75,
     "reason": "review only; no cut-off is free of calibration errors"
    },
    {
@@ -70,18 +70,26 @@
     "max_options": 3,
     "green": null,
     "amber": null,
-    "n": 18,
-    "reason": "18 calibration answers, need 20"
+    "n": 16,
+    "reason": "16 calibration answers, need 20"
    },
    {
     "options": 4,
     "max_options": 12,
-    "green": 0.8,
-    "amber": 0.69,
-    "n": 167
+    "green": 0.81,
+    "amber": 0.54,
+    "n": 146
    }
   ],
   "rate": [
+   {
+    "options": 13,
+    "max_options": 255,
+    "green": null,
+    "amber": null,
+    "n": 5,
+    "reason": "5 calibration answers, need 20"
+   },
    {
     "options": 2,
     "max_options": 3,
@@ -94,8 +102,8 @@
     "options": 4,
     "max_options": 12,
     "green": null,
-    "amber": 0.47,
-    "n": 70,
+    "amber": 0.35,
+    "n": 65,
     "reason": "review only; no cut-off is free of calibration errors"
    }
   ],

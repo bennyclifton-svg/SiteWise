@@ -411,3 +411,36 @@ func TestExGST(t *testing.T) {
 		}
 	}
 }
+
+func TestOneLumpSumAgainstStagesStaysAmber(t *testing.T) {
+	name := "Fee Proposal Town Planning (Varga).pdf"
+	body := text(page(1,
+		[]string{"Varga Traffic Planning Pty Ltd", "ABN 88 071 762 537"},
+		[]string{"Fee proposal"},
+		[]string{"Full town planning service", "$9,000", "excl. GST"},
+	))
+	ev := Harvest(name, body)
+	id := ""
+	for _, a := range ev.Amounts {
+		if a.Display == "$9,000" {
+			id = a.ID
+		}
+	}
+	fake := &fakeJev{conf: 0.99, answers: map[string]string{"price:stage:report": id, "price:stage:advice": choiceNotPrice}}
+	out, err := Read(context.Background(), fake, greenAt(0.9), name, body, context1(), nil)
+	if err != nil || id == "" {
+		t.Fatalf("id %q err %v", id, err)
+	}
+	amber := 0
+	for _, p := range out.Prices {
+		if strings.HasPrefix(p.Key, "stage:") && p.Band == BandGreen {
+			t.Fatalf("%s green from one lump sum: %+v", p.Key, p)
+		}
+		if p.Key == "stage:report" && p.Band == BandAmber {
+			amber++
+		}
+	}
+	if amber != 1 {
+		t.Fatalf("report not read amber: %+v", out.Prices)
+	}
+}

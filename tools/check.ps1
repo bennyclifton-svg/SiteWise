@@ -69,6 +69,11 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & go run ./cmd/invoice-eval
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+# Proposal reading: replay of the recorded live run over the private proposal
+# answer key (42 real fee proposals). A replay miss or any wrong green fails.
+& go run ./cmd/proposal-eval
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 # Latency: every budgeted path through the real server, gated by
 # bench/budgets.json. The release gate is the same command with -live on the
 # intended VPS; replayed provider latency is a timing model, not evidence.
