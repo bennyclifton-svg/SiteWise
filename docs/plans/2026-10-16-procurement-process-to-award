@@ -1,0 +1,261 @@
+Procurement implementation plan: from fee proposal to award
+16 Oct 2026 · @Ben clifton 
+Summary
+Fee proposals and tender submissions are dropped into the document repository like any other file. Jev recognises them as commercial documents, works out the discipline and the firm, and they appear in that package's firm columns on the procurement page with the firm's details filled in. Prices are read into the same schedule the RFP asked for, so two or more submissions line up in one comparison table, followed by a short non-price section and a recommendation. Awarding a firm writes its fee breakdown into the cost plan as child lines under one parent, which is what later invoices map to.
+The recommended order is to get one proposal all the way from drop to cost plan before building the multi-firm report. Comparison then mostly renders data that already exists, and the only LLM call arrives last.
+Build order
+Each phase ships something a PM can use on its own, and each builds on data the previous one created.
+Phase
+Ships
+Needs
+LLM
+0. Schedule as data
+Returnable schedules stored as rows and shown as tables in the RFP
+Existing RFP generator
+No
+1. Intake and firm linking
+Proposals dropped anywhere appear in the right package's firm columns, firm details filled
+Phase 0
+No
+2. Price extraction and table
+Each proposal's fees read into schedule lines; one table that is a review screen with one firm and a comparison with several
+Phases 0 and 1
+No
+3. Award to cost plan
+Award lets the PM choose and roll up items, then writes them as child lines; invoices map to them
+Phase 2 and the invoice spec
+No
+4. Non-price and report
+Non-price section, recommendation and the one-page report
+Phases 2 and 3
+One call per report
+Why one proposal end to end first. Small residential jobs often have a single fee proposal, so award-to-cost-plan is useful without any comparison. It also proves the hardest parts first: reading fees reliably, and the schedule-to-cost-plan link that the invoice feature depends on. Once one proposal reads cleanly, comparing three is the same extraction run three times plus a table.
+Why the LLM comes last. Price evaluation is arithmetic and lookups, so code and Jev do it faster and more reliably. The LLM is only needed to summarise non-price answers and draft the recommendation, which is also the part the owner must approve under the "Jev only" rule in AGENTS.md.
+Phase 0: the returnable schedule as data
+One schedule per package is the central unit. The RFP is generated from it, proposals are read into it, the comparison report lays it out, and the cost plan's child lines are copied from its price items.
+The content already in the RFPs is right and broad, so this phase gives it structure rather than new questions:
+Item kind
+Source in the RFP
+Used for
+Stage price item
+Scope by stage and fee proposal: the stages the PM selected
+Price rows; cost plan lines on award
+Service option
+Same section: the options selected, such as help selecting other consultants, architectural specification, interior layouts
+Price rows below the base fee total
+Rate item
+Hourly rates schedule
+Rates rows; stored for variations later
+Non-price criterion
+Returnable schedules: deliverables, team, experience, program, departures, insurance
+Non-price rows in the report
+Price items are read from the PM's selections in that section, never hard-coded per discipline. The owner plans to refine the scope by stage and fee proposal section for each discipline, and those changes must flow through to comparison and award with no code change.
+The returnable schedules (R2, R3, R4, R5 and so on) are currently a block of text in the RFP. This phase renders each one as a table for the firm to fill in, with the same content. The coding agent may adjust their wording so the RFP, the extraction and the report line up item for item. Tables also make proposals easier to read, because firms tend to answer in the structure they were given.
+Each item has a stable id, a label, an order and its kind. The discipline template supplies a default schedule, so a proposal that arrives without an issued RFP still has rows to be read into.
+[ ] Every RFP or RFT the app generates is backed by schedule rows, and regenerating it from those rows gives the same scope
+[ ] Returnable schedules render as tables in the RFP with no loss of content
+[ ] Changing the selected stages or options in an RFP changes its price items with no code change
+End-to-end flow
+Because the same schedule ids run from the RFP to the cost plan's child lines, an invoice for "Stage 2" can be matched to the Stage 2 line the firm priced months earlier.
+Phase 1: proposal intake and firm linking
+A proposal is filed exactly like any other document, inside the existing filing budget. The procurement questions ride in the same Jev fan-out, so no extra round trip is added.
+Field
+Decided by
+Notes
+Kind
+Jev, existing kind question
+New option: commercial document, with subtype fee proposal or tender submission
+Discipline
+Jev, existing discipline question
+
+Package
+Rule: the project's one package for that discipline; else Jev picks among them
+Dropping onto a package row settles it by rule
+Firm
+Rule: harvested ABN matches the firm directory; else Jev picks among name candidates (letterhead, signature block, email domain)
+No match creates a draft firm, amber
+Firm details
+Code harvests candidates; Jev picks name, address, contact, email, phone
+ABN checksum checked in code
+Received date
+Code: upload date; user can override
+
+Once a proposal has a package and a firm, code creates a submission linking the two. A later proposal from the same firm for the same package supersedes the earlier one, which is kept and shown as superseded.
+Procurement page. The placeholder "firms come later" callout is replaced by live firm columns under each package:
+• Firm column: firm name, received date, total ex GST once Phase 2 is in, and a status chip (Received, Needs review, Awarded, Unsuccessful). Clicking it opens the proposal beside its fields.
+• Add firm: pick a firm from the directory, or drop a proposal straight onto the column or the package row. Dropping there settles the package and firm by rule.
+• Review or Compare: with one submission the button reads Review; with two or more it reads Compare. Both open the same table (Phase 2).
+The column count is not fixed at three; the page shows up to five side by side and scrolls beyond that.
+[ ] Dropping a fee proposal in the document repository shows it under the right package and firm within the filing budget
+[ ] A firm seen on an earlier project is matched by ABN and its details fill without a Jev call
+[ ] A revised proposal supersedes the earlier one and both stay visible
+[ ] Org isolation test covers firms and submissions
+Phase 2: price extraction and the price table
+Price reading runs as a background job straight after filing, so it never slows the drop. It follows the usual split: code harvests and computes, Jev only picks.
+1. Harvest (code). Collect every money amount with its row label from tables and text, plus stated totals, GST wording (inc or ex), hourly rates, percentage fees, and the exclusions and assumptions sections.
+2. Map (Jev). For each price and rate item in the schedule, one choice question: which harvested amount answers this item? The options are the candidates plus Not priced and Included in another item. All items go out in one parallel fan-out.
+3. Leftovers (code). Amounts that no item claimed and that aren't totals become Other items for that firm, so nothing offered is lost.
+4. Check (code). Normalise everything to ex GST, compare the sum of mapped items to the firm's stated total, and flag any gap.
+5. Review (user). Every cell shows its band chip and opens the source passage in the PDF. A user's correction is final.
+The price table is one screen for both cases: with one firm it is the review screen, with several it is the comparison. Firms run across the top and schedule items down the left, answering the two first questions: did everyone price everything, and who is cheapest. Example layout, with illustrative figures:
+Item (ex GST)
+Firm A
+Firm B
+Firm C
+Stage 1: DA documentation
+$8,500
+$7,900
+$9,200
+Stage 2: lodgement and RFIs
+$3,200
+Not priced
+$2,800
+Disbursements
+$450
+$600
+Included
+Base fee total
+$12,150
+$8,500
+$12,000
+Option: interior layouts
+$2,400
+$1,900
+Not priced
+Other items offered
+
+$1,200 (heritage report)
+
+Items not priced
+0
+1
+1
+Principal rate per hour
+$260
+$240
+$275
+The lowest base fee total is highlighted, but a total with items not priced carries an amber note, because the cheapest-looking number is often the incomplete one. Service options sit below the base fee total so they never blur the base comparison. Extras a firm offered unasked are shown but kept out of totals until the award step. The table exports to Excel with the same layout, using the export built for the invoice feature.
+[ ] A real fee proposal from each of the three answer-key projects reads into its schedule with every amount traceable to a passage
+[ ] An accuracy eval on at least 30 real proposals sets the threshold for each mapping question
+[ ] Sum check, GST normalisation and not-priced count have unit tests
+[ ] Playwright: drop three proposals for one package, open Compare, correct one cell, see the total change
+Phase 3: award and the cost plan
+Each firm column in the price table has an Award button. It opens a two-step confirmation, and nothing is written until the PM confirms.
+Step 1: choose what goes into the cost plan. A table lists every item the firm priced: scheduled stages, selected service options, and any extras offered unasked. Each row shows the firm's amount and a Cost plan line column.
+• By default each scheduled item and selected option gets its own line, and extras are left out.
+• The PM can tick extras in, or select several rows and choose Combine to roll them into one line with a name they type, for example Stages 3 to 5 into "Design development and documentation".
+• A running total shows what will be written, and code checks it equals the sum of the included items to the cent.
+Step 2: confirm. The preview shows the final parent and child lines, then one transaction writes:
+• Parent line: the package's cost plan line, for example "Town planning: Firm A". Its contract value becomes the sum of its children. Its budget stays exactly as set; if none was set it stays blank and no variance is shown.
+• Child lines: one per line chosen in step 1. Each remembers which schedule items it combines, so an invoice for "Stage 4" still finds the combined line that contains Stage 4.
+• Package: status Awarded, linked to the firm as its supplier, with the firm's hourly rates stored for variations later.
+• Other submissions: marked Unsuccessful and kept unchanged.
+Award can be undone until an invoice is allocated to one of its child lines; after that the button explains why it is locked.
+What this changes in the invoice spec. An invoice whose ABN matches an awarded firm settles its package by rule. The activity line becomes a Jev choice among that package's child lines only, usually a handful of options, so it is fast and confident. An invoice saying "Stage 2" lines up with the line holding the Stage 2 item the firm priced.
+[ ] Combining rows gives one child line whose amount equals the sum of the rows combined
+[ ] Awarding writes the parent and children in one transaction, and the cost plan tab shows them without a reload
+[ ] A package with no budget shows its contract value with no variance
+[ ] An invoice naming a stage maps to the combined line containing that stage on the test set
+[ ] Undo is refused once an invoice is allocated
+Phase 4: non-price and the one-page report
+This phase adds the first LLM to SiteWise, so the owner first amends non-negotiable #1 in AGENTS.md, for example: "Jev decides; code computes. A generative model may only draft prose from evidence that Jev and code selected, must cite it, and never sets a field or a number."
+Before the call. Code splits each proposal into sections by its headings. For each non-price criterion and each firm, Jev picks which sections answer it, or none. Code also collects each firm's departures, exclusions and assumptions passages.
+The one call. One request per report, to a fast, low-cost model hosted in an Australian region. It receives the price table's computed facts and the selected passages with their ids, and must return JSON in a fixed schema:
+• a summary of at most 25 words per criterion per firm, citing passage ids;
+• each firm's departures from the RFP, citing passage ids;
+• a recommendation of at most 120 words.
+After the call, code checks it. Every cited id must exist, every summary must cite something, and every dollar figure or number in the text must match a computed value or appear in a cited passage. Anything that fails is dropped and flagged rather than shown. The result is cached by a hash of its inputs and regenerated only when a submission changes. If the call fails or times out, the report still renders with the price section and the raw passages under each criterion.
+Ratings stay with the PM. The model does not score firms, and there are no weights or numeric scores. The PM sets a rating per criterion per firm (Strong, Acceptable or Concern) and edits the recommendation, which is labelled "Drafted by model, edited by" with their name.
+The report is one page of A4 landscape, two at most. For now it is an in-app page with a print layout; it moves to proper PDF and Word export when the app-wide export feature is built:
+1. Header: project, package, RFP reference, date and the firms compared.
+2. Price: the Phase 2 table, unchanged.
+3. Non-price: criteria down the left, firms across, a short summary and rating in each cell, departures as the last row.
+4. Recommendation: the edited paragraph and the PM's sign-off.
+[ ] AGENTS.md amended and the model, region and budget recorded in the decision log
+[ ] The validation step rejects a planted wrong figure and a planted uncited claim in tests
+[ ] The report fits one A4 landscape page for three firms and eight criteria
+[ ] With the model switched off, the report still renders and prints
+Data model
+Names are placeholders; the coding agent maps them to the repo's real tables before writing its plan. Every row carries org_id, and money is integer cents in AUD, ex GST.
+Table
+Key columns
+Notes
+schedule_items
+package or RFP, kind (price, rate, non-price), label, order
+Phase 0; may already exist inside the RFP generator
+firms
+name, ABN, address, contact, email, phone
+Org-wide directory, shared by all of an organisation's projects; may already exist behind packages
+submissions
+project, package, firm, file(s), received date, status, supersedes
+Status: Received, Needs review, Awarded, Unsuccessful, Superseded, Withdrawn
+submission_prices
+submission, schedule item (or none for other items), amount, state, source passage
+State: priced, not priced, included elsewhere, excluded
+submission_responses
+submission, non-price item, passage ids, summary, rating
+Summary written by model or user; rating by user only
+comparison_reports
+package, submissions, input hash, model, output JSON, edited recommendation, signed off by
+Cached LLM output, kept for audit
+cost_lines
+Existing; add parent link and contract value
+Children roll up to the parent
+packages
+Existing; status and awarded firm
+Awarding sets the supplier link
+decisions
+Existing
+One row per Jev or rule decision, as in filing
+Award adds one more link table, cost_line_sources: each row ties a child cost line to a schedule item or an extra it includes. A line combining Stages 3 to 5 has three rows, which is how invoices find it.
+Speed budgets
+All figures except the first are proposed and need the owner's sign-off. The benchmark fails the build when any is broken.
+Step
+p50
+p90
+Proposal filed, linked to package and firm
+1,000 ms
+2,000 ms (existing filing gate)
+Prices read into the schedule, from filing
+3 s
+6 s
+Price table opens, five firms
+150 ms
+300 ms
+Award written to the cost plan
+200 ms
+500 ms
+Non-price summaries and recommendation (the LLM call)
+5 s
+10 s
+Cached report reopened
+150 ms
+300 ms
+The price section never waits for the LLM: it shows at once and the non-price section fills in when the call returns.
+Edge cases
+Case
+Behaviour
+Percentage fee ("6% of construction cost")
+Code computes it from the cost plan's construction estimate and shows the basis beside the amount
+Hourly rates only, no lump sum
+Rates rows filled; price items Not priced; flagged "rates only"
+Options A and B in one proposal
+Flagged; the PM picks which option to compare, the other is kept
+Prices quoted inc GST
+Normalised to ex GST in code, with a note
+Scanned proposal, no text layer
+Filed and linked by what can be read; price cells left for manual entry
+Proposal split across files (letter, fee schedule, CVs)
+v1 links extra files to the submission by hand; the fee schedule file is the one read
+Proposal arrives with no RFP issued
+Read into the discipline's default schedule
+Firm's total differs from its items
+Amber note with the gap; the PM decides which to use
+Firm withdraws
+Submission marked Withdrawn and left out of the comparison
+Award changed before any invoice
+Undo, then award the other firm; the cost plan children are replaced
+Open questions
+Answered on 16 Oct 2026 and now in the plan: award sets the parent's contract value and leaves its budget as set; the PM chooses and rolls up items in an award step; ratings are qualitative only; the report is an in-app print page until app-wide PDF and Word export exists; and the firm directory is shared across an organisation's projects.
+[ ] For the coding agent. Confirm how the RFP generator stores the returnable schedules and the scope by stage and fee proposal section, whether a firms or suppliers table already sits behind packages, and whether cost plan lines already support a parent link.
+[ ] Later. The owner will refine the scope by stage and fee proposal section per discipline, including shortening its table; nothing in this plan may hard-code its rows.

@@ -52,6 +52,7 @@ Start on instruction/agreed inputs; end at named output/response. Price once.  R
 | S8b Interim / staged strategy — Option | Phase/building/shutdown/occupation strategies; temporary measures, operator/contractor duties, impairment/restoration and acceptance dependencies |  |  |  |
 | S9a Defined advisory — Option | Defined question/cutoff/reliance, evidence limits, confidence/findings/actions/response end; continued design/novation duration/handover; annual operation separate |  |  |  |
 | S9b Independent peer review — Option | Independent review: named solutions/report, evidence cutoff, method/rounds; designer retains duty; advisory does not buy peer review |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Interim strategies/shutdowns/staged occupation |  |  |  |
 | Service option | Selected script review/test witnessing |  |  |  |
@@ -89,14 +90,18 @@ Counts by solution/stage, unit/duration; fixed fee, time ceiling or unit rate. A
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Section 3 outputs/registers: extent, format/native files, recipients/reliance, input revisions, rounds and dates.
-R3 Hourly rates: Lead/reviewer/engineer/modeller/specialist rates; extra solution/scenario/iteration, drawing update/meeting/visit/retest/RFI; ceilings/travel/cancellation/remobilisation.
-R4 Team: Lead/checker/resources, registrations/competence, modelling/peer independence, conflicts/subconsultants and ISO/equivalent QA; name all designer/authority/trade/operator interfaces.
-R5 Experience: Two or three comparable use/solution/retrofit/staging commissions: personnel roles, outputs, process/lessons and referees.
-R6 Departures: Sections 2–5/agreement departures: reason, alternative, fee/time/decision; unknown/conflicting evidence, priced assumptions with owner/date/consequence/review point; excluded-work parties.
-R7 Program: Methods/scenarios/criteria/checks, input owners/dates, resources, draft/final gates, authority rounds, hold-point/test/retest plan; urgent escalation/operator decisions.
-R8 Insurance and compliance: PI Project-selected $5m; PL Project-selected $20m; current workers cover/duration/certificates; facade/material/hazard/modelling exclusions match offered work. Agreement/precedence departures, reliance/liability/inspection terms/novation.
-R9 Reimbursables: Travel/out-of-hours, authority/reviewer, surveys/tests/lab/opening/access, models/specialists/printing/reinstatement: quantity/basis, payer/GST/markup/approval; no services/R1 duplication.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Section 3 outputs/registers: extent, format/native files, recipients/reliance, input revisions, rounds and dates. |
+| R3 Hourly rates | Lead/reviewer/engineer/modeller/specialist rates; extra solution/scenario/iteration, drawing update/meeting/visit/retest/RFI; ceilings/travel/cancellation/remobilisation. |
+| R4 Team | Lead/checker/resources, registrations/competence, modelling/peer independence, conflicts/subconsultants and ISO/equivalent QA; name all designer/authority/trade/operator interfaces. |
+| R5 Experience | Two or three comparable use/solution/retrofit/staging commissions: personnel roles, outputs, process/lessons and referees. |
+| R6 Departures | Sections 2–5/agreement departures: reason, alternative, fee/time/decision; unknown/conflicting evidence, priced assumptions with owner/date/consequence/review point; excluded-work parties. |
+| R7 Program | Methods/scenarios/criteria/checks, input owners/dates, resources, draft/final gates, authority rounds, hold-point/test/retest plan; urgent escalation/operator decisions. |
+| R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/duration/certificates; facade/material/hazard/modelling exclusions match offered work. Agreement/precedence departures, reliance/liability/inspection terms/novation. |
+| R9 Reimbursables | Travel/out-of-hours, authority/reviewer, surveys/tests/lab/opening/access, models/specialists/printing/reinstatement: quantity/basis, payer/GST/markup/approval; no services/R1 duplication. |
 
 ### Before issue — resolve or accept
 

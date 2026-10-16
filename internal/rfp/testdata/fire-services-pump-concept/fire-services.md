@@ -56,6 +56,7 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 | S7 Construction — Option | RFIs/submittals, hold-point inspection/findings, changes/test-plan records; inaccessible work/defect closure |  |  |  |
 | S8 Commissioning — Option | Scripts/results; water/integrated failure/recovery test witness, expected/actual results/defects/retests; scoped statements/as-builts/O&M/settings/training/residuals |  |  |  |
 | S9 Advisory — Option | Defined question/cutoff/reliance, method/confidence/actions; peer review retains design duty; remedy/annual services separate |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Demand/storage calculations |  |  |  |
 | Service option | Existing upgrade design subject to investigation/accepted strategy |  |  |  |
@@ -98,14 +99,18 @@ Separate quantity/duration by item, system and stage (not one pooled count). Fix
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Section 3 outputs and registers: purpose/maturity, native formats/calculations, recipients/reliance, input revisions/rounds/dates.
-R3 Hourly rates: Lead/wet/dry designer, modeller/checker/inspector/specialist rates; extra visit/review/test/witness/retest/package units, ceilings/travel/out-of-hours/cancellation.
-R4 Team: Named lead/checker/resources, competence/registration, conflicts/subconsultants, ISO/equivalent QA; complete allocation schedule with one owner per function.
-R5 Experience: Two or three comparable system/use/live-site commissions: staff roles, outputs, interface/test lessons and referees.
-R6 Departures: Sections 2–5/agreement departures: alternative/reason/fee/time; exclusions and parties, conflicts, assumptions with owner/date/consequence/review point.
-R7 Program: Inputs/providers/revisions/dates (architecture, hazards, BCA/strategy/approvals, records/supply/MEP); methods/checks/gates, access/outages/operator permissions, hold-point/test plan, urgent findings and closure.
-R8 Insurance and compliance: PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates, activity/hazard exclusions; agreement/precedence, liability/reliance/novation departures.
-R9 Reimbursables: Enquiry/tests/authority/connection fees, surveys/openings/specialists/access/traffic/isolation/reinstatement/disposal/travel/printing: quantity/basis/payer/markup/GST/approval; no R1 or other-discipline duplication.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Section 3 outputs and registers: purpose/maturity, native formats/calculations, recipients/reliance, input revisions/rounds/dates. |
+| R3 Hourly rates | Lead/wet/dry designer, modeller/checker/inspector/specialist rates; extra visit/review/test/witness/retest/package units, ceilings/travel/out-of-hours/cancellation. |
+| R4 Team | Named lead/checker/resources, competence/registration, conflicts/subconsultants, ISO/equivalent QA; complete allocation schedule with one owner per function. |
+| R5 Experience | Two or three comparable system/use/live-site commissions: staff roles, outputs, interface/test lessons and referees. |
+| R6 Departures | Sections 2–5/agreement departures: alternative/reason/fee/time; exclusions and parties, conflicts, assumptions with owner/date/consequence/review point. |
+| R7 Program | Inputs/providers/revisions/dates (architecture, hazards, BCA/strategy/approvals, records/supply/MEP); methods/checks/gates, access/outages/operator permissions, hold-point/test plan, urgent findings and closure. |
+| R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates, activity/hazard exclusions; agreement/precedence, liability/reliance/novation departures. |
+| R9 Reimbursables | Enquiry/tests/authority/connection fees, surveys/openings/specialists/access/traffic/isolation/reinstatement/disposal/travel/printing: quantity/basis/payer/markup/GST/approval; no R1 or other-discipline duplication. |
 
 ### Before issue — resolve or accept
 

@@ -47,6 +47,7 @@ Base stages only, from written instruction/input-access milestone to the selecte
 | G5 Design / tender support — Option | Review conditions and changed footprint/loads against coverage; supplementary work separately priced. Review parameter use; tender inputs, hold points and scheduled queries. Review is not design authorship |  |  |  |
 | G6 Construction / completion — Option | Scheduled founding/pile/excavation inspections, earthworks tests and monitoring reviews; changed-condition advice, test/issues register and scoped completion statement. Record missed/inaccessible work; agree instruments handover/decommissioning |  |  |  |
 | G7 Contractor advice / transfer — Option | Define contractor design review, further investigation, client, reliance and endpoint. Separate appointment and fee for novation/transfer |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Beyond-spot groundwater monitoring / hydrogeology / dewatering |  |  |  |
 | Service option | Defect/distress diagnosis |  |  |  |
@@ -84,14 +85,18 @@ Client completes the reconciled plan and quantities. Guaranteed work is separate
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Plan, logs/location/photos, labs, ground model/parameters, interim/final/monitoring reports and completion records: purpose, recipient, editable formats, dates, rounds, limits/reliance and pending tests.
-R3 Hourly rates: Role/equipment and extra metre/hole/test/well/visit rates; minimum hire, travel, standby/cancellation, expedited lab/storage/restoration, ceilings and escalation. Expose markups.
-R4 Team: Name lead, field supervisor, reviewer, environmental specialist, labs/subcontractors, competence and availability. Allocate clearance, sampling, design, disposal, reinstatement and handover; QA ISO or equivalent.
-R5 Experience: Two or three comparable investigations with referees: actual ground/excavation, existing/live constraints, scale, decision, role and outcome.
-R6 Departures: List scope/agreement departures, alternatives and fee/time effect, or nil. Include conflicting levels, counts/depths, reliance/environmental scope; authorised assumptions need quantity, decision owner/date.
-R7 Program: Input/plan approval, mobilisation, field/lab, preliminary/final report and monitoring endpoint dates; optional construction coverage, booking notice, dependencies/start/pause and interim report limits.
-R8 Insurance and compliance: Client-selected PI $5 million (client selected) and PL $20 million (client selected). Current PI/PL/workers compensation as applicable, claim/aggregate limits, exclusions, continuity and competence/registration. Agree client-selected insurance limits before issue.
-R9 Reimbursables: Labs/plant/locator, permits, water/skips/disposal/restoration, travel, instruments/storage: included/allowance/rate, payer, quantity, markup/GST and approval. No R1 duplication; identify client-direct work.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Plan, logs/location/photos, labs, ground model/parameters, interim/final/monitoring reports and completion records: purpose, recipient, editable formats, dates, rounds, limits/reliance and pending tests. |
+| R3 Hourly rates | Role/equipment and extra metre/hole/test/well/visit rates; minimum hire, travel, standby/cancellation, expedited lab/storage/restoration, ceilings and escalation. Expose markups. |
+| R4 Team | Name lead, field supervisor, reviewer, environmental specialist, labs/subcontractors, competence and availability. Allocate clearance, sampling, design, disposal, reinstatement and handover; QA ISO or equivalent. |
+| R5 Experience | Two or three comparable investigations with referees: actual ground/excavation, existing/live constraints, scale, decision, role and outcome. |
+| R6 Departures | List scope/agreement departures, alternatives and fee/time effect, or nil. Include conflicting levels, counts/depths, reliance/environmental scope; authorised assumptions need quantity, decision owner/date. |
+| R7 Program | Input/plan approval, mobilisation, field/lab, preliminary/final report and monitoring endpoint dates; optional construction coverage, booking notice, dependencies/start/pause and interim report limits. |
+| R8 Insurance and compliance | Client-selected PI $5 million (client selected) and PL $20 million (client selected). Current PI/PL/workers compensation as applicable, claim/aggregate limits, exclusions, continuity and competence/registration. Agree client-selected insurance limits before issue. |
+| R9 Reimbursables | Labs/plant/locator, permits, water/skips/disposal/restoration, travel, instruments/storage: included/allowance/rate, payer, quantity, markup/GST and approval. No R1 duplication; identify client-direct work. |
 
 ### Before issue — resolve or accept
 

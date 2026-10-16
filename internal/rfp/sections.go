@@ -202,17 +202,22 @@ func (b *builder) terms() {
 	b.add("terms", "rfp:terms", "", strings.Join(lines, "\n"), nil, map[string]any{"rows": b.r.Terms})
 }
 
+// returnables prints one row per schedule in the order the comparison
+// report reads them back. The response form carries a fill-in table for
+// each (form.go); a proposal returned on it reads item by item.
 func (b *builder) returnables() {
-	lines := []string{}
+	rows := [][]string{}
 	for _, r := range b.r.Returnables {
 		if r.Key == "r1" {
 			continue
 		}
-		lines = append(lines, r.Label+": "+r.Text)
+		rows = append(rows, []string{r.Label, r.Text})
 	}
-
-	b.add("returnables", "rfp:returnables", "", strings.Join(lines, "\n"), nil, map[string]any{"rows": b.r.Returnables})
+	b.add("returnables", "rfp:returnables", "", ResponseFormNote, doc([]string{"Schedule", "What to return"}, rows), map[string]any{"rows": b.r.Returnables})
 }
+
+// ResponseFormNote tells the firm how to reply.
+const ResponseFormNote = "Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal."
 
 // shortLabel keeps a fee row readable: the item up to its first clause.
 func shortLabel(label string) string {

@@ -58,6 +58,7 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 | Tender documents — Included | Drawings, specification and tender schedules; typical connection details; safety in design report; tender queries and addenda. You hold the structural design except the contractor-designed elements. |  |  |  |
 | Construction documents — Included | Construction issue; design certification for the construction certificate; 1 round(s) of peer review or certifier comments |  |  |  |
 | Construction phase — Included | 4 inspections at the hold points in your inspection schedule; RFIs; shop drawing review including contractor-designed elements; certificate of completion of the structural works based on the inspections made |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Detailed design of post-tensioned slabs and piles |  |  |  |
 | Service option | Shoring and piled retention design |  |  |  |
@@ -96,14 +97,18 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Drawing list by stage, specification, reports and certificates.
-R3 Hourly rates: Excl. GST, for work authorised in writing beyond the allowances. Roles: Director · Associate · Senior engineer · Engineer · Drafting or BIM lead · Drafter. Per-meeting rates if used.
-R4 Team: Named lead, % time by stage, subconsultants; resources must match R7. Named director and project engineer; CPEng or NER.
-R5 Experience: Two or three comparable projects in the last five years, each with a referee. Projects with the same class and structure type.
-R6 Departures: Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant.
-R7 Program: Weeks by stage, separating your time, authority time and the dates you need inputs.
-R8 Insurance and compliance: PI $10 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest.
-R9 Reimbursables: "Included in the fee" (preferred), or each item with its rate.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Drawing list by stage, specification, reports and certificates. |
+| R3 Hourly rates | Excl. GST, for work authorised in writing beyond the allowances. Roles: Director · Associate · Senior engineer · Engineer · Drafting or BIM lead · Drafter. Per-meeting rates if used. |
+| R4 Team | Named lead, % time by stage, subconsultants; resources must match R7. Named director and project engineer; CPEng or NER. |
+| R5 Experience | Two or three comparable projects in the last five years, each with a referee. Projects with the same class and structure type. |
+| R6 Departures | Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant. |
+| R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. |
+| R8 Insurance and compliance | PI $10 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest. |
+| R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. |
 
 ### Before issue — resolve or accept
 

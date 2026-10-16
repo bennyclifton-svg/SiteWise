@@ -52,6 +52,7 @@ Price each stage that applies as a lump sum; surveys are priced per location.  R
 | Car park certification — Option | Design certification of the car park, access and loading against AS 2890 for the construction certificate; completed car park certification after construction |  |  |  |
 | Construction traffic management plan — Included | Construction traffic management plan for council approval, or review of the contractor's plan (say which in R2); traffic control plans |  |  |  |
 | Green travel plan — Option | Travel plan meeting the condition or DCP requirement. Price as an option: needed only if a consent condition or the DCP requires a travel plan. |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Alternative schemes tested |  |  |  |
 | Service option | Road safety audit by an auditor independent of the design team |  |  |  |
@@ -84,14 +85,18 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Report, model files, swept path drawings and letters.
-R3 Hourly rates: Excl. GST, for work authorised in writing beyond the allowances. Roles: Director · Senior engineer · Traffic engineer · Graduate · CAD or graphics. Per-meeting rates if you use them.
-R4 Team: Named lead, % time by stage, subconsultants; resources must match R7. Credentials: CPEng or RPEQ, road safety auditor level, traffic control planner.
-R5 Experience: Two or three comparable projects in the last five years, each with a referee. Traffic reports for this use, in the same LGA or state road context.
-R6 Departures: Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant.
-R7 Program: Weeks by stage, separating your time, authority time and the dates you need inputs.
-R8 Insurance and compliance: PI $5 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest. Conflict of interest statement.
-R9 Reimbursables: "Included in the fee" (preferred), or each item with its rate. Included is preferred.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Report, model files, swept path drawings and letters. |
+| R3 Hourly rates | Excl. GST, for work authorised in writing beyond the allowances. Roles: Director · Senior engineer · Traffic engineer · Graduate · CAD or graphics. Per-meeting rates if you use them. |
+| R4 Team | Named lead, % time by stage, subconsultants; resources must match R7. Credentials: CPEng or RPEQ, road safety auditor level, traffic control planner. |
+| R5 Experience | Two or three comparable projects in the last five years, each with a referee. Traffic reports for this use, in the same LGA or state road context. |
+| R6 Departures | Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant. |
+| R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. |
+| R8 Insurance and compliance | PI $5 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest. Conflict of interest statement. |
+| R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. Included is preferred. |
 
 ### Before issue — resolve or accept
 

@@ -48,6 +48,7 @@ Select base, options and end boundary; advice-only ends at its report/response r
 | S6 Post-contract review — Option | Separately appointed contractor details/substitutions: tactile indicators, doors, fixtures, signs/lifts; effects on earlier reports/solutions and reassessment. No automatic novation |  |  |  |
 | S7 Construction / completion — Option | Counted hold-point visits, pre-final/final audits and close-out; location/photos, test/product/as-built evidence and solution conditions. Qualified opinion only for inspected scope; outstanding gaps explicit; certifier decides occupation |  |  |  |
 | S8 Advisory / operational — Option | Defined audit/inclusive brief: sampling, evidence cutoff, user consultation, sensory/cognitive needs, priorities/actions and operator commitments. Operational plan cannot replace physical compliance or accepted solution |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Performance departure: brief/method/report/revisions per departure |  |  |  |
 | Service option | Luminance/slip tests: competent named provider, installed-product certificates and field-test extent separately priced |  |  |  |
@@ -84,14 +85,18 @@ Complete quantities or authorised assumption with owner/date/consequence. Fixed 
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Reports/mark-ups/maps/audits/solutions/registers: purpose, extent, revisions, dates, formats/editable files, reliance and draft/final rounds; completion-opinion limits.
-R3 Hourly rates: Actual role rates and fixed period; counted additional reviews/RFIs, stage meetings, visits/revisits/tests, solution departures/revisions, travel/delay/cancellation and approval ceiling.
-R4 Team: Lead/reviewer, solution author/independent reviewer, housing assessor and survey/test providers; competence, conflicts, stage resources, substitutions and ISO/equivalent QA; named design/certifier/operator evidence owners.
-R5 Experience: Two or three comparable uses/work types, existing conditions, housing/operational targets and occupation stages; actual personal scope, lessons and referees.
-R6 Departures: Each sections 2-5/agreement departure or unresolved fact: reason, alternative, fee/time, owner/date/evidence, or nil. Cover meetings, authority scope, tests/solutions, housing, IP/reliance, liability/payment/insurance.
-R7 Program: Input/access owners/dates, start, draft/final reviews, consultations, authority/tender responses, hold points before finishes, final response/end and later options; unavailable-evidence consequences.
-R8 Insurance and compliance: Current PI $5 million (client selected)/PL $20 million (client selected)/workers evidence and agreed duration; claim/aggregate, expiry/retroactivity/exclusions/renewal. Task competence/accreditation and required registration; historic certificates insufficient.
-R9 Reimbursables: Testing/survey/opening-up/reinstatement, specialist/authority/equipment/travel/platform costs: included/quantity/rate, payer, GST/markup/prior authority; client-direct evidence owners; no double counting.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Reports/mark-ups/maps/audits/solutions/registers: purpose, extent, revisions, dates, formats/editable files, reliance and draft/final rounds; completion-opinion limits. |
+| R3 Hourly rates | Actual role rates and fixed period; counted additional reviews/RFIs, stage meetings, visits/revisits/tests, solution departures/revisions, travel/delay/cancellation and approval ceiling. |
+| R4 Team | Lead/reviewer, solution author/independent reviewer, housing assessor and survey/test providers; competence, conflicts, stage resources, substitutions and ISO/equivalent QA; named design/certifier/operator evidence owners. |
+| R5 Experience | Two or three comparable uses/work types, existing conditions, housing/operational targets and occupation stages; actual personal scope, lessons and referees. |
+| R6 Departures | Each sections 2-5/agreement departure or unresolved fact: reason, alternative, fee/time, owner/date/evidence, or nil. Cover meetings, authority scope, tests/solutions, housing, IP/reliance, liability/payment/insurance. |
+| R7 Program | Input/access owners/dates, start, draft/final reviews, consultations, authority/tender responses, hold points before finishes, final response/end and later options; unavailable-evidence consequences. |
+| R8 Insurance and compliance | Current PI $5 million (client selected)/PL $20 million (client selected)/workers evidence and agreed duration; claim/aggregate, expiry/retroactivity/exclusions/renewal. Task competence/accreditation and required registration; historic certificates insufficient. |
+| R9 Reimbursables | Testing/survey/opening-up/reinstatement, specialist/authority/equipment/travel/platform costs: included/quantity/rate, payer, GST/markup/prior authority; client-direct evidence owners; no double counting. |
 
 ### Before issue — resolve or accept
 

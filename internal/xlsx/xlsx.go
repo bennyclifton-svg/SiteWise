@@ -1,4 +1,7 @@
-package invoices
+// Package xlsx writes small Office Open XML workbooks with the standard
+// library: the invoice ledger export, the RFP response form and the
+// procurement comparison.
+package xlsx
 
 import (
 	"archive/zip"
@@ -139,7 +142,7 @@ func writeCell(b *strings.Builder, ref string, c Cell) {
 		}
 		v := ""
 		if c.Cents != nil {
-			v = "<v>" + FormatCents(*c.Cents) + "</v>"
+			v = "<v>" + formatCents(*c.Cents) + "</v>"
 		}
 		fmt.Fprintf(b, `<c r="%s" s="%d"><f>%s</f>%s</c>`, ref, style, esc(c.Formula), v)
 	case c.Cents != nil:
@@ -147,7 +150,7 @@ func writeCell(b *strings.Builder, ref string, c Cell) {
 		if c.Bold {
 			style = styleMoneyBold
 		}
-		fmt.Fprintf(b, `<c r="%s" s="%d"><v>%s</v></c>`, ref, style, FormatCents(*c.Cents))
+		fmt.Fprintf(b, `<c r="%s" s="%d"><v>%s</v></c>`, ref, style, formatCents(*c.Cents))
 	case c.Number != nil:
 		fmt.Fprintf(b, `<c r="%s" s="%d"><v>%s</v></c>`, ref, styleNumber, strconv.FormatFloat(*c.Number, 'f', -1, 64))
 	case c.Date != "" || c.Month != "":
@@ -211,4 +214,17 @@ func esc(s string) string {
 	}, s)
 	_ = xml.EscapeText(&b, []byte(s))
 	return b.String()
+}
+
+// formatCents is the exact decimal for a money cell, e.g. 1100000 → "11000.00".
+func formatCents(c int64) string {
+	sign := ""
+	if c < 0 {
+		sign, c = "-", -c
+	}
+	frac := strconv.FormatInt(c%100, 10)
+	if len(frac) < 2 {
+		frac = "0" + frac
+	}
+	return sign + strconv.FormatInt(c/100, 10) + "." + frac
 }

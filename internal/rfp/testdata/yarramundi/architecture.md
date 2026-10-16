@@ -77,6 +77,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 | Regulated design — Option | Regulated designs including passive fire and waterproofing details; design compliance declarations for one construction certificate |  |  |  |
 | Contract administration — Option | Superintendent or contract administrator under the construction contract: progress claims and variations assessed, practical completion and defects certification. Price as an option: the client has not decided who administers the construction contract. |  |  |  |
 | Post-novation — Option | For-construction documentation for the contractor; RFIs; design changes the contractor asks for. The contractor holds the design after novation. |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Help selecting other consultants |  |  |  |
 | Service option | BIM coordination meetings, clash detection |  |  |  |
@@ -125,14 +126,18 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Drawing list: the sheets you expect at planning, tender and construction, with titles.
-R3 Hourly rates: Excl. GST, for work authorised in writing beyond the allowances. Roles: Principal or Director · Associate or Senior architect · Project architect · Architect · Graduate or Technician · Interior designer · Administration.
-R4 Team: Named lead, % time by stage, subconsultants; resources must match R7. Named director, project lead and project architect, with registration numbers. NSW design practitioner registration class for the regulated designs.
-R5 Experience: Two or three comparable projects in the last five years, each with a referee. Choose projects of the same use and work type.
-R6 Departures: Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant.
-R7 Program: Weeks by stage, separating your time, authority time and the dates you need inputs.
-R8 Insurance and compliance: PI $20 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest.
-R9 Reimbursables: "Included in the fee" (preferred), or each item with its rate.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Drawing list: the sheets you expect at planning, tender and construction, with titles. |
+| R3 Hourly rates | Excl. GST, for work authorised in writing beyond the allowances. Roles: Principal or Director · Associate or Senior architect · Project architect · Architect · Graduate or Technician · Interior designer · Administration. |
+| R4 Team | Named lead, % time by stage, subconsultants; resources must match R7. Named director, project lead and project architect, with registration numbers. NSW design practitioner registration class for the regulated designs. |
+| R5 Experience | Two or three comparable projects in the last five years, each with a referee. Choose projects of the same use and work type. |
+| R6 Departures | Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant. |
+| R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. |
+| R8 Insurance and compliance | PI $20 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest. |
+| R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. |
 
 ### Before issue — resolve or accept
 

@@ -51,6 +51,7 @@ From written instruction/inputs/access to named final issue/handover, with agree
 | S5 Approval / tender support — Option | Scheduled supplementary/adjoining/roof/height inputs, approval plans and queries; tender datum/control/set-out allocation. Draft subdivision/easement/strata plans only if selected, with solicitor/authority inputs |  |  |  |
 | S6 Set-out / checks / monitoring — Option | Selected elements from current approved revisions; control/set-out records and discrepancy notices. Monitoring has separate baseline/locations/frequency/duration and engineer action plan. Builder protects marks/books before concealment; name independent checker |  |  |  |
 | S7 Completion / final plans — Option | Selected identification/work-as-executed, scoped certificates and final title plans; distinguish measured/supplied data, dates, concealed/missed work and deviations. Name lodgement/registration payer; hand over records and close-out queries |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Subdivision, strata and easement creation |  |  |  |
 | Service option | Interior measure-up/scan/point cloud |  |  |  |
@@ -90,14 +91,18 @@ Complete quantities/extent before issue; return gaps and price alternatives with
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Selected plans/certificates, CAD/PDF/cloud/data, datum/accuracy, detection/sewer, missing features, set-out/as-built/monitoring and title records: purpose, editability, recipient, dates/rounds, reliance/limits.
-R3 Hourly rates: Extra visits/hours/features/areas/pits/plans, travel/minimums, control replacement, standby/cancellation/after-hours/equipment/repeats; ceilings/escalation. Separate quantity, rate and each markup.
-R4 Team: Name lead/reviewer, cadastral practitioner, crew, locator/plumber, subcontractors and availability; assign records/permissions/access/exposure/isolation/restoration, detection/measurement/checks/interpretation/lodgement. QA ISO or equivalent.
-R5 Experience: Two or three examples with referees matched to purpose, accuracy, hidden-service/boundary/existing/live constraints and scale; role and delivered evidence.
-R6 Departures: Sections 2–5/agreement: comply/departure, reason, alternative, owner and fee/time effect, or nil. Include extent/datum conflicts, boundaries/hidden assets/methods, duplicate scope/markups/reliance. Assumptions state quantity, consequence, decision owner/date.
-R7 Program: Input/permission/control/revision dates, mobilisation/simultaneous specialists, field/draft/review/final/options; start/pause conditions, booking notice, currency/revisit triggers and authority dependencies.
-R8 Insurance and compliance: Current PI $5 million (client selected), PL $20 million (client selected), workers compensation as applicable; project-selected limits agreed before issue, claim/aggregate/exclusions, registration/competence/continuity. Historical certificates are not current cover.
-R9 Reimbursables: Searches, locator/plumber, authority/lodgement, travel/parking, traffic/access/safety, exposure/isolation/restoration and data: included/allowance/rate, payer/quantity/GST/markup/approval; client-direct work, no R1 duplication or stacked charges.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Selected plans/certificates, CAD/PDF/cloud/data, datum/accuracy, detection/sewer, missing features, set-out/as-built/monitoring and title records: purpose, editability, recipient, dates/rounds, reliance/limits. |
+| R3 Hourly rates | Extra visits/hours/features/areas/pits/plans, travel/minimums, control replacement, standby/cancellation/after-hours/equipment/repeats; ceilings/escalation. Separate quantity, rate and each markup. |
+| R4 Team | Name lead/reviewer, cadastral practitioner, crew, locator/plumber, subcontractors and availability; assign records/permissions/access/exposure/isolation/restoration, detection/measurement/checks/interpretation/lodgement. QA ISO or equivalent. |
+| R5 Experience | Two or three examples with referees matched to purpose, accuracy, hidden-service/boundary/existing/live constraints and scale; role and delivered evidence. |
+| R6 Departures | Sections 2–5/agreement: comply/departure, reason, alternative, owner and fee/time effect, or nil. Include extent/datum conflicts, boundaries/hidden assets/methods, duplicate scope/markups/reliance. Assumptions state quantity, consequence, decision owner/date. |
+| R7 Program | Input/permission/control/revision dates, mobilisation/simultaneous specialists, field/draft/review/final/options; start/pause conditions, booking notice, currency/revisit triggers and authority dependencies. |
+| R8 Insurance and compliance | Current PI $5 million (client selected), PL $20 million (client selected), workers compensation as applicable; project-selected limits agreed before issue, claim/aggregate/exclusions, registration/competence/continuity. Historical certificates are not current cover. |
+| R9 Reimbursables | Searches, locator/plumber, authority/lodgement, travel/parking, traffic/access/safety, exposure/isolation/restoration and data: included/allowance/rate, payer/quantity/GST/markup/approval; client-direct work, no R1 duplication or stacked charges. |
 
 ### Before issue — resolve or accept
 

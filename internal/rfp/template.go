@@ -156,6 +156,7 @@ func (b *builder) consultantStages() {
 		pricingRows[s.Key] = children
 	}
 	stageRows := len(rows)
+	rows = append(rows, []string{"Reimbursables", "Included in the fee, or each item with its rate (R9)", "", "", ""})
 	rows = append(rows, []string{"Base fee total", "Included stages and elements only", "", "", ""})
 	for _, p := range b.r.Positions {
 		if p.Value != "O" || (b.r.Discipline == "hydraulic-services" && hydraulicStageService(p.Key)) {
@@ -171,7 +172,7 @@ func (b *builder) consultantStages() {
 		}
 	}
 	instructions = append(instructions, "Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.")
-	b.add("stages", "rfp:stages", "", strings.TrimSpace(strings.Join(instructions, " ")), doc([]string{"Stage / position", "Deliverable at sign-off", "Fee $", "Weeks", "Hours"}, rows), map[string]any{"stages": b.r.Stages, "elements": b.r.Elements, "positions": b.r.Positions, "stage_rows": stageRows, "pricing_rows": pricingRows, "layout": "scope_stages"})
+	b.add("stages", "rfp:stages", "", strings.TrimSpace(strings.Join(instructions, " ")), doc([]string{"Stage / position", "Deliverable at sign-off", "Fee $", "Weeks", "Hours"}, rows), map[string]any{"stages": b.r.Stages, "elements": b.r.Elements, "positions": b.r.Positions, "stage_rows": stageRows, "pricing_rows": pricingRows, "schedule": Schedule(b.r), "layout": "scope_stages"})
 }
 
 func stageScopeText(s StageResult) string {

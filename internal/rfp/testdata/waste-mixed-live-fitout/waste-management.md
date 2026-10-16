@@ -53,6 +53,7 @@ Select base/options and named end; operational and C&D plans are separate purcha
 | S7 Construction / completion — Option | Sample tracking/destination evidence and counted room/route hold-point visits; deviations, outstanding gaps and qualified completion report for inspected/evidenced scope. Authority/certifier retains approval |  |  |  |
 | S8 Advisory review — Option | Defined advice/audit/options/cost decision: evidence cutoff, sampling/inspection limits, calculations/confidence, reliance and prioritised actions; independent peer/expert evidence separately selected |  |  |  |
 | S8 Post-occupation review — Option | Review actual collection records/costs over stated period against assumptions; prioritise actions and operator ownership. No ongoing management or savings guarantee |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Occupied/staged/heritage/remediation interim plans/checks |  |  |  |
 | Service option | Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee |  |  |  |
@@ -88,14 +89,18 @@ Allocate counts to each selected stage/service below, not every category. Comple
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Plans, calculations, layouts/forms and condition/decision/completion records: extent/input revisions, formats/editable files, recipients/reliance, rounds/dates and evidence limits.
-R3 Hourly rates: Personnel and extra unit rates; counted rounds/meetings/visits/rooms/tests/reporting periods, travel/delay/cancellation and prior-overrun approval. State rate fixed period/indexation.
-R4 Team: Lead/reviewer, resources, competence/conflicts, supplier affiliations and QA (ISO or equivalent); allocate architect/services/fire/access, traffic/specialists, contractor/operator and evidence owners.
-R5 Experience: Two or three comparable actual-use/work/stream/collection/staging projects: personal roles, outputs, lessons and referees.
-R6 Departures: Numbered scope/agreement departures: alternative, reason, fee/time; unknown/conflicting facts need resolution or priced assumption with owner/date/consequence/review point. Include IP/reliance/payment/liability and excluded parties.
-R7 Program: Input/access owners/dates: plans/sections/DWGs/clearances, occupancy/activity, records, photos and quantity estimates; specialist reports and contractor processes/destinations. Method checks, council/operator/traffic dependencies, milestone/end, risks and expedited option.
-R8 Insurance and compliance: Current PI $5 million (client selected), PL $20 million (client selected), workers cover/duration, exclusions/renewals; subcontractors and agreement/precedence acceptance or departures. Historical cover is insufficient.
-R9 Reimbursables: Authority/collector/traffic/specialist/equipment/survey/travel/platform/expedite costs: included/allowance/unit, quantity, payer, GST/markup/prior approval; client-direct costs and no R1 duplication.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Plans, calculations, layouts/forms and condition/decision/completion records: extent/input revisions, formats/editable files, recipients/reliance, rounds/dates and evidence limits. |
+| R3 Hourly rates | Personnel and extra unit rates; counted rounds/meetings/visits/rooms/tests/reporting periods, travel/delay/cancellation and prior-overrun approval. State rate fixed period/indexation. |
+| R4 Team | Lead/reviewer, resources, competence/conflicts, supplier affiliations and QA (ISO or equivalent); allocate architect/services/fire/access, traffic/specialists, contractor/operator and evidence owners. |
+| R5 Experience | Two or three comparable actual-use/work/stream/collection/staging projects: personal roles, outputs, lessons and referees. |
+| R6 Departures | Numbered scope/agreement departures: alternative, reason, fee/time; unknown/conflicting facts need resolution or priced assumption with owner/date/consequence/review point. Include IP/reliance/payment/liability and excluded parties. |
+| R7 Program | Input/access owners/dates: plans/sections/DWGs/clearances, occupancy/activity, records, photos and quantity estimates; specialist reports and contractor processes/destinations. Method checks, council/operator/traffic dependencies, milestone/end, risks and expedited option. |
+| R8 Insurance and compliance | Current PI $5 million (client selected), PL $20 million (client selected), workers cover/duration, exclusions/renewals; subcontractors and agreement/precedence acceptance or departures. Historical cover is insufficient. |
+| R9 Reimbursables | Authority/collector/traffic/specialist/equipment/survey/travel/platform/expedite costs: included/allowance/unit, quantity, payer, GST/markup/prior approval; client-direct costs and no R1 duplication. |
 
 ### Before issue — resolve or accept
 

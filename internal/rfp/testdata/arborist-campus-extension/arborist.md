@@ -52,6 +52,7 @@ Written instruction/agreed inputs to named output/response end. Price once acros
 | S7a Advisory / remediation — Option | Feasibility/condition/remediation decision, cutoff/reliance, confidence/options/actions; preserve evidence before root attribution; structural/geotechnical specialists diagnose |  |  |  |
 | S7b Ongoing monitoring — Option | Repeat-inspection duration/visits/triggers, responsible party and report/closure criteria; no indefinite obligation |  |  |  |
 | S7c Independent peer review — Option | Independent review of named report/question, cutoff/reliance, method/response round; advisory does not appoint peer review |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Tree works/protection supervision at scheduled visits/hold points |  |  |  |
 | Service option | Internal/root/canopy/soil investigation |  |  |  |
@@ -86,14 +87,18 @@ Allocate counts by service/stage; each quantity needs its own unit/duration. Com
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Reports, IDs/registers, plans/CAD, calculations, methods and inspection/completion records: purpose/extent, revisions, formats, recipients/reliance, rounds and dates.
-R3 Hourly rates: Role/additional tree/visit/revision/investigation rates; meetings/responses/visits/durations/hold points/rounds and monitoring limits; travel/callout/cancellation and approval before overruns.
-R4 Team: Lead/reviewer, stage resources, competence, investigators/subcontractors/conflicts and tree-contractor affiliations; permission/survey/landscape/civil/structure/utilities interfaces; substitutions and ISO/equivalent QA.
-R5 Experience: Two or three comparable tree/works constraints, ownership/access, investigations and construction interfaces; named personnel roles, outputs, lessons and referees.
-R6 Departures: Sections 2–5 and agreement departures: reason, alternative, fee/time and decision or nil; unknown/conflicting facts or authorised assumption with owner/date/consequence/review point; name excluded-work parties.
-R7 Program: Input/access providers/dates, stage resources and field/draft/review/final milestones; authority dependencies/hold-point notice. Survey reconciliation, calculation/risk/test methods/limits, urgent escalation and condition closure.
-R8 Insurance and compliance: Current PI Client-selected $5m; PL Client-selected $20m; workers cover and required duration. Declare activity/height exclusions and renewals; match offered consulting/investigation; agreement/precedence acceptance or numbered departures.
-R9 Reimbursables: Travel/access/permits, survey/locating, testing/lab/equipment, traffic controls, tree contractors/reinstatement and documents: quantity, included/allowance/unit basis, payer/GST/markup/prior approval; no R1 duplication.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Reports, IDs/registers, plans/CAD, calculations, methods and inspection/completion records: purpose/extent, revisions, formats, recipients/reliance, rounds and dates. |
+| R3 Hourly rates | Role/additional tree/visit/revision/investigation rates; meetings/responses/visits/durations/hold points/rounds and monitoring limits; travel/callout/cancellation and approval before overruns. |
+| R4 Team | Lead/reviewer, stage resources, competence, investigators/subcontractors/conflicts and tree-contractor affiliations; permission/survey/landscape/civil/structure/utilities interfaces; substitutions and ISO/equivalent QA. |
+| R5 Experience | Two or three comparable tree/works constraints, ownership/access, investigations and construction interfaces; named personnel roles, outputs, lessons and referees. |
+| R6 Departures | Sections 2–5 and agreement departures: reason, alternative, fee/time and decision or nil; unknown/conflicting facts or authorised assumption with owner/date/consequence/review point; name excluded-work parties. |
+| R7 Program | Input/access providers/dates, stage resources and field/draft/review/final milestones; authority dependencies/hold-point notice. Survey reconciliation, calculation/risk/test methods/limits, urgent escalation and condition closure. |
+| R8 Insurance and compliance | Current PI Client-selected $5m; PL Client-selected $20m; workers cover and required duration. Declare activity/height exclusions and renewals; match offered consulting/investigation; agreement/precedence acceptance or numbered departures. |
+| R9 Reimbursables | Travel/access/permits, survey/locating, testing/lab/equipment, traffic controls, tree contractors/reinstatement and documents: quantity, included/allowance/unit basis, payer/GST/markup/prior approval; no R1 duplication. |
 
 ### Before issue — resolve or accept
 

@@ -50,6 +50,7 @@ Confirm separate A/B boundaries in R1. Base stages only; later stages are option
 | B2 Construction approval assessment — Included | CC checklist/condition register; assess plans, specialist evidence and scheduled solutions/referrals; determine each CC package with reasons/outstanding actions, supporting documents and applicable fire safety schedule. |  |  |  |
 | B3 Principal-certifier construction services — Included | Appointment notices/inspection schedule, booking responsibilities and notice; scheduled inspections/photo reports, close-out and missed-inspection records; witness/referral tasks, occupation checklist and required compliance/complaint duties. |  |  |  |
 | B4 Occupation assessment / handover — Included | Assess conditions and completion evidence; final inspection/fire-authority coordination; determine each OC package. Certificates or reasons/outstanding items, approved-document index, inspection records and fire safety schedule; separate from practical completion. |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Performance-solution assessment |  |  |  |
 | Service option | Extra visits, missed inspections and changed approved design: contingency rates/notice |  |  |  |
@@ -87,14 +88,18 @@ Price these quantities; identify insufficiency before engagement. Allowances nev
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Reports/markups, registers, fire schedule, inspection/test records, determinations and handover index: purpose, recipient, formats/editable files, rounds, dates, licence/reliance. Distinguish preparation from assessment.
-R3 Hourly rates: Named-role/hourly and unit rates: review, meeting, visit, certificate, travel/out-of-hours, cancellation/reinspection, complaints/enforcement and solution versions. Distinguish staging from design change; state ceilings/escalation.
-R4 Team: Name adviser, certifier, inspectors, reviewer, substitutes and specialists; eligibility/prior involvement, stage availability and R7 resources. Allocate authorship, review, tests and assessment; name excluded parties.
-R5 Experience: Two or three comparable appointments with referees: actual use/work type, existing/live constraints, solutions, staging and your role/outcome.
-R6 Departures: Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant. Include unresolved/conflicting facts, decision owner/date and expressly authorised pricing assumptions with scope/allowance.
-R7 Program: Weeks by stage, separating your time, authority time and the dates you need inputs. Completeness-review/assessment targets, inspection booking notice, authority dependencies and timing start/pause points; no guaranteed certificate date.
-R8 Insurance and compliance: Current registrations/eligibility, PI/PL limits and exclusions, workers compensation, conflicts and QA (ISO or equivalent). Agree project cover before appointment; no universal statutory insurance limit inferred.
-R9 Reimbursables: "Included in the fee" (preferred), or each item with its rate.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Reports/markups, registers, fire schedule, inspection/test records, determinations and handover index: purpose, recipient, formats/editable files, rounds, dates, licence/reliance. Distinguish preparation from assessment. |
+| R3 Hourly rates | Named-role/hourly and unit rates: review, meeting, visit, certificate, travel/out-of-hours, cancellation/reinspection, complaints/enforcement and solution versions. Distinguish staging from design change; state ceilings/escalation. |
+| R4 Team | Name adviser, certifier, inspectors, reviewer, substitutes and specialists; eligibility/prior involvement, stage availability and R7 resources. Allocate authorship, review, tests and assessment; name excluded parties. |
+| R5 Experience | Two or three comparable appointments with referees: actual use/work type, existing/live constraints, solutions, staging and your role/outcome. |
+| R6 Departures | Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant. Include unresolved/conflicting facts, decision owner/date and expressly authorised pricing assumptions with scope/allowance. |
+| R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. Completeness-review/assessment targets, inspection booking notice, authority dependencies and timing start/pause points; no guaranteed certificate date. |
+| R8 Insurance and compliance | Current registrations/eligibility, PI/PL limits and exclusions, workers compensation, conflicts and QA (ISO or equivalent). Agree project cover before appointment; no universal statutory insurance limit inferred. |
+| R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. |
 
 ### Before issue — resolve or accept
 

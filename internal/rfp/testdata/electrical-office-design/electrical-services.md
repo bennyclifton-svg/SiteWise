@@ -54,6 +54,7 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates.  R1 Fee by s
 | S8 Support — Option | Equipment/shop drawings/RFIs; concealed/earthing/board/energisation hold-point reports/actions |  |  |  |
 | S9 Witness/handover — Option | Scripts/results, factory/site/life-safety/failure/recovery tests; failures/retests, as-builts/settings/O&M/training/residuals |  |  |  |
 | S10 Defects — Option | Follow-up/deferred tests, demand/resilience, operating prerequisites/period and closure |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Feature/sports/process lighting, separate brief |  |  |  |
 | Service option | Continued design |  |  |  |
@@ -89,14 +90,18 @@ Editable client defaults: 4 design meetings per appointed design stage, 1 consol
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Section 3 outputs/registers: maturity/formats/native files, recipients/reliance, input revisions/rounds/dates.
-R3 Hourly rates: Lead/designer/specialist/ASP3/dry-fire/controls/checker/modeller/inspector/witness rates; extra visit/review/test/retest units/ceilings; travel/out-of-hours/cancellation/escalation.
-R4 Team: Named lead/checker/competence/registrations, stage resources/conflicts/subconsultants, ISO/equivalent QA; return allocation matrix and utility/install/energisation/test/witness/statement owners.
-R5 Experience: Two or three comparable use/supply/existing/staged commissions; proposed staff roles/outputs, utility/test lessons and referees.
-R6 Departures: Sections 2–5/agreement departures: wording/reason/fee/time; exclusion owner. Resolve conflicts or authorised assumption: owner/date/consequence/verification/review point.
-R7 Program: Inputs/providers/revisions/dates: loads/reserve/utility/interval data/single-lines/tests/fire strategy/MEP/ICT/operator; methods/checks/gates/shutdown/temporary power/test criteria/closure.
-R8 Insurance and compliance: PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence/liability/reliance/IP/termination/novation.
-R9 Reimbursables: Utility/ASP3/specialist/logging/scans/openings/access/isolation/temporary power/tests/travel/printing: quantity/payer/markup/GST/approval; no R1/contractor/other-package duplication.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Section 3 outputs/registers: maturity/formats/native files, recipients/reliance, input revisions/rounds/dates. |
+| R3 Hourly rates | Lead/designer/specialist/ASP3/dry-fire/controls/checker/modeller/inspector/witness rates; extra visit/review/test/retest units/ceilings; travel/out-of-hours/cancellation/escalation. |
+| R4 Team | Named lead/checker/competence/registrations, stage resources/conflicts/subconsultants, ISO/equivalent QA; return allocation matrix and utility/install/energisation/test/witness/statement owners. |
+| R5 Experience | Two or three comparable use/supply/existing/staged commissions; proposed staff roles/outputs, utility/test lessons and referees. |
+| R6 Departures | Sections 2–5/agreement departures: wording/reason/fee/time; exclusion owner. Resolve conflicts or authorised assumption: owner/date/consequence/verification/review point. |
+| R7 Program | Inputs/providers/revisions/dates: loads/reserve/utility/interval data/single-lines/tests/fire strategy/MEP/ICT/operator; methods/checks/gates/shutdown/temporary power/test criteria/closure. |
+| R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence/liability/reliance/IP/termination/novation. |
+| R9 Reimbursables | Utility/ASP3/specialist/logging/scans/openings/access/isolation/temporary power/tests/travel/printing: quantity/payer/markup/GST/approval; no R1/contractor/other-package duplication. |
 
 ### Before issue — resolve or accept
 

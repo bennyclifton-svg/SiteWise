@@ -51,6 +51,7 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 | Assessment — Included | Monitor and follow up; client updates; up to 1 response(s) to authority information requests; 1 meeting(s) with the authority; review of the assessment report and draft conditions |  |  |  |
 | Determination review — Included | Review of the consent conditions; advice on conditions to challenge or modify |  |  |  |
 | Post-approval support — Option | Conditions register separating pre-construction, pre-occupation and ongoing conditions, with the responsible consultant and the evidence each needs; consistency review of later design changes; condition compliance advice |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Historic consents through GIPA |  |  |  |
 | Service option | Response to public submissions |  |  |  |
@@ -89,14 +90,18 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Reports and letters you will issue, with drafts.
-R3 Hourly rates: Excl. GST, for work authorised in writing beyond the allowances. Roles: Director · Associate Director or Senior Associate · Senior Planner · Planner · Graduate.
-R4 Team: Named lead, % time by stage, subconsultants; resources must match R7. Named director and day-to-day lead.
-R5 Experience: Two or three comparable projects in the last five years, each with a referee. Applications on the same pathway for this use, in the same consent authority or LGA, with the outcome.
-R6 Departures: Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant.
-R7 Program: Weeks by stage, separating your time, authority time and the dates you need inputs.
-R8 Insurance and compliance: PI $10 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest.
-R9 Reimbursables: "Included in the fee" (preferred), or each item with its rate. At cost with no handling fee is preferred.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Each deliverable with its format, stage, review rounds and recipient; whether editable files are included and what reliance others may place on them. Reports and letters you will issue, with drafts. |
+| R3 Hourly rates | Excl. GST, for work authorised in writing beyond the allowances. Roles: Director · Associate Director or Senior Associate · Senior Planner · Planner · Graduate. |
+| R4 Team | Named lead, % time by stage, subconsultants; resources must match R7. Named director and day-to-day lead. |
+| R5 Experience | Two or three comparable projects in the last five years, each with a referee. Applications on the same pathway for this use, in the same consent authority or LGA, with the outcome. |
+| R6 Departures | Each departure from sections 2–5 or the agreement: clause or item, proposed change, effect on fee and time; or "nil". A general exclusion not listed here is non-compliant. |
+| R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. |
+| R8 Insurance and compliance | PI $10 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest. |
+| R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. At cost with no handling fee is preferred. |
 
 ### Before issue — resolve or accept
 

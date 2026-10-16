@@ -45,6 +45,7 @@ Confirm base stages, inputs and final query-period end; later services require w
 | S5 Procurement / tender — Option | Separately select pretender estimate, BoQ/schedule, packages, clarifications/interviews/negotiation and recommendation; agree measurement rules/contractual quantity status. D&C/ECI design/risk allowances and tender-budget reconciliation |  |  |  |
 | S6 Post-contract cost advice — Option | Named contract; counted claims/variations, observations, cost reports/cashflow and forecast. Separate claimed, assessed/certified, paid, committed/disputed/forecast; reconcile PC/PS, contingency and client costs. Administrator retains powers; lender reliance separate |  |  |  |
 | S7 Final account — Option | Reconcile contract sum, variations/allowances/claims, commitments and risk; scoped retention/defects advice, unresolved disputes and final registers. Completion certification, entitlement and security release remain contract roles |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Tender/D&C/ECI review |  |  |  |
 | Service option | Progress-claim reports |  |  |  |
@@ -81,14 +82,18 @@ Complete counts before issue. Fixed fee, time ceiling or unit rate with quantity
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Each report/BoQ/workbook/register: purpose/scope, input cutoff, format/editability, recipient/reliance, dates/rounds and confidence. Include reconciliation, unpriced gaps and authority versus budget differences.
-R3 Hourly rates: Personnel and extra plan/option/update/meeting/visit/tender/claim/variation rates, ceilings, duration extensions/travel/cancellation/escalation; quantity assumptions and authority before exceedance.
-R4 Team: Lead, measurer/estimator, services specialist/reviewer/subconsultants, stage availability/conflicts and ISO or equivalent QA. Assign design/quantity/operator/owner/authority/tax inputs and claim assessor/certifier/payer.
-R5 Experience: Two or three matching building/work/purpose/procurement/maturity and existing/live/staging examples; personal role, deliverables, forecast lessons and referees.
-R6 Departures: Sections 2–5/agreement: comply/departure or nil; reason, alternative, fee/time effect, owner/date/evidence. Resolve identity/date, meeting/update/rate conflicts and unpriced gaps. Assumptions state extent/quantity, basis and consequence; unknown cost is not zero.
-R7 Program: Start/complete-input conditions, owners/due dates, cutoff/draft/review/final, authority/design/tender milestones, optional reporting cycle and appointment end; pauses/update triggers/consequences.
-R8 Insurance and compliance: Current PI $5 million (client selected), PL $20 million (client selected), workers evidence; project-selected limits before issue, claim/aggregate/expiry/exclusions and task-specific competence/registration. Old certificates establish no current cover.
-R9 Reimbursables: Travel/site, investigation/data access, authority/lender and specialist costs: included/allowance/unit, quantity/payer/GST/markup/approval. Identify client-direct costs; no R1 or budget duplication.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Each report/BoQ/workbook/register: purpose/scope, input cutoff, format/editability, recipient/reliance, dates/rounds and confidence. Include reconciliation, unpriced gaps and authority versus budget differences. |
+| R3 Hourly rates | Personnel and extra plan/option/update/meeting/visit/tender/claim/variation rates, ceilings, duration extensions/travel/cancellation/escalation; quantity assumptions and authority before exceedance. |
+| R4 Team | Lead, measurer/estimator, services specialist/reviewer/subconsultants, stage availability/conflicts and ISO or equivalent QA. Assign design/quantity/operator/owner/authority/tax inputs and claim assessor/certifier/payer. |
+| R5 Experience | Two or three matching building/work/purpose/procurement/maturity and existing/live/staging examples; personal role, deliverables, forecast lessons and referees. |
+| R6 Departures | Sections 2–5/agreement: comply/departure or nil; reason, alternative, fee/time effect, owner/date/evidence. Resolve identity/date, meeting/update/rate conflicts and unpriced gaps. Assumptions state extent/quantity, basis and consequence; unknown cost is not zero. |
+| R7 Program | Start/complete-input conditions, owners/due dates, cutoff/draft/review/final, authority/design/tender milestones, optional reporting cycle and appointment end; pauses/update triggers/consequences. |
+| R8 Insurance and compliance | Current PI $5 million (client selected), PL $20 million (client selected), workers evidence; project-selected limits before issue, claim/aggregate/expiry/exclusions and task-specific competence/registration. Old certificates establish no current cover. |
+| R9 Reimbursables | Travel/site, investigation/data access, authority/lender and specialist costs: included/allowance/unit, quantity/payer/GST/markup/approval. Identify client-direct costs; no R1 or budget duplication. |
 
 ### Before issue — resolve or accept
 

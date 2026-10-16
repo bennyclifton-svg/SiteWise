@@ -54,6 +54,7 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates.  R1 Fee by s
 | S9 Commissioning — Option | Scripts/results; balancing/controls/fire/failure/recovery witnesses, expected/actual/defects/retests; as-builts/O&M/settings/trends/training/residuals |  |  |  |
 | S10 Seasonal — Option | Deferred seasonal/tuning/defect reviews, weather/operation prerequisites, closure |  |  |  |
 | S11 Advisory — Option | Decision/extent/cutoff/reliance/method/confidence/actions; separate diagnosis/remedy/verification; reviewer is not designer |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Service option | Occupied/phased temporary ventilation/isolation/handback by use/phase |  |  |  |
 | Service option | Diagnosis/trial/verification |  |  |  |
@@ -95,14 +96,18 @@ Separate quantities/durations for each item/system/stage. Fixed fee, time ceilin
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Section 3 outputs/registers: purpose/maturity, native calculations/formats, recipient/reliance, revisions/rounds/dates.
-R3 Hourly rates: Lead/engineer/controls/smoke/specialist/checker/modeller/inspector/witness rates; extra visit/review/test/retest units/ceilings, travel/out-of-hours/cancellation/escalation.
-R4 Team: Lead/checker/registrations/competence, resources/conflicts/subconsultants, ISO/equivalent QA; responsibility matrix for design/strategy/controls/power/network/install/test/lead/witness/certify.
-R5 Experience: Two or three comparable systems/use/live/staged commissions: staff roles, outputs, coordination/test lessons and referees.
-R6 Departures: Sections 2–5/agreement departures: wording/reason/fee/time; exclusion owner; resolve conflicts or priced assumption with owner/date/consequence/review point.
-R7 Program: Inputs/providers/revisions/dates: loads/hours, facade/energy/acoustics, plant/controls/tests, structure/MEP, strategy/approvals; checks/gates/outages/notice/response; balancing/integrated-test criteria/closure.
-R8 Insurance and compliance: PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence, liability/reliance/IP/termination/novation.
-R9 Reimbursables: Authority/surveys/logging/openings/lab/specialist/access/isolation/reinstatement/independent commissioning/travel/printing: quantity/payer/markup/GST/approval; no R1, other consultant or contractor-test duplication.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Section 3 outputs/registers: purpose/maturity, native calculations/formats, recipient/reliance, revisions/rounds/dates. |
+| R3 Hourly rates | Lead/engineer/controls/smoke/specialist/checker/modeller/inspector/witness rates; extra visit/review/test/retest units/ceilings, travel/out-of-hours/cancellation/escalation. |
+| R4 Team | Lead/checker/registrations/competence, resources/conflicts/subconsultants, ISO/equivalent QA; responsibility matrix for design/strategy/controls/power/network/install/test/lead/witness/certify. |
+| R5 Experience | Two or three comparable systems/use/live/staged commissions: staff roles, outputs, coordination/test lessons and referees. |
+| R6 Departures | Sections 2–5/agreement departures: wording/reason/fee/time; exclusion owner; resolve conflicts or priced assumption with owner/date/consequence/review point. |
+| R7 Program | Inputs/providers/revisions/dates: loads/hours, facade/energy/acoustics, plant/controls/tests, structure/MEP, strategy/approvals; checks/gates/outages/notice/response; balancing/integrated-test criteria/closure. |
+| R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence, liability/reliance/IP/termination/novation. |
+| R9 Reimbursables | Authority/surveys/logging/openings/lab/specialist/access/isolation/reinstatement/independent commissioning/travel/printing: quantity/payer/markup/GST/approval; no R1, other consultant or contractor-test duplication. |
 
 ### Before issue — resolve or accept
 

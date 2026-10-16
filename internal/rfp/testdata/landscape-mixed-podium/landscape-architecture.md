@@ -49,6 +49,7 @@ Select base/options and end; later stages require instruction. Fit-out without l
 | S5 Traditional documentation — Included | Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment requirements/hold points; counted queries/substitutions. |  |  |  |
 | S7 Construction / completion — Included | Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits; departures/actions/evidence and bounded completion statement, distinct from contract PC/authority acceptance. |  |  |  |
 | S8 Establishment review — Included | Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation, erosion/defects; end report to administrator/operator. Contractor maintains. |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Options total | Separate from the base fee |  |  |  |
 
@@ -81,14 +82,18 @@ Complete a separate quantity/basis for each listed item by selected stage; group
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Plans/details, plant/material/soil schedules, specifications/calculations, authority, completion/establishment reports and native registers: extent, formats, recipients/reliance, input revisions, rounds/dates.
-R3 Hourly rates: Personnel/extra visit/review/substitution rates, meeting/response ceilings, durations, hold points/establishment, travel/callout/out-of-hours/cancellation and overrun authority.
-R4 Team: Lead/reviewer, stage resources, competence, subconsultants/conflicts and ISO or equivalent QA; allocate civil/structure/arborist/irrigation/environmental/authority/contractor duties.
-R5 Experience: Two or three comparable actual-use/site/soil/podium/public/retained-landscape/establishment projects: personnel role, outputs, lessons and referees.
-R6 Departures: Sections 2–5/agreement departures: reason, alternative, fee/time; unresolved evidence or authorised assumption with owner/date/consequence/review; name excluded-work owners.
-R7 Program: Input providers/dates, stage resources, access/test method, draft/review/final, authority/contractor dependencies, hold-point notice and establishment schedule; calculations/substitutions, evidence limits, urgent escalation/close-out.
-R8 Insurance and compliance: Current selected PI $5 million (client selected), PL $20 million (client selected), workers cover, duration/exclusions/renewals; agreement/precedence acceptance or departures, novation and reliance/IP.
-R9 Reimbursables: Travel/access, survey/locating, soil/lab/testing, authorities, specialists, samples/documents: included/allowance/unit, quantity/payer/GST/markup/approval; no R1 duplication or hidden installation/maintenance.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Plans/details, plant/material/soil schedules, specifications/calculations, authority, completion/establishment reports and native registers: extent, formats, recipients/reliance, input revisions, rounds/dates. |
+| R3 Hourly rates | Personnel/extra visit/review/substitution rates, meeting/response ceilings, durations, hold points/establishment, travel/callout/out-of-hours/cancellation and overrun authority. |
+| R4 Team | Lead/reviewer, stage resources, competence, subconsultants/conflicts and ISO or equivalent QA; allocate civil/structure/arborist/irrigation/environmental/authority/contractor duties. |
+| R5 Experience | Two or three comparable actual-use/site/soil/podium/public/retained-landscape/establishment projects: personnel role, outputs, lessons and referees. |
+| R6 Departures | Sections 2–5/agreement departures: reason, alternative, fee/time; unresolved evidence or authorised assumption with owner/date/consequence/review; name excluded-work owners. |
+| R7 Program | Input providers/dates, stage resources, access/test method, draft/review/final, authority/contractor dependencies, hold-point notice and establishment schedule; calculations/substitutions, evidence limits, urgent escalation/close-out. |
+| R8 Insurance and compliance | Current selected PI $5 million (client selected), PL $20 million (client selected), workers cover, duration/exclusions/renewals; agreement/precedence acceptance or departures, novation and reliance/IP. |
+| R9 Reimbursables | Travel/access, survey/locating, soil/lab/testing, authorities, specialists, samples/documents: included/allowance/unit, quantity/payer/GST/markup/approval; no R1 duplication or hidden installation/maintenance. |
 
 ### Before issue — resolve or accept
 

@@ -54,6 +54,7 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 | S8 Support — Option | Submittal/RFI reviews; before-backfill/lining, penetration/fire-stop/waterproofing/plant hold points; records |  |  |  |
 | S9 Witness — Option | Review selected tests, flushing/disinfection, as-builts/O&M and training; witness retests. Trades execute tests; no unseen-work certification. |  |  |  |
 | S10 Defects — Option | Deferred tests/visits/monitoring; operating prerequisites/period, closure/residual items |  |  |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
 | Base fee total | Included stages and elements only |  |  |  |
 | Options total | Separate from the base fee |  |  |  |
 
@@ -88,14 +89,18 @@ Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate
 
 ### Returnable schedules: reply using this structure only
 
-R2 Deliverables list: Outputs/calculations: maturity/native formats/revisions/rounds/reliance/dates; tests: pressure/leakage/flow/temperature/backflow/drain/pump/control/integrated.
-R3 Hourly rates: Lead/designer/specialist/checker/modeller/inspector/witness rates; investigation/visit/review/test/retest units/ceilings; travel/out-of-hours/cancellation/escalation.
-R4 Team: Lead/checker/competence/registrations/conflicts/stage team/specialists, ISO/equivalent QA; Section 2 responsibility allocations.
-R5 Experience: 2-3 comparable use/source/system/live/staged jobs; staff roles/outputs, authority/test lessons, referees.
-R6 Departures: Sections 2-5/agreement departures: wording/reason/fee/time, exclusion owner; resolve facts or priced assumption with owner/date/consequence/review point.
-R7 Program: Inputs/providers/versions/dates: fixtures/occupancy/equipment, authority/levels/tests/source quality, civil/OSD/treatment/fire/operator; methods/checks/gates/isolation/temporary supply/test criteria/closure.
-R8 Insurance and compliance: PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence/liability/reliance/IP/termination/novation.
-R9 Reimbursables: Authority/Water Services Coordinator/surveys/CCTV/tests/lab/access/isolation/make-good/specialists/travel: quantities/payer/markup/GST/approval; no duplicate fees.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+
+| Schedule | What to return |
+|---|---|
+| R2 Deliverables list | Outputs/calculations: maturity/native formats/revisions/rounds/reliance/dates; tests: pressure/leakage/flow/temperature/backflow/drain/pump/control/integrated. |
+| R3 Hourly rates | Lead/designer/specialist/checker/modeller/inspector/witness rates; investigation/visit/review/test/retest units/ceilings; travel/out-of-hours/cancellation/escalation. |
+| R4 Team | Lead/checker/competence/registrations/conflicts/stage team/specialists, ISO/equivalent QA; Section 2 responsibility allocations. |
+| R5 Experience | 2-3 comparable use/source/system/live/staged jobs; staff roles/outputs, authority/test lessons, referees. |
+| R6 Departures | Sections 2-5/agreement departures: wording/reason/fee/time, exclusion owner; resolve facts or priced assumption with owner/date/consequence/review point. |
+| R7 Program | Inputs/providers/versions/dates: fixtures/occupancy/equipment, authority/levels/tests/source quality, civil/OSD/treatment/fire/operator; methods/checks/gates/isolation/temporary supply/test criteria/closure. |
+| R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence/liability/reliance/IP/termination/novation. |
+| R9 Reimbursables | Authority/Water Services Coordinator/surveys/CCTV/tests/lab/access/isolation/make-good/specialists/travel: quantities/payer/markup/GST/approval; no duplicate fees. |
 
 ### Before issue — resolve or accept
 
