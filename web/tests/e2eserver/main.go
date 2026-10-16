@@ -37,6 +37,8 @@ import (
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
+	"sitewise/internal/proposals"
+	sample2 "sitewise/internal/proposals/sample"
 	"sitewise/internal/store"
 	"sitewise/internal/works"
 	"sitewise/web"
@@ -141,10 +143,14 @@ func run(addr, data string) error {
 		Catalog:           cat,
 		Thresholds:        thresholds(cat),
 		InvoiceThresholds: invoiceThresholds(),
-		Static:            web.Dist(),
-		PublicOrigin:      "http://" + addr,
-		MaxUploadBytes:    50 << 20,
-		Log:               log.New(os.Stderr, "e2e ", log.LstdFlags),
+		// Proposals are read by a stand-in that takes the amount printed
+		// beside each row's own label, with every band applied.
+		ProposalJev:        sample2.Jev{Delay: 150 * time.Millisecond},
+		ProposalThresholds: proposalThresholds(),
+		Static:             web.Dist(),
+		PublicOrigin:       "http://" + addr,
+		MaxUploadBytes:     50 << 20,
+		Log:                log.New(os.Stderr, "e2e ", log.LstdFlags),
 	})
 	if err != nil {
 		return err
@@ -167,6 +173,30 @@ func run(addr, data string) error {
 		}
 		w.Header().Set("Content-Type", "application/pdf")
 		_, _ = w.Write(sample.PDF(sample.Batch(n, 1)[0]))
+	})
+	// Synthetic fee proposals: ?firm=Name&abn=n&lines=Label~cents,Label~-1&rates=Role~cents&extra=Label~cents
+	mux.HandleFunc("GET /__e2e/proposal.pdf", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		n, _ := strconv.Atoi(q.Get("abn"))
+		p := sample2.Proposal{Firm: q.Get("firm"), ABN: sample.ABNFor(n), Email: "office@" + strings.ToLower(strings.Fields(q.Get("firm") + " firm")[0]) + ".test"}
+		parse := func(v string) []sample2.Line {
+			var out []sample2.Line
+			for _, part := range strings.Split(v, ",") {
+				label, cents, ok := strings.Cut(part, "~")
+				if !ok {
+					continue
+				}
+				c, _ := strconv.ParseInt(cents, 10, 64)
+				out = append(out, sample2.Line{Label: label, Cents: c})
+			}
+			return out
+		}
+		p.Lines, p.Rates = parse(q.Get("lines")), parse(q.Get("rates"))
+		if e := parse(q.Get("extra")); len(e) == 1 {
+			p.Extra = &e[0]
+		}
+		w.Header().Set("Content-Type", "application/pdf")
+		_, _ = w.Write(sample2.PDF(p))
 	})
 	mux.HandleFunc("POST /__e2e/drop-streams", func(w http.ResponseWriter, r *http.Request) {
 		cut.dropAll()
@@ -354,4 +384,15 @@ func recorded(w http.ResponseWriter, r *http.Request) {
 		"answers": answers,
 		"usage":   map[string]int{"input_tokens": 10, "output_tokens": 2},
 	})
+}
+
+// proposalThresholds apply every proposal answer green, so the browser
+// suite sees the read as it would with a calibrated question.
+func proposalThresholds() proposals.Thresholds {
+	lo, hi, g := 2, 255, 0.5
+	th := proposals.Thresholds{QuestionVersion: proposals.QuestionVersion, Questions: map[string][]proposals.Threshold{}}
+	for _, f := range []string{"price", "rate", "criterion", "firm", "kind", "package", "gst_basis", "stated_total"} {
+		th.Questions[f] = []proposals.Threshold{{Options: &lo, MaxOptions: &hi, Green: &g, Amber: &g}}
+	}
+	return th
 }

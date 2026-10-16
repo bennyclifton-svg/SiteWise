@@ -47,12 +47,16 @@ func formatOf(filename string) string {
 // Runner is the foreground path from stored bytes to a committed filing.
 type Runner struct {
 	// Wake delivers committed OCR progress to this org's live event streams.
-	Wake   func(string)
-	OCR    func(context.Context, string) (identity.Text, error)
-	blobs  *files.Store
-	store  *store.Store
-	svc    *Service
-	limits identity.Limits
+	Wake func(string)
+	// AfterFile hears each document filed with a text layer, with the
+	// identity text it was filed from. It must not block: procurement uses
+	// it to start a proposal read outside the filing budget.
+	AfterFile func(orgID, documentID string, text identity.Text)
+	OCR       func(context.Context, string) (identity.Text, error)
+	blobs     *files.Store
+	store     *store.Store
+	svc       *Service
+	limits    identity.Limits
 }
 
 // NewRunner binds the blob store and the filing service.
@@ -94,7 +98,9 @@ func (r *Runner) Run(ctx context.Context, orgID, documentID string) error {
 		}
 		return r.notFiled(ctx, orgID, documentID, ReasonNoText)
 	}
-	_, err = r.svc.File(ctx, orgID, documentID, text)
+	if _, err = r.svc.File(ctx, orgID, documentID, text); err == nil && r.AfterFile != nil {
+		r.AfterFile(orgID, documentID, text)
+	}
 	return err
 }
 

@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/knowledge"
@@ -183,4 +184,82 @@ func packageInProject(ctx context.Context, q querier, org, project, pkg string) 
 		return ErrNotFound
 	}
 	return nil
+}
+
+// ResponseForm is an RFP's response form: its schedule rows and returnables
+// as the current draft resolves them.
+type ResponseForm struct {
+	Header      rfp.FormHeader
+	Items       []rfp.ScheduleItem
+	Returnables []rfp.Row
+}
+
+// ReadResponseForm resolves a consultant RFP's draft into its form. A report
+// that is not a consultant RFP has no form (ErrInvalidReport).
+func (s *Store) ReadResponseForm(ctx context.Context, org, reportID string) (ResponseForm, error) {
+	var f ResponseForm
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return f, err
+	}
+	defer tx.Rollback(ctx)
+	r, err := readReport(ctx, tx, org, reportID)
+	if err != nil {
+		return f, err
+	}
+	if r.Kind != "rfp" || r.CurrentDraftVersionID == "" {
+		return f, ErrInvalidReport
+	}
+	d, err := readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
+	if err != nil {
+		return f, err
+	}
+	if d.TemplateID != rfpTemplateID {
+		return f, ErrInvalidReport
+	}
+	settings, err := readReportSettings(ctx, tx, org, d.ID)
+	if err != nil {
+		return f, err
+	}
+	_, _, _, res, err := s.storedRFP(d.SourceRevisions, settings)
+	if err != nil {
+		return f, err
+	}
+	var project string
+	if err := tx.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.ProjectID).Scan(&project); err != nil {
+		return f, err
+	}
+	f.Header = rfp.FormHeader{Title: r.Title, Project: project, Ref: res.Fields["ref"].Value}
+	f.Items = rfp.Schedule(res)
+	f.Returnables = res.Returnables
+	return f, tx.Commit(ctx)
+}
+
+// AddFirmSubmission puts a directory firm under a package with no file yet;
+// its prices are typed in the table.
+func (s *Store) AddFirmSubmission(ctx context.Context, org, project, pkg, firmID string, now time.Time) (string, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer tx.Rollback(ctx)
+	if err := packageInProject(ctx, tx, org, project, pkg); err != nil {
+		return "", err
+	}
+	f, err := readFirm(ctx, tx, org, firmID)
+	if err != nil {
+		return "", err
+	}
+	id := newID()
+	if _, err := tx.Exec(ctx, `INSERT INTO submissions (org_id,id,project_id,package_id,firm_id,filename,kind,status,received_on)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6,'fee_proposal','received',$7::date)`, org, id, project, pkg, f.ID, clipText(f.Name, 255), SydneyDate(now)); err != nil {
+		return "", err
+	}
+	if err := s.ensureSchedule(ctx, tx, org, project, pkg); err != nil {
+		return "", err
+	}
+	if err := procurementEvent(ctx, tx, s, org, project, id, "received"); err != nil {
+		return "", err
+	}
+	return id, tx.Commit(ctx)
 }

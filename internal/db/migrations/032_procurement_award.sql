@@ -166,7 +166,7 @@ CREATE TABLE submission_responses (
  updated_at timestamptz NOT NULL DEFAULT now(),
  PRIMARY KEY (org_id, submission_id, item_key),
  FOREIGN KEY (org_id, project_id, submission_id) REFERENCES submissions(org_id, project_id, id) ON DELETE CASCADE,
- FOREIGN KEY (org_id, rated_by) REFERENCES users(org_id, id),
+ FOREIGN KEY (org_id, rated_by) REFERENCES users(org_id, id) DEFERRABLE INITIALLY DEFERRED,
  CHECK (rating IS NULL OR rated_by IS NOT NULL)
 );
 
@@ -188,8 +188,8 @@ CREATE TABLE comparison_reports (
  version bigint NOT NULL DEFAULT 1 CHECK (version > 0),
  PRIMARY KEY (org_id, package_id),
  FOREIGN KEY (org_id, project_id, package_id) REFERENCES packages(org_id, project_id, id) ON DELETE CASCADE,
- FOREIGN KEY (org_id, recommendation_by) REFERENCES users(org_id, id),
- FOREIGN KEY (org_id, signed_off_by) REFERENCES users(org_id, id),
+ FOREIGN KEY (org_id, recommendation_by) REFERENCES users(org_id, id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id, signed_off_by) REFERENCES users(org_id, id) DEFERRABLE INITIALLY DEFERRED,
  CHECK ((signed_off_by IS NULL) = (signed_off_at IS NULL))
 );
 
@@ -212,7 +212,7 @@ CREATE TABLE awards (
  FOREIGN KEY (org_id, project_id, package_id) REFERENCES packages(org_id, project_id, id) ON DELETE CASCADE,
  FOREIGN KEY (org_id, project_id, submission_id) REFERENCES submissions(org_id, project_id, id) ON DELETE CASCADE,
  FOREIGN KEY (org_id, project_id, parent_item_id) REFERENCES cost_items(org_id, project_id, id) ON DELETE CASCADE,
- FOREIGN KEY (org_id, created_by) REFERENCES users(org_id, id)
+ FOREIGN KEY (org_id, created_by) REFERENCES users(org_id, id) DEFERRABLE INITIALLY DEFERRED
 );
 CREATE UNIQUE INDEX awards_live_uq ON awards (org_id, package_id) WHERE undone_at IS NULL;
 
@@ -228,6 +228,7 @@ CREATE TABLE cost_line_sources (
  item_key text CHECK (item_key ~ '^[A-Za-z0-9_:.\-]{1,200}$'),
  price_id uuid,
  label text NOT NULL DEFAULT '' CHECK (length(label) <= 500),
+ ordinal integer NOT NULL DEFAULT 0 CHECK (ordinal >= 0),
  PRIMARY KEY (org_id, id),
  FOREIGN KEY (org_id, project_id, award_id) REFERENCES awards(org_id, project_id, id) ON DELETE CASCADE,
  FOREIGN KEY (org_id, project_id, cost_item_id) REFERENCES cost_items(org_id, project_id, id) ON DELETE CASCADE,

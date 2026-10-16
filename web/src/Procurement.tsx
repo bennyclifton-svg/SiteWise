@@ -1,15 +1,19 @@
 // Procurement is one table with one row per package, grouped Consultants and
 // Trades (docs/plans/2026-10-10-procurement-table.md). Choosing a discipline
 // saves a package; Create makes its RFP or RFT in one request; View opens the
-// report full width. Firms and comparison are placeholders until tenderers
-// are designed.
-import { useCallback, useEffect, useState } from "react";
+// report full width. Each package shows the firms whose proposals arrived
+// (docs/plans/2026-10-16-procurement-to-award-implementation.md): a proposal
+// filed anywhere lands here, and one dropped on a row lands in that package.
+import { useCallback, useEffect, useState, type DragEvent } from "react";
 import { api, ApiError, type Option } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
 import { PackageScope } from "./PackageScope";
 import { packageApi, type EngagedBy, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
 import { procurementApi } from "./procurementApi";
+import { Prices } from "./Prices";
+import { STATUS_WORDS, submissionApi, uploadProposal, type Board, type FirmCard } from "./submissionApi";
+import { fmt } from "./CostGrid";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
 import "./reports.css";
@@ -18,7 +22,7 @@ const words = (value: string) => value.replaceAll("_", " ");
 const routeLabels: Record<string, string> = { traditional: "Traditional (Lump Sum)", design_construct: "Design & Construct", eci: "Early Contractor Involvement", managing_contractor: "Managing Contractor", alliance: "Alliance", ppp: "PPP" };
 const gapWords: Record<string, string> = { install: "nobody carries out the works", design: "nobody designs it", maintain_operation_or_protect: "nobody protects it", inspect_or_test: "nobody inspects or tests it" };
 
-type View = { at: "table" } | { at: "report"; id: string } | { at: "scope"; pkg: PackageRecord };
+type View = { at: "table" } | { at: "report"; id: string } | { at: "scope"; pkg: PackageRecord } | { at: "prices"; pkg: string; report?: string };
 
 /** One table row: a saved package, or a profile suggestion not yet accepted. */
 interface Row {
@@ -30,9 +34,9 @@ interface Row {
   report?: SavedReport;
 }
 
-interface Loaded { overview: PackageOverview; reports: SavedReport[]; works: ScopeWork[] }
+interface Loaded { overview: PackageOverview; reports: SavedReport[]; works: ScopeWork[]; board: Board }
 
-export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { projectId: string; tick: number; onSignedOut: () => void; onOpenProfile: () => void }) {
+export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpenCostPlan }: { projectId: string; tick: number; onSignedOut: () => void; onOpenProfile: () => void; onOpenCostPlan?: () => void }) {
   const [view, setView] = useState<View>({ at: "table" });
   const [data, setData] = useState<Loaded | null>(null);
   const [disciplines, setDisciplines] = useState<Option[]>([]);
@@ -41,12 +45,13 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
   const [busyRow, setBusyRow] = useState("");
   const [draft, setDraft] = useState<string | null>(null);
   const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
+  const [dropRow, setDropRow] = useState("");
 
   // The three reads go out together, so the table waits for one round trip.
   useEffect(() => {
     let stopped = false;
-    Promise.all([packageApi.list(projectId), reportApi.list(projectId), packageApi.works(projectId)])
-      .then(([overview, reports, works]) => { if (!stopped) setData({ overview, reports, works: works.items }); })
+    Promise.all([packageApi.list(projectId), reportApi.list(projectId), packageApi.works(projectId), submissionApi.board(projectId)])
+      .then(([overview, reports, works, board]) => { if (!stopped) setData({ overview, reports, works: works.items, board }); })
       .catch(e => {
         if (stopped) return;
         if (e instanceof ApiError && e.status === 401) onSignedOut();
@@ -127,8 +132,25 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     catch (e) { fail(e); } finally { setBusyRow(""); }
   }
   const back = () => { setView({ at: "table" }); setReload(n => n + 1); };
+  // A proposal dropped on a row is filed like any upload, and its package
+  // is the row's: the firm column appears once it is read.
+  async function dropOn(pkg: PackageRecord, e: DragEvent) {
+    e.preventDefault(); e.stopPropagation(); setDropRow("");
+    const files = Array.from(e.dataTransfer.files);
+    if (!files.length) return;
+    setBusyRow(pkg.id); setError("");
+    try { for (const f of files) await uploadProposal(projectId, pkg.id, f); setReload(n => n + 1); }
+    catch (err) { fail(err); } finally { setBusyRow(""); }
+  }
+  async function assign(card: FirmCard, pkg: string) {
+    if (!pkg) return;
+    setBusyRow(card.submission_id); setError("");
+    try { await submissionApi.edit(projectId, card.submission_id, { package_id: pkg }); setReload(n => n + 1); }
+    catch (err) { fail(err); } finally { setBusyRow(""); }
+  }
 
   if (view.at === "report") return <Reports key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
+  if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} />;
   if (view.at === "scope") return <section className="reports report-view" aria-label="Package scope">
     <div className="scope-back"><button type="button" className="btn btn-small report-back" onClick={back}>← Procurement</button></div>
     <PackageScope projectId={projectId} pkg={view.pkg} tick={tick} onSignedOut={onSignedOut} />
@@ -159,7 +181,11 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
   function rowView(row: Row) {
     const busy = busyRow === row.key;
     const doc = row.kind === "services" ? "RFP" : "RFT";
-    return <tr key={row.key} className={row.pkg ? undefined : "row-suggested"}>
+    const dropping = row.pkg && dropRow === row.pkg.id;
+    return <tr key={row.key} className={[row.pkg ? "" : "row-suggested", dropping ? "row-drop" : ""].filter(Boolean).join(" ") || undefined}
+      onDragOver={row.pkg ? (e => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); e.stopPropagation(); setDropRow(row.pkg!.id); } }) : undefined}
+      onDragLeave={row.pkg ? (() => setDropRow("")) : undefined}
+      onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
       <th scope="row" className="discipline-cell">
         {row.label}{!row.pkg && <span className="suggested-tag">suggested</span>}
       </th>
@@ -169,11 +195,14 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
           <option value="client">Client</option>
           <option value="lead_consultant">Lead consultant</option>
         </select>}</td>
-      {[1, 2, 3].map(n => <td key={n} className="firm-cell"><input disabled placeholder="Add firm" aria-label={`Firm ${n} for ${row.label}`} title="Firms come later" /></td>)}
+      <td className="firms-cell">{row.pkg ? <FirmChips cards={data?.board.packages[row.pkg.id] ?? []} onOpen={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })} /> : <span className="firms-none">—</span>}</td>
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? "Creating…" : "Create"}</button>}</td>
-      <td><button type="button" className="table-action" disabled title="Tender comparison comes later">Compare</button></td>
+      <td>{row.pkg ? (() => {
+        const n = data?.board.packages[row.pkg.id]?.length ?? 0;
+        return <button type="button" className="table-action" aria-label={`${n > 1 ? "Compare" : n === 1 ? "Review" : "Prices for"} ${row.label}`} onClick={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })}>{n > 1 ? `Compare ${n}` : n === 1 ? "Review" : "Prices"}</button>;
+      })() : "—"}</td>
       <td className="row-menu-cell">{!row.pkg && row.proposalKey?.startsWith("default:services:") && <details className="row-menu">
         <summary aria-label={`More for ${row.label}`}>⋯</summary>
         <div className="row-menu-items">
@@ -189,7 +218,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     </tr>;
   }
   const group = (title: string, list: Row[]) => list.length > 0 && <tbody>
-    <tr className="group-row"><th colSpan={8} scope="rowgroup">{title}</th></tr>
+    <tr className="group-row"><th colSpan={6} scope="rowgroup">{title}</th></tr>
     {list.map(rowView)}
   </tbody>;
 
@@ -207,12 +236,20 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
     {data && <p className="procurement-line">{!gaps.length
       ? <>Every accepted work item is covered.{waiting ? ` ${waiting} work item${waiting === 1 ? " is" : "s are"} not yet accepted in Profile under Scope and works.` : ""}</>
       : <>{gapItems} work item{gapItems === 1 ? " has" : "s have"} a gap: {gaps.map(g => `${workTitle(g.work_item_id)} (${g.state === "overlap" ? `two packages hold ${words(g.role ?? "")}` : gapWords[g.role ?? ""] ?? words(g.role ?? "")})`).join(", ")}</>}</p>}
+    {data && data.board.unassigned.length > 0 && <div className="procurement-line procurement-unassigned" role="note">
+      <p><strong>{data.board.unassigned.length} proposal{data.board.unassigned.length === 1 ? " needs" : "s need"} a package.</strong></p>
+      {data.board.unassigned.map(c => <label key={c.submission_id}>{c.firm_name || c.filename}
+        <select aria-label={`Package for ${c.filename}`} defaultValue="" disabled={busyRow === c.submission_id} onChange={e => void assign(c, e.target.value)}>
+          <option value="">Choose package</option>
+          {live.map(p => <option key={p.id} value={p.id}>{label(p)}</option>)}
+        </select></label>)}
+    </div>}
     {!data ? !error && <p role="status">Loading procurement…</p> : <div className="procurement-scroll">
       <table className="procurement-table">
-        <thead><tr><th scope="col">Discipline</th><th scope="col" title="The client engages the consultant directly, or the lead design consultant engages it as a subconsultant and includes its fee">Engaged by</th><th scope="col">Firm 1</th><th scope="col">Firm 2</th><th scope="col">Firm 3</th><th scope="col">RFP / RFT</th><th scope="col">Comparison</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
+        <thead><tr><th scope="col">Discipline</th><th scope="col" title="The client engages the consultant directly, or the lead design consultant engages it as a subconsultant and includes its fee">Engaged by</th><th scope="col" title="Drop a proposal on a row to add it to that package">Firms</th><th scope="col">RFP / RFT</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
         {group("Consultants", consultants)}
         {group("Trades", trades)}
-        {draft !== null && <tbody><tr className="draft-row"><td colSpan={8}>
+        {draft !== null && <tbody><tr className="draft-row"><td colSpan={6}>
           <form className="draft-form" onSubmit={e => { e.preventDefault(); void addRow(); }}>
             <select aria-label="Discipline" value={draft} disabled={busyRow === "draft"} onChange={e => setDraft(e.target.value)} autoFocus>
               <option value="">Choose a discipline</option>
@@ -223,7 +260,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
             <button type="button" className="table-action" disabled={busyRow === "draft"} onClick={() => setDraft(null)}>Cancel</button>
           </form>
         </td></tr></tbody>}
-        {!rows.length && draft === null && <tbody><tr><td colSpan={8} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
+        {!rows.length && draft === null && <tbody><tr><td colSpan={6} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
       </table>
     </div>}
     {data && <p className="procurement-line procurement-pmp">Project management plan:{" "}
@@ -231,4 +268,19 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile }: { p
         : <button type="button" className="table-action" aria-label="Create project management plan" disabled={busyRow === "pmp"} onClick={() => void createPmp()}>{busyRow === "pmp" ? "Creating…" : "Create"}</button>}</p>}
     {removing && <ConfirmDialog title={`Remove ${removing.label}?`} message={removing.costLabels.length ? `Also delete ${removing.costLabels.length} linked cost-plan line(s), including any subdivisions and their amounts: ${removing.costLabels.join(", ")}? Frozen baselines are kept. Any RFP or RFT will show the package as retired.` : "The row leaves the table. Any RFP or RFT made from it will show its package as retired."} confirmLabel={removing.costLabels.length ? "Remove and delete cost lines" : "Remove"} busy={busyRow === removing.pkg.id} busyLabel="Removing…" onConfirm={() => void remove()} onCancel={() => setRemoving(null)} />}
   </section>;
+}
+
+/** FirmChips shows each firm under a package: its name, the base total the
+ * server computed, and its status in words. */
+function FirmChips({ cards, onOpen }: { cards: FirmCard[]; onOpen: () => void }) {
+  if (!cards.length) return <span className="firms-none">Drop a proposal here</span>;
+  return <ul className="firm-chips">{cards.slice(0, 5).map(c => <li key={c.submission_id}>
+    <button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
+      title={`${c.filename} · received ${c.received_on}${c.not_priced ? ` · ${c.not_priced} not priced` : ""}`}>
+      <span className="firm-chip-name">{c.firm_name || c.filename}</span>
+      <span className="firm-chip-figure">{c.status === "reading" ? "Reading…" : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : "—"}</span>
+      {c.status !== "received" && c.status !== "reading" && <span className="firm-chip-status">{STATUS_WORDS[c.status]}</span>}
+      {c.status === "received" && c.needs_review && <span className="firm-chip-status warn">Check</span>}
+    </button>
+  </li>)}{cards.length > 5 && <li><button type="button" className="table-action" onClick={onOpen}>+{cards.length - 5} more</button></li>}</ul>;
 }

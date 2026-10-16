@@ -541,7 +541,7 @@ func (d *Draft) ask() {
 }
 
 func (d *Draft) firmQuestion(field string, values []string, max int, add func(question)) {
-	if len(values) < 2 {
+	if len(values) == 0 {
 		return
 	}
 	opts := []choice{}
@@ -574,17 +574,19 @@ func (d *Draft) candidates() (fees, rates, totals []Amount) {
 	return limit(distinct(fees), 120), limit(distinct(rates), 80), limit(distinct(totals), 30)
 }
 
-// distinct keeps the first amount of each figure: any copy of a figure
-// gives the same price, and a proposal that prints its rates twice should
-// not crowd the request.
+// distinct drops an amount printed again on a row of the same name: a
+// proposal that lists its rates twice, or repeats its fee summary, should
+// not crowd the request. Two rows with the same figure and different names
+// (two stages at $6,925) both stay: each is its own row's fee.
 func distinct(as []Amount) []Amount {
-	seen := map[int64]bool{}
+	seen := map[string]bool{}
 	var out []Amount
 	for _, a := range as {
-		key := a.Cents
-		if a.Kind == "percent" {
-			key = -int64(a.PercentBP) - 1
+		name := a.Label
+		if name == "" {
+			name = strings.Replace(a.Context, a.Display, "", 1)
 		}
+		key := strconv.FormatInt(a.Cents, 10) + "|" + strconv.Itoa(a.PercentBP) + "|" + NameKey(digitsRe.ReplaceAllString(name, ""))
 		if seen[key] {
 			continue
 		}

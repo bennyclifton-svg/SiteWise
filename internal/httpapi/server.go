@@ -21,6 +21,7 @@ import (
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
+	"sitewise/internal/proposals"
 	"sitewise/internal/store"
 )
 
@@ -65,6 +66,10 @@ type Options struct {
 	// InvoiceJev answers invoice questions; nil uses Jev. The bench sets a
 	// latency model here because its recordings hold filing calls only.
 	InvoiceJev invoices.Asker
+	// ProposalThresholds band Jev's proposal answers (data/proposal); the
+	// zero value applies none. ProposalJev answers them; nil uses Jev.
+	ProposalThresholds proposals.Thresholds
+	ProposalJev        proposals.Asker
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -73,6 +78,7 @@ type Server struct {
 	store     *store.Store
 	filer     *filer
 	invoices  *invoiceReader
+	proposals *proposalReader
 	closing   chan struct{}
 	closeOnce sync.Once
 }
@@ -158,6 +164,26 @@ func New(opts Options) (*Server, error) {
 	if reader.thresholds.QuestionVersion == "" {
 		reader.thresholds.QuestionVersion = invoices.QuestionVersion
 	}
+	preader := &proposalReader{
+		store:      opts.Store,
+		blobs:      opts.Blobs,
+		ask:        opts.Jev,
+		thresholds: opts.ProposalThresholds,
+		broker:     broker,
+		log:        opts.Log,
+		observe:    speed.Observe,
+		timeout:    30 * time.Second,
+		slots:      make(chan struct{}, 8),
+		now:        time.Now,
+		inflight:   map[string]struct{}{},
+	}
+	if opts.ProposalJev != nil {
+		preader.ask = opts.ProposalJev
+	}
+	if preader.thresholds.QuestionVersion == "" {
+		preader.thresholds.QuestionVersion = proposals.QuestionVersion
+	}
+	runner.AfterFile = preader.Filed
 	closing := make(chan struct{})
 	api := Handler(Deps{
 		Store:          opts.Store,
@@ -172,6 +198,7 @@ func New(opts Options) (*Server, error) {
 		Broker:         broker,
 		Filer:          f,
 		InvoiceReader:  reader,
+		ProposalReader: preader,
 		Closing:        closing,
 		Health:         checker,
 		Speed:          speed,
@@ -193,7 +220,7 @@ func New(opts Options) (*Server, error) {
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
-	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, closing: closing}, nil
+	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, closing: closing}, nil
 }
 
 // CloseStreams ends open event streams. Clients reconnect from their cursor.
@@ -235,7 +262,14 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 	for _, p := range unread {
 		s.invoices.Start(p.OrgID, p.InvoiceID, time.Time{}, false)
 	}
-	return len(pending) + len(expansions) + len(unread), nil
+	reading, err := s.store.PendingSubmissionReads(ctx)
+	if err != nil {
+		return len(pending) + len(expansions) + len(unread), err
+	}
+	for _, p := range reading {
+		s.proposals.Start(p.OrgID, p.SubmissionID, time.Time{}, false)
+	}
+	return len(pending) + len(expansions) + len(unread) + len(reading), nil
 }
 
 // Wait blocks until started filings finish or ctx ends.
@@ -244,6 +278,7 @@ func (s *Server) Wait(ctx context.Context) error {
 	go func() {
 		s.filer.wg.Wait()
 		s.invoices.wg.Wait()
+		s.proposals.wg.Wait()
 		close(done)
 	}()
 	select {

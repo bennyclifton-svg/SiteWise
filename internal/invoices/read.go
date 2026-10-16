@@ -88,12 +88,15 @@ type Package struct {
 }
 
 // Line is a live posting cost plan line an invoice may be charged to.
+// Holds names the schedule items an awarded line carries ("Stage 2:
+// Lodgement"), so an invoice for a stage finds the line that holds it.
 type Line struct {
 	ID        string
 	Label     string
 	Section   string
 	PackageID string
 	Category  string
+	Holds     []string
 }
 
 // Context is the project an invoice is read into. History maps a package to
@@ -360,10 +363,27 @@ func (d *Draft) question(field string) (question, bool) {
 			opts = append(opts, choice{ID: "p" + strconv.Itoa(len(opts)+1), Value: p.ID, Describe: map[string]string{"package": p.Title, "role": role}})
 		}
 	case FieldLine:
-		for _, l := range d.ctx.Lines {
+		// An awarded package's invoice is charged to one of its award lines:
+		// when a rule settled the supplier, those lines are the options.
+		lines := d.ctx.Lines
+		if sup := d.by[FieldSupplier]; sup.DecidedBy == DecidedByRule && sup.Band == BandGreen {
+			var awarded []Line
+			for _, l := range d.ctx.Lines {
+				if l.PackageID == sup.Value && len(l.Holds) > 0 {
+					awarded = append(awarded, l)
+				}
+			}
+			if len(awarded) > 0 {
+				lines = awarded
+			}
+		}
+		for _, l := range lines {
 			desc := map[string]string{"line": l.Label, "section": l.Section}
 			if l.Category != "" {
 				desc["category"] = l.Category
+			}
+			if len(l.Holds) > 0 {
+				desc["holds"] = strings.Join(l.Holds, "; ")
 			}
 			opts = append(opts, choice{ID: "l" + strconv.Itoa(len(opts)+1), Value: l.ID, Describe: desc})
 		}

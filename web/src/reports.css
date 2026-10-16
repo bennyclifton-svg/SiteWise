@@ -213,6 +213,22 @@
 .draft-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .draft-form select { min-width: 0; max-width: 100%; height: 28px; padding: 0 8px; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
 .procurement-empty { color: var(--ink-muted); white-space: normal; }
+.firms-cell { min-width: 220px; max-width: 560px; white-space: normal !important; }
+.firms-none { font-size: 12px; color: var(--ink-muted); }
+.firm-chips { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; overflow-x: auto; }
+.firm-chip { display: grid; grid-template-columns: auto auto; align-items: baseline; gap: 0 8px; max-width: 200px; padding: 3px 9px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); font: inherit; font-size: 12.5px; text-align: left; cursor: pointer; }
+.firm-chip:hover { border-color: var(--ink-muted); }
+.firm-chip.lowest { border-color: var(--ok); background: color-mix(in oklab, var(--ok) 13%, var(--paper)); }
+.firm-chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.firm-chip-figure { font-variant-numeric: tabular-nums; color: var(--ink-body); white-space: nowrap; }
+.firm-chip-status { grid-column: 1 / -1; font-size: 11px; color: var(--ink-muted); }
+.firm-chip-status.warn { color: var(--warn); }
+.firm-chip[data-status="awarded"] { border-color: var(--ok); }
+.firm-chip[data-status="awarded"] .firm-chip-status { color: var(--ok); font-weight: 600; }
+.firm-chip[data-status="unsuccessful"] { opacity: .7; }
+.procurement-table tr.row-drop td, .procurement-table tr.row-drop th { background: var(--azure-soft); box-shadow: inset 0 0 0 1px var(--azure); }
+.procurement-unassigned label { display: inline-flex; align-items: center; gap: 6px; }
+.procurement-unassigned select { padding: 3px 6px; font: inherit; font-size: 12.5px; }
 .procurement-pmp { margin-top: 6px; }
 .procurement .banner { flex-wrap: wrap; }
 

@@ -80,7 +80,17 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
             <td className="cost-sticky" data-col="category">{editable ? <CategoryCell item={i} plan={plan} packages={packages} label={category(i)} onSave={c => onItem(c, i.cost_item_id)} /> : category(i)}</td>
             <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16}px` }}><button type="button" className="cost-open" title={i.label} onClick={e => { e.stopPropagation(); onOpen(i.cost_item_id); }}>{i.label}</button>{editable && <TextCell label={`Item for ${i.label}`} value={i.label} compact onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} />}{i.excluded && <span className="cost-tag">excluded</span>}</td>
             {quantities && <QuantityCells key={i.cost_item_id} item={i} editable={editable && i.posting} onSave={c => onItem(c, i.cost_item_id, true)} />}
-            {!i.posting ? <td colSpan={COLUMNS.length + LEDGER.length} className="cost-note">Group · amounts are on the lines below</td> : <>
+            {!i.posting && i.values.budget ? <>
+              <td className="cost-num"><MoneyCell metric="budget" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "budget", a)} /></td>
+              <td className="cost-num" title="The sum of the awarded lines below">{cell(f?.forecast)}</td>
+              <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
+              <td className="cost-num">{cell(f?.forecast)}</td>
+              <td className="cost-num">{fmt(f?.budget_variance)}</td>
+              <td className="cost-num cost-placeholder">—</td>
+              <td className="cost-num cost-placeholder">—</td>
+              <td className="cost-num cost-placeholder">—</td>
+              <LedgerCells line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} /></>
+            : !i.posting ? <td colSpan={COLUMNS.length + LEDGER.length} className="cost-note">Group · amounts are on the lines below</td> : <>
               <td className="cost-num"><MoneyCell metric="budget" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "budget", a)} /></td>
               <td className="cost-num"><MoneyCell metric="commitment" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "commitment", a)} /></td>
               <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>

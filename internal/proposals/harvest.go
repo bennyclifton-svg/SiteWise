@@ -179,8 +179,8 @@ type Evidence struct {
 	Printed   int
 	Hints     []string
 	Addresses []string
-	Contacts      []string
-	Sections      []Section
+	Contacts  []string
+	Sections  []Section
 	// Form holds a SiteWise response form's cells by schedule key, read
 	// verbatim; FormFirm its labelled firm fields.
 	Form     map[string]string
@@ -770,4 +770,22 @@ func clip(s string, max int) string {
 		cut--
 	}
 	return s[:cut]
+}
+
+// Cue reports whether a filed document should be read as a proposal: it
+// calls itself one in its filename or opening lines, or it was filed as
+// commercial and prices fees. A wrong cue costs one fan-out whose kind
+// question answers "not a proposal"; a missed one leaves the PM to drop the
+// file on the package row.
+func Cue(filename string, text identity.Text, kind string) bool {
+	words := map[string]bool{}
+	for _, w := range cueWords(filename, Lines(text)) {
+		words[w] = true
+	}
+	for _, strong := range []string{"fee proposal", "fee submission", "fee estimate", "fee quote", "fee schedule", "tender submission", "quotation", "response form", "proposal for"} {
+		if words[strong] {
+			return true
+		}
+	}
+	return kind == "commercial" && (words["fee"] || words["proposal"] || words["quote"] || words["tender"])
 }

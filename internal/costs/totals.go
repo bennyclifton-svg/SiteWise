@@ -82,7 +82,16 @@ func emptyTotals() map[string]Total {
 	return out
 }
 func addLine(out map[string]Total, item Item) {
+	addMetrics(out, item, false)
+}
+
+// addMetrics adds a line's figures. A line under a budgeted group adds no
+// budget: the group's budget stands for its children (an awarded package).
+func addMetrics(out map[string]Total, item Item, noBudget bool) {
 	for m, t := range out {
+		if noBudget && m == "budget" {
+			continue
+		}
 		v := item.Values[m]
 		basis := m
 		if m == "forecast" {
@@ -136,8 +145,18 @@ func Summarize(plan Plan, by string) (Totals, error) {
 	for _, section := range []string{"authority", "consultants", "construction", "contingency"} {
 		out.Sections[section] = emptyTotals()
 	}
+	groups := budgetGroups(plan.Items)
 	for _, item := range plan.Items {
 		if !item.Posting {
+			if b, ok := item.Values["budget"]; ok && !item.Excluded {
+				// A group that keeps its budget: the budget counts once, here.
+				g := Item{Values: map[string]Value{"budget": b}}
+				for _, bucket := range []map[string]Total{out.Overall, out.Sections[out.SectionItems[item.ID]], kindBucket(&out, item.LineKind)} {
+					if bucket != nil {
+						addOnly(bucket, "budget", g)
+					}
+				}
+			}
 			continue
 		}
 		// An excluded line still reads its own figures; it stays out of totals.
@@ -145,15 +164,11 @@ func Summarize(plan Plan, by string) (Totals, error) {
 		if item.Excluded {
 			continue
 		}
-		addLine(out.Overall, item)
-		addLine(out.Sections[out.SectionItems[item.ID]], item)
-		switch item.LineKind {
-		case "works":
-			addLine(out.Works, item)
-		case "fee":
-			addLine(out.Fees, item)
-		case "project_wide":
-			addLine(out.ProjectWide, item)
+		under := groups[item.ID] != ""
+		addMetrics(out.Overall, item, under)
+		addMetrics(out.Sections[out.SectionItems[item.ID]], item, under)
+		if b := kindBucket(&out, item.LineKind); b != nil {
+			addMetrics(b, item, under)
 		}
 		key := "overall"
 		switch by {
@@ -179,8 +194,9 @@ func Summarize(plan Plan, by string) (Totals, error) {
 		if out.Groups[key] == nil {
 			out.Groups[key] = emptyTotals()
 		}
-		addLine(out.Groups[key], item)
+		addMetrics(out.Groups[key], item, under)
 	}
+	groupFigures(plan.Items, groups, out.Items)
 	for key, bucket := range out.Sections {
 		for metric, total := range bucket {
 			if total.Lines == 0 {
@@ -212,6 +228,89 @@ func Summarize(plan Plan, by string) (Totals, error) {
 		out.Variance = &v
 	}
 	return out, nil
+}
+
+func kindBucket(out *Totals, kind string) map[string]Total {
+	switch kind {
+	case "works":
+		return out.Works
+	case "fee":
+		return out.Fees
+	case "project_wide":
+		return out.ProjectWide
+	}
+	return nil
+}
+
+// addOnly adds one metric of a line.
+func addOnly(out map[string]Total, metric string, item Item) {
+	one := map[string]Total{metric: out[metric]}
+	addMetrics(one, item, false)
+	out[metric] = one[metric]
+}
+
+// budgetGroups maps each line under a group that holds a budget to that
+// group. An awarded package's line is such a group: it keeps the budget the
+// PM set while its children hold the contract.
+func budgetGroups(items []Item) map[string]string {
+	byID := map[string]Item{}
+	for _, i := range items {
+		byID[i.ID] = i
+	}
+	out := map[string]string{}
+	for _, i := range items {
+		seen := map[string]bool{i.ID: true}
+		for p := i.ParentItemID; p != "" && !seen[p]; {
+			seen[p] = true
+			parent, ok := byID[p]
+			if !ok {
+				break
+			}
+			if _, has := parent.Values["budget"]; has && !parent.Posting {
+				out[i.ID] = parent.ID
+				break
+			}
+			p = parent.ParentItemID
+		}
+	}
+	return out
+}
+
+// groupFigures gives each budgeted group its own figures: the forecast is
+// its children's, known only when every child's is; the variance is its
+// budget less that forecast.
+func groupFigures(items []Item, groups map[string]string, figs map[string]Figures) {
+	sum := map[string]Money{}
+	unknown := map[string]bool{}
+	for _, i := range items {
+		g := groups[i.ID]
+		if g == "" || !i.Posting || i.Excluded {
+			continue
+		}
+		f := figs[i.ID].Forecast
+		if f.ValueState != "known" || f.Amount == nil {
+			unknown[g] = true
+			continue
+		}
+		cur, ok := sum[g]
+		if !ok {
+			cur = "0.00"
+		}
+		sum[g] = Add(cur, *f.Amount)
+	}
+	for _, i := range items {
+		b, ok := i.Values["budget"]
+		if i.Posting || !ok {
+			continue
+		}
+		fig := Figures{Forecast: Value{ValueState: "unknown"}, Basis: "children"}
+		if total, ok := sum[i.ID]; ok && !unknown[i.ID] {
+			t := total
+			fig.Forecast = Value{ValueState: "known", Amount: &t, Origin: "calculation", Meaning: "stated"}
+			fig.BudgetVariance = diff(exact(b), &t)
+		}
+		figs[i.ID] = fig
+	}
 }
 
 // Residual preserves every metric independently. An unpriced child produces an

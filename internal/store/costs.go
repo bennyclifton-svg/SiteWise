@@ -425,7 +425,17 @@ func (s *Store) PutCostValue(ctx context.Context, org, project, item, actor, met
 				return p, e
 			}
 			if !i.Posting {
-				return p, costs.ErrInvalid
+				// An awarded package's line is a group that keeps its own
+				// budget; any other group's amounts are on its lines.
+				var award bool
+				if metric == "budget" {
+					if e = tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM awards WHERE org_id=$1::uuid AND parent_item_id=$2::uuid AND undone_at IS NULL)`, org, item).Scan(&award); e != nil {
+						return p, e
+					}
+				}
+				if !award {
+					return p, costs.ErrInvalid
+				}
 			}
 			if i.Values[metric].Version != in.Version {
 				return p, ErrVersionConflict

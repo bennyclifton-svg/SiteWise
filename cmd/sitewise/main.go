@@ -27,6 +27,7 @@ import (
 	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
 	"sitewise/internal/profile"
+	feeproposals "sitewise/internal/proposals"
 	"sitewise/internal/store"
 	"sitewise/internal/works"
 	"sitewise/web"
@@ -77,6 +78,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	profileReading := fs.String("profile-reading", "data/profile/reading.json", "document kinds the project profile reads automatically")
 	proposalPolicy := fs.String("proposal-policy", "data/profile/proposals.json", "proposal visibility policy")
 	invoiceData := fs.String("invoice-data", "data/invoice", "invoice question thresholds directory")
+	proposalData := fs.String("proposal-data", "data/proposal", "fee proposal question thresholds directory")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
@@ -142,6 +144,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		fmt.Fprintln(stderr, "proposal policy: "+err.Error())
 		return 1
 	}
+	proposalTh, err := feeproposals.LoadThresholds(*proposalData)
+	if err != nil {
+		fmt.Fprintln(stderr, "proposal thresholds: "+err.Error())
+		return 1
+	}
 	invoiceTh, err := invoices.LoadThresholds(*invoiceData)
 	if err != nil {
 		fmt.Fprintln(stderr, "invoice thresholds: "+err.Error())
@@ -194,11 +201,12 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		MaxUploadBytes: *maxUpload,
 		Log:            logger,
 
-		Knowledge:         building,
-		ProfileThresholds: profileTh,
-		ProfileReading:    reading,
-		ProposalShowCount: proposals.ShowCount,
-		InvoiceThresholds: invoiceTh,
+		Knowledge:          building,
+		ProfileThresholds:  profileTh,
+		ProfileReading:     reading,
+		ProposalShowCount:  proposals.ShowCount,
+		InvoiceThresholds:  invoiceTh,
+		ProposalThresholds: proposalTh,
 	})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -223,6 +231,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	}
 	go jobs.RunBackground(ctx, worker, 2*time.Second, logger.Printf)
 	go srv.RunInvoiceRechecks(ctx, 10*time.Second)
+	go srv.RunProposalRechecks(ctx, 15*time.Second)
 	if n, err := srv.Resume(ctx); err != nil {
 		logger.Printf("resume failed: %v", err)
 	} else if n > 0 {

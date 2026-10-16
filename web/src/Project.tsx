@@ -313,7 +313,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
             if (ev.payload?.project_id === projectId) setSpecificationTick(n => n + 1);
             return;
           }
-		  if (ev.kind === "report" || ev.kind === "works" || ev.kind === "packages" || ev.kind === "delivery" || ev.kind === "costs") {
+		  if (ev.kind === "report" || ev.kind === "works" || ev.kind === "packages" || ev.kind === "delivery" || ev.kind === "costs" || ev.kind === "procurement") {
 		    if (ev.payload?.project_id === projectId) setReportTick(n => n + 1);
 		    return;
 		  }
@@ -676,7 +676,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
-      wideWorkspace={showSpecifications}
+      wideWorkspace={showSpecifications || showReports || showCosts}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
@@ -689,7 +689,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {deliveryOpened && <div className="project-reports" hidden={!showDelivery}><Delivery projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} onOpenCostPlan={() => showView("costs")} /></div>}
       <input
         ref={fileInput}
         type="file"

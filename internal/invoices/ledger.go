@@ -63,6 +63,11 @@ type BudgetLine struct {
 	PackageID string
 	Budget    *int64
 	Archived  bool
+	// Parent is the awarded group this line belongs to. The group holds the
+	// budget; the line's spend rolls up to it.
+	Parent string
+	// Group is a line whose budget stands for its children's.
+	Group bool
 }
 
 // Counted reports whether an invoice is in the ledger totals: read, an
@@ -161,8 +166,28 @@ func Summarize(lines []BudgetLine, ledger []Invoice, taxBasis string) Summary {
 		}
 	}
 	s.Unallocated.Invoiced = s.Total - held
+	// A group's spend is its own and its children's; a child's budget is the
+	// group's, so it neither counts nor leaves the total unknown.
+	parentOf := map[string]string{}
+	for _, l := range lines {
+		if l.Parent != "" {
+			if _, ok := index[l.Parent]; ok {
+				parentOf[l.ID] = l.Parent
+			}
+		}
+	}
+	for i := range s.Lines {
+		if p, ok := parentOf[s.Lines[i].ID]; ok {
+			g := &s.Lines[index[p]]
+			g.Invoiced += s.Lines[i].Invoiced
+			g.Invoices += s.Lines[i].Invoices
+		}
+	}
 	for i := range s.Lines {
 		l := &s.Lines[i]
+		if _, child := parentOf[l.ID]; child {
+			continue
+		}
 		if l.Budget == nil {
 			if !l.Archived {
 				s.BudgetUnknown++

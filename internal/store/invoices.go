@@ -267,8 +267,28 @@ ORDER BY title, id`, orgID, projectID)
 	plan.taxBasis = cp.TaxBasis
 	sections := costs.CostSections(cp.Items)
 	cat := s.workCatalog()
+	holds, err := awardHolds(ctx, tx, orgID, projectID)
+	if err != nil {
+		return pc, plan, err
+	}
+	groups := map[string]bool{}
+	for _, it := range cp.Items {
+		if _, ok := it.Values["budget"]; ok && !it.Posting {
+			groups[it.ID] = true
+		}
+	}
 	for _, it := range cp.Items {
 		if !it.Posting {
+			// An awarded package's line keeps its budget for its children.
+			if groups[it.ID] {
+				var budget *int64
+				if v := it.Values["budget"]; v.ValueState == "known" && v.Amount != nil {
+					if c, ok, err := invoices.ParseCents(string(*v.Amount)); err == nil && ok {
+						budget = &c
+					}
+				}
+				plan.lines = append(plan.lines, invoices.BudgetLine{ID: it.ID, Label: it.Label, Section: sections[it.ID], Category: plan.packageTitles[it.PackageID], PackageID: it.PackageID, Budget: budget, Group: true})
+			}
 			continue
 		}
 		pkg, category := it.PackageID, ""
@@ -278,7 +298,7 @@ ORDER BY title, id`, orgID, projectID)
 		if category == "" {
 			category = plan.packageTitles[pkg]
 		}
-		line := invoices.Line{ID: it.ID, Label: it.Label, Section: sections[it.ID], PackageID: pkg, Category: category}
+		line := invoices.Line{ID: it.ID, Label: it.Label, Section: sections[it.ID], PackageID: pkg, Category: category, Holds: holds[it.ID]}
 		pc.Lines = append(pc.Lines, line)
 		var budget *int64
 		if v, ok := it.Values["budget"]; ok && v.ValueState == "known" && v.Amount != nil {
@@ -286,7 +306,11 @@ ORDER BY title, id`, orgID, projectID)
 				budget = &c
 			}
 		}
-		plan.lines = append(plan.lines, invoices.BudgetLine{ID: it.ID, Label: it.Label, Section: line.Section, Category: category, PackageID: pkg, Budget: budget})
+		parent := ""
+		if groups[it.ParentItemID] {
+			parent = it.ParentItemID
+		}
+		plan.lines = append(plan.lines, invoices.BudgetLine{ID: it.ID, Label: it.Label, Section: line.Section, Category: category, PackageID: pkg, Budget: budget, Parent: parent})
 	}
 	hist, err := tx.Query(ctx, `
 SELECT DISTINCT i.package_id::text, a.cost_item_id::text
@@ -926,4 +950,23 @@ ON CONFLICT (org_id, invoice_id, field) DO UPDATE SET value=EXCLUDED.value, band
 		return err
 	}
 	return s.finishInvoiceWrite(ctx, tx, orgID, projectID, invoiceID)
+}
+
+// awardHolds names, for each live award line, the schedule items it holds.
+func awardHolds(ctx context.Context, tx pgx.Tx, org, project string) (map[string][]string, error) {
+	rows, err := tx.Query(ctx, `SELECT s.cost_item_id::text, s.label FROM cost_line_sources s JOIN awards a ON a.org_id=s.org_id AND a.id=s.award_id
+WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND a.undone_at IS NULL AND s.label <> '' ORDER BY s.ordinal, s.id`, org, project)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string][]string{}
+	for rows.Next() {
+		var id, label string
+		if err := rows.Scan(&id, &label); err != nil {
+			return nil, err
+		}
+		out[id] = append(out[id], label)
+	}
+	return out, rows.Err()
 }

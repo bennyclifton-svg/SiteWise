@@ -37,7 +37,7 @@ test("procurement creates suggested and chosen disciplines, edits scope and remo
   await page.getByRole("button", { name: "Add discipline", exact: true }).click();
   await expect(page.getByLabel("Discipline", { exact: true }).locator('option[value="consultant.structural"]')).toHaveCount(0);
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
-  await expect(page.getByLabel("Firm 1 for Structural", { exact: true })).toBeDisabled();
+  await expect(page.getByRole("row", { name: /^Structural/ }).getByText("Drop a proposal here")).toBeVisible();
   // Who engages a consultant is asked per row and saved to the package.
   await expect(page.getByLabel("Who engages Structural", { exact: true })).toHaveValue("");
   await page.getByLabel("Who engages Structural", { exact: true }).selectOption("lead_consultant");
