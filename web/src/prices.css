@@ -119,4 +119,11 @@ dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
   .report-grid th, .report-grid td { border-color: #999; }
   .report-grid .lowest { background: none; font-weight: 700; }
   .report-nonprice select { display: none; }
+  .leftnav, .project-side-panel, .ask-bar, .cockpit-shell-header .btn, .cockpit-shell-header button, .banner { display: none !important; }
+  .cockpit-shell { display: block !important; }
+  /* Paper is white whatever the screen theme. */
+  html, body, .cockpit-page, .cockpit-shell, .project-main-panel, .cockpit-scroll, .project-reports, .prices, .report-page,
+  .report-page *, .cockpit-title, .cockpit-address { background: #fff !important; color: #000 !important; box-shadow: none !important; border-color: #888 !important; }
+  .report-grid { font-size: 8.5pt; }
+  .report-grid tr { break-inside: avoid; }
 }

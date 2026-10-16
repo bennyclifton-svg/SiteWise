@@ -78,6 +78,24 @@ test("three proposals dropped on a package compare, a corrected cell moves the t
   await expect(gamma).toContainText("Awarded");
   await expect(table.locator("thead th").nth(1)).toContainText("Unsuccessful");
 
+  // The one-page report: price, non-price with the PM's ratings, and a
+  // recommendation drafted from the figures that the PM edits and signs off.
+  await page.getByRole("button", { name: "Report", exact: true }).click();
+  await expect(page.getByRole("heading", { name: /Town Planner: comparison of 3 proposals/ })).toBeVisible();
+  await expect(page.getByLabel("Recommendation")).toHaveValue(/Lowest complete base fee: Gamma Planning Pty Ltd/);
+  await expect(page.getByText("Authority fees are excluded.").first()).toBeVisible();
+  await page.getByLabel("Rating for Team, Gamma Planning Pty Ltd").selectOption("strong");
+  await expect(page.getByLabel("Rating for Team, Gamma Planning Pty Ltd")).toHaveValue("strong");
+  await expect(page.getByRole("button", { name: "Save and sign off" })).toBeDisabled();
+  await page.getByLabel("Recommendation").fill("Appoint Gamma Planning: lowest complete fee and a strong team.");
+  await page.getByRole("button", { name: "Save and sign off" }).click();
+  await expect(page.getByText(/Signed off by/)).toBeVisible();
+  await page.screenshot({ path: "../.tools/procurement-report.png", fullPage: true });
+  await page.emulateMedia({ media: "print" });
+  await page.screenshot({ path: "../.tools/procurement-report-print.png", fullPage: true });
+  await page.emulateMedia({ media: "screen" });
+  await page.getByRole("button", { name: "← Price table" }).click();
+
   // The cost plan shows the group and its two lines without a reload.
   await page.getByRole("button", { name: "Open cost plan" }).click();
   await expect(page.getByRole("button", { name: /^Town Planner: Gamma Planning/ })).toBeVisible();
