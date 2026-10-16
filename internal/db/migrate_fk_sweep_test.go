@@ -174,7 +174,18 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["invoices"] = row{"org_id": org, "id": invoice, "project_id": p, "file_id": id(1800 + n), "filename": "invoice.pdf", "status": "filed", "period": "2026-10-01", "package_id": pkg}
 		f["invoice_allocations"] = row{"org_id": org, "id": id(3200 + n), "project_id": p, "invoice_id": invoice, "cost_item_id": costID, "decided_by": "rule", "band": "green", "ordinal": 0}
 		f["invoice_decisions"] = row{"org_id": org, "project_id": p, "invoice_id": invoice, "field": "kind", "band": "green", "decided_by": "rule"}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions"} {
+		firm, submission, award := id(3300+n), id(3400+n), id(3500+n)
+		f["firms"] = row{"org_id": org, "id": firm, "name": "Firm", "name_key": "firm", "status": "draft"}
+		f["schedule_items"] = row{"org_id": org, "project_id": p, "package_id": pkg, "key": "stage:design", "kind": "stage", "label": "Design", "base": true, "ordinal": 0, "source": "rfp"}
+		f["submissions"] = row{"org_id": org, "id": submission, "project_id": p, "package_id": pkg, "firm_id": firm, "filename": "proposal.pdf", "status": "received", "received_on": "2026-10-16"}
+		f["submission_decisions"] = row{"org_id": org, "project_id": p, "submission_id": submission, "field": "firm", "band": "green", "decided_by": "rule"}
+		f["submission_passages"] = row{"org_id": org, "project_id": p, "submission_id": submission, "ordinal": 0, "body": "Fee"}
+		f["submission_prices"] = row{"org_id": org, "id": id(3600 + n), "project_id": p, "submission_id": submission, "item_key": "stage:design", "state": "not_priced", "band": "green", "decided_by": "rule"}
+		f["submission_responses"] = row{"org_id": org, "project_id": p, "submission_id": submission, "item_key": "criterion:r2", "rating": "strong", "rated_by": u}
+		f["comparison_reports"] = row{"org_id": org, "project_id": p, "package_id": pkg, "recommendation_by": u, "signed_off_by": u, "signed_off_at": "2026-10-16T00:00:00Z"}
+		f["awards"] = row{"org_id": org, "id": award, "project_id": p, "package_id": pkg, "submission_id": submission, "parent_item_id": costID, "parent_created": false, "created_by": u}
+		f["cost_line_sources"] = row{"org_id": org, "id": id(3700 + n), "project_id": p, "award_id": award, "cost_item_id": costID, "item_key": "stage:design"}
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
@@ -236,6 +247,16 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		actual[name] = after[name].definition
 	}
 	if !maps.Equal(expected, actual) {
+		for name, def := range actual {
+			if expected[name] != def {
+				t.Logf("not in the inventory: %q: %q", name, def)
+			}
+		}
+		for name := range expected {
+			if _, ok := actual[name]; !ok {
+				t.Logf("in the inventory, not in the schema: %q", name)
+			}
+		}
 		t.Fatal("next-wave foreign-key contract changed; review the migration and update its coverage inventory explicitly")
 	}
 	for _, name := range keys {
@@ -275,6 +296,16 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 				base["ordinal"] = 1
 			case "invoice_decisions":
 				base["field"] = "number"
+			case "submissions":
+				// One submission per document: the control uses the spare document.
+				base["document_id"] = id(1951)
+				if strings.Contains(f.definition, "superseded_by") {
+					base["superseded_by"] = fixtures[0]["submissions"]["id"]
+					base["status"] = "superseded"
+				}
+			case "awards":
+				// One live award per package: the control is an undone award.
+				base["undone_at"] = "2026-10-16T00:00:00Z"
 			case "projects":
 				base["site_id"] = id(9900)
 			case "project_parts":
