@@ -133,11 +133,17 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 	m.getJSON(t, "/api/projects/"+sibling+"/profile", &siblingProfile)
 	var siblingWork works.Item
 	m.call(t, "POST", "/api/projects/"+sibling+"/works", jsonBody(map[string]any{"title": "Private sibling work", "part_id": siblingProfile.Parts[0].ID, "system_id": "mechanical.air-conditioning", "action": "new"}), 201, &siblingWork)
+	var program struct {
+		Program store.Program `json:"program"`
+	}
+	m.call(t, "POST", base+"/program/prepare", []byte(`{"surface":"program"}`), 200, &program)
+	programOps := jsonBody(map[string]any{"program_id": program.Program.ID, "version": program.Program.Version,
+		"ops": []map[string]any{{"op": "set_start", "start_date": "2027-03-01"}}})
 	// Capture authoritative rows, including versions, histories, projections
 	// and events. Checking just the returned status would miss partial writes.
 	snapshot := func() map[string]string {
 		out := map[string]string{}
-		for _, table := range []string{"cost_plan_versions", "cost_plans", "cost_items", "cost_item_revisions", "cost_values", "cost_suggestion_dismissals", "projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs"} {
+		for _, table := range []string{"cost_plan_versions", "cost_plans", "cost_items", "cost_item_revisions", "cost_values", "cost_suggestion_dismissals", "projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs", "programs", "program_activities", "program_links", "program_calendar_days", "program_ops", "program_changes", "program_readings"} {
 			var raw []byte
 			err := conn.QueryRow(ctx, `SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY to_jsonb(r)::text),'[]'::jsonb) FROM `+pgx.Identifier{table}.Sanitize()+` r WHERE org_id=ANY($1::uuid[])`, []string{m.orgID, foreign.orgID}).Scan(&raw)
 			if err != nil {
@@ -176,6 +182,9 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"GET", base + "/profile", nil, false}, {"GET", base + "/profile/sources", nil, false},
 		{"PUT", base + "/profile/hdr.subclass", []byte(`{"value":"house"}`), false}, {"PUT", base + "/profile/scope", []byte(`{"systems":{"mechanical.air-conditioning":"in"}}`), false}, {"POST", base + "/profile/read", nil, false},
 		{"POST", base + "/parts", []byte(`{"label":"Intrusion","kind":"roof"}`), false}, {"PATCH", base + "/parts/" + part, []byte(`{"label":"Intrusion"}`), true},
+		{"GET", base + "/program", nil, false}, {"POST", base + "/program/prepare", []byte(`{"surface":"program"}`), false},
+		{"POST", base + "/program/ops", programOps, true}, {"POST", base + "/program/undo", []byte(`{"version":1}`), true}, {"POST", base + "/program/redo", []byte(`{"version":1}`), true},
+		{"POST", base + "/program/accept", []byte(`{"version":1,"all":true}`), true}, {"POST", base + "/program/question", []byte(`{"version":1,"key":"flood_hazard","value":"not_sure"}`), true},
 		{"GET", base + "/planning", nil, false}, {"PUT", base + "/planning/gross_floor_area", jsonBody(map[string]any{"part_id": part, "value": 1300, "unit": "m2", "version": 1}), true}, {"DELETE", base + "/planning/gross_floor_area?version=1&part_id=" + part, nil, true},
 	}
 	denied := func(t *testing.T, actor *member, r route, path string, want int) {

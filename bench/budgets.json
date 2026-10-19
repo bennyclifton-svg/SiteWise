@@ -261,7 +261,10 @@
       "name": "costs_accept_all",
       "p50_us": 250000,
       "p90_us": 500000
-    }
+    },
+	{"name":"program_read","p50_us":100000,"p90_us":250000,"note":"GET /program with 1,000 activities and 2,000 links, compute and extras included (proposed)"},
+	{"name":"program_write","p50_us":100000,"p90_us":250000,"note":"one move, recomputed state returned (proposed)"},
+	{"name":"program_generate","p50_us":300000,"p90_us":800000,"note":"POST /program/prepare on a project with 30 packages and 40 systems (proposed)"}
   ],
   "note": "Budgets marked where=release are component budgets, judged only on the target VPS (owner decision D-37, 5 October 2026): elsewhere they are measured and reported, not gated. User paths gate everywhere."
 }

@@ -215,6 +215,13 @@ func Handler(deps Deps) http.Handler {
 		"GET /projects/{id}/planning":                        getPlanning,
 		"PUT /projects/{id}/planning/{key}":                  putPlanning,
 		"DELETE /projects/{id}/planning/{key}":               deletePlanning,
+		"GET /projects/{id}/program":                         getProgram,
+		"POST /projects/{id}/program/prepare":                postProgramPrepare,
+		"POST /projects/{id}/program/ops":                    postProgramOps,
+		"POST /projects/{id}/program/undo":                   postProgramUndo,
+		"POST /projects/{id}/program/redo":                   postProgramUndo,
+		"POST /projects/{id}/program/accept":                 postProgramAccept,
+		"POST /projects/{id}/program/question":               postProgramQuestion,
 	}
 	for pattern, h := range routes {
 		path, timed := routePaths[pattern]
@@ -337,6 +344,13 @@ var routePaths = map[string]string{
 	"PATCH /projects/{id}/parts/{part}":                                pathProfileEdit,
 	"GET /projects/{id}/site":                                          pathProfileRead,
 	"PATCH /sites/{site}":                                              pathProfileEdit,
+	"GET /projects/{id}/program":                                       pathProgramRead,
+	"POST /projects/{id}/program/prepare":                              pathProgramGenerate,
+	"POST /projects/{id}/program/ops":                                  pathProgramWrite,
+	"POST /projects/{id}/program/undo":                                 pathProgramWrite,
+	"POST /projects/{id}/program/redo":                                 pathProgramWrite,
+	"POST /projects/{id}/program/accept":                               pathProgramWrite,
+	"POST /projects/{id}/program/question":                             pathProgramWrite,
 	// A planning write rebuilds the profile in code, so it is a profile edit.
 	"GET /projects/{id}/planning":          pathProfileRead,
 	"PUT /projects/{id}/planning/{key}":    pathProfileEdit,

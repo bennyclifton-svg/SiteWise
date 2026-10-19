@@ -195,6 +195,9 @@ func TestCommittedBudgets(t *testing.T) {
 		"spec_home_profile_edit":    {50_000, 150_000},
 		"document_delete":           {500_000, 1_000_000},
 		"project_delete":            {500_000, 1_000_000},
+		"program_read":              {100_000, 250_000},
+		"program_write":             {100_000, 250_000},
+		"program_generate":          {300_000, 800_000},
 	}
 	if len(budgets.Paths) != len(want) {
 		t.Fatalf("paths = %d", len(budgets.Paths))
