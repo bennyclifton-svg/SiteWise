@@ -1,0 +1,1 @@
+{"name":"cycle","computed":{"status":{"known":5,"total":5,"words":"All 5 durations known"},"finish":{"typical":null,"low":null,"high":null,"typical_index":null,"low_index":null,"high_index":null,"complete":false},"activities":{},"driving_links":[],"cycle":["a","b","c","a"],"conflicts":[]},"cycle_words":"Framing → Roof → Cladding → Framing"}

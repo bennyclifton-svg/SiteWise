@@ -831,6 +831,9 @@ func Validate(in Input) error {
 		if (a.Low == nil) != (a.High == nil) || (a.Low != nil && *a.Low > *a.High) {
 			return fmt.Errorf("%s: low and high come together, low first", a.ID)
 		}
+		if a.Low != nil && (*a.Low < 0 || *a.High > MaxDuration) {
+			return fmt.Errorf("%s: duration range must be 0 to 3,650 working days", a.ID)
+		}
 		switch a.Constraint {
 		case "", ConstraintASAP:
 			if a.ConstraintDate != "" {

@@ -41,6 +41,12 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & $Npm --prefix web run build
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+# The TypeScript program engine must reproduce the Go engine on every shared
+# fixture and Go golden output (internal/program/testdata/engine). Go's side
+# of the same fixtures runs in go test below.
+& $Npm --prefix web run test
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 # Integration packages share the dedicated database and deterministic fixture
 # IDs. Serialize packages so cleanup in one cannot remove another's fixtures.
 & go test -p 1 ./...
