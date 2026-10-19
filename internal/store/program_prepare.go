@@ -505,6 +505,9 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 	if same {
 		ci.ConstructionStageID = byKey[plan.ConstructionStageKey]
 	}
+	// Edited rows of a package removed in Procurement stay until the user
+	// decides in the review; the check names them meanwhile (plan 6.6).
+	ci.RemovedPackageRows = engine.RemovedPackageRows(engine.Diff(liveRows(st.Activities), liveLinks(st.Links), plan))
 	ex.Checks = append(ex.Checks, engine.Checks(ci)...)
 	// Generation notes (an unknown lag, a library link that could not be
 	// placed) still describe the stored rows they name; the skeleton tie is
@@ -731,7 +734,10 @@ func (w *programWork) applyGenerated(i int, raw engine.Op) (bool, error) {
 		if len(ids) == 0 {
 			return false, nil
 		}
-		reason := "No longer applies after the Profile answer."
+		reason := w.genReason
+		if reason == "" {
+			reason = "No longer applies after the Profile answer."
+		}
 		return true, w.opDelete(i, ProgramOp{Op: "delete", IDs: ids, Reason: &reason})
 	case "link_add":
 		pred, succ := w.live(w.resolve(o.PredID)), w.live(w.resolve(o.SuccID))

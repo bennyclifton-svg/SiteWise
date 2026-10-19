@@ -70,6 +70,9 @@ type Options struct {
 	// zero value applies none. ProposalJev answers them; nil uses Jev.
 	ProposalThresholds proposals.Thresholds
 	ProposalJev        proposals.Asker
+	// ProgramReviewDelay is the program review's debounce; zero is the
+	// plan's 2 seconds (7.4). Tests shorten it.
+	ProgramReviewDelay time.Duration
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -79,6 +82,7 @@ type Server struct {
 	filer     *filer
 	invoices  *invoiceReader
 	proposals *proposalReader
+	review    *programReviewer
 	closing   chan struct{}
 	closeOnce sync.Once
 }
@@ -185,6 +189,10 @@ func New(opts Options) (*Server, error) {
 	}
 	runner.AfterFile = preader.Filed
 	closing := make(chan struct{})
+	var review *programReviewer
+	if opts.Knowledge != nil {
+		review = newProgramReviewer(opts.Store, opts.Knowledge, broker, opts.Log, opts.ProgramReviewDelay)
+	}
 	api := Handler(Deps{
 		Store:          opts.Store,
 		Blobs:          opts.Blobs,
@@ -199,6 +207,7 @@ func New(opts Options) (*Server, error) {
 		Filer:          f,
 		InvoiceReader:  reader,
 		ProposalReader: preader,
+		ProgramReview:  review,
 		Closing:        closing,
 		Health:         checker,
 		Speed:          speed,
@@ -220,7 +229,7 @@ func New(opts Options) (*Server, error) {
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
-	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, closing: closing}, nil
+	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, review: review, closing: closing}, nil
 }
 
 // CloseStreams ends open event streams. Clients reconnect from their cursor.
@@ -272,13 +281,15 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 	return len(pending) + len(expansions) + len(unread) + len(reading), nil
 }
 
-// Wait blocks until started filings finish or ctx ends.
+// Wait blocks until started filings finish or ctx ends. Program reviews not
+// yet started are dropped (opening the program runs them again).
 func (s *Server) Wait(ctx context.Context) error {
 	done := make(chan struct{})
 	go func() {
 		s.filer.wg.Wait()
 		s.invoices.wg.Wait()
 		s.proposals.wg.Wait()
+		s.review.Stop()
 		close(done)
 	}()
 	select {

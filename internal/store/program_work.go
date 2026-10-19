@@ -42,6 +42,9 @@ type programWork struct {
 
 	stageChange bool
 	temp        map[string]string
+	// genReason is the reason a generated delete gives a hold point; empty
+	// means the question strip's answer.
+	genReason string
 	// catalogue reports a delivery stage id; nil when no catalogue is loaded,
 	// which leaves only `other` acceptable.
 	catalogue func(string) bool

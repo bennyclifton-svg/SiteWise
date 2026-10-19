@@ -41,6 +41,9 @@ type Deps struct {
 	// ProposalReader reads a proposal dropped on a package row whose bytes
 	// were already filed. Nil leaves it to the filing hook.
 	ProposalReader ProposalReader
+	// ProgramReview runs the program's ask-first review after its inputs
+	// change. Nil runs no review.
+	ProgramReview *programReviewer
 	// Closing ends event streams when the server shuts down.
 	Closing <-chan struct{}
 	// Health and Speed serve the owner-only status views. Budgets are what
@@ -222,9 +225,12 @@ func Handler(deps Deps) http.Handler {
 		"POST /projects/{id}/program/redo":                   postProgramUndo,
 		"POST /projects/{id}/program/accept":                 postProgramAccept,
 		"POST /projects/{id}/program/question":               postProgramQuestion,
+		"GET /projects/{id}/program/changes":                 getProgramChanges,
+		"POST /projects/{id}/program/changes/decide":         postProgramDecide,
 		"GET /projects/{id}/program/export":                  getProgramExport,
 	}
 	for pattern, h := range routes {
+		h = reviewHook(pattern, h)
 		path, timed := routePaths[pattern]
 		if !timed || deps.Speed == nil {
 			mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) { h(w, r, deps) })
@@ -352,6 +358,8 @@ var routePaths = map[string]string{
 	"POST /projects/{id}/program/redo":                                 pathProgramWrite,
 	"POST /projects/{id}/program/accept":                               pathProgramWrite,
 	"POST /projects/{id}/program/question":                             pathProgramWrite,
+	"GET /projects/{id}/program/changes":                               pathProgramRead,
+	"POST /projects/{id}/program/changes/decide":                       pathProgramWrite,
 	"GET /projects/{id}/program/export":                                pathProgramExport,
 	// A planning write rebuilds the profile in code, so it is a profile edit.
 	"GET /projects/{id}/planning":          pathProfileRead,

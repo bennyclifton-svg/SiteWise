@@ -186,6 +186,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"GET", base + "/program/export?format=csv&view=collapsed", nil, true}, {"GET", base + "/program/export", nil, true},
 		{"POST", base + "/program/ops", programOps, true}, {"POST", base + "/program/undo", []byte(`{"version":1}`), true}, {"POST", base + "/program/redo", []byte(`{"version":1}`), true},
 		{"POST", base + "/program/accept", []byte(`{"version":1,"all":true}`), true}, {"POST", base + "/program/question", []byte(`{"version":1,"key":"flood_hazard","value":"not_sure"}`), true},
+		{"GET", base + "/program/changes", nil, true}, {"POST", base + "/program/changes/decide", []byte(`{"version":1,"all":"adopt"}`), true},
 		{"GET", base + "/planning", nil, false}, {"PUT", base + "/planning/gross_floor_area", jsonBody(map[string]any{"part_id": part, "value": 1300, "unit": "m2", "version": 1}), true}, {"DELETE", base + "/planning/gross_floor_area?version=1&part_id=" + part, nil, true},
 	}
 	denied := func(t *testing.T, actor *member, r route, path string, want int) {
