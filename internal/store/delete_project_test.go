@@ -6,6 +6,7 @@ import (
 	"errors"
 	"testing"
 
+	"sitewise/internal/procurement"
 	"sitewise/internal/store"
 )
 
@@ -115,6 +116,25 @@ WHERE org_id = $1::uuid AND id = $2::uuid`, orgA, reportVersion, userA); err != 
 		t.Fatal(err)
 	}
 
+	// A program whose stage a package stage points at, with an undo log.
+	pkg, err := st.CreatePackage(ctx, orgA, doomedProject, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	const doomedStage = "33333333-3333-4333-8333-333333333381"
+	if _, err := pool.Exec(ctx, `INSERT INTO package_stages(org_id,id,project_id,package_id,stage_id,label,ordinal,origin) VALUES($1,$2,$3,$4,'design','Design',0,'user')`, orgA, doomedStage, doomedProject, pkg.ID); err != nil {
+		t.Fatal(err)
+	}
+	plan := sampleProgram()
+	plan.PackageStages = map[string]string{doomedStage: "design"}
+	created, err := st.CreateProgram(ctx, orgA, doomedProject, plan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := st.ApplyProgramOps(ctx, orgA, doomedProject, userA, created.ProgramID, 1, []store.ProgramOp{{Op: "set_start"}}); err != nil {
+		t.Fatal(err)
+	}
+
 	var site string
 	if err := pool.QueryRow(ctx, `SELECT site_id::text FROM projects WHERE org_id=$1 AND id=$2`, orgA, doomedProject).Scan(&site); err != nil {
 		t.Fatal(err)
@@ -160,6 +180,10 @@ WHERE org_id = $1::uuid AND id = $2::uuid`, orgA, reportVersion, userA); err != 
 		{"history", `SELECT count(*) FROM specification_history WHERE org_id=$1 AND project_id=$2`, []any{orgA, doomedProject}},
 		{"reports", `SELECT count(*) FROM reports WHERE org_id=$1 AND project_id=$2`, []any{orgA, doomedProject}},
 		{"events", `SELECT count(*) FROM events WHERE org_id=$1 AND payload::jsonb->>'project_id'=$2`, []any{orgA, doomedProject}},
+		{"program", `SELECT count(*) FROM programs WHERE org_id=$1 AND id=$2`, []any{orgA, created.ProgramID}},
+		{"program rows", `SELECT count(*) FROM program_activities WHERE org_id=$1 AND program_id=$2`, []any{orgA, created.ProgramID}},
+		{"program links", `SELECT count(*) FROM program_links WHERE org_id=$1 AND program_id=$2`, []any{orgA, created.ProgramID}},
+		{"program ops", `SELECT count(*) FROM program_ops WHERE org_id=$1 AND program_id=$2`, []any{orgA, created.ProgramID}},
 	}
 	for _, row := range gone {
 		var n int

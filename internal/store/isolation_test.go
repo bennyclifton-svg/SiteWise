@@ -234,6 +234,50 @@ func TestOrgIsolation(t *testing.T) {
 			t.Fatal("expected error")
 		}
 	})
+
+	t.Run("program", func(t *testing.T) {
+		for _, tn := range []struct{ org, project string }{{orgA, projectA}, {orgB, projectB}} {
+			if _, err := st.CreateProgram(ctx, tn.org, tn.project, sampleProgram()); err != nil {
+				t.Fatal(err)
+			}
+		}
+		a, err := st.LoadProgram(ctx, orgA, projectA)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b, err := st.LoadProgram(ctx, orgB, projectB)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := st.LoadProgram(ctx, orgB, projectA); !errors.Is(err, store.ErrNotFound) {
+			t.Fatalf("read: %v", err)
+		}
+		if _, err := st.CreateProgram(ctx, orgA, projectB, sampleProgram()); !errors.Is(err, store.ErrNotFound) {
+			t.Fatalf("create: %v", err)
+		}
+		set := []store.ProgramOp{{Op: "set_start"}}
+		if _, err := st.ApplyProgramOps(ctx, orgB, projectA, userB, a.Program.ID, a.Program.Version, set); !errors.Is(err, store.ErrNotFound) {
+			t.Fatalf("write: %v", err)
+		}
+		// Org B naming A's program on its own project is refused too.
+		if _, err := st.ApplyProgramOps(ctx, orgB, projectB, userB, a.Program.ID, b.Program.Version, set); !errors.Is(err, store.ErrNotFound) {
+			t.Fatalf("forged program id: %v", err)
+		}
+		// And A's row ids are not in B's program.
+		var oe *store.ProgramOpError
+		if _, err := st.ApplyProgramOps(ctx, orgB, projectB, userB, b.Program.ID, b.Program.Version, []store.ProgramOp{{Op: "delete", IDs: []string{a.Activities[0].ID}}}); !errors.As(err, &oe) {
+			t.Fatalf("cross-org row: %v", err)
+		}
+		if _, err := st.UndoProgram(ctx, orgB, projectA, userB, a.Program.Version); !errors.Is(err, store.ErrNotFound) {
+			t.Fatalf("undo: %v", err)
+		}
+		if _, err := st.AcceptProgram(ctx, orgB, projectA, userB, a.Program.Version, nil, true); !errors.Is(err, store.ErrNotFound) {
+			t.Fatalf("accept: %v", err)
+		}
+		if again, err := st.LoadProgram(ctx, orgA, projectA); err != nil || again.Program.Version != a.Program.Version || len(again.Activities) != len(a.Activities) {
+			t.Fatalf("A's program changed: %v", err)
+		}
+	})
 }
 
 func seedTenants(ctx context.Context, st *store.Store) error {

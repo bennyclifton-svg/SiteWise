@@ -179,6 +179,9 @@ func TestPopulatedPreM2MigrationRehearsal(t *testing.T) {
  (SELECT bool_and(rank=CASE severity WHEN 'life-safety' THEN 1 ELSE 2 END) FROM ranked_proposals WHERE org_id=md5('upgrade-org1')::uuid) AND
  (SELECT rank=1 FROM ranked_proposals WHERE org_id=md5('upgrade-org2')::uuid) AND
  NOT EXISTS(SELECT 1 FROM cost_plan_versions) AND
+ (SELECT count(*)=2 AND bool_and(program_stage_id IS NULL AND stage_revision IS NULL) FROM package_stages) AND
+ (SELECT count(*)=2 AND bool_and(stage_revision IS NULL) FROM report_versions) AND
+ NOT EXISTS(SELECT 1 FROM programs) AND
  NOT EXISTS(SELECT 1 FROM pg_constraint WHERE connamespace='public'::regnamespace AND NOT convalidated) AND
  (SELECT count(*)=$1 FROM schema_migrations)`, len(names)).Scan(&valid)
 	if err != nil || !valid {
@@ -234,6 +237,10 @@ func upgradeDigests(ctx context.Context, c *pgx.Conn, tables []string) (map[stri
 			exclude = []string{"projection_hash"}
 		case "passage_sources", "passage_calls":
 			exclude = []string{"document_id"}
+		case "package_stages":
+			exclude = []string{"program_stage_id", "stage_revision"}
+		case "report_versions":
+			exclude = []string{"stage_revision"}
 		}
 		rows, err := c.Query(ctx, `SELECT content FROM (SELECT (to_jsonb(r)-$1::text[])::text AS content FROM `+pgx.Identifier{"public", table}.Sanitize()+` r) saved_rows ORDER BY content COLLATE "C"`, exclude)
 		if err != nil {

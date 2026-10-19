@@ -185,9 +185,27 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["comparison_reports"] = row{"org_id": org, "project_id": p, "package_id": pkg, "recommendation_by": u, "signed_off_by": u, "signed_off_at": "2026-10-16T00:00:00Z"}
 		f["awards"] = row{"org_id": org, "id": award, "project_id": p, "package_id": pkg, "submission_id": submission, "parent_item_id": costID, "parent_created": false, "created_by": u}
 		f["cost_line_sources"] = row{"org_id": org, "id": id(3700 + n), "project_id": p, "award_id": award, "cost_item_id": costID, "item_key": "stage:design"}
+		program, programStage := id(3800+n), id(3900+n)
+		f["programs"] = row{"org_id": org, "id": program, "project_id": p, "library_version": "fixture", "created_by_surface": "program"}
+		f["program_stage"] = row{"org_id": org, "id": programStage, "program_id": program, "ordinal": 0, "kind": "stage", "label": "Design", "catalogue_stage_id": "design", "review_status": "proposed", "origin": "library"}
+		f["program_activities"] = row{"org_id": org, "id": id(4000 + n), "program_id": program, "parent_id": programStage, "ordinal": 0, "kind": "activity", "label": "Concept", "review_status": "proposed", "origin": "library"}
+		f["program_links"] = row{"org_id": org, "id": id(4100 + n), "program_id": program, "pred_id": programStage, "succ_id": id(4000 + n), "type": "SS", "origin": "user"}
+		f["program_calendar_days"] = row{"org_id": org, "program_id": program, "day": "2027-01-01", "kind": "public_holiday", "label": "New Year", "origin": "library"}
+		f["program_ops"] = row{"org_id": org, "program_id": program, "seq": 1, "actor": u, "ops": []any{}, "inverse": []any{}}
+		f["program_changes"] = row{"org_id": org, "id": id(4200 + n), "program_id": program, "source": "profile", "kind": "add", "source_key": "fixture", "proposal": row{}, "summary": "Add", "default_choice": "adopt"}
+		f["program_readings"] = row{"org_id": org, "id": id(4300 + n), "program_id": program, "source": "program_file", "field": "start", "band": "blank", "decided_by": "rule"}
 		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
+			}
+		}
+		for _, key := range []string{"programs", "program_stage", "program_activities"} {
+			table := key
+			if key == "program_stage" {
+				table = "program_activities"
+			}
+			if err := insert(tx, table, f[key]); err != nil {
+				t.Fatal(key, err)
 			}
 		}
 		unusedCost := maps.Clone(f["cost_items"])
@@ -222,6 +240,9 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 	}
 	// A new project needs an unused site for its positive-control insertion.
 	run(`INSERT INTO sites(org_id,id,label) VALUES($1,$2,'Unused')`, id(1), id(9900))
+	// One program per project: the program control needs a project without one.
+	run(`INSERT INTO sites(org_id,id,label) VALUES($1,$2,'Spare')`, id(1), id(9902))
+	run(`INSERT INTO projects(org_id,id,site_id,name) VALUES($1,$2,$3,'Spare')`, id(1), id(9901), id(9902))
 	keys := []string{}
 	for name, f := range after {
 		if old, ok := before[name]; !ok || old.definition != f.definition {
@@ -316,6 +337,17 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 				base["key"] = "sweep"
 			case "report_versions":
 				base["number"] = 2
+			case "programs":
+				base["project_id"] = id(9901)
+			case "program_links":
+				// One live link per pair: the control runs the other way.
+				base["pred_id"], base["succ_id"] = base["succ_id"], base["pred_id"]
+			case "program_calendar_days":
+				base["day"] = "2027-01-02"
+			case "program_ops":
+				base["seq"] = 2
+			case "program_changes":
+				base["source_key"] = "sweep"
 			case "proposals":
 				base["record_id"] = "ic.sweep"
 				base["key"] = "ic.sweep||||0"
