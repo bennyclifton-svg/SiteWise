@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { DevStatus } from "./DevStatus";
 import { Wordmark } from "./Wordmark";
 
-export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs";
+export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs" | "program";
 
 interface Props {
   projects: { id: string; name: string }[] | null;
@@ -16,11 +16,11 @@ interface Props {
   onView: (view: WorkbenchView) => void;
 }
 
-const VIEWS: { id: WorkbenchView | "plan" | "program"; label: string; name?: string; icon: string; idle?: boolean }[] = [
+const VIEWS: { id: WorkbenchView | "plan"; label: string; name?: string; icon: string; idle?: boolean }[] = [
   { id: "profile", label: "Project Profile", name: "Profile", icon: "M4 8h16M4 16h16M8 8v8M16 8v8" },
   { id: "plan", label: "Project Plan", icon: "M7 3h8l4 4v14H7zM15 3v5h5", idle: true },
   { id: "costs", label: "Cost Plan", name: "Costs", icon: "M12 3v18M7 8h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h8" },
-  { id: "program", label: "Program", icon: "M4 6h16M4 12h10M4 18h13", idle: true },
+  { id: "program", label: "Program", icon: "M4 6h16M4 12h10M4 18h13" },
   { id: "procurement", label: "Procurement", icon: "M8 4h8v3H8zM6 7h12v13H6z" },
   { id: "specifications", label: "Specifications", icon: "M7 3h8l4 4v14H7zM9 13h6M9 17h6" },
 ];

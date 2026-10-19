@@ -21,6 +21,7 @@ import { Profile } from "./Profile";
 import { Register } from "./Register";
 import { Procurement } from "./Procurement";
 import { Costs } from "./Costs";
+import { Program } from "./Program";
 import { SpecificationSchedule as Specifications } from "./SpecificationSchedule";
 import { ocrStage } from "./OCRStatus";
 
@@ -236,6 +237,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [invoiceTick, setInvoiceTick] = useState(0);
   const [costsOpened, setCostsOpened] = useState(false);
   const [reportsOpened, setReportsOpened] = useState(false);
+  const [showProgram, setShowProgram] = useState(false);
+  const [programOpened, setProgramOpened] = useState(false);
+  // Newest program version announced on the stream (plan 8.3).
+  const [programVersion, setProgramVersion] = useState(0);
 	const [reportTick, setReportTick] = useState(0);
   const [notReadOnly, setNotReadOnly] = useState(false);
   const [address, setAddress] = useState("");
@@ -301,6 +306,11 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
           lastId.current = ev.id;
           if (ev.kind === "invoices") {
             if (ev.payload?.project_id === projectId) setInvoiceTick(n => n + 1);
+            return;
+          }
+          if (ev.kind === "program.changed") {
+            const p = ev.payload as unknown as { project_id?: string; version?: number } | undefined;
+            if (p?.project_id === projectId && typeof p.version === "number") setProgramVersion((v) => Math.max(v, p.version as number));
             return;
           }
           if (ev.kind === "specification") {
@@ -546,7 +556,9 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     [state, now, flash],
   );
 
-  const view: WorkbenchView = showSpecifications
+  const view: WorkbenchView = showProgram
+    ? "program"
+    : showSpecifications
     ? "specifications"
     : showCosts
       ? "costs"
@@ -555,6 +567,14 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         : "profile";
 
   const showView = (next: WorkbenchView) => {
+    setShowProgram(next === "program");
+    if (next === "program") {
+      setProgramOpened(true);
+      setShowSpecifications(false);
+      setShowCosts(false);
+      setShowReports(false);
+      return;
+    }
     if (next === "specifications") {
       setSpecificationsOpened(true);
       setShowSpecifications(true);
@@ -642,17 +662,18 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
-      wideWorkspace={showSpecifications || showReports || showCosts}
+      wideWorkspace={showSpecifications || showReports || showCosts || showProgram}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <section className="profile-col" aria-label="Project profile" hidden={showSpecifications || showReports || showCosts}>
+      <section className="profile-col" aria-label="Project profile" hidden={showSpecifications || showReports || showCosts || showProgram}>
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} />
       </section>
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
+      {programOpened && <div className="project-reports" hidden={!showProgram}><Program projectId={projectId} remoteVersion={programVersion} active={showProgram} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} onOpenCostPlan={() => showView("costs")} /></div>}
       <input
         ref={fileInput}

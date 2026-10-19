@@ -1,0 +1,183 @@
+/* Program view (plan 9). Colours are DESIGN.md tokens only, so light and
+   dark both work: ember = user or evidenced, azure = library inference,
+   amber (warn) = proposal awaiting review, alert = critical and conflicts.
+   Each also has a second cue: fill weight, dash, stroke width or an icon. */
+
+.cockpit-scroll .program {
+  max-width: none;
+  margin: 0;
+  padding: 16px 18px 20px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: var(--cockpit-radius);
+  background: var(--sw-surface);
+  min-width: 0;
+}
+
+.program { --pg-scale-h: 44px; color: var(--ink-body); font-size: 13.5px; }
+.program-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px; }
+.program-head h1 { margin: 0; font-size: 22px; font-weight: 600; color: var(--ink); }
+.pg-chip { padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink-muted); font-size: 12px; }
+.program-empty { display: grid; justify-items: start; gap: 14px; max-width: 75ch; padding: 24px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); color: var(--ink-muted); }
+.program-empty p { margin: 0; }
+.pg-build { background: var(--ember); border-color: var(--ember); color: var(--paper); }
+.pg-build:hover { background: var(--ember-hot); border-color: var(--ember-hot); }
+:root[data-theme="dark"] .pg-build { color: #fff; }
+
+.pg-toolbar { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-bottom: 10px; }
+.pg-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.pg-toolbar .btn { height: 28px; padding: 0 10px; font-size: 12.5px; text-decoration: none; display: inline-flex; align-items: center; }
+.pg-toolbar .pg-icon { width: 28px; padding: 0; justify-content: center; font-size: 15px; }
+.pg-toolbar .btn[aria-pressed="true"] { background: var(--ground); }
+.pg-accept { border-color: var(--warn); }
+
+.pg-strip { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 10px; padding: 8px 12px; border: 1px solid var(--line); border-left: 3px solid var(--azure); border-radius: var(--radius-sm); background: var(--paper); }
+.pg-q { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.pg-q-label { font-weight: 500; color: var(--ink); }
+.pg-q-why { color: var(--ink-muted); font-size: 12px; }
+.pg-q-number { width: 9ch; height: 28px; }
+.pg-start { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-muted); font-size: 12px; }
+.pg-start .input { height: 28px; font-family: var(--mono); }
+
+.pg-summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 22px; margin-bottom: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); }
+.pg-k { color: var(--ink-muted); font-size: 12px; margin-right: 6px; }
+.pg-v { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 15px; color: var(--ink); }
+.pg-v.is-unknown { font-family: var(--sans); font-style: italic; font-weight: 500; color: var(--warn); }
+.pg-range { margin-left: 8px; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink-body); }
+.pg-status { color: var(--ink-body); }
+.pg-skeleton, .pg-relative { color: var(--ink-muted); font-size: 12.5px; }
+.pg-reason { color: var(--ink-muted); }
+.pg-alert { color: var(--alert); font-weight: 500; }
+.pg-checks-toggle { border: 0; background: none; padding: 0; color: var(--warn); font: inherit; font-weight: 600; text-decoration: underline dotted; cursor: pointer; }
+.pg-checks ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-body); flex-basis: 100%; }
+.pg-checks { flex-basis: 100%; }
+.pg-note { margin-bottom: 10px; padding: 8px 12px; border: 1px solid var(--warn); border-radius: var(--radius-sm); background: var(--warn-soft); color: var(--ink); }
+.pg-toast { min-height: 1.2em; margin: 8px 0 0; color: var(--ink-muted); font-size: 12.5px; }
+
+/* Split pane: one scroller in both directions; the grid column is sticky on
+   the left and the timescale sticky on top, so the vertical scroll is shared
+   and the chart alone scrolls sideways. */
+.pg-body {
+  position: relative;
+  height: max(320px, calc(100dvh - 330px));
+  overflow: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
+}
+.pg-canvas { display: grid; grid-template-columns: var(--pg-grid-w) 1fr; grid-template-rows: var(--pg-scale-h) 1fr; position: relative; }
+.pg-corner { position: sticky; top: 0; left: 0; z-index: 4; height: var(--pg-scale-h); background: var(--canvas); border-bottom: 1px solid var(--line-strong); border-right: 1px solid var(--line-strong); }
+.pg-scale { position: sticky; top: 0; z-index: 3; height: var(--pg-scale-h); background: var(--canvas); border-bottom: 1px solid var(--line-strong); }
+.pg-gridcol { position: sticky; left: 0; z-index: 2; background: var(--paper); border-right: 1px solid var(--line-strong); overflow: hidden; }
+.pg-chartcol { position: relative; z-index: 1; }
+
+.pg-gridhead, .pg-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 84px 96px 96px; align-items: center; }
+.is-narrow .pg-gridhead, .is-narrow .pg-row { grid-template-columns: minmax(0, 1fr); }
+.pg-gridhead { height: 100%; padding-top: 18px; font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+.pg-cell { padding: 0 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pg-rows { will-change: transform; }
+.pg-row { box-sizing: border-box; border-bottom: 1px solid var(--line); cursor: default; user-select: none; }
+.pg-row:hover { background: var(--ground); }
+.pg-row.is-selected { background: var(--ember-soft); box-shadow: inset 2px 0 0 var(--ember); }
+:root[data-theme="dark"] .pg-row.is-selected { background: color-mix(in oklab, var(--ember) 22%, transparent); }
+.pg-row.is-stage .pg-label { font-weight: 600; color: var(--ink); }
+.pg-row:not(.is-stage) .pg-name { padding-left: 30px; }
+.pg-num { font-family: var(--mono); font-size: 11px; color: var(--ink-muted); text-align: right; }
+.pg-name { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.pg-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-dur, .pg-date { font-family: var(--mono); font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--ink-body); }
+.pg-dur.is-unknown { color: var(--warn); font-style: italic; font-family: var(--sans); }
+.pg-chevron { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--ink-muted); cursor: pointer; flex: none; }
+.pg-chevron:hover { background: var(--line); color: var(--ink); }
+.pg-chevron svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.pg-chevron-gap { width: 20px; flex: none; }
+/* Amber square plus the "proposed" text for screen readers and the title. */
+.pg-proposed { flex: none; width: 8px; height: 8px; margin-left: 4px; border: 1.5px dashed var(--warn); border-radius: 1px; background: var(--warn-soft); }
+.pg-unknown-tag { flex: none; padding: 0 4px; border: 1px dotted var(--warn); border-radius: 3px; color: var(--warn); font-size: 11px; }
+.pg-divider { position: absolute; top: 0; right: -4px; bottom: 0; width: 8px; cursor: col-resize; z-index: 5; }
+.pg-divider:hover, .pg-divider:focus-visible { background: color-mix(in oklab, var(--azure) 30%, transparent); }
+
+/* Chart */
+.pg-scale-svg, .pg-chart { display: block; font-family: var(--sans); }
+.pg-scale-svg text { font-size: 11px; fill: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.pg-major text { font-weight: 600; fill: var(--ink-body); }
+.pg-tick { stroke: var(--line-strong); stroke-width: 1; shape-rendering: crispEdges; }
+.pg-tick-minor { stroke: var(--line); }
+.pg-gridline { stroke: var(--line); stroke-width: 1; shape-rendering: crispEdges; opacity: 0.7; }
+.pg-gridline-major { stroke: var(--line-strong); opacity: 0.8; }
+.pg-break { fill: var(--hatch); stroke: var(--line-strong); stroke-width: 0.5; }
+.pg-today { stroke: var(--ember); stroke-width: 1.5; stroke-dasharray: 3 3; }
+
+.pg-bar .pg-shape { stroke-width: 1; }
+.pg-bar.o-user .pg-shape { fill: var(--ember); stroke: var(--ember-hot); }
+.pg-bar.o-library .pg-shape { fill: var(--azure-soft); stroke: var(--azure); }
+.pg-bar.is-summary .pg-shape { fill: var(--ink-body); stroke: var(--ink-body); }
+.pg-bar.is-summary.o-user .pg-shape { fill: var(--ember-hot); stroke: var(--ember-hot); }
+.pg-bar.is-proposed .pg-shape { stroke: var(--warn); stroke-dasharray: 4 2; stroke-width: 1.5; }
+.pg-bar.is-critical .pg-shape { stroke: var(--alert); stroke-width: 2; stroke-dasharray: none; }
+.pg-bar.is-conflict .pg-shape { stroke: var(--alert); stroke-dasharray: 2 2; stroke-width: 2; }
+.pg-bar.is-selected .pg-shape { stroke: var(--ember); stroke-width: 2.5; }
+.pg-bar:focus-visible { outline: none; }
+.pg-bar:focus-visible .pg-shape { stroke: var(--sw-action-focus); stroke-width: 3; }
+.pg-hold-mark { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+.pg-label-in, .pg-label-out { font-size: 12px; dominant-baseline: auto; pointer-events: none; }
+.pg-label-out { fill: var(--ink-body); }
+.pg-bar.o-user .pg-label-in { fill: #fff; }
+.pg-bar.o-library .pg-label-in { fill: var(--ink); }
+.pg-bar.is-summary .pg-label-out { font-weight: 600; fill: var(--ink); }
+.pg-unknown rect { fill: none; stroke: var(--warn); stroke-dasharray: 2 2; }
+.pg-unknown text { font-size: 11px; fill: var(--warn); font-weight: 600; }
+.pg-unknown .pg-unknown-text { font-weight: 400; font-style: italic; }
+
+.pg-link-line { fill: none; stroke: var(--ink-muted); stroke-width: 1; }
+.pg-link.is-free .pg-link-line { stroke-dasharray: 4 3; }
+.pg-link.is-critical .pg-link-line { stroke: var(--alert); stroke-width: 2; }
+.pg-link.is-faint { opacity: 0.4; }
+.pg-link-arrow { fill: var(--ink-muted); }
+.pg-link.is-critical .pg-link-arrow { fill: var(--alert); }
+.pg-link-hit { fill: none; stroke: transparent; stroke-width: 10; pointer-events: stroke; }
+.pg-link-hold { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+.pg-link-lag { font-size: 11px; font-family: var(--mono); fill: var(--ink); opacity: 0; pointer-events: none; }
+.pg-link:hover .pg-link-lag { opacity: 1; }
+.pg-link:hover .pg-link-line { stroke-width: 2; }
+
+.pg-guide { stroke: var(--ember); stroke-dasharray: 2 2; }
+.pg-selbox { fill: color-mix(in oklab, var(--ember) 10%, transparent); stroke: var(--ember); }
+.pg-tip rect { fill: var(--ink); }
+.pg-tip text { fill: var(--paper); font-size: 11px; }
+
+@media (max-width: 760px) {
+  .cockpit-scroll .program { padding: 12px 10px 16px; }
+  .pg-toolbar { gap: 6px; }
+  .pg-body { height: max(320px, calc(100dvh - 380px)); }
+}
+
+.pg-print { display: none; }
+
+/* A named page, so the A4 rules other views print with never apply here.
+   .pg-print exists only while printing (beforeprint), so these rules touch
+   no other view. */
+@page program-a3 { size: A3 landscape; margin: 10mm; }
+
+@media print {
+  html:has(.pg-print) body { page: program-a3; }
+  html:has(.pg-print) :is(.leftnav, .project-side-panel, .ask-bar, .cockpit-shell-header .btn, .cockpit-shell-header button, .profile-col) { display: none !important; }
+  html:has(.pg-print) .cockpit-shell { display: block !important; }
+  html:has(.pg-print) :is(.cockpit-scroll, .project-main-panel) { overflow: visible !important; height: auto !important; }
+  .pg-toolbar, .pg-strip, .pg-toast, .pg-note, .pg-body { display: none !important; }
+  .cockpit-scroll .program { border: 0; padding: 0; }
+  .pg-print { display: block; }
+  .pg-print-page { break-after: page; break-inside: avoid; width: calc(var(--pg-grid-w) + 1160px); }
+  .pg-print-page:last-child { break-after: auto; }
+  .pg-print-head { display: grid; grid-template-columns: var(--pg-grid-w) 1160px; height: 44px; border-bottom: 1px solid var(--line-strong); }
+  .pg-print-body { position: relative; display: grid; grid-template-columns: var(--pg-grid-w) 1160px; overflow: hidden; }
+  .pg-print-grid, .pg-print-chart { align-self: start; }
+  .pg-print-grid { border-right: 1px solid var(--line-strong); }
+  .pg-print-head .pg-gridhead { padding-top: 18px; }
+  .pg-link-lag { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-bar, .pg-rows { transition: none !important; }
+}
