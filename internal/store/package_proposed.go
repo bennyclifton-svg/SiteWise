@@ -61,7 +61,7 @@ func (s *Store) acceptProposalTx(ctx context.Context, tx pgx.Tx, org, project, a
 			}
 		} else {
 			p = procurement.Package{Kind: "works", WorksScope: "head_contract", DisciplineID: disciplineID, Title: w.Title, LifecycleStatus: "planned", Stages: []procurement.Stage{}}
-			if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance); err != nil {
+			if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance, nil); err != nil {
 				return p, err
 			}
 		}
@@ -83,8 +83,12 @@ func (s *Store) acceptProposalTx(ctx context.Context, tx pgx.Tx, org, project, a
 			continue
 		}
 		p = procurement.Package{Kind: "services", DisciplineID: disciplineID, Title: sug.Title, Novation: sug.Novation, LifecycleStatus: "planned"}
-		p.Stages = procurement.DefaultStages(p, s.workCatalog())
-		if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance); err != nil {
+		plan, err := readStagePlan(ctx, tx, org, project, false)
+		if err != nil {
+			return p, err
+		}
+		p.Stages = s.defaultStages(p, plan)
+		if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance, plan); err != nil {
 			return p, err
 		}
 		return p, nil
@@ -93,7 +97,8 @@ func (s *Store) acceptProposalTx(ctx context.Context, tx pgx.Tx, org, project, a
 	return p, ErrNotFound
 }
 
-func (s *Store) insertProposedPackage(ctx context.Context, tx pgx.Tx, org, project string, p procurement.Package, provenance []byte) (procurement.Package, error) {
+// plan is the program's stage plan, nil when the project has none.
+func (s *Store) insertProposedPackage(ctx context.Context, tx pgx.Tx, org, project string, p procurement.Package, provenance []byte, plan *stagePlan) (procurement.Package, error) {
 	if err := procurement.ValidatePackage(p); err != nil {
 		return p, fmt.Errorf("%w: %v", ErrInvalidPackage, err)
 	}
@@ -116,7 +121,7 @@ func (s *Store) insertProposedPackage(ctx context.Context, tx pgx.Tx, org, proje
 		return p, err
 	}
 	for i := range p.Stages {
-		stage, err := s.insertPackageStage(ctx, tx, org, p, p.Stages[i])
+		stage, err := s.insertPackageStage(ctx, tx, org, p, p.Stages[i], plan)
 		if err != nil {
 			return p, err
 		}

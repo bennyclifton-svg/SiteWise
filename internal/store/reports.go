@@ -370,6 +370,13 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 	if err := json.Unmarshal(raw, &d); err != nil {
 		return d, err
 	}
+	// A new RFP draft records the stage plan it is built from (program plan
+	// 7.6); a refresh leaves its rows to Update or Keep.
+	if creatingDraft {
+		if err := recordRFPStages(ctx, tx, org, r, d.ID); err != nil {
+			return d, err
+		}
+	}
 	if previous != "" && creatingDraft {
 		_, err = tx.Exec(ctx, `INSERT INTO report_edits(org_id,report_version_id,target_id,text,base_content_sha256,user_id,version,created_at,updated_at) SELECT org_id,$3::uuid,target_id,text,base_content_sha256,user_id,version,created_at,updated_at FROM report_edits WHERE org_id=$1::uuid AND report_version_id=$2::uuid ON CONFLICT DO NOTHING`, org, previous, d.ID)
 		if err != nil {

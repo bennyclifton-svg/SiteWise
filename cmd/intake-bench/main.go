@@ -48,6 +48,7 @@ import (
 	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
 	"sitewise/internal/profile"
+	"sitewise/internal/programread"
 	"sitewise/internal/proposals"
 	"sitewise/internal/store"
 	"sitewise/web"
@@ -312,9 +313,11 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	}
 	var invoiceAsk invoices.Asker
 	var proposalAsk proposals.Asker
+	var programAsk programread.Asker
 	if !o.live {
 		invoiceAsk = newInvoiceModel(records)
 		proposalAsk = newProposalModel(repo)
+		programAsk = programModel{proposal: newProposalModel(repo)}
 	}
 	proposalTh, err := proposals.LoadThresholds(filepath.Join(repo, "data", "proposal"))
 	if err != nil {
@@ -325,6 +328,7 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 		InvoiceJev:         invoiceAsk,
 		ProposalThresholds: proposalTh,
 		ProposalJev:        proposalAsk,
+		ProgramJev:         programAsk,
 		Store:              st,
 		Blobs:              blobs,
 		Jev:                client,

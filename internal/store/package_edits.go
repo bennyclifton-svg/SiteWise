@@ -151,7 +151,11 @@ func (s *Store) CreatePackageStage(ctx context.Context, org, project, id, actor 
 		return stage, fmt.Errorf("%w: too many stages", ErrInvalidPackage)
 	}
 	stage.Origin = "user"
-	stage, err = s.insertPackageStage(ctx, tx, org, p, stage)
+	plan, err := readStagePlan(ctx, tx, org, project, false)
+	if err != nil {
+		return stage, err
+	}
+	stage, err = s.insertPackageStage(ctx, tx, org, p, stage, plan)
 	if err != nil {
 		return stage, err
 	}

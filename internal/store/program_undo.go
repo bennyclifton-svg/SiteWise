@@ -127,7 +127,7 @@ func (w *programWork) loadTouched(ctx context.Context, tx pgx.Tx, entries []prog
 		}
 	}
 	w.addRetired(acts, links)
-	return nil
+	return w.loadReadingStatus(ctx, tx, entries)
 }
 
 // restore checks every touched row against the image the flip expects and
@@ -190,6 +190,10 @@ func (w *programWork) restore(entries []programInverse, undo bool) (programChang
 			} else {
 				w.days[e.ID] = *next
 				c.upsDays = append(c.upsDays, *next)
+			}
+		case "reading":
+			if !w.restoreReading(e, from, to, &c) {
+				return c, changed
 			}
 		case "program":
 			var want, next startImage
@@ -286,14 +290,4 @@ func (s *Store) AcceptProgram(ctx context.Context, org, project, actor string, v
 	}, func(ctx context.Context, tx pgx.Tx, w *programWork, c programChanges) error {
 		return logProgramBatch(ctx, tx, w, actor, []any{op}, c)
 	})
-}
-
-// acceptProgramReadings is the seam for document readings (WP-P12): ids
-// that are not program rows will name program_readings rows. Until readings
-// exist, any such id is not in this program.
-func acceptProgramReadings(ctx context.Context, tx pgx.Tx, w *programWork, ids []string, all bool) error {
-	if len(ids) > 0 {
-		return opErr(-1, "ids", MsgNotInProgram)
-	}
-	return nil
 }

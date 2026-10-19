@@ -21,6 +21,7 @@ import (
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
+	"sitewise/internal/programread"
 	"sitewise/internal/proposals"
 	"sitewise/internal/store"
 )
@@ -70,6 +71,10 @@ type Options struct {
 	// zero value applies none. ProposalJev answers them; nil uses Jev.
 	ProposalThresholds proposals.Thresholds
 	ProposalJev        proposals.Asker
+	// ProgramThresholds band Jev's program_row answers (data/program); the
+	// zero value applies none. ProgramJev answers them; nil uses Jev.
+	ProgramThresholds programread.Thresholds
+	ProgramJev        programread.Asker
 	// ProgramReviewDelay is the program review's debounce; zero is the
 	// plan's 2 seconds (7.4). Tests shorten it.
 	ProgramReviewDelay time.Duration
@@ -82,6 +87,7 @@ type Server struct {
 	filer     *filer
 	invoices  *invoiceReader
 	proposals *proposalReader
+	imports   *programImporter
 	review    *programReviewer
 	closing   chan struct{}
 	closeOnce sync.Once
@@ -187,31 +193,55 @@ func New(opts Options) (*Server, error) {
 	if preader.thresholds.QuestionVersion == "" {
 		preader.thresholds.QuestionVersion = proposals.QuestionVersion
 	}
-	runner.AfterFile = preader.Filed
+	importer := &programImporter{
+		store:      opts.Store,
+		blobs:      opts.Blobs,
+		ask:        opts.Jev,
+		thresholds: opts.ProgramThresholds,
+		broker:     broker,
+		log:        opts.Log,
+		observe:    speed.Observe,
+		timeout:    30 * time.Second,
+		slots:      make(chan struct{}, 8),
+		now:        time.Now,
+		inflight:   map[string]struct{}{},
+	}
+	if opts.ProgramJev != nil {
+		importer.ask = opts.ProgramJev
+	}
+	if importer.thresholds.QuestionVersion == "" {
+		importer.thresholds.QuestionVersion = programread.QuestionVersion
+	}
+	// Both readers return at once; filing itself is unchanged.
+	runner.AfterFile = func(orgID, documentID string, text identity.Text) {
+		preader.Filed(orgID, documentID, text)
+		importer.Filed(orgID, documentID, text)
+	}
 	closing := make(chan struct{})
 	var review *programReviewer
 	if opts.Knowledge != nil {
 		review = newProgramReviewer(opts.Store, opts.Knowledge, broker, opts.Log, opts.ProgramReviewDelay)
 	}
 	api := Handler(Deps{
-		Store:          opts.Store,
-		Blobs:          opts.Blobs,
-		PublicOrigin:   opts.PublicOrigin,
-		Log:            opts.Log,
-		SecureCookie:   opts.SecureCookie,
-		MaxUploadBytes: opts.MaxUploadBytes,
-		Uploader:       intake.NewUploader(opts.Blobs, opts.Store),
-		Service:        svc,
-		Catalog:        opts.Catalog,
-		Broker:         broker,
-		Filer:          f,
-		InvoiceReader:  reader,
-		ProposalReader: preader,
-		ProgramReview:  review,
-		Closing:        closing,
-		Health:         checker,
-		Speed:          speed,
-		Budgets:        budgets,
+		Store:           opts.Store,
+		Blobs:           opts.Blobs,
+		PublicOrigin:    opts.PublicOrigin,
+		Log:             opts.Log,
+		SecureCookie:    opts.SecureCookie,
+		MaxUploadBytes:  opts.MaxUploadBytes,
+		Uploader:        intake.NewUploader(opts.Blobs, opts.Store),
+		Service:         svc,
+		Catalog:         opts.Catalog,
+		Broker:          broker,
+		Filer:           f,
+		InvoiceReader:   reader,
+		ProposalReader:  preader,
+		ProgramImporter: importer,
+		ProgramReview:   review,
+		Closing:         closing,
+		Health:          checker,
+		Speed:           speed,
+		Budgets:         budgets,
 
 		Knowledge:         opts.Knowledge,
 		ProfileThresholds: opts.ProfileThresholds,
@@ -225,11 +255,11 @@ func New(opts Options) (*Server, error) {
 	if opts.DevLogin {
 		mux.Handle("GET /dev/login", noStore(devLogin(opts.Store, opts.SecureCookie, opts.Log)))
 		// tools/dev.ps1 starts serve in the repo root, so "." is the source tree.
-		mux.Handle("GET /dev/build", noStore(devBuild(".", time.Now())))
+		mux.Handle("GET /dev/build", noStore(devBuild(".", time.Now(), calibrationNotes(importer.thresholds))))
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
-	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, review: review, closing: closing}, nil
+	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, imports: importer, review: review, closing: closing}, nil
 }
 
 // CloseStreams ends open event streams. Clients reconnect from their cursor.
@@ -278,7 +308,19 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 	for _, p := range reading {
 		s.proposals.Start(p.OrgID, p.SubmissionID, time.Time{}, false)
 	}
-	return len(pending) + len(expansions) + len(unread) + len(reading), nil
+	imports, err := s.store.PendingProgramImports(ctx)
+	if err != nil {
+		return len(pending) + len(expansions) + len(unread) + len(reading), err
+	}
+	for _, ref := range imports {
+		// A filing that finished while the process was down never ran the
+		// hook; claim it now. A claimed read restarts as it was.
+		if refs, err := s.store.ClaimProgramImport(ctx, ref.OrgID, ref.ImportID); err == nil && len(refs) > 0 {
+			ref = refs[0]
+		}
+		s.imports.Start(store.ProgramImportRef{OrgID: ref.OrgID, ImportID: ref.ImportID}, false)
+	}
+	return len(pending) + len(expansions) + len(unread) + len(reading) + len(imports), nil
 }
 
 // Wait blocks until started filings finish or ctx ends. Program reviews not
@@ -289,6 +331,7 @@ func (s *Server) Wait(ctx context.Context) error {
 		s.filer.wg.Wait()
 		s.invoices.wg.Wait()
 		s.proposals.wg.Wait()
+		s.imports.wg.Wait()
 		s.review.Stop()
 		close(done)
 	}()

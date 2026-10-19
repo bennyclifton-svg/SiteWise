@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"sitewise/internal/programread"
 )
 
 // Development only: the running binary is a snapshot of the source tree.
@@ -21,12 +23,25 @@ type devBuildJSON struct {
 	ServerChanged string    `json:"server_changed,omitempty"`
 	WebStale      bool      `json:"web_stale"`
 	WebChanged    string    `json:"web_changed,omitempty"`
+	Calibration   []string  `json:"calibration,omitempty"`
 }
 
-func devBuild(root string, started time.Time) http.HandlerFunc {
+func devBuild(root string, started time.Time, calibration []string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, devBuildStatus(root, started))
+		out := devBuildStatus(root, started)
+		out.Calibration = calibration
+		writeJSON(w, http.StatusOK, out)
 	}
+}
+
+// calibrationNotes names Jev question families with no calibrated cut-off:
+// their answers stay blank, so the feature is visible but inert (plan 10.5).
+func calibrationNotes(program programread.Thresholds) []string {
+	var out []string
+	if !program.Calibrated(programread.Family) {
+		out = append(out, programread.Family+": not calibrated")
+	}
+	return out
 }
 
 func devBuildStatus(root string, started time.Time) devBuildJSON {

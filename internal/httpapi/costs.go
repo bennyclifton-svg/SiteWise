@@ -76,6 +76,11 @@ func postCostItem(w http.ResponseWriter, r *http.Request, d Deps) {
 		return
 	}
 	p, e := d.Store.CreateCostItem(r.Context(), s.OrgID, r.PathValue("id"), s.UserID, in)
+	// A fee line by stage creates the stage plan when the project has none
+	// (plan 7.6); the line itself is already saved.
+	if e == nil && in.LineKind == "fee" && in.PackageStageID != "" {
+		ensureProgram(r, d, s.OrgID, r.PathValue("id"), "cost_plan")
+	}
 	costResult(w, d, s.OrgID, p, e)
 }
 func patchCostItem(w http.ResponseWriter, r *http.Request, d Deps) {

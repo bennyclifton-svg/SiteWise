@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "./api";
 import { reportApi, type ReportView, type ReportReference, type ReportBlock, type PageFit } from "./reportApi";
 import { submissionApi } from "./submissionApi";
+import { RfpStages } from "./PackageStages";
 import { ProjectPage, RfpReleaseDates, RfpIssue, RfpSectionEditor, SectionMarkers, controlSection, editableSections } from "./RfpEditor";
 import "./reports.css";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -188,6 +189,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
           <SectionMarkers controls={view.rfp} section="issue_dates" busyKey={busyKey} onWrite={writeSetting} onJump={jump} />
         </>}
         {view.rfp_suggestion && <div className="report-notice" role="status"><strong>This package looks like {view.rfp_suggestion.title.toLowerCase()}</strong><p>Use the {view.rfp_suggestion.title.toLowerCase()} RFP, built from the reviewed golden set, instead of the generic one? This records the package's discipline; the package title alone never changes the scope.</p><div className="report-actions"><button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => void confirmDiscipline()}>Use the {view.rfp_suggestion.title.toLowerCase()} RFP</button></div></div>}
+        {view.rfp && <RfpStages reportId={reportId} tick={tick} onChanged={() => setReload(n => n + 1)} onSignedOut={onSignedOut} />}
         {!!view.issues?.length && <section className="report-notice" aria-label="Issued reports"><h3>Issued reports</h3><ul>{view.issues.map(item => <li key={item.id}><a href={`/api/reports/${reportId}/versions/${item.id}/file`}>Download issue {item.number} — {item.reporting_date}</a></li>)}</ul><p>Issued PDFs retain their saved sources and wording.</p></section>}
         {!!view.changes_since_issue?.length && <details className="report-notice"><summary>Changes since last issue ({view.changes_since_issue.length})</summary><ul>{view.changes_since_issue.map(change => <li key={change.target_id}><strong>{change.kind}</strong>: {change.after || change.before}</li>)}</ul></details>}
         {draft && <div>

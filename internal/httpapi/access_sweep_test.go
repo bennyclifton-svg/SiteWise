@@ -143,7 +143,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 	// and events. Checking just the returned status would miss partial writes.
 	snapshot := func() map[string]string {
 		out := map[string]string{}
-		for _, table := range []string{"cost_plan_versions", "cost_plans", "cost_items", "cost_item_revisions", "cost_values", "cost_suggestion_dismissals", "projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs", "programs", "program_activities", "program_links", "program_calendar_days", "program_ops", "program_changes", "program_readings"} {
+		for _, table := range []string{"cost_plan_versions", "cost_plans", "cost_items", "cost_item_revisions", "cost_values", "cost_suggestion_dismissals", "projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs", "programs", "program_activities", "program_links", "program_calendar_days", "program_ops", "program_changes", "program_readings", "program_imports"} {
 			var raw []byte
 			err := conn.QueryRow(ctx, `SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY to_jsonb(r)::text),'[]'::jsonb) FROM `+pgx.Identifier{table}.Sanitize()+` r WHERE org_id=ANY($1::uuid[])`, []string{m.orgID, foreign.orgID}).Scan(&raw)
 			if err != nil {
@@ -187,6 +187,9 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"POST", base + "/program/ops", programOps, true}, {"POST", base + "/program/undo", []byte(`{"version":1}`), true}, {"POST", base + "/program/redo", []byte(`{"version":1}`), true},
 		{"POST", base + "/program/accept", []byte(`{"version":1,"all":true}`), true}, {"POST", base + "/program/question", []byte(`{"version":1,"key":"flood_hazard","value":"not_sure"}`), true},
 		{"GET", base + "/program/changes", nil, true}, {"POST", base + "/program/changes/decide", []byte(`{"version":1,"all":"adopt"}`), true},
+		{"GET", pkgPath + "/stage-sync", nil, true}, {"POST", pkgPath + "/stage-sync", []byte(`{"choice":"keep","revision":1}`), true},
+		{"GET", reportPath + "/stage-sync", nil, false}, {"POST", reportPath + "/stage-sync", []byte(`{"choice":"update","revision":1}`), false},
+		{"POST", base + "/program/import?name=Intrusion.xlsx", []byte("x"), true}, {"POST", base + "/program/readings/dismiss", []byte(`{"version":1,"ids":["` + newUUID(t) + `"]}`), true},
 		{"GET", base + "/planning", nil, false}, {"PUT", base + "/planning/gross_floor_area", jsonBody(map[string]any{"part_id": part, "value": 1300, "unit": "m2", "version": 1}), true}, {"DELETE", base + "/planning/gross_floor_area?version=1&part_id=" + part, nil, true},
 	}
 	denied := func(t *testing.T, actor *member, r route, path string, want int) {

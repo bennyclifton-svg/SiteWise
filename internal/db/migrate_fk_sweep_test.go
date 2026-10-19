@@ -194,6 +194,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["program_ops"] = row{"org_id": org, "program_id": program, "seq": 1, "actor": u, "ops": []any{}, "inverse": []any{}}
 		f["program_changes"] = row{"org_id": org, "id": id(4200 + n), "program_id": program, "source": "profile", "kind": "add", "source_key": "fixture", "proposal": row{}, "summary": "Add", "default_choice": "adopt"}
 		f["program_readings"] = row{"org_id": org, "id": id(4300 + n), "program_id": program, "source": "program_file", "field": "start", "band": "blank", "decided_by": "rule"}
+		f["program_imports"] = row{"org_id": org, "id": id(4400 + n), "program_id": program, "document_id": id(1900 + n), "filename": "program.xlsx"}
 		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
@@ -348,6 +349,9 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 				base["seq"] = 2
 			case "program_changes":
 				base["source_key"] = "sweep"
+			case "program_imports":
+				// One import per document: the control uses the spare document.
+				base["document_id"] = id(1951)
 			case "proposals":
 				base["record_id"] = "ic.sweep"
 				base["key"] = "ic.sweep||||0"

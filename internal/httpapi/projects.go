@@ -44,6 +44,9 @@ type Deps struct {
 	// ProgramReview runs the program's ask-first review after its inputs
 	// change. Nil runs no review.
 	ProgramReview *programReviewer
+	// ProgramImporter reads a program file dropped on Program whose bytes
+	// were already filed. Nil leaves it to the filing hook.
+	ProgramImporter ProgramImporter
 	// Closing ends event streams when the server shuts down.
 	Closing <-chan struct{}
 	// Health and Speed serve the owner-only status views. Budgets are what
@@ -228,6 +231,12 @@ func Handler(deps Deps) http.Handler {
 		"GET /projects/{id}/program/changes":                 getProgramChanges,
 		"POST /projects/{id}/program/changes/decide":         postProgramDecide,
 		"GET /projects/{id}/program/export":                  getProgramExport,
+		"POST /projects/{id}/program/import":                 postProgramImport,
+		"POST /projects/{id}/program/readings/dismiss":       postProgramReadingsDismiss,
+		"GET /projects/{id}/packages/{pkg}/stage-sync":       getPackageStageSync,
+		"POST /projects/{id}/packages/{pkg}/stage-sync":      postPackageStageSync,
+		"GET /reports/{r}/stage-sync":                        getReportStageSync,
+		"POST /reports/{r}/stage-sync":                       postReportStageSync,
 	}
 	for pattern, h := range routes {
 		h = reviewHook(pattern, h)
@@ -361,6 +370,11 @@ var routePaths = map[string]string{
 	"GET /projects/{id}/program/changes":                               pathProgramRead,
 	"POST /projects/{id}/program/changes/decide":                       pathProgramWrite,
 	"GET /projects/{id}/program/export":                                pathProgramExport,
+	"POST /projects/{id}/program/readings/dismiss":                     pathProgramWrite,
+	"GET /projects/{id}/packages/{pkg}/stage-sync":                     pathPackagesRead,
+	"POST /projects/{id}/packages/{pkg}/stage-sync":                    pathStageSyncWrite,
+	"GET /reports/{r}/stage-sync":                                      pathReportRead,
+	"POST /reports/{r}/stage-sync":                                     pathStageSyncWrite,
 	// A planning write rebuilds the profile in code, so it is a profile edit.
 	"GET /projects/{id}/planning":          pathProfileRead,
 	"PUT /projects/{id}/planning/{key}":    pathProfileEdit,

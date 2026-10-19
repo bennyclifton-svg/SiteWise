@@ -33,6 +33,12 @@ func (a *apiClient) program(ctx context.Context, st *store.Store, cat *knowledge
 	if err := a.programReadWrite(ctx, st, n); err != nil {
 		return fmt.Errorf("program read and write: %w", err)
 	}
+	if err := a.stageSync(ctx, n); err != nil {
+		return fmt.Errorf("stage sync: %w", err)
+	}
+	if err := a.programImport(ctx, n); err != nil {
+		return fmt.Errorf("program import: %w", err)
+	}
 	return nil
 }
 

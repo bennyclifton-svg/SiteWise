@@ -210,15 +210,19 @@ func (s *Store) CreatePackage(ctx context.Context, org, project, actor string, p
 	if err != nil {
 		return p, err
 	}
+	plan, err := readStagePlan(ctx, tx, org, project, false)
+	if err != nil {
+		return p, err
+	}
 	if p.Stages == nil {
-		p.Stages = procurement.DefaultStages(p, s.workCatalog())
+		p.Stages = s.defaultStages(p, plan)
 	} else {
 		for i := range p.Stages {
 			p.Stages[i].Origin = "user"
 		}
 	}
 	for i := range p.Stages {
-		stage, err := s.insertPackageStage(ctx, tx, org, p, p.Stages[i])
+		stage, err := s.insertPackageStage(ctx, tx, org, p, p.Stages[i], plan)
 		if err != nil {
 			return p, err
 		}
@@ -267,12 +271,16 @@ func (s *Store) CreateDisciplinePackage(ctx context.Context, org, project, actor
 	if err := procurement.ValidatePackage(p); err != nil {
 		return p, fmt.Errorf("%w: %v", ErrInvalidPackage, err)
 	}
-	p.Stages = procurement.DefaultStages(p, s.workCatalog())
+	plan, err := readStagePlan(ctx, tx, org, project, false)
+	if err != nil {
+		return p, err
+	}
+	p.Stages = s.defaultStages(p, plan)
 	provenance, _ := json.Marshal(map[string]string{"actor": actor, "discipline": p.DisciplineID})
 	// A discipline the user picked is their choice, not a calculation.
 	// insertProposedPackage refuses a discipline a live package holds.
 	p.Origin = "user"
-	if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance); err != nil {
+	if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance, plan); err != nil {
 		return p, err
 	}
 	return p, s.finishPackagesWrite(ctx, tx, org, project)
@@ -292,16 +300,27 @@ func packageActor(ctx context.Context, tx pgx.Tx, org, actor string) error {
 	return nil
 }
 
-func (s *Store) insertPackageStage(ctx context.Context, tx pgx.Tx, org string, p procurement.Package, stage procurement.Stage) (procurement.Stage, error) {
+// insertPackageStage creates one stage. plan is the program's stage plan
+// (nil when the project has none): the stage points at its program stage
+// and the package records the plan the first time one of its stages does.
+func (s *Store) insertPackageStage(ctx context.Context, tx pgx.Tx, org string, p procurement.Package, stage procurement.Stage, plan *stagePlan) (procurement.Stage, error) {
+	if err := s.linkPackageStage(p, &stage, plan); err != nil {
+		return stage, err
+	}
 	if err := procurement.ValidateStage(stage, p, s.workCatalog()); err != nil {
 		return stage, fmt.Errorf("%w: %v", ErrInvalidPackage, err)
 	}
-	stage.ID, stage.ProjectID, stage.PackageID, stage.Version, stage.RetiredAt = newID(), p.ProjectID, p.ID, 1, nil
+	stage.ID, stage.ProjectID, stage.PackageID, stage.Version, stage.RetiredAt, stage.RemovedFromProgram = newID(), p.ProjectID, p.ID, 1, nil, nil
 	// Caller-supplied stages are user choices; only the service creates defaults.
 	if stage.Origin != "calculation" {
 		stage.Origin = "user"
 	}
-	_, err := tx.Exec(ctx, `INSERT INTO package_stages(org_id,id,project_id,package_id,stage_id,label,ordinal,novation_phase,origin) VALUES($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,$9)`, org, stage.ID, p.ProjectID, p.ID, stage.StageID, stage.Label, stage.Ordinal, stage.NovationPhase, stage.Origin)
+	_, err := tx.Exec(ctx, `INSERT INTO package_stages(org_id,id,project_id,package_id,stage_id,label,ordinal,novation_phase,origin,program_stage_id,stage_revision) VALUES($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,$9,NULLIF($10,'')::uuid,NULLIF($11,0))`, org, stage.ID, p.ProjectID, p.ID, stage.StageID, stage.Label, stage.Ordinal, stage.NovationPhase, stage.Origin, stage.ProgramStageID, stage.StageRevision)
+	if err != nil || stage.ProgramStageID == "" {
+		return stage, err
+	}
+	raw, _ := json.Marshal(plan.recorded())
+	_, err = tx.Exec(ctx, `UPDATE packages SET stage_plan=$4::jsonb,stage_revision=$5 WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid AND stage_plan IS NULL`, org, p.ProjectID, p.ID, raw, plan.Revision)
 	return stage, err
 }
 

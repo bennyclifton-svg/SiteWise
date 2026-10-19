@@ -54,6 +54,9 @@ func postReport(w http.ResponseWriter, r *http.Request, deps Deps) {
 		reportError(w, err)
 		return
 	}
+	if report.Kind == "rfp" {
+		ensureProgram(r, deps, session.OrgID, project, "procurement")
+	}
 	if deps.Broker != nil {
 		deps.Broker.Wake(session.OrgID)
 	}

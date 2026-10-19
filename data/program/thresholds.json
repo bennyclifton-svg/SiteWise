@@ -1,0 +1,5 @@
+{
+ "question_version": "program-row-1",
+ "calibration": "none: no labelled program gold set exists yet (gold set format: cmd/program-eval/main.go); every program_row answer stays blank",
+ "questions": {}
+}

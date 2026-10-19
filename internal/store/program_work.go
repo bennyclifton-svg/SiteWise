@@ -51,6 +51,10 @@ type programWork struct {
 
 	fb ProgramFeedback
 
+	// readings holds document reading statuses the batch changes
+	// (program_readings.go); nil when it changes none.
+	readings *readingWork
+
 	dirty bool
 	in    engine.Input
 	out   engine.Output
@@ -358,6 +362,7 @@ type programChanges struct {
 	upsDays            []ProgramCalendarDay
 	delDays            []string
 	inverse            []programInverse
+	readings           []readingStatus
 }
 
 // programInverse is one entry of a batch's inverse: the image of a row
@@ -441,6 +446,7 @@ func (w *programWork) diff() programChanges {
 	if w.stageChange {
 		c.inverse = append(c.inverse, programInverse{Op: "stage_revision"})
 	}
+	w.readingDiff(&c)
 	return c
 }
 
@@ -523,6 +529,11 @@ func (c programChanges) write(ctx context.Context, tx pgx.Tx, org, programID str
 	if len(c.delDays) > 0 {
 		b.Queue(`DELETE FROM program_calendar_days WHERE org_id=$1::uuid AND program_id=$2::uuid AND day::text=ANY($3::text[])`, org, programID, c.delDays)
 		want = append(want, len(c.delDays))
+	}
+	if n, err := c.writeReadings(b, org, programID); err != nil {
+		return err
+	} else if n > 0 {
+		want = append(want, n)
 	}
 	if b.Len() == 0 {
 		return nil

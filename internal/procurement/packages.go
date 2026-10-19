@@ -42,6 +42,21 @@ type Stage struct {
 	Origin        string     `json:"origin"`
 	RetiredAt     *time.Time `json:"retired_at,omitempty"`
 	Version       int64      `json:"version"`
+	// ProgramStageID is the program stage this stage points to and
+	// StageRevision the program stage revision it was built from (program
+	// plan 7.6). RemovedFromProgram marks a stage kept downstream after its
+	// program stage was deleted, because money is attached to it.
+	ProgramStageID     string     `json:"program_stage_id,omitempty"`
+	StageRevision      int64      `json:"stage_revision,omitempty"`
+	RemovedFromProgram *time.Time `json:"removed_from_program,omitempty"`
+}
+
+// ProgramStage is a live program stage, in program order: the project's
+// stage plan that package stages point to (program plan 7.6).
+type ProgramStage struct {
+	ID               string `json:"id"`
+	Label            string `json:"label"`
+	CatalogueStageID string `json:"catalogue_stage_id"`
 }
 
 // Who engages a services package: the client directly, or the lead design
@@ -159,6 +174,40 @@ func DefaultStages(p Package, cat *knowledge.Catalog) []Stage {
 		out = append(out, Stage{StageID: s.ID, Label: s.Label, Ordinal: len(out), NovationPhase: phase, Origin: "calculation", Version: 1})
 	}
 	return out
+}
+
+// ProgramDefaultStages is DefaultStages once the project has a program
+// (program plan 7.6): a services package gets the program stages whose
+// catalogue stage is one of the catalogue sub-stages DefaultStages copies,
+// in program order, labelled as the program labels them and pointing to
+// them. Nothing is copied from the catalogue but the novation side.
+func ProgramDefaultStages(p Package, cat *knowledge.Catalog, plan []ProgramStage, revision int64) []Stage {
+	out := []Stage{}
+	if cat == nil || p.Kind != "services" {
+		return out
+	}
+	for _, ps := range plan {
+		s, ok := cat.DeliveryStage(ps.CatalogueStageID)
+		if !ok || s.ParentID == "" {
+			continue
+		}
+		out = append(out, Stage{StageID: s.ID, Label: ps.Label, Ordinal: len(out), NovationPhase: ProgramNovationPhase(p, cat, s.ID),
+			Origin: "calculation", Version: 1, ProgramStageID: ps.ID, StageRevision: revision})
+	}
+	return out
+}
+
+// ProgramNovationPhase is the side of a novation a stage falls on, from the
+// catalogue, for a novated package; "none" otherwise or for a stage the
+// catalogue gives no side (a top-level or user-made stage).
+func ProgramNovationPhase(p Package, cat *knowledge.Catalog, catalogueStageID string) string {
+	if cat == nil || !p.Novated() || p.Kind != "services" {
+		return "none"
+	}
+	if s, ok := cat.DeliveryStage(catalogueStageID); ok && (s.Novation == "pre" || s.Novation == "post") {
+		return s.Novation
+	}
+	return "none"
 }
 
 func bounded(s string, n int) bool {

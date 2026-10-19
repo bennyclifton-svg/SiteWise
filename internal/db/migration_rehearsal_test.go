@@ -238,9 +238,13 @@ func upgradeDigests(ctx context.Context, c *pgx.Conn, tables []string) (map[stri
 		case "passage_sources", "passage_calls":
 			exclude = []string{"document_id"}
 		case "package_stages":
-			exclude = []string{"program_stage_id", "stage_revision"}
+			exclude = []string{"program_stage_id", "stage_revision", "removed_from_program"}
 		case "report_versions":
-			exclude = []string{"stage_revision"}
+			exclude = []string{"stage_revision", "stage_plan", "stage_rows"}
+		case "packages":
+			exclude = []string{"stage_plan", "stage_revision", "stage_acknowledged"}
+		case "reports":
+			exclude = []string{"stage_acknowledged"}
 		}
 		rows, err := c.Query(ctx, `SELECT content FROM (SELECT (to_jsonb(r)-$1::text[])::text AS content FROM `+pgx.Identifier{"public", table}.Sanitize()+` r) saved_rows ORDER BY content COLLATE "C"`, exclude)
 		if err != nil {

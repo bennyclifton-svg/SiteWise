@@ -9,6 +9,7 @@ import { api, ApiError, type Option } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
 import { PackageScope } from "./PackageScope";
+import { PackageStages } from "./PackageStages";
 import { packageApi, type EngagedBy, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
 import { procurementApi } from "./procurementApi";
 import { Prices } from "./Prices";
@@ -188,6 +189,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
       <th scope="row" className="discipline-cell">
         {row.label}{!row.pkg && <span className="suggested-tag">suggested</span>}
+        {row.pkg && <PackageStages projectId={projectId} pkgId={row.pkg.id} label={row.label} tick={tick} onSignedOut={onSignedOut} />}
       </th>
       <td className="engaged-cell">{row.kind !== "services" || !row.pkg || row.pkg.discipline_id === "consultant.architect" ? "—"
         : <select aria-label={`Who engages ${row.label}`} value={row.pkg.engaged_by ?? ""} disabled={busy} onChange={e => void engage(row.pkg!, e.target.value as EngagedBy | "")}>

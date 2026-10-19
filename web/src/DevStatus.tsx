@@ -9,6 +9,8 @@ interface Build {
   server_changed?: string;
   web_stale: boolean;
   web_changed?: string;
+  // Jev question families with no calibrated cut-off: answers stay blank.
+  calibration?: string[];
 }
 
 type State = { kind: "unknown" } | { kind: "absent" } | { kind: "offline" } | { kind: "up"; build: Build };
@@ -66,6 +68,7 @@ export function DevStatus() {
         ) : build.server_stale ? (
           <small title={build.server_changed}>Backend changed: rerun dev.ps1</small>
         ) : null}
+        {build.calibration?.map((note) => <small key={note}>{note}</small>)}
       </span>
     </div>
   );

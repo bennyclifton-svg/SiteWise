@@ -27,6 +27,7 @@ import (
 	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
 	"sitewise/internal/profile"
+	"sitewise/internal/programread"
 	feeproposals "sitewise/internal/proposals"
 	"sitewise/internal/store"
 	"sitewise/internal/works"
@@ -79,6 +80,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	proposalPolicy := fs.String("proposal-policy", "data/profile/proposals.json", "proposal visibility policy")
 	invoiceData := fs.String("invoice-data", "data/invoice", "invoice question thresholds directory")
 	proposalData := fs.String("proposal-data", "data/proposal", "fee proposal question thresholds directory")
+	programData := fs.String("program-data", "data/program", "program file reading thresholds directory")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
@@ -149,6 +151,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		fmt.Fprintln(stderr, "proposal thresholds: "+err.Error())
 		return 1
 	}
+	programTh, err := programread.LoadThresholds(*programData)
+	if err != nil {
+		fmt.Fprintln(stderr, "program thresholds: "+err.Error())
+		return 1
+	}
 	invoiceTh, err := invoices.LoadThresholds(*invoiceData)
 	if err != nil {
 		fmt.Fprintln(stderr, "invoice thresholds: "+err.Error())
@@ -207,6 +214,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		ProposalShowCount:  proposals.ShowCount,
 		InvoiceThresholds:  invoiceTh,
 		ProposalThresholds: proposalTh,
+		ProgramThresholds:  programTh,
 	})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
@@ -232,6 +240,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	go jobs.RunBackground(ctx, worker, 2*time.Second, logger.Printf)
 	go srv.RunInvoiceRechecks(ctx, 10*time.Second)
 	go srv.RunProposalRechecks(ctx, 15*time.Second)
+	go srv.RunProgramImportRechecks(ctx, 15*time.Second)
 	if n, err := srv.Resume(ctx); err != nil {
 		logger.Printf("resume failed: %v", err)
 	} else if n > 0 {

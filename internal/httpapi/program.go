@@ -230,16 +230,19 @@ func postProgramUndo(w http.ResponseWriter, r *http.Request, d Deps) {
 }
 
 // postProgramAccept is POST /program/accept {"version", "ids"} or
-// {"version", "all": true}.
+// {"version", "all": true}. ids may name proposed rows or document
+// readings (plan 10.2). {"version", "add_rows": [{"import_id", "row",
+// "parent_id"}]} adds file rows no target matched as new activities.
 func postProgramAccept(w http.ResponseWriter, r *http.Request, d Deps) {
 	s, ok := programSession(w, r, d, true)
 	if !ok {
 		return
 	}
 	var body struct {
-		Version int64    `json:"version"`
-		IDs     []string `json:"ids"`
-		All     bool     `json:"all"`
+		Version int64                 `json:"version"`
+		IDs     []string              `json:"ids"`
+		All     bool                  `json:"all"`
+		AddRows []store.ProgramRowAdd `json:"add_rows"`
 	}
 	if readProposalJSON(w, r, d.MaxBodyBytes, &body) != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -254,6 +257,25 @@ func postProgramAccept(w http.ResponseWriter, r *http.Request, d Deps) {
 			programInvalid(w, "ids", store.MsgNotInProgram)
 			return
 		}
+	}
+	if len(body.AddRows) > 0 {
+		if len(body.IDs) > 0 || body.All {
+			programInvalid(w, "add_rows", "Accept readings or add rows, one at a time.")
+			return
+		}
+		for _, a := range body.AddRows {
+			if !uuidPattern.MatchString(a.ImportID) || a.ParentID != "" && !uuidPattern.MatchString(a.ParentID) {
+				programInvalid(w, "add_rows", store.MsgNotInProgram)
+				return
+			}
+		}
+		res, err := d.Store.AddProgramImportRows(r.Context(), s.OrgID, r.PathValue("id"), s.UserID, body.Version, body.AddRows)
+		if err != nil {
+			programError(w, r, d, s.OrgID, res, err)
+			return
+		}
+		writeProgramResult(w, r, d, s.OrgID, res)
+		return
 	}
 	res, err := d.Store.AcceptProgram(r.Context(), s.OrgID, r.PathValue("id"), s.UserID, body.Version, body.IDs, body.All)
 	if err != nil {

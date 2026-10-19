@@ -45,7 +45,20 @@ type ProgramExtras struct {
 	StartSuggestion NullText        `json:"start_suggestion"`
 	Skeleton        ProgramSkeleton `json:"skeleton"`
 	ReadingsPending int             `json:"readings_pending"`
-	ChangesPending  int             `json:"changes_pending"`
+	// Readings are the proposed document readings and Imports the program
+	// files read into this program (plan 10.2; program_import.go).
+	Readings       []ProgramReadingView `json:"readings"`
+	Imports        []ProgramImportView  `json:"imports"`
+	ChangesPending int                  `json:"changes_pending"`
+	// CatalogueStages lists the delivery stage catalogue so a user can say
+	// which one a user-made stage really is (owner answer Q5).
+	CatalogueStages []ProgramCatalogueStage `json:"catalogue_stages"`
+}
+
+// ProgramCatalogueStage is one delivery catalogue stage offered for a remap.
+type ProgramCatalogueStage struct {
+	ID    string `json:"id"`
+	Label string `json:"label"`
 }
 
 // ProgramView is the full response of every program route: the state, the
@@ -379,6 +392,11 @@ func (s *Store) PrepareProgram(ctx context.Context, org, project, surface string
 	} else if err != nil {
 		return ProgramState{}, false, err
 	}
+	// The package stages just linked record the plan they now point at, so
+	// a later stage change is offered to them (plan 7.6).
+	if err := recordPackagePlans(ctx, tx, org, project); err != nil {
+		return ProgramState{}, false, err
+	}
 	if err := tx.Commit(ctx); err != nil {
 		return ProgramState{}, false, err
 	}
@@ -458,7 +476,12 @@ func (s *Store) ResultView(ctx context.Context, org, project string, r ProgramRe
 }
 
 func (s *Store) programExtras(ctx context.Context, q programQuerier, org, project string, st ProgramState, cat *knowledge.Catalog) (ProgramExtras, error) {
-	ex := ProgramExtras{Checks: []engine.Check{}, Skeleton: ProgramSkeleton{ID: st.Program.SkeletonID}}
+	ex := ProgramExtras{Checks: []engine.Check{}, Skeleton: ProgramSkeleton{ID: st.Program.SkeletonID}, CatalogueStages: []ProgramCatalogueStage{}}
+	if cat != nil {
+		for _, c := range cat.DeliveryStages() {
+			ex.CatalogueStages = append(ex.CatalogueStages, ProgramCatalogueStage{ID: c.ID, Label: c.Label})
+		}
+	}
 	var dismissedRaw string
 	if err := q.QueryRow(ctx, `SELECT p.question_dismissed::text,
  (SELECT count(*) FROM program_readings r WHERE r.org_id=p.org_id AND r.program_id=p.id AND r.status='proposed'),
@@ -467,6 +490,9 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ex, ErrNotFound
 		}
+		return ex, err
+	}
+	if err := s.readingExtras(ctx, q, org, st, &ex); err != nil {
 		return ex, err
 	}
 	if cat == nil {

@@ -80,9 +80,13 @@ func (s *Store) AcceptPackageProposal(ctx context.Context, org, project, key, ac
 		if err != nil {
 			return p, err
 		}
-		p.Stages = procurement.DefaultStages(p, s.workCatalog())
+		plan, err := readStagePlan(ctx, tx, org, project, false)
+		if err != nil {
+			return p, err
+		}
+		p.Stages = s.defaultStages(p, plan)
 		for i := range p.Stages {
-			stage, err := s.insertPackageStage(ctx, tx, org, p, p.Stages[i])
+			stage, err := s.insertPackageStage(ctx, tx, org, p, p.Stages[i], plan)
 			if err != nil {
 				return p, err
 			}

@@ -133,6 +133,11 @@ func postProcurementCreate(w http.ResponseWriter, r *http.Request, deps Deps) {
 		procurementCreateError(w, err)
 		return
 	}
+	// Creating an RFP is one of the surfaces that creates the stage plan
+	// when the project has none, before the draft records it (plan 7.6).
+	if report.Kind == "rfp" {
+		ensureProgram(r, deps, session.OrgID, project, "procurement")
+	}
 	if report.CurrentDraftVersionID == "" {
 		draft, err := deps.Store.EnsureReportDraft(r.Context(), session.OrgID, report.ID, session.UserID, deps.ReportBuild)
 		if err != nil {

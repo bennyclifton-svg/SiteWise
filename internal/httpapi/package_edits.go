@@ -63,18 +63,30 @@ func postPackageStage(w http.ResponseWriter, r *http.Request, deps Deps) {
 		Label         string `json:"label"`
 		Ordinal       int    `json:"ordinal"`
 		NovationPhase string `json:"novation_phase"`
+		// ProgramStageID ticks a program stage (the stage picker): its
+		// catalogue stage and label come from the program.
+		ProgramStageID string `json:"program_stage_id"`
 	}
 	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
+	if body.ProgramStageID != "" && !uuidPattern.MatchString(body.ProgramStageID) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
 	if body.NovationPhase == "" {
 		body.NovationPhase = "none"
 	}
-	stage, err := deps.Store.CreatePackageStage(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"), session.UserID, procurement.Stage{StageID: body.StageID, Label: body.Label, Ordinal: body.Ordinal, NovationPhase: body.NovationPhase})
+	stage, err := deps.Store.CreatePackageStage(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"), session.UserID, procurement.Stage{StageID: body.StageID, Label: body.Label, Ordinal: body.Ordinal, NovationPhase: body.NovationPhase, ProgramStageID: body.ProgramStageID})
 	if err != nil {
 		packageError(w, err)
 		return
+	}
+	// Adding a package stage creates the stage plan when the project has
+	// none; prepare links this stage with the others (plan 7.6).
+	if stage.ProgramStageID == "" {
+		ensureProgram(r, deps, session.OrgID, r.PathValue("id"), "procurement")
 	}
 	if deps.Broker != nil {
 		deps.Broker.Wake(session.OrgID)
