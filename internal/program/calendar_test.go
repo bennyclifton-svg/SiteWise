@@ -95,9 +95,20 @@ func TestCalendarWorkingOverride(t *testing.T) {
 }
 
 func TestCalendarRelative(t *testing.T) {
-	c := cal("", 0, day("2027-03-02", DayPublicHoliday))
-	if !c.Relative() || c.DateOf(3) != "" {
-		t.Fatal("a program without a start date shows no dates")
+	c := cal("", 0, day("2027-03-02", DayPublicHoliday), day("2001-01-02", DayPublicHoliday))
+	if !c.Relative() {
+		t.Fatal("a program without a start date is relative")
+	}
+	// Indices map to dates from RelativeEpoch (a Monday) so constraints can be
+	// stored; holiday rows are ignored.
+	if c.DateOf(0) != RelativeEpoch || c.DateOf(1) != "2001-01-02" || c.DateOf(5) != "2001-01-08" {
+		t.Errorf("relative dates: %s %s %s", c.DateOf(0), c.DateOf(1), c.DateOf(5))
+	}
+	if i, ok := c.IndexOnOrAfter("2001-01-06"); !ok || i != 5 {
+		t.Errorf("Saturday of week 1 on or after = %d %v, want 5", i, ok)
+	}
+	if i, ok := c.IndexOnOrBefore("2001-01-06"); !ok || i != 4 {
+		t.Errorf("Saturday of week 1 on or before = %d %v, want 4", i, ok)
 	}
 	if c.WeekLabel(4) != "Week 1" || c.WeekLabel(5) != "Week 2" || c.DayLabel(6) != "Week 2, day 2" {
 		t.Errorf("labels: %s, %s, %s", c.WeekLabel(4), c.WeekLabel(5), c.DayLabel(6))

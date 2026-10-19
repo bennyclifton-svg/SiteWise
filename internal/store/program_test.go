@@ -558,9 +558,73 @@ func TestProgramMove(t *testing.T) {
 	if tm := times(t, res.ProgramState, "Concept design"); tm.ES != 5 || rowOf(t, res.ProgramState, "Concept design").ConstraintDate != "2027-03-08" {
 		t.Fatalf("to a Saturday lands on Monday: %+v", tm)
 	}
-	// A relative program has no dates to move to.
-	res = apply(t, s, res.ProgramState, store.ProgramOp{Op: "set_start"})
-	refuse(t, s, res.ProgramState, "ids", store.MsgNoStart, store.ProgramOp{Op: "move", IDs: []string{roof}, Days: ip(1)})
+}
+
+// TestProgramMoveRelative: dragging works without a start date (plan 13.1,
+// 13.3 Q2). Constraint dates count from engine.RelativeEpoch, and set_start
+// keeps every constraint on the same working-day index; undo restores them.
+func TestProgramMoveRelative(t *testing.T) {
+	ctx := context.Background()
+	s := profileStore(t)
+	st := newProgram(t, s)
+	roof, concept := rowID(t, st, "Roof"), rowID(t, st, "Concept design")
+	st = apply(t, s, st, store.ProgramOp{Op: "set_start"}).ProgramState
+	if st.Program.StartDate != "" {
+		t.Fatal("start not cleared")
+	}
+
+	// Later by 5: Roof 60 → 65 = 13 weeks after the epoch Monday.
+	res := apply(t, s, st, store.ProgramOp{Op: "move", IDs: []string{roof}, Days: ip(5)},
+		// A Saturday in the epoch's first week lands on Monday, index 5.
+		store.ProgramOp{Op: "move", ID: concept, StartDate: sp("2001-01-06")})
+	if r := rowOf(t, res.ProgramState, "Roof"); r.ConstraintKind != "snet" || r.ConstraintDate != "2001-04-02" || times(t, res.ProgramState, "Roof").ES != 65 {
+		t.Fatalf("relative move %+v %+v", r, times(t, res.ProgramState, "Roof"))
+	}
+	if r := rowOf(t, res.ProgramState, "Concept design"); r.ConstraintDate != "2001-01-08" || times(t, res.ProgramState, "Concept design").ES != 5 {
+		t.Fatalf("relative move to a date %+v", r)
+	}
+	moved := res.ProgramState
+
+	// A holiday is kept but ignored without a start date.
+	st = apply(t, s, moved, store.ProgramOp{Op: "calendar_day", Day: "2027-04-14", Kind: sp("public_holiday"), Label: sp("Shutdown")}).ProgramState
+	if times(t, st, "Roof").ES != 65 || len(st.Calendar.Days) != 1 {
+		t.Fatal("a relative program ignores holidays")
+	}
+
+	// Setting a Wednesday start keeps each bar on its index: Concept 5 is
+	// Wed 10 Mar; Roof 65 is 13 weeks on, Wed 2 Jun, plus the Wed 14 Apr
+	// holiday = Thu 3 Jun.
+	st = apply(t, s, st, store.ProgramOp{Op: "set_start", StartDate: sp("2027-03-03")}).ProgramState
+	if r := rowOf(t, st, "Roof"); r.ConstraintDate != "2027-06-03" || times(t, st, "Roof").ES != 65 {
+		t.Fatalf("roof after set_start %+v %+v", r, times(t, st, "Roof"))
+	}
+	if r := rowOf(t, st, "Concept design"); r.ConstraintDate != "2027-03-10" || r.Origin != "user" || times(t, st, "Concept design").ES != 5 {
+		t.Fatalf("concept after set_start %+v", r)
+	}
+	if r := rowOf(t, st, "Slab"); r.ConstraintKind != "asap" || r.ConstraintDate != "" {
+		t.Fatalf("an unconstrained row gains nothing: %+v", r)
+	}
+
+	// Undo puts the program back to relative with the epoch dates.
+	u, err := s.UndoProgram(ctx, orgA, projectA, userA, st.Program.Version)
+	if err != nil {
+		t.Fatal(err)
+	}
+	st = u.ProgramState
+	if st.Program.StartDate != "" || rowOf(t, st, "Roof").ConstraintDate != "2001-04-02" || rowOf(t, st, "Concept design").ConstraintDate != "2001-01-08" || times(t, st, "Roof").ES != 65 {
+		t.Fatalf("undo set_start %+v roof %+v", st.Program, rowOf(t, st, "Roof"))
+	}
+
+	// A Monday start: index 65 is Mon 31 May plus the holiday = Tue 1 Jun.
+	// Clearing the start converts back to the epoch.
+	st = apply(t, s, st, store.ProgramOp{Op: "set_start", StartDate: sp("2027-03-01")}).ProgramState
+	if rowOf(t, st, "Roof").ConstraintDate != "2027-06-01" || times(t, st, "Roof").ES != 65 {
+		t.Fatalf("monday start %+v", rowOf(t, st, "Roof"))
+	}
+	st = apply(t, s, st, store.ProgramOp{Op: "set_start"}).ProgramState
+	if rowOf(t, st, "Roof").ConstraintDate != "2001-04-02" || times(t, st, "Roof").ES != 65 {
+		t.Fatalf("cleared start %+v", rowOf(t, st, "Roof"))
+	}
 }
 
 func TestProgramFirstAndLastChild(t *testing.T) {

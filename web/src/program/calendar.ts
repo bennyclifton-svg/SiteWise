@@ -92,8 +92,12 @@ export function weekdayBit(d: number): number {
   return 1 << (((d % 7) + 7 + 3) % 7);
 }
 
-// A relative program anchors its weekly pattern on a Monday but never shows
-// a date from it.
+/**
+ * The Monday a relative program (no start date) anchors its working-day
+ * indices to (plan 6.1, 13.1), as in Go. Its dates are never shown; they let
+ * stored snet/mso constraint dates mean "working day N" on a relative program.
+ */
+export const RelativeEpoch = "2001-01-01";
 const relativeOrigin = daysFromCivil(2001, 1, 1);
 
 function validDayKind(k: string): boolean {
@@ -221,9 +225,11 @@ export class Cal {
     return this.perWeek;
   }
 
-  /** Date of working day i, or "" for a relative program. */
+  /**
+   * Date of working day i. On a relative program it counts from RelativeEpoch:
+   * for storing a constraint, never for display.
+   */
   dateOf(i: number): string {
-    if (this.relative) return "";
     const k = i - this.cacheLo;
     if (k >= 0 && k < this.cache.length) return this.cache[k];
     return dayString(this.origin + this.dayOf(i));
@@ -271,17 +277,17 @@ export class Cal {
     this.cacheLo = lo;
   }
 
-  /** Index of the first working day on or after date, or null. */
+  /** Index of the first working day on or after date, or null (relative: from RelativeEpoch). */
   indexOnOrAfter(date: string | undefined | null): number | null {
     const d = dayNumber(date);
-    if (d === null || this.relative) return null;
+    if (d === null) return null;
     return this.count(d - this.origin);
   }
 
   /** Index of the last working day on or before date, or null. */
   indexOnOrBefore(date: string | undefined | null): number | null {
     const d = dayNumber(date);
-    if (d === null || this.relative) return null;
+    if (d === null) return null;
     return this.count(d - this.origin + 1) - 1;
   }
 

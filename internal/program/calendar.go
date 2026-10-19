@@ -34,9 +34,15 @@ type Cal struct {
 	cache   string
 }
 
-// relativeOrigin is a Monday. A relative program anchors its weekly pattern
-// here but never shows a date from it.
-var relativeOrigin = mustDay("2001-01-01")
+// RelativeEpoch is the Monday a relative program (no start date) anchors its
+// working-day indices to (plan 6.1, 13.1). Index 0 is the first working day on
+// or after it, holidays never apply, and the dates are never shown: they exist
+// only so start-no-earlier and mandatory-start constraints, which are stored
+// as dates, mean "working day N" on a relative program. Setting a start date
+// converts those dates by index (store opSetStart).
+const RelativeEpoch = "2001-01-01"
+
+var relativeOrigin = mustDay(RelativeEpoch)
 
 func mustDay(s string) int {
 	d, ok := dayNumber(s)
@@ -286,11 +292,9 @@ func (c *Cal) Relative() bool { return c.relative }
 // WorkingDaysPerWeek is what "3w" multiplies by.
 func (c *Cal) WorkingDaysPerWeek() int { return c.perWeek }
 
-// DateOf is the date of working day i, or "" for a relative program.
+// DateOf is the date of working day i. On a relative program it is a date
+// counted from RelativeEpoch, for storing a constraint, never for display.
 func (c *Cal) DateOf(i int) string {
-	if c.relative {
-		return ""
-	}
 	if k := i - c.cacheLo; k >= 0 && k < c.cacheN {
 		return c.cache[10*k : 10*k+10]
 	}
@@ -335,10 +339,11 @@ func (c *Cal) warm(lo, hi, rows int) {
 	c.cache, c.cacheLo, c.cacheN = string(buf), lo, n
 }
 
-// IndexOnOrAfter is the index of the first working day on or after date.
+// IndexOnOrAfter is the index of the first working day on or after date; on a
+// relative program the date is read from RelativeEpoch.
 func (c *Cal) IndexOnOrAfter(date string) (int, bool) {
 	d, ok := dayNumber(date)
-	if !ok || c.relative {
+	if !ok {
 		return 0, false
 	}
 	return c.count(d - c.origin), true
@@ -347,7 +352,7 @@ func (c *Cal) IndexOnOrAfter(date string) (int, bool) {
 // IndexOnOrBefore is the index of the last working day on or before date.
 func (c *Cal) IndexOnOrBefore(date string) (int, bool) {
 	d, ok := dayNumber(date)
-	if !ok || c.relative {
+	if !ok {
 		return 0, false
 	}
 	return c.count(d-c.origin+1) - 1, true

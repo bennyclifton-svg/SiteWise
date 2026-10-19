@@ -1,0 +1,27 @@
+{
+  "name": "relative-snet",
+  "why": "Constraints apply on a relative program (plan 6.1, 13.1, 13.3 Q2). Its constraint dates are read from RelativeEpoch 2001-01-01, a Monday: index 0 = Mon 1 Jan 2001 = Week 1, day 1, Mon-Fri working, and the holiday row on Wed 10 Jan is ignored because a relative program has no holidays. No dates are returned.",
+  "calendar": {"start": "", "working_week": 31, "days": [{"day": "2001-01-10", "kind": "public_holiday", "label": "Ignored without a start date"}]},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Excavate", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Pour slab", "duration": 3, "constraint": "snet", "constraint_date": "2001-01-10"},
+    {"id": "c", "ordinal": 2, "label": "Deliver frames", "duration": 2, "constraint": "mso", "constraint_date": "2001-01-13"}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 0, "lag_unit": "working"}
+  ],
+  "expect": {
+    "finish": 12,
+    "finish_dates": {"typical": null, "low": null, "high": null},
+    "driving": [],
+    "conflicts": [],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 4, "lf": 9, "tf": 4, "ff": 2, "critical": false, "start": null, "finish": null,
+            "why": "Week 1, days 1-5. LF = LS_b 9 - 0 = 9, LS = 9 - 5 = 4, TF 4. FF = ES_b 7 - link result 5 = 2."},
+      "b": {"es": 7, "ef": 10, "ls": 9, "lf": 12, "tf": 2, "ff": 2, "critical": false, "start": null, "finish": null,
+            "why": "SNET Wed 10 Jan 2001 = Week 2, day 3 = index 7 (the holiday on that day is ignored, so it is still a working day). The link allows 5, so ES = max(5, 7) = 7 and ab is not driving. LF = PF 12."},
+      "c": {"es": 10, "ef": 12, "ls": 10, "lf": 12, "tf": 0, "ff": 0, "critical": true, "start": null, "finish": null,
+            "why": "MSO Sat 13 Jan 2001 lands on the first working day on or after it, Mon 15 Jan = Week 3, day 1 = index 10. EF 12 = PF."}
+    }
+  }
+}

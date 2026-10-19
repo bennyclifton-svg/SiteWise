@@ -2,7 +2,7 @@
 // cross-check of the fast arithmetic and the lag boundary helpers.
 
 import { describe, expect, test } from "vitest";
-import { Cal, dayNumber, dayString, weekdayBit } from "./calendar";
+import { Cal, RelativeEpoch, dayNumber, dayString, weekdayBit } from "./calendar";
 import type { CalendarDay } from "./types";
 
 const cal = (start: string, week: number, ...days: CalendarDay[]) => new Cal({ start, working_week: week, days });
@@ -73,14 +73,20 @@ test("working override and a six-day week", () => {
 });
 
 test("relative program", () => {
-  const c = cal("", 0, day("2027-03-02", "public_holiday"));
+  const c = cal("", 0, day("2027-03-02", "public_holiday"), day("2001-01-02", "public_holiday"));
   expect(c.relative).toBe(true);
-  expect(c.dateOf(3)).toBe("");
+  // Dates count from RelativeEpoch (a Monday) for stored constraints; holiday
+  // rows are ignored.
+  expect(c.dateOf(0)).toBe(RelativeEpoch);
+  expect(c.dateOf(1)).toBe("2001-01-02");
+  expect(c.dateOf(5)).toBe("2001-01-08");
+  expect(c.indexOnOrAfter("2001-01-06")).toBe(5);
+  expect(c.indexOnOrBefore("2001-01-06")).toBe(4);
   expect(c.weekLabel(4)).toBe("Week 1");
   expect(c.weekLabel(5)).toBe("Week 2");
   expect(c.dayLabel(6)).toBe("Week 2, day 2");
   expect(c.display(0, 5)).toStrictEqual(["", ""]);
-  expect(c.indexOnOrAfter("2027-03-02")).toBeNull();
+  expect(c.indexOnOrAfter("")).toBeNull();
 });
 
 test("display is half-open", () => {

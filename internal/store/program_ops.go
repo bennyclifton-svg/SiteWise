@@ -27,7 +27,6 @@ const (
 	MsgTooManyOps      = "A change holds at most 500 edits."
 	MsgTooManyRows     = "This program holds at most 5,000 rows. Collapse stages to work faster."
 	MsgTooManyLinks    = "This program holds at most 20,000 links."
-	MsgNoStart         = "Set a program start date before moving bars to dates."
 	MsgUndoChanged     = "Can't undo: changed since"
 	MsgRedoChanged     = "Can't redo: changed since"
 	MsgNothingToUndo   = "Nothing to undo."
@@ -822,10 +821,9 @@ func (w *programWork) knownStage(id string) bool {
 // earlier than the new date; earlier lowers or removes that constraint and
 // never breaks a link. A stage with activities moves its activities. All or
 // none: when links hold any row, nothing moves and the held rows are named.
+// A relative program moves too (plan 13.1): its constraint dates count from
+// engine.RelativeEpoch, and a move to a date reads that date the same way.
 func (w *programWork) opMove(i int, o ProgramOp) error {
-	if w.prog.StartDate == "" {
-		return opErr(i, "ids", MsgNoStart)
-	}
 	out0 := w.output()
 	times := out0.Activities.Map()
 	cal := engine.NewCalendar(w.input().Calendar)
@@ -1407,16 +1405,52 @@ func (w *programWork) opLinkDelete(i int, o ProgramOp) error {
 	return nil
 }
 
+// opSetStart sets, changes or clears the start date. Start-no-earlier and
+// mandatory-start constraints are stored as dates (a relative program's count
+// from engine.RelativeEpoch), so each is rewritten to the date of the same
+// working-day index in the new calendar: a bar keeps its place relative to the
+// program start instead of jumping. The rows are touched, not edited, so they
+// keep their origin and the undo log restores the original dates exactly.
+// Retired rows are left alone: touching one would make undoing its delete
+// fail as changed since.
 func (w *programWork) opSetStart(o ProgramOp) error {
-	if o.StartDate == nil || *o.StartDate == "" {
+	next := ""
+	if o.StartDate != nil {
+		next = *o.StartDate
+	}
+	if next != string(w.prog.StartDate) {
+		oldCal := w.input().Calendar
+		newCal := oldCal
+		newCal.Start = next
+		from, to := engine.NewCalendar(oldCal), engine.NewCalendar(newCal)
+		for _, id := range w.order() {
+			a := w.acts[id]
+			if a.ConstraintKind != engine.ConstraintSNET && a.ConstraintKind != engine.ConstraintMSO {
+				continue
+			}
+			idx, ok := from.IndexOnOrAfter(string(a.ConstraintDate))
+			if !ok {
+				continue
+			}
+			if d := to.DateOf(idx); d != string(a.ConstraintDate) {
+				w.touchAct(id).ConstraintDate = NullText(d)
+			}
+		}
+	}
+	if next == "" {
 		w.prog.StartDate, w.prog.StartOrigin = "", ""
 	} else {
-		w.prog.StartDate, w.prog.StartOrigin = NullText(*o.StartDate), "user"
+		w.prog.StartDate, w.prog.StartOrigin = NullText(next), "user"
 	}
 	w.dirty = true
 	return nil
 }
 
+// opCalendarDay stores a calendar day on any program. A relative program
+// keeps the rows but ignores them (plan 6.1: no holidays without a start
+// date; the engine skips them), so they take effect once a start date is set.
+// set_start converts constraints by index under each calendar as it is, so a
+// day stored on a relative program does not shift a constraint until then.
 func (w *programWork) opCalendarDay(o ProgramOp) error {
 	w.touchDay(o.Day)
 	if o.Kind == nil {

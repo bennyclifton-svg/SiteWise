@@ -21,7 +21,9 @@ Defaults: missing `kind` = activity, `type` = FS, `lag_unit` = working,
 missing = unknown (a milestone is always 0; a stage with children ignores
 its own duration). `low`/`high` absent = the typical duration in all three runs.
 Empty `start` = relative program: index 0 is Monday of Week 1, no dates are
-returned and `days` are ignored.
+returned and `days` are ignored. Its `constraint_date`s are read from the
+relative epoch 2001-01-01 (a Monday, index 0), so `relative-snet.json` puts
+an SNET on Wed 10 Jan 2001 = index 7.
 
 ## Expect (only the keys present are compared)
 
