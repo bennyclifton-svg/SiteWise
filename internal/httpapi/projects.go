@@ -222,6 +222,7 @@ func Handler(deps Deps) http.Handler {
 		"POST /projects/{id}/program/redo":                   postProgramUndo,
 		"POST /projects/{id}/program/accept":                 postProgramAccept,
 		"POST /projects/{id}/program/question":               postProgramQuestion,
+		"GET /projects/{id}/program/export":                  getProgramExport,
 	}
 	for pattern, h := range routes {
 		path, timed := routePaths[pattern]
@@ -351,6 +352,7 @@ var routePaths = map[string]string{
 	"POST /projects/{id}/program/redo":                                 pathProgramWrite,
 	"POST /projects/{id}/program/accept":                               pathProgramWrite,
 	"POST /projects/{id}/program/question":                             pathProgramWrite,
+	"GET /projects/{id}/program/export":                                pathProgramExport,
 	// A planning write rebuilds the profile in code, so it is a profile edit.
 	"GET /projects/{id}/planning":          pathProfileRead,
 	"PUT /projects/{id}/planning/{key}":    pathProfileEdit,

@@ -24,7 +24,8 @@ const (
 
 // program measures program_generate (prepare on a project with 30
 // packages and 40 systems of work), program_read (GET with 1,000 activities
-// and 2,000 links) and program_write (one move). Seeding is untimed.
+// and 2,000 links), program_write (one move) and program_export (Excel of
+// the same 1,000 rows). Seeding is untimed.
 func (a *apiClient) program(ctx context.Context, st *store.Store, cat *knowledge.Catalog, dsn string, n int) error {
 	if err := a.programGenerate(ctx, cat, dsn, n); err != nil {
 		return fmt.Errorf("program generate: %w", err)
@@ -197,6 +198,14 @@ func (a *apiClient) programReadWrite(ctx context.Context, st *store.Store, n int
 		}
 		if len(v.Activities) != 1000 || len(v.Links) != programBenchLinkCount || v.Program.Version != version {
 			return fmt.Errorf("read %d rows, %d links, version %d", len(v.Activities), len(v.Links), v.Program.Version)
+		}
+		// Excel export of the same 1,000 rows, expanded (program_export).
+		xl, err := a.timed(ctx, "program_export", http.MethodGet, base+"/export?format=xlsx&view=expanded", nil, http.StatusOK)
+		if err != nil {
+			return err
+		}
+		if !bytes.HasPrefix(xl, []byte("PK")) {
+			return fmt.Errorf("program export is not a workbook: %.40q", xl)
 		}
 		// One move: the last activity a working day later each time, so a
 		// link never holds it.
