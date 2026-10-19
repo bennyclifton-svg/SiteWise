@@ -1,0 +1,28 @@
+{
+  "name": "leaf-stage",
+  "why": "A stages-only program: a stage with no children is scheduled exactly like an activity, with its own duration and links.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "design", "ordinal": 0, "kind": "stage", "label": "Design", "duration": 10},
+    {"id": "approval", "ordinal": 1, "kind": "stage", "label": "Approval", "duration": 15},
+    {"id": "construction", "ordinal": 2, "kind": "stage", "label": "Construction", "duration": 40}
+  ],
+  "links": [
+    {"id": "da", "pred": "design", "succ": "approval", "type": "FS", "lag": 0},
+    {"id": "ac", "pred": "approval", "succ": "construction", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 65,
+    "finish_dates": {"typical": "2027-05-28", "low": "2027-05-28", "high": "2027-05-28"},
+    "status": {"known": 3, "total": 3, "words": "All 3 durations known"},
+    "driving": ["da", "ac"],
+    "activities": {
+      "design": {"es": 0, "ef": 10, "ls": 0, "lf": 10, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-01", "finish": "2027-03-12",
+                 "why": "Index 9 = week 2 day 5 = Fri 12 Mar."},
+      "approval": {"es": 10, "ef": 25, "ls": 10, "lf": 25, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-15", "finish": "2027-04-02",
+                   "why": "Index 10 = Mon 15 Mar; index 24 = 4 weeks + 4 days = 1 Mar + 32 days = Fri 2 Apr."},
+      "construction": {"es": 25, "ef": 65, "ls": 25, "lf": 65, "tf": 0, "ff": 0, "critical": true, "start": "2027-04-05", "finish": "2027-05-28",
+                       "why": "Index 25 = 5 weeks = 1 Mar + 35 days = Mon 5 Apr; index 64 = 12 weeks + 4 days = 1 Mar + 88 days = Fri 28 May."}
+    }
+  }
+}

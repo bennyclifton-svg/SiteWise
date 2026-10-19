@@ -1,0 +1,42 @@
+{
+  "name": "shutdown-year-end",
+  "why": "A Christmas shutdown spanning the year end, holidays on Saturdays that change nothing (25 Dec 2027 and 1 Jan 2028 are Saturdays), and a working Saturday override on 8 Jan 2028. Working days from Mon 20 Dec 2027: 0-3 = 20-23 Dec, 4 = Sat 8 Jan, 5-9 = Mon 10-Fri 14 Jan, 10 = Mon 17 Jan, 11 = Tue 18 Jan, 12 = Wed 19 Jan.",
+  "calendar": {"start": "2027-12-20", "working_week": 31, "days": [
+    {"day": "2027-12-24", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2027-12-25", "kind": "public_holiday", "label": "Christmas Day"},
+    {"day": "2027-12-27", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2027-12-28", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2027-12-29", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2027-12-30", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2027-12-31", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2028-01-01", "kind": "public_holiday", "label": "New Year's Day"},
+    {"day": "2028-01-03", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2028-01-04", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2028-01-05", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2028-01-06", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2028-01-07", "kind": "shutdown", "label": "Christmas shutdown"},
+    {"day": "2028-01-08", "kind": "working_override", "label": "Catch-up Saturday"}
+  ]},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Brickwork", "duration": 10},
+    {"id": "b", "ordinal": 1, "label": "Render", "duration": 2},
+    {"id": "c", "ordinal": 2, "label": "Windows", "duration": 3}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 3, "lag_unit": "calendar"},
+    {"id": "ac", "pred": "a", "succ": "c", "type": "FS", "lag": 0, "lag_unit": "working"}
+  ],
+  "expect": {
+    "finish": 13,
+    "finish_dates": {"typical": "2028-01-19", "low": "2028-01-19", "high": "2028-01-19"},
+    "driving": ["ab", "ac"],
+    "activities": {
+      "a": {"es": 0, "ef": 10, "ls": 0, "lf": 10, "tf": 0, "ff": 0, "critical": true, "start": "2027-12-20", "finish": "2028-01-14",
+            "why": "Ten working days: 20-23 Dec, Sat 8 Jan, 10-14 Jan. Backward from b: latest start Tue 18 Jan minus 3 = Sat 15 Jan; working days before Sat 15 Jan = 4 + 1 + 5 = 10, so LF 10. From c: LS 10 - 0 = 10."},
+      "b": {"es": 11, "ef": 13, "ls": 11, "lf": 13, "tf": 0, "ff": 0, "critical": true, "start": "2028-01-18", "finish": "2028-01-19",
+            "why": "a ends Fri 14 Jan, instant Sat 15, + 3 = Tue 18 Jan = index 11."},
+      "c": {"es": 10, "ef": 13, "ls": 10, "lf": 13, "tf": 0, "ff": 0, "critical": true, "start": "2028-01-17", "finish": "2028-01-19",
+            "why": "F_a 10 = Mon 17 Jan."}
+    }
+  }
+}

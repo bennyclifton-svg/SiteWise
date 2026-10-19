@@ -1,0 +1,32 @@
+{
+  "name": "milestone",
+  "why": "A zero-duration milestone between two activities shows its start date only. Its finish instant is its own start, so a 1 calendar day lag from a Monday milestone lands on Tuesday.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Frame", "duration": 5},
+    {"id": "m", "ordinal": 1, "kind": "milestone", "label": "Frame inspection passed", "duration": 0},
+    {"id": "b", "ordinal": 2, "label": "Lining", "duration": 3},
+    {"id": "c", "ordinal": 3, "label": "Notify insurer", "duration": 1}
+  ],
+  "links": [
+    {"id": "am", "pred": "a", "succ": "m", "type": "FS", "lag": 0, "lag_unit": "working"},
+    {"id": "mb", "pred": "m", "succ": "b", "type": "FS", "lag": 0, "lag_unit": "working"},
+    {"id": "mc", "pred": "m", "succ": "c", "type": "FS", "lag": 1, "lag_unit": "calendar"}
+  ],
+  "expect": {
+    "finish": 8,
+    "finish_dates": {"typical": "2027-03-10", "low": "2027-03-10", "high": "2027-03-10"},
+    "status": {"known": 4, "total": 4, "words": "All 4 durations known"},
+    "driving": ["am", "mb", "mc"],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true,
+            "why": "LF = LS_m 5 - 0 = 5."},
+      "m": {"es": 5, "ef": 5, "ls": 5, "lf": 5, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-08", "finish": null,
+            "why": "FS from a: 5 = Mon 8 Mar; EF = 5 + 0. A milestone shows date(start) only, so finish is null. LF = min(PF 8, b: 5, c: c's latest start Wed 10 minus 1 day = Tue 9, last zero-length finish on or before Tue 9 = index 6) = 5."},
+      "b": {"es": 5, "ef": 8, "ls": 5, "lf": 8, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-08", "finish": "2027-03-10",
+            "why": "FS from m: 5. EF 8 = PF; last day index 7 = Wed 10 Mar."},
+      "c": {"es": 6, "ef": 7, "ls": 7, "lf": 8, "tf": 1, "ff": 1, "critical": false, "start": "2027-03-09", "finish": "2027-03-09",
+            "why": "m's instant is Mon 8 Mar 00:00, + 1 calendar day = Tue 9 = index 6. A one-day activity shows the same start and finish date."}
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "relative-weeks",
+  "why": "No start date: index 0 is Week 1, day 1 (a Monday), Mon-Fri working, no holidays, and no dates are returned. A calendar lag still counts the weekend: a ends on day 5 (a Friday), its finish instant is Saturday, + 3 days = Tuesday of week 2 = index 6. Working week 0 means the default.",
+  "calendar": {"start": "", "working_week": 0, "days": [{"day": "2027-03-02", "kind": "public_holiday", "label": "Ignored without a start date"}]},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Design", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Approval", "duration": 3}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 3, "lag_unit": "calendar"}
+  ],
+  "expect": {
+    "finish": 9,
+    "finish_dates": {"typical": null, "low": null, "high": null},
+    "driving": ["ab"],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true, "start": null, "finish": null,
+            "why": "b's latest start is Tuesday of week 2; minus 3 days = Saturday of week 1; the last 5-day finish with instant on or before that Saturday is 5. LF 5."},
+      "b": {"es": 6, "ef": 9, "ls": 6, "lf": 9, "tf": 0, "ff": 0, "critical": true, "start": null, "finish": null,
+            "why": "Index 6 is Tuesday of week 2; EF 9 = PF."}
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "cycle",
+  "why": "Framing -> Roof -> Cladding -> Framing is a loop. Survey feeds the loop and is ordered; Painting hangs off it and is not. The walk starts at the least outline key among unordered rows (Painting, ordinal 0), steps to the least-key predecessor each time (Cladding, Roof, Framing, Cladding again), keeps the repeated stretch, reads it forwards and rotates it to start at its least key (Framing, ordinal 1). Nothing else is computed.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "e", "ordinal": 0, "label": "Painting", "duration": 3},
+    {"id": "a", "ordinal": 1, "label": "Framing", "duration": 5},
+    {"id": "b", "ordinal": 2, "label": "Roof", "duration": 4},
+    {"id": "c", "ordinal": 3, "label": "Cladding", "duration": 6},
+    {"id": "d", "ordinal": 4, "label": "Survey", "duration": 1}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 0},
+    {"id": "bc", "pred": "b", "succ": "c", "type": "FS", "lag": 0},
+    {"id": "ca", "pred": "c", "succ": "a", "type": "SS", "lag": 0},
+    {"id": "ce", "pred": "c", "succ": "e", "type": "FS", "lag": 0},
+    {"id": "da", "pred": "d", "succ": "a", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "cycle": ["a", "b", "c", "a"],
+    "cycle_words": "Framing → Roof → Cladding → Framing",
+    "status": {"known": 5, "total": 5, "words": "All 5 durations known"},
+    "driving": [],
+    "activities": {}
+  }
+}

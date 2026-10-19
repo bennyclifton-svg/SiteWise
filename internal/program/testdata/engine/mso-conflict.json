@@ -1,0 +1,26 @@
+{
+  "name": "mso-conflict",
+  "why": "A mandatory start earlier than its link allows keeps its date, records a conflict and pushes negative float onto the predecessor. A start-no-earlier constraint simply holds c later.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Excavate", "duration": 10},
+    {"id": "b", "ordinal": 1, "label": "Pour slab", "duration": 3, "constraint": "mso", "constraint_date": "2027-03-08"},
+    {"id": "c", "ordinal": 2, "label": "Deliver frames", "duration": 2, "constraint": "snet", "constraint_date": "2027-03-10"}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 0, "lag_unit": "working"}
+  ],
+  "expect": {
+    "finish": 10,
+    "driving": [],
+    "conflicts": [{"activity_id": "b", "index": 5, "held_index": 10, "held_by": "a", "link_id": "ab"}],
+    "activities": {
+      "a": {"es": 0, "ef": 10, "ls": -3, "lf": 7, "tf": -3, "ff": -5, "critical": true, "start": "2027-03-01", "finish": "2027-03-12",
+            "why": "LF = min(PF 10, LS_b 7 - 0) = 7, LS = 7 - 10 = -3, TF -3: negative float is shown, never hidden. FF = ES_b 5 - result 10 = -5."},
+      "b": {"es": 5, "ef": 8, "ls": 7, "lf": 10, "tf": 2, "ff": 2, "critical": false, "start": "2027-03-08", "finish": "2027-03-10",
+            "why": "MSO Mon 8 Mar = index 5, so ES 5 although the link gives 10 (Mon 15 Mar): conflict, and ab is not driving because 10 is not ES. LF = PF 10."},
+      "c": {"es": 7, "ef": 9, "ls": 8, "lf": 10, "tf": 1, "ff": 1, "critical": false, "start": "2027-03-10",
+            "why": "SNET Wed 10 Mar = index 7; ES = max(0, 7)."}
+    }
+  }
+}

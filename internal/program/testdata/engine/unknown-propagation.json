@@ -1,0 +1,41 @@
+{
+  "name": "unknown-propagation",
+  "why": "b has no duration. Everything reachable from b (c, then f) is unknown: no dates, never critical, links touching them never drive. The finish is computed from known rows only and marked incomplete.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Demolition", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Council inspection", "duration": null},
+    {"id": "c", "ordinal": 2, "label": "Underpinning", "duration": 3},
+    {"id": "d", "ordinal": 3, "label": "Site clean", "duration": 2},
+    {"id": "e", "ordinal": 4, "label": "Hoarding", "duration": 4},
+    {"id": "f", "ordinal": 5, "label": "Slab", "duration": 2}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 0},
+    {"id": "bc", "pred": "b", "succ": "c", "type": "FS", "lag": 0},
+    {"id": "ad", "pred": "a", "succ": "d", "type": "FS", "lag": 0},
+    {"id": "df", "pred": "d", "succ": "f", "type": "FS", "lag": 0},
+    {"id": "cf", "pred": "c", "succ": "f", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 7,
+    "finish_dates": {"typical": "2027-03-09", "low": "2027-03-09", "high": "2027-03-09"},
+    "complete": false,
+    "status": {"known": 5, "total": 6, "words": "Indicative: 5 of 6 durations known"},
+    "driving": ["ad"],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true,
+            "why": "Its unknown successor b is ignored. LF = min(PF 7, d: 5) = 5. FF = ES_d 5 - 5 = 0."},
+      "b": {"unknown": true, "es": null, "ef": null, "tf": null, "critical": false, "start": null, "finish": null,
+            "why": "No duration."},
+      "c": {"unknown": true, "es": null, "critical": false, "start": null,
+            "why": "Reachable from b, so unknown although its own duration is 3."},
+      "d": {"es": 5, "ef": 7, "ls": 5, "lf": 7, "tf": 0, "ff": 0, "critical": true,
+            "why": "Only known successor would be f, which is unknown, so LF = PF 7 and FF = PF - EF = 0."},
+      "e": {"es": 0, "ef": 4, "ls": 3, "lf": 7, "tf": 3, "ff": 3, "critical": false,
+            "why": "Unlinked; LF = PF 7."},
+      "f": {"unknown": true, "critical": false,
+            "why": "Reachable from b through c; d being known does not rescue it."}
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "three-run-ranges",
+  "why": "Low, typical and high runs. Rows without low/high (Slab) use their one duration in all three runs. Bars and floats come from the typical run; the completion range is [PF low, PF high].",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Earthworks", "duration": 10, "low": 8, "high": 15},
+    {"id": "b", "ordinal": 1, "label": "Slab", "duration": 5},
+    {"id": "c", "ordinal": 2, "label": "Services", "duration": 12, "low": 10, "high": 14}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 15,
+    "finish_low": 13,
+    "finish_high": 20,
+    "finish_dates": {"typical": "2027-03-19", "low": "2027-03-17", "high": "2027-03-26"},
+    "driving": ["ab"],
+    "activities": {
+      "a": {"es": 0, "ef": 10, "ls": 0, "lf": 10, "tf": 0, "ff": 0, "critical": true,
+            "why": "Typical 10. Low run: a 0-8, b 8-13, c 0-10, PF 13 (Wed 17 Mar, index 12). High run: a 0-15, b 15-20, c 0-14, PF 20 (Fri 26 Mar, index 19)."},
+      "b": {"es": 10, "ef": 15, "ls": 10, "lf": 15, "tf": 0, "ff": 0, "critical": true,
+            "why": "Typical PF 15 = index 14 = Fri 19 Mar."},
+      "c": {"es": 0, "ef": 12, "ls": 3, "lf": 15, "tf": 3, "ff": 3, "critical": false,
+            "why": "Typical 12; LF = PF 15."}
+    }
+  }
+}

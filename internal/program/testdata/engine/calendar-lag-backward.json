@@ -1,0 +1,26 @@
+{
+  "name": "calendar-lag-backward",
+  "why": "The backward pass converts a calendar lag with 'on or before'. b has 2 days of float, yet a has none: a weekend and a holiday sit between them, so a one-day slip of a moves b by three working days.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": [{"day": "2027-03-08", "kind": "public_holiday", "label": "Labour Day"}]},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Pour slab", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Strip formwork", "duration": 2},
+    {"id": "c", "ordinal": 2, "label": "Fabricate trusses", "duration": 10}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 4, "lag_unit": "calendar"}
+  ],
+  "expect": {
+    "finish": 10,
+    "finish_dates": {"typical": "2027-03-15", "low": "2027-03-15", "high": "2027-03-15"},
+    "driving": ["ab"],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true,
+            "why": "b's latest start is index 8 = Fri 12 Mar; minus 4 calendar days = Mon 8 Mar. The last finish whose instant is on or before Mon 8 is index 5 (ending Fri 5, instant Sat 6). Finishing one day later (Tue 9) gives instant Wed 10 + 4 = Sun 14, so b could not start before Mon 15 = index 9 > 8. LF 5, TF 0."},
+      "b": {"es": 6, "ef": 8, "ls": 8, "lf": 10, "tf": 2, "ff": 2, "critical": false, "start": "2027-03-10", "finish": "2027-03-11",
+            "why": "Instant Sat 6 Mar + 4 = Wed 10 Mar = index 6. LF = PF 10, LS 8."},
+      "c": {"es": 0, "ef": 10, "ls": 0, "lf": 10, "tf": 0, "ff": 0, "critical": true, "finish": "2027-03-15",
+            "why": "Unlinked; sets PF 10. Index 9 = Mon 15 Mar."}
+    }
+  }
+}

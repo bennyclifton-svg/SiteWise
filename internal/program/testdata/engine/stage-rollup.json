@@ -1,0 +1,29 @@
+{
+  "name": "stage-rollup",
+  "why": "A stage with children ignores its own duration (30 here) and spans its children. Hidden Start(S) and Finish(S) nodes are never returned. The stage is not counted in the status: its span comes from its children.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "s", "ordinal": 0, "kind": "stage", "label": "Structure", "duration": 30},
+    {"id": "c1", "parent": "s", "ordinal": 0, "label": "Slab", "duration": 3},
+    {"id": "c2", "parent": "s", "ordinal": 1, "label": "Columns", "duration": 4},
+    {"id": "c3", "parent": "s", "ordinal": 2, "label": "Beams", "duration": 2}
+  ],
+  "links": [
+    {"id": "l13", "pred": "c1", "succ": "c3", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 5,
+    "status": {"known": 3, "total": 3, "words": "All 3 durations known"},
+    "driving": ["l13"],
+    "activities": {
+      "s": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-01", "finish": "2027-03-05",
+            "why": "es = min child es 0; ef = max child ef 5; ls = min child ls (0, 1, 3) = 0; lf = max child lf (3, 5, 5) = 5; tf = least child float 0; ff = free float of Finish(S), which has no successor: PF 5 - 5 = 0."},
+      "c1": {"es": 0, "ef": 3, "ls": 0, "lf": 3, "tf": 0, "ff": 0, "critical": true,
+             "why": "Start(S) has ES 0, so c1 starts at 0. LF = min(PF 5, c3: LS 3, Finish(S): 5) = 3. FF = min(c3: 3 - 3, Finish(S): 5 - 3) = 0."},
+      "c2": {"es": 0, "ef": 4, "ls": 1, "lf": 5, "tf": 1, "ff": 1, "critical": false,
+             "why": "Only successor is Finish(S): LF = LF of Finish(S) 5; FF = ES of Finish(S) 5 - 4 = 1."},
+      "c3": {"es": 3, "ef": 5, "ls": 3, "lf": 5, "tf": 0, "ff": 0, "critical": true,
+             "why": "FS from c1: 3. LF 5 from Finish(S)."}
+    }
+  }
+}

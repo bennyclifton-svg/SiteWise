@@ -1,0 +1,31 @@
+{
+  "name": "calendar-lag-ff-sf",
+  "why": "Calendar-day lag on FF and SF, and a negative calendar lag on SS, in both passes. Holiday Mon 8 Mar 2027. Indices: 0-4 = Mon 1-Fri 5 Mar, 5 = Tue 9, 6 = Wed 10.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": [{"day": "2027-03-08", "kind": "public_holiday", "label": "Labour Day"}]},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Waterproofing", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Flood test", "duration": 3},
+    {"id": "c", "ordinal": 2, "label": "Temporary cover", "duration": 2},
+    {"id": "d", "ordinal": 3, "label": "Tiling set-out", "duration": 4}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FF", "lag": 3, "lag_unit": "calendar"},
+    {"id": "ac", "pred": "a", "succ": "c", "type": "SF", "lag": 2, "lag_unit": "calendar"},
+    {"id": "bd", "pred": "b", "succ": "d", "type": "SS", "lag": -2, "lag_unit": "calendar"}
+  ],
+  "expect": {
+    "finish": 6,
+    "finish_dates": {"typical": "2027-03-09", "low": "2027-03-09", "high": "2027-03-09"},
+    "driving": ["ab", "ac", "bd"],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true,
+            "why": "From b (FF, calendar): b's latest finish instant is Wed 10 Mar (it ends Tue 9), minus 3 = Sun 7; the last 5-day finish with instant on or before Sun 7 is index 5. From c (SF, calendar): c's latest finish instant Wed 10 minus 2 = Mon 8; the last start on or before Mon 8 is index 4 (Fri 5), + D_a 5 = 9. LF = min(PF 6, 5, 9) = 5. FF = min(3 - 3, 0 - 0) = 0."},
+      "b": {"es": 3, "ef": 6, "ls": 3, "lf": 6, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-04", "finish": "2027-03-09",
+            "why": "a's finish instant is Sat 6 Mar, + 3 days = Tue 9 Mar 00:00. b must finish at or after that: ending Fri 5 gives Sat 6 (too early), ending Tue 9 gives Wed 10, so EF = 6 and ES = 6 - 3 = 3 (Thu 4, Fri 5, Tue 9). Backward: d's bound is index 7 (below), so LF = PF 6. FF = ES_d 1 - result 1 = 0."},
+      "c": {"es": 0, "ef": 2, "ls": 4, "lf": 6, "tf": 4, "ff": 4, "critical": false, "start": "2027-03-01", "finish": "2027-03-02",
+            "why": "a starts Mon 1 Mar, + 2 = Wed 3 Mar; c must finish at or after Wed 3 00:00, which ending Tue 2 does: EF 2, ES 0."},
+      "d": {"es": 1, "ef": 5, "ls": 2, "lf": 6, "tf": 1, "ff": 1, "critical": false, "start": "2027-03-02", "finish": "2027-03-05",
+            "why": "b starts Thu 4 Mar, minus 2 calendar days = Tue 2 Mar = index 1. Backward to b: d's latest start index 2 = Wed 3, plus 2 = Fri 5; the last start on or before Fri 5 is 4, + D_b 3 = 7, above PF 6."}
+    }
+  }
+}

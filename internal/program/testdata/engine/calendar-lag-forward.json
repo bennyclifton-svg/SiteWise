@@ -1,0 +1,31 @@
+{
+  "name": "calendar-lag-forward",
+  "why": "Calendar-day lag across a weekend and a holiday (Mon 8 Mar 2027), beside the same lag in working days. Indices: 0-4 = Mon 1-Fri 5 Mar, Mon 8 is a holiday, 5-8 = Tue 9-Fri 12, 9 = Mon 15, 10 = Tue 16. A finish instant is the start of the calendar day after the last working day; a start instant is the start of the first day.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": [{"day": "2027-03-08", "kind": "public_holiday", "label": "Labour Day"}]},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Pour slab", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Strip formwork", "duration": 2},
+    {"id": "c", "ordinal": 2, "label": "Set out walls", "duration": 2},
+    {"id": "d", "ordinal": 3, "label": "Order steel", "duration": 1}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FS", "lag": 4, "lag_unit": "calendar"},
+    {"id": "ac", "pred": "a", "succ": "c", "type": "FS", "lag": 4, "lag_unit": "working"},
+    {"id": "ad", "pred": "a", "succ": "d", "type": "SS", "lag": 2, "lag_unit": "calendar"}
+  ],
+  "expect": {
+    "finish": 11,
+    "finish_dates": {"typical": "2027-03-16", "low": "2027-03-16", "high": "2027-03-16"},
+    "driving": ["ab", "ac", "ad"],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-01", "finish": "2027-03-05",
+            "why": "LF = min(PF 11, c: LS 9 - 4 = 5, b (calendar FS): b's latest start instant Mon 15 Mar minus 4 days = Thu 11 Mar; the last finish whose instant is on or before Thu 11 is index 7 (finishing Wed 10) = 7, d (calendar SS): LS_d 10 = Tue 16, minus 2 = Sun 14, last start on or before = index 8, + D_a 5 = 13) = 5. FF = min(6 - 6, 9 - 9, 2 - 2) = 0."},
+      "b": {"es": 6, "ef": 8, "ls": 9, "lf": 11, "tf": 3, "ff": 3, "critical": false, "start": "2027-03-10", "finish": "2027-03-11",
+            "why": "a ends Fri 5 Mar, so its finish instant is Sat 6 Mar; + 4 calendar days = Wed 10 Mar (Sat, Sun, the Monday holiday and Tuesday pass) = index 6. LF = PF 11."},
+      "c": {"es": 9, "ef": 11, "ls": 9, "lf": 11, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-15", "finish": "2027-03-16",
+            "why": "Working lag: F_a 5 + 4 = 9 = Mon 15 Mar; the holiday is not a working day, so 4 working days reach further than 4 calendar days."},
+      "d": {"es": 2, "ef": 3, "ls": 10, "lf": 11, "tf": 8, "ff": 8, "critical": false, "start": "2027-03-03",
+            "why": "Calendar SS+2: a starts Mon 1 Mar, + 2 days = Wed 3 Mar = index 2. LF 11, LS 10."}
+    }
+  }
+}

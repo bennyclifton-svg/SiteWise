@@ -1,0 +1,28 @@
+{
+  "name": "last-child-before",
+  "why": "Design has two activities, removed together in one batch. engine_test reads Design's span with StageSpan (40), retires both children and their link, gives Design 40 days, and requires the result to compute exactly as last-child-after.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "brief", "ordinal": 0, "kind": "stage", "label": "Brief", "duration": 5},
+    {"id": "design", "ordinal": 1, "kind": "stage", "label": "Design"},
+    {"id": "build", "ordinal": 2, "kind": "stage", "label": "Build", "duration": 20},
+    {"id": "concept", "parent": "design", "ordinal": 0, "label": "Concept design", "duration": 15},
+    {"id": "developed", "parent": "design", "ordinal": 1, "label": "Developed design", "duration": 25}
+  ],
+  "links": [
+    {"id": "bd", "pred": "brief", "succ": "design", "type": "FS", "lag": 0},
+    {"id": "cd", "pred": "concept", "succ": "developed", "type": "FS", "lag": 0},
+    {"id": "db", "pred": "design", "succ": "build", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 65,
+    "driving": ["bd", "cd", "db"],
+    "activities": {
+      "design": {"es": 5, "ef": 45, "ls": 5, "lf": 45, "tf": 0, "ff": 0, "critical": true,
+                 "why": "Concept 5-20 and Developed 20-45: span 45 - 5 = 40 working days."},
+      "concept": {"es": 5, "ef": 20, "tf": 0, "critical": true, "why": "Start(Design) = 5 from Brief."},
+      "developed": {"es": 20, "ef": 45, "tf": 0, "critical": true, "why": "FS from Concept."},
+      "build": {"es": 45, "ef": 65, "critical": true, "why": "FS from Finish(Design) = 45."}
+    }
+  }
+}

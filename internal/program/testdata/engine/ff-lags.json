@@ -1,0 +1,35 @@
+{
+  "name": "ff-lags",
+  "why": "Finish-to-finish with positive, zero and negative lag; ES = F_a + lag - D_b. Activity e is the plan's section 6.7 example (3 days, FF -1). Mon 8 Mar 2027 is a holiday, which moves dates but not indices.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": [{"day": "2027-03-08", "kind": "public_holiday", "label": "Labour Day"}]},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Brickwork", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Lintels", "duration": 3},
+    {"id": "c", "ordinal": 2, "label": "Wall ties", "duration": 3},
+    {"id": "d", "ordinal": 3, "label": "Cleaning down", "duration": 3},
+    {"id": "e", "ordinal": 4, "label": "Pointing", "duration": 3}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "FF", "lag": 2, "lag_unit": "working"},
+    {"id": "ac", "pred": "a", "succ": "c", "type": "FF", "lag": 0, "lag_unit": "working"},
+    {"id": "ad", "pred": "a", "succ": "d", "type": "FF", "lag": -2, "lag_unit": "working"},
+    {"id": "ae", "pred": "a", "succ": "e", "type": "FF", "lag": -1, "lag_unit": "working"}
+  ],
+  "expect": {
+    "finish": 7,
+    "finish_dates": {"typical": "2027-03-10", "low": "2027-03-10", "high": "2027-03-10"},
+    "driving": ["ab", "ac", "ad", "ae"],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-01", "finish": "2027-03-05",
+            "why": "LF = min(PF 7, b: LF 7 - 2 = 5, c: 7 - 0 = 7, d: 7 + 2 = 9, e: 7 + 1 = 8) = 5. FF = min(4 - 4, 2 - 2, 0 - 0, 1 - 1) = 0."},
+      "b": {"es": 4, "ef": 7, "ls": 4, "lf": 7, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-05", "finish": "2027-03-10",
+            "why": "FF+2: 5 + 2 - 3 = 4; EF 7. Indices 4, 5, 6 are Fri 5, Tue 9 and Wed 10 Mar (Mon 8 Mar is the holiday), so it shows 5 to 10 Mar."},
+      "c": {"es": 2, "ef": 5, "ls": 4, "lf": 7, "tf": 2, "ff": 2, "critical": false,
+            "why": "FF+0: 5 - 3 = 2. LF = PF 7."},
+      "d": {"es": 0, "ef": 3, "ls": 4, "lf": 7, "tf": 4, "ff": 4, "critical": false,
+            "why": "FF-2: 5 - 2 - 3 = 0, exactly the program start, so the link drives."},
+      "e": {"es": 1, "ef": 4, "ls": 4, "lf": 7, "tf": 3, "ff": 3, "critical": false,
+            "why": "FF-1: 5 - 1 - 3 = 1, as in the plan. PF here is 7 because b runs on; in the plan's two-activity example PF is 5, giving LS 2 and TF 1."}
+    }
+  }
+}

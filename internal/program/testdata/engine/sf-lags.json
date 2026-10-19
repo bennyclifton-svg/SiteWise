@@ -1,0 +1,34 @@
+{
+  "name": "sf-lags",
+  "why": "Start-to-finish with positive, zero and negative lag; ES = S_a + lag - D_b. A predecessor p moves a to index 4 so the leads have room before clamping.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "p", "ordinal": 0, "label": "Site establishment", "duration": 4},
+    {"id": "a", "ordinal": 1, "label": "New supply live", "duration": 5},
+    {"id": "b", "ordinal": 2, "label": "Temporary power", "duration": 3},
+    {"id": "c", "ordinal": 3, "label": "Generator hire", "duration": 3},
+    {"id": "d", "ordinal": 4, "label": "Old supply", "duration": 3}
+  ],
+  "links": [
+    {"id": "pa", "pred": "p", "succ": "a", "type": "FS", "lag": 0, "lag_unit": "working"},
+    {"id": "ab", "pred": "a", "succ": "b", "type": "SF", "lag": 2, "lag_unit": "working"},
+    {"id": "ac", "pred": "a", "succ": "c", "type": "SF", "lag": 0, "lag_unit": "working"},
+    {"id": "ad", "pred": "a", "succ": "d", "type": "SF", "lag": -2, "lag_unit": "working"}
+  ],
+  "expect": {
+    "finish": 9,
+    "driving": ["pa", "ab", "ac"],
+    "activities": {
+      "p": {"es": 0, "ef": 4, "ls": 0, "lf": 4, "tf": 0, "ff": 0, "critical": true,
+            "why": "LF = min(PF 9, FS to a: LS_a 4 - 0 = 4) = 4. FF = ES_a 4 - result 4 = 0."},
+      "a": {"es": 4, "ef": 9, "ls": 4, "lf": 9, "tf": 0, "ff": 0, "critical": true,
+            "why": "FS from p: 4. LF = min(PF 9, b: LF 9 - 2 + D_a 5 = 12, c: 9 - 0 + 5 = 14, d: 9 + 2 + 5 = 16) = 9. FF = min(b: 3 - 3, c: 1 - 1, d: 0 - (-1)) = 0."},
+      "b": {"es": 3, "ef": 6, "ls": 6, "lf": 9, "tf": 3, "ff": 3, "critical": false,
+            "why": "SF+2: 4 + 2 - 3 = 3. LF = PF 9."},
+      "c": {"es": 1, "ef": 4, "ls": 6, "lf": 9, "tf": 5, "ff": 5, "critical": false,
+            "why": "SF+0: 4 - 3 = 1."},
+      "d": {"es": 0, "ef": 3, "ls": 6, "lf": 9, "tf": 6, "ff": 6, "critical": false,
+            "why": "SF-2: 4 - 2 - 3 = -1, clamped to 0; not driving."}
+    }
+  }
+}

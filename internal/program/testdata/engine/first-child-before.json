@@ -1,0 +1,25 @@
+{
+  "name": "first-child-before",
+  "why": "Three leaf stages before Design gets its first activity. engine_test applies FirstChildMove to this input (adding Concept design under Design) and requires the result to compute exactly as first-child-after.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "brief", "ordinal": 0, "kind": "stage", "label": "Brief", "duration": 5},
+    {"id": "design", "ordinal": 1, "kind": "stage", "label": "Design", "duration": 40},
+    {"id": "build", "ordinal": 2, "kind": "stage", "label": "Build", "duration": 20}
+  ],
+  "links": [
+    {"id": "bd", "pred": "brief", "succ": "design", "type": "FS", "lag": 0},
+    {"id": "db", "pred": "design", "succ": "build", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 65,
+    "driving": ["bd", "db"],
+    "activities": {
+      "brief": {"es": 0, "ef": 5, "tf": 0, "critical": true, "why": "First in the chain."},
+      "design": {"es": 5, "ef": 45, "ls": 5, "lf": 45, "tf": 0, "critical": true, "start": "2027-03-08", "finish": "2027-04-30",
+                 "why": "FS from Brief: 5 = Mon 8 Mar; EF 45, index 44 = 8 weeks + 4 days = 1 Mar + 60 days = Fri 30 Apr."},
+      "build": {"es": 45, "ef": 65, "tf": 0, "critical": true, "start": "2027-05-03", "finish": "2027-05-28",
+                "why": "Index 45 = 9 weeks = Mon 3 May; index 64 = Fri 28 May."}
+    }
+  }
+}

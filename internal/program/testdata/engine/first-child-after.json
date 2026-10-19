@@ -1,0 +1,30 @@
+{
+  "name": "first-child-after",
+  "why": "Design's 40 days moved to its first activity, Concept design. Design keeps its links, now on its hidden nodes: Brief -> Start(Design) and Finish(Design) -> Build, so every date is unchanged.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "brief", "ordinal": 0, "kind": "stage", "label": "Brief", "duration": 5},
+    {"id": "design", "ordinal": 1, "kind": "stage", "label": "Design", "duration": null},
+    {"id": "build", "ordinal": 2, "kind": "stage", "label": "Build", "duration": 20},
+    {"id": "concept", "parent": "design", "ordinal": 0, "kind": "activity", "label": "Concept design", "duration": 40}
+  ],
+  "links": [
+    {"id": "bd", "pred": "brief", "succ": "design", "type": "FS", "lag": 0},
+    {"id": "db", "pred": "design", "succ": "build", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 65,
+    "status": {"known": 3, "total": 3, "words": "All 3 durations known"},
+    "driving": ["bd", "db"],
+    "activities": {
+      "brief": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true,
+                "why": "FS into Start(Design): LF = LS of Start(Design) 5."},
+      "design": {"es": 5, "ef": 45, "ls": 5, "lf": 45, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-08", "finish": "2027-04-30",
+                 "why": "Spans its one child. ff is Finish(Design)'s: ES_build 45 - result 45 = 0."},
+      "concept": {"es": 5, "ef": 45, "ls": 5, "lf": 45, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-08", "finish": "2027-04-30",
+                  "why": "Starts at Start(Design) 5, which Brief holds; finishes into Finish(Design), which Build waits on."},
+      "build": {"es": 45, "ef": 65, "ls": 45, "lf": 65, "tf": 0, "ff": 0, "critical": true, "start": "2027-05-03", "finish": "2027-05-28",
+                "why": "FS out of Design anchors on Finish(Design) = 45."}
+    }
+  }
+}

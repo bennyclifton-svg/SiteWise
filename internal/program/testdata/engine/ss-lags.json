@@ -1,0 +1,32 @@
+{
+  "name": "ss-lags",
+  "why": "Start-to-start with positive, zero and negative lag. The negative lead would start before the program, so it clamps at 0 and is not a driving link.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "a", "ordinal": 0, "label": "Frame", "duration": 5},
+    {"id": "b", "ordinal": 1, "label": "Roof", "duration": 3},
+    {"id": "c", "ordinal": 2, "label": "Plumbing rough-in", "duration": 3},
+    {"id": "d", "ordinal": 3, "label": "Scaffold", "duration": 3}
+  ],
+  "links": [
+    {"id": "ab", "pred": "a", "succ": "b", "type": "SS", "lag": 2, "lag_unit": "working"},
+    {"id": "ac", "pred": "a", "succ": "c", "type": "SS", "lag": 0, "lag_unit": "working"},
+    {"id": "ad", "pred": "a", "succ": "d", "type": "SS", "lag": -2, "lag_unit": "working"}
+  ],
+  "expect": {
+    "finish": 5,
+    "finish_dates": {"typical": "2027-03-05", "low": "2027-03-05", "high": "2027-03-05"},
+    "driving": ["ab", "ac"],
+    "conflicts": [],
+    "activities": {
+      "a": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true,
+            "why": "LF = min(PF 5, b: LS 2 - 2 + D_a 5 = 5, c: 2 - 0 + 5 = 7, d: 2 + 2 + 5 = 9) = 5. FF = min(b: 2 - 2 = 0, c: 0 - 0 = 0, d: ES 0 - result -2 = 2) = 0."},
+      "b": {"es": 2, "ef": 5, "ls": 2, "lf": 5, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-03", "finish": "2027-03-05",
+            "why": "SS+2: S_a 0 + 2 = 2 (Wed 3 Mar); EF 5 equals PF."},
+      "c": {"es": 0, "ef": 3, "ls": 2, "lf": 5, "tf": 2, "ff": 2, "critical": false,
+            "why": "SS+0: 0. LF = PF 5, LS 2."},
+      "d": {"es": 0, "ef": 3, "ls": 2, "lf": 5, "tf": 2, "ff": 2, "critical": false, "start": "2027-03-01", "finish": "2027-03-03",
+            "why": "SS-2: 0 - 2 = -2, clamped to 0 (nothing starts before the program). The link result -2 is not ES 0, so ad is not driving. FF = PF 5 - EF 3 = 2."}
+    }
+  }
+}

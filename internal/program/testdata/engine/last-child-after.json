@@ -1,0 +1,25 @@
+{
+  "name": "last-child-after",
+  "why": "Design is a leaf again with its last span, 40 working days, and the same links, so Brief, Design and Build keep their dates.",
+  "calendar": {"start": "2027-03-01", "working_week": 31, "days": []},
+  "activities": [
+    {"id": "brief", "ordinal": 0, "kind": "stage", "label": "Brief", "duration": 5},
+    {"id": "design", "ordinal": 1, "kind": "stage", "label": "Design", "duration": 40},
+    {"id": "build", "ordinal": 2, "kind": "stage", "label": "Build", "duration": 20}
+  ],
+  "links": [
+    {"id": "bd", "pred": "brief", "succ": "design", "type": "FS", "lag": 0},
+    {"id": "db", "pred": "design", "succ": "build", "type": "FS", "lag": 0}
+  ],
+  "expect": {
+    "finish": 65,
+    "status": {"known": 3, "total": 3, "words": "All 3 durations known"},
+    "driving": ["bd", "db"],
+    "activities": {
+      "brief": {"es": 0, "ef": 5, "ls": 0, "lf": 5, "tf": 0, "ff": 0, "critical": true, "why": "First in the chain."},
+      "design": {"es": 5, "ef": 45, "ls": 5, "lf": 45, "tf": 0, "ff": 0, "critical": true, "start": "2027-03-08", "finish": "2027-04-30",
+                 "why": "Leaf: FS from Brief 5, + 40 = 45."},
+      "build": {"es": 45, "ef": 65, "ls": 45, "lf": 65, "tf": 0, "ff": 0, "critical": true, "why": "FS from Design."}
+    }
+  }
+}
