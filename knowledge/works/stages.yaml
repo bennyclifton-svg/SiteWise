@@ -23,3 +23,8 @@ stages:
       - {id: construction_stage_inspections, label: Construction-stage inspections, novation: post}
   - {id: completion, label: Completion}
   - {id: defects, label: Defects liability}
+  # A stage a user makes in Program maps to `other` until the user picks the
+  # catalogue stage it really is (program plan 4.6, owner answer Q5). It is
+  # never a default: procurement and fee defaults offer only real stages.
+  # Draft for owner review.
+  - {id: other, label: Other stage, status: draft}

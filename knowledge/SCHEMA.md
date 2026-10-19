@@ -167,6 +167,7 @@ mutually exclusive and at most 40 per parent.
     before: <system or activity>
     after: <system or activity>
     evidence: what proves the hold point was released
+    release: <question>       # optional noul with `status`; see below
   responsibility: >-          # optional: who designs / installs / certifies each side
     ...
   resolved_when: [<question>, ...]   # Jev nouls; each true answer is evidence the interface is addressed
@@ -179,6 +180,31 @@ mutually exclusive and at most 40 per parent.
 Direction: `from` acts on `to` (services penetrate construction; fire water
 supplies sprinklers; detection controls fans; sprinkler concession: FRLs
 depend_on sprinklers).
+
+`hold_point.release` (optional, program plan
+`docs/plans/2026-10-18-program.md` §10.4) is a noul in the Questions format
+with its own `status` (`draft` until the owner reviews it), authored per
+interface by the knowledge owner. It asks whether a passage states that the
+inspection in `hold_point` was carried out and the work released; `runs_on`
+names the systems whose passages it reads. A true answer is only a proposal:
+a user marks a hold point released, and Jev never gives a date.
+
+```yaml
+hold_point:
+  before: substructure.slab-on-ground
+  after: structure.concrete
+  evidence: Reinforcement inspection release identifying the pour.
+  release:
+    type: noul
+    instructions: >-
+      Using `text`, does this passage state that the inspection described in
+      `hold_point` was carried out and the work was released to proceed?
+    criteria:
+      true: It states the inspection was completed and the work may proceed.
+      false: It only requires, schedules or requests the inspection.
+    runs_on: [structure.concrete]
+    status: draft
+```
 
 ## Failure modes
 
@@ -208,6 +234,37 @@ applies_when:
 
 Operators: `any_of`, `eq`, `is` (boolean), `gt`, `gte`, `lt`, `lte`,
 `system_present`. Nest `all`, `any`, `not`.
+
+**Program library only** (`knowledge/program/`, see "Program library
+(2026-10-18)"). Two more forms, rejected anywhere else:
+
+```yaml
+- {cond: planning, any_of: [da, ssd]}          # a Profile condition
+- {cond: procurement_route, eq: traditional}
+- {work_action: {system: substructure, any_of: [new, replace]}}
+```
+
+- `cond: <key>` reads a Profile condition (`profile/taxonomy.yaml`
+  `conditions`, stored as `hdr.cond.<key>`) with exactly one of `any_of` or
+  `eq`. The key must exist and each value must be one of its `options` or
+  `user_options`. The approval pathway is `cond: planning` (`exempt`, `cdc`,
+  `da`, `ssd`, `planning_permit`) and the procurement route is
+  `cond: procurement_route` (`traditional`, `design_construct`, `eci`,
+  `managing_contractor`, `alliance`, `ppp`); there are no duplicate planning
+  keys for them (owner answer Q1, 19 October 2026). A condition with no value
+  is unknown.
+- `det: work_type` in a program predicate must compare with `any_of` or `eq`
+  against `profile/taxonomy.yaml` work type ids; code feeds it from the
+  Profile's work types.
+- `work_action: {system: <id>, any_of: [...]}` is true when an included work
+  item (`work_items.inclusion = included`) on that system, or below it, has
+  one of the actions. It is evaluated by code exactly like `works` (an item
+  on an ancestor, or with no action yet, is unknown; no items is false).
+  `any_of` is a non-empty subset of `new`, `replace`, `upgrade`, `alter`,
+  `repair`, `remove`, each an id in `works/actions.yaml`. `retain` brings no
+  activities and `investigate` brings one Investigation activity from
+  generation, so neither may select a fragment; `remove` selects demolition
+  fragments.
 
 ## Questions (Jev)
 
@@ -600,6 +657,8 @@ The top-level ids are the stage targets of unforeseen conditions:
 
 `substages` are editable suggestions for staged fee lines, never requirements. `novation` says which side of a novation a sub-stage usually falls on (`pre` or `post`); a package may change it.
 
+One more top-level id, `other` (label "Other stage", draft, owner answer Q5), is where a stage a user makes in Program maps until the user picks the catalogue stage it really is. It is a valid stage id everywhere a stage id is checked, but it is never a default or a suggestion, it is not an unforeseen-condition target, and library rows never use it.
+
 ```yaml
 version: 1
 status: draft
@@ -837,3 +896,184 @@ RFP positions optionally carry `group` (a stable display subheading) and
 selection predicates. They travel with the resolved position into the saved
 report basis and export. The Hydraulic pilot uses them in the combined scope
 table; other disciplines retain their existing presentation.
+
+## Program library (2026-10-18)
+
+See `docs/plans/2026-10-18-program.md` §4. Four files hold everything Program
+generation needs; a program never contains a number that is not in one of
+them, in the Profile, in a document or typed by the user.
+
+```text
+knowledge/program/
+  skeletons.yaml   stage patterns: which stages a program has and how they link
+  fragments.yaml   activities a system's work items bring to a stage
+  durations.yaml   the only source of library durations
+  calendars.yaml   non-working days, one state and one year per calendar
+```
+
+Each file is a mapping with `version: 1`, `status`, `sources` (common fields
+above), optional `notes`, and one list key named after the file. Every row
+carries `status` and `sources`; everything is written `status: draft` and only
+the owner marks a row `reviewed`. Rows use the predicate operators above,
+including the program-only `cond` and `work_action`. Keys are checked
+strictly: an unknown or misspelt key is an error, because a misspelt
+`applies_when` would load as a row that always applies. Content is authored
+separately by the owner (WP-P15): never fill a number, a calendar day or a
+fragment from memory, seeds or the web.
+
+| Kind | Form | Example |
+|---|---|---|
+| Skeleton | `sk.<slug>` | `sk.generic` |
+| Fragment | `fr.<slug>` | `fr.basement-excavation` |
+| Activity key | `<slug>`, unique within its fragment | `bulk-ex` |
+| Duration | `du.<slug>` | `du.bulk-excavation` |
+| Calendar | `cal.<slug>` | `cal.nsw-2027` |
+
+A link is `{from, to, type, lag}`: `type` is `FS`, `SS`, `FF` or `SF`; `lag`
+is `null` or a `du.*` id, never a literal number. A link joins two different
+ids of the same row, and a row's links form no cycle.
+
+### Skeletons (`program/skeletons.yaml`)
+
+```yaml
+- id: sk.new-traditional-da
+  label: New building, traditional procurement, development consent
+  applies_when:
+    all:
+      - {det: work_type, eq: new}
+      - {cond: procurement_route, eq: traditional}
+      - {cond: planning, eq: da}
+  stages: [investigation, concept_design, approval_documentation, approvals,
+           construction_documentation, procurement, construction, completion, defects]
+  links:
+    - {from: approval_documentation, to: approvals, type: FS, lag: null}
+  status: draft
+  sources: [...]
+```
+
+- `stages` lists catalogue stage ids (`works/stages.yaml`) in order as one
+  flat tier; catalogue sub-stages appear here as ordinary stages. `other` is
+  never listed. `links` reference ids in `stages`.
+- v1 applies one skeleton per project. Generation picks the matching skeleton
+  with the most predicate terms (leaf conditions); a predicate must hold, so
+  an unknown determinant or condition never selects one. A tie is kept and
+  reported as a check message. Two skeletons with identical predicates (list
+  order inside `all`, `any` and `any_of` ignored) are an error.
+- Exactly one fallback `sk.generic`, with no `applies_when`: every catalogue
+  stage in order, a top-level stage replaced by its sub-stages where it has
+  more than one (a single sub-stage is a fee item inside its stage, so
+  Construction stays), without `other`, chained `FS` with no lags. The checker and the loader
+  derive this list from `stages.yaml` and refuse a file that differs.
+
+### Fragments (`program/fragments.yaml`)
+
+```yaml
+- id: fr.basement-excavation
+  label: Basement excavation and retention
+  stage: construction
+  systems: [substructure.basement]
+  applies_when: {work_action: {system: substructure.basement, any_of: [new]}}
+  activities:
+    - {key: shoring, label: Install shoring, systems: [substructure.basement], duration: du.shoring-per-m}
+    - {key: bulk-ex, label: Bulk excavation, systems: [site.earthworks], duration: null}
+  links:
+    - {from: shoring, to: bulk-ex, type: SS, lag: du.shoring-lead}
+  attach: {after: stage_start, before: fr.substructure-slab}
+  status: draft
+  sources: [...]
+```
+
+- `stage` is a catalogue stage other than `other`. `systems` (on the fragment
+  and on each activity) are system ids from `systems.yaml` and cluster files;
+  hold points attach by the activity systems.
+- Fragments follow work items: `applies_when` normally uses `work_action`
+  over included work items. When a fragment yields a single activity, its
+  label is the work item's title, as the user wrote it.
+- `duration` is a `du.*` id or `null` (unknown).
+- `attach.after` and `attach.before` (either or both) are `stage_start`,
+  `stage_finish` or another fragment id; each becomes an FS link with no lag.
+  Attach references between fragments form no cycle.
+- A fragment must not duplicate an activity a skeleton already provides.
+
+### Durations (`program/durations.yaml`)
+
+Mirrors `costs/benchmarks.yaml`: with no reviewed applicable row, the duration
+stays unknown.
+
+```yaml
+- id: du.bulk-excavation
+  version: 1
+  basis: per_unit            # fixed | per_unit | floor_cycle | time_cost | statutory | lead_time
+  driver: {planning_key: <key>, unit: m3}   # per_unit and floor_cycle only
+  unit_days: working         # working | calendar
+  low: "<n>"                 # quoted decimal strings, never floats
+  typical: "<n>"
+  high: "<n>"
+  applies_when: {...}        # optional
+  geography: <text>
+  limitations: [<text>]
+  status: draft
+  sources: [...]
+```
+
+| `basis` | Inputs | Code computes | Extra fields |
+|---|---|---|---|
+| `fixed` | none | `low`, `typical`, `high` as given | |
+| `per_unit` | driver value | `ceil(driver × rate)` for each bound; rate is days per unit | `driver` |
+| `floor_cycle` | storeys (`rise_in_storeys` or a part's storeys) | `ceil(storeys × cycle)`; cycle is days per floor | `driver` |
+| `time_cost` | construction cost from the Cost Plan, indexed to `cost_base_date` | `ceil(K × C^B)` (Bromilow) | `k`, `b`, `cost_base_date`, `index_basis`; no `low`, `typical`, `high` |
+| `statutory` | none | as given | `instrument`, `clause`, `verified` |
+| `lead_time` | none | as given | |
+
+- `driver` names exactly one of `planning_key` (`profile/planning_keys.yaml`)
+  or `determinant`, plus a `unit`. It is required for `per_unit` and
+  `floor_cycle` and omitted otherwise. A driver that is unknown leaves the
+  duration unknown; a range uses its ends.
+- `low ≤ typical ≤ high`, all non-negative quoted decimal strings with at most
+  2 decimal places. `k` and `b` are non-negative quoted decimal strings with
+  at most 4 places; `cost_base_date` is a quoted `YYYY-MM-DD`; `index_basis`
+  names the cost index. The time-cost parameters are not authored until the
+  owner names a published set (owner answer Q7).
+- `statutory` rows carry `instrument`, `clause` and `verified`. `verified`
+  stays `false` until checked against the instrument itself; a `true` needs
+  `primary_source`.
+- Rounding: always round **up** to whole days, in Go, after computing each
+  bound. `per_unit` and `floor_cycle` use exact decimal arithmetic
+  (`math/big`); only `time_cost` uses floating point, for the fractional
+  power, rounded up at the end.
+- Runtime uses a row only when `status: reviewed` and its `applies_when`
+  holds. Draft rows are loaded and validated but never applied.
+
+### Calendars (`program/calendars.yaml`)
+
+```yaml
+- id: cal.nsw-2027
+  state: NSW                 # NSW | VIC | QLD | SA | WA | TAS | ACT | NT
+  year: 2027
+  working_week: [mon, tue, wed, thu, fri]
+  days:
+    - {date: "<yyyy-mm-dd>", kind: public_holiday, label: <text>}
+    - {from: "<yyyy-mm-dd>", to: "<yyyy-mm-dd>", kind: shutdown, label: <text>}
+  verified: false
+  status: draft
+  sources: [...]
+```
+
+- `kind` is `public_holiday`, `rdo` or `shutdown`. A day has either `date` or
+  `from` and `to`. Dates are quoted `YYYY-MM-DD` strings, fall in `year`, and
+  `from ≤ to`. One calendar per state and year.
+- A program spanning a year with no calendar shows the check "No holiday data
+  for <year>; weekends only". The project calendar starts as a copy of the
+  matching rows; the user's edits never write back to the library.
+- No rows are authored until the owner names the sources (owner answer Q6).
+- YAML trap: quote dates, and never use bare `on`, `off`, `yes` or `no` as a
+  `kind` or a label; YAML 1.1 reads them as booleans.
+
+### Hold points: no new file
+
+Hold points come from existing `type: sequences` interfaces that carry
+`hold_point: {before, after, evidence}` (and optionally `release`, see
+Interfaces) in `knowledge/clusters/*/interfaces.yaml`. Generation inserts one
+when both the `before` and `after` systems are present and at least one
+program activity is tagged with each. Do not copy them into
+`knowledge/program/`.

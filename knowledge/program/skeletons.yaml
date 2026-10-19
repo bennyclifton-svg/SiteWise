@@ -1,0 +1,28 @@
+# Program skeletons (SCHEMA.md "Program library (2026-10-18)"). A skeleton
+# picks which stages a program has and how they link. Only the fallback
+# sk.generic is here: every catalogue stage in knowledge/works/stages.yaml
+# order, with a top-level stage replaced by its sub-stages where it has more than one,
+# chained finish-to-start with no lags. `other` is left out: it names a stage
+# a user makes, never a library stage. Further skeletons are owner content
+# (WP-P15). Draft for owner review.
+version: 1
+status: draft
+sources:
+  - {design: docs/plans/2026-10-18-program.md, anchor: "### 4.1 `skeletons.yaml` — stage patterns"}
+skeletons:
+  - id: sk.generic
+    label: Generic stage sequence
+    stages: [investigation, concept_design, approval_documentation, construction_documentation,
+             approvals, procurement, construction, completion, defects]
+    links:
+      - {from: investigation, to: concept_design, type: FS, lag: null}
+      - {from: concept_design, to: approval_documentation, type: FS, lag: null}
+      - {from: approval_documentation, to: construction_documentation, type: FS, lag: null}
+      - {from: construction_documentation, to: approvals, type: FS, lag: null}
+      - {from: approvals, to: procurement, type: FS, lag: null}
+      - {from: procurement, to: construction, type: FS, lag: null}
+      - {from: construction, to: completion, type: FS, lag: null}
+      - {from: completion, to: defects, type: FS, lag: null}
+    status: draft
+    sources:
+      - {design: docs/plans/2026-10-18-program.md, anchor: "### 4.1 `skeletons.yaml` — stage patterns"}

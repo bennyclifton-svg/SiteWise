@@ -5,16 +5,24 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // Version identifies the bytes actually parsed at Load, not a later disk read.
 // Paths are relative and slash-normalised so checkout location does not matter.
 func (c *Catalog) Version() string { return c.version }
 
-func (c *Catalog) hashLoaded() string {
+func (c *Catalog) hashLoaded() string { return c.hashLoadedUnder("") }
+
+// hashLoadedUnder hashes only the parsed files whose relative path starts
+// with prefix, so one library (knowledge/program) can carry its own version
+// that does not change when an unrelated knowledge file does.
+func (c *Catalog) hashLoadedUnder(prefix string) string {
 	paths := make([]string, 0, len(c.loaded))
 	for path := range c.loaded {
-		paths = append(paths, path)
+		if strings.HasPrefix(path, prefix) {
+			paths = append(paths, path)
+		}
 	}
 	sort.Strings(paths)
 	h := sha256.New()

@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import argparse
 import csv
+import datetime
 import hashlib
 import json
 import re
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 import yaml
@@ -79,6 +81,40 @@ WORKS_ID = {
 }
 ROW_ID = re.compile(r"^[A-Z][A-Z0-9]*-\d{4,}$")
 
+# Program library (SCHEMA.md "Program library (2026-10-18)").
+PROGRAM_DIR = "program"
+PROGRAM_FILES = {"durations.yaml": "durations", "fragments.yaml": "fragments",
+                 "skeletons.yaml": "skeletons", "calendars.yaml": "calendars"}
+PROGRAM_ID = {
+    "skeletons": re.compile(r"^sk\.[a-z0-9-]+$"),
+    "fragments": re.compile(r"^fr\.[a-z0-9-]+$"),
+    "durations": re.compile(r"^du\.[a-z0-9-]+$"),
+    "calendars": re.compile(r"^cal\.[a-z0-9-]+$"),
+}
+PROGRAM_STATUSES = {"draft", "reviewed"}
+GENERIC_SKELETON = "sk.generic"
+ACTIVITY_KEY = re.compile(r"^[a-z0-9-]+$")
+LINK_TYPES = {"FS", "SS", "FF", "SF"}
+ATTACH_ENDS = {"stage_start", "stage_finish"}
+FRAGMENT_ACTIONS = {"new", "replace", "upgrade", "alter", "repair", "remove"}
+DURATION_BASES = {"fixed", "per_unit", "floor_cycle", "time_cost", "statutory", "lead_time"}
+DAY_DECIMAL = re.compile(r"^[0-9]+(\.[0-9]{1,2})?$")
+# Time-cost K and B keep up to four places so a published set is not re-rounded.
+PARAM_DECIMAL = re.compile(r"^[0-9]+(\.[0-9]{1,4})?$")
+ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+CALENDAR_KINDS = {"public_holiday", "rdo", "shutdown"}
+CALENDAR_STATES = {"NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"}
+WEEKDAYS = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"}
+PROGRAM_KEYS = {
+    "skeletons": {"id", "label", "applies_when", "stages", "links", "status", "sources", "notes"},
+    "fragments": {"id", "label", "stage", "systems", "applies_when", "activities", "links", "attach",
+                  "status", "sources", "notes"},
+    "durations": {"id", "version", "basis", "driver", "unit_days", "low", "typical", "high", "k", "b",
+                  "cost_base_date", "index_basis", "instrument", "clause", "verified", "primary_source",
+                  "applies_when", "geography", "limitations", "status", "sources", "notes"},
+    "calendars": {"id", "state", "year", "working_week", "days", "verified", "status", "sources", "notes"},
+}
+
 
 class Report:
     def __init__(self) -> None:
@@ -98,7 +134,8 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
         rel = path.relative_to(ROOT).as_posix()
         parts = path.relative_to(KNOWLEDGE).parts[:-1]
         # RFP discipline files have their own shape and check (check_rfp).
-        if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in parts or set(CATALOGUE_DIRS) & set(parts) or "rfp" in parts:
+        if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in parts or set(CATALOGUE_DIRS) & set(parts) or "rfp" in parts \
+                or PROGRAM_DIR in parts:
             continue
         if path.name in CLUSTER_WORKS_FILES and path.parent.parent.name == "clusters":
             continue
@@ -277,7 +314,9 @@ def check_works_predicate(where: str, val, report: Report, refs: list) -> None:
     refs.extend(("system", where, s) for s in val.get("system") or [])
 
 
-def check_predicate(where: str, pred, report: Report, refs: list) -> None:
+def check_predicate(where: str, pred, report: Report, refs: list, program: dict | None = None) -> None:
+    """`program` is the program library context; only there are `cond` and
+    `work_action` valid, and `det: work_type` literals checked."""
     if not isinstance(pred, dict):
         report.error(where, f"predicate must be a mapping: {pred}")
         return
@@ -287,9 +326,9 @@ def check_predicate(where: str, pred, report: Report, refs: list) -> None:
                 report.error(where, f"`{key}` must be a list")
                 continue
             for sub in val:
-                check_predicate(where, sub, report, refs)
+                check_predicate(where, sub, report, refs, program)
         elif key == "not":
-            check_predicate(where, val, report, refs)
+            check_predicate(where, val, report, refs, program)
         elif key == "system_present":
             refs.append(("system", where, val))
         elif key == "system_existing":
@@ -302,13 +341,54 @@ def check_predicate(where: str, pred, report: Report, refs: list) -> None:
             ops = set(pred) - {"det"}
             if len(ops) != 1 or not ops <= PREDICATE_OPS:
                 report.error(where, f"determinant condition needs exactly one of {sorted(PREDICATE_OPS)}: {pred}")
+            elif program is not None and val == "work_type":
+                # Code feeds work_type from the Profile's work types.
+                check_literals(where, pred, "det", program["work_types"], "work type", report)
+        elif key == "cond" and program is not None:
+            options = program["conditions"].get(val)
+            ops = set(pred) - {"cond"}
+            if options is None:
+                report.error(where, f"unknown Profile condition `{val}`")
+            elif len(ops) != 1 or not ops <= {"any_of", "eq"}:
+                report.error(where, f"condition needs exactly one of any_of or eq: {pred}")
+            else:
+                check_literals(where, pred, "cond", options, f"option of {val}", report)
+        elif key == "work_action" and program is not None:
+            check_work_action(where, val, report, refs)
         elif key in PREDICATE_OPS:
-            if "det" not in pred:
+            if "det" not in pred and not (program is not None and "cond" in pred):
                 report.error(where, f"`{key}` without `det`: {pred}")
             if key == "is" and not isinstance(val, bool):
                 report.error(where, "`is` requires a boolean; use any_of for choice values")
         else:
             report.error(where, f"unknown predicate key `{key}`")
+
+
+def check_literals(where: str, pred: dict, operand: str, allowed: set, what: str, report: Report) -> None:
+    op = next(k for k in pred if k != operand)
+    values = pred[op] if op == "any_of" else [pred[op]]
+    if op not in ("any_of", "eq") or not isinstance(values, list) or not values:
+        report.error(where, f"{what} compares with any_of (a non-empty list) or eq: {pred}")
+        return
+    for v in values:
+        if str(v) not in allowed:
+            report.error(where, f"{v!r} is not a valid {what}")
+
+
+def check_work_action(where: str, val, report: Report, refs: list) -> None:
+    """`work_action`: an included work item on the system (or below it) with one
+    of the actions. retain and investigate never select a fragment."""
+    if not isinstance(val, dict) or set(val) != {"system", "any_of"} or not isinstance(val.get("system"), str):
+        report.error(where, f"`work_action` needs exactly system (one id) and any_of: {val}")
+        return
+    refs.append(("system", where, val["system"]))
+    actions = val["any_of"]
+    if not isinstance(actions, list) or not actions:
+        report.error(where, "work_action.any_of must be a non-empty list")
+        return
+    for action in actions:
+        if action not in FRAGMENT_ACTIONS or action not in ACTIONS:
+            report.error(where, f"work_action action {action!r} must be one of {sorted(FRAGMENT_ACTIONS)}")
 
 
 def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: list, cache: dict) -> None:
@@ -409,6 +489,15 @@ def check_item(kind: str, rel: str, item, seed_dir: Path, report: Report, refs: 
                 refs.extend(("system", where, s) for s in vals)
         if item.get("type") == "sequences" and "hold_point" not in item:
             report.warn(where, "sequences interface without hold_point")
+        hold = item.get("hold_point")
+        release = hold.get("release") if isinstance(hold, dict) else None
+        if release is not None:
+            # Optional Jev noul for hold-point release evidence (program plan 10.4).
+            check_question(where, release, report, refs)
+            if not isinstance(release, dict) or release.get("type") != "noul":
+                report.error(where, "hold_point.release must be a noul")
+            elif release.get("status") not in STATUSES:
+                report.error(where, f"hold_point.release needs a status in {sorted(STATUSES)}")
         for q in item.get("resolved_when") or []:
             check_question(where, q, report, refs)
         for r in item.get("governed_by") or []:
@@ -1043,6 +1132,7 @@ def check_works(report: Report, seed_dir: Path, refs: list, cache: dict, actions
 # Delivery and commercial catalogues (SCHEMA.md, 2026-10-05). Each file is
 # optional; a present file must match its documented shape.
 CATALOGUE_DIRS = ("reports", "costs")
+STAGE_OTHER = "other"
 PLANNING_VALUES = {"integer", "number", "boolean", "choice", "text"}
 PLANNING_KEY = re.compile(r"^[a-z][a-z0-9_]*$")
 
@@ -1090,8 +1180,9 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             report.error(rel, "stages file needs a status")
         check_sources(rel, doc.get("sources"), seed_dir, report, cache)
         ids = [s.get("id") for s in doc.get("stages") or [] if isinstance(s, dict)]
-        if set(ids) != UC_STAGES or len(ids) != len(UC_STAGES):
-            report.error(rel, f"top-level stages must be exactly {sorted(UC_STAGES)}")
+        # `other` is the one extra: where a user-made Program stage maps.
+        if set(ids) - {STAGE_OTHER} != UC_STAGES or len(ids) != len(set(ids)):
+            report.error(rel, f"top-level stages must be exactly {sorted(UC_STAGES)}, plus optional {STAGE_OTHER}")
         seen = set(ids)
         for stage in doc.get("stages") or []:
             if not isinstance(stage, dict) or not str(stage.get("label", "")).strip():
@@ -1400,6 +1491,309 @@ def check_cost_structure(report: Report, seed_dir: Path, cache: dict) -> None:
             report.error(rel, "cost elements must cover every top-level system exactly once")
 
 
+def link_cycle(nodes, links) -> bool:
+    """Kahn's algorithm: a node never peeled off sits on a cycle."""
+    indeg = {n: 0 for n in nodes}
+    out: dict = {}
+    for a, b in links:
+        out.setdefault(a, []).append(b)
+        indeg[b] = indeg.get(b, 0) + 1
+        indeg.setdefault(a, 0)
+    queue = [n for n, d in indeg.items() if d == 0]
+    done = 0
+    while queue:
+        n = queue.pop()
+        done += 1
+        for m in out.get(n, []):
+            indeg[m] -= 1
+            if indeg[m] == 0:
+                queue.append(m)
+    return done != len(indeg)
+
+
+def canonical_predicate(pred) -> str:
+    """Order inside all, any and any_of does not change a predicate."""
+    def norm(v):
+        if isinstance(v, dict):
+            return {str(k): norm(x) for k, x in v.items()}
+        if isinstance(v, list):
+            return sorted((norm(x) for x in v), key=lambda x: json.dumps(x, sort_keys=True, default=str))
+        return v
+    return json.dumps(norm(pred), sort_keys=True, default=str)
+
+
+def check_program_links(where: str, nodes: list, links, durations: set, report: Report) -> None:
+    if not isinstance(links, list):
+        report.error(where, "links must be a list")
+        return
+    pairs = []
+    for link in links:
+        if not isinstance(link, dict) or set(link) - {"from", "to", "type", "lag"}:
+            report.error(where, f"link needs from, to, type and lag: {link}")
+            continue
+        if link.get("from") not in nodes or link.get("to") not in nodes or link.get("from") == link.get("to"):
+            report.error(where, f"link must join two different listed ids: {link}")
+            continue
+        if link.get("type") not in LINK_TYPES:
+            report.error(where, f"link type must be one of {sorted(LINK_TYPES)}")
+        lag = link.get("lag")
+        if lag is not None and lag not in durations:
+            report.error(where, f"lag must be null or a duration id in durations.yaml, never a number: {lag!r}")
+        pairs.append((link["from"], link["to"]))
+    if link_cycle(nodes, pairs):
+        report.error(where, "links form a cycle")
+
+
+def program_date(where: str, value, year: int, report: Report):
+    # Quoted, so YAML 1.1 and Go's YAML 1.2 read the same string.
+    if not isinstance(value, str) or not ISO_DATE.match(value):
+        report.error(where, f"date must be a quoted YYYY-MM-DD string: {value!r}")
+        return None
+    try:
+        day = datetime.date.fromisoformat(value)
+    except ValueError:
+        report.error(where, f"not a calendar date: {value}")
+        return None
+    if year is not None and day.year != year:
+        report.error(where, f"date {value} is outside {year}")
+    return day
+
+
+def check_program_duration(where: str, d: dict, planning: set, context: dict, report: Report, refs: list) -> None:
+    for field in ("id", "version", "basis", "unit_days", "geography", "limitations", "status", "sources"):
+        if field not in d:
+            report.error(where, f"missing field {field}")
+    if not isinstance(d.get("version"), int) or isinstance(d.get("version"), bool) or d.get("version", 0) < 1:
+        report.error(where, "version must be a positive integer")
+    basis = d.get("basis")
+    if basis not in DURATION_BASES:
+        report.error(where, f"basis must be one of {sorted(DURATION_BASES)}")
+    if d.get("unit_days") not in ("working", "calendar"):
+        report.error(where, "unit_days must be working or calendar")
+    if not str(d.get("geography") or "").strip() or not isinstance(d.get("limitations"), list):
+        report.error(where, "needs geography text and a limitations list")
+    driver = d.get("driver")
+    if (basis in ("per_unit", "floor_cycle")) != (driver is not None):
+        report.error(where, "driver is required for per_unit and floor_cycle and omitted otherwise")
+    if driver is not None:
+        if not isinstance(driver, dict) or set(driver) - {"planning_key", "determinant", "unit"} \
+                or ("planning_key" in driver) == ("determinant" in driver) or not str(driver.get("unit") or "").strip():
+            report.error(where, f"driver needs exactly one of planning_key or determinant, and a unit: {driver}")
+        elif "planning_key" in driver and driver["planning_key"] not in planning:
+            report.error(where, f"unknown planning key {driver['planning_key']}")
+        elif "determinant" in driver:
+            refs.append(("determinant", where, driver["determinant"]))
+    cost_fields = {"k", "b", "cost_base_date", "index_basis"} & d.keys()
+    if basis == "time_cost":
+        if {"low", "typical", "high"} & d.keys():
+            report.error(where, "time_cost rows carry k and b, not low, typical and high")
+        for field in ("k", "b"):
+            if not isinstance(d.get(field), str) or not PARAM_DECIMAL.match(d[field]):
+                report.error(where, f"{field} must be a non-negative decimal string with at most 4 places")
+        program_date(where, d.get("cost_base_date"), None, report)
+        if not str(d.get("index_basis") or "").strip():
+            report.error(where, "time_cost needs index_basis")
+    else:
+        if cost_fields:
+            report.error(where, f"{sorted(cost_fields)} belong to time_cost rows")
+        values = []
+        for field in ("low", "typical", "high"):
+            v = d.get(field)
+            if not isinstance(v, str) or not DAY_DECIMAL.match(v):
+                report.error(where, f"{field} must be a non-negative decimal string with at most 2 places, never a float")
+            else:
+                values.append(Decimal(v))
+        if len(values) == 3 and not values[0] <= values[1] <= values[2]:
+            report.error(where, "needs low <= typical <= high")
+    if basis == "statutory":
+        if not str(d.get("instrument") or "").strip() or not str(d.get("clause") or "").strip() \
+                or not isinstance(d.get("verified"), bool):
+            report.error(where, "statutory rows carry instrument, clause and verified")
+        elif d["verified"] and not d.get("primary_source"):
+            report.error(where, "a verified statutory row needs primary_source")
+    if d.get("applies_when") is not None:
+        check_predicate(where, d["applies_when"], report, refs, context)
+
+
+def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> None:
+    """The program library: plan section 4 and checker rules 4.7."""
+    directory = KNOWLEDGE / PROGRAM_DIR
+    if not directory.is_dir():
+        return
+    taxonomy = yaml.safe_load((KNOWLEDGE / PROFILE_DIR / "taxonomy.yaml").read_text(encoding="utf-8")) or {}
+    context = {
+        "work_types": {str(w.get("id")) for w in taxonomy.get("work_types") or []},
+        "conditions": {c.get("key"): {str(o.get("id")) for o in (c.get("options") or []) + (c.get("user_options") or [])}
+                       for c in taxonomy.get("conditions") or []},
+    }
+    planning = {k.get("key") for k in (yaml.safe_load((KNOWLEDGE / PROFILE_DIR / "planning_keys.yaml")
+                                                      .read_text(encoding="utf-8")) or {}).get("keys") or []}
+    catalogue = (yaml.safe_load((KNOWLEDGE / WORKS_DIR / "stages.yaml").read_text(encoding="utf-8")) or {}).get("stages") or []
+    stages, generic = set(), []
+    for top in catalogue:
+        stages.add(top.get("id"))
+        subs = [s.get("id") for s in top.get("substages") or []]
+        stages.update(subs)
+        if top.get("id") != STAGE_OTHER:
+            # Only a stage with several sub-stages is replaced by them; one
+            # sub-stage is a fee item inside its stage (GenericStages).
+            generic.extend(subs if len(subs) > 1 else [top.get("id")])
+
+    rows: dict = {}
+    for name, key in PROGRAM_FILES.items():
+        path = directory / name
+        rel = path.relative_to(ROOT).as_posix()
+        if not path.is_file():
+            report.error(rel, "missing program library file")
+            rows[key] = (rel, [])
+            continue
+        rel, doc = load_works_doc(path, key, report)
+        if doc is None:
+            rows[key] = (rel, [])
+            continue
+        if doc.get("status") not in PROGRAM_STATUSES:
+            report.error(rel, f"status must be one of {sorted(PROGRAM_STATUSES)}")
+        check_sources(rel, doc.get("sources"), seed_dir, report, cache)
+        items = []
+        seen = set()
+        for item in doc.get(key) or []:
+            if not isinstance(item, dict):
+                report.error(rel, f"{key} entry must be a mapping")
+                continue
+            where = f"{rel} [{item.get('id', '?')}]"
+            if not PROGRAM_ID[key].match(str(item.get("id", ""))):
+                report.error(where, f"id does not match {PROGRAM_ID[key].pattern}")
+            if item.get("id") in seen:
+                report.error(where, "duplicate id")
+            seen.add(item.get("id"))
+            unknown = set(item) - PROGRAM_KEYS[key]
+            if unknown:
+                report.error(where, f"unknown fields {sorted(unknown, key=str)}")
+            if item.get("status") not in PROGRAM_STATUSES:
+                report.error(where, f"status must be one of {sorted(PROGRAM_STATUSES)}")
+            check_sources(where, item.get("sources"), seed_dir, report, cache)
+            items.append((where, item))
+        rows[key] = (rel, items)
+
+    durations = {item.get("id") for _, item in rows["durations"][1]}
+    fragments = {item.get("id") for _, item in rows["fragments"][1]}
+
+    for where, d in rows["durations"][1]:
+        check_program_duration(where, d, planning, context, report, refs)
+
+    attach_links = []
+    for where, f in rows["fragments"][1]:
+        if not str(f.get("label") or "").strip():
+            report.error(where, "fragment needs a label")
+        if f.get("stage") not in stages or f.get("stage") == STAGE_OTHER:
+            report.error(where, f"stage must be a catalogue stage other than {STAGE_OTHER}: {f.get('stage')}")
+        if not isinstance(f.get("systems"), list) or not f["systems"]:
+            report.error(where, "fragment needs systems")
+        else:
+            refs.extend(("system", where, s) for s in f["systems"])
+        if f.get("applies_when") is not None:
+            check_predicate(where, f["applies_when"], report, refs, context)
+        keys = []
+        activities = f.get("activities")
+        if not isinstance(activities, list) or not activities:
+            report.error(where, "fragment needs activities")
+            activities = []
+        for a in activities:
+            if not isinstance(a, dict) or set(a) - {"key", "label", "systems", "duration"} \
+                    or not ACTIVITY_KEY.match(str(a.get("key", ""))) or not str(a.get("label") or "").strip():
+                report.error(where, f"activity needs key, label, systems and duration: {a}")
+                continue
+            if a["key"] in keys:
+                report.error(where, f"duplicate activity key {a['key']}")
+            keys.append(a["key"])
+            if not isinstance(a.get("systems"), list) or not a["systems"]:
+                report.error(where, f"activity {a['key']} needs systems")
+            else:
+                refs.extend(("system", where, s) for s in a["systems"])
+            if a.get("duration") is not None and a["duration"] not in durations:
+                report.error(where, f"activity {a['key']} names unknown duration {a['duration']}")
+        check_program_links(where, keys, f.get("links") or [], durations, report)
+        attach = f.get("attach")
+        if attach is not None:
+            if not isinstance(attach, dict) or not attach or set(attach) - {"after", "before"}:
+                report.error(where, f"attach needs after and/or before: {attach}")
+                continue
+            for side, end in attach.items():
+                if end in ATTACH_ENDS:
+                    continue
+                if end not in fragments or end == f.get("id"):
+                    report.error(where, f"attach.{side} must be stage_start, stage_finish or another fragment: {end}")
+                    continue
+                attach_links.append((end, f["id"]) if side == "after" else (f["id"], end))
+    if link_cycle(sorted(fragments, key=str), attach_links):
+        report.error(rows["fragments"][0], "fragment attach links form a cycle")
+
+    generic_count = 0
+    predicates: dict = {}
+    for where, sk in rows["skeletons"][1]:
+        if not str(sk.get("label") or "").strip():
+            report.error(where, "skeleton needs a label")
+        listed = sk.get("stages")
+        if not isinstance(listed, list) or not listed or len(set(map(str, listed))) != len(listed):
+            report.error(where, "stages must be a non-empty list without repeats")
+            listed = []
+        for stage in listed:
+            if stage not in stages or stage == STAGE_OTHER:
+                report.error(where, f"stage must be a catalogue stage other than {STAGE_OTHER}: {stage}")
+        check_program_links(where, listed, sk.get("links") or [], durations, report)
+        if sk.get("id") == GENERIC_SKELETON:
+            generic_count += 1
+            if "applies_when" in sk:
+                report.error(where, "sk.generic has no applies_when")
+            if listed != generic:
+                report.error(where, f"sk.generic stages must be the catalogue order {generic}")
+            chain = [{"from": a, "to": b, "type": "FS", "lag": None} for a, b in zip(generic, generic[1:])]
+            if sk.get("links") != chain:
+                report.error(where, "sk.generic links must chain its stages finish-to-start with no lag")
+            continue
+        if sk.get("applies_when") is None:
+            report.error(where, "only sk.generic may omit applies_when")
+            continue
+        check_predicate(where, sk["applies_when"], report, refs, context)
+        canon = canonical_predicate(sk["applies_when"])
+        if canon in predicates:
+            report.error(where, f"identical predicate to {predicates[canon]}; generation could not tell them apart")
+        predicates[canon] = sk.get("id")
+    if generic_count != 1:
+        report.error(rows["skeletons"][0], f"needs exactly one {GENERIC_SKELETON}, found {generic_count}")
+
+    covered = set()
+    for where, cal in rows["calendars"][1]:
+        year = cal.get("year")
+        if cal.get("state") not in CALENDAR_STATES or not isinstance(year, int) or isinstance(year, bool):
+            report.error(where, f"needs a state in {sorted(CALENDAR_STATES)} and an integer year")
+            year = None
+        if (cal.get("state"), year) in covered:
+            report.error(where, "another calendar covers this state and year")
+        covered.add((cal.get("state"), year))
+        week = cal.get("working_week")
+        if not isinstance(week, list) or not week or set(week) - WEEKDAYS or len(set(week)) != len(week):
+            report.error(where, f"working_week must list distinct days from {sorted(WEEKDAYS)}")
+        if not isinstance(cal.get("verified"), bool):
+            report.error(where, "calendar needs verified true or false")
+        for day in cal.get("days") or []:
+            if not isinstance(day, dict) or set(day) - {"date", "from", "to", "kind", "label"}:
+                report.error(where, f"day needs date (or from and to), kind and label: {day}")
+                continue
+            # A bare `on` or `no` would arrive here as a boolean, never a kind.
+            if day.get("kind") not in CALENDAR_KINDS or not str(day.get("label") or "").strip():
+                report.error(where, f"day needs a kind in {sorted(CALENDAR_KINDS)} and a label: {day}")
+            if ("date" in day) == ("from" in day or "to" in day):
+                report.error(where, f"day needs either date or from and to: {day}")
+            elif "date" in day:
+                program_date(where, day["date"], year, report)
+            else:
+                start = program_date(where, day.get("from"), year, report)
+                end = program_date(where, day.get("to"), year, report)
+                if start and end and start > end:
+                    report.error(where, f"from {day['from']} is after to {day['to']}")
+
+
 def check_source_archive(archive: Path, report: Report) -> None:
     """Keep cited source bytes reproducible without the original repository."""
     where = "source archive"
@@ -1584,6 +1978,7 @@ def main() -> int:
     check_catalogues(report, args.seed_dir, cache, determinants)
     check_rfp(report)
     check_cost_structure(report, args.seed_dir, cache)
+    check_program(report, args.seed_dir, cache, refs)
     check_replacements(deprecated, known, report)
     check_deprecated_refs(refs, deprecated, report)
 

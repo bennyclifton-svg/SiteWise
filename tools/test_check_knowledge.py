@@ -1,4 +1,5 @@
 """Regression checks for the knowledge publication boundary; no network needed."""
+import datetime
 import tempfile
 import unittest
 from pathlib import Path
@@ -141,9 +142,6 @@ class TableValidationTests(unittest.TestCase):
         self.assertEqual(class5_b[0]['max_floor_area_m2'], 5500)
         self.assertEqual(class5_b[0]['max_volume_m3'], 33000)
 
-
-if __name__ == '__main__':
-    unittest.main()
 
 
 def _det(**extra):
@@ -389,3 +387,138 @@ class RFPCheckTests(unittest.TestCase):
         joined = ' '.join(report.errors)
         for needle in ('cannot be marked reviewed', 'unknown stage gone', 'unknown position nope', 'unknown discipline acoustics'):
             self.assertIn(needle, joined)
+
+
+# Test fixtures only: every number, label and clause is invented for the test.
+_PROGRAM_SOURCE = [{'seed': 'seed.md', 'anchor': '# Test'}]
+_GENERIC = ['investigation', 'concept_design', 'approval_documentation', 'construction_documentation',
+            'approvals', 'procurement', 'construction', 'completion', 'defects']
+
+
+def _program_fixture():
+    def common(**item):
+        item.update(status='draft', sources=_PROGRAM_SOURCE)
+        return item
+    return {
+        'durations': [
+            common(id='du.fixed', version=1, basis='fixed', unit_days='working', low='1', typical='2.5',
+                   high='4', geography='Test', limitations=[]),
+            common(id='du.stat', version=1, basis='statutory', unit_days='calendar', low='10', typical='10',
+                   high='10', instrument='Test instrument', clause='T1', verified=False, geography='Test',
+                   limitations=[]),
+            common(id='du.tc', version=1, basis='time_cost', unit_days='calendar', k='100', b='0.5',
+                   cost_base_date='2020-01-01', index_basis='Test index', geography='Test', limitations=[]),
+        ],
+        'fragments': [
+            common(id='fr.a', label='A', stage='construction', systems=['structure'],
+                   applies_when={'work_action': {'system': 'structure', 'any_of': ['new', 'replace']}},
+                   activities=[{'key': 'one', 'label': 'One', 'systems': ['structure'], 'duration': 'du.fixed'},
+                               {'key': 'two', 'label': 'Two', 'systems': ['structure'], 'duration': None}],
+                   links=[{'from': 'one', 'to': 'two', 'type': 'FS', 'lag': None}],
+                   attach={'after': 'stage_start', 'before': 'fr.b'}),
+            common(id='fr.b', label='B', stage='construction', systems=['structure'],
+                   activities=[{'key': 'one', 'label': 'One', 'systems': ['structure'], 'duration': None}]),
+        ],
+        'skeletons': [
+            common(id='sk.generic', label='Generic', stages=list(_GENERIC),
+                   links=[{'from': a, 'to': b, 'type': 'FS', 'lag': None} for a, b in zip(_GENERIC, _GENERIC[1:])]),
+            common(id='sk.new-da', label='New with consent',
+                   applies_when={'all': [{'det': 'work_type', 'eq': 'new'},
+                                         {'cond': 'planning', 'any_of': ['da', 'cdc']}]},
+                   stages=['design', 'approvals'],
+                   links=[{'from': 'design', 'to': 'approvals', 'type': 'FS', 'lag': 'du.stat'}]),
+        ],
+        'calendars': [
+            common(id='cal.test-2027', state='NSW', year=2027, working_week=['mon', 'tue', 'wed', 'thu', 'fri'],
+                   days=[{'date': '2027-03-03', 'kind': 'public_holiday', 'label': 'Test day'},
+                         {'from': '2027-12-24', 'to': '2027-12-31', 'kind': 'shutdown', 'label': 'Test shutdown'}],
+                   verified=False),
+        ],
+    }
+
+
+class ProgramLibraryTests(unittest.TestCase):
+    """Checker rules 4.7 of docs/plans/2026-10-18-program.md."""
+
+    def run_check(self, mutate=None):
+        rows = _program_fixture()
+        if mutate:
+            mutate(rows)
+        real = checker.KNOWLEDGE
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            knowledge = root / 'knowledge'
+            for sub in ('profile', 'works', 'program'):
+                (knowledge / sub).mkdir(parents=True)
+            for rel in ('profile/taxonomy.yaml', 'profile/planning_keys.yaml', 'works/stages.yaml'):
+                (knowledge / rel).write_bytes((real / rel).read_bytes())
+            (root / 'seed.md').write_text('# Test\n', encoding='utf-8')
+            for key, items in rows.items():
+                (knowledge / 'program' / f'{key}.yaml').write_text(yaml.safe_dump(
+                    {'version': 1, 'status': 'draft', 'sources': _PROGRAM_SOURCE, key: items}), encoding='utf-8')
+            report, refs = checker.Report(), []
+            actions = {'new', 'replace', 'upgrade', 'alter', 'repair', 'remove', 'retain', 'investigate'}
+            with patch.object(checker, 'ROOT', root), patch.object(checker, 'KNOWLEDGE', knowledge), \
+                    patch.object(checker, 'ACTIONS', actions):
+                checker.check_program(report, root, {}, refs)
+            return report
+
+    def test_fixture_passes(self):
+        self.assertEqual(self.run_check().errors, [])
+
+    def test_each_rule_rejects_a_bad_case(self):
+        def at(key, i, **change):
+            def mutate(rows):
+                rows[key][i].update(change)
+            return mutate
+
+        def calendar_day(i, **change):
+            return lambda r: r['calendars'][0]['days'][i].update(change)
+
+        cases = {
+            'id does not match': at('skeletons', 1, id='sk_new'),
+            'duplicate id': at('fragments', 1, id='fr.a'),
+            'catalogue stage other than other': at('fragments', 1, stage='other'),
+            'unknown duration': lambda r: r['fragments'][0]['activities'][0].update(duration='du.missing'),
+            'never a number': lambda r: r['skeletons'][1]['links'][0].update(lag=5),
+            'unknown planning key': at('durations', 0, basis='per_unit',
+                                       driver={'planning_key': 'excavation_volume', 'unit': 'm3'}),
+            'unknown Profile condition': at('skeletons', 1, applies_when={'cond': 'approval_pathway', 'eq': 'da'}),
+            'not a valid option of planning': at('skeletons', 1, applies_when={'cond': 'planning', 'eq': 'council'}),
+            'not a valid work type': at('skeletons', 1, applies_when={'det': 'work_type', 'eq': 'demolish'}),
+            'unknown predicate key': at('skeletons', 1, applies_when={'work_type': 'new'}),
+            'work_action action': at('fragments', 0, applies_when={
+                'work_action': {'system': 'structure', 'any_of': ['retain']}}),
+            'needs exactly system': at('fragments', 0, applies_when={'work_action': {'system': 'structure'}}),
+            'never a float': at('durations', 0, typical=2.5),
+            'at most 2 places': at('durations', 0, typical='2.505'),
+            'low <= typical <= high': at('durations', 0, low='3'),
+            'instrument, clause and verified': lambda r: r['durations'][1].pop('clause'),
+            'links form a cycle': lambda r: r['fragments'][0]['links'].append(
+                {'from': 'two', 'to': 'one', 'type': 'SS', 'lag': None}),
+            'attach links form a cycle': at('fragments', 1, attach={'before': 'fr.a'}),
+            'outside 2027': calendar_day(0, date='2028-03-03'),
+            'quoted YYYY-MM-DD': calendar_day(0, date=datetime.date(2027, 3, 3)),
+            'is after to': calendar_day(1, **{'from': '2027-12-31', 'to': '2027-12-24'}),
+            'needs a kind': calendar_day(0, kind=True),
+            'exactly one sk.generic': at('skeletons', 0, id='sk.fallback',
+                                         applies_when={'det': 'work_type', 'eq': 'refurb'}),
+            'catalogue order': lambda r: r['skeletons'][0]['stages'].reverse(),
+            'identical predicate': lambda r: r['skeletons'].append(dict(r['skeletons'][1], id='sk.copy', applies_when={
+                'all': [{'cond': 'planning', 'any_of': ['cdc', 'da']}, {'det': 'work_type', 'eq': 'new'}]})),
+            'unknown fields': at('fragments', 0, applies_whne={}),
+        }
+        for needle, mutate in cases.items():
+            with self.subTest(needle=needle):
+                report = self.run_check(mutate)
+                self.assertTrue(any(needle in e for e in report.errors), report.errors)
+
+    def test_program_operands_are_rejected_elsewhere(self):
+        for pred in ({'cond': 'planning', 'eq': 'da'}, {'work_action': {'system': 'structure', 'any_of': ['new']}}):
+            report = checker.Report()
+            checker.check_predicate('test', pred, report, [])
+            self.assertTrue(report.errors, pred)
+
+
+if __name__ == '__main__':
+    unittest.main()

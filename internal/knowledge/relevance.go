@@ -101,6 +101,9 @@ type predEnv struct {
 	presentState func(string) tri
 	works        func(cond map[string]any) tri
 	existing     func(system string) tri
+	// conditions are Profile condition values (taxonomy `conditions`) by
+	// key, read by the program library's `cond` operand. Nil makes it unknown.
+	conditions map[string]string
 }
 
 // evalPredicate evaluates an applies_when mapping. Missing values and
@@ -112,6 +115,12 @@ func evalPredicate(p any, env predEnv) tri {
 	m, ok := asMap(p)
 	if !ok {
 		return triUnknown
+	}
+	if cond, ok := m["cond"]; ok {
+		if env.conditions == nil {
+			return triUnknown
+		}
+		return evalConditionValue(env.conditions[fmt.Sprint(cond)], m)
 	}
 	if det, ok := m["det"]; ok {
 		id := fmt.Sprint(det)
@@ -157,6 +166,13 @@ func evalPredicate(p any, env predEnv) tri {
 			if env.existing != nil {
 				t = env.existing(fmt.Sprint(val))
 			}
+		case "work_action":
+			// The program library's form of `works`: one system and the
+			// actions that bring its activities. Same matching, same unknowns.
+			t = triUnknown
+			if wa, ok := asMap(val); ok && env.works != nil {
+				t = env.works(map[string]any{"action": asList(wa["any_of"]), "system": []any{wa["system"]}})
+			}
 		default:
 			t = triUnknown
 		}
@@ -190,7 +206,7 @@ func evalConditionValue(value string, cond map[string]any) tri {
 	}
 	for op, arg := range cond {
 		switch op {
-		case "det":
+		case "det", "cond":
 			continue
 		case "any_of":
 			for _, want := range asList(arg) {

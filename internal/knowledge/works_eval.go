@@ -51,7 +51,11 @@ type WorksEnv struct {
 	// Existing reports the site evidence only. Live items below can establish
 	// existence or override it with removal/replacement (D-10).
 	Existing func(system string) Truth
-	memo     *worksMemo
+	// Conditions are Profile condition values by taxonomy key (planning,
+	// procurement_route), read only by the program library's `cond`
+	// operand. Nil leaves every `cond` unknown.
+	Conditions map[string]string
+	memo       *worksMemo
 }
 
 // Holds evaluates a works-layer predicate (consequence or unforeseen `when`,
@@ -65,7 +69,7 @@ func (c *Catalog) Holds(p any, env WorksEnv) Truth {
 	} else {
 		workType = c.workTypeValue(env.WorkTypes)
 	}
-	e := predEnv{values: env.Values, workType: &workType, present: env.Present,
+	e := predEnv{values: env.Values, workType: &workType, present: env.Present, conditions: env.Conditions,
 		works: func(cond map[string]any) tri { return c.matchInEnv(cond, env) }}
 	if env.PresentState != nil {
 		e.presentState = func(system string) tri { return toTri(env.PresentState(system)) }

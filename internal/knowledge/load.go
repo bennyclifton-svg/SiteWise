@@ -108,6 +108,7 @@ type Catalog struct {
 	costBenchmarks  map[string]CostBenchmark
 	costElements    []CostElement
 	costStarters    []CostStarter
+	program         programData
 	rfp             rfpData
 	layout          layoutData
 }
@@ -209,6 +210,11 @@ func Load(root string) (*Catalog, error) {
 		return nil, err
 	}
 	if err := c.loadCostBenchmarks(root); err != nil {
+		return nil, err
+	}
+	// After stages, determinants, the taxonomy and planning keys: the program
+	// library refers to all four.
+	if err := c.loadProgram(root); err != nil {
 		return nil, err
 	}
 	if err := c.loadRFP(filepath.Join(root, "rfp")); err != nil {
