@@ -45,6 +45,18 @@ type Interface struct {
 	Status       string     `yaml:"status"`
 	AppliesWhen  any        `yaml:"applies_when,omitempty"`
 	ResolvedWhen []Question `yaml:"resolved_when"`
+	// HoldPoint is set on some `sequences` interfaces: work on Before waits
+	// until After is inspected. Program generation reads it (plan 4.5) and
+	// inserts one only when Before and After are system ids it can match.
+	HoldPoint *HoldPoint `yaml:"hold_point,omitempty"`
+}
+
+// HoldPoint is copied from the interface file. Evidence is the text a
+// Program hold point is labelled with.
+type HoldPoint struct {
+	Before   string `yaml:"before"`
+	After    string `yaml:"after"`
+	Evidence string `yaml:"evidence"`
 }
 
 // Rule is a code-evaluated requirement. Derives is nil when the rule does
