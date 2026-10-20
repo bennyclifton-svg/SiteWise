@@ -373,13 +373,24 @@ type ProgramReadingView struct {
 	Text   string `json:"text,omitempty"`
 }
 
+// catalogueLabel names a catalogue stage the way the user reads it; the
+// id stands in only when the catalogue is not loaded.
+func catalogueLabel(ex *ProgramExtras, id string) string {
+	for _, c := range ex.CatalogueStages {
+		if c.ID == id {
+			return c.Label
+		}
+	}
+	return id
+}
+
 // proposalReadingView resolves an awarded proposal's reading to its live
 // row, or adds the "no stage" notice when the stage is gone (plan 7.7).
 func proposalReadingView(v ProgramReadingView, acts, byCatalogue map[string]*ProgramActivity, p Program, ex *ProgramExtras) ProgramReadingView {
 	target := resolveTarget(acts, byCatalogue, string(v.TargetActivityID), string(v.CatalogueStageID))
 	if target == nil {
 		if v.CatalogueStageID != "" {
-			ex.Checks = append(ex.Checks, engine.Check{Code: "evidence_without_stage", Message: "Evidence for " + string(v.CatalogueStageID) + " has no stage. Add the stage back or dismiss."})
+			ex.Checks = append(ex.Checks, engine.Check{Code: "evidence_without_stage", Message: "Evidence for " + catalogueLabel(ex, string(v.CatalogueStageID)) + " has no stage. Add the stage back or dismiss."})
 		}
 		return v
 	}
@@ -520,7 +531,7 @@ WHERE r.org_id=$1::uuid AND r.program_id=$2::uuid AND r.source IN ('program_file
 		}
 		if target == nil {
 			if v.CatalogueStageID != "" {
-				label := string(v.CatalogueStageID)
+				label := catalogueLabel(ex, string(v.CatalogueStageID))
 				ex.Checks = append(ex.Checks, engine.Check{Code: "evidence_without_stage", Message: "Evidence for " + label + " has no stage. Add the stage back or dismiss."})
 			}
 		} else {
