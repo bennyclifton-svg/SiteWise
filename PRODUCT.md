@@ -43,7 +43,16 @@ The workbench, in navigation order:
   splits). The plan's invoiced to date, budget remaining and % spent come
   from that ledger, with an Unallocated row so the totals always add up.
   Both views export to Excel and CSV and print. Variations is a placeholder.
-- **Program.** A navigation placeholder.
+- **Program.** One program per project: stages and their activities, built
+  from the Profile, included work items, Procurement packages and the
+  reviewed library, shown collapsed or expanded as a grid beside a Gantt
+  chart. Edited like a spreadsheet and a chart (rename, drag, resize, link,
+  bulk select, reorder, undo). Every date, float and the critical path is
+  computed in Go; unknown durations stay unknown and the completion shows
+  as a range. Its stages are the stage plan Procurement and the Cost Plan
+  use. Changes made elsewhere arrive as a review to adopt or keep. Program
+  files, R7 returnables and hold-point evidence are read in the background
+  as proposals. Exports to Excel and CSV and prints A3 landscape.
 - **Procurement.** One table of consultant and trade packages. Choosing a
   discipline saves the package. Create writes an RFP for a consultant and an
   RFT for a trade. The table proposes the disciplines the profile and scope

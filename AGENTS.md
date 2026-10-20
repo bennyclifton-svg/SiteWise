@@ -30,8 +30,8 @@ speed, Jev only, the building as the model, and the intake budget.
 
 `PRODUCT.md` names the workbench. The foundation design is the origin of the
 rules above and describes the intake slice. The workbench also includes
-Profile, Cost Plan, Procurement and Specifications.
-Project Plan and Program are navigation placeholders. Delivery records and
+Profile, Cost Plan, Procurement, Specifications and Program.
+Project Plan is a navigation placeholder. Delivery records and
 implication proposals stay on the project and are off the left nav.
 
 When a task does not name a budget, use the budget already recorded for that
@@ -50,6 +50,10 @@ read and export do not call Jev. A proposal dropped on a procurement row is
 read with one fan-out after filing; the price table, cell corrections,
 award, undo, ratings and the comparison report do not call Jev. Award writes
 contract values only from the firm's priced cells; it never writes a budget.
+Program open, edit, drag, link, generate, review, stage sync, export and
+print do not call Jev; every date is computed in Go. Its three readings (a
+dropped program file, the R7 returnable after award, hold-point release
+evidence) are background fan-outs that write proposals only.
 
 Money is computed in Go. Unknown stays unknown. Do not invent a rate, a price,
 a rule number or a product selection. An upload leaves an accepted
@@ -74,6 +78,7 @@ Before changing one of these surfaces, read its current note:
 - Procurement to award: `docs/plans/2026-10-16-procurement-process-to-award`,
   `docs/plans/2026-10-16-procurement-to-award-implementation.md`,
   `docs/evidence/2026-10-16-procurement-to-award.md`
+- Program: `docs/plans/2026-10-18-program.md` (owner answers in 13.3)
 - Invoices (Cost Plan panel): `docs/plans/2026-10-15-invoice-intake.md`,
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,
   `docs/evidence/2026-10-16-invoice-intake.md`
