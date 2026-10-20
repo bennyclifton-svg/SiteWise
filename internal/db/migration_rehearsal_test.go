@@ -242,7 +242,9 @@ func upgradeDigests(ctx context.Context, c *pgx.Conn, tables []string) (map[stri
 		case "report_versions":
 			exclude = []string{"stage_revision", "stage_plan", "stage_rows"}
 		case "packages":
-			exclude = []string{"stage_plan", "stage_revision", "stage_acknowledged"}
+			// 021q turns novation from a boolean into a state; 021r adds engaged_by
+			// and 031 supplier_abn, so these legitimately differ from the pre-M2 hash.
+			exclude = []string{"novation", "engaged_by", "supplier_abn", "stage_plan", "stage_revision", "stage_acknowledged"}
 		case "reports":
 			exclude = []string{"stage_acknowledged"}
 		}
