@@ -1,0 +1,8 @@
+{
+  "model": "jev-1.13.0",
+  "answers": {
+    "hold:if.envelope-frame-before-roof": {"type": "noul", "noul": 0.7},
+    "if:if.envelope-frame-before-roof#0": {"type": "noul", "noul": 0.9}
+  },
+  "usage": {"input_tokens": 1800, "output_tokens": 8}
+}

@@ -1,0 +1,24 @@
+{
+  "model": "jev-1.13.0",
+  "answers": {
+    "ps-concept": {
+      "type": "choice",
+      "choice": "none",
+      "probabilities": {"c1": 0.04, "none": 0.96},
+      "confidence": 0.95
+    },
+    "ps-dd": {
+      "type": "choice",
+      "choice": "none",
+      "probabilities": {"c1": 0.03, "c2": 0.02, "none": 0.95},
+      "confidence": 0.94
+    },
+    "ps-da": {
+      "type": "choice",
+      "choice": "none",
+      "probabilities": {"c1": 0.05, "none": 0.95},
+      "confidence": 0.93
+    }
+  },
+  "usage": {"input_tokens": 520, "output_tokens": 24}
+}

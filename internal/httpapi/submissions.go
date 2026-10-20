@@ -50,6 +50,9 @@ type proposalReader struct {
 
 	mu       sync.Mutex
 	inflight map[string]struct{}
+	// after runs once a read commits: the proposal_program read queued
+	// after this read finishes (plan 10.3). Nil runs nothing.
+	after func(orgID, submissionID string)
 }
 
 // Filed is the filing hook: a proposal-like document gets a submission and
@@ -114,6 +117,9 @@ func (r *proposalReader) Start(orgID, id string, began time.Time, recheck bool) 
 		r.broker.Wake(orgID)
 		if committed && !recheck && !began.IsZero() && r.observe != nil {
 			r.observe(pathProposalRead, time.Since(began))
+		}
+		if committed && r.after != nil {
+			r.after(orgID, id)
 		}
 	}()
 }

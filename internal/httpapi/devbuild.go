@@ -41,6 +41,12 @@ func calibrationNotes(program programread.Thresholds) []string {
 	if !program.Calibrated(programread.Family) {
 		out = append(out, programread.Family+": not calibrated")
 	}
+	if !program.Calibrated(programread.StageWeeksFamily) {
+		out = append(out, programread.StageWeeksFamily+": not calibrated")
+	}
+	if !program.ReleaseCalibrated() {
+		out = append(out, programread.HoldPointFamily+": not calibrated")
+	}
 	return out
 }
 

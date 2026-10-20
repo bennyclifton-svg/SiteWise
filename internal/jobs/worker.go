@@ -17,6 +17,7 @@ import (
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
+	"sitewise/internal/programread"
 	"sitewise/internal/store"
 )
 
@@ -72,7 +73,10 @@ type Worker struct {
 	Profile profile.Thresholds
 	// Reading decides which documents' facts the profile uses. The zero
 	// policy uses every document.
-	Reading           profile.ReadPolicy
+	Reading profile.ReadPolicy
+	// ProgramThresholds band hold-point release answers (plan 10.4). No
+	// cut-off proposes nothing.
+	ProgramThresholds programread.Thresholds
 	profileOnce       sync.Once
 	profileConfigured *store.Store
 }
@@ -245,6 +249,11 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		return err
 	}
 	factSets := make([][]store.StoredFact, len(passages))
+	holds, err := w.releaseTargets(ctx, job, passages)
+	if err != nil {
+		return err
+	}
+	releases := make([][]store.HoldPointReading, len(passages))
 	err = eachPassage(ctx, len(passages), func(ctx context.Context, i int) error {
 		passage := passages[i]
 		if passage.SkipEvidence {
@@ -278,9 +287,20 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 		if !ok {
 			return nil
 		}
-		result, err := w.cachedAsk(ctx, job, passage.ID, "evidence", call)
+		// A program hold point's release noul joins this one fan-out; its
+		// answer is split off before anything below reads the result.
+		asked, target, joined := WithRelease(w.Catalog, call, passage.Passage, holds)
+		result, err := w.cachedAsk(ctx, job, passage.ID, "evidence", asked)
 		if err != nil {
 			return err
+		}
+		if joined {
+			var answer jev.Answer
+			var answered bool
+			result, answer, answered = splitRelease(result, knowledge.ReleaseQuestionID(target.InterfaceID))
+			if r, ok := w.releaseReading(target, passage.ID, answer); answered && ok {
+				releases[i] = append(releases[i], r)
+			}
 		}
 		if detail, ok := DetailCall(w.Catalog, passage.Passage, DetailLeaves(w.Catalog, passage.Passage, result, w.MinNoul)); ok {
 			more, err := w.cachedAsk(ctx, job, passage.ID, "evidence_detail", detail)
@@ -330,6 +350,13 @@ func (w *Worker) evidence(ctx context.Context, job store.ClaimedJob) error {
 
 	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"sys.", "sig."}, profile.QuestionVersion, facts); err != nil {
 		return err
+	}
+	if len(holds) > 0 {
+		var recs []store.HoldPointReading
+		for _, set := range releases {
+			recs = append(recs, set...)
+		}
+		return w.Store.ReplaceHoldPointReadings(ctx, job.OrgID, job.DocumentID, recs)
 	}
 	return nil
 }

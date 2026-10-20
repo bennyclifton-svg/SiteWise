@@ -1,5 +1,6 @@
 {
  "question_version": "program-row-1",
- "calibration": "none: no labelled program gold set exists yet (gold set format: cmd/program-eval/main.go); every program_row answer stays blank",
+ "question_versions": {"program_stage_weeks": "proposal-program-1"},
+ "calibration": "none: no labelled program or R7 returnable gold set exists yet (gold set formats: cmd/program-eval/main.go); every program_row and program_stage_weeks answer stays blank",
  "questions": {}
 }

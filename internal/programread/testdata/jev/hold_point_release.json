@@ -1,0 +1,9 @@
+{
+  "model": "jev-1.13.0",
+  "answers": {
+    "hold:if.green": {"type": "noul", "noul": 0.95},
+    "hold:if.amber": {"type": "noul", "noul": 0.7},
+    "hold:if.low": {"type": "noul", "noul": 0.3}
+  },
+  "usage": {"input_tokens": 520, "output_tokens": 6}
+}

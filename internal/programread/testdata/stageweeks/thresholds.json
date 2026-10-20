@@ -1,0 +1,10 @@
+{
+ "question_version": "program-row-1",
+ "question_versions": {"program_stage_weeks": "proposal-program-1"},
+ "calibration": "test fixture: not a calibration",
+ "questions": {
+  "program_stage_weeks": [
+   {"options": 2, "max_options": 3, "green": 0.92, "amber": 0.6, "n": 40}
+  ]
+ }
+}

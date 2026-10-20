@@ -53,6 +53,9 @@ type ProgramExtras struct {
 	// CatalogueStages lists the delivery stage catalogue so a user can say
 	// which one a user-made stage really is (owner answer Q5).
 	CatalogueStages []ProgramCatalogueStage `json:"catalogue_stages"`
+	// HoldPoints are hold points with release evidence or a release
+	// (plan 10.4; program_holdpoints.go).
+	HoldPoints []ProgramHoldPointView `json:"hold_points"`
 }
 
 // ProgramCatalogueStage is one delivery catalogue stage offered for a remap.
@@ -484,7 +487,7 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 	}
 	var dismissedRaw string
 	if err := q.QueryRow(ctx, `SELECT p.question_dismissed::text,
- (SELECT count(*) FROM program_readings r WHERE r.org_id=p.org_id AND r.program_id=p.id AND r.status='proposed'),
+ (SELECT count(*) FROM program_readings r WHERE r.org_id=p.org_id AND r.program_id=p.id AND r.status='proposed' AND `+readingVisible("r")+`),
  (SELECT count(*) FROM program_changes c WHERE c.org_id=p.org_id AND c.program_id=p.id AND c.status='pending')
  FROM programs p WHERE p.org_id=$1::uuid AND p.id=$2::uuid`, org, st.Program.ID).Scan(&dismissedRaw, &ex.ReadingsPending, &ex.ChangesPending); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -493,6 +496,9 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 		return ex, err
 	}
 	if err := s.readingExtras(ctx, q, org, st, &ex); err != nil {
+		return ex, err
+	}
+	if err := holdPointExtras(ctx, q, org, st, &ex); err != nil {
 		return ex, err
 	}
 	if cat == nil {

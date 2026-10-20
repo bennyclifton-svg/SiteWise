@@ -20,8 +20,27 @@
 //	  }]
 //	}
 //
-// No gold set exists yet. Until one does, data/program/thresholds.json holds
-// no cut-off and every Jev answer stays blank ("program_row: not
+// With -family program_stage_weeks it calibrates Reading B (plan 10.3)
+// instead: every proposal of the gold set is read as the server reads it
+// (R7 rules, harvest, one program_stage_weeks fan-out), and -fit replaces
+// that family's cut-offs only, versioned "proposal-program-1". Gold set
+// format (data/eval/program/private/r7-answer-key.json):
+//
+//	{
+//	  "question_version": "proposal-program-1",
+//	  "corpus_root": "D:/corpora",
+//	  "cases": [{
+//	    "id": "petersham-arch-01",
+//	    "file": "Petersham/Architect fee proposal.pdf",
+//	    "per_week": 5,
+//	    "stages": [{"ID": "s1", "Label": "Design development"}],
+//	    "expected": {"s1": "6 weeks", "s2": null}  // the verbatim candidate, or null for none
+//	  }]
+//	}
+//
+// No gold set exists for either family yet. Until one does,
+// data/program/thresholds.json holds no cut-off and every Jev answer stays
+// blank ("program_row: not calibrated" and "program_stage_weeks: not
 // calibrated" on the dev status page). Replay is the default; -live calls
 // System One and records every exchange (nightly or owner-run only, never CI).
 package main
@@ -46,6 +65,7 @@ import (
 	"sitewise/internal/identity"
 	"sitewise/internal/jev"
 	"sitewise/internal/programread"
+	"sitewise/internal/proposals"
 )
 
 func main() {
@@ -53,8 +73,9 @@ func main() {
 }
 
 type options struct {
-	key, recording, data, corpusRoot string
-	live, fit                        bool
+	key, recording, data, corpusRoot, family string
+	knowledge                                string
+	live, fit                                bool
 }
 
 // policy is the proposal read's: the accuracy a cut-off must show on the
@@ -72,7 +93,31 @@ func run(args []string, getenv func(string) string, stdout, stderr io.Writer) in
 	fs.StringVar(&o.corpusRoot, "corpus-root", "", "override the answer key corpus_root")
 	fs.BoolVar(&o.live, "live", false, "call System One and record every exchange")
 	fs.BoolVar(&o.fit, "fit", false, "write cut-offs fitted on the calibration split")
+	fs.StringVar(&o.family, "family", programread.Family, "question family: program_row, program_stage_weeks or hold_point_release")
+	fs.StringVar(&o.knowledge, "knowledge", "knowledge", "knowledge directory (hold_point_release reads its release questions)")
 	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+	set := map[string]bool{}
+	fs.Visit(func(f *flag.Flag) { set[f.Name] = true })
+	switch o.family {
+	case programread.Family:
+	case programread.StageWeeksFamily:
+		if !set["key"] {
+			o.key = "data/eval/program/private/r7-answer-key.json"
+		}
+		if !set["recording"] {
+			o.recording = "data/eval/program/private/r7-recording.jsonl"
+		}
+	case programread.HoldPointFamily:
+		if !set["key"] {
+			o.key = "data/eval/program/private/hold-point-key.json"
+		}
+		if !set["recording"] {
+			o.recording = "data/eval/program/private/hold-point-recording.jsonl"
+		}
+	default:
+		fmt.Fprintln(stderr, "program-eval: unknown -family", o.family)
 		return 2
 	}
 	if err := evaluate(context.Background(), o, getenv, stdout); err != nil {
@@ -98,9 +143,29 @@ type keyCase struct {
 }
 
 type answerKey struct {
-	QuestionVersion string    `json:"question_version"`
-	CorpusRoot      string    `json:"corpus_root"`
-	Cases           []keyCase `json:"cases"`
+	QuestionVersion string          `json:"question_version"`
+	CorpusRoot      string          `json:"corpus_root"`
+	Cases           json.RawMessage `json:"cases"`
+}
+
+// stageCase is one proposal of the program_stage_weeks gold set.
+type stageCase struct {
+	ID       string              `json:"id"`
+	File     string              `json:"file"`
+	PerWeek  int                 `json:"per_week"`
+	Stages   []programread.Stage `json:"stages"`
+	Expected map[string]*string  `json:"expected"`
+}
+
+// familyVersion is the question map a family's gold set must be for.
+func familyVersion(family string) string {
+	if family == programread.StageWeeksFamily {
+		return programread.StageWeeksQuestionVersion
+	}
+	if family == programread.HoldPointFamily {
+		return programread.HoldPointReleaseVersion
+	}
+	return programread.QuestionVersion
 }
 
 func evaluate(ctx context.Context, o options, getenv func(string) string, stdout io.Writer) error {
@@ -115,12 +180,42 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, stdout
 	if err := json.Unmarshal(body, &key); err != nil {
 		return err
 	}
-	if key.QuestionVersion != programread.QuestionVersion {
-		return fmt.Errorf("gold set is for %q, this build asks %q", key.QuestionVersion, programread.QuestionVersion)
+	if want := familyVersion(o.family); key.QuestionVersion != want {
+		return fmt.Errorf("gold set is for %q, this build asks %q", key.QuestionVersion, want)
 	}
 	root := key.CorpusRoot
 	if o.corpusRoot != "" {
 		root = o.corpusRoot
+	}
+	type caseRun struct {
+		id  string
+		run func(programread.Asker) ([]eval.Answer, error)
+	}
+	var cases []caseRun
+	if o.family == programread.HoldPointFamily {
+		runs, ids, err := releaseCases(ctx, key.Cases, o.knowledge)
+		if err != nil {
+			return err
+		}
+		for i := range runs {
+			cases = append(cases, caseRun{ids[i], runs[i]})
+		}
+	} else if o.family == programread.StageWeeksFamily {
+		var list []stageCase
+		if err := json.Unmarshal(key.Cases, &list); err != nil {
+			return err
+		}
+		for _, c := range list {
+			cases = append(cases, caseRun{c.ID, func(ask programread.Asker) ([]eval.Answer, error) { return evaluateStageCase(ctx, ask, root, c) }})
+		}
+	} else {
+		var list []keyCase
+		if err := json.Unmarshal(key.Cases, &list); err != nil {
+			return err
+		}
+		for _, c := range list {
+			cases = append(cases, caseRun{c.ID, func(ask programread.Asker) ([]eval.Answer, error) { return evaluateCase(ctx, ask, root, c) }})
+		}
 	}
 	ask, finish, err := client(ctx, o, getenv)
 	if err != nil {
@@ -128,10 +223,10 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, stdout
 	}
 	var answers []eval.Answer
 	right, wrong, blank := 0, 0, 0
-	for _, c := range key.Cases {
-		got, err := evaluateCase(ctx, ask, root, c)
+	for _, c := range cases {
+		got, err := c.run(ask)
 		if err != nil {
-			return fmt.Errorf("%s: %w", c.ID, err)
+			return fmt.Errorf("%s: %w", c.id, err)
 		}
 		for _, a := range got {
 			if a.Correct {
@@ -148,11 +243,58 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, stdout
 	if err := finish(); err != nil {
 		return err
 	}
-	fmt.Fprintf(stdout, "%d cases, %d answers: %d right, %d wrong; %d cases asked nothing\n", len(key.Cases), len(answers), right, wrong, blank)
+	fmt.Fprintf(stdout, "%d cases, %d answers: %d right, %d wrong; %d cases asked nothing\n", len(cases), len(answers), right, wrong, blank)
 	if !o.fit {
 		return nil
 	}
-	return writeThresholds(o.data, answers)
+	if o.family == programread.HoldPointFamily {
+		return writeReleaseThresholds(o.data, answers)
+	}
+	return writeThresholds(o.data, o.family, answers)
+}
+
+// evaluateStageCase reads one proposal as the server does and scores each
+// asked stage's raw answer against the verbatim value the owner gave.
+func evaluateStageCase(ctx context.Context, ask programread.Asker, root string, c stageCase) ([]eval.Answer, error) {
+	path := filepath.Join(root, filepath.FromSlash(c.File))
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	info, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	format := strings.TrimPrefix(strings.ToLower(filepath.Ext(path)), ".")
+	text, err := identity.Extract(ctx, format, f, info.Size(), proposals.ExtractLimits())
+	if err != nil {
+		return nil, err
+	}
+	d := programread.NewStageDraft(programread.StageWeeksInput{Filename: filepath.Base(path), Text: text, PerWeek: c.PerWeek, Stages: c.Stages})
+	call, ok := d.Call()
+	if !ok {
+		return nil, nil
+	}
+	res, err := ask.Ask(ctx, call)
+	if err != nil {
+		return nil, err
+	}
+	split := eval.SplitOf(c.ID, programread.StageWeeksQuestionVersion, 60)
+	var out []eval.Answer
+	for _, id := range d.Asked() {
+		value, conf, answered := d.Raw(res, id)
+		if !answered || conf == nil {
+			continue
+		}
+		want, scored := c.Expected[id]
+		if !scored {
+			continue
+		}
+		correct := value == "" && want == nil || value != "" && want != nil && value == *want
+		out = append(out, eval.Answer{Case: split + "/" + c.ID, Field: programread.StageWeeksFamily, Options: d.Options(id), Confidence: *conf, Correct: correct})
+	}
+	return out, nil
 }
 
 // evaluateCase reads one file as the server does and scores each asked
@@ -272,9 +414,10 @@ func shapeOf(options int) eval.Shape {
 	}
 }
 
-// writeThresholds fits on the calibration split only and writes every
-// bucket with its n, a nil cut-off where the evidence is too thin.
-func writeThresholds(dir string, answers []eval.Answer) error {
+// writeThresholds fits one family on the calibration split only and
+// writes every bucket with its n, a nil cut-off where the evidence is too
+// thin. Other families' cut-offs already in the file are kept.
+func writeThresholds(dir, family string, answers []eval.Answer) error {
 	groups := map[string][]eval.Answer{}
 	n := 0
 	for _, a := range answers {
@@ -290,8 +433,21 @@ func writeThresholds(dir string, answers []eval.Answer) error {
 		groups[k] = append(groups[k], a)
 		n++
 	}
-	th := programread.Thresholds{QuestionVersion: programread.QuestionVersion, Questions: map[string][]programread.Threshold{}}
-	th.Calibration = fmt.Sprintf("cmd/program-eval -fit, %d calibration answers, %s", n, time.Now().UTC().Format("2006-01-02"))
+	th, err := programread.LoadThresholds(dir)
+	if err != nil {
+		return err
+	}
+	if th.Questions == nil {
+		th.Questions = map[string][]programread.Threshold{}
+	}
+	delete(th.Questions, family)
+	if family != programread.Family {
+		if th.Versions == nil {
+			th.Versions = map[string]string{}
+		}
+		th.Versions[family] = familyVersion(family)
+	}
+	th.Calibration = fmt.Sprintf("cmd/program-eval -fit -family %s, %d calibration answers, %s", family, n, time.Now().UTC().Format("2006-01-02"))
 	th.Policy, _ = json.Marshal(policy)
 	keys := make([]string, 0, len(groups))
 	for k := range groups {

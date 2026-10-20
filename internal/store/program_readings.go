@@ -134,8 +134,10 @@ type programReading struct {
 }
 
 func loadReadings(ctx context.Context, tx pgx.Tx, w *programWork, status string, ids []string, all bool) ([]programReading, error) {
+	// A program file's readings, and an awarded proposal's R7 readings
+	// (plan 10.3): a proposal's stay out until its submission is awarded.
 	sql := `SELECT id::text,COALESCE(document_id::text,''),COALESCE(target_activity_id::text,''),COALESCE(catalogue_stage_id,''),field,COALESCE(value,''),parsed::text,status
-FROM program_readings WHERE org_id=$1::uuid AND program_id=$2::uuid AND source='program_file' AND status=$3`
+FROM program_readings WHERE org_id=$1::uuid AND program_id=$2::uuid AND source IN ('program_file','proposal_r7') AND ` + readingVisible("program_readings") + ` AND status=$3`
 	args := []any{w.org, w.prog.ID, status}
 	if !all {
 		sql += ` AND id::text=ANY($4::text[])`

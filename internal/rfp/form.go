@@ -10,6 +10,11 @@ import (
 // form is read by these references, item by item, with no judgement.
 const FormRef = "Ref"
 
+// R7Columns is the header of the R7 Program table, cell for cell. The
+// program read settles an R7 row by rule only under exactly this header
+// (internal/programread, plan 10.3).
+var R7Columns = []string{"Stage", "Your weeks", "Authority weeks", "Inputs you need, and by when"}
+
 // FormFirmFields are the labelled cells at the top of the fee sheet, in order.
 var FormFirmFields = []string{"Firm", "ABN", "Contact", "Email", "Phone", "Address"}
 
@@ -103,7 +108,7 @@ func ResponseForm(h FormHeader, items []ScheduleItem, returnables []Row) []xlsx.
 	table("r4", "R4 Team", []string{"Role", "Name", "% time by stage", "Subconsultant firm"}, blank(8, 4))
 	table("r5", "R5 Experience", []string{"Project", "Client", "Value $", "Year", "Your role", "Referee and phone"}, blank(3, 6))
 	table("r6", "R6 Departures", []string{"Clause or item", "Proposed change", "Effect on fee", "Effect on time"}, append([][]xlsx.Cell{{text("Nil, or list each departure")}}, blank(6, 4)...))
-	table("r7", "R7 Program", []string{"Stage", "Your weeks", "Authority weeks", "Inputs you need, and by when"}, stages)
+	table("r7", "R7 Program", R7Columns, stages)
 	insurance := [][]xlsx.Cell{}
 	for _, row := range []string{"Professional indemnity", "Public liability", "Workers compensation", "Quality system", "Safety system", "Environmental system", "Conflicts of interest"} {
 		insurance = append(insurance, []xlsx.Cell{text(row), {}, {}, {}})

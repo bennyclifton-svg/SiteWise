@@ -190,6 +190,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"GET", pkgPath + "/stage-sync", nil, true}, {"POST", pkgPath + "/stage-sync", []byte(`{"choice":"keep","revision":1}`), true},
 		{"GET", reportPath + "/stage-sync", nil, false}, {"POST", reportPath + "/stage-sync", []byte(`{"choice":"update","revision":1}`), false},
 		{"POST", base + "/program/import?name=Intrusion.xlsx", []byte("x"), true}, {"POST", base + "/program/readings/dismiss", []byte(`{"version":1,"ids":["` + newUUID(t) + `"]}`), true},
+		{"POST", base + "/program/hold-points/release", []byte(`{"version":1,"id":"` + newUUID(t) + `"}`), true},
 		{"GET", base + "/planning", nil, false}, {"PUT", base + "/planning/gross_floor_area", jsonBody(map[string]any{"part_id": part, "value": 1300, "unit": "m2", "version": 1}), true}, {"DELETE", base + "/planning/gross_floor_area?version=1&part_id=" + part, nil, true},
 	}
 	denied := func(t *testing.T, actor *member, r route, path string, want int) {

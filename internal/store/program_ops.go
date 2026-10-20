@@ -767,7 +767,12 @@ func (w *programWork) opUpdate(i int, o ProgramOp) error {
 				return opErr(i, "duration_days", "A hold point takes 0 days.")
 			}
 		}
-		a.DurationLow, a.DurationHigh, a.DurationSource = nil, nil, json.RawMessage(`{}`)
+		a.DurationLow, a.DurationHigh = nil, nil
+		if a.Kind != engine.KindHoldPoint {
+			// A hold point keeps its source: it carries the user's release
+			// (program_holdpoints.go), which a 0-day edit must not clear.
+			a.DurationSource = json.RawMessage(`{}`)
+		}
 		if v == nil {
 			a.DurationDays, a.DurationOrigin = nil, ""
 		} else {

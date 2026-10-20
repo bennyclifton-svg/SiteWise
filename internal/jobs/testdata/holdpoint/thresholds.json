@@ -1,0 +1,10 @@
+{
+ "question_version": "program-row-1",
+ "question_versions": {"hold_point_release": "hold-point-release-1"},
+ "calibration": "test fixture: not a calibration",
+ "questions": {
+  "hold_point_release": [
+   {"options": null, "green": 0.9, "amber": 0.6, "n": 40}
+  ]
+ }
+}

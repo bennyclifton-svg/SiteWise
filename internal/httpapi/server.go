@@ -88,9 +88,11 @@ type Server struct {
 	invoices  *invoiceReader
 	proposals *proposalReader
 	imports   *programImporter
-	review    *programReviewer
-	closing   chan struct{}
-	closeOnce sync.Once
+	// proposalPrograms reads each read proposal's R7 programme (plan 10.3).
+	proposalPrograms *proposalProgramReader
+	review           *programReviewer
+	closing          chan struct{}
+	closeOnce        sync.Once
 }
 
 // New composes the upload, filing and event path. Nothing here starts a
@@ -212,6 +214,21 @@ func New(opts Options) (*Server, error) {
 	if importer.thresholds.QuestionVersion == "" {
 		importer.thresholds.QuestionVersion = programread.QuestionVersion
 	}
+	// Reading B runs after the proposal read commits, as its own job with
+	// its own question version; the proposal read is unchanged.
+	stages := &proposalProgramReader{
+		store:      opts.Store,
+		blobs:      opts.Blobs,
+		ask:        importer.ask,
+		thresholds: importer.thresholds,
+		broker:     broker,
+		log:        opts.Log,
+		timeout:    30 * time.Second,
+		slots:      make(chan struct{}, 8),
+		now:        time.Now,
+		inflight:   map[string]struct{}{},
+	}
+	preader.after = stages.Queue
 	// Both readers return at once; filing itself is unchanged.
 	runner.AfterFile = func(orgID, documentID string, text identity.Text) {
 		preader.Filed(orgID, documentID, text)
@@ -259,7 +276,7 @@ func New(opts Options) (*Server, error) {
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
-	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, imports: importer, review: review, closing: closing}, nil
+	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, imports: importer, proposalPrograms: stages, review: review, closing: closing}, nil
 }
 
 // CloseStreams ends open event streams. Clients reconnect from their cursor.
@@ -308,6 +325,13 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 	for _, p := range reading {
 		s.proposals.Start(p.OrgID, p.SubmissionID, time.Time{}, false)
 	}
+	programs, err := s.store.PendingProposalPrograms(ctx)
+	if err != nil {
+		return len(pending) + len(expansions) + len(unread) + len(reading), err
+	}
+	for _, p := range programs {
+		s.proposalPrograms.Start(p.OrgID, p.SubmissionID, false)
+	}
 	imports, err := s.store.PendingProgramImports(ctx)
 	if err != nil {
 		return len(pending) + len(expansions) + len(unread) + len(reading), err
@@ -332,6 +356,7 @@ func (s *Server) Wait(ctx context.Context) error {
 		s.invoices.wg.Wait()
 		s.proposals.wg.Wait()
 		s.imports.wg.Wait()
+		s.proposalPrograms.wg.Wait()
 		s.review.Stop()
 		close(done)
 	}()

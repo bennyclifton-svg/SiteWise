@@ -336,7 +336,7 @@ FROM jsonb_to_recordset($4::jsonb) AS r(id uuid,target_activity_id uuid,catalogu
  retry_after=$7,read_attempts=read_attempts+$8,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid`, org, id, fileRows, notMatched, grey, checks, retry, attempt); err != nil {
 		return c, false, err
 	}
-	if err := tx.QueryRow(ctx, `SELECT count(*) FROM program_readings WHERE org_id=$1::uuid AND program_id=$2::uuid AND status='proposed'`, org, c.ProgramID).Scan(&c.ReadingsPending); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM program_readings r WHERE r.org_id=$1::uuid AND r.program_id=$2::uuid AND r.status='proposed' AND `+readingVisible("r"), org, c.ProgramID).Scan(&c.ReadingsPending); err != nil {
 		return c, false, err
 	}
 	return c, true, tx.Commit(ctx)
@@ -366,6 +366,26 @@ type ProgramReadingView struct {
 	DocumentID       string          `json:"document_id"`
 	DocumentTitle    string          `json:"document_title"`
 	Applies          bool            `json:"applies"`
+	// Source is program_file or proposal_r7. Text is the line an awarded
+	// proposal's reading shows: "From the awarded proposal: Design
+	// development 6 weeks".
+	Source string `json:"source"`
+	Text   string `json:"text,omitempty"`
+}
+
+// proposalReadingView resolves an awarded proposal's reading to its live
+// row, or adds the "no stage" notice when the stage is gone (plan 7.7).
+func proposalReadingView(v ProgramReadingView, acts, byCatalogue map[string]*ProgramActivity, p Program, ex *ProgramExtras) ProgramReadingView {
+	target := resolveTarget(acts, byCatalogue, string(v.TargetActivityID), string(v.CatalogueStageID))
+	if target == nil {
+		if v.CatalogueStageID != "" {
+			ex.Checks = append(ex.Checks, engine.Check{Code: "evidence_without_stage", Message: "Evidence for " + string(v.CatalogueStageID) + " has no stage. Add the stage back or dismiss."})
+		}
+		return v
+	}
+	v.TargetActivityID = NullText(target.ID)
+	v.Applies = readingApplies(target, v.Field, p)
+	return v
 }
 
 // ProgramFileRow is a file row no target matched, which the user can add
@@ -444,9 +464,6 @@ WHERE i.org_id=$1::uuid AND i.program_id=$2::uuid AND i.status<>'dismissed' ORDE
 	if err := rows.Err(); err != nil {
 		return err
 	}
-	if len(imports) == 0 {
-		return nil
-	}
 	acts := map[string]*ProgramActivity{}
 	byCatalogue := map[string]*ProgramActivity{}
 	added := map[string]bool{}
@@ -461,20 +478,31 @@ WHERE i.org_id=$1::uuid AND i.program_id=$2::uuid AND i.status<>'dismissed' ORDE
 		}
 	}
 	matched := map[string]map[string]string{} // document → row → target
-	rows, err = q.Query(ctx, `SELECT id::text,COALESCE(document_id::text,''),COALESCE(target_activity_id::text,''),COALESCE(catalogue_stage_id,''),field,COALESCE(value,''),parsed::text,band,decided_by,status
-FROM program_readings WHERE org_id=$1::uuid AND program_id=$2::uuid AND source='program_file' AND status<>'dismissed' ORDER BY created_at,field,id`, org, st.Program.ID)
+	// Program file readings, and an awarded proposal's R7 readings (plan
+	// 10.3): a proposal's readings stay hidden until its submission is
+	// awarded, and hide again when the award is undone.
+	rows, err = q.Query(ctx, `SELECT r.id::text,COALESCE(r.document_id::text,''),COALESCE(r.target_activity_id::text,''),COALESCE(r.catalogue_stage_id,''),r.field,COALESCE(r.value,''),r.parsed::text,r.band,r.decided_by,r.status,r.source,COALESCE(d.filename,'')
+FROM program_readings r LEFT JOIN documents d ON d.org_id=r.org_id AND d.id=r.document_id
+WHERE r.org_id=$1::uuid AND r.program_id=$2::uuid AND r.source IN ('program_file','proposal_r7') AND `+readingVisible("r")+` AND r.status<>'dismissed' ORDER BY r.created_at,r.field,r.id`, org, st.Program.ID)
 	if err != nil {
 		return err
 	}
 	targetsWith := map[string]map[string]bool{}
 	for rows.Next() {
 		var v ProgramReadingView
-		var parsed, status string
-		if err := rows.Scan(&v.ID, &v.DocumentID, (*string)(&v.TargetActivityID), (*string)(&v.CatalogueStageID), &v.Field, &v.Value, &parsed, &v.Band, &v.DecidedBy, &status); err != nil {
+		var parsed, status, filename string
+		if err := rows.Scan(&v.ID, &v.DocumentID, (*string)(&v.TargetActivityID), (*string)(&v.CatalogueStageID), &v.Field, &v.Value, &parsed, &v.Band, &v.DecidedBy, &status, &v.Source, &filename); err != nil {
 			rows.Close()
 			return err
 		}
 		v.Parsed = json.RawMessage(parsed)
+		if v.Source == "proposal_r7" {
+			if status == "proposed" {
+				v.DocumentTitle, v.Text = filename, proposalReadingText(v.Parsed)
+				ex.Readings = append(ex.Readings, proposalReadingView(v, acts, byCatalogue, st.Program, ex))
+			}
+			continue
+		}
 		m := byDoc[v.DocumentID]
 		if m == nil {
 			continue
@@ -619,6 +647,6 @@ func importLinks(rows []programread.Row, rowTarget map[string]string) []ProgramP
 // ImportReadingsPending counts proposed readings, for the reader's event.
 func (s *Store) ImportReadingsPending(ctx context.Context, org, programID string) (int, error) {
 	var n int
-	err := s.pool.QueryRow(ctx, `SELECT count(*) FROM program_readings WHERE org_id=$1::uuid AND program_id=$2::uuid AND status='proposed'`, org, programID).Scan(&n)
+	err := s.pool.QueryRow(ctx, `SELECT count(*) FROM program_readings r WHERE r.org_id=$1::uuid AND r.program_id=$2::uuid AND r.status='proposed' AND `+readingVisible("r"), org, programID).Scan(&n)
 	return n, err
 }

@@ -57,6 +57,80 @@ type HoldPoint struct {
 	Before   string `yaml:"before"`
 	After    string `yaml:"after"`
 	Evidence string `yaml:"evidence"`
+	// Release is the optional noul that asks whether a passage states the
+	// inspection was carried out and the work released (plan 10.4). Nil
+	// when none is authored: nothing reads release evidence then.
+	Release *HoldPointRelease `yaml:"release,omitempty"`
+}
+
+// HoldPointRelease is a Questions-format noul with its own status. Its ID
+// is ReleaseQuestionID of the interface. It is not an evidence question:
+// it joins a passage's fan-out only where a program holds this hold point.
+type HoldPointRelease struct {
+	Question `yaml:",inline"`
+	Status   string `yaml:"status"`
+}
+
+// ReleaseQuestionID is the Jev question id of an interface's release noul.
+func ReleaseQuestionID(interfaceID string) string {
+	return "hold:" + interfaceID
+}
+
+// HoldPointRelease returns the interface's release noul when one is
+// authored and the passage labels fall within its runs_on systems.
+func (c *Catalog) HoldPointRelease(interfaceID string, labels []string) (Question, bool) {
+	for _, iface := range c.Interfaces {
+		if iface.ID != interfaceID {
+			continue
+		}
+		if iface.HoldPoint == nil || iface.HoldPoint.Release == nil || iface.HoldPoint.Release.Status == statusDeprecated {
+			return Question{}, false
+		}
+		q := iface.HoldPoint.Release.Question
+		return q, c.runsOn(labels, q.RunsOn)
+	}
+	return Question{}, false
+}
+
+// checkRelease validates hold_point.release as tools/check_knowledge.py
+// does: a noul with instructions, true and false criteria, a runs_on of
+// loaded systems and a status.
+func (c *Catalog) checkRelease(path, ifaceID string, r *HoldPointRelease) error {
+	where := fmt.Sprintf("%s: %s hold_point.release", path, ifaceID)
+	if r.Type != "noul" {
+		return fmt.Errorf("%s must be a noul", where)
+	}
+	if strings.TrimSpace(r.Instructions) == "" {
+		return fmt.Errorf("%s needs instructions", where)
+	}
+	keys := map[string]bool{}
+	switch m := r.Criteria.(type) {
+	case map[string]any:
+		for k := range m {
+			keys[strings.ToLower(k)] = true
+		}
+	case map[any]any:
+		for k := range m {
+			keys[strings.ToLower(fmt.Sprint(k))] = true
+		}
+	}
+	if len(keys) != 2 || !keys["true"] || !keys["false"] {
+		return fmt.Errorf("%s criteria must have exactly true and false", where)
+	}
+	if len(r.RunsOn) == 0 {
+		return fmt.Errorf("%s needs a non-empty runs_on", where)
+	}
+	for _, id := range r.RunsOn {
+		if _, ok := c.systems[id]; !ok {
+			return fmt.Errorf("%s runs_on unknown system %s", where, id)
+		}
+	}
+	switch r.Status {
+	case "draft", statusReviewed, statusDeprecated:
+	default:
+		return fmt.Errorf("%s needs a status of draft, reviewed or deprecated", where)
+	}
+	return nil
 }
 
 // Rule is a code-evaluated requirement. Derives is nil when the rule does
@@ -380,6 +454,12 @@ func (c *Catalog) loadInterfaces(path string) error {
 			return fmt.Errorf("%s: duplicate interface %s", path, iface.ID)
 		}
 		seen[iface.ID] = struct{}{}
+		if hp := iface.HoldPoint; hp != nil && hp.Release != nil {
+			if err := c.checkRelease(path, iface.ID, hp.Release); err != nil {
+				return err
+			}
+			hp.Release.ID = ReleaseQuestionID(iface.ID)
+		}
 		for i := range iface.ResolvedWhen {
 			q := iface.ResolvedWhen[i]
 			q.ID = fmt.Sprintf("if:%s#%d", iface.ID, i)

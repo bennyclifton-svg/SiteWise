@@ -223,7 +223,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	// Passages, labels, evidence and the project profile run in the
 	// background; filing keeps its slots and the interactive Jev reserve.
 	worker := &jobs.Worker{Store: st, Ask: client, Catalog: building, Source: jobs.FullSource(st, blobs),
-		MinNoul: minNoul, Profile: profileTh, Reading: reading}
+		MinNoul: minNoul, Profile: profileTh, Reading: reading, ProgramThresholds: programTh}
 	ocrService, err := intake.NewService(st, client, cat, thresholds)
 	if err != nil {
 		fmt.Fprintln(stderr, err)
@@ -241,6 +241,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	go srv.RunInvoiceRechecks(ctx, 10*time.Second)
 	go srv.RunProposalRechecks(ctx, 15*time.Second)
 	go srv.RunProgramImportRechecks(ctx, 15*time.Second)
+	go srv.RunProposalProgramRechecks(ctx, 15*time.Second)
 	if n, err := srv.Resume(ctx); err != nil {
 		logger.Printf("resume failed: %v", err)
 	} else if n > 0 {

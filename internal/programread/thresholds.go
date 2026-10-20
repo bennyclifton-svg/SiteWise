@@ -18,6 +18,12 @@ const QuestionVersion = "program-row-1"
 // Family is the threshold family of the one question this reading asks.
 const Family = "program_row"
 
+// familyVersions is the question map each family's cut-offs belong to. A
+// family not listed is part of QuestionVersion's map. Reading B asks its
+// own map (plan 13.3 Q3), so its cut-offs are versioned on their own.
+var familyVersions = map[string]string{Family: QuestionVersion, StageWeeksFamily: StageWeeksQuestionVersion,
+	HoldPointFamily: HoldPointReleaseVersion}
+
 // Threshold is one calibrated cut-off for a family and option shape. A nil
 // cut-off is unknown and authorises nothing. N is the calibration evidence.
 type Threshold struct {
@@ -32,10 +38,28 @@ type Threshold struct {
 // Thresholds is data/program/thresholds.json, written by cmd/program-eval in
 // the shape of data/proposal/thresholds.json.
 type Thresholds struct {
-	QuestionVersion string                 `json:"question_version"`
-	Calibration     string                 `json:"calibration"`
-	Policy          json.RawMessage        `json:"policy,omitempty"`
-	Questions       map[string][]Threshold `json:"questions"`
+	QuestionVersion string          `json:"question_version"`
+	Calibration     string          `json:"calibration"`
+	Policy          json.RawMessage `json:"policy,omitempty"`
+	// Versions names the question version a family was calibrated for
+	// when it is not QuestionVersion: "program_stage_weeks":
+	// "proposal-program-1".
+	Versions  map[string]string      `json:"question_versions,omitempty"`
+	Questions map[string][]Threshold `json:"questions"`
+}
+
+// versionOK reports whether the file's cut-offs for family were fitted on
+// the question map this build asks for that family.
+func (t Thresholds) versionOK(family string) bool {
+	want, ok := familyVersions[family]
+	if !ok {
+		want = QuestionVersion
+	}
+	got := t.Versions[family]
+	if got == "" {
+		got = t.QuestionVersion
+	}
+	return got == want
 }
 
 // LoadThresholds reads <dir>/thresholds.json. A missing file is no
@@ -54,6 +78,11 @@ func LoadThresholds(dir string) (Thresholds, error) {
 	}
 	if t.QuestionVersion != QuestionVersion {
 		return Thresholds{}, fmt.Errorf("program threshold version %q, want %q", t.QuestionVersion, QuestionVersion)
+	}
+	for family := range t.Versions {
+		if !t.versionOK(family) {
+			return Thresholds{}, fmt.Errorf("%s threshold version %q, want %q", family, t.Versions[family], familyVersions[family])
+		}
 	}
 	for family, list := range t.Questions {
 		for _, q := range list {
@@ -84,7 +113,7 @@ func (q Threshold) shape() (lo, hi int) {
 // Calibrated reports whether any cut-off exists for the family, for the dev
 // status line ("program_row: not calibrated").
 func (t Thresholds) Calibrated(family string) bool {
-	if t.QuestionVersion != QuestionVersion {
+	if !t.versionOK(family) {
 		return false
 	}
 	for _, q := range t.Questions[family] {
@@ -102,7 +131,7 @@ func (t Thresholds) Calibrated(family string) bool {
 //	https://docs.typesafe.ai/confidence
 //	https://docs.typesafe.ai/patterns/confidence-routing
 func (t Thresholds) Band(family string, confidence *float64, options int) (band string, apply bool) {
-	if t.QuestionVersion != QuestionVersion || confidence == nil {
+	if !t.versionOK(family) || confidence == nil {
 		return BandBlank, false
 	}
 	for _, q := range t.Questions[family] {
