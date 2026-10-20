@@ -52,6 +52,10 @@ type LiveRow struct {
 	DurationOrigin   string
 	Origin           string // library, user or document
 	ReviewStatus     string // proposed or accepted
+	// GenLabel is the label generation last gave the row, set only while
+	// the row carries a label the user typed. A rename back to it is the
+	// user's own edit undone, never a difference (plan section 2 rule 2).
+	GenLabel string
 }
 
 // Edited is true once the user has created, edited or accepted the row.
@@ -70,6 +74,25 @@ type LiveLink struct {
 	LagUnit   string
 	Origin    string
 	SourceKey string // "" for a user-drawn link
+	// GenShape is the type and lag generation last gave the link, set only
+	// while the link carries a type or lag the user chose.
+	GenShape *LinkShape
+}
+
+// LinkShape is a link's type and lag.
+type LinkShape struct {
+	Type    string
+	Lag     int
+	LagUnit string
+}
+
+// UserRetired names, by source key, the generated rows and links the user
+// deleted. A deletion is a user decision (plan 7.4, 13.1), so the review
+// never offers the row or link back; a row the review itself removed is not
+// listed and comes back when its input does.
+type UserRetired struct {
+	Rows  map[string]bool
+	Links map[string]bool
 }
 
 // Op is one op of the batch Adopt applies, in the vocabulary of plan 8.1.
@@ -116,7 +139,7 @@ func SourceOf(key string) string {
 // nothing. Changes come in a fixed order: additions, renames and duration
 // changes in plan order, removals in live order, then link changes (plan
 // order, then live order).
-func Diff(live []LiveRow, liveLinks []LiveLink, plan Plan) []Change {
+func Diff(live []LiveRow, liveLinks []LiveLink, plan Plan, gone UserRetired) []Change {
 	byKey := map[string]LiveRow{}
 	byID := map[string]LiveRow{}
 	for _, r := range live {
@@ -138,17 +161,24 @@ func Diff(live []LiveRow, liveLinks []LiveLink, plan Plan) []Change {
 	}
 	var changes []Change
 	added := map[string]int{} // plan key → index of its add change
+	// held: plan rows not offered because the user deleted them, or deleted
+	// the stage they sit in.
+	held := map[string]bool{}
 
 	for i, r := range plan.Rows {
 		lr, ok := byKey[r.SourceKey]
+		if !ok && (gone.Rows[r.SourceKey] || held[r.ParentKey]) {
+			held[r.SourceKey] = true
+			continue
+		}
 		if !ok {
-			op := addOp(r, plan, i, ref)
+			op := addOp(r, plan, i, ref, held)
 			added[r.SourceKey] = len(changes)
 			changes = append(changes, Change{Kind: ChangeAdd, Source: SourceOf(r.SourceKey), SourceKey: r.SourceKey,
 				Summary: fmt.Sprintf("Add %s.", quote(r.Label)), Ops: []Op{op}, DefaultChoice: ChoiceAdopt})
 			continue
 		}
-		if lr.Label != r.Label {
+		if lr.Label != r.Label && !(lr.GenLabel != "" && lr.GenLabel == r.Label) {
 			c := Change{Kind: ChangeRename, Source: SourceOf(r.SourceKey), SourceKey: r.SourceKey, TargetActivityID: lr.ID,
 				Summary: fmt.Sprintf("Rename %s to %s.", quote(lr.Label), quote(r.Label)),
 				Ops:     []Op{{"op": "update", "id": lr.ID, "label": r.Label}}}
@@ -211,6 +241,9 @@ func Diff(live []LiveRow, liveLinks []LiveLink, plan Plan) []Change {
 	for _, l := range plan.Links {
 		planLinkKeys[l.SourceKey] = true
 		ll, ok := liveLinkByKey[l.SourceKey]
+		if !ok && (gone.Links[l.SourceKey] || held[l.PredKey] || held[l.SuccKey]) {
+			continue
+		}
 		if !ok {
 			op := Op{"op": "link_add", "pred_id": ref(l.PredKey), "succ_id": ref(l.SuccKey), "type": l.Type,
 				"lag_days": l.Lag, "lag_unit": l.LagUnit, "origin": l.Origin, "source_key": l.SourceKey}
@@ -230,6 +263,9 @@ func Diff(live []LiveRow, liveLinks []LiveLink, plan Plan) []Change {
 				Summary: fmt.Sprintf("Link %s to %s.", quote(labelOf(l.PredKey, byKey, planKeys)), quote(labelOf(l.SuccKey, byKey, planKeys))),
 				Ops:     []Op{op}, DefaultChoice: ChoiceAdopt})
 			continue
+		}
+		if g := ll.GenShape; g != nil && g.Type == l.Type && g.Lag == l.Lag && unitOr(g.LagUnit) == unitOr(l.LagUnit) {
+			continue // the user's own type or lag, and generation's has not moved
 		}
 		if ll.Type != l.Type || ll.Lag != l.Lag || unitOr(ll.LagUnit) != unitOr(l.LagUnit) {
 			c := Change{Kind: ChangeLink, Source: SourceOf(l.SuccKey), SourceKey: l.SourceKey,
@@ -320,7 +356,7 @@ func removedRow(r LiveRow, plan map[string]Row) bool {
 	return !ok
 }
 
-func addOp(r Row, plan Plan, i int, ref func(string) string) Op {
+func addOp(r Row, plan Plan, i int, ref func(string) string, held map[string]bool) Op {
 	op := Op{"op": "add", "temp_id": r.SourceKey, "kind": r.Kind, "label": r.Label, "duration_days": r.Duration,
 		"duration_low": r.Low, "duration_high": r.High, "duration_origin": r.DurationOrigin,
 		"duration_source": r.DurationSource, "source_key": r.SourceKey, "origin": OriginLibrary, "systems": r.Systems}
@@ -332,7 +368,7 @@ func addOp(r Row, plan Plan, i int, ref func(string) string) Op {
 	// after_id is the plan row before this one in the same parent, so the
 	// added row lands where generation put it.
 	for j := i - 1; j >= 0; j-- {
-		if plan.Rows[j].ParentKey == r.ParentKey {
+		if plan.Rows[j].ParentKey == r.ParentKey && !held[plan.Rows[j].SourceKey] {
 			op["after_id"] = ref(plan.Rows[j].SourceKey)
 			break
 		}

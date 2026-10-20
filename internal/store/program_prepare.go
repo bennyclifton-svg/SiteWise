@@ -501,6 +501,9 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 	if err := holdPointExtras(ctx, q, org, st, &ex); err != nil {
 		return ex, err
 	}
+	if err := dismissedHoldPointChecks(ctx, q, org, st.Program.ID, &ex); err != nil {
+		return ex, err
+	}
 	if cat == nil {
 		return ex, nil
 	}
@@ -539,7 +542,9 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 	}
 	// Edited rows of a package removed in Procurement stay until the user
 	// decides in the review; the check names them meanwhile (plan 6.6).
-	ci.RemovedPackageRows = engine.RemovedPackageRows(engine.Diff(liveRows(st.Activities), liveLinks(st.Links), plan))
+	// Removals do not depend on the user's own values (userValues), so the
+	// read skips the undo log.
+	ci.RemovedPackageRows = engine.RemovedPackageRows(engine.Diff(liveRows(st.Activities), liveLinks(st.Links), plan, engine.UserRetired{}))
 	ex.Checks = append(ex.Checks, engine.Checks(ci)...)
 	// Generation notes (an unknown lag, a library link that could not be
 	// placed) still describe the stored rows they name; the skeleton tie is
@@ -616,7 +621,11 @@ func (s *Store) ApplyProgramAnswer(ctx context.Context, org, project, actor stri
 		if err != nil {
 			return err
 		}
-		for _, c := range engine.Diff(liveRows(live.Activities), liveLinks(live.Links), plan) {
+		diff, err := reviewDiff(ctx, tx, org, w.prog.ID, live.Activities, live.Links, plan)
+		if err != nil {
+			return err
+		}
+		for _, c := range diff {
 			if c.DefaultChoice != engine.ChoiceAdopt {
 				continue
 			}

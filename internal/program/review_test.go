@@ -49,7 +49,7 @@ func TestDiffNoChange(t *testing.T) {
 	cat := testCatalog(t, testLibrary, "")
 	p := mustGenerate(t, cat, reviewInput())
 	rows, links := liveFrom(p)
-	if cs := Diff(rows, links, p); len(cs) != 0 {
+	if cs := Diff(rows, links, p, UserRetired{}); len(cs) != 0 {
 		t.Fatalf("unchanged program has changes: %+v", cs)
 	}
 }
@@ -77,7 +77,7 @@ func TestDiffDefaultsAndSummaries(t *testing.T) {
 	in.Packages[0].Title = "Architect (lead)" // renamed
 	in.Packages = append(in.Packages, Package{ID: "qs", Title: "Quantity surveyor", Kind: "services"})
 	after := mustGenerate(t, cat, in)
-	cs := Diff(rows, links, after)
+	cs := Diff(rows, links, after, UserRetired{})
 
 	frame, ok := findChange(cs, ChangeRemove, "fragment:fr.frame:frame:frame")
 	if !ok || frame.DefaultChoice != ChoiceKeep || !frame.Edited || frame.Source != SourceWorkItems ||
@@ -134,7 +134,7 @@ func TestDiffMatchesBySourceKeyOnly(t *testing.T) {
 			rows[i].SourceKey = "package:arch:old"
 		}
 	}
-	cs := Diff(rows, links, p)
+	cs := Diff(rows, links, p, UserRetired{})
 	if _, ok := findChange(cs, ChangeRemove, "package:arch:old"); !ok {
 		t.Fatalf("no removal: %+v", cs)
 	}
@@ -155,7 +155,7 @@ func TestDiffDuration(t *testing.T) {
 	rows, links := liveFrom(p)
 	key := "fragment:fr.slab:slab:form"
 	in.DocumentDurations = map[string]Reading{key: {Days: 9, ReadingID: "r"}}
-	cs := Diff(rows, links, mustGenerate(t, cat, in))
+	cs := Diff(rows, links, mustGenerate(t, cat, in), UserRetired{})
 	c, ok := findChange(cs, ChangeDuration, key)
 	if !ok || c.DefaultChoice != ChoiceAdopt || c.Ops[0]["duration_days"] == nil || *(c.Ops[0]["duration_days"].(*int)) != 9 ||
 		c.Summary != "Form slab: duration 5 days to 9 days." {

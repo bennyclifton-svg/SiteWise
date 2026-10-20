@@ -74,7 +74,11 @@ func (s *Store) ReviewProgram(ctx context.Context, org, project string, cat *kno
 	if err != nil {
 		return out, err
 	}
-	changes := reviewChanges(engine.Diff(liveRows(acts), liveLinks(links), plan), acts, links)
+	diff, err := reviewDiff(ctx, tx, org, p.ID, acts, links, plan)
+	if err != nil {
+		return out, err
+	}
+	changes := reviewChanges(diff, acts, links)
 
 	type stored struct {
 		id, basis, status string
@@ -644,4 +648,123 @@ func adoptRefs(op engine.Op, w *programWork, keyIdx map[string]string) engine.Op
 		}
 	}
 	return out
+}
+
+// generatedBatch names the logged batches whose row changes generation
+// made (a review adoption, a question strip answer); every other batch is
+// the user's own edit.
+const generatedBatch = `o.ops->0->>'op' IN ('review_adopt','profile_answer')`
+
+// userValues marks, from the undo log, the user's own values the review
+// must leave alone (plan section 2 rule 2, 7.4): a label or link shape the
+// user set gets the value generation last gave it, so only a move in
+// generation's value is a difference; and a generated row or link the user
+// deleted (a hold point deleted with a reason included) is listed, so it is
+// never offered back. A row retired by an adopted review removal is not
+// the user's decision and is offered again when its input returns. Undone
+// batches do not count.
+func userValues(ctx context.Context, q programQuerier, org, programID string, rows []engine.LiveRow, links []engine.LiveLink) ([]engine.LiveRow, []engine.LiveLink, engine.UserRetired, error) {
+	gone := engine.UserRetired{Rows: map[string]bool{}, Links: map[string]bool{}}
+	res, err := q.Query(ctx, `SELECT `+generatedBatch+`,e->>'target',e->>'id',COALESCE(e->'after'->>'source_key',''),
+ COALESCE(e->'before'->>'retired','false')='true',COALESCE(e->'after'->>'retired','false')='true',
+ COALESCE(e->'before'->>'label',''),COALESCE(e->'after'->>'label',''),
+ COALESCE(e->'before'->>'type',''),COALESCE((e->'before'->>'lag_days')::int,0),COALESCE(e->'before'->>'lag_unit',''),
+ COALESCE(e->'after'->>'type',''),COALESCE((e->'after'->>'lag_days')::int,0),COALESCE(e->'after'->>'lag_unit','')
+ FROM program_ops o CROSS JOIN LATERAL jsonb_array_elements(o.inverse) e
+ WHERE o.org_id=$1::uuid AND o.program_id=$2::uuid AND o.undone_at IS NULL AND e->>'op'='restore'
+ AND (COALESCE(e->'before'->>'retired','false')<>COALESCE(e->'after'->>'retired','false')
+  OR e->>'target'='activity' AND e->'before'->'label' IS DISTINCT FROM e->'after'->'label'
+  OR e->>'target'='link' AND (e->'before'->'type',e->'before'->'lag_days',e->'before'->'lag_unit') IS DISTINCT FROM (e->'after'->'type',e->'after'->'lag_days',e->'after'->'lag_unit'))
+ ORDER BY o.seq`, org, programID)
+	if err != nil {
+		return rows, links, gone, err
+	}
+	defer res.Close()
+	type track[T comparable] struct {
+		gen  T
+		user bool
+	}
+	labels := map[string]*track[string]{}
+	shapes := map[string]*track[engine.LinkShape]{}
+	for res.Next() {
+		var generated, wasRetired, isRetired bool
+		var target, id, key, beforeLabel, afterLabel string
+		var before, after engine.LinkShape
+		if err := res.Scan(&generated, &target, &id, &key, &wasRetired, &isRetired, &beforeLabel, &afterLabel,
+			&before.Type, &before.Lag, &before.LagUnit, &after.Type, &after.Lag, &after.LagUnit); err != nil {
+			return rows, links, gone, err
+		}
+		retired := gone.Rows
+		if target == "link" {
+			retired = gone.Links
+		}
+		switch {
+		case !wasRetired && isRetired && key != "":
+			retired[key] = !generated
+			continue
+		case wasRetired && !isRetired && key != "":
+			delete(retired, key) // added or restored
+			continue
+		case wasRetired != isRetired:
+			continue
+		}
+		if target == "activity" {
+			t := labels[id]
+			if t == nil {
+				t = &track[string]{gen: beforeLabel}
+				labels[id] = t
+			}
+			if generated {
+				t.gen = afterLabel
+			}
+			t.user = !generated
+			continue
+		}
+		t := shapes[id]
+		if t == nil {
+			t = &track[engine.LinkShape]{gen: before}
+			shapes[id] = t
+		}
+		if generated {
+			t.gen = after
+		}
+		t.user = !generated
+	}
+	if err := res.Err(); err != nil {
+		return rows, links, gone, err
+	}
+	for key, user := range gone.Rows {
+		if !user {
+			delete(gone.Rows, key)
+		}
+	}
+	for key, user := range gone.Links {
+		if !user {
+			delete(gone.Links, key)
+		}
+	}
+	for i, r := range rows {
+		if t := labels[r.ID]; t != nil && t.user && r.SourceKey != "" && r.Label != t.gen {
+			rows[i].GenLabel = t.gen
+		}
+	}
+	for i, l := range links {
+		if t := shapes[l.ID]; t != nil && t.user && l.SourceKey != "" {
+			g := t.gen
+			if (engine.LinkShape{Type: l.Type, Lag: l.Lag, LagUnit: l.LagUnit}) != g {
+				links[i].GenShape = &g
+			}
+		}
+	}
+	return rows, links, gone, nil
+}
+
+// reviewDiff diffs the live program with a regeneration, leaving the
+// user's own values out (userValues).
+func reviewDiff(ctx context.Context, q programQuerier, org, programID string, acts []ProgramActivity, links []ProgramLink, plan engine.Plan) ([]engine.Change, error) {
+	rows, ls, gone, err := userValues(ctx, q, org, programID, liveRows(acts), liveLinks(links))
+	if err != nil {
+		return nil, err
+	}
+	return engine.Diff(rows, ls, plan, gone), nil
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -346,4 +347,30 @@ LEFT JOIN passage_sources ps ON ps.org_id=d.org_id AND ps.passage_id::text=x.pas
 		r.DocumentTitle, r.Page = f.title, f.page
 	}
 	return nil
+}
+
+// CheckHoldPointDismissed names a hold point the user deleted with a reason.
+const CheckHoldPointDismissed = "hold_point_dismissed"
+
+// dismissedHoldPointChecks keeps a check visible for each retired hold point
+// that carries a dismissal reason (plan 13.1 "Deleting a hold point"), until
+// undo restores the row and clears its reason.
+func dismissedHoldPointChecks(ctx context.Context, q programQuerier, org, programID string, ex *ProgramExtras) error {
+	// The row is retired, so the check names it in words, not by id.
+	rows, err := q.Query(ctx, `SELECT label,dismissed_reason FROM program_activities
+ WHERE org_id=$1::uuid AND program_id=$2::uuid AND kind='hold_point' AND retired_at IS NOT NULL AND COALESCE(trim(dismissed_reason),'')<>''
+ ORDER BY retired_at,ordinal,id`, org, programID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var label, reason string
+		if err := rows.Scan(&label, &reason); err != nil {
+			return err
+		}
+		ex.Checks = append(ex.Checks, engine.Check{Code: CheckHoldPointDismissed,
+			Message: "Hold point removed: " + label + ". Reason: " + strings.TrimSuffix(strings.TrimSpace(reason), ".") + "."})
+	}
+	return rows.Err()
 }

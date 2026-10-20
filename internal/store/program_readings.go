@@ -214,7 +214,10 @@ func (w *programWork) readingTarget(g []programReading) *ProgramActivity {
 	if a := w.live(g[0].Target); a != nil {
 		return a
 	}
-	if c := g[0].Catalogue; c != "" {
+	// A user-made stage (`other`) receives evidence only when the user
+	// assigns it (plan 7.7): evidence for a deleted one has no stage and
+	// never moves to another user-made stage.
+	if c := g[0].Catalogue; c != "" && c != "other" {
 		for _, id := range w.stages {
 			if string(w.acts[id].CatalogueStageID) == c {
 				return w.acts[id]
