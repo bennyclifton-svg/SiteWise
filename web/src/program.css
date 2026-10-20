@@ -55,6 +55,58 @@
 .pg-toast.is-alert { color: var(--alert); font-weight: 500; }
 .pg-toast-undo { border: 0; background: none; padding: 0; color: var(--ember-hot); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
 
+/* Review, readings and hold points (plan 7.4, 7.7, 10.2 to 10.4): warm
+   notice regions above the chart; amber = a proposal awaiting a choice. */
+.pg-banner { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.pg-link-button { border: 0; background: none; padding: 0; color: var(--ember-hot); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.pg-link-button:disabled { opacity: 0.5; cursor: default; }
+.pg-panel { margin-bottom: 10px; padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--warn); border-radius: var(--radius-sm); background: var(--paper); }
+.pg-panel-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-bottom: 6px; }
+.pg-panel-head h2 { margin: 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+.pg-panel-head .btn { margin-left: auto; height: 26px; padding: 0 10px; font-size: 12px; }
+.pg-panel-why, .pg-panel-empty { margin: 0; color: var(--ink-muted); font-size: 12.5px; }
+.pg-panel-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-top: 8px; }
+.pg-panel .btn-small { height: 26px; padding: 0 10px; font-size: 12px; }
+.pg-review, .pg-readings, .pg-file-rows ul, .pg-holds ul { margin: 0; padding: 0; list-style: none; }
+.pg-review-item, .pg-readings li, .pg-file-rows li, .pg-holds li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 5px 0; border-top: 1px solid var(--line); }
+.pg-review-item:first-child, .pg-readings li:first-child { border-top: 0; }
+.pg-review-text { flex: 1 1 24ch; min-width: 0; }
+.pg-kind { flex: none; min-width: 64px; color: var(--ink-muted); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.pg-segment { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); overflow: hidden; }
+.pg-segment button { height: 26px; padding: 0 10px; border: 0; background: var(--paper); color: var(--ink-body); font: inherit; font-size: 12px; cursor: pointer; }
+.pg-segment button + button { border-left: 1px solid var(--line-strong); }
+.pg-segment button.is-on { background: var(--ink); color: var(--paper); }
+.pg-import { padding-top: 6px; }
+.pg-import + .pg-import { margin-top: 6px; border-top: 1px solid var(--line); }
+.pg-import h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.pg-import-state { color: var(--ink-muted); font-weight: 400; font-size: 12px; }
+.pg-import-state.is-not_read, .pg-import-grey { color: var(--warn); }
+.pg-import-grey { margin: 4px 0 0; font-size: 12.5px; }
+.pg-import-unmatched { margin-top: 4px; color: var(--ink-muted); font-size: 12.5px; }
+.pg-import-unmatched p { margin: 4px 0 0; }
+.pg-reading-target { flex: 0 1 28ch; min-width: 0; font-weight: 500; color: var(--ink); }
+.pg-reading-value { flex: 1 1 20ch; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--warn); }
+.pg-reading-kept { color: var(--ink-muted); font-size: 12px; font-style: italic; }
+.pg-file-rows { margin-top: 6px; }
+.pg-file-rows-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--ink-muted); font-size: 12.5px; }
+.pg-file-rows-head label { display: inline-flex; align-items: center; gap: 6px; }
+.pg-file-rows-head .input { height: 26px; max-width: 24ch; }
+.pg-file-label { flex: 1 1 24ch; min-width: 0; }
+.pg-file-dates { font-family: var(--mono); font-size: 11.5px; color: var(--ink-muted); }
+.pg-holds { border-left-color: var(--ink-muted); }
+.pg-holds summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.pg-holds ul { margin-top: 6px; }
+.pg-hold-label { flex: 0 1 28ch; min-width: 0; }
+.pg-hold-evidence { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.pg-hold-date { color: var(--ink-muted); font-size: 12px; }
+.pg-hold-released { color: var(--ok); font-weight: 500; }
+.pg-note-chip { flex: none; margin-left: 4px; padding: 0 5px; border: 1px dashed var(--warn); border-radius: 3px; color: var(--warn); font-size: 10.5px; line-height: 16px; }
+.pg-note-chip.is-released { border-style: solid; border-color: var(--ok); color: var(--ok); }
+.pg-reading-mark { fill: var(--warn-soft); stroke: var(--warn); stroke-dasharray: 3 2; stroke-width: 1.2; }
+.pg-bar.is-released .pg-shape, .pg-bar.is-released .pg-hold-mark { fill: var(--ok); stroke: var(--ok); }
+.program.is-dropping .pg-body { outline: 2px dashed var(--ember); outline-offset: 2px; }
+.pg-drop-hint { border-color: var(--ember); color: var(--ember-hot); }
+
 /* Split pane: one scroller in both directions; the grid column is sticky on
    the left and the timescale sticky on top, so the vertical scroll is shared
    and the chart alone scrolls sideways. */
@@ -214,7 +266,7 @@
   html:has(.pg-print) :is(.leftnav, .project-side-panel, .ask-bar, .cockpit-shell-header .btn, .cockpit-shell-header button, .profile-col) { display: none !important; }
   html:has(.pg-print) .cockpit-shell { display: block !important; }
   html:has(.pg-print) :is(.cockpit-scroll, .project-main-panel) { overflow: visible !important; height: auto !important; }
-  .pg-toolbar, .pg-strip, .pg-toast, .pg-note, .pg-body { display: none !important; }
+  .pg-toolbar, .pg-strip, .pg-toast, .pg-note, .pg-panel, .pg-body { display: none !important; }
   .cockpit-scroll .program { border: 0; padding: 0; }
   .pg-print { display: block; }
   .pg-print-page { break-after: page; break-inside: avoid; width: calc(var(--pg-grid-w) + 1160px); }

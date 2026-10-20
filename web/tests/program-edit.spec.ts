@@ -481,6 +481,8 @@ test("two browsers: an edit arrives by SSE; a stale write shows the other versio
   const other = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   const b = await other.newPage();
   await signIn(b);
+  // The token becomes a session after the page loads; navigating sooner lands on sign-in.
+  await expect(b.getByLabel("New project")).toBeVisible();
   await b.goto(`/projects/${project}`);
   await openProgram(b);
   await expect(row(b, stage.id)).toBeVisible();

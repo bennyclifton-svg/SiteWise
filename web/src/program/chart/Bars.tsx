@@ -27,6 +27,10 @@ export interface BarsProps {
   drivers: ReadonlyMap<string, string>;
   /** End-zone width: the hit area reaches this far past each end (plan 9.4). */
   zone: number;
+  /** Row id → [start, finish] working-day indices a document proposes (plan 10.2). */
+  marks?: ReadonlyMap<string, readonly [number, number]>;
+  /** Hold points the user has marked released (plan 10.4). */
+  released?: ReadonlySet<string>;
 }
 
 // The shell sets labels in var(--sans) (Instrument Sans; IBM Plex Sans is not
@@ -71,7 +75,7 @@ function ariaLabel(r: Row, t: Times | undefined, relative: boolean, held: string
   return parts.join(", ");
 }
 
-export const Bars = memo(function Bars({ rows, times, v, first, last, selected, conflicts, relative, drivers, zone }: BarsProps) {
+export const Bars = memo(function Bars({ rows, times, v, first, last, selected, conflicts, relative, drivers, zone, marks, released }: BarsProps) {
   const out = [];
   const h = v.rowH;
   for (let i = first; i < last; i++) {
@@ -80,6 +84,17 @@ export const Bars = memo(function Bars({ rows, times, v, first, last, selected, 
     const b = barOf(t, v);
     const y = i * h;
     const mid = y + h / 2;
+    // A document's proposed dates: an amber dashed outline beside the bar,
+    // behind it, never moved by a drag (it is not the row's value).
+    const m = marks?.get(r.id);
+    if (m) {
+      const x0 = xOf(m[0], v);
+      out.push(
+        <rect key={`${r.id}:mark`} className="pg-reading-mark" x={Math.round(x0) + 0.5} y={Math.round(y + h * 0.16) + 0.5} width={Math.max(4, Math.round(xOf(m[1], v) - x0))} height={Math.round(h * 0.68) - 1} rx={2}>
+          <title>Proposed by a document; accept or dismiss it above the chart</title>
+        </rect>,
+      );
+    }
     if (!b) {
       // No bar: say so where the row would start (its stage's start, else the program start).
       const stageT = r.parentId ? times[r.parentId] : undefined;
@@ -98,6 +113,7 @@ export const Bars = memo(function Bars({ rows, times, v, first, last, selected, 
       r.hasChildren ? "is-summary" : "",
       r.act.kind === "milestone" || b.milestone ? "is-milestone" : "",
       r.act.kind === "hold_point" ? "is-hold" : "",
+      released?.has(r.id) ? "is-released" : "",
       ownerClass(r.act.origin, r.act.duration_origin),
       r.act.review_status === "proposed" ? "is-proposed" : "",
       t?.critical ? "is-critical" : "",

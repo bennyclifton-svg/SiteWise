@@ -241,6 +241,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [programOpened, setProgramOpened] = useState(false);
   // Newest program version announced on the stream (plan 8.3).
   const [programVersion, setProgramVersion] = useState(0);
+  // Bumped when the program's review or readings change (no new version).
+  const [programTick, setProgramTick] = useState(0);
 	const [reportTick, setReportTick] = useState(0);
   const [notReadOnly, setNotReadOnly] = useState(false);
   const [address, setAddress] = useState("");
@@ -306,6 +308,11 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
           lastId.current = ev.id;
           if (ev.kind === "invoices") {
             if (ev.payload?.project_id === projectId) setInvoiceTick(n => n + 1);
+            return;
+          }
+          if (ev.kind === "program.review" || ev.kind === "program.readings") {
+            const p = ev.payload as unknown as { project_id?: string } | undefined;
+            if (p?.project_id === projectId) setProgramTick((n) => n + 1);
             return;
           }
           if (ev.kind === "program.changed") {
@@ -673,7 +680,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       </section>
       {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
-      {programOpened && <div className="project-reports" hidden={!showProgram}><Program projectId={projectId} remoteVersion={programVersion} active={showProgram} onSignedOut={onSignedOut} /></div>}
+      {programOpened && <div className="project-reports" hidden={!showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} onOpenCostPlan={() => showView("costs")} /></div>}
       <input
         ref={fileInput}

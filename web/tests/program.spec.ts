@@ -7,6 +7,7 @@
 
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { compute } from "../src/program/engine";
+import { LEFT_ROOM } from "../src/program/fit";
 import type { Input } from "../src/program/types";
 
 async function signIn(page: Page) {
@@ -109,9 +110,10 @@ test("build, collapse and expand, the question strip and Accept all (steps 1–4
   await expect(activityRows(page)).toHaveCount(3);
   await expect(page.getByRole("button", { name: "Collapse Construction", exact: true })).toBeVisible();
 
-  // 3. The question strip. The committed library has no predicates, so no
-  // fact narrows the range and no question is asked (blocked on WP-P15
-  // content): the strip shows no question and nothing blocks the chart.
+  // 3. The question strip. This project's work type is known and no other
+  // library predicate reads an unknown fact, so no question is asked and
+  // nothing blocks the chart. Answering a question is step 3 in
+  // program-review.spec.ts, on the e2e server's test library.
   const view = await (await page.request.get(`/api/projects/${project}/program`)).json();
   expect(view.question).toBeNull();
   await expect(page.locator(".pg-q-why")).toHaveCount(0);
@@ -178,7 +180,8 @@ test("fit to screen, selection and height (step 11)", async ({ page }) => {
   await page.getByRole("button", { name: "Fit to selection", exact: true }).click();
   await page.waitForTimeout(100);
   const bar = (await page.locator(`.pg-layer-bars [data-id="${id}"] .pg-shape`).boundingBox())!;
-  expect(bar.width).toBeGreaterThan((c.right - c.left) * 0.7);
+  // Most of the width the fit leaves for bars: 48 px free on the right, the start dot's room on the left.
+  expect(bar.width).toBeGreaterThan((c.right - c.left - 48 - LEFT_ROOM) * 0.7);
   expect(bar.x).toBeGreaterThanOrEqual(c.left - 1);
   expect(bar.x + bar.width).toBeLessThanOrEqual(c.right + 1);
 

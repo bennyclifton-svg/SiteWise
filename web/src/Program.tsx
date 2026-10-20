@@ -11,14 +11,14 @@
 // its message (422) or the newer version (409). An SSE refetch that lands
 // during a drag waits for the release (plan 8.3).
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactElement } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactElement } from "react";
 import { flushSync } from "react-dom";
 import { ApiError } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { programApi, ProgramConflict, ProgramRefused, type ProgramOp, type ProgramView } from "./programApi";
+import { programApi, ProgramConflict, ProgramRefused, type ProgramChange, type ProgramHoldPoint, type ProgramOp, type ProgramView } from "./programApi";
 import { Cal } from "./program/calendar";
 import { deletePlan, dropTarget, inOutline, predecessorOps, predecessorTexts, reorderStep, rowNumbers, ZONE_COARSE, ZONE_FINE, type DeletePlan } from "./program/edit";
-import { clampPx, fitHeight, fitSpan, PX_DEFAULT, scaleFor, zoomAbout } from "./program/fit";
+import { clampPx, fitHeight, fitSpan, LEFT_ROOM, PX_DEFAULT, scaleFor, zoomAbout } from "./program/fit";
 import {
   drawnLinks,
   extent,
@@ -41,6 +41,9 @@ import { Bars } from "./program/chart/Bars";
 import { Links, lagText } from "./program/chart/Links";
 import { Overlay, type OverlayHandle } from "./program/chart/Overlay";
 import { useDrag } from "./program/chart/useDrag";
+import { EvidenceNotice, HoldPointsPanel, ReadingsPanel, ReviewBanner, ReviewPanel } from "./program/Panels";
+import { groupReadings, importable, orphanEvidence, proposedText, reviewWords } from "./program/readings";
+import type { RowNote } from "./program/grid/Grid";
 import type { Times } from "./program/types";
 import "./program.css";
 
@@ -48,6 +51,10 @@ interface Props {
   projectId: string;
   /** Newest program version announced by `program.changed` (plan 8.3). */
   remoteVersion: number;
+  /** Bumped by `program.review` and `program.readings`: the review or the readings changed, not the version. */
+  remoteTick?: number;
+  /** A strip answer wrote a Profile value: the Profile view refetches. */
+  onProfileChanged?: () => void;
   /** The view is on screen; a hidden view never takes over printing. */
   active: boolean;
   onSignedOut: () => void;
@@ -142,7 +149,7 @@ interface CommitOpts {
   refused?: (message: string) => void;
 }
 
-export function Program({ projectId, remoteVersion, active, onSignedOut }: Props) {
+export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSignedOut, onProfileChanged }: Props) {
   const [view, setView] = useState<ProgramView | null | undefined>(undefined);
   const [error, setError] = useState("");
   const [toast, setToast] = useState<Toast | null>(null);
@@ -159,6 +166,10 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
   const [printing, setPrinting] = useState(false);
   const [checksOpen, setChecksOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [changes, setChanges] = useState<{ list: ProgramChange[]; counts: Record<string, number> } | null>(null);
+  const [readingsOpen, setReadingsOpen] = useState(true);
+  const [dropping, setDropping] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   const [startInput, setStartInput] = useState("");
   const [editing, setEditing] = useState<Editing | null>(null);
   const [focus, setFocus] = useState<CellFocus | null>(null);
@@ -228,6 +239,36 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     if (dragging.current) refetchOnRelease.current = true;
     else load();
   }, [remoteVersion, view, load]);
+
+  // The review or the readings changed (plan 8.3 events that carry no
+  // version): refetch, after the drag when one is in progress.
+  const seenTick = useRef(remoteTick);
+  useEffect(() => {
+    if (remoteTick === seenTick.current) return;
+    seenTick.current = remoteTick;
+    if (dragging.current) refetchOnRelease.current = true;
+    else load();
+  }, [remoteTick, load]);
+
+  // The review list and its counts, read whenever the pending count or the
+  // program changes while something is pending (plan 7.4).
+  const pendingChanges = view?.changes_pending ?? 0;
+  const viewVersion = view?.program.version ?? 0;
+  useEffect(() => {
+    if (pendingChanges <= 0) {
+      setChanges(null);
+      setReviewOpen(false);
+      return;
+    }
+    let stale = false;
+    programApi.changes(projectId).then(
+      (c) => !stale && setChanges({ list: c.changes ?? [], counts: c.counts ?? {} }),
+      (e) => !stale && fail(e),
+    );
+    return () => {
+      stale = true;
+    };
+  }, [projectId, pendingChanges, viewVersion, fail]);
 
   /** Ends a drag and runs a refetch deferred during it. */
   const releaseDrag = useCallback(() => {
@@ -325,6 +366,40 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     };
   }, [view]);
 
+  // Readings, hold-point evidence and releases, for the panels, the grid
+  // markers and the chart's amber outlines (plan 10.2 to 10.4).
+  const docs = useMemo(() => {
+    if (!view || !model) return null;
+    const groups = groupReadings(view.readings);
+    const live = groups.filter((g) => g.targetId && model.byId.has(g.targetId));
+    const notes = new Map<string, RowNote[]>();
+    const add = (id: string, n: RowNote) => notes.set(id, [...(notes.get(id) ?? []), n]);
+    const marks = new Map<string, readonly [number, number]>();
+    for (const g of live) {
+      const id = g.targetId!;
+      const text = g.text || proposedText(g, fmtDate);
+      add(id, { tone: "reading", text: g.source === "proposal_r7" ? "Proposal" : "File", title: `${g.documentTitle}: ${text}. Accept or dismiss it in Readings.` });
+      const s = model.cal.relative ? null : model.cal.indexOnOrAfter(g.start?.date);
+      const f = model.cal.relative ? null : model.cal.indexOnOrBefore(g.finish?.date);
+      if (s !== null && f !== null && f >= s) marks.set(id, [s, f + 1]);
+    }
+    const holdInfo = new Map<string, ProgramHoldPoint>((view.hold_points ?? []).map((h) => [h.activity_id, h]));
+    const released = new Set<string>();
+    for (const h of holdInfo.values()) {
+      if (!model.byId.has(h.activity_id)) continue;
+      if (h.released) {
+        released.add(h.activity_id);
+        add(h.activity_id, { tone: "released", text: "Released", title: "Marked released by a user" });
+      } else if ((h.evidence ?? []).length) {
+        add(h.activity_id, { tone: "evidence", text: "Evidence found", title: `${h.evidence![0].text}. ${h.limit}` });
+      }
+    }
+    const holds = view.activities.filter((a) => a.kind === "hold_point");
+    const imports = view.imports ?? [];
+    const proposalReadings = live.filter((g) => g.source === "proposal_r7").length;
+    return { groups, live, notes, marks, holdInfo, released, holds, imports, proposalReadings, orphans: orphanEvidence(groups) };
+  }, [view, model]);
+
   const rows: Row[] = useMemo(() => (view ? outlineRows(view.activities, expanded) : []), [view, expanded]);
   const order = useMemo(() => rows.map((r) => r.id), [rows]);
   useEffect(() => setSel((s) => prune(s, order)), [order]);
@@ -335,9 +410,11 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     () => (model && view ? extent(view.activities.map((a) => a.id), model.times, view.computed.finish.high_index) : null),
     [model, view],
   );
-  // The chart's x = 0 sits two days before the program start (or the
-  // earliest bar), fixed for a zoom, so fitting only scrolls.
-  const origin = Math.min(0, allSpan?.[0] ?? 0) - 2;
+  // The chart's x = 0 sits two days and the fit's left room before the
+  // program start (or the earliest bar), fixed for a zoom, so fitting only
+  // scrolls and a start link dot on day 0 is never cut off.
+  const originAt = useCallback((px: number) => Math.min(0, allSpan?.[0] ?? 0) - 2 - LEFT_ROOM / px, [allSpan]);
+  const origin = originAt(ppd);
   const v: Viewport = useMemo(() => ({ pxPerDay: ppd, viewStart: origin, rowH }), [ppd, origin, rowH]);
 
   const narrow = box.w > 0 && box.w < NARROW;
@@ -458,10 +535,10 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
       if (!s || chartViewW <= 0) return false;
       const f = fitSpan(s, chartViewW);
       setPpd(f.pxPerDay);
-      pendingScroll.current = { left: (f.viewStart - origin) * f.pxPerDay };
+      pendingScroll.current = { left: (f.viewStart - originAt(f.pxPerDay)) * f.pxPerDay };
       return true;
     },
-    [chartViewW, origin],
+    [chartViewW, originAt],
   );
 
   const note = useCallback((text: string) => setToast({ text }), []);
@@ -496,11 +573,11 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
       const el = scroller.current;
       if (!el) return;
       const centre = indexAt(el.scrollLeft + chartViewW / 2, v);
-      const z = zoomAbout(ppd, origin, factor, centre);
-      setPpd(clampPx(z.pxPerDay));
-      pendingScroll.current = { left: (centre - origin) * z.pxPerDay - chartViewW / 2 };
+      const next = clampPx(zoomAbout(ppd, origin, factor, centre).pxPerDay);
+      setPpd(next);
+      pendingScroll.current = { left: (centre - originAt(next)) * next - chartViewW / 2 };
     },
-    [chartViewW, v, ppd, origin],
+    [chartViewW, v, ppd, origin, originAt],
   );
 
   const goToday = useCallback(() => {
@@ -926,11 +1003,35 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
   }
 
   const m = model!;
+  const d = docs!;
   const finish = view.computed.finish;
   const typical = shownFinish(m.cal, finish.typical, finish.typical_index);
   const low = shownFinish(m.cal, finish.low, finish.low_index);
   const high = shownFinish(m.cal, finish.high, finish.high_index);
-  const checks = view.checks ?? [];
+  // Evidence that lost its stage shows as its own notice with Dismiss (7.7).
+  const checks = (view.checks ?? []).filter((c) => c.code !== "evidence_without_stage");
+  const orphaned = (view.checks ?? []).some((c) => c.code === "evidence_without_stage") ? d.orphans : [];
+  const acceptCount = m.proposed + d.live.length;
+  const labelOf = (id: string) => m.byId.get(id)?.label ?? "";
+  const stageChoices = view.activities.filter((a) => !a.parent_id).map((a) => ({ id: a.id, label: a.label }));
+
+  // Program files: dropped on the view or picked with Import, filed through
+  // intake, then read in the background (plan 10.2).
+  const importFiles = (files: File[]) => {
+    const ok = files.filter((f) => importable(f.name));
+    if (ok.length < files.length) setToast({ text: "Only PDF, DOCX and XLSX program files can be imported.", alert: true });
+    if (!ok.length) return;
+    setReadingsOpen(true);
+    setToast({ text: `Filing ${ok.map((f) => f.name).join(", ")}…` });
+    Promise.all(ok.map((f) => programApi.importFile(projectId, f))).then(
+      () => load(),
+      (e) => {
+        if (e instanceof ApiError && e.status === 401) return onSignedOut();
+        setToast({ text: e instanceof Error ? `Import failed: ${e.message}` : "Import failed.", alert: true });
+      },
+    );
+  };
+  const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer.types).includes("Files");
   const q = view.question;
   const askStart = !view.program.start_date;
   const anyOpen = rows.some((r) => !r.stage);
@@ -953,7 +1054,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
         onPointerCancel={onScreen ? drag.onPointerCancel : undefined}
       >
         <TimescaleGrid {...scaleProps} v={vp} lo={ticksLo} hi={ticksHi} width={w} plain={m.plain} height={rows.length * vp.rowH} today={m.today} />
-        <Bars rows={rows} times={m.times} v={vp} first={from} last={to} selected={onScreen ? selected : new Set()} conflicts={m.conflicts} relative={m.cal.relative} version={view.program.version} drivers={m.drivers} zone={zone} />
+        <Bars rows={rows} times={m.times} v={vp} first={from} last={to} selected={onScreen ? selected : new Set()} conflicts={m.conflicts} relative={m.cal.relative} version={view.program.version} drivers={m.drivers} zone={zone} marks={d.marks} released={d.released} />
         <Links drawn={links} rows={rows} times={m.times} v={vp} driving={m.driving} version={view.program.version} />
         {onScreen && <Overlay ref={overlay} height={rows.length * vp.rowH} />}
       </svg>
@@ -961,10 +1062,30 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
   };
 
   return (
-    <section className="program" aria-label="Program" onKeyDown={onKeyDown}>
+    <section
+      className={`program${dropping ? " is-dropping" : ""}`}
+      aria-label="Program"
+      onKeyDown={onKeyDown}
+      onDragOver={(e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+        if (!dropping) setDropping(true);
+      }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDropping(false);
+      }}
+      onDrop={(e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        setDropping(false);
+        importFiles(Array.from(e.dataTransfer.files));
+      }}
+    >
       <header className="program-head">
         <h1>Program</h1>
         {sel.ids.length > 0 && <span className="pg-chip">{sel.ids.length} selected</span>}
+        {dropping && <span className="pg-chip pg-drop-hint">Drop a PDF, DOCX or XLSX program to read its dates</span>}
       </header>
 
       <div className="pg-toolbar" role="toolbar" aria-label="Program tools">
@@ -989,17 +1110,42 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
           <button type="button" className="btn btn-small" disabled={sel.ids.length < 2} onClick={linkChain} title="Ctrl+L">Link in sequence</button>
         </div>
         <div className="pg-tools">
-          {m.proposed > 0 && (
-            <button type="button" className="btn btn-small pg-accept" disabled={busy} onClick={() => apply((cur) => programApi.acceptAll(projectId, cur!))}>
-              Accept all ({m.proposed})
+          {acceptCount > 0 && (
+            <button type="button" className="btn btn-small pg-accept" disabled={busy} onClick={() => apply((cur) => programApi.acceptAll(projectId, cur!), { undoable: true })}>
+              Accept all ({acceptCount})
             </button>
           )}
           {view.changes_pending > 0 && (
-            <button type="button" className="btn btn-small" aria-expanded={reviewOpen} onClick={() => setReviewOpen((o) => !o)}>
+            <button type="button" className="btn btn-small pg-accept" aria-expanded={reviewOpen} onClick={() => setReviewOpen((o) => !o)}>
               Review changes ({view.changes_pending})
             </button>
           )}
-          <button type="button" className="btn btn-small" disabled title="Importing a program file arrives in a later build">Import</button>
+          {d.imports.map((imp) => (
+            <button key={imp.id} type="button" className={`btn btn-small pg-import-text is-${imp.status}`} aria-expanded={readingsOpen} onClick={() => setReadingsOpen((o) => !o)}>
+              {imp.text}
+            </button>
+          ))}
+          {d.proposalReadings > 0 && (
+            <button type="button" className="btn btn-small pg-import-text" aria-expanded={readingsOpen} onClick={() => setReadingsOpen((o) => !o)}>
+              {d.proposalReadings} reading{d.proposalReadings === 1 ? "" : "s"} from awarded proposals
+            </button>
+          )}
+          <button type="button" className="btn btn-small" title="Read the dates of a PDF, DOCX or XLSX program, or drop one on the Program" onClick={() => fileInput.current?.click()}>
+            Import
+          </button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept=".pdf,.docx,.xlsx"
+            multiple
+            hidden
+            aria-label="Import a program file"
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? []);
+              e.target.value = "";
+              importFiles(files);
+            }}
+          />
           <a className="btn btn-small" href={programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed")} download>
             Export
           </a>
@@ -1008,10 +1154,52 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
       </div>
 
       {error && <Failure error={error} retry={load} />}
+      {view.changes_pending > 0 && !reviewOpen && <ReviewBanner words={reviewWords(changes?.counts, view.changes_pending)} onReview={() => setReviewOpen(true)} />}
       {reviewOpen && (
-        <div className="pg-note" role="note">
-          {view.changes_pending} change{view.changes_pending === 1 ? "" : "s"} from the Profile or Procurement wait for review. The review list is not in this build yet; nothing has changed on the program.
-        </div>
+        <ReviewPanel
+          changes={changes?.list ?? null}
+          busy={busy}
+          onClose={() => setReviewOpen(false)}
+          onAdoptAll={() => apply((cur) => programApi.adoptAll(projectId, cur!), { undoable: true, note: "Adopted every change that defaults to Adopt; edited rows wait for your choice." })}
+          onApply={(decisions) => {
+            const adopted = decisions.filter((x) => x.choice === "adopt").length;
+            apply((cur) => programApi.decide(projectId, cur!, decisions), {
+              undoable: adopted > 0,
+              note: adopted ? `Adopted ${adopted} change${adopted === 1 ? "" : "s"}; kept ${decisions.length - adopted}.` : "Kept the program as it is.",
+            });
+          }}
+        />
+      )}
+      {orphaned.map((g) => (
+        <EvidenceNotice
+          key={g.key}
+          label={view.catalogue_stages?.find((c) => c.id === g.catalogueStageId)?.label ?? g.catalogueStageId!}
+          busy={busy}
+          onDismiss={() => apply((cur) => programApi.dismissReadings(projectId, cur!, g.ids), { undoable: true, note: "Dismissed." })}
+        />
+      ))}
+      {readingsOpen && (d.imports.length > 0 || d.proposalReadings > 0) && (
+        <ReadingsPanel
+          imports={d.imports}
+          groups={d.live}
+          labelOf={labelOf}
+          stages={stageChoices}
+          busy={busy}
+          onClose={() => setReadingsOpen(false)}
+          onAccept={(ids) => apply((cur) => programApi.accept(projectId, cur!, ids), { undoable: true, note: "Accepted." })}
+          onDismiss={(ids) => apply((cur) => programApi.dismissReadings(projectId, cur!, ids), { undoable: true, note: "Dismissed." })}
+          onAddRow={(importId, row, parentId) =>
+            apply((cur) => programApi.addRows(projectId, cur!, [{ import_id: importId, row, parent_id: parentId }]), { undoable: true, note: "Added." })
+          }
+        />
+      )}
+      {d.holds.length > 0 && (
+        <HoldPointsPanel
+          holds={d.holds}
+          info={d.holdInfo}
+          busy={busy}
+          onRelease={(id, readingId) => apply((cur) => programApi.release(projectId, cur!, id, readingId), { undoable: true, note: "Marked released." })}
+        />
       )}
 
       {(q || askStart) && (
@@ -1020,7 +1208,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
             <div className="pg-q">
               <span className="pg-q-label">{q.label}</span>
               {q.number ? (
-                <NumberAnswer disabled={busy} onSave={(n) => apply((cur) => programApi.answer(projectId, cur!, q.key, n))} />
+                <NumberAnswer disabled={busy} onSave={(n) => apply((cur) => programApi.answer(projectId, cur!, q.key, n), { undoable: true, then: onProfileChanged })} />
               ) : (
                 q.options.map((label, i) => (
                   <button
@@ -1028,7 +1216,8 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
                     type="button"
                     className="btn btn-small"
                     disabled={busy}
-                    onClick={() => apply((cur) => programApi.answer(projectId, cur!, q.key, q.values[i] ?? "not_sure"))}
+                    // An answer's program changes are one undoable batch (plan 7.3); "Not sure" changes nothing.
+                    onClick={() => apply((cur) => programApi.answer(projectId, cur!, q.key, q.values[i] ?? "not_sure"), i < q.values.length ? { undoable: true, then: onProfileChanged } : {})}
                   >
                     {label}
                   </button>
@@ -1146,6 +1335,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
               onFocusCell={onFocusCell}
               onHandleDown={onHandleDown}
               onCatalogue={onCatalogue}
+              notes={d.notes}
             />
             <div ref={insert} className="pg-insert" hidden aria-hidden="true" />
             {!narrow && (
@@ -1402,14 +1592,14 @@ function PrintPages({
         <div key={from} className="pg-print-page" style={{ ["--pg-grid-w" as string]: `${PRINT_GRID_W}px` }}>
           <div className="pg-print-head">
             <GridHeader narrow={false} />
-            <TimescaleHeader cal={cal} v={v} lo={s[0] - 1} hi={s[1] + 2} scale={scale} width={PRINT_CHART_W} version={version} />
+            <TimescaleHeader cal={cal} v={v} lo={Math.floor(f.viewStart)} hi={s[1] + 2} scale={scale} width={PRINT_CHART_W} version={version} />
           </div>
           <div className="pg-print-body" style={{ height: (to - from) * v.rowH }}>
             <div className="pg-print-grid" style={{ transform: `translateY(${-from * v.rowH}px)` }}>
               <Grid rows={rows} times={times} cal={cal} first={from} last={to} rowH={v.rowH} narrow={false} selected={new Set()} version={version} onToggle={() => {}} onSelect={() => {}} />
             </div>
             <div className="pg-print-chart" style={{ transform: `translateY(${-from * v.rowH}px)` }}>
-              {render(from, to, PRINT_CHART_W, v, s[0] - 1, s[1] + 2, false)}
+              {render(from, to, PRINT_CHART_W, v, Math.floor(f.viewStart), s[1] + 2, false)}
             </div>
           </div>
         </div>

@@ -20,6 +20,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -41,6 +42,7 @@ import (
 	sample2 "sitewise/internal/proposals/sample"
 	"sitewise/internal/store"
 	"sitewise/internal/works"
+	"sitewise/internal/xlsx"
 	"sitewise/web"
 )
 
@@ -59,13 +61,17 @@ var confidence = map[string]float64{
 func main() {
 	addr := flag.String("addr", "127.0.0.1:4173", "listen address")
 	data := flag.String("data", "data/intake", "intake vocabulary directory")
+	library := flag.String("program-library", "fixture", `program library: "fixture" (a temp copy of knowledge/ with the test fragment and duration below) or "repo" (knowledge/ as committed)`)
 	flag.Parse()
-	if err := run(*addr, *data); err != nil {
+	if *library != "fixture" && *library != "repo" {
+		log.Fatal(`-program-library is "fixture" or "repo"`)
+	}
+	if err := run(*addr, *data, *library == "fixture"); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(addr, data string) error {
+func run(addr, data string, programFixture bool) error {
 	host, _, err := net.SplitHostPort(addr)
 	if err != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() {
 		return errors.New("e2e server must bind a loopback address")
@@ -121,7 +127,17 @@ func run(addr, data string) error {
 		return err
 	}
 	// The profile panel reads the real knowledge with provisional floors.
-	building, err := knowledge.Load("knowledge")
+	// The program library is the committed one, or with programFixture a
+	// temp copy holding one test fragment and one reviewed test duration, so
+	// the browser suite has a question to answer and work-item changes to
+	// review (plan 11.5 steps 3 and 13). The repo's knowledge/ is never edited.
+	root := "knowledge"
+	if programFixture {
+		if root, err = programLibrary(dir); err != nil {
+			return err
+		}
+	}
+	building, err := knowledge.Load(root)
 	if err != nil {
 		return err
 	}
@@ -198,6 +214,21 @@ func run(addr, data string) error {
 		w.Header().Set("Content-Type", "application/pdf")
 		_, _ = w.Write(sample2.PDF(p))
 	})
+	// Synthetic program files for the readings suite:
+	// ?rows=Label~start~finish,Label~start~finish with dates as typed text.
+	mux.HandleFunc("GET /__e2e/program.xlsx", func(w http.ResponseWriter, r *http.Request) {
+		txt := func(s string) xlsx.Cell { return xlsx.Cell{Text: s} }
+		rows := [][]xlsx.Cell{{txt("Task Name"), txt("Start"), txt("Finish")}}
+		for _, part := range strings.Split(r.URL.Query().Get("rows"), ",") {
+			f := strings.Split(part, "~")
+			if len(f) != 3 || strings.TrimSpace(f[0]) == "" {
+				continue
+			}
+			rows = append(rows, []xlsx.Cell{txt(f[0]), txt(f[1]), txt(f[2])})
+		}
+		w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+		_ = xlsx.WriteXLSX(w, []xlsx.Sheet{{Name: "Program", Rows: rows}})
+	})
 	mux.HandleFunc("POST /__e2e/drop-streams", func(w http.ResponseWriter, r *http.Request) {
 		cut.dropAll()
 		w.WriteHeader(http.StatusNoContent)
@@ -253,6 +284,62 @@ func run(addr, data string) error {
 		return err
 	}
 	return nil
+}
+
+// Test fixture only: the fragment, its labels and every number below are
+// invented for the browser suite and are not library content. Gas work on
+// a new building brings two activities with a reviewed 3–5–8 day duration;
+// with the work type unknown the fragment is conditional (low 0), so the
+// strip asks for the work type and answering narrows the finish range.
+const fixtureFragments = `version: 1
+status: draft
+sources: [{design: test-fixture-only, anchor: "# e2e"}]
+fragments:
+  - id: fr.e2e-gas
+    label: Gas service
+    stage: construction
+    systems: [hydraulic.gas]
+    applies_when: {det: work_type, eq: new}
+    activities:
+      - {key: rough-in, label: Gas rough-in, systems: [hydraulic.gas], duration: du.e2e-gas}
+      - {key: fit-off, label: Gas fit-off, systems: [hydraulic.gas], duration: du.e2e-gas}
+    links:
+      - {from: rough-in, to: fit-off, type: FS, lag: null}
+    attach: {after: stage_start}
+    status: draft
+    sources: [{design: test-fixture-only, anchor: "# e2e"}]
+`
+
+const fixtureDurations = `version: 1
+status: draft
+sources: [{design: test-fixture-only, anchor: "# e2e"}]
+durations:
+  - id: du.e2e-gas
+    version: 1
+    basis: fixed
+    unit_days: working
+    low: "3"
+    typical: "5"
+    high: "8"
+    geography: Test
+    limitations: []
+    status: reviewed
+    sources: [{design: test-fixture-only, anchor: "# e2e"}]
+`
+
+// programLibrary copies knowledge/ under dir and replaces the program
+// fragments and durations with the test fixture, returning the copy's root.
+func programLibrary(dir string) (string, error) {
+	root := filepath.Join(dir, "knowledge")
+	if err := os.CopyFS(root, os.DirFS("knowledge")); err != nil {
+		return "", err
+	}
+	for name, body := range map[string]string{"fragments.yaml": fixtureFragments, "durations.yaml": fixtureDurations} {
+		if err := os.WriteFile(filepath.Join(root, "program", name), []byte(body), 0o600); err != nil {
+			return "", err
+		}
+	}
+	return root, nil
 }
 
 // streamCutter ends open event streams on demand, standing in for a network

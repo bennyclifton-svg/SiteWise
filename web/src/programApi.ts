@@ -65,6 +65,88 @@ export interface ProgramQuestion {
   narrows_by_days: number;
 }
 
+/** A proposed document reading (plan 10.2, 10.3): a proposal until accepted. */
+export interface ProgramReading {
+  id: string;
+  /** "" for an awarded proposal's R7 reading. */
+  import_id: string;
+  /** null when the stage it belongs to is gone (plan 7.7). */
+  target_activity_id: string | null;
+  catalogue_stage_id: string | null;
+  field: "start" | "finish" | "duration" | string;
+  /** The file's text, verbatim. */
+  value: string;
+  /** Code's parse: {row?, date?, low?, high?}. */
+  parsed: { row?: string; date?: string; low?: number | null; high?: number | null } | null;
+  band: string;
+  decided_by: string;
+  document_id: string;
+  document_title: string;
+  /** False when accepting would not change the target (a user value wins). */
+  applies: boolean;
+  source: "program_file" | "proposal_r7" | string;
+  /** "From the awarded proposal: Design development 6 weeks" (R7 only). */
+  text?: string;
+}
+
+export interface ProgramImport {
+  id: string;
+  document_id: string;
+  filename: string;
+  /** filing, reading, read or not_read. */
+  status: string;
+  not_read: string | null;
+  /** "4 readings from Smith program.xlsx". */
+  text: string;
+  readings: number;
+  /** Target ids no row matched, and ids Jev did not answer (grey, retried). */
+  not_matched: string[] | null;
+  grey: string[] | null;
+  unmatched_rows: { row: string; label: string; start?: string; finish?: string; duration?: string }[] | null;
+  unmatched: number;
+}
+
+export interface ProgramHoldEvidence {
+  reading_id: string;
+  document_id: string;
+  passage_id: string;
+  document_title: string;
+  page: number;
+  band: string;
+  /** "Evidence found: <title>, page <n>". */
+  text: string;
+  document_date: string;
+  date_label: string;
+}
+
+export interface ProgramHoldPoint {
+  activity_id: string;
+  released: { by: string; document_id?: string; document_title?: string; page?: number; document_date?: string; date_label?: string } | null;
+  evidence: ProgramHoldEvidence[] | null;
+  /** The known-limit tooltip (plan 10.4). */
+  limit: string;
+}
+
+/** One ask-first review item (plan 7.4). */
+export interface ProgramChange {
+  id: string;
+  kind: "add" | "remove" | "rename" | "duration" | "link" | string;
+  source: string;
+  source_key: string;
+  target_activity_id: string | null;
+  summary: string;
+  default_choice: "adopt" | "keep" | string;
+  edited: boolean;
+  edited_since: boolean;
+}
+
+export interface ProgramChangeList {
+  program_id: string;
+  version: number;
+  changes: ProgramChange[];
+  counts: Record<string, number>;
+}
+
 export interface ProgramView {
   program: ProgramHead;
   activities: ProgramActivity[];
@@ -77,6 +159,9 @@ export interface ProgramView {
   skeleton: { id: string | null; label: string; reason: string };
   readings_pending: number;
   changes_pending: number;
+  readings?: ProgramReading[] | null;
+  imports?: ProgramImport[] | null;
+  hold_points?: ProgramHoldPoint[] | null;
   /** The delivery stage catalogue, for remapping a user-made stage (owner answer Q5). */
   catalogue_stages?: { id: string; label: string }[];
   /** Present on write responses only (plan 8.1 feedback). */
@@ -189,6 +274,30 @@ export const programApi = {
     write(request<ProgramView>("POST", `${base(p)}/ops`, { program_id: v.program.id, version: v.program.version, ops })),
   undo: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/undo`, { version: v.program.version })),
   redo: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/redo`, { version: v.program.version })),
+  changes: (p: string) => request<ProgramChangeList>("GET", `${base(p)}/changes`),
+  /** Adopted changes apply as one undoable batch. */
+  decide: (p: string, v: ProgramView, decisions: { id: string; choice: string }[]) =>
+    write(request<ProgramView>("POST", `${base(p)}/changes/decide`, { version: v.program.version, decisions })),
+  adoptAll: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/changes/decide`, { version: v.program.version, all: "adopt" })),
+  /** Readings (a target's start, finish and duration go together) or rows. */
+  accept: (p: string, v: ProgramView, ids: string[]) => write(request<ProgramView>("POST", `${base(p)}/accept`, { version: v.program.version, ids })),
+  dismissReadings: (p: string, v: ProgramView, ids: string[]) => write(request<ProgramView>("POST", `${base(p)}/readings/dismiss`, { version: v.program.version, ids })),
+  /** File rows no target matched, added as activities (or stages with no parent). */
+  addRows: (p: string, v: ProgramView, rows: { import_id: string; row: string; parent_id: string }[]) =>
+    write(request<ProgramView>("POST", `${base(p)}/accept`, { version: v.program.version, add_rows: rows })),
+  release: (p: string, v: ProgramView, id: string, readingId = "") =>
+    write(request<ProgramView>("POST", `${base(p)}/hold-points/release`, { version: v.program.version, id, reading_id: readingId })),
+  /** Files the upload through intake; the readings arrive as a program.readings event. */
+  importFile: async (p: string, file: File): Promise<{ import_id: string; document_id: string }> => {
+    let res: Response;
+    try {
+      res = await fetch(`/api${base(p)}/import?name=${encodeURIComponent(file.name)}`, { method: "POST", credentials: "same-origin", body: file });
+    } catch {
+      throw new ApiError(0, "Can't reach SiteWise. Check your connection and try again.");
+    }
+    if (!res.ok) throw new ApiError(res.status, (await res.text()).trim() || res.statusText);
+    return (await res.json()) as { import_id: string; document_id: string };
+  },
   exportHref: (p: string, view: "collapsed" | "expanded") => `/api${base(p)}/export?format=xlsx&view=${view}`,
 };
 

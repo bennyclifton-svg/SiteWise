@@ -25,6 +25,13 @@ export interface CellFocus {
   col: string;
 }
 
+/** A short marker beside a row's name: a proposed reading, hold-point evidence or a release. */
+export interface RowNote {
+  text: string;
+  tone: "reading" | "evidence" | "released";
+  title: string;
+}
+
 export interface GridProps {
   rows: readonly Row[];
   times: Record<string, Times>;
@@ -51,6 +58,8 @@ export interface GridProps {
   onFocusCell?: (id: string, col: string) => void;
   onHandleDown?: (e: ReactPointerEvent<HTMLElement>, id: string) => void;
   onCatalogue?: (id: string, stage: string) => void;
+  /** Row id → markers shown beside its name (plan 10.2, 10.4). */
+  notes?: ReadonlyMap<string, readonly RowNote[]>;
 }
 
 export const GRID_COLUMNS = ["#", "Name", "Duration", "Start", "Finish", "Predecessors"] as const;
@@ -73,7 +82,7 @@ export function editText(row: Row, col: EditCol, preds: ReadonlyMap<string, stri
 }
 
 export const Grid = memo(function Grid(p: GridProps) {
-  const { rows, times, cal, first, last, rowH, narrow, selected, onToggle, onSelect, preds, editing, focus, catalogue } = p;
+  const { rows, times, cal, first, last, rowH, narrow, selected, onToggle, onSelect, preds, editing, focus, catalogue, notes } = p;
   const out = [];
   for (let i = first; i < last; i++) {
     const r = rows[i];
@@ -163,6 +172,12 @@ export const Grid = memo(function Grid(p: GridProps) {
               <span className="sr-only">, proposed</span>
             </span>
           )}
+          {!ed &&
+            notes?.get(r.id)?.map((n) => (
+              <span key={n.tone} className={`pg-note-chip is-${n.tone}`} title={n.title}>
+                {n.text}
+              </span>
+            ))}
           {!narrow && !ed && r.stage && r.act.catalogue_stage_id === "other" && catalogue && catalogue.length > 0 && (
             <select
               className="pg-cat"

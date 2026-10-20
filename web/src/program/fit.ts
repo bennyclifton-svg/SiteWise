@@ -15,13 +15,23 @@ export function clampPx(px: number): number {
 }
 
 /**
- * pxPerDay = (chartWidth − 48) / (last − first + 2), viewStart = first − 1,
- * over an extent [first, last) of working-day indices.
+ * Room kept free at the chart's left edge, beyond the one day before the
+ * first bar: the start link dot sits past the bar's end zone (8 px fine,
+ * 24 px coarse, plus 6 px and the 4 px dot), so at a fitted zoom a bar
+ * starting on day 0 would otherwise put its dot under the grid divider.
+ */
+export const LEFT_ROOM = 40;
+
+/**
+ * pxPerDay = (chartWidth − 48 − 40) / (last − first + 2) and viewStart =
+ * first − 1 − 40 / pxPerDay, over an extent [first, last) of working-day
+ * indices: one day and 40 px free on the left, 48 px on the right.
  */
 export function fitSpan(span: [number, number], chartWidth: number): { pxPerDay: number; viewStart: number } {
   const [first, last] = span;
   const days = Math.max(1, last - first) + 2;
-  return { pxPerDay: clampPx(Math.max(1, chartWidth - MARGIN) / days), viewStart: first - 1 };
+  const pxPerDay = clampPx(Math.max(1, chartWidth - MARGIN - LEFT_ROOM) / days);
+  return { pxPerDay, viewStart: first - 1 - LEFT_ROOM / pxPerDay };
 }
 
 /** Timescale tier from the zoom: ≥ 24 px a day shows days, ≥ 4 weeks, ≥ 1 months, else quarters. */
