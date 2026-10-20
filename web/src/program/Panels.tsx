@@ -5,9 +5,9 @@
 // none calls Jev.
 
 import { useEffect, useState, type ReactNode } from "react";
-import type { ProgramActivity, ProgramChange, ProgramHoldPoint, ProgramImport } from "../programApi";
+import type { ProgramActivity, ProgramChange, ProgramHoldPoint, ProgramImport, ProgramProposedLink } from "../programApi";
 import { fmtDate } from "./layout";
-import { notReadWords, proposedText, type ReadingGroup } from "./readings";
+import { fileLinks, notReadWords, proposedText, type ReadingGroup } from "./readings";
 
 /** "Scope and procurement changed: 3 to add, 1 to remove, 2 renamed. Review." */
 export function ReviewBanner({ words, onReview }: { words: string; onReview: () => void }) {
@@ -117,8 +117,9 @@ export interface StageChoice {
 
 /**
  * Proposed readings by target with Accept and Dismiss, each file's state,
- * and its rows that matched nothing, each added in one click (plan 10.2);
- * an awarded proposal's readings show their own line (10.3).
+ * its rows that matched nothing, each added in one click, and the links its
+ * predecessor column makes between matched rows (plan 10.2); an awarded
+ * proposal's readings show their own line (10.3).
  */
 export function ReadingsPanel({
   imports,
@@ -129,6 +130,7 @@ export function ReadingsPanel({
   onAccept,
   onDismiss,
   onAddRow,
+  onAddLinks,
   onClose,
 }: {
   imports: readonly ProgramImport[];
@@ -139,6 +141,7 @@ export function ReadingsPanel({
   onAccept: (ids: string[]) => void;
   onDismiss: (ids: string[]) => void;
   onAddRow: (importId: string, row: string, parentId: string) => void;
+  onAddLinks: (links: ProgramProposedLink[]) => void;
   onClose: () => void;
 }) {
   const [parent, setParent] = useState<Record<string, string>>({});
@@ -158,6 +161,8 @@ export function ReadingsPanel({
         const under = parent[imp.id] ?? stages[0]?.id ?? "";
         const notMatched = (imp.not_matched ?? []).map(labelOf).filter(Boolean);
         const grey = (imp.grey ?? []).map(labelOf).filter(Boolean);
+        const links = fileLinks(imp, new Set(mine.map((g) => g.targetId!)), (id) => labelOf(id) !== "");
+        const addable = links.filter((l) => !l.onAccept);
         return (
           <div key={imp.id} className="pg-import" data-import={imp.id}>
             <h3>
@@ -168,6 +173,41 @@ export function ReadingsPanel({
             </h3>
             {imp.status === "not_read" && <p className="pg-panel-empty">{notReadWords(imp.not_read)}</p>}
             {mine.length > 0 && <ReadingList groups={mine} labelOf={labelOf} busy={busy} onAccept={onAccept} onDismiss={onDismiss} />}
+            {links.length > 0 && (
+              <div className="pg-file-rows pg-file-links">
+                <div className="pg-file-rows-head">
+                  <span>
+                    {links.length} link{links.length === 1 ? "" : "s"} from the file's predecessor column
+                  </span>
+                  {addable.length > 1 && (
+                    <button type="button" className="btn btn-small" disabled={busy} onClick={() => onAddLinks(addable.map((l) => l.link))}>
+                      Add all {addable.length} links
+                    </button>
+                  )}
+                </div>
+                <ul>
+                  {links.map((l) => {
+                    const pred = labelOf(l.link.pred_id);
+                    const succ = labelOf(l.link.succ_id);
+                    return (
+                      <li key={l.key} data-pred={l.link.pred_id} data-succ={l.link.succ_id}>
+                        <span className="pg-file-label">
+                          {pred} → {succ}
+                        </span>
+                        <span className="pg-file-dates">{l.text}</span>
+                        {l.onAccept ? (
+                          <span className="pg-reading-kept">Added when you accept the readings</span>
+                        ) : (
+                          <button type="button" className="btn btn-small" disabled={busy} aria-label={`Add link ${pred} to ${succ}`} onClick={() => onAddLinks([l.link])}>
+                            Add
+                          </button>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
             {grey.length > 0 && <p className="pg-import-grey">Not read yet, retried in the background: {grey.join(", ")}.</p>}
             {imp.status === "read" && notMatched.length > 0 && (
               <details className="pg-import-unmatched">

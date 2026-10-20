@@ -4,7 +4,7 @@
 // banner and toolbar use, and the evidence that lost its stage. Accepting,
 // dismissing and deciding are server routes; nothing here changes a value.
 
-import type { ProgramReading } from "../programApi";
+import type { ProgramImport, ProgramProposedLink, ProgramReading } from "../programApi";
 
 /** One target's proposed values from one document: accepted or dismissed together. */
 export interface ReadingGroup {
@@ -122,4 +122,40 @@ export function notReadWords(reason: string | null | undefined): string {
 /** Program files the Program view takes: PDF, DOCX and XLSX (plan 10.2). */
 export function importable(name: string): boolean {
   return /\.(pdf|docx|xlsx)$/i.test(name.trim());
+}
+
+/** One proposed link from a file, as the Readings panel lists it. */
+export interface FileLink {
+  key: string;
+  link: ProgramProposedLink;
+  /** "FS", "SS+2d", "FS+3cd": the grid's typed format without the row number. */
+  text: string;
+  /**
+   * True when an end still has a reading waiting: accepting it adds the link
+   * (the server links accepted rows from the file). False when both ends are
+   * settled, so only an explicit Add makes it.
+   */
+  onAccept: boolean;
+}
+
+/**
+ * A file's proposed links between rows still in the program, split by how
+ * they are added. `pending` is the targets with a reading from this file
+ * still waiting; `live` says whether an activity is still in the program.
+ */
+export function fileLinks(imp: ProgramImport, pending: ReadonlySet<string>, live: (id: string) => boolean): FileLink[] {
+  return (imp.links ?? [])
+    .filter((l) => live(l.pred_id) && live(l.succ_id))
+    .map((l) => ({
+      key: `${imp.id}|${l.pred_id}|${l.succ_id}`,
+      link: l,
+      text: linkText(l),
+      onAccept: pending.has(l.pred_id) || pending.has(l.succ_id),
+    }));
+}
+
+/** "FS", "SS+2d", "FF-1d", "FS+3cd". */
+export function linkText(l: { type: string; lag_days: number; lag_unit: string }): string {
+  if (l.lag_days === 0) return l.type;
+  return `${l.type}${l.lag_days > 0 ? "+" : ""}${l.lag_days}${l.lag_unit === "calendar" ? "cd" : "d"}`;
 }

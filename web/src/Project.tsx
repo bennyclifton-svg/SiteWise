@@ -22,6 +22,7 @@ import { Register } from "./Register";
 import { Procurement } from "./Procurement";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
+import { newerAnnouncement, type RemoteProgram } from "./programApi";
 import { SpecificationSchedule as Specifications } from "./SpecificationSchedule";
 import { ocrStage } from "./OCRStatus";
 
@@ -239,8 +240,9 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [reportsOpened, setReportsOpened] = useState(false);
   const [showProgram, setShowProgram] = useState(false);
   const [programOpened, setProgramOpened] = useState(false);
-  // Newest program version announced on the stream (plan 8.3).
-  const [programVersion, setProgramVersion] = useState(0);
+  // Newest program version announced on the stream (plan 8.3), with the
+  // program it belongs to: a recreated program starts its versions again.
+  const [programVersion, setProgramVersion] = useState<RemoteProgram>({ programId: "", version: 0 });
   // Bumped when the program's review or readings change (no new version).
   const [programTick, setProgramTick] = useState(0);
 	const [reportTick, setReportTick] = useState(0);
@@ -316,8 +318,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
             return;
           }
           if (ev.kind === "program.changed") {
-            const p = ev.payload as unknown as { project_id?: string; version?: number } | undefined;
-            if (p?.project_id === projectId && typeof p.version === "number") setProgramVersion((v) => Math.max(v, p.version as number));
+            const p = ev.payload as unknown as { project_id?: string; program_id?: string; version?: number } | undefined;
+            if (p?.project_id === projectId && typeof p.version === "number") setProgramVersion((v) => newerAnnouncement(v, p.program_id ?? "", p.version as number));
             return;
           }
           if (ev.kind === "specification") {

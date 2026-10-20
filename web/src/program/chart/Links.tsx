@@ -2,6 +2,7 @@
 // 2 px in the critical colour, a diamond at the midpoint of a link into or
 // out of a hold point, the lag on hover. Under each path a transparent
 // 10 px stroke is the hit target that opens the link popover (data-id).
+// Keyboard: a focused bar's Left and Right keys focus its links (Program.tsx).
 
 import { memo } from "react";
 import type { Times } from "../types";
@@ -22,6 +23,13 @@ export function lagText(lag: number, unit: string): string {
   const sign = lag > 0 ? "+" : "−";
   const n = Math.abs(lag);
   return `${sign}${n} ${unit === "calendar" ? "calendar" : "working"} day${n === 1 ? "" : "s"}`;
+}
+
+const TYPE_WORDS: Record<string, string> = { FS: "finish to start", SS: "start to start", FF: "finish to finish", SF: "start to finish" };
+
+/** "Link Slab to Framing, finish to start, +2 working days, driving": a link's accessible name. */
+export function linkName(pred: string, succ: string, type: string, lag: number, unit: string, driving: boolean): string {
+  return `Link ${pred} to ${succ}, ${TYPE_WORDS[type] ?? type}${lag !== 0 ? `, ${lagText(lag, unit)}` : ""}${driving ? ", driving" : ""}`;
 }
 
 export const Links = memo(function Links({ drawn, rows, times, v, driving }: LinksProps) {
@@ -47,7 +55,17 @@ export const Links = memo(function Links({ drawn, rows, times, v, driving }: Lin
     const name = `${rows[d.pred].act.label} → ${rows[d.succ].act.label}, ${d.link.type}, ${lagText(d.link.lag_days, d.link.lag_unit)}${isDriving ? ", driving" : ""}`;
     const cls = ["pg-link", isDriving ? "is-driving" : "is-free", critical ? "is-critical" : "", d.faint ? "is-faint" : ""].filter(Boolean).join(" ");
     out.push(
-      <g key={d.link.id} className={cls} data-id={d.link.id} data-link="1" role="button" tabIndex={-1} aria-label={`Link ${name}`}>
+      <g
+        key={d.link.id}
+        className={cls}
+        data-id={d.link.id}
+        data-link="1"
+        data-pred={d.link.pred_id}
+        data-succ={d.link.succ_id}
+        role="button"
+        tabIndex={-1}
+        aria-label={linkName(rows[d.pred].act.label, rows[d.succ].act.label, d.link.type, d.link.lag_days, d.link.lag_unit, isDriving)}
+      >
         <title>{name}</title>
         <path className="pg-link-hit" d={r.d} />
         <path className="pg-link-line" d={r.d} />

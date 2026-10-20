@@ -142,6 +142,31 @@ test("a start date offered in the strip sets the program start", async ({ page }
   expect(view.program.start_date).toBe("2027-03-01");
 });
 
+test("the consent date is offered as a one-tap start (plan 7.3)", async ({ page }) => {
+  const project = await seededProject(page, "Program consent start");
+  await openProgram(page);
+  await page.getByRole("button", { name: "Build program", exact: true }).click();
+  await expect(page.locator(".pg-relative")).toBeVisible();
+  // The suggestion is the Profile's consent date, which only a filed
+  // consent document sets; the e2e suite cannot file one, so the live view
+  // is served with it while the program has no start.
+  await page.route(`**/api/projects/${project}/program`, async (route) => {
+    if (route.request().method() !== "GET") return route.continue();
+    const res = await route.fetch();
+    const json = await res.json();
+    return route.fulfill({ response: res, json: { ...json, start_suggestion: json.program.start_date ? null : "2027-02-15" } });
+  });
+  await page.reload();
+  await openProgram(page);
+  const done = page.waitForResponse((r) => r.url().endsWith("/program/ops") && r.request().method() === "POST");
+  await page.getByRole("button", { name: "Start on 15 Feb 2027 (consent date)", exact: true }).click();
+  expect((await done).request().postDataJSON().ops).toEqual([{ op: "set_start", start_date: "2027-02-15" }]);
+  await expect(page.locator(".pg-relative")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /consent date/ })).toHaveCount(0);
+  const view = await (await page.request.get(`/api/projects/${project}/program`)).json();
+  expect(view.program.start_date).toBe("2027-02-15");
+});
+
 test("fit to screen, selection and height (step 11)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const project = await seededProject(page, "Program fit");
@@ -357,25 +382,111 @@ test("scrolling 2,000 activities has no long task over 50 ms (plan 11.2)", async
   expect(long.filter((d) => d > 50)).toEqual([]);
 });
 
-test("print: A3 landscape, every row, the timescale on each page (plan 9.7)", async ({ page }) => {
+test("each fit finishes within one frame, ≤ 16 ms, at 2,000 activities (plan 11.2)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await signIn(page);
-  const project = await newProject(page, "Program print");
-  await serveSynthetic(page, project, 5, 15); // 80 rows
+  const project = await newProject(page, "Program fit budget");
+  await serveSynthetic(page, project, 100, 20); // 2,100 rows, 2,000 activities
   await page.reload();
   await page.getByRole("button", { name: "Program", exact: true }).click();
   await expect(page.locator(".pg-layer-bars .pg-bar").first()).toBeVisible();
+  await activityRows(page).nth(3).click();
+  await activityRows(page).nth(15).click({ modifiers: ["Shift"] });
+  await expect(page.getByText("13 selected")).toBeVisible();
+  // In the page: click, let React render and commit (a microtask for a
+  // click), then force style and layout; the time is the fit's whole work
+  // before the frame can paint. A zoom first, untimed, so each fit changes
+  // the view.
+  const times = await page.evaluate(async () => {
+    const button = (name: string) => [...document.querySelectorAll<HTMLButtonElement>(".pg-toolbar button")].find((b) => b.textContent?.trim() === name || b.getAttribute("aria-label") === name)!;
+    const look = () => {
+      const svg = document.querySelector(".pg-chart")!;
+      const row = document.querySelector<HTMLElement>(".pg-gridcol [role='row'][data-id]")!;
+      return `${svg.getAttribute("width")}|${document.querySelector(".pg-body")!.scrollLeft}|${row.getBoundingClientRect().height}`;
+    };
+    const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(null))));
+    const time = async (name: string) => {
+      const before = look();
+      const t0 = performance.now();
+      button(name).click();
+      for (let i = 0; i < 4; i++) await Promise.resolve();
+      const after = look(); // reads layout: forces style and layout now
+      const ms = performance.now() - t0;
+      await frame();
+      return { name, ms, changed: after !== before };
+    };
+    const out: { name: string; ms: number; changed: boolean }[] = [];
+    for (let k = 0; k < 5; k++) {
+      for (const name of ["Fit to screen", "Fit to selection"]) {
+        button("Zoom in").click();
+        button("Zoom in").click();
+        await frame();
+        out.push(await time(name));
+      }
+    }
+    out.push(await time("Fit height"));
+    return out;
+  });
+  for (const t of times) expect(t.changed, `${t.name} changed the view`).toBe(true);
+  const worst = (name: string) => Math.max(...times.filter((t) => t.name === name).map((t) => t.ms));
+  console.log(`program fit, 2,000 activities: screen max ${worst("Fit to screen").toFixed(1)} ms, selection max ${worst("Fit to selection").toFixed(1)} ms, height ${worst("Fit height").toFixed(1)} ms`);
+  for (const t of times) expect(t.ms, t.name).toBeLessThanOrEqual(16);
+});
+
+test("print: A3 landscape, every row, the timescale on each page, inside the printable area (plan 9.7)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await signIn(page);
+  const project = await newProject(page, "Program print");
+  // 80 rows, and eight checks opened above the chart: the first page
+  // shares its height with them.
+  const view = { ...syntheticView(project, 5, 15), checks: Array.from({ length: 8 }, (_, i) => ({ code: "date_order_assumed", message: `Date order assumed day/month in column Start (check ${i + 1}).` })) };
+  await page.route(`**/api/projects/${project}/program`, (route: Route) =>
+    route.request().method() === "GET" ? route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(view) }) : route.continue(),
+  );
+  await page.evaluate(([p, ids]) => localStorage.setItem(`sitewise.program.expanded.v1.${p}`, JSON.stringify(ids)), [project, view.activities.filter((a) => a.parent_id === null).map((a) => a.id)] as const);
+  await page.reload();
+  await page.getByRole("button", { name: "Program", exact: true }).click();
+  await expect(page.locator(".pg-layer-bars .pg-bar").first()).toBeVisible();
+  await page.getByRole("button", { name: "8 checks", exact: true }).click();
+  // A3 landscape less 10 mm margins: 400 × 277 mm, 1511 × 1046 CSS px.
+  const [pageW, pageH] = [1511, 1046];
+  await page.setViewportSize({ width: pageW, height: pageH });
   await page.emulateMedia({ media: "print" });
   await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
-  // No virtualisation while printing: all 80 rows across three pages, each with its header.
-  await expect(page.locator(".pg-print-page")).toHaveCount(3);
-  await expect(page.locator(".pg-print-page .pg-print-head")).toHaveCount(3);
+  // No virtualisation while printing: all 80 rows, each page with its header.
   await expect(page.locator(".pg-print [role='row'][data-id]")).toHaveCount(80);
+  const pages = await page.locator(".pg-print-page").count();
+  expect(pages).toBeGreaterThanOrEqual(3);
+  await expect(page.locator(".pg-print-page .pg-print-head")).toHaveCount(pages);
   await expect(page.locator(".pg-toolbar")).toBeHidden();
   await expect(page.locator(".pg-summary")).toBeVisible();
+  await expect(page.locator(".pg-checks li")).toHaveCount(8);
+  // Every box fits the printable width; each page fits its height, the
+  // first one below the heading and the checks.
+  const fit = await page.evaluate(() => {
+    const out: { page: number; width: number; right: number; bottom: number; height: number }[] = [];
+    document.querySelectorAll<HTMLElement>(".pg-print-page").forEach((pg, i) => {
+      const box = pg.getBoundingClientRect();
+      let right = box.right;
+      // HTML boxes and each SVG's own box (an SVG clips what it draws).
+      pg.querySelectorAll<Element>("*").forEach((el) => {
+        if (el.closest("svg") && el.tagName.toLowerCase() !== "svg") return;
+        const r = el.getBoundingClientRect();
+        if (r.width > 0) right = Math.max(right, r.right);
+      });
+      out.push({ page: i, width: box.width, right: right - box.left, bottom: box.bottom + window.scrollY, height: box.height });
+    });
+    return out;
+  });
+  for (const f of fit) {
+    expect(f.width, `page ${f.page} width`).toBeLessThanOrEqual(pageW);
+    expect(f.right, `page ${f.page} content right edge`).toBeLessThanOrEqual(pageW);
+    expect(f.height, `page ${f.page} height`).toBeLessThanOrEqual(pageH);
+  }
+  expect(fit[0].bottom, "the first page's rows end on the first sheet").toBeLessThanOrEqual(pageH);
   const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true });
   const boxes = [...pdf.toString("latin1").matchAll(/\/MediaBox\s*\[\s*0 0 ([\d.]+) ([\d.]+)\s*\]/g)].map((m) => [+m[1], +m[2]]);
-  expect(boxes.length).toBeGreaterThanOrEqual(3);
+  expect(boxes.length).toBe(pages);
   for (const [w, h] of boxes) {
     // A3 landscape is 420 × 297 mm = 1190.55 × 841.89 pt.
     expect(Math.abs(w - 1190.55)).toBeLessThan(2);

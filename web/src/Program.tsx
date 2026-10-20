@@ -15,7 +15,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { flushSync } from "react-dom";
 import { ApiError } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { programApi, ProgramConflict, ProgramRefused, type ProgramChange, type ProgramHoldPoint, type ProgramOp, type ProgramView } from "./programApi";
+import { needsRefetch, programApi, ProgramConflict, ProgramRefused, type ProgramChange, type ProgramHoldPoint, type ProgramOp, type ProgramView, type RemoteProgram } from "./programApi";
 import { Cal } from "./program/calendar";
 import { deletePlan, dropTarget, inOutline, predecessorOps, predecessorTexts, reorderStep, rowNumbers, ZONE_COARSE, ZONE_FINE, type DeletePlan } from "./program/edit";
 import { clampPx, fitHeight, fitSpan, LEFT_ROOM, PX_DEFAULT, scaleFor, zoomAbout } from "./program/fit";
@@ -49,8 +49,8 @@ import "./program.css";
 
 interface Props {
   projectId: string;
-  /** Newest program version announced by `program.changed` (plan 8.3). */
-  remoteVersion: number;
+  /** Newest program version announced by `program.changed` (plan 8.3), and its program. */
+  remoteVersion: RemoteProgram;
   /** Bumped by `program.review` and `program.readings`: the review or the readings changed, not the version. */
   remoteTick?: number;
   /** A strip answer wrote a Profile value: the Profile view refetches. */
@@ -67,9 +67,17 @@ const GRID_W_MIN = 220;
 const NARROW = 720;
 const X_CHUNK = 256;
 /** Rows on one A3 landscape page at 28 px with the header (plan 9.7). */
+// A3 landscape less the 10 mm margins is 400 × 277 mm: 1511 × 1046 CSS px.
+// Grid plus chart fit that width; rows per page fit that height under the
+// 44 px timescale, and the first page leaves room for the heading and the
+// completion summary printed above it.
+const PRINT_PAGE_W = 1511;
+const PRINT_PAGE_H = 1046;
 const PRINT_ROWS = 30;
 const PRINT_GRID_W = 520;
-const PRINT_CHART_W = 1160;
+const PRINT_CHART_W = PRINT_PAGE_W - PRINT_GRID_W - 11;
+/** Room the shell's printed title takes above the program when it cannot be measured. */
+const PRINT_SHELL_H = 80;
 /** Grid columns the arrow keys move between (plan 9.5). */
 const COLS = ["name", "duration", "start", "finish", "predecessors"];
 
@@ -164,6 +172,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   const [box, setBox] = useState({ w: 0, h: 0 });
   const [win, setWin] = useState<Win>({ first: 0, last: 40, x0: 0, x1: 2048 });
   const [printing, setPrinting] = useState(false);
+  const [printFirst, setPrintFirst] = useState(PRINT_ROWS);
   const [checksOpen, setChecksOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [changes, setChanges] = useState<{ list: ProgramChange[]; counts: Record<string, number> } | null>(null);
@@ -175,7 +184,8 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   const [focus, setFocus] = useState<CellFocus | null>(null);
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [reason, setReason] = useState("");
-  const [linkPop, setLinkPop] = useState<{ id: string; x: number; y: number } | null>(null);
+  // `back`: the bar a keyboard user reached the link from; focus returns there when the popover closes.
+  const [linkPop, setLinkPop] = useState<{ id: string; x: number; y: number; back?: string } | null>(null);
   const [coarse] = useState(() => {
     try {
       return window.matchMedia("(pointer: coarse)").matches;
@@ -234,8 +244,12 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
 
   // A newer version from another viewer: refetch now, or on release when a
   // drag is in progress (plan 8.3).
+  // Each announcement refetches at most once, so a GET that answers with a
+  // lower version (a recreated program) can never refetch in a loop.
+  const fetchedFor = useRef<RemoteProgram | null>(null);
   useEffect(() => {
-    if (!view || remoteVersion <= view.program.version) return;
+    if (!view || !needsRefetch(remoteVersion, view.program, fetchedFor.current)) return;
+    fetchedFor.current = remoteVersion;
     if (dragging.current) refetchOnRelease.current = true;
     else load();
   }, [remoteVersion, view, load]);
@@ -885,7 +899,10 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
 
   useEffect(() => {
     if (!active) return;
-    const before = () => setPrinting(true);
+    const before = () => {
+      setPrintFirst(firstPrintRows(printReserve()));
+      setPrinting(true);
+    };
     const after = () => setPrinting(false);
     window.addEventListener("beforeprint", before);
     window.addEventListener("afterprint", after);
@@ -894,6 +911,14 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
       window.removeEventListener("afterprint", after);
     };
   }, [active]);
+
+  // Once the print pages exist under print styles, measure where the first
+  // one starts and give it only the rows that fit below the summary.
+  useLayoutEffect(() => {
+    if (!printing) return;
+    const n = firstPrintRows(printReserve());
+    if (n !== printFirst) setPrintFirst(n);
+  }, [printing, printFirst]);
 
   // --- keyboard (plan 9.5) ----------------------------------------------------
 
@@ -917,17 +942,77 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     reveal(j);
   }
 
+  // Links take focus from the bar they touch: Left and Right step through
+  // that bar's drawn links, Enter opens the popover, Escape goes back.
+  const linkFrom = useRef<string | null>(null);
+
+  function focusBar(id: string) {
+    linkFrom.current = null;
+    scroller.current?.querySelector<SVGGElement>(`.pg-layer-bars [data-id="${id}"]`)?.focus({ preventScroll: true });
+  }
+
+  function stepLink(barId: string, fromLink: string | null, dir: 1 | -1) {
+    const list = Array.from(scroller.current?.querySelectorAll<SVGGElement>(`.pg-layer-links [data-pred="${barId}"], .pg-layer-links [data-succ="${barId}"]`) ?? []);
+    if (!list.length) return;
+    const i = fromLink ? list.findIndex((el) => el.dataset.id === fromLink) + dir : dir > 0 ? 0 : list.length - 1;
+    if (i < 0 || i >= list.length) return focusBar(barId);
+    linkFrom.current = barId;
+    list[i].focus({ preventScroll: true });
+  }
+
+  function closeLinkPop(to: "link" | "bar") {
+    const p = linkPop;
+    setLinkPop(null);
+    if (!p?.back) return;
+    const back = p.back;
+    requestAnimationFrame(() => {
+      const el = to === "link" ? scroller.current?.querySelector<SVGGElement>(`.pg-layer-links [data-id="${p.id}"]`) : null;
+      if (el) {
+        linkFrom.current = back;
+        el.focus({ preventScroll: true });
+      } else focusBar(back);
+    });
+  }
+
   function onKeyDown(e: KeyboardEvent) {
     const t = e.target as HTMLElement;
     if (t.closest("input, textarea, select, dialog, .pg-pop")) return;
     const mod = e.ctrlKey || e.metaKey;
     const k = e.key;
+    // Row keys (Delete, arrows, Enter, Tab, Ctrl+A, Ctrl+L) act only with
+    // focus in the grid or the chart: Backspace on a toolbar button must not
+    // delete the selected row. View keys (undo, redo, collapse, expand, the
+    // fits, Escape) also work from elsewhere in the section, but never on a
+    // control or inside a panel, where the key belongs to that control.
+    if (!t.closest(".pg-gridcol, .pg-chartcol") || t.closest("[role=separator]")) {
+      if (t.closest("button, a, summary, [role=radio], [role=separator], .pg-panel, .pg-strip, .pg-toolbar")) return;
+      const viewKey = (mod && ["[", "]", "z", "Z", "y", "Y"].includes(k)) || (!mod && !e.altKey && (k === "f" || k === "F")) || k === "Escape";
+      if (!viewKey) return;
+    }
     const bar = (t.closest(".pg-layer-bars [data-id]") as HTMLElement | null)?.dataset.id ?? null;
     const cell = t.closest(".pg-gridcol [data-col]") as HTMLElement | null;
+    const link = t.closest(".pg-layer-links [data-link]") as SVGGElement | null;
     const act = (fn: () => void) => {
       e.preventDefault();
       fn();
     };
+    if (link && !mod && !e.altKey) {
+      const from = linkFrom.current ?? link.dataset.pred!;
+      if (k === "Enter" || k === " ") {
+        const b = link.getBBox();
+        return act(() => setLinkPop({ id: link.dataset.id!, x: b.x + b.width / 2, y: b.y + b.height / 2, back: from }));
+      }
+      if (k === "ArrowLeft" || k === "ArrowRight") return act(() => stepLink(from, link.dataset.id!, k === "ArrowRight" ? 1 : -1));
+      if (k === "Escape" || k === "ArrowUp" || k === "ArrowDown") return act(() => focusBar(from));
+      // A link is deleted from its popover, never by a row key.
+      if (k === "Delete" || k === "Backspace" || k === "Tab" || k === "F2") return;
+    }
+    // The chart's own tab stop: Up or Down goes to the selected row's bar.
+    if (t.classList.contains("pg-chartcol") && !mod && !e.altKey && (k === "ArrowUp" || k === "ArrowDown")) {
+      const start = sel.anchor && order.includes(sel.anchor) ? sel.anchor : order[0];
+      if (start) act(() => moveFocus(0, 0, e.shiftKey, start));
+      return;
+    }
     if (mod && k === "[") act(collapseAll);
     else if (mod && k === "]") act(expandAll);
     else if (mod && (k === "a" || k === "A")) act(() => setSel(selectAll(order)));
@@ -940,6 +1025,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     else if (e.shiftKey && (k === "ArrowLeft" || k === "ArrowRight")) act(() => nudge(k === "ArrowLeft" ? -1 : 1));
     else if (k === "ArrowUp" || k === "ArrowDown") act(() => moveFocus(k === "ArrowUp" ? -1 : 1, 0, e.shiftKey, bar));
     else if ((k === "ArrowLeft" || k === "ArrowRight") && cell) act(() => moveFocus(0, k === "ArrowLeft" ? -1 : 1, false, null));
+    else if ((k === "ArrowLeft" || k === "ArrowRight") && bar && !mod && !e.altKey) act(() => stepLink(bar, null, k === "ArrowRight" ? 1 : -1));
     else if ((k === "Enter" || k === "F2") && cell && focus) {
       const col = focus.col as EditCol;
       if (col === "name" || col === "duration" || col === "predecessors") act(() => onEdit(focus.id, col));
@@ -1191,6 +1277,12 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
           onAddRow={(importId, row, parentId) =>
             apply((cur) => programApi.addRows(projectId, cur!, [{ import_id: importId, row, parent_id: parentId }]), { undoable: true, note: "Added." })
           }
+          onAddLinks={(links) =>
+            commit(
+              links.map((l) => ({ op: "link_add", pred_id: l.pred_id, succ_id: l.succ_id, type: l.type, lag_days: l.lag_days, lag_unit: l.lag_unit })),
+              { note: `Added ${links.length} link${links.length === 1 ? "" : "s"} from the file.` },
+            )
+          }
         />
       )}
       {d.holds.length > 0 && (
@@ -1354,7 +1446,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
               />
             )}
           </div>
-          <div className="pg-chartcol" tabIndex={-1}>
+          <div className="pg-chartcol" tabIndex={0} role="group" aria-label="Program chart: Up and Down move between bars, Left and Right between a bar's links">
             {!printing && chart(first, last, chartW, v, lo, hi, true)}
             {popLink && linkPop && (
               <LinkPopover
@@ -1365,13 +1457,13 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
                 lag={popLink.lag_days}
                 unit={popLink.lag_unit}
                 title={`${m.byId.get(popLink.pred_id)?.label ?? ""} → ${m.byId.get(popLink.succ_id)?.label ?? ""}`}
-                onClose={() => setLinkPop(null)}
+                onClose={() => closeLinkPop("link")}
                 onSave={(type, lag, unit) => {
-                  setLinkPop(null);
+                  closeLinkPop("link");
                   if (type !== popLink.type || lag !== popLink.lag_days || unit !== popLink.lag_unit) commit([{ op: "link_update", id: popLink.id, type, lag_days: lag, lag_unit: unit }]);
                 }}
                 onDelete={() => {
-                  setLinkPop(null);
+                  closeLinkPop("bar");
                   commit([{ op: "link_delete", ids: [popLink.id] }]);
                 }}
               />
@@ -1380,7 +1472,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         </div>
       </div>
 
-      {printing && <PrintPages rows={rows} times={m.times} cal={m.cal} span={span} render={chart} version={view.program.version} />}
+      {printing && <PrintPages rows={rows} times={m.times} cal={m.cal} span={span} render={chart} version={view.program.version} firstRows={printFirst} />}
 
       <div className={`pg-toast${toast?.alert ? " is-alert" : ""}`} role={toast?.alert ? "alert" : "status"} aria-live={toast?.alert ? "assertive" : "polite"}>
         {toast?.text}
@@ -1563,6 +1655,29 @@ function LinkPopover({
   );
 }
 
+/**
+ * How far down the first printed page the rows start. Under print styles
+ * the print block's own position says it; otherwise (the moment before
+ * printing) the heading and summary heights plus the shell's title, which
+ * over-estimates at a narrower screen width and so stays safe.
+ */
+function printReserve(): number {
+  const pg = document.querySelector<HTMLElement>(".pg-print");
+  if (pg && pg.getClientRects().length) return pg.getBoundingClientRect().top + window.scrollY;
+  const outer = (sel: string) => {
+    const el = document.querySelector<HTMLElement>(sel);
+    if (!el) return 0;
+    const cs = getComputedStyle(el);
+    return el.getBoundingClientRect().height + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
+  };
+  return PRINT_SHELL_H + outer(".program .program-head") + outer(".program .pg-summary");
+}
+
+/** Rows that fit on the first page below `reserve` px: at least 4, at most a full page. */
+function firstPrintRows(reserve: number): number {
+  return Math.max(4, Math.min(PRINT_ROWS, Math.floor((PRINT_PAGE_H - reserve - SCALE_H - 8) / ROW_H)));
+}
+
 // A3 landscape pages (plan 9.7): every row in the current view, the
 // timescale header repeated on each page, the chart fitted to the page.
 function PrintPages({
@@ -1572,6 +1687,7 @@ function PrintPages({
   span,
   render,
   version,
+  firstRows,
 }: {
   rows: Row[];
   times: Record<string, Times>;
@@ -1579,17 +1695,19 @@ function PrintPages({
   span: [number, number] | null;
   render: (from: number, to: number, w: number, v: Viewport, lo: number, hi: number, onScreen: boolean) => ReactElement;
   version: number;
+  /** Rows on the first page, which shares its height with the summary. */
+  firstRows: number;
 }) {
   const s = span ?? [0, 20];
   const f = fitSpan(s, PRINT_CHART_W);
   const v: Viewport = { pxPerDay: f.pxPerDay, viewStart: f.viewStart, rowH: ROW_H };
   const pages: [number, number][] = [];
-  for (let i = 0; i < Math.max(rows.length, 1); i += PRINT_ROWS) pages.push([i, Math.min(rows.length, i + PRINT_ROWS)]);
+  for (let i = 0; i < Math.max(rows.length, 1); i += i === 0 ? firstRows : PRINT_ROWS) pages.push([i, Math.min(rows.length, i + (i === 0 ? firstRows : PRINT_ROWS))]);
   const scale = scaleFor(v.pxPerDay);
   return (
     <div className="pg-print" aria-hidden="true">
       {pages.map(([from, to]) => (
-        <div key={from} className="pg-print-page" style={{ ["--pg-grid-w" as string]: `${PRINT_GRID_W}px` }}>
+        <div key={from} className="pg-print-page" style={{ ["--pg-grid-w" as string]: `${PRINT_GRID_W}px`, ["--pg-print-chart-w" as string]: `${PRINT_CHART_W}px` }}>
           <div className="pg-print-head">
             <GridHeader narrow={false} />
             <TimescaleHeader cal={cal} v={v} lo={Math.floor(f.viewStart)} hi={s[1] + 2} scale={scale} width={PRINT_CHART_W} version={version} />

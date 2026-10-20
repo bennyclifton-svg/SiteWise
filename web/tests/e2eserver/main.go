@@ -215,16 +215,38 @@ func run(addr, data string, programFixture bool) error {
 		_, _ = w.Write(sample2.PDF(p))
 	})
 	// Synthetic program files for the readings suite:
-	// ?rows=Label~start~finish,Label~start~finish with dates as typed text.
+	// ?rows=Label~start~finish,Label~start~finish with dates as typed text,
+	// and an optional fourth field, the predecessors cell ("1", "1SS+2d";
+	// rows number from 1, as program tools do without an ID column; a
+	// semicolon separates several). The column is written only when a row
+	// has one.
 	mux.HandleFunc("GET /__e2e/program.xlsx", func(w http.ResponseWriter, r *http.Request) {
 		txt := func(s string) xlsx.Cell { return xlsx.Cell{Text: s} }
-		rows := [][]xlsx.Cell{{txt("Task Name"), txt("Start"), txt("Finish")}}
+		var data [][]string
+		withPred := false
 		for _, part := range strings.Split(r.URL.Query().Get("rows"), ",") {
 			f := strings.Split(part, "~")
-			if len(f) != 3 || strings.TrimSpace(f[0]) == "" {
+			if (len(f) != 3 && len(f) != 4) || strings.TrimSpace(f[0]) == "" {
 				continue
 			}
-			rows = append(rows, []xlsx.Cell{txt(f[0]), txt(f[1]), txt(f[2])})
+			withPred = withPred || len(f) == 4
+			data = append(data, f)
+		}
+		head := []xlsx.Cell{txt("Task Name"), txt("Start"), txt("Finish")}
+		if withPred {
+			head = append(head, txt("Predecessors"))
+		}
+		rows := [][]xlsx.Cell{head}
+		for _, f := range data {
+			row := []xlsx.Cell{txt(f[0]), txt(f[1]), txt(f[2])}
+			if withPred {
+				pred := ""
+				if len(f) == 4 {
+					pred = f[3]
+				}
+				row = append(row, txt(pred))
+			}
+			rows = append(rows, row)
 		}
 		w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 		_ = xlsx.WriteXLSX(w, []xlsx.Sheet{{Name: "Program", Rows: rows}})

@@ -538,6 +538,237 @@ test("a user-made stage can be told which catalogue stage it is (owner answer Q5
   await expect(picker).toHaveCount(0);
 });
 
+test("row keys act only in the grid and chart: Backspace on a toolbar button deletes nothing (9.5)", async ({ page }) => {
+  const project = await builtProgram(page, "Edit key scope");
+  await page.getByRole("button", { name: "Expand all", exact: true }).click();
+  const v0 = await read(page, project);
+  const act = v0.activities.find((a) => a.parent_id)!;
+  await row(page, act.id).locator('[data-col="start"]').click();
+  await expect(page.getByText("1 selected")).toBeVisible();
+  let posts = 0;
+  page.on("request", (r) => /\/program\/(ops|undo|redo)$/.test(r.url()) && r.method() === "POST" && posts++);
+  // Focus on a toolbar button: its keys are its own.
+  await page.getByRole("button", { name: "Links on", exact: true }).focus();
+  for (const key of ["Backspace", "Delete", "ArrowDown", "Control+a", "Control+z"]) await page.keyboard.press(key);
+  await page.waitForTimeout(300);
+  expect(posts).toBe(0);
+  await expect(row(page, act.id)).toHaveCount(1);
+  await expect(page.getByText("1 selected")).toBeVisible();
+  await expect(grid(page).locator('[role="row"][aria-selected="true"]')).toHaveAttribute("data-id", act.id);
+  // On the grid divider, too: it resizes, it never deletes.
+  await page.locator(".pg-divider").focus();
+  await page.keyboard.press("Delete");
+  await page.waitForTimeout(200);
+  expect(posts).toBe(0);
+  // Back in the grid, Delete deletes.
+  await row(page, act.id).locator('[data-col="start"]').click();
+  const done = opsDone(page);
+  await page.keyboard.press("Delete");
+  expect((await done).request().postDataJSON().ops).toEqual([{ op: "delete", ids: [act.id] }]);
+  await expect(row(page, act.id)).toHaveCount(0);
+});
+
+test("the chart is one tab stop: arrows reach bars and a bar's links; a link's popover deletes it (9.5, 9.4)", async ({ page }) => {
+  const project = await builtProgram(page, "Edit chart keys");
+  await page.getByRole("button", { name: "Expand all", exact: true }).click();
+  const v0 = await read(page, project);
+  const byId = new Map(v0.activities.map((a) => [a.id, a]));
+  // A finish-to-start link inside one stage, both ends drawn as bars.
+  const l = v0.links.find((x) => {
+    const p = byId.get(x.pred_id)!;
+    const s = byId.get(x.succ_id)!;
+    return p.parent_id && p.parent_id === s.parent_id && x.type === "FS" && x.lag_days === 0;
+  })!;
+  const pred = byId.get(l.pred_id)!;
+  const succ = byId.get(l.succ_id)!;
+  await row(page, pred.id).locator('[data-col="start"]').click();
+  await centre(page, bar(page, pred.id));
+
+  // Tab from the grid's last stop (the divider) lands on the chart.
+  await page.locator(".pg-divider").focus();
+  await page.keyboard.press("Tab");
+  await expect(page.locator(".pg-chartcol")).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  const predBar = page.locator(`.pg-layer-bars [data-id="${pred.id}"]`);
+  await expect(predBar).toBeFocused();
+
+  // Right steps through the bar's links until the one to its successor.
+  const focusedId = () => page.evaluate(() => (document.activeElement as HTMLElement | null)?.getAttribute("data-id") ?? null);
+  for (let i = 0; i < 12 && (await focusedId()) !== l.id; i++) await page.keyboard.press("ArrowRight");
+  const linkEl = page.locator(`.pg-layer-links [data-id="${l.id}"]`);
+  await expect(linkEl).toBeFocused();
+  await expect(linkEl).toHaveAttribute("aria-label", new RegExp(`^Link ${esc(pred.label)} to ${esc(succ.label)}, finish to start(, driving)?$`));
+  // Its focus style: the focus colour at 3 px.
+  expect(await linkEl.locator(".pg-link-line").evaluate((el) => getComputedStyle(el).strokeWidth)).toBe("3px");
+
+  // Enter opens the popover; Escape closes it and focus comes back.
+  await page.keyboard.press("Enter");
+  const pop = page.getByRole("dialog", { name: `Link ${pred.label} → ${succ.label}` });
+  await expect(pop).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(pop).toHaveCount(0);
+  await expect(linkEl).toBeFocused();
+  // Escape on the link goes back to its bar.
+  await page.keyboard.press("Escape");
+  await expect(predBar).toBeFocused();
+
+  // Delete the link from its popover: one link_delete, focus on the bar.
+  for (let i = 0; i < 12 && (await focusedId()) !== l.id; i++) await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
+  await expect(pop).toBeVisible();
+  const done = opsDone(page);
+  await pop.getByRole("button", { name: "Delete link", exact: true }).click();
+  expect((await done).request().postDataJSON().ops).toEqual([{ op: "link_delete", ids: [l.id] }]);
+  await expect(page.locator(`.pg-layer-links [data-id="${l.id}"]`)).toHaveCount(0);
+  const v1 = await read(page, project);
+  expect(v1.links.some((x) => x.id === l.id)).toBe(false);
+  expect(v1.activities.some((a) => a.id === pred.id)).toBe(true);
+  await expect(predBar).toBeFocused();
+});
+
+test("Alt+Up and Alt+Down reorder the selected activity (9.5)", async ({ page }) => {
+  const project = await builtProgram(page, "Edit alt reorder");
+  await page.getByRole("button", { name: "Expand all", exact: true }).click();
+  const v0 = await read(page, project);
+  const stage = v0.activities.find((a) => !a.parent_id && kidsOf(v0, a.id).length >= 3)!;
+  const [k0, k1, k2] = kidsOf(v0, stage.id);
+  await row(page, k1.id).locator('[data-col="start"]').click();
+  let done = opsDone(page);
+  await page.keyboard.press("Alt+ArrowUp");
+  expect((await done).request().postDataJSON().ops[0]).toMatchObject({ op: "reorder", ids: [k1.id] });
+  const order = async () => kidsOf(await read(page, project), stage.id).map((a) => a.id).slice(0, 3);
+  // The grid shows the server's order before the next key acts on it.
+  const shown = () => grid(page).locator('[role="row"][data-id]').evaluateAll((els, ks) => els.map((e) => e.getAttribute("data-id")!).filter((id) => ks.includes(id)), [k0.id, k1.id, k2.id]);
+  await expect.poll(shown).toEqual([k1.id, k0.id, k2.id]);
+  expect(await order()).toEqual([k1.id, k0.id, k2.id]);
+  for (const want of [[k0.id, k1.id, k2.id], [k0.id, k2.id, k1.id]]) {
+    done = opsDone(page);
+    await page.keyboard.press("Alt+ArrowDown");
+    await done;
+    await expect.poll(shown).toEqual(want);
+  }
+  expect(await order()).toEqual([k0.id, k2.id, k1.id]);
+});
+
+test("resize from the left end moves the start and keeps the finish (9.4)", async ({ page }) => {
+  const project = await builtProgram(page, "Edit left end");
+  await page.getByRole("button", { name: "Expand all", exact: true }).click();
+  const v0 = await read(page, project);
+  const longest = v0.activities.filter((a) => a.parent_id && a.duration_days).sort((x, y) => y.duration_days! - x.duration_days!)[0];
+  await row(page, longest.id).locator('[data-col="start"]').click();
+  await page.keyboard.press("Shift+F");
+  await settled(page);
+  const c = await centre(page, bar(page, longest.id));
+  const ppd = c.b.width / longest.duration_days!;
+  // Fitted to the bar, days snap; inside a wide bar the start zone is its
+  // first 8 px. Drag it right by three days.
+  expect(ppd).toBeGreaterThanOrEqual(12);
+  const from = { x: c.b.x + 3, y: c.y };
+  const done = opsDone(page);
+  await dragMouse(page, from, { x: from.x + 3 * ppd, y: from.y });
+  const ops = (await done).request().postDataJSON().ops;
+  expect(ops).toHaveLength(2);
+  expect(ops[0]).toMatchObject({ op: "move", ids: [longest.id] });
+  const days = ops[0].days as number;
+  expect(days).toBeGreaterThan(0);
+  expect(ops[1]).toEqual({ op: "resize", id: longest.id, duration_days: longest.duration_days! - days });
+  const v1 = await read(page, project);
+  expect(v1.computed.activities[longest.id].es).toBe(v0.computed.activities[longest.id].es! + days);
+  expect(v1.computed.activities[longest.id].ef).toBe(v0.computed.activities[longest.id].ef);
+});
+
+test("Shift-drag on empty chart space draws a box that selects the bars it touches (9.4)", async ({ page }) => {
+  await builtProgram(page, "Edit select box");
+  await page.getByRole("button", { name: "Expand all", exact: true }).click();
+  await page.getByRole("button", { name: "Fit to screen", exact: true }).click();
+  await settled(page);
+  const body = (await page.locator(".pg-body").boundingBox())!;
+  const ids = await grid(page).locator('[role="row"][data-id]').evaluateAll((els) => els.map((e) => e.getAttribute("data-id")!));
+  // From the empty room right of every bar, up-left across rows 2 to 6.
+  const rowBox = async (i: number) => (await row(page, ids[i]).boundingBox())!;
+  const r2 = await rowBox(2);
+  const r6 = await rowBox(6);
+  const start = { x: body.x + body.width - 12, y: r2.y + r2.height / 2 };
+  const end = { x: body.x + body.width * 0.55, y: r6.y + r6.height / 2 };
+  const expected: string[] = [];
+  for (let i = 2; i <= 6; i++) {
+    const s = bar(page, ids[i]);
+    if (!(await s.count())) continue;
+    const b = (await s.boundingBox())!;
+    if (b.x + b.width >= end.x) expected.push(ids[i]);
+  }
+  expect(expected.length).toBeGreaterThan(0);
+  await page.keyboard.down("Shift");
+  await dragMouse(page, start, end);
+  await page.keyboard.up("Shift");
+  await expect(page.getByText(`${expected.length} selected`)).toBeVisible();
+  for (const id of expected) await expect(row(page, id)).toHaveAttribute("aria-selected", "true");
+});
+
+test("a bulk drag with a held row snaps every bar back and sends nothing (13.1)", async ({ page }) => {
+  const project = await builtProgram(page, "Edit bulk held");
+  await page.getByRole("button", { name: "Expand all", exact: true }).click();
+  const v0 = await read(page, project);
+  const driven = v0.links.find((l) => {
+    const s = v0.activities.find((a) => a.id === l.succ_id)!;
+    return s.parent_id && l.type === "FS" && v0.computed.activities[s.id].es! >= 5 && v0.computed.activities[s.id].es === v0.computed.activities[l.pred_id].ef;
+  })!;
+  const held = v0.activities.find((a) => a.id === driven.succ_id)!;
+  const pred = v0.activities.find((a) => a.id === driven.pred_id)!;
+  const free = v0.activities.find((a) => a.parent_id && a.id !== held.id && v0.computed.activities[a.id].es! > 5 && !v0.links.some((l) => l.succ_id === a.id))!;
+  await page.getByRole("button", { name: "Zoom in", exact: true }).click();
+  await settled(page);
+  await row(page, held.id).locator('[data-col="start"]').click();
+  await row(page, free.id).locator('[data-col="start"]').click({ modifiers: ["Control"] });
+  await expect(page.getByText("2 selected")).toBeVisible();
+  let posts = 0;
+  page.on("request", (r) => r.url().endsWith("/program/ops") && r.method() === "POST" && posts++);
+  const c = await centre(page, bar(page, free.id));
+  const heldX = (await bar(page, held.id).boundingBox())?.x ?? null;
+  const ppd = c.b.width / free.duration_days!;
+  const step = (ppd >= 12 ? 1 : 5) * ppd * 1.2;
+  // Dragging the free bar drags both; the held one cannot go earlier.
+  await page.mouse.move(c.x, c.y);
+  await page.mouse.down();
+  await page.mouse.move(c.x - step, c.y, { steps: 6 });
+  await page.mouse.up();
+  await expect(page.locator(".pg-tip text")).toContainText(pred.label);
+  await page.waitForTimeout(300);
+  expect(posts).toBe(0);
+  expect(Math.abs((await bar(page, free.id).boundingBox())!.x - c.b.x)).toBeLessThan(1);
+  if (heldX !== null) expect(Math.abs((await bar(page, held.id).boundingBox())!.x - heldX)).toBeLessThan(1);
+  expect((await read(page, project)).program.version).toBe(v0.program.version);
+});
+
+test("removing a hold point needs a reason (13.1)", async ({ page }) => {
+  const project = await builtProgram(page, "Edit hold point");
+  await page.getByRole("button", { name: "Expand all", exact: true }).click();
+  const v0 = await read(page, project);
+  const stage = v0.activities.find((a) => !a.parent_id && kidsOf(v0, a.id).length)!;
+  const add = await page.request.post(`/api/projects/${project}/program/ops`, {
+    headers: origin(page),
+    data: { program_id: v0.program.id, version: v0.program.version, ops: [{ op: "add", temp_id: "h", parent_id: stage.id, kind: "hold_point", label: "Slab inspection" }] },
+  });
+  expect(add.ok(), await add.text()).toBeTruthy();
+  const hold = ((await add.json()) as { temp_ids: Record<string, string> }).temp_ids.h;
+  await expect(row(page, hold)).toHaveCount(1); // arrives by SSE
+  await row(page, hold).locator('[data-col="start"]').click();
+  await page.keyboard.press("Delete");
+  const dialog = page.getByRole("dialog", { name: "Remove hold point" });
+  await expect(dialog).toBeVisible();
+  const confirm = dialog.getByRole("button", { name: "Delete", exact: true });
+  const why = dialog.getByLabel("Why is it not needed?");
+  await expect(confirm).toBeDisabled();
+  await why.fill("   ");
+  await expect(confirm).toBeDisabled();
+  await why.fill("Engineer waived the inspection");
+  await expect(confirm).toBeEnabled();
+  const done = opsDone(page);
+  await confirm.click();
+  expect((await done).request().postDataJSON().ops).toEqual([{ op: "delete", ids: [hold], reason: "Engineer waived the inspection" }]);
+  await expect(row(page, hold)).toHaveCount(0);
+});
+
 // --- browser budget and touch (plan 11.2, 9.4) ---------------------------------
 
 function syntheticView(project: string, stages: number, per: number) {

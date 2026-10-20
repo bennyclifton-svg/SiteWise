@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import type { ProgramReading } from "../programApi";
-import { groupReadings, importable, orphanEvidence, proposedText, reviewWords } from "./readings";
+import type { ProgramImport, ProgramReading } from "../programApi";
+import { fileLinks, groupReadings, importable, linkText, orphanEvidence, proposedText, reviewWords } from "./readings";
 
 const reading = (over: Partial<ProgramReading>): ProgramReading => ({
   id: "r1",
@@ -60,4 +60,28 @@ test("only PDF, DOCX and XLSX files are imported", () => {
   expect(importable("scan.pdf")).toBe(true);
   expect(importable("program.mpp")).toBe(false);
   expect(importable("notes.xlsx.txt")).toBe(false);
+});
+
+test("a file's proposed links: added on accept while an end waits, otherwise offered to add (plan 10.2)", () => {
+  const imp = {
+    id: "i1",
+    links: [
+      { pred_id: "slab", succ_id: "frame", type: "FS", lag_days: 0, lag_unit: "working" },
+      { pred_id: "frame", succ_id: "roof", type: "SS", lag_days: 2, lag_unit: "working" },
+      { pred_id: "roof", succ_id: "gone", type: "FS", lag_days: 0, lag_unit: "working" },
+    ],
+  } as unknown as ProgramImport;
+  const live = (id: string) => id !== "gone";
+  const links = fileLinks(imp, new Set(["slab"]), live);
+  expect(links.map((l) => [l.link.pred_id, l.link.succ_id, l.text, l.onAccept])).toEqual([
+    ["slab", "frame", "FS", true],
+    ["frame", "roof", "SS+2d", false],
+  ]);
+  expect(fileLinks({ ...imp, links: null }, new Set(), live)).toEqual([]);
+});
+
+test("a link's type and lag in the typed format", () => {
+  expect(linkText({ type: "FS", lag_days: 0, lag_unit: "working" })).toBe("FS");
+  expect(linkText({ type: "FF", lag_days: -1, lag_unit: "working" })).toBe("FF-1d");
+  expect(linkText({ type: "FS", lag_days: 3, lag_unit: "calendar" })).toBe("FS+3cd");
 });

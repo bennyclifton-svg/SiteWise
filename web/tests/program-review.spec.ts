@@ -18,6 +18,7 @@ type View = {
   computed: { finish: { low_index: number | null; high_index: number | null } };
   question: { key: string; label: string; options: string[]; values: string[] } | null;
   readings: { id: string }[];
+  links: { id: string; pred_id: string; succ_id: string; type: string; lag_days: number; origin: string }[];
   changes_pending: number;
 };
 
@@ -308,4 +309,116 @@ test("hold-point evidence, an awarded proposal's reading and evidence without a 
   await expect.poll(() => sent.length).toBe(2);
   expect(sent[1].url).toMatch(/hold-points\/release$/);
   expect(sent[1].body).toMatchObject({ id: hold.id, reading_id: "00000000-0000-4000-8000-000000000003" });
+});
+
+test("a file's predecessor column proposes links between matched rows: added on accept, or by Add and Add all (plan 10.2)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const project = await newProject(page, "Program import links");
+  await build(page);
+  let v = await ops(page, project, [{ op: "set_start", start_date: "2027-03-01" }]);
+  const parents = new Set(v.activities.map((a) => a.parent_id).filter(Boolean));
+  const leaves = v.activities.filter((a) => a.kind === "stage" && !parents.has(a.id));
+  // Three stages in program order with gaps, so no library link joins them
+  // directly and no file link closes a loop.
+  const [a, b, c] = [leaves[0], leaves[2], leaves[4]];
+  const joined = (x: string, y: string) => v.links.some((l) => (l.pred_id === x && l.succ_id === y) || (l.pred_id === y && l.succ_id === x));
+  expect([joined(a.id, b.id), joined(a.id, c.id), joined(b.id, c.id)]).toEqual([false, false, false]);
+  await page.reload();
+  await openProgram(page);
+
+  // Rows number from 1: B follows A; C follows A and starts 2 days after B starts.
+  const rows = [`${a.label}~15/03/2027~26/03/2027~`, `${b.label}~29/03/2027~09/04/2027~1`, `${c.label}~12/04/2027~16/04/2027~1;2SS+2d`].join(",");
+  const xlsx = await (await page.request.get(`/__e2e/program.xlsx?rows=${encodeURIComponent(rows)}`)).body();
+  const chooser = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await (await chooser).setFiles({ name: "Links program.xlsx", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: xlsx });
+  await expect(page.getByRole("button", { name: "3 readings from Links program.xlsx", exact: true })).toBeVisible({ timeout: 20_000 });
+
+  const panel = page.getByRole("region", { name: "Readings" });
+  const links = panel.locator(".pg-file-links");
+  const link = (p: Act, s: Act) => links.locator(`li[data-pred="${p.id}"][data-succ="${s.id}"]`);
+  await expect(links).toContainText("3 links from the file's predecessor column");
+  await expect(link(a, b)).toContainText(`${a.label} → ${b.label}`);
+  await expect(link(a, b).locator(".pg-file-dates")).toHaveText("FS");
+  await expect(link(b, c).locator(".pg-file-dates")).toHaveText("SS+2d");
+  // Every end still waits for its reading: accepting adds the links.
+  for (const [p, s] of [[a, b], [a, c], [b, c]]) await expect(link(p, s)).toContainText("Added when you accept the readings");
+  await expect(links.getByRole("button")).toHaveCount(0);
+
+  const accept = async (x: Act) => {
+    const done = page.waitForResponse((r) => r.url().endsWith("/program/accept") && r.request().method() === "POST");
+    await panel.getByRole("button", { name: `Accept reading for ${x.label}`, exact: true }).click();
+    expect((await done).ok()).toBe(true);
+  };
+  await accept(a);
+  await expect(link(a, b)).toBeVisible();
+  await accept(b);
+  await expect(link(a, b)).toHaveCount(0);
+  await accept(c);
+  await expect(links).toHaveCount(0);
+  v = await read(page, project);
+  const made = (p: Act, s: Act) => v.links.find((l) => l.pred_id === p.id && l.succ_id === s.id);
+  expect(made(b, c)).toMatchObject({ type: "SS", lag_days: 2, origin: "document" });
+
+  // Removed later, the file's links are offered back, each with Add, and Add all.
+  v = await ops(page, project, [{ op: "link_delete", ids: [made(a, c)!.id, made(b, c)!.id] }]);
+  await expect(link(a, c).getByRole("button", { name: `Add link ${a.label} to ${c.label}`, exact: true })).toBeVisible();
+  await expect(link(b, c).getByRole("button", { name: `Add link ${b.label} to ${c.label}`, exact: true })).toBeVisible();
+  let done = page.waitForResponse((r) => r.url().endsWith("/program/ops") && r.request().method() === "POST");
+  await links.getByRole("button", { name: "Add all 2 links", exact: true }).click();
+  const body = (await done).request().postDataJSON();
+  expect(body.ops).toEqual([
+    { op: "link_add", pred_id: a.id, succ_id: c.id, type: "FS", lag_days: 0, lag_unit: "working" },
+    { op: "link_add", pred_id: b.id, succ_id: c.id, type: "SS", lag_days: 2, lag_unit: "working" },
+  ]);
+  await expect(links).toHaveCount(0);
+  await expect(page.locator(".pg-toast")).toContainText("Added 2 links from the file.");
+
+  // One link alone: its own Add.
+  v = await read(page, project);
+  v = await ops(page, project, [{ op: "link_delete", ids: [made(b, c)!.id] }]);
+  await expect(links.getByRole("button", { name: /^Add all/ })).toHaveCount(0);
+  done = page.waitForResponse((r) => r.url().endsWith("/program/ops") && r.request().method() === "POST");
+  await link(b, c).getByRole("button", { name: `Add link ${b.label} to ${c.label}`, exact: true }).click();
+  expect((await done).request().postDataJSON().ops).toHaveLength(1);
+  await expect(links).toHaveCount(0);
+  expect((await read(page, project)).links.some((l) => l.pred_id === b.id && l.succ_id === c.id)).toBe(true);
+});
+
+test("Not sure in the strip dismisses the question and changes nothing (plan 7.3)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const project = await newProject(page, "Program not sure");
+  await build(page);
+  await ops(page, project, [{ op: "set_start", start_date: "2027-03-01" }]);
+  // Only a yes/no question offers Not sure, and the e2e library asks none,
+  // so the view is served with one; the route answers the way the server's
+  // not_sure path does: the question goes, the program is unchanged.
+  const question = { key: "det.basement", kind: "determinant", label: "Is there a basement?", options: ["Yes", "No", "Not sure"], values: ["true", "false"], narrows_by_days: 15 };
+  let dismissed = false;
+  await page.route(`**/api/projects/${project}/program`, async (route) => {
+    if (route.request().method() !== "GET") return route.continue();
+    const res = await route.fetch();
+    const json = await res.json();
+    return route.fulfill({ response: res, json: { ...json, question: dismissed ? null : question } });
+  });
+  const sent: unknown[] = [];
+  await page.route(`**/api/projects/${project}/program/question`, async (route) => {
+    sent.push(route.request().postDataJSON());
+    dismissed = true;
+    const json = await read(page, project);
+    return route.fulfill({ status: 200, contentType: "application/json", json: { ...json, question: null, toasts: ["We won't ask about is there a basement? again until it changes in the Profile."] } });
+  });
+  await page.reload();
+  await openProgram(page);
+  const before = await read(page, project);
+  const strip = page.getByRole("region", { name: "Question" });
+  await expect(strip.locator(".pg-q-label", { hasText: question.label })).toBeVisible();
+  await strip.getByRole("button", { name: "Not sure", exact: true }).click();
+  await expect.poll(() => sent.length).toBe(1);
+  expect(sent[0]).toMatchObject({ key: "det.basement", value: "not_sure", version: before.program.version });
+  await expect(page.locator(".pg-toast")).toContainText("We won't ask about");
+  // Nothing to undo: the program did not change.
+  await expect(page.locator(".pg-toast").getByRole("button", { name: "Undo" })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Question" })).toHaveCount(0);
+  expect((await read(page, project)).program.version).toBe(before.program.version);
 });

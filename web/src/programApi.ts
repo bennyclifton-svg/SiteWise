@@ -104,6 +104,17 @@ export interface ProgramImport {
   grey: string[] | null;
   unmatched_rows: { row: string; label: string; start?: string; finish?: string; duration?: string }[] | null;
   unmatched: number;
+  /** Links the file's predecessor column makes between two matched rows, not yet in the program (plan 10.2). */
+  links?: ProgramProposedLink[] | null;
+}
+
+/** A link code read from a file's predecessor column, between two matched activities. */
+export interface ProgramProposedLink {
+  pred_id: string;
+  succ_id: string;
+  type: string;
+  lag_days: number;
+  lag_unit: string;
 }
 
 export interface ProgramHoldEvidence {
@@ -300,6 +311,35 @@ export const programApi = {
   },
   exportHref: (p: string, view: "collapsed" | "expanded") => `/api${base(p)}/export?format=xlsx&view=${view}`,
 };
+
+/** The newest `program.changed` announcement (plan 8.3): its program and version. */
+export interface RemoteProgram {
+  programId: string;
+  version: number;
+}
+
+/**
+ * Keeps the newest announcement. Another program id (the program was
+ * recreated) replaces it whatever its version, since versions restart.
+ */
+export function newerAnnouncement(cur: RemoteProgram, programId: string, version: number): RemoteProgram {
+  if (programId && cur.programId && programId !== cur.programId) return { programId, version };
+  if (version <= cur.version) return cur;
+  return { programId: programId || cur.programId, version };
+}
+
+/**
+ * Whether an announcement means the shown program is stale: another
+ * program, or a newer version of this one. An announcement already
+ * fetched for never refetches again, so a GET that answers with a lower
+ * version cannot loop.
+ */
+export function needsRefetch(remote: RemoteProgram, shown: { id: string; version: number }, fetched: RemoteProgram | null): boolean {
+  if (remote.version <= 0) return false;
+  if (fetched && fetched.programId === remote.programId && fetched.version === remote.version) return false;
+  if (remote.programId && remote.programId !== shown.id) return true;
+  return remote.version > shown.version;
+}
 
 /** The raw engine input of a view, for the TypeScript drag preview (plan 3, 8.2). */
 export function toInput(v: ProgramView): Input {
