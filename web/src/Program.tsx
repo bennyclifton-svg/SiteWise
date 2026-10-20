@@ -1,21 +1,23 @@
 // The Program view (plan docs/plans/2026-10-18-program.md section 9):
 // toolbar, the one question, the completion header and a split pane with
 // the grid on the left and the chart on the right sharing one vertical
-// scroll. WP-P7 is read-only apart from Build, Accept all, the question and
-// the one-tap start. Every date comes from the server's `computed`; the
-// TypeScript engine is kept for WP-P8's drag preview (toInput in
-// programApi.ts feeds it the raw inputs).
+// scroll. Every date comes from the server's `computed`, except during a
+// drag, when the TypeScript engine previews it (chart/useDrag.ts).
 //
-// WP-P8 hooks: `dragging` (a ref) suppresses SSE refetches until release,
-// and `releaseDrag` runs the deferred refetch; bar and link groups carry
-// data-id for pointer handlers; the Overlay ref exposes the ghost, guide and
-// selection-box nodes; `apply` is the one place a write response replaces
-// state (use it for POST /program/ops batches).
+// Editing (WP-P8): every edit is one POST /program/ops batch through
+// `apply`, the one place a write response replaces state. Writes queue so
+// each carries the version the last answer returned; a drag shows its
+// preview at once and is replaced by the server's answer, or restored with
+// its message (422) or the newer version (409). An SSE refetch that lands
+// during a drag waits for the release (plan 8.3).
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactElement } from "react";
+import { flushSync } from "react-dom";
 import { ApiError } from "./api";
-import { programApi, ProgramConflict, type ProgramView } from "./programApi";
+import { ConfirmDialog } from "./ConfirmDialog";
+import { programApi, ProgramConflict, ProgramRefused, type ProgramOp, type ProgramView } from "./programApi";
 import { Cal } from "./program/calendar";
+import { deletePlan, dropTarget, inOutline, predecessorOps, predecessorTexts, reorderStep, rowNumbers, ZONE_COARSE, ZONE_FINE, type DeletePlan } from "./program/edit";
 import { clampPx, fitHeight, fitSpan, PX_DEFAULT, scaleFor, zoomAbout } from "./program/fit";
 import {
   drawnLinks,
@@ -32,11 +34,13 @@ import {
   type Viewport,
 } from "./program/layout";
 import { clickRow, emptySelection, prune, selectAll, type Selection } from "./program/selection";
-import { Grid, GRID_COLUMNS } from "./program/grid/Grid";
+import { Grid, GRID_COLUMNS, type CellFocus, type CommitKey, type EditCol, type Editing } from "./program/grid/Grid";
+import { parseDuration, parsePredecessors } from "./program/grid/parse";
 import { SCALE_H, TimescaleGrid, TimescaleHeader } from "./program/chart/Timescale";
 import { Bars } from "./program/chart/Bars";
-import { Links } from "./program/chart/Links";
+import { Links, lagText } from "./program/chart/Links";
 import { Overlay, type OverlayHandle } from "./program/chart/Overlay";
+import { useDrag } from "./program/chart/useDrag";
 import type { Times } from "./program/types";
 import "./program.css";
 
@@ -49,7 +53,7 @@ interface Props {
   onSignedOut: () => void;
 }
 
-const GRID_W = 520;
+const GRID_W = 620;
 const GRID_W_NARROW = 150;
 const GRID_W_MIN = 220;
 /** Below this pane width the grid shows the name column only (plan 9.1). */
@@ -57,8 +61,10 @@ const NARROW = 720;
 const X_CHUNK = 256;
 /** Rows on one A3 landscape page at 28 px with the header (plan 9.7). */
 const PRINT_ROWS = 30;
-const PRINT_GRID_W = 320;
+const PRINT_GRID_W = 520;
 const PRINT_CHART_W = 1160;
+/** Grid columns the arrow keys move between (plan 9.5). */
+const COLS = ["name", "duration", "start", "finish", "predecessors"];
 
 const expandKey = (p: string) => `sitewise.program.expanded.v1.${p}`;
 
@@ -89,6 +95,14 @@ function todayString(): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
+const reducedMotion = () => {
+  try {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch {
+    return false;
+  }
+};
+
 interface Win {
   first: number;
   last: number;
@@ -96,10 +110,42 @@ interface Win {
   x1: number;
 }
 
+interface Toast {
+  text: string;
+  /** The write can be undone from the toast. */
+  undo?: boolean;
+  /** A refusal: announced assertively. */
+  alert?: boolean;
+}
+
+interface ApplyOpts {
+  optimistic?: ProgramView;
+  /** An edit: one undo step, so the toast offers Undo. */
+  undoable?: boolean;
+  /** Toast when the server sends none. */
+  note?: string;
+  then?: (v: ProgramView) => void;
+  refused?: (message: string) => void;
+}
+
+type Dialog =
+  | { kind: "delete"; ids: string[]; plan: DeletePlan }
+  | { kind: "durations"; ids: string[]; days: number | null }
+  | { kind: "milestone"; ops: ProgramOp[]; label: string; days: number; o: CommitOpts };
+
+interface CommitOpts {
+  optimistic?: ProgramView;
+  /** Toast when the server sends none (it still offers Undo). */
+  note?: string;
+  added?: { temp: string; parent: string | null };
+  then?: (v: ProgramView) => void;
+  refused?: (message: string) => void;
+}
+
 export function Program({ projectId, remoteVersion, active, onSignedOut }: Props) {
   const [view, setView] = useState<ProgramView | null | undefined>(undefined);
   const [error, setError] = useState("");
-  const [toast, setToast] = useState("");
+  const [toast, setToast] = useState<Toast | null>(null);
   const [busy, setBusy] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(() => readExpanded(projectId));
   const [sel, setSel] = useState<Selection>(emptySelection);
@@ -113,10 +159,24 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
   const [printing, setPrinting] = useState(false);
   const [checksOpen, setChecksOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
-  const [tooltip] = useState<{ x: number; y: number; text: string } | null>(null);
   const [startInput, setStartInput] = useState("");
+  const [editing, setEditing] = useState<Editing | null>(null);
+  const [focus, setFocus] = useState<CellFocus | null>(null);
+  const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [reason, setReason] = useState("");
+  const [linkPop, setLinkPop] = useState<{ id: string; x: number; y: number } | null>(null);
+  const [coarse] = useState(() => {
+    try {
+      return window.matchMedia("(pointer: coarse)").matches;
+    } catch {
+      return false;
+    }
+  });
 
   const scroller = useRef<HTMLDivElement>(null);
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null);
+  const gridcol = useRef<HTMLDivElement>(null);
+  const insert = useRef<HTMLDivElement>(null);
   const overlay = useRef<OverlayHandle>(null);
   const pendingScroll = useRef<{ left?: number; top?: number } | null>(null);
   const fitted = useRef(false);
@@ -124,6 +184,14 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
   const dragging = useRef(false);
   const refetchOnRelease = useRef(false);
   const divider = useRef<{ x: number; w: number } | null>(null);
+  /** The view on screen (optimistic included) and the last one the server sent. */
+  const viewRef = useRef<ProgramView | null>(null);
+  const confirmed = useRef<ProgramView | null>(null);
+  const queue = useRef<Promise<void>>(Promise.resolve());
+  /** Bar x positions before a state change, for the settle animation. */
+  const settleFrom = useRef<Map<string, number> | null>(null);
+  /** Where DOM focus goes after the next render: a grid cell or a bar. */
+  const focusNext = useRef<{ kind: "cell" | "bar"; id: string } | null>(null);
 
   const fail = useCallback(
     (e: unknown) => {
@@ -133,15 +201,23 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     [onSignedOut],
   );
 
+  const show = useCallback((v: ProgramView | null) => {
+    viewRef.current = v;
+    setView(v);
+  }, []);
+
   const load = useCallback(() => {
     programApi.read(projectId).then(
       (v) => {
-        setView(v);
+        confirmed.current = v;
+        captureBars();
+        show(v);
         setError("");
       },
       (e) => fail(e),
     );
-  }, [projectId, fail]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, fail, show]);
 
   useEffect(load, [load]);
 
@@ -153,7 +229,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     else load();
   }, [remoteVersion, view, load]);
 
-  /** For WP-P8: call when a drag ends to run a refetch deferred during it. */
+  /** Ends a drag and runs a refetch deferred during it. */
   const releaseDrag = useCallback(() => {
     dragging.current = false;
     if (refetchOnRelease.current) {
@@ -161,27 +237,57 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
       load();
     }
   }, [load]);
-  void releaseDrag;
 
-  /** Replaces state with a write response; a 409 shows the newer version. */
+  // Record where every bar is drawn now, so the next render can ease from it.
+  function captureBars() {
+    const svg = scroller.current?.querySelector(".pg-chart");
+    if (!svg || reducedMotion()) return;
+    const m = new Map<string, number>();
+    for (const el of svg.querySelectorAll<SVGGElement>(".pg-layer-bars .pg-bar")) m.set(el.dataset.id!, Number(el.dataset.x) + Number(el.dataset.dx ?? 0));
+    settleFrom.current = m;
+  }
+
+  /**
+   * Runs a write in order after any write before it, against the last
+   * version the server sent. A 409 shows the other user's version; a 422
+   * restores what was there and shows the server's message.
+   */
   const apply = useCallback(
-    async (write: () => Promise<ProgramView>) => {
-      setBusy(true);
-      try {
-        const next = await write();
-        setView(next);
-        setError("");
-        if (next.toasts?.length) setToast(next.toasts.join(" "));
-      } catch (e) {
-        if (e instanceof ProgramConflict) {
-          setView(e.current);
-          setToast(e.message);
-        } else fail(e);
-      } finally {
-        setBusy(false);
-      }
+    (write: (v: ProgramView | null) => Promise<ProgramView>, o: ApplyOpts = {}) => {
+      if (o.optimistic) flushSync(() => show(o.optimistic!));
+      const run = async () => {
+        setBusy(true);
+        try {
+          const next = await write(confirmed.current);
+          confirmed.current = next;
+          captureBars();
+          show(next);
+          setError("");
+          const words = next.toasts ?? [];
+          if (words.length || o.note) setToast({ text: words.length ? words.join(" ") : o.note!, undo: o.undoable });
+          else if (o.undoable) setToast(null);
+          o.then?.(next);
+        } catch (e) {
+          if (e instanceof ProgramConflict) {
+            confirmed.current = e.current;
+            show(e.current);
+            setToast({ text: e.message, alert: true });
+          } else if (e instanceof ProgramRefused) {
+            captureBars();
+            show(confirmed.current);
+            setToast({ text: e.message, alert: true });
+            o.refused?.(e.message);
+          } else {
+            if (o.optimistic) show(confirmed.current);
+            fail(e);
+          }
+        } finally {
+          setBusy(false);
+        }
+      };
+      queue.current = queue.current.then(run, run);
     },
-    [fail],
+    [fail, show],
   );
 
   // --- derived model -------------------------------------------------------
@@ -195,12 +301,23 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     const parentOf = new Map(view.activities.map((a) => [a.id, a.parent_id]));
     const withKids = stagesWithChildren(view.activities);
     const today = cal.relative ? null : cal.indexOnOrAfter(todayString());
+    const byId = new Map(view.activities.map((a) => [a.id, a]));
+    // Row → label of the row driving its start, for "held by Slab" (plan 9.5).
+    const drivers = new Map<string, string>();
+    const linkById = new Map(view.links.map((l) => [l.id, l]));
+    for (const id of view.computed.driving_links ?? []) {
+      const l = linkById.get(id);
+      if (l && !drivers.has(l.succ_id)) drivers.set(l.succ_id, byId.get(l.pred_id)?.label ?? "");
+    }
     return {
       cal,
       plain,
       parentOf,
       withKids,
       today,
+      byId,
+      drivers,
+      preds: predecessorTexts(view.links, rowNumbers(view.activities)),
       times: view.computed.activities as Record<string, Times>,
       driving: new Set(view.computed.driving_links ?? []),
       conflicts: new Set((view.computed.conflicts ?? []).map((c) => c.activity_id)),
@@ -241,6 +358,49 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     [model, view, rows, showLinks, first, last],
   );
 
+  // --- settle and focus after a render ----------------------------------------
+
+  useLayoutEffect(() => {
+    const from = settleFrom.current;
+    settleFrom.current = null;
+    const svg = scroller.current?.querySelector(".pg-chart");
+    if (!from || !svg) return;
+    // Plan 9.4 "Settle": bars ease to where the server put them over 150 ms.
+    const moved: SVGGElement[] = [];
+    for (const el of svg.querySelectorAll<SVGGElement>(".pg-layer-bars .pg-bar")) {
+      const old = from.get(el.dataset.id!);
+      const now = Number(el.dataset.x);
+      el.style.transition = "";
+      delete el.dataset.dx;
+      if (old === undefined || Math.abs(old - now) < 0.5) {
+        el.style.transform = "";
+        continue;
+      }
+      el.style.transform = `translateX(${old - now}px)`;
+      moved.push(el);
+    }
+    if (!moved.length) return;
+    void svg.getBoundingClientRect();
+    for (const el of moved) {
+      el.style.transition = "transform 150ms ease-out";
+      el.style.transform = "";
+      window.setTimeout(() => (el.style.transition = ""), 200);
+    }
+  }, [view]);
+
+  useLayoutEffect(() => {
+    const f = focusNext.current;
+    if (!f || !scroller.current) return;
+    const el =
+      f.kind === "cell"
+        ? scroller.current.querySelector<HTMLElement>('.pg-gridcol [data-focus="1"]')
+        : scroller.current.querySelector<SVGGElement>(`.pg-layer-bars [data-id="${f.id}"]`);
+    if (el) {
+      focusNext.current = null;
+      el.focus({ preventScroll: true });
+    }
+  });
+
   // --- scrolling, measuring and fitting -------------------------------------
 
   const live = useRef({ rows: 0, rowH: ROW_H, gw: GRID_W });
@@ -270,6 +430,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
 
   useLayoutEffect(() => {
     const el = scroller.current;
+    setScrollEl(el);
     if (!el) return;
     const ro = new ResizeObserver(() => {
       setBox((b) => (b.w === el.clientWidth && b.h === el.clientHeight ? b : { w: el.clientWidth, h: el.clientHeight }));
@@ -303,15 +464,17 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     [chartViewW, origin],
   );
 
+  const note = useCallback((text: string) => setToast({ text }), []);
+
   const fitScreen = useCallback(() => {
-    if (!fitTo(span)) setToast("Nothing to fit yet: no row has a known duration.");
-  }, [fitTo, span]);
+    if (!fitTo(span)) note("Nothing to fit yet: no row has a known duration.");
+  }, [fitTo, span, note]);
 
   const fitSelection = useCallback(() => {
     if (!model) return;
-    if (sel.ids.length === 0) return setToast("Select rows to fit them.");
-    if (!fitTo(extent(sel.ids, model.times))) setToast("The selected rows have no known dates to fit.");
-  }, [fitTo, model, sel]);
+    if (sel.ids.length === 0) return note("Select rows to fit them.");
+    if (!fitTo(extent(sel.ids, model.times))) note("The selected rows have no known dates to fit.");
+  }, [fitTo, model, sel, note]);
 
   const fitRows = useCallback(() => {
     const el = scroller.current;
@@ -341,11 +504,24 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
   );
 
   const goToday = useCallback(() => {
-    if (!model || model.today === null) return setToast("Set a start date to see today on the program.");
-    if (model.today < origin || model.today > endIndex) return setToast(`Today (${fmtDate(todayString())}) is outside the program.`);
+    if (!model || model.today === null) return note("Set a start date to see today on the program.");
+    if (model.today < origin || model.today > endIndex) return note(`Today (${fmtDate(todayString())}) is outside the program.`);
     pendingScroll.current = { left: xOf(model.today, v) - chartViewW / 3 };
     setWin((w) => ({ ...w })); // render so the scroll applies
-  }, [model, origin, endIndex, v, chartViewW]);
+  }, [model, origin, endIndex, v, chartViewW, note]);
+
+  /** Scrolls so row i is inside the visible rows. */
+  const reveal = useCallback(
+    (i: number) => {
+      const el = scroller.current;
+      if (!el) return;
+      const top = i * rowH;
+      const viewH = el.clientHeight - SCALE_H;
+      if (top < el.scrollTop) el.scrollTop = top;
+      else if (top + rowH > el.scrollTop + viewH) el.scrollTop = top + rowH - viewH;
+    },
+    [rowH],
+  );
 
   // --- expand and collapse ---------------------------------------------------
 
@@ -373,6 +549,261 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     [order],
   );
 
+  // --- edits ---------------------------------------------------------------------
+
+  /**
+   * Sends one batch. A milestone given days asks first (plan 13.1); a row
+   * added by the batch opens for naming once the server has given it an id.
+   */
+  const commit = useCallback(
+    (ops: ProgramOp[], o: CommitOpts = {}, confirmedMilestone = false) => {
+      const cur = viewRef.current;
+      if (!cur) return;
+      if (!confirmedMilestone) {
+        for (const op of ops) {
+          const a = op.id ? cur.activities.find((x) => x.id === op.id) : undefined;
+          if ((op.op === "resize" || op.op === "update") && a?.kind === "milestone" && typeof op.duration_days === "number" && op.duration_days > 0) {
+            setDialog({ kind: "milestone", ops, label: a.label, days: op.duration_days, o });
+            return;
+          }
+        }
+      }
+      apply((v) => programApi.ops(projectId, v!, ops), {
+        optimistic: o.optimistic,
+        undoable: true,
+        note: o.note,
+        refused: o.refused,
+        then: (next) => {
+          if (o.added) {
+            const id = next.temp_ids?.[o.added.temp];
+            if (id) {
+              if (o.added.parent && !expanded.has(o.added.parent)) setOpen(new Set([...expanded, o.added.parent]));
+              setSel({ ids: [id], anchor: id, base: [] });
+              setFocus({ id, col: "name" });
+              setEditing({ id, col: "name", error: "" });
+            }
+          }
+          o.then?.(next);
+        },
+      });
+    },
+    [apply, projectId, expanded, setOpen],
+  );
+
+  const undo = useCallback(() => apply((v) => programApi.undo(projectId, v!), { note: "Undone." }), [apply, projectId]);
+  const redo = useCallback(() => apply((v) => programApi.redo(projectId, v!), { note: "Redone." }), [apply, projectId]);
+
+  const linkChain = useCallback(() => {
+    if (!view) return;
+    const ids = inOutline(sel.ids, view.activities);
+    if (ids.length < 2) return note("Select two or more rows to link them in sequence.");
+    commit([{ op: "link_chain", ids }]);
+  }, [view, sel, commit, note]);
+
+  const remove = useCallback(() => {
+    if (!view || !sel.ids.length) return;
+    // The focused row may go: keep keyboard focus in the program so Undo still works.
+    const inChart = !!(document.activeElement as HTMLElement | null)?.closest?.(".pg-chartcol");
+    ((inChart ? scroller.current?.querySelector(".pg-chartcol") : gridcol.current) as HTMLElement | null)?.focus({ preventScroll: true });
+    const plan = deletePlan(sel.ids, view.activities, view.links);
+    if (plan.stages.length || plan.holds.length) {
+      setReason("");
+      setDialog({ kind: "delete", ids: [...sel.ids], plan });
+    } else commit([{ op: "delete", ids: [...sel.ids] }], { note: deletedNote(plan) });
+  }, [view, sel, commit]);
+
+  const nudge = useCallback((days: number) => sel.ids.length && commit([{ op: "move", ids: [...sel.ids], days }]), [sel, commit]);
+
+  const tier = useCallback(
+    (op: "indent" | "outdent") => view && sel.ids.length && commit([{ op, ids: inOutline(sel.ids, view.activities) }]),
+    [view, sel, commit],
+  );
+
+  const reorder = useCallback(
+    (dir: -1 | 1) => {
+      if (!view || !sel.ids.length) return;
+      const op = reorderStep(sel.ids, view.activities, dir);
+      if (op) commit([op]);
+      else note(sel.ids.some((id) => model?.byId.get(id)?.parent_id) && sel.ids.some((id) => !model?.byId.get(id)?.parent_id) ? "Move stages or activities, not both at once." : "It can't move further that way.");
+    },
+    [view, sel, commit, note, model],
+  );
+
+  /** A row's add op placed directly below it. */
+  const addBelow = (r: Row, temp: string): ProgramOp =>
+    r.stage ? { op: "add", temp_id: temp, after_id: r.id, label: "New stage" } : { op: "add", temp_id: temp, parent_id: r.parentId!, after_id: r.id, label: "New activity" };
+
+  const onEdit = useCallback(
+    (id: string, col: EditCol) => {
+      const r = rows.find((x) => x.id === id);
+      if (!r) return;
+      if (col === "duration" && r.hasChildren) return note("A stage with activities takes its length from them.");
+      setFocus({ id, col });
+      setEditing({ id, col, error: "" });
+    },
+    [rows, note],
+  );
+
+  const onCommit = useCallback(
+    (id: string, col: EditCol, text: string, key: CommitKey) => {
+      if (!view || !model) return;
+      const r = rows.find((x) => x.id === id);
+      if (!r) return setEditing(null);
+      const keep = (msg: string) => setEditing({ id, col, error: msg });
+      const at = rows.indexOf(r);
+      const next = (k: CommitKey) => {
+        if (k === "tab" || k === "shift-tab") {
+          const to = rows[at + (k === "tab" ? 1 : -1)];
+          if (to) {
+            setFocus({ id: to.id, col: "name" });
+            setSel({ ids: [to.id], anchor: to.id, base: [] });
+            setEditing({ id: to.id, col: "name", error: "" });
+            reveal(at + (k === "tab" ? 1 : -1));
+            return;
+          }
+        }
+        setEditing(null);
+        focusNext.current = { kind: "cell", id };
+      };
+      if (col === "name") {
+        const label = text.trim();
+        if (label.length < 1 || label.length > 200) return keep("Names are 1 to 200 characters.");
+        if (label !== r.act.label) {
+          const optimistic = { ...view, activities: view.activities.map((a) => (a.id === id ? { ...a, label } : a)) };
+          commit([{ op: "update", id, label }], { optimistic });
+        }
+        return next(key);
+      }
+      if (col === "duration") {
+        let days: number | null = null;
+        if (text.trim() !== "") {
+          const d = parseDuration(text, model.cal.perWeek);
+          if (!d.ok) return keep(d.error);
+          if (d.value.low !== d.value.high) return keep("Type one duration, for example 5, 5d or 3w.");
+          days = d.value.low;
+        }
+        setEditing(null);
+        focusNext.current = { kind: "cell", id };
+        const many = selected.has(id) && sel.ids.length > 1;
+        if (many) {
+          const ids = sel.ids.filter((x) => !rows.find((y) => y.id === x)?.hasChildren);
+          if (ids.length > 1) return setDialog({ kind: "durations", ids, days });
+        }
+        if (days !== r.act.duration_days) commit([{ op: "update", id, duration_days: days }]);
+        if (key === "tab") setEditing({ id, col: "predecessors", error: "" });
+        return;
+      }
+      // Predecessors: typed rows become link adds, updates and deletes.
+      const refs = parsePredecessors(text, model.cal.perWeek);
+      if (!refs.ok) return keep(refs.error);
+      const diff = predecessorOps(id, refs.value, view.activities, view.links);
+      if ("error" in diff) return keep(diff.error);
+      const ops = [...diff.ops];
+      setEditing(null);
+      // Enter on the last cell adds a row below (plan 9.5).
+      if (key === "enter") {
+        ops.push(addBelow(r, "below-1"));
+        commit(ops, { added: { temp: "below-1", parent: r.stage ? null : r.parentId } });
+      } else {
+        focusNext.current = { kind: "cell", id };
+        if (ops.length) commit(ops);
+      }
+    },
+    [view, model, rows, commit, selected, sel, reveal],
+  );
+
+  const onCancel = useCallback(() => {
+    if (editing) focusNext.current = { kind: "cell", id: editing.id };
+    setEditing(null);
+  }, [editing]);
+
+  const onFocusCell = useCallback((id: string, col: string) => setFocus((f) => (f && f.id === id && f.col === col ? f : { id, col })), []);
+
+  const onCatalogue = useCallback((id: string, stage: string) => stage !== "other" && commit([{ op: "update", id, catalogue_stage_id: stage }]), [commit]);
+
+  // --- dragging grid rows to reorder (plan 9.4) --------------------------------
+
+  const onHandleDown = useCallback(
+    (e: ReactPointerEvent<HTMLElement>, id: string) => {
+      if (!view || (e.pointerType === "mouse" && e.button !== 0)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const isStage = (x: string) => !model?.byId.get(x)?.parent_id;
+      const ids = selected.has(id) ? inOutline(sel.ids.filter((x) => isStage(x) === isStage(id)), view.activities) : [id];
+      if (!selected.has(id)) setSel({ ids: [id], anchor: id, base: [] });
+      const col = gridcol.current;
+      const line = insert.current;
+      if (!col || !line) return;
+      const y0 = e.clientY;
+      let started = false;
+      let drop: ReturnType<typeof dropTarget> = null;
+      const hide = () => line.setAttribute("hidden", "");
+      const stop = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+        window.removeEventListener("pointercancel", cancel);
+        window.removeEventListener("keydown", key, true);
+        hide();
+        if (started) releaseDrag();
+      };
+      const move = (ev: PointerEvent) => {
+        if (!started && Math.abs(ev.clientY - y0) < 4) return;
+        if (!started) {
+          started = true;
+          dragging.current = true;
+        }
+        drop = dropTarget(rows, ids, ev.clientY - col.getBoundingClientRect().top, rowH, view.activities);
+        if (!drop) return hide();
+        line.removeAttribute("hidden");
+        line.className = drop.line >= 0 ? "pg-insert" : "pg-insert is-into";
+        line.style.top = `${drop.line >= 0 ? drop.line * rowH - 1 : drop.into * rowH}px`;
+        line.style.height = drop.line >= 0 ? "2px" : `${rowH}px`;
+      };
+      const up = () => {
+        stop();
+        if (started && drop) commit([drop.op]);
+      };
+      const cancel = () => stop();
+      const key = (ev: globalThis.KeyboardEvent) => {
+        if (ev.key !== "Escape") return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        drop = null;
+        stop();
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+      window.addEventListener("pointercancel", cancel);
+      window.addEventListener("keydown", key, true);
+    },
+    [view, model, selected, sel, rows, rowH, commit, releaseDrag],
+  );
+
+  // --- the chart's pointer gestures (chart/useDrag.ts) ---------------------------
+
+  const drag = useDrag({
+    view: view ?? ({ activities: [], links: [] } as unknown as ProgramView),
+    rows,
+    times: model?.times ?? {},
+    v,
+    cal: model?.cal ?? new Cal({}),
+    selIds: sel.ids,
+    overlay: () => overlay.current,
+    scroller: scrollEl,
+    select: onSelect,
+    addToSelection: (ids) => setSel((s) => {
+      const all = [...s.ids, ...ids.filter((x) => !s.ids.includes(x))];
+      return { ids: all, anchor: s.anchor ?? all[0] ?? null, base: all };
+    }),
+    clearSelection: () => {
+      setSel(emptySelection);
+      (scroller.current?.querySelector(".pg-chartcol") as HTMLElement | null)?.focus({ preventScroll: true });
+    },
+    commit: (ops, o) => commit(ops, o ?? {}),
+    openLink: (id, x, y) => setLinkPop({ id, x, y }),
+    setDragging: (on) => (on ? (dragging.current = true) : releaseDrag()),
+  });
+
   // --- print: every row, no virtualisation (plan 9.7) ------------------------
 
   useEffect(() => {
@@ -387,26 +818,57 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
     };
   }, [active]);
 
-  // --- keyboard (plan 9.5; WP-P7 subset) --------------------------------------
+  // --- keyboard (plan 9.5) ----------------------------------------------------
+
+  function moveFocus(dRow: number, dCol: number, extend: boolean, inChart: string | null) {
+    const id = inChart ?? focus?.id ?? sel.anchor ?? order[0];
+    if (!id) return;
+    const i = order.indexOf(id);
+    const j = Math.max(0, Math.min(order.length - 1, (i < 0 ? 0 : i) + dRow));
+    const to = order[j];
+    if (inChart) {
+      setSel((s) => clickRow(s, to, order, { shift: extend }));
+      focusNext.current = { kind: "bar", id: to };
+      reveal(j);
+      return;
+    }
+    const cols = narrow ? ["name"] : COLS;
+    const c = Math.max(0, Math.min(cols.length - 1, cols.indexOf(focus?.col ?? "name") + dCol));
+    setFocus({ id: to, col: cols[c] });
+    if (dRow) setSel((s) => clickRow(s, to, order, { shift: extend }));
+    focusNext.current = { kind: "cell", id: to };
+    reveal(j);
+  }
 
   function onKeyDown(e: KeyboardEvent) {
     const t = e.target as HTMLElement;
-    if (t.closest("input, textarea, select")) return;
+    if (t.closest("input, textarea, select, dialog, .pg-pop")) return;
     const mod = e.ctrlKey || e.metaKey;
-    if (mod && e.key === "[") {
+    const k = e.key;
+    const bar = (t.closest(".pg-layer-bars [data-id]") as HTMLElement | null)?.dataset.id ?? null;
+    const cell = t.closest(".pg-gridcol [data-col]") as HTMLElement | null;
+    const act = (fn: () => void) => {
       e.preventDefault();
-      collapseAll();
-    } else if (mod && e.key === "]") {
-      e.preventDefault();
-      expandAll();
-    } else if (mod && (e.key === "a" || e.key === "A")) {
-      e.preventDefault();
-      setSel(selectAll(order));
-    } else if (!mod && !e.altKey && (e.key === "f" || e.key === "F")) {
-      e.preventDefault();
-      if (e.shiftKey) fitSelection();
-      else fitScreen();
-    } else if (e.key === "Escape") {
+      fn();
+    };
+    if (mod && k === "[") act(collapseAll);
+    else if (mod && k === "]") act(expandAll);
+    else if (mod && (k === "a" || k === "A")) act(() => setSel(selectAll(order)));
+    else if (mod && (k === "z" || k === "Z")) act(e.shiftKey ? redo : undo);
+    else if (mod && (k === "y" || k === "Y")) act(redo);
+    else if (mod && (k === "l" || k === "L")) act(linkChain);
+    else if (!mod && !e.altKey && (k === "f" || k === "F")) act(e.shiftKey ? fitSelection : fitScreen);
+    else if (k === "Delete" || k === "Backspace") act(remove);
+    else if (e.altKey && (k === "ArrowUp" || k === "ArrowDown")) act(() => reorder(k === "ArrowUp" ? -1 : 1));
+    else if (e.shiftKey && (k === "ArrowLeft" || k === "ArrowRight")) act(() => nudge(k === "ArrowLeft" ? -1 : 1));
+    else if (k === "ArrowUp" || k === "ArrowDown") act(() => moveFocus(k === "ArrowUp" ? -1 : 1, 0, e.shiftKey, bar));
+    else if ((k === "ArrowLeft" || k === "ArrowRight") && cell) act(() => moveFocus(0, k === "ArrowLeft" ? -1 : 1, false, null));
+    else if ((k === "Enter" || k === "F2") && cell && focus) {
+      const col = focus.col as EditCol;
+      if (col === "name" || col === "duration" || col === "predecessors") act(() => onEdit(focus.id, col));
+    } else if (k === "Tab" && cell && focus?.col === "name" && sel.ids.length) act(() => tier(e.shiftKey ? "outdent" : "indent"));
+    else if (k === "Escape") {
+      setLinkPop(null);
       setSel(emptySelection);
     }
   }
@@ -455,7 +917,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
         {error && <Failure error={error} retry={load} />}
         <div className="program-empty">
           <p>No program yet. SiteWise builds one from the Profile, the included work and the Procurement packages; nothing is guessed, and unknown durations stay unknown.</p>
-          <button type="button" className="btn pg-build" disabled={busy} onClick={() => void apply(() => programApi.prepare(projectId))}>
+          <button type="button" className="btn pg-build" disabled={busy} onClick={() => apply(() => programApi.prepare(projectId))}>
             {busy ? "Building…" : "Build program"}
           </button>
         </div>
@@ -473,15 +935,27 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
   const askStart = !view.program.start_date;
   const anyOpen = rows.some((r) => !r.stage);
   const scaleProps = { cal: m.cal, v, lo, hi, scale, width: chartW, version: view.program.version };
+  const zone = coarse ? ZONE_COARSE : ZONE_FINE;
+  const popLink = linkPop ? view.links.find((l) => l.id === linkPop.id) : undefined;
 
-  const chart = (from: number, to: number, w: number, vp: Viewport, ticksLo: number, ticksHi: number, withOverlay: boolean) => {
+  const chart = (from: number, to: number, w: number, vp: Viewport, ticksLo: number, ticksHi: number, onScreen: boolean) => {
     const links = printing ? (showLinks ? drawnLinks(view.links, rows, m.parentOf, from, to) : []) : drawn;
     return (
-      <svg className="pg-chart" width={w} height={rows.length * vp.rowH} role="presentation">
+      <svg
+        className="pg-chart"
+        width={w}
+        height={rows.length * vp.rowH}
+        role="presentation"
+        ref={onScreen ? drag.svg : undefined}
+        onPointerDown={onScreen ? drag.onPointerDown : undefined}
+        onPointerMove={onScreen ? drag.onPointerMove : undefined}
+        onPointerUp={onScreen ? drag.onPointerUp : undefined}
+        onPointerCancel={onScreen ? drag.onPointerCancel : undefined}
+      >
         <TimescaleGrid {...scaleProps} v={vp} lo={ticksLo} hi={ticksHi} width={w} plain={m.plain} height={rows.length * vp.rowH} today={m.today} />
-        <Bars rows={rows} times={m.times} v={vp} first={from} last={to} selected={selected} conflicts={m.conflicts} relative={m.cal.relative} version={view.program.version} />
+        <Bars rows={rows} times={m.times} v={vp} first={from} last={to} selected={onScreen ? selected : new Set()} conflicts={m.conflicts} relative={m.cal.relative} version={view.program.version} drivers={m.drivers} zone={zone} />
         <Links drawn={links} rows={rows} times={m.times} v={vp} driving={m.driving} version={view.program.version} />
-        {withOverlay && <Overlay ref={overlay} tooltip={tooltip} height={rows.length * vp.rowH} />}
+        {onScreen && <Overlay ref={overlay} height={rows.length * vp.rowH} />}
       </svg>
     );
   };
@@ -510,13 +984,13 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
           <button type="button" className="btn btn-small" onClick={goToday}>Today</button>
         </div>
         <div className="pg-tools">
-          <button type="button" className="btn btn-small" disabled title="Editing arrives in the next build">Undo</button>
-          <button type="button" className="btn btn-small" disabled title="Editing arrives in the next build">Redo</button>
-          <button type="button" className="btn btn-small" disabled title="Editing arrives in the next build">Link in sequence</button>
+          <button type="button" className="btn btn-small" onClick={undo} title="Ctrl+Z">Undo</button>
+          <button type="button" className="btn btn-small" onClick={redo} title="Ctrl+Shift+Z">Redo</button>
+          <button type="button" className="btn btn-small" disabled={sel.ids.length < 2} onClick={linkChain} title="Ctrl+L">Link in sequence</button>
         </div>
         <div className="pg-tools">
           {m.proposed > 0 && (
-            <button type="button" className="btn btn-small pg-accept" disabled={busy} onClick={() => void apply(() => programApi.acceptAll(projectId, view))}>
+            <button type="button" className="btn btn-small pg-accept" disabled={busy} onClick={() => apply((cur) => programApi.acceptAll(projectId, cur!))}>
               Accept all ({m.proposed})
             </button>
           )}
@@ -546,7 +1020,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
             <div className="pg-q">
               <span className="pg-q-label">{q.label}</span>
               {q.number ? (
-                <NumberAnswer disabled={busy} onSave={(n) => void apply(() => programApi.answer(projectId, view, q.key, n))} />
+                <NumberAnswer disabled={busy} onSave={(n) => apply((cur) => programApi.answer(projectId, cur!, q.key, n))} />
               ) : (
                 q.options.map((label, i) => (
                   <button
@@ -554,7 +1028,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
                     type="button"
                     className="btn btn-small"
                     disabled={busy}
-                    onClick={() => void apply(() => programApi.answer(projectId, view, q.key, q.values[i] ?? "not_sure"))}
+                    onClick={() => apply((cur) => programApi.answer(projectId, cur!, q.key, q.values[i] ?? "not_sure"))}
                   >
                     {label}
                   </button>
@@ -566,7 +1040,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
           {askStart && (
             <div className="pg-q">
               {view.start_suggestion ? (
-                <button type="button" className="btn btn-small" disabled={busy} onClick={() => void apply(() => programApi.setStart(projectId, view, view.start_suggestion))}>
+                <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply((cur) => programApi.setStart(projectId, cur!, view.start_suggestion))}>
                   Start on {fmtDate(view.start_suggestion)} (consent date)
                 </button>
               ) : (
@@ -580,7 +1054,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
                 type="button"
                 className="btn btn-small"
                 disabled={busy || !/^\d{4}-\d{2}-\d{2}$/.test(startInput)}
-                onClick={() => void apply(() => programApi.setStart(projectId, view, startInput))}
+                onClick={() => apply((cur) => programApi.setStart(projectId, cur!, startInput))}
               >
                 Set start
               </button>
@@ -644,7 +1118,7 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
           <div className="pg-scale">
             <TimescaleHeader {...scaleProps} />
           </div>
-          <div className="pg-gridcol" role="treegrid" tabIndex={0} aria-label="Program rows" aria-rowcount={rows.length + 1} aria-multiselectable="true" style={{ height }}>
+          <div className="pg-gridcol" ref={gridcol} role="treegrid" tabIndex={0} aria-label="Program rows" aria-rowcount={rows.length + 1} aria-multiselectable="true" style={{ height }}>
             <div role="row" className="sr-only" aria-rowindex={1}>
               {(narrow ? ["Name"] : GRID_COLUMNS).map((c) => (
                 <span key={c} role="columnheader">{c}</span>
@@ -662,7 +1136,18 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
               version={view.program.version}
               onToggle={toggle}
               onSelect={onSelect}
+              preds={m.preds}
+              editing={editing}
+              focus={focus}
+              catalogue={view.catalogue_stages}
+              onEdit={onEdit}
+              onCommit={onCommit}
+              onCancel={onCancel}
+              onFocusCell={onFocusCell}
+              onHandleDown={onHandleDown}
+              onCatalogue={onCatalogue}
             />
+            <div ref={insert} className="pg-insert" hidden aria-hidden="true" />
             {!narrow && (
               <div
                 className="pg-divider"
@@ -679,17 +1164,107 @@ export function Program({ projectId, remoteVersion, active, onSignedOut }: Props
               />
             )}
           </div>
-          <div className="pg-chartcol">{!printing && chart(first, last, chartW, v, lo, hi, true)}</div>
+          <div className="pg-chartcol" tabIndex={-1}>
+            {!printing && chart(first, last, chartW, v, lo, hi, true)}
+            {popLink && linkPop && (
+              <LinkPopover
+                key={popLink.id}
+                x={linkPop.x}
+                y={linkPop.y}
+                type={popLink.type}
+                lag={popLink.lag_days}
+                unit={popLink.lag_unit}
+                title={`${m.byId.get(popLink.pred_id)?.label ?? ""} → ${m.byId.get(popLink.succ_id)?.label ?? ""}`}
+                onClose={() => setLinkPop(null)}
+                onSave={(type, lag, unit) => {
+                  setLinkPop(null);
+                  if (type !== popLink.type || lag !== popLink.lag_days || unit !== popLink.lag_unit) commit([{ op: "link_update", id: popLink.id, type, lag_days: lag, lag_unit: unit }]);
+                }}
+                onDelete={() => {
+                  setLinkPop(null);
+                  commit([{ op: "link_delete", ids: [popLink.id] }]);
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
 
       {printing && <PrintPages rows={rows} times={m.times} cal={m.cal} span={span} render={chart} version={view.program.version} />}
 
-      <p className="pg-toast" role="status" aria-live="polite">
-        {toast}
-      </p>
+      <div className={`pg-toast${toast?.alert ? " is-alert" : ""}`} role={toast?.alert ? "alert" : "status"} aria-live={toast?.alert ? "assertive" : "polite"}>
+        {toast?.text}
+        {toast?.undo && (
+          <button type="button" className="pg-toast-undo" onClick={() => (setToast(null), undo())}>
+            Undo
+          </button>
+        )}
+      </div>
+
+      {dialog?.kind === "delete" && (
+        <ConfirmDialog
+          title={dialog.plan.holds.length ? "Remove hold point" : "Delete stage"}
+          message={deleteWords(dialog.plan)}
+          confirmLabel="Delete"
+          confirmDisabled={dialog.plan.holds.length > 0 && !reason.trim()}
+          onCancel={() => setDialog(null)}
+          onConfirm={() => {
+            const ids = dialog.ids;
+            setDialog(null);
+            commit([{ op: "delete", ids, ...(reason.trim() ? { reason: reason.trim() } : {}) }], { note: deletedNote(dialog.plan) });
+          }}
+        >
+          {dialog.plan.holds.length > 0 && (
+            <label className="pg-reason">
+              <span>Why is it not needed?</span>
+              <input className="input" value={reason} maxLength={200} onChange={(e) => setReason(e.target.value)} />
+            </label>
+          )}
+        </ConfirmDialog>
+      )}
+      {dialog?.kind === "durations" && (
+        <ConfirmDialog
+          title="Set duration"
+          message={`Set the duration of ${dialog.ids.length} rows to ${dialog.days === null ? "unknown" : dialog.days === 0 ? "0 days (milestones)" : `${dialog.days} days`}?`}
+          confirmLabel={`Set ${dialog.ids.length} rows`}
+          tone="plain"
+          onCancel={() => setDialog(null)}
+          onConfirm={() => {
+            const d = dialog;
+            setDialog(null);
+            commit(d.ids.map((id) => ({ op: "update", id, duration_days: d.days })));
+          }}
+        />
+      )}
+      {dialog?.kind === "milestone" && (
+        <ConfirmDialog
+          title="Milestone to activity"
+          message={`${dialog.label} is a milestone. Giving it ${dialog.days} day${dialog.days === 1 ? "" : "s"} makes it an activity.`}
+          confirmLabel="Make it an activity"
+          tone="plain"
+          onCancel={() => setDialog(null)}
+          onConfirm={() => {
+            const d = dialog;
+            setDialog(null);
+            commit(d.ops, d.o, true);
+          }}
+        />
+      )}
     </section>
   );
+}
+
+/** "Delete Build and its 3 activities? 4 rows and 6 links are removed." (plan 13.1) */
+function deleteWords(p: DeletePlan): string {
+  const parts: string[] = [];
+  if (p.stages.length) parts.push(`Delete ${p.stages.join(", ")} with ${p.stages.length === 1 ? "its" : "their"} activities? ${p.rows} row${p.rows === 1 ? "" : "s"} and ${p.links} link${p.links === 1 ? "" : "s"} are removed.`);
+  if (p.holds.length) parts.push(`${p.holds.join(", ")} ${p.holds.length === 1 ? "is a hold point" : "are hold points"}: say why it is not needed. It is retired, not deleted, and a check stays visible.`);
+  parts.push("Undo restores it all.");
+  return parts.join(" ");
+}
+
+function deletedNote(p: DeletePlan): string {
+  return `Deleted ${p.rows} row${p.rows === 1 ? "" : "s"}.`;
 }
 
 function Failure({ error, retry }: { error: string; retry: () => void }) {
@@ -725,6 +1300,79 @@ function NumberAnswer({ disabled, onSave }: { disabled: boolean; onSave: (v: str
   );
 }
 
+// Click a link line (plan 9.4): type, lag, unit, delete.
+function LinkPopover({
+  x,
+  y,
+  type,
+  lag,
+  unit,
+  title,
+  onSave,
+  onDelete,
+  onClose,
+}: {
+  x: number;
+  y: number;
+  type: string;
+  lag: number;
+  unit: string;
+  title: string;
+  onSave: (type: string, lag: number, unit: string) => void;
+  onDelete: () => void;
+  onClose: () => void;
+}) {
+  const [t, setT] = useState(type);
+  const [l, setL] = useState(String(lag));
+  const [u, setU] = useState(unit);
+  const first = useRef<HTMLSelectElement>(null);
+  useEffect(() => first.current?.focus(), []);
+  const n = Number(l.replace("−", "-"));
+  const ok = /^[-−]?\d{1,3}$/.test(l.trim()) && n >= -365 && n <= 365;
+  return (
+    <div
+      className="pg-pop"
+      role="dialog"
+      aria-label={`Link ${title}`}
+      style={{ left: Math.round(x), top: Math.round(y) + 8 }}
+      onKeyDown={(e) => {
+        e.stopPropagation();
+        if (e.key === "Escape") onClose();
+        if (e.key === "Enter" && ok) onSave(t, n, u);
+      }}
+    >
+      <p className="pg-pop-title">{title}</p>
+      <label>
+        <span>Type</span>
+        <select ref={first} className="input" value={t} onChange={(e) => setT(e.target.value)}>
+          <option value="FS">Finish to start</option>
+          <option value="SS">Start to start</option>
+          <option value="FF">Finish to finish</option>
+          <option value="SF">Start to finish</option>
+        </select>
+      </label>
+      <label>
+        <span>Lag</span>
+        <input className="input" inputMode="numeric" value={l} onChange={(e) => setL(e.target.value)} aria-invalid={!ok || undefined} />
+      </label>
+      <label>
+        <span>Unit</span>
+        <select className="input" value={u} onChange={(e) => setU(e.target.value)}>
+          <option value="working">Working days</option>
+          <option value="calendar">Calendar days</option>
+        </select>
+      </label>
+      {!ok && <p className="pg-pop-error">Lag is a whole number of days from −365 to 365.</p>}
+      <p className="pg-pop-now">Now: {lagText(lag, unit)}</p>
+      <div className="pg-pop-actions">
+        <button type="button" className="btn btn-small btn-danger" onClick={onDelete}>Delete link</button>
+        <button type="button" className="btn btn-small" onClick={onClose}>Cancel</button>
+        <button type="button" className="btn btn-small pg-build" disabled={!ok} onClick={() => onSave(t, n, u)}>Save</button>
+      </div>
+    </div>
+  );
+}
+
 // A3 landscape pages (plan 9.7): every row in the current view, the
 // timescale header repeated on each page, the chart fitted to the page.
 function PrintPages({
@@ -739,7 +1387,7 @@ function PrintPages({
   times: Record<string, Times>;
   cal: Cal;
   span: [number, number] | null;
-  render: (from: number, to: number, w: number, v: Viewport, lo: number, hi: number, overlay: boolean) => ReactElement;
+  render: (from: number, to: number, w: number, v: Viewport, lo: number, hi: number, onScreen: boolean) => ReactElement;
   version: number;
 }) {
   const s = span ?? [0, 20];

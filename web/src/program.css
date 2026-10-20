@@ -51,7 +51,9 @@
 .pg-checks ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-body); flex-basis: 100%; }
 .pg-checks { flex-basis: 100%; }
 .pg-note { margin-bottom: 10px; padding: 8px 12px; border: 1px solid var(--warn); border-radius: var(--radius-sm); background: var(--warn-soft); color: var(--ink); }
-.pg-toast { min-height: 1.2em; margin: 8px 0 0; color: var(--ink-muted); font-size: 12.5px; }
+.pg-toast { display: flex; align-items: center; gap: 10px; min-height: 1.6em; margin: 8px 0 0; color: var(--ink-muted); font-size: 12.5px; }
+.pg-toast.is-alert { color: var(--alert); font-weight: 500; }
+.pg-toast-undo { border: 0; background: none; padding: 0; color: var(--ember-hot); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
 
 /* Split pane: one scroller in both directions; the grid column is sticky on
    the left and the timescale sticky on top, so the vertical scroll is shared
@@ -72,10 +74,12 @@
 .pg-gridcol { position: sticky; left: 0; z-index: 2; background: var(--paper); border-right: 1px solid var(--line-strong); overflow: hidden; }
 .pg-chartcol { position: relative; z-index: 1; }
 
-.pg-gridhead, .pg-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 84px 96px 96px; align-items: center; }
+.pg-gridhead, .pg-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 84px 96px 96px 100px; align-items: center; }
 .is-narrow .pg-gridhead, .is-narrow .pg-row { grid-template-columns: minmax(0, 1fr); }
 .pg-gridhead { height: 100%; padding-top: 18px; font-size: 12px; font-weight: 600; color: var(--ink-muted); }
 .pg-cell { padding: 0 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* Full row height, so an empty cell can still be clicked and edited. */
+.pg-row > .pg-cell { align-self: stretch; line-height: calc(var(--pg-row-h, 28px) - 1px); }
 .pg-rows { will-change: transform; }
 .pg-row { box-sizing: border-box; border-bottom: 1px solid var(--line); cursor: default; user-select: none; }
 .pg-row:hover { background: var(--ground); }
@@ -146,6 +150,51 @@
 .pg-selbox { fill: color-mix(in oklab, var(--ember) 10%, transparent); stroke: var(--ember); }
 .pg-tip rect { fill: var(--ink); }
 .pg-tip text { fill: var(--paper); font-size: 11px; }
+
+/* Editing (WP-P8) */
+.pg-row.is-editing { position: relative; z-index: 3; }
+.pg-cell:focus-visible { outline: 2px solid var(--sw-action-focus); outline-offset: -2px; }
+.pg-edit { width: 100%; min-width: 0; height: calc(var(--pg-row-h) - 6px); padding: 0 6px; border: 1px solid var(--ember); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; }
+.pg-edit[aria-invalid="true"] { border-color: var(--alert); }
+.pg-cell-error { position: absolute; left: 40px; top: 100%; z-index: 4; max-width: 420px; padding: 4px 8px; border: 1px solid var(--alert); border-radius: var(--radius-sm); background: var(--alert-soft); color: var(--ink); font-size: 12px; white-space: normal; }
+.pg-pred { font-family: var(--mono); font-size: 11.5px; color: var(--ink-body); }
+.pg-num { position: relative; }
+.pg-handle { position: absolute; left: 2px; top: 50%; width: 10px; height: 14px; margin-top: -7px; cursor: grab; opacity: 0; touch-action: none;
+  background: radial-gradient(circle, var(--ink-muted) 1.2px, transparent 1.4px) 0 0 / 5px 5px; }
+.pg-row:hover .pg-handle, .pg-row.is-selected .pg-handle { opacity: 0.8; }
+.pg-insert { position: absolute; left: 0; right: 0; height: 2px; background: var(--ember); pointer-events: none; z-index: 4; }
+.pg-insert.is-into { background: color-mix(in oklab, var(--ember) 14%, transparent); outline: 2px solid var(--ember); outline-offset: -2px; }
+.pg-cat { flex: none; max-width: 110px; height: 20px; margin-left: auto; padding: 0 2px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); background: none; color: var(--ink-muted); font: inherit; font-size: 11px; }
+.pg-chartcol:focus { outline: none; }
+.pg-chart { touch-action: pan-x pan-y; }
+.pg-chart.is-armed, .pg-chart.is-moving, .pg-chart.is-resizing, .pg-chart.is-linking { touch-action: none; }
+.pg-chart.is-moving { cursor: grabbing !important; }
+.pg-chart.is-resizing { cursor: ew-resize !important; }
+.pg-chart.is-linking { cursor: crosshair !important; }
+.pg-chart.is-moving .pg-layer-links, .pg-chart.is-resizing .pg-layer-links { opacity: 0.25; }
+.pg-hit { fill: transparent; }
+.pg-bar.is-ghosted { opacity: 0.35; }
+.pg-dot { fill: var(--paper); stroke: var(--azure); stroke-width: 1.5; opacity: 0; pointer-events: none; cursor: crosshair; }
+.pg-bar:hover .pg-dot, .pg-bar.is-hover .pg-dot, .pg-chart.is-linking .pg-dot { opacity: 1; pointer-events: auto; }
+@media (pointer: coarse) {
+  .pg-bar:hover .pg-dot, .pg-bar.is-hover .pg-dot { opacity: 0; pointer-events: none; }
+  .pg-bar.is-selected .pg-dot { opacity: 1; pointer-events: auto; r: 7px; }
+}
+.pg-dot.is-target, .pg-bar.is-target .pg-shape { stroke: var(--ember); stroke-width: 3; }
+.pg-dot.is-target { fill: var(--ember); opacity: 1; }
+.pg-layer-overlay { pointer-events: none; }
+.pg-ghost { fill: color-mix(in oklab, var(--ember) 30%, transparent); stroke: var(--ember); stroke-dasharray: 3 2; }
+.pg-band { stroke: var(--ember); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.pg-link:focus-visible { outline: none; }
+.pg-link:focus-visible .pg-link-line { stroke: var(--sw-action-focus); stroke-width: 3; }
+.pg-pop { position: absolute; z-index: 6; display: grid; gap: 6px; width: 230px; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); box-shadow: 0 6px 20px rgb(0 0 0 / 0.14); font-size: 12.5px; }
+.pg-pop label { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: 8px; color: var(--ink-muted); }
+.pg-pop .input { height: 28px; }
+.pg-pop-title { margin: 0; font-weight: 600; color: var(--ink); }
+.pg-pop-now { margin: 0; color: var(--ink-muted); font-size: 11.5px; }
+.pg-pop-error { margin: 0; color: var(--alert); font-size: 11.5px; }
+.pg-pop-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.pg-reason { display: grid; gap: 4px; margin: 0 0 12px; color: var(--ink-muted); font-size: 12.5px; }
 
 @media (max-width: 760px) {
   .cockpit-scroll .program { padding: 12px 10px 16px; }

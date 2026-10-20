@@ -22,6 +22,7 @@ export interface ProgramActivity {
   ordinal: number;
   kind: string;
   label: string;
+  catalogue_stage_id?: string | null;
   package_id?: string | null;
   interface_id?: string | null;
   duration_days: number | null;
@@ -76,8 +77,55 @@ export interface ProgramView {
   skeleton: { id: string | null; label: string; reason: string };
   readings_pending: number;
   changes_pending: number;
-  /** Present on write responses only. */
+  /** The delivery stage catalogue, for remapping a user-made stage (owner answer Q5). */
+  catalogue_stages?: { id: string; label: string }[];
+  /** Present on write responses only (plan 8.1 feedback). */
   toasts?: string[];
+  temp_ids?: Record<string, string>;
+  healed_links?: ProgramLink[];
+  chain_added?: ProgramLink[];
+  chain_removed?: ProgramLink[];
+  backward_links?: ProgramLink[];
+  linked?: ProgramLink[];
+}
+
+/** One edit of an ops batch (plan 8.1). Any id may name an earlier temp_id. */
+export interface ProgramOp {
+  op: string;
+  temp_id?: string;
+  id?: string;
+  ids?: string[];
+  parent_id?: string;
+  after_id?: string;
+  kind?: string;
+  label?: string;
+  /** null makes the duration unknown; absent keeps it. */
+  duration_days?: number | null;
+  constraint_kind?: string;
+  constraint_date?: string;
+  catalogue_stage_id?: string;
+  days?: number;
+  start_date?: string | null;
+  reason?: string;
+  pred_id?: string;
+  succ_id?: string;
+  type?: string;
+  lag_days?: number;
+  lag_unit?: string;
+  day?: string;
+}
+
+/** A refused batch (422): the plain message plus what it names. */
+export class ProgramRefused extends ApiError {
+  constructor(
+    message: string,
+    readonly field = "",
+    readonly opIndex = -1,
+    readonly cycle: string[] = [],
+    readonly held: string[] = [],
+  ) {
+    super(422, message);
+  }
 }
 
 /** A stale write: the server's current view and its message (8.1). */
@@ -104,8 +152,8 @@ async function write(p: Promise<ProgramView>): Promise<ProgramView> {
     }
     if (e instanceof ApiError && e.status === 422) {
       try {
-        const body = JSON.parse(e.message) as { error?: string };
-        if (body.error) throw new ApiError(422, body.error);
+        const body = JSON.parse(e.message) as { error?: string; field?: string; op_index?: number; cycle?: string[]; held?: string[] };
+        if (body.error) throw new ProgramRefused(body.error, body.field ?? "", body.op_index ?? -1, body.cycle ?? [], body.held ?? []);
       } catch (inner) {
         if (inner instanceof ApiError) throw inner;
       }
@@ -136,6 +184,11 @@ export const programApi = {
         ops: [{ op: "set_start", start_date: start }],
       }),
     ),
+  /** One batch = one undo step; pinned to the version the edit was made on. */
+  ops: (p: string, v: ProgramView, ops: ProgramOp[]) =>
+    write(request<ProgramView>("POST", `${base(p)}/ops`, { program_id: v.program.id, version: v.program.version, ops })),
+  undo: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/undo`, { version: v.program.version })),
+  redo: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/redo`, { version: v.program.version })),
   exportHref: (p: string, view: "collapsed" | "expanded") => `/api${base(p)}/export?format=xlsx&view=${view}`,
 };
 

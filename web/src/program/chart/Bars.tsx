@@ -3,8 +3,9 @@
 // user or evidenced duration, azure light fill for library inference, amber
 // dashed outline for a proposal, alert red 2 px outline for the critical
 // path. A row with an unknown duration has no bar, only a dotted
-// "duration unknown" marker. WP-P8 attaches drag handlers to the `pg-bar`
-// groups through data-id; nothing here holds drag state.
+// "duration unknown" marker. useDrag finds bars by data-id and moves them
+// with transforms during a drag; nothing here holds drag state. Each bar has
+// a transparent hit area covering its end zones and two link dots.
 
 import { memo } from "react";
 import type { Times } from "../types";
@@ -22,6 +23,10 @@ export interface BarsProps {
   conflicts: ReadonlySet<string>;
   relative: boolean;
   version: number;
+  /** Row id → label of the row driving its start, for "held by Slab" (plan 9.5). */
+  drivers: ReadonlyMap<string, string>;
+  /** End-zone width: the hit area reaches this far past each end (plan 9.4). */
+  zone: number;
 }
 
 // The shell sets labels in var(--sans) (Instrument Sans; IBM Plex Sans is not
@@ -54,7 +59,7 @@ export function ownerClass(origin: string, durationOrigin: string | null): "o-us
   return origin === "user" || OWNED.has(durationOrigin ?? "") ? "o-user" : "o-library";
 }
 
-function ariaLabel(r: Row, t: Times | undefined, relative: boolean, held: boolean): string {
+function ariaLabel(r: Row, t: Times | undefined, relative: boolean, held: string | undefined): string {
   const parts = [r.act.label];
   if (t && !t.unknown && t.es !== null && t.ef !== null) {
     if (!relative && t.start) parts.push(t.finish ? `${fmtDate(t.start)} to ${fmtDate(t.finish)}` : fmtDate(t.start));
@@ -62,11 +67,11 @@ function ariaLabel(r: Row, t: Times | undefined, relative: boolean, held: boolea
   } else parts.push("duration unknown");
   if (t?.critical) parts.push("critical");
   if (r.act.review_status === "proposed") parts.push("proposed");
-  if (held) parts.push("held by a link");
+  if (held) parts.push(`held by ${held}`);
   return parts.join(", ");
 }
 
-export const Bars = memo(function Bars({ rows, times, v, first, last, selected, conflicts, relative }: BarsProps) {
+export const Bars = memo(function Bars({ rows, times, v, first, last, selected, conflicts, relative, drivers, zone }: BarsProps) {
   const out = [];
   const h = v.rowH;
   for (let i = first; i < last; i++) {
@@ -80,7 +85,7 @@ export const Bars = memo(function Bars({ rows, times, v, first, last, selected, 
       const stageT = r.parentId ? times[r.parentId] : undefined;
       const x = stageT && stageT.es !== null ? xOf(stageT.es, v) : xOf(0, v);
       out.push(
-        <g key={r.id} className="pg-unknown" data-id={r.id} role="img" aria-label={ariaLabel(r, t, relative, false)}>
+        <g key={r.id} className="pg-unknown" data-id={r.id} role="img" aria-label={ariaLabel(r, t, relative, undefined)}>
           <rect x={Math.round(x) + 0.5} y={Math.round(mid - 6) + 0.5} width={14} height={12} rx={2} />
           <text x={x + 7} y={mid + 4} textAnchor="middle">?</text>
           <text className="pg-unknown-text" x={x + 20} y={mid + 4}>duration unknown</text>
@@ -119,8 +124,16 @@ export const Bars = memo(function Bars({ rows, times, v, first, last, selected, 
       const top = Math.round(y + h * 0.22) + 0.5;
       shape = <rect className="pg-shape" x={x} y={top} width={Math.max(1, Math.round(b.w) - 1)} height={Math.round(h * 0.56) - 1} rx={2} />;
     }
+    // Hit area: the row band from one end zone past the start to one past the finish.
+    const [hx, hw] = b.milestone ? [b.x - MILESTONE / 2, MILESTONE] : [b.x, b.w];
+    // End zones sit outside a narrow bar; the link dots sit beyond them, and
+    // the hit area reaches past the dots so moving onto one keeps the hover.
+    const reach = hw >= 3 * zone ? 0 : zone;
+    const dotOff = reach + 6;
+    const out1 = reach + 12;
     out.push(
-      <g key={r.id} className={cls} data-id={r.id} role="button" tabIndex={-1} aria-label={ariaLabel(r, t, relative, conflicts.has(r.id))}>
+      <g key={r.id} className={cls} data-id={r.id} data-x={b.x} role="button" tabIndex={-1} aria-label={ariaLabel(r, t, relative, drivers.get(r.id))}>
+        <rect className="pg-hit" x={hx - out1} y={y + 2} width={hw + 2 * out1} height={h - 4} />
         {shape}
         {r.act.kind === "hold_point" && !b.milestone && (
           <path className="pg-hold-mark" d={`M${b.x},${mid - 4}l4,4l-4,4l-4,-4Z`} />
@@ -128,6 +141,9 @@ export const Bars = memo(function Bars({ rows, times, v, first, last, selected, 
         <text className={place.inside ? "pg-label-in" : "pg-label-out"} x={b.milestone ? b.x + MILESTONE : place.x} y={mid + 4}>
           {label}
         </text>
+        {/* Link dots (plan 9.4): shown on hover, or once selected on touch. */}
+        <circle className="pg-dot" data-dot="S" cx={hx - dotOff} cy={mid} r={4} />
+        <circle className="pg-dot" data-dot="F" cx={hx + hw + dotOff} cy={mid} r={4} />
       </g>,
     );
   }

@@ -1,7 +1,7 @@
 // Links layer (plan 9.3): driving links solid, non-driving dashed, critical
 // 2 px in the critical colour, a diamond at the midpoint of a link into or
 // out of a hold point, the lag on hover. Under each path a transparent
-// 10 px stroke is the hit target WP-P8's link popover will use (data-id).
+// 10 px stroke is the hit target that opens the link popover (data-id).
 
 import { memo } from "react";
 import type { Times } from "../types";
@@ -44,10 +44,11 @@ export const Links = memo(function Links({ drawn, rows, times, v, driving }: Lin
     const isDriving = driving.has(d.link.id);
     const critical = !d.faint && isDriving && pt.critical && st.critical;
     const hold = rows[d.pred].act.kind === "hold_point" || rows[d.succ].act.kind === "hold_point";
+    const name = `${rows[d.pred].act.label} → ${rows[d.succ].act.label}, ${d.link.type}, ${lagText(d.link.lag_days, d.link.lag_unit)}${isDriving ? ", driving" : ""}`;
     const cls = ["pg-link", isDriving ? "is-driving" : "is-free", critical ? "is-critical" : "", d.faint ? "is-faint" : ""].filter(Boolean).join(" ");
     out.push(
-      <g key={d.link.id} className={cls} data-id={d.link.id}>
-        <title>{`${rows[d.pred].act.label} → ${rows[d.succ].act.label}, ${d.link.type}, ${lagText(d.link.lag_days, d.link.lag_unit)}${isDriving ? ", driving" : ""}`}</title>
+      <g key={d.link.id} className={cls} data-id={d.link.id} data-link="1" role="button" tabIndex={-1} aria-label={`Link ${name}`}>
+        <title>{name}</title>
         <path className="pg-link-hit" d={r.d} />
         <path className="pg-link-line" d={r.d} />
         <path className="pg-link-arrow" d={r.arrow} />
