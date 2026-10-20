@@ -804,6 +804,14 @@ func (a *apiClient) do(ctx context.Context, method, path string, body io.Reader,
 	if body != nil && !strings.Contains(path, "/files?") {
 		req.Header.Set("Content-Type", "application/json")
 	}
+	if strings.HasPrefix(path, "/events") {
+		// The client's Timeout bounds the whole response, body included, so
+		// it would cut an event stream that outlives it (the award step's
+		// forty reads take ~90 s). The stream ends when its ctx is cancelled.
+		c := *a.http
+		c.Timeout = 0
+		return c.Do(req)
+	}
 	return a.http.Do(req)
 }
 
