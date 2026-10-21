@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // A chosen project: drop files anywhere on the page, watch each become a title
 // block, correct any box. Live updates come from the durable event stream and
 // never move focus.
@@ -26,12 +27,13 @@ import { ocrStage } from "./OCRStatus";
 
 const STALE_MS = 8000;
 const UPLOAD_CONCURRENCY = 4;
-const ACCEPT = ".pdf,.docx,.xlsx";
+const ACCEPT = ".pdf,.docx,.xlsx,.md,.markdown";
 
 interface Upload {
   key: string;
   filename: string;
   progress: number;
+  queued?: boolean;
   error?: string;
   docId?: string;
 }
@@ -68,6 +70,7 @@ type Action =
   | { type: "dismiss"; key: string }
   | { type: "event"; ev: StreamEvent; at: number }
   | { type: "doc"; doc: Doc }
+  | { type: "externalDoc"; doc: Doc }
   | { type: "retrying"; id: string }
   | { type: "unland"; id: string }
   | { type: "reading"; ids: string[]; setting: ReadSetting }
@@ -116,13 +119,13 @@ function reducer(state: State, action: Action): State {
     case "uploadStart": {
       // A batch goes on top in the order it was chosen.
       const uploads = { ...state.uploads };
-      for (const it of action.items) uploads[it.key] = { key: it.key, filename: it.filename, progress: 0 };
+      for (const it of action.items) uploads[it.key] = { key: it.key, filename: it.filename, progress: 0, queued: true };
       return { ...state, uploads, order: [...action.items.map((it) => it.key), ...state.order] };
     }
     case "uploadProgress": {
       const up = state.uploads[action.key];
       if (!up) return state;
-      return { ...state, uploads: { ...state.uploads, [action.key]: { ...up, progress: action.progress } } };
+      return { ...state, uploads: { ...state.uploads, [action.key]: { ...up, progress: action.progress, queued: false } } };
     }
     case "uploadDone": {
       const { doc, key } = action;
@@ -180,6 +183,13 @@ function reducer(state: State, action: Action): State {
         landed: landing ? { ...state.landed, [id]: true } : state.landed,
         filedIn: landing && sent !== undefined ? { ...state.filedIn, [id]: action.at - sent } : state.filedIn,
       };
+    }
+    case "externalDoc": {
+      if (state.docs[action.doc.id]) return state;
+      const early = state.early[action.doc.id];
+      const next = { ...state, docs: { ...state.docs, [action.doc.id]: action.doc },
+        order: [action.doc.id, ...state.order], early: without(state.early, action.doc.id) };
+      return early ? reducer(next, { type: "event", ev: early, at: performance.now() }) : next;
     }
     case "doc":
       return { ...state, docs: { ...state.docs, [action.doc.id]: action.doc } };
@@ -247,6 +257,31 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const docsRef = useRef(state.docs);
   docsRef.current = state.docs;
 
+  // SSE is the fast path. A small list refresh recovers a lost completion
+  // event without downloading images, restarting jobs or spending AI calls.
+  useEffect(() => {
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      const before = docsRef.current;
+      const waiting = Object.values(before).some(doc => doc.status === "filed" && /\.pdf$/i.test(doc.filename)
+        && (!doc.visual_status || doc.visual_status === "queued" || doc.visual_status === "reading")
+        && !doc.fields.some(f => f.field === "title" && (f.value || f.decided_by === "user")));
+      if (waiting) {
+        try {
+          const list = await api.documents(projectId);
+          if (!stopped) for (const doc of list.documents) {
+            // Do not overwrite a correction or deletion that overtook this read.
+            if (before[doc.id] && docsRef.current[doc.id] === before[doc.id]) dispatch({type: "doc", doc});
+          }
+        } catch { /* Retry transient failures on the next tick. */ }
+      }
+      if (!stopped) timer = setTimeout(poll, 3000);
+    };
+    timer = setTimeout(poll, 1000);
+    return () => { stopped = true; clearTimeout(timer); };
+  }, [projectId]);
+
   // Load the list, then stream from the cursor read before it.
   useEffect(() => {
     let cancelled = false;
@@ -311,6 +346,12 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
 		    if (ev.payload?.project_id === projectId) setReportTick(n => n + 1);
 		    return;
 		  }
+          if (ev.kind === "visual") {
+            if (ev.document_id) api.document(ev.document_id).then(doc => {
+              if (!stopped && doc.project_id === projectId) dispatch({type: "doc", doc});
+            }).catch(() => { /* A deletion can overtake the reading. */ });
+            return;
+          }
           if (ev.kind === "sheets") {
             api.documents(projectId).then((list) => {
               if (!stopped) dispatch({ type: "loaded", list });
@@ -332,8 +373,16 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
             return;
           }
           dispatch({ type: "event", ev, at: performance.now() });
-          const doc = docsRef.current[ev.payload?.document_id ?? ""];
-          if (!doc) return;
+          const documentId = ev.payload?.document_id ?? ev.document_id;
+          const doc = docsRef.current[documentId ?? ""];
+          if (!doc) {
+            // Procurement and other tabs upload through the same repository.
+            // Their events arrive without this component's upload response.
+            if (documentId && (!ev.payload?.project_id || ev.payload.project_id === projectId)) api.document(documentId).then(d => {
+              if (!stopped && d.project_id === projectId) dispatch({ type: "externalDoc", doc: d });
+            }).catch(() => { /* A later deletion may already have removed it. */ });
+            return;
+          }
           if (ev.kind === "filing") setAnnouncement(`${doc.filename} filed.`);
           if (ev.kind === "not_filed") setAnnouncement(`${doc.filename} stored but not filed.`);
           if (ev.kind === "filing_failed") setAnnouncement(`Filing stopped for ${doc.filename}. Retry is available.`);
@@ -385,6 +434,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     while (active.current < UPLOAD_CONCURRENCY && queue.current.length > 0) {
       const { key, file } = queue.current.shift()!;
       active.current++;
+      dispatch({ type: "uploadProgress", key, progress: 0 });
       const job = upload(projectId, file, (progress) => dispatch({ type: "uploadProgress", key, progress }));
       job.done
         .then(({ doc, created }) => {
@@ -525,7 +575,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     () =>
       state.order.flatMap((key): RowModel[] => {
         const up = state.uploads[key];
-        if (up) return [{ key, filename: up.filename, progress: up.progress, uploadError: up.error }];
+        if (up) return [{ key, filename: up.filename, progress: up.progress, uploadQueued: up.queued, uploadError: up.error }];
         const doc = state.docs[key];
         if (!doc) return [];
         const since = state.pendingSince[key] ?? state.loadedAt;
@@ -603,8 +653,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
 
   if (state.phase === "loading") {
     return (
-      <CockpitFrame nav={nav} title="Opening project…" subtitle="Site address TBC" repository={<p className="reg-empty">Opening documents…</p>}>
-        <p className="drop-sub">Opening project…</p>
+      <CockpitFrame nav={nav} title="Opening project…" subtitle="Site address TBC" repository={<p className="reg-empty"><Pending delayed>Opening documents…</Pending></p>}>
+        <p className="drop-sub"><Pending delayed>Opening project…</Pending></p>
       </CockpitFrame>
     );
   }

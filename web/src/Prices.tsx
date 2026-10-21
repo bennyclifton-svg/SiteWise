@@ -1,13 +1,17 @@
+import { ConsultantComparison } from "./ConsultantComparison";
+import { Pending } from "./Activity";
+import { BuilderQuotedTotals, BuilderWorkSections } from "./BuilderComparison";
 // The price table: schedule items down the side, firms across. With one firm
 // it is the review screen; with several it is the comparison. Every total
 // arrives computed by the server; a cell a user corrects is final.
 import { useCallback, useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { ApiError } from "./api";
 import { AwardDialog } from "./AwardDialog";
+import { ComparisonRowEditor } from "./ComparisonAlignment";
 import { fmt } from "./CostGrid";
 import { Chip } from "./Invoices";
 import { ProcurementReport } from "./ProcurementReport";
-import { FLAG_WORDS, STATUS_WORDS, submissionApi, type Cell, type CellState, type Column, type FirmFields, type PriceTable, type ScheduleItem } from "./submissionApi";
+import { FLAG_WORDS, STATUS_WORDS, submissionApi, uploadProposal, type Cell, type CellState, type Column, type FirmFields, type PriceTable, type ScheduleItem } from "./submissionApi";
 import "./prices.css";
 
 const money = (m: string | null | undefined) => (m == null ? "—" : `$${fmt(m)}`);
@@ -34,6 +38,8 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [rowEditor, setRowEditor] = useState<ScheduleItem | "new" | null>(null);
+  const [moving, setMoving] = useState<{ sub: string; cell: Cell; version: number; target: string; rate: boolean } | null>(null);
 
   const fail = useCallback((e: unknown) => {
     if (e instanceof ApiError && e.status === 401) { onSignedOut(); return; }
@@ -48,21 +54,55 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
 
   async function run(action: () => Promise<PriceTable>) {
     setBusy(true); setError("");
-    try { setTable(await action()); } catch (e) { fail(e); } finally { setBusy(false); }
+    try { setTable(await action()); return true; } catch (e) { fail(e); return false; } finally { setBusy(false); }
   }
 
-  const items = table?.items ?? [];
+  const [uploading, setUploading] = useState("");
+  async function attach(submissionId: string, file?: File) {
+    if (!file || busy) return;
+    setUploading(submissionId);
+    await run(async () => {
+      await uploadProposal(projectId, pkg, file, submissionId);
+      return submissionApi.table(projectId, pkg);
+    });
+    setUploading("");
+  }
+
+  const items = (table?.items ?? []).filter(i => i.key !== "comparison:appointment");
   const base = useMemo(() => items.filter(i => (i.kind === "stage" || i.kind === "element" || i.kind === "reimbursable") && i.base), [items]);
   const cols = table?.columns ?? [];
-  // A row no firm priced is one line, not a column of "Not priced".
-  const priced = (i: ScheduleItem) => cols.some(c => { const cell = c.cells[i.key]; return !cell || cell.state !== "not_priced"; });
   const allOptions = useMemo(() => items.filter(i => i.kind === "option"), [items]);
   const allRates = useMemo(() => items.filter(i => i.kind === "rate"), [items]);
-  const options = allOptions.filter(priced);
-  const rates = allRates.filter(priced);
-  const unpriced = [...allOptions, ...allRates].filter(i => !priced(i));
+  const options = allOptions;
+  const rates = allRates;
+  const unpriced: ScheduleItem[] = [];
   const compare = cols.length > 1;
+  const quoted = !table?.builder && cols.some(c => c.quote);
   const selected = cols.find(c => c.submission.id === panel);
+
+  const moveColumn = cols.find(c => c.submission.id === moving?.sub);
+  const destination = items.find(i => i.key === moving?.target);
+  const destinationCell = destination && moveColumn?.cells[destination.key];
+  const combining = destinationCell?.state === "priced" && destinationCell.amount != null;
+  const locked = busy || !!table?.award;
+  function startMove(col: Column, cell: Cell) {
+    setEditing(null);
+    setMoving({ sub: col.submission.id, cell, version: col.submission.version, target: "", rate: items.some(i => i.key === cell.item_key && i.kind === "rate") });
+  }
+  async function finishMove(exclude = false) {
+    if (!moving) return;
+    const ids = [moving.cell.id];
+    if (!exclude && combining && destinationCell && destinationCell.id !== moving.cell.id) ids.push(destinationCell.id);
+    if (await run(() => submissionApi.align(projectId, moving.sub, moving.version, moving.target, ids, false, exclude))) setMoving(null);
+  }
+  function renderRow(it: ScheduleItem) {
+    if (table?.builder && it.key === "stage:lump_sum" && it.label === "Lump sum fee") it = { ...it, label: "Construction price used" };
+    return <Row key={it.key} item={it} cols={cols} editing={editing} onEdit={setEditing}
+      onSave={(sub, state, amount, note) => void run(() => submissionApi.setCell(projectId, sub, it.key, state, amount, note)).then(ok => { if (ok) setEditing(null); })}
+      busy={locked} perHour={it.kind === "rate"} moving={moving} onMove={startMove}
+      onTarget={target => setMoving(m => m ? { ...m, target } : null)} onRename={() => setRowEditor(it)}
+      onPlacement={() => void run(() => submissionApi.row(projectId, pkg, it.key, it.label, it.base ? "option" : "base", it.unit || ""))} />;
+  }
 
   if (showReport && table) return <ProcurementReport projectId={projectId} table={table} onBack={() => setShowReport(false)} onSignedOut={onSignedOut} />;
 
@@ -70,7 +110,8 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     <header className="prices-head">
       <button type="button" className="btn btn-small" onClick={onBack}>← Procurement</button>
       <h1>{table?.title ?? "Package"} <span>{compare ? `· comparing ${cols.length} firms` : cols.length === 1 ? "· review" : ""}</span></h1>
-      <div className="prices-actions">
+      <div className="prices-actions"><span role="status">{busy && !uploading && <Pending delayed>Saving…</Pending>}</span>
+        {cols.length > 0 && <button className="btn btn-small" disabled={locked || !!moving} onClick={() => setRowEditor("new")}>+ Add row</button>}
         <button type="button" className="btn btn-small" onClick={() => setAdding(a => !a)} aria-expanded={adding}>+ Add firm</button>
         {reportId && <a className="btn btn-small" href={submissionApi.responseFormURL(reportId)} download>Response form</a>}
         {cols.length > 0 && <a className="btn btn-small" href={submissionApi.exportURL(projectId, pkg)} download>Export to Excel</a>}
@@ -79,53 +120,82 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => setError("")}>Dismiss</button></div>}
     {adding && <AddFirm projectId={projectId} pkg={pkg} onDone={t => { setTable(t); setAdding(false); }} onFail={fail} onCancel={() => setAdding(false)} />}
+    {rowEditor && <ComparisonRowEditor key={rowEditor === "new" ? "new" : rowEditor.key} item={rowEditor === "new" ? undefined : rowEditor} busy={locked} onCancel={() => setRowEditor(null)} onSave={async (key, label, section, unit) => { if (await run(() => submissionApi.row(projectId, pkg, key, label, section, unit))) setRowEditor(null); }} />}
+    {moving && <div className="prices-move-bar" role="region" aria-label="Move or combine fee">
+      <p><strong>{moveColumn?.firm?.name ?? moveColumn?.submission.filename}</strong>: {money(moving.cell.amount)} · {moving.cell.label || items.find(i => i.key === moving.cell.item_key)?.label}<br />
+      {destination ? `${combining ? "Combine with the existing fee in" : "Move to"} ${destination.label}.` : "Choose a destination in this firm’s column."}</p>
+      <button className="btn btn-small" disabled={locked || !destination} onClick={() => void finishMove()}>{combining ? "Combine fees" : "Move fee"}</button>
+      <button className="table-action" disabled={locked} onClick={() => void finishMove(true)}>Set aside</button>
+      <button className="table-action" disabled={busy} onClick={() => setMoving(null)}>Cancel</button>
+    </div>}
     {table?.award && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
-    {!table ? !error && <p role="status">Loading prices…</p> : cols.length === 0 ? <div className="prices-empty">
+    {table && quoted && <ConsultantComparison table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onCoverage={(sub, key, state, note) => run(() => submissionApi.setCell(projectId, sub, key, state, "", note))} onConfirm={(sub, amount, note) => run(() => submissionApi.setCell(projectId, sub, "comparison:appointment", "priced", amount, note))} />}
+    <details open={!quoted}><summary>{quoted ? "Schedule details and scope corrections" : "Fee schedule"}</summary>
+    {!table ? !error && <p role="status"><Pending delayed>Loading prices…</Pending></p> : cols.length === 0 ? <div className="prices-empty">
       <p><strong>No proposals yet.</strong> Drop a fee proposal on this package's row in Procurement, or drop it anywhere in the document register: proposals are recognised when they are filed.</p>
       <p>The table will list the {base.length + options.length} fee rows of this package's schedule{rates.length ? ` and ${rates.length} hourly rates` : ""}.</p>
     </div> : <div className="prices-scroll">
-      <table className="prices-table">
+      <table className={`prices-table${table.builder ? " builder-compact" : ""}`}>
+        <colgroup><col className="prices-label-col" />{cols.map(c => <col key={c.submission.id} />)}<col className="prices-action-col" /></colgroup>
         <thead><tr>
-          <th scope="col" className="prices-item">Item <span>ex GST</span></th>
-          {cols.map(c => <th scope="col" key={c.submission.id} className={c.totals.lowest ? "prices-firm lowest" : "prices-firm"}>
+          <th scope="col" className="prices-item">{table.builder ? "Work section" : "Item"} <span>ex GST</span></th>
+          {cols.map(c => <th scope="col" key={c.submission.id} className={c.totals.lowest ? "prices-firm lowest" : "prices-firm"}
+            onDragOver={e => { if (!c.submission.document_id) { e.preventDefault(); e.stopPropagation(); } }}
+            onDrop={e => { if (!c.submission.document_id) { e.preventDefault(); e.stopPropagation(); void attach(c.submission.id, e.dataTransfer.files[0]); } }}>
             <button type="button" className="prices-firm-name" onClick={() => setPanel(panel === c.submission.id ? "" : c.submission.id)} aria-expanded={panel === c.submission.id}>
-              {c.firm?.name ?? c.submission.filename}{c.firm?.status === "draft" && <span className="prices-draft" title="New to your firm directory: check the details">new</span>}
+              {c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "")}{!table.builder && c.firm?.status === "draft" && <span className="prices-draft" title="New to your firm directory: check the details">new</span>}
             </button>
-            <span className="prices-firm-meta">{day(c.submission.received_on)} · <span className="prices-status" data-status={c.submission.status}>{STATUS_WORDS[c.submission.status]}</span></span>
-            {!table.award && (c.submission.status === "received" || c.submission.status === "needs_review") && <button type="button" className="btn btn-small prices-award" disabled={busy} onClick={() => setAwardFor(c.submission.id)}>Award</button>}
+            <details className={table.builder ? "builder-firm-actions" : "prices-firm-actions"} open={table.builder ? undefined : true}>
+            <summary hidden={!table.builder} aria-label={`Options for ${c.firm?.name ?? c.submission.filename}`}>⋯</summary>
+            <span className="prices-firm-meta">{day(c.submission.received_on)} · <span className="prices-status" data-status={c.submission.status}>{c.submission.status === "reading" ? <Pending>Reading proposal…</Pending> : STATUS_WORDS[c.submission.status]}</span></span>
+            {!c.submission.document_id && c.submission.status !== "awarded" && <label className="prices-upload">
+              <span>{uploading === c.submission.id ? <Pending>Uploading proposal…</Pending> : "Upload proposal"}</span>
+              <input type="file" aria-label={`Upload proposal for ${c.firm?.name ?? c.submission.filename}`} accept=".pdf,.docx,.xlsx" disabled={busy} onChange={e => { void attach(c.submission.id, e.target.files?.[0]); e.target.value = ""; }} />
+              <small>Or drop here. Also saved in Documents.</small>
+            </label>}
+            {!quoted && !table.award && (c.submission.status === "received" || c.submission.status === "needs_review") && <button type="button" className="btn btn-small prices-award" disabled={busy || (table.builder && (c.cells["stage:lump_sum"]?.decided_by !== "user" || c.cells["stage:lump_sum"]?.state !== "priced"))} onClick={() => setAwardFor(c.submission.id)}>Award</button>}
+            {c.undo_alignment && !table.award && <button className="table-action prices-undo" disabled={busy} onClick={() => void run(() => submissionApi.align(projectId, c.submission.id, c.submission.version, "", [], true)).then(ok => { if (ok) setMoving(null); })}>Undo last alignment</button>}
+            </details>
           </th>)}
+          <th scope="col"><span className="prices-sr-only">Row placement</span></th>
         </tr></thead>
         <tbody>
-          {base.map(it => <Row key={it.key} item={it} cols={cols} editing={editing} onEdit={setEditing} onSave={(sub, state, amount) => void run(() => submissionApi.setCell(projectId, sub, it.key, state, amount)).then(() => setEditing(null))} busy={busy} />)}
-          <tr className="prices-total">
-            <th scope="row">Base fee total</th>
+          {table.builder && <BuilderWorkSections cols={cols} projectId={projectId} />}
+          {base.filter(it=>!table.builder || it.key!=="stage:lump_sum").map(renderRow)}
+          {!table.builder && <tr className="prices-total">
+            <th scope="row">{table.builder ? "Comparison total" : quoted ? "Confirmed comparison fee — independent of schedule breakdown" : "Base fee total"}</th>
             {cols.map(c => <td key={c.submission.id} className={c.totals.lowest ? "lowest" : undefined}>
-              <span className="prices-figure">{c.totals.base_total != null ? money(c.totals.base_total) : `${money(c.totals.known_base)} + ?`}</span>
+              <span className="prices-figure">{c.totals.base_total != null ? money(c.totals.base_total) : c.totals.known_base && c.totals.known_base !== "0.00" ? `${money(c.totals.known_base)} known` : "Unknown"}</span>
+              {table.builder && c.cells["stage:lump_sum"]?.decided_by !== "user" && <span className="prices-note warn">Not confirmed by you</span>}
+              {c.totals.base_total == null && <span className="prices-note warn">{table.builder ? "Comparison amount unresolved" : "Incomplete fee"}</span>}
+              {!table.builder && c.totals.stated_total != null && <span className="prices-note">Proposal states {money(c.totals.stated_total)}</span>}
               {c.totals.lowest && <span className="prices-note ok">Lowest complete price</span>}
               {c.totals.not_priced > 0 && <span className="prices-note warn">{c.totals.not_priced} item{c.totals.not_priced === 1 ? "" : "s"} not priced</span>}
               {c.totals.unread > 0 && <span className="prices-note warn">{c.totals.unread} not read</span>}
-              {c.totals.gap != null && <span className="prices-note warn" title={`Stated total ${money(c.totals.stated_total)}`}>Stated total differs by {money(c.totals.gap)}</span>}
-            </td>)}
-          </tr>
-          {options.length > 0 && <tr className="prices-group"><th colSpan={cols.length + 1} scope="rowgroup">Options, priced separately</th></tr>}
-          {options.map(it => <Row key={it.key} item={it} cols={cols} editing={editing} onEdit={setEditing} onSave={(sub, state, amount) => void run(() => submissionApi.setCell(projectId, sub, it.key, state, amount)).then(() => setEditing(null))} busy={busy} />)}
-          {cols.some(c => c.others.length > 0) && <tr className="prices-others">
-            <th scope="row">Offered, not asked for <span>kept out of totals</span></th>
-            {cols.map(c => <td key={c.submission.id}>{c.others.length ? <ul>{c.others.map(o => <li key={o.id} title={o.passage}>{money(o.amount)} <span>{o.label}</span></li>)}</ul> : "—"}</td>)}
+              {!table.builder && c.totals.gap != null && <span className="prices-note warn" title={`Stated total ${money(c.totals.stated_total)}`}>Stated total differs by {money(c.totals.gap)}</span>}
+            </td>)}<td />
           </tr>}
-          {rates.length > 0 && <tr className="prices-group"><th colSpan={cols.length + 1} scope="rowgroup">Hourly rates, for variations</th></tr>}
-          {rates.map(it => <Row key={it.key} item={it} cols={cols} editing={editing} onEdit={setEditing} onSave={(sub, state, amount) => void run(() => submissionApi.setCell(projectId, sub, it.key, state, amount)).then(() => setEditing(null))} busy={busy} perHour />)}
-          {cols.length > 0 && unpriced.length > 0 && <tr className="prices-unpriced"><th scope="row" colSpan={cols.length + 1}>
+          {options.length > 0 && <tr className="prices-group"><th colSpan={cols.length + 2} scope="rowgroup">Options, priced separately</th></tr>}
+          {options.map(renderRow)}
+          {!table.builder && cols.some(c => c.others.length > 0) && <tr className="prices-others">
+            <th scope="row">Fees awaiting alignment <span>not included in comparison totals</span></th>
+            {cols.map(c => <td key={c.submission.id}>{c.others.length ? <ul>{c.others.map(o => <li key={o.id} title={o.passage}>{o.state === "excluded" ? "Set aside" : money(o.amount)} <span>{o.label}</span>{o.state === "priced" && o.amount != null && <button className="price-icon" disabled={locked || !!moving} aria-label={`Move or combine ${o.label}, ${c.firm?.name ?? c.submission.filename}`} title="Move or combine fee" onClick={() => startMove(c, o)}><PriceIcon kind="move" /></button>}</li>)}</ul> : "—"}</td>)}<td />
+          </tr>}
+          {rates.length > 0 && <tr className="prices-group"><th colSpan={cols.length + 2} scope="rowgroup">Rates, for variations</th></tr>}
+          {rates.map(renderRow)}
+          {table.builder && <BuilderQuotedTotals cols={cols} busy={locked} onUse={(sub,amount,note)=>void run(()=>submissionApi.setCell(projectId,sub,"stage:lump_sum","priced",amount,note))} />}
+          {!table.builder && cols.length > 0 && unpriced.length > 0 && <tr className="prices-unpriced"><th scope="row" colSpan={cols.length + 2}>
             Not priced by any firm: {unpriced.map(i => i.label).join("; ")}.
           </th></tr>}
-          {cols.some(c => c.submission.flags.length > 0) && <tr className="prices-flags">
+          {!table.builder && cols.some(c => c.submission.flags.length > 0) && <tr className="prices-flags">
             <th scope="row">Read notes</th>
-            {cols.map(c => <td key={c.submission.id}>{c.submission.flags.filter(f => FLAG_WORDS[f]).map(f => <p key={f}>{FLAG_WORDS[f]}</p>)}</td>)}
+            {cols.map(c => <td key={c.submission.id}>{c.submission.flags.filter(f => FLAG_WORDS[f] && !(table.builder && f.startsWith("gst_"))).map(f => <p key={f}>{FLAG_WORDS[f]}</p>)}</td>)}<td />
           </tr>}
         </tbody>
       </table>
     </div>}
-    {cols.length > 0 && <p className="prices-legend">Figures are read from each proposal and are ex GST. A cell marked <em>Check</em> or <em>Not read</em> needs your eye; click any cell to correct it. Your corrections are final.</p>}
+    </details>
+    {cols.length > 0 && !quoted && <p className="prices-legend">{table?.builder ? "Review the quoted total, then use it or enter your confirmed comparison amount. Expand a work section to check the source wording. Allowances, options and components are not added to the quoted total. Your corrections are preserved." : "Figures are read from each proposal and are ex GST. The warning triangle means review needed. Click a fee for its source and notes. Use row arrows to change base/option placement, or the button beside a fee to move or combine it. Your corrections are final."}</p>}
     {table && table.earlier.length > 0 && <details className="prices-earlier"><summary>{table.earlier.length} earlier or set-aside proposal{table.earlier.length === 1 ? "" : "s"}</summary>
       <ul>{table.earlier.map(s => <li key={s.id}>{s.filename} · {day(s.received_on)} · {STATUS_WORDS[s.status]}
         {(s.status === "withdrawn" || s.status === "not_proposal") && <button type="button" className="table-action" onClick={() => void run(() => submissionApi.edit(projectId, s.id, { status: "received" }))}>Restore</button>}</li>)}</ul>
@@ -136,25 +206,42 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
   </section>;
 }
 
-function Row({ item, cols, editing, onEdit, onSave, busy, perHour }: {
+function PriceIcon({ kind }: { kind: "up" | "down" | "move" | "warning" }) {
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {kind === "warning" ? <><path d="M12 3 22 21H2Z" /><path d="M12 9v5m0 3h.01" /></> : kind === "move" ? <><path d="M4 5h5v7h11M16 8l4 4-4 4M4 19h5v-7" /></> : <path d={kind === "up" ? "M12 20V4m-6 6 6-6 6 6" : "M12 4v16m-6-6 6 6 6-6"} />}
+  </svg>;
+}
+
+function Row({ item, cols, editing, onEdit, onSave, busy, perHour, moving, onMove, onTarget, onRename, onPlacement }: {
   item: ScheduleItem; cols: Column[]; editing: { sub: string; key: string } | null; busy: boolean; perHour?: boolean;
-  onEdit: (e: { sub: string; key: string } | null) => void; onSave: (sub: string, state: CellState, amount: string) => void;
+  moving: { sub: string; cell: Cell; target: string; rate: boolean } | null;
+  onMove: (col: Column, cell: Cell) => void; onTarget: (key: string) => void; onRename: () => void; onPlacement: () => void;
+  onEdit: (e: { sub: string; key: string } | null) => void; onSave: (sub: string, state: CellState, amount: string, note: string) => void;
 }) {
   return <tr>
-    <th scope="row" className="prices-item" title={item.detail}>{item.label}{perHour && <span> per hour</span>}</th>
+    <th scope="row" className="prices-item"><button className="prices-row-name" title="Edit service description" disabled={busy || !!moving} onClick={onRename}>{item.label}</button>{perHour && <span> per {item.unit || "hour"}</span>}</th>
     {cols.map(c => {
       const cell = c.cells[item.key];
       const open = editing?.sub === c.submission.id && editing.key === item.key;
-      return <td key={c.submission.id} className={cell?.decided_by === "user" ? "user" : undefined}>
-        {open ? <CellEditor cell={cell} busy={busy} onCancel={() => onEdit(null)} onSave={(s, a) => onSave(c.submission.id, s, a)} />
-          : <button type="button" className="prices-cell" disabled={c.submission.status === "awarded" || c.submission.status === "unsuccessful"} onClick={() => onEdit({ sub: c.submission.id, key: item.key })}
-            aria-label={`${item.label}, ${c.firm?.name ?? c.submission.filename}: ${cellWords(cell)}. Change`} title={provenance(cell)}>
+      const sameFirm = moving?.sub === c.submission.id;
+      const source = sameFirm && moving?.cell.id === cell?.id;
+      const eligible = sameFirm && !source && (!moving?.rate || perHour) && !(perHour && cell?.state === "priced");
+      const review = cell && cell.state !== "" && cell.decided_by !== "user" && cell.band !== "green";
+      return <td key={c.submission.id} className={`${cell?.decided_by === "user" ? "user" : ""} ${source ? "prices-source-selected" : ""} ${sameFirm && moving?.target === item.key ? "prices-target-selected" : ""}`}>
+        {open ? <CellEditor cell={cell} busy={busy} onCancel={() => onEdit(null)} onSave={(s, a, note) => onSave(c.submission.id, s, a, note)} />
+          : <div className="prices-cell-line"><button type="button" className="prices-cell" disabled={busy || !!moving || c.submission.status === "awarded" || c.submission.status === "unsuccessful"} onClick={() => onEdit({ sub: c.submission.id, key: item.key })}
+            aria-label={`${item.label}, ${c.firm?.name ?? c.submission.filename}: ${cellWords(cell)}. Change`} title={[provenance(cell), cell?.basis].filter(Boolean).join(". ")}>
             <span className={cell?.state === "priced" ? "prices-figure" : "prices-word"}>{cellWords(cell)}</span>
-            {cell && cell.state !== "" && !(cell.band === "green" && cell.decided_by !== "user") && <Chip field={{ value: cell.state, band: cell.band, decided_by: cell.decided_by }} />}
-            {cell?.basis && <span className="prices-basis">{cell.basis}</span>}
-          </button>}
+            {review && <span className="prices-warning" aria-label="Review needed"><PriceIcon kind="warning" /></span>}
+            {cell?.basis && <span className="prices-sr-only">{cell.basis}</span>}
+          </button>
+          {!moving && cell?.state === "priced" && cell.amount != null && <button className="price-icon" disabled={busy} aria-label={`Move or combine ${item.label}, ${c.firm?.name ?? c.submission.filename}`} title="Move or combine fee" onClick={() => onMove(c, cell)}><PriceIcon kind="move" /></button>}
+          {eligible && <button className="btn btn-small prices-destination" disabled={busy} aria-pressed={moving?.target === item.key} onClick={() => onTarget(item.key)}>{cell?.state === "priced" ? "Combine here" : "Move here"}</button>}
+          {source && <span className="prices-note">Selected</span>}
+          </div>}
       </td>;
     })}
+    <td className="prices-row-action">{!perHour && <button className="price-icon" disabled={busy || !!moving} title={item.base ? "Move row below the base total" : "Move row into the base fee"} aria-label={`Move ${item.label} to ${item.base ? "options" : "base fee"}`} onClick={onPlacement}><PriceIcon kind={item.base ? "down" : "up"} /></button>}</td>
   </tr>;
 }
 
@@ -170,16 +257,19 @@ function cellWords(cell: Cell | undefined): string {
   return CELL_WORDS[cell.state] ?? cell.state;
 }
 
-function CellEditor({ cell, busy, onSave, onCancel }: { cell?: Cell; busy: boolean; onSave: (state: CellState, amount: string) => void; onCancel: () => void }) {
+function CellEditor({ cell, busy, onSave, onCancel }: { cell?: Cell; busy: boolean; onSave: (state: CellState, amount: string, note: string) => void; onCancel: () => void }) {
   const [state, setState] = useState<CellState>(cell?.state ? cell.state : "priced");
   const [amount, setAmount] = useState(cell?.amount ?? "");
-  const key = (e: KeyboardEvent) => { if (e.key === "Enter") onSave(state, amount); if (e.key === "Escape") onCancel(); };
+  const [note, setNote] = useState(cell?.basis ?? "");
+  const key = (e: KeyboardEvent) => { if (e.key === "Enter") onSave(state, amount.replace(/[,$\s]/g, ""), note); if (e.key === "Escape") onCancel(); };
   return <div className="prices-editor" onKeyDown={key}>
+    {cell?.passage && <p className="prices-source-note">{provenance(cell)}</p>}
     <select aria-label="Answer" value={state} onChange={e => setState(e.target.value as CellState)} disabled={busy}>
       <option value="priced">Amount</option><option value="not_priced">Not priced</option><option value="included">Included elsewhere</option><option value="excluded">Excluded</option>
     </select>
     {state === "priced" && <input aria-label="Amount ex GST" inputMode="decimal" autoFocus value={amount} onChange={e => setAmount(e.target.value)} disabled={busy} placeholder="0.00" />}
-    <button type="button" className="btn btn-small" disabled={busy} onClick={() => onSave(state, amount.replace(/[,$\s]/g, ""))}>Save</button>
+    <input aria-label="Scope or allowance note" placeholder="Scope, allowance or bundled fee reference" value={note} maxLength={500} onChange={e=>setNote(e.target.value)} disabled={busy} />
+    <button type="button" className="btn btn-small" disabled={busy} onClick={() => onSave(state, amount.replace(/[,$\s]/g, ""), note)}>Save</button>
     <button type="button" className="table-action" onClick={onCancel}>Cancel</button>
   </div>;
 }

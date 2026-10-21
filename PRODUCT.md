@@ -22,11 +22,19 @@ cost, who is appointed, and what is specified, with the document repository
 beside that work. It replaces the old sitewise.au app, which nobody used and
 which was too slow.
 
-A dropped PDF, DOCX or XLSX is filed within about a second (p50 ≤ 1 s, p90 ≤ 2 s
+A dropped PDF, DOCX, XLSX or Markdown (.md or .markdown) is filed within about a second (p50 ≤ 1 s, p90 ≤ 2 s
 after upload). Saved reads and writes on the cost plan, procurement and
 specifications stay within p50 ≤ 100 ms and p90 ≤ 250 ms, except where a named
 path is already tighter. Success is a project a manager can read and decide
 from, and a filing they can trust at a glance and correct in one move.
+
+PDF filing also queues an image-assisted identity review. The expanded document
+row shows literal suggestions for title, number and revision beside source
+images, with enlargement and explicit Use actions. Drawings use overlapping
+bottom/right regions; reports use the first three pages. Existing PDFs can
+request this reading from their row. Suggestions never replace saved values
+automatically, and edited fields remain protected. This background state uses
+one Jev fan-out and does not delay filing. Box is not used.
 
 The workbench, in navigation order:
 

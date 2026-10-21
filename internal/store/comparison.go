@@ -16,17 +16,21 @@ import (
 // FirmColumn is one firm in a package's price table. Totals are computed in
 // Go from the stored cells.
 type FirmColumn struct {
-	Submission  Submission                    `json:"submission"`
-	Firm        *Firm                         `json:"firm"`
-	Cells       map[string]proposals.Cell     `json:"cells"`
-	Others      []proposals.Cell              `json:"others"`
-	Totals      proposals.Column              `json:"-"`
-	NeedsReview bool                          `json:"needs_review"`
-	Decisions   map[string]proposals.Decision `json:"decisions"`
+	Quote         *proposals.QuoteReview        `json:"quote,omitempty"`
+	Builder       *proposals.BuilderReview      `json:"builder,omitempty"`
+	Submission    Submission                    `json:"submission"`
+	Firm          *Firm                         `json:"firm"`
+	Cells         map[string]proposals.Cell     `json:"cells"`
+	Others        []proposals.Cell              `json:"others"`
+	Totals        proposals.Column              `json:"-"`
+	NeedsReview   bool                          `json:"needs_review"`
+	Decisions     map[string]proposals.Decision `json:"decisions"`
+	UndoAlignment bool                          `json:"undo_alignment"`
 }
 
 // PriceTable is a package's schedule down the side and its firms across.
 type PriceTable struct {
+	Builder    bool           `json:"builder"`
 	PackageID  string         `json:"package_id"`
 	Title      string         `json:"title"`
 	Discipline string         `json:"discipline_id"`
@@ -70,6 +74,9 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 	if err != nil {
 		return t, err
 	}
+	if t.Builder, err = builderPackage(ctx, tx, org, pkg); err != nil {
+		return t, err
+	}
 	if err := s.ensureSchedule(ctx, tx, org, project, pkg); err != nil {
 		return t, err
 	}
@@ -95,6 +102,10 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 // packageColumns loads every submission of one package with its firm, cells
 // and decisions, and computes each live column's totals.
 func (s *Store) packageColumns(ctx context.Context, tx pgx.Tx, org, project, pkg string, items []rfp.ScheduleItem) ([]FirmColumn, []Submission, error) {
+	isBuilder, err := builderPackage(ctx, tx, org, pkg)
+	if err != nil {
+		return nil, nil, err
+	}
 	rows, err := tx.Query(ctx, `SELECT id::text FROM submissions WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3 ORDER BY received_on, created_at`, org, project, pkg)
 	if err != nil {
 		return nil, nil, err
@@ -160,12 +171,36 @@ FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2 ORDER BY
 		if col.Decisions, err = submissionDecisions(ctx, tx, org, id); err != nil {
 			return nil, nil, err
 		}
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM comparison_alignment WHERE org_id=$1::uuid AND submission_id=$2::uuid AND version=$3)`, org, id, sub.Version).Scan(&col.UndoAlignment); err != nil {
+			return nil, nil, err
+		}
 		col.Totals = proposals.Totals(items, col.Cells, col.Others, sub.StatedTotal)
+		if !isBuilder {
+			col.Quote, err = quotedReview(ctx, tx, org, id)
+			if err != nil {
+				return nil, nil, err
+			}
+			if _, confirmed := col.Cells["comparison:appointment"]; col.Quote != nil || confirmed {
+				col.Totals = proposals.Totals([]rfp.ScheduleItem{{Key: "comparison:appointment", Kind: rfp.ItemStage, Base: true}}, col.Cells, nil, nil)
+			}
+		}
+		if isBuilder {
+			col.Builder, err = builderReview(ctx, tx, org, id)
+			if err != nil {
+				return nil, nil, err
+			}
+		}
 		col.NeedsReview = needsReview(items, col)
 		cols = append(cols, col)
 		totals = append(totals, col.Totals)
 	}
-	proposals.MarkLowest(totals)
+	hasQuoted := false
+	for _, col := range cols {
+		hasQuoted = hasQuoted || col.Quote != nil
+	}
+	if !isBuilder && !hasQuoted {
+		proposals.MarkLowest(totals)
+	}
 	for i := range cols {
 		cols[i].Totals = totals[i]
 	}
@@ -312,11 +347,15 @@ func cardOf(c FirmColumn) FirmCard {
 type CellInput struct {
 	State  string `json:"state"`
 	Amount string `json:"amount"`
+	Note   string `json:"note"`
 }
 
 // SetSubmissionCell records a user's cell. The user's word is final: a
 // later read keeps it. The decision keeps what the machine said.
 func (s *Store) SetSubmissionCell(ctx context.Context, org, project, id, key string, in CellInput) error {
+	if len(in.Note) > 500 {
+		return ErrInvalidInput
+	}
 	var cents *int64
 	switch in.State {
 	case proposals.StatePriced:
@@ -334,9 +373,31 @@ func (s *Store) SetSubmissionCell(ctx context.Context, org, project, id, key str
 		return err
 	}
 	defer tx.Rollback(ctx)
+	initial, err := readSubmission(ctx, tx, org, id)
+	if err != nil {
+		return err
+	}
+	if initial.ProjectID != project {
+		return ErrNotFound
+	}
+	if err = lockComparison(ctx, tx, org, project, initial.PackageID); err != nil {
+		return err
+	}
 	sub, err := lockSubmission(ctx, tx, org, project, id)
 	if err != nil {
 		return err
+	}
+	if sub.Status != SubmissionReceived && sub.Status != SubmissionNeedsReview {
+		return ErrConflict
+	}
+	if key == "comparison:appointment" {
+		if strings.TrimSpace(in.Note) == "" {
+			return ErrInvalidInput
+		}
+		_, err = tx.Exec(ctx, `INSERT INTO schedule_items(org_id,project_id,package_id,key,kind,label,detail,base,ordinal,source,comparison_custom) VALUES($1::uuid,$2::uuid,$3::uuid,'comparison:appointment','stage','Confirmed comparison fee','User-confirmed scope and amount; source breakdown is not additive',true,0,'generic',true) ON CONFLICT(org_id,package_id,key) DO NOTHING`, org, project, sub.PackageID)
+		if err != nil {
+			return err
+		}
 	}
 	var label string
 	err = tx.QueryRow(ctx, `SELECT label FROM schedule_items WHERE org_id=$1::uuid AND package_id::text=$2 AND key=$3`, org, sub.PackageID, key).Scan(&label)
@@ -353,10 +414,10 @@ func (s *Store) SetSubmissionCell(ctx context.Context, org, project, id, key str
 	if err := upsertSubmissionDecision(ctx, tx, org, project, id, proposals.Decision{Field: proposals.PricePrefix + key, Value: value}, true); err != nil {
 		return err
 	}
-	if _, err := tx.Exec(ctx, `INSERT INTO submission_prices (org_id,id,project_id,submission_id,item_key,label,amount_cents,state,band,decided_by)
-VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,'green','user')
+	if _, err := tx.Exec(ctx, `INSERT INTO submission_prices (org_id,id,project_id,submission_id,item_key,label,amount_cents,state,band,decided_by,basis)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,'green','user',$9)
 ON CONFLICT (org_id,submission_id,item_key) WHERE item_key IS NOT NULL DO UPDATE SET amount_cents=EXCLUDED.amount_cents, state=EXCLUDED.state,
- band='green', decided_by='user', basis='', updated_at=now()`, org, newID(), project, id, key, clipText(label, 500), cents, in.State); err != nil {
+ band='green', decided_by='user', basis=EXCLUDED.basis, updated_at=now()`, org, newID(), project, id, key, clipText(label, 500), cents, in.State, in.Note); err != nil {
 		return err
 	}
 	return s.finishSubmissionWrite(ctx, tx, org, project, id)

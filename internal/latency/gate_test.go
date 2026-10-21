@@ -184,6 +184,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"jev_admission_request":     {350_000, 800_000},
 		"commit_sse_enqueue":        {5_000, 15_000},
 		"whole_intake":              {1_000_000, 2_000_000},
+		"visual_identity":           {10_000_000, 20_000_000},
 		"project_document_list":     {50_000, 150_000},
 		"field_correction":          {50_000, 150_000},
 		"project_invite_auth":       {100_000, 250_000},

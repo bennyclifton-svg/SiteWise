@@ -144,6 +144,8 @@ func mediaType(name string) string {
 		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 	case ".xlsx":
 		return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	case ".md", ".markdown":
+		return "text/markdown; charset=utf-8"
 	default:
 		return "application/octet-stream"
 	}

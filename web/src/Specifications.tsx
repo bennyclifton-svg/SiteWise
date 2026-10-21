@@ -1,3 +1,4 @@
+import { Pending, ImportStatus } from "./Activity";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ApiError, type Doc } from "./api";
 import { specificationApi, type SpecificationType, type SpecificationApplication, type SpecificationAssertion, type SpecificationValue, type SpecificationView, type SpecificationIssue } from "./specificationApi";
@@ -72,7 +73,7 @@ export function Specifications({projectId, tick, documents, onSignedOut, initial
       <h1>Specifications</h1><p className="report-muted">Materials, finishes and equipment, with their locations and decisions.</p>
       <div className="report-actions"><button className="btn btn-primary" disabled={blocked || !view || !!editor} onClick={()=>{setEditor(blankType());setSelected("");setSchedule(false);setApplication(null);}}>Add item</button><button className="btn" disabled={!view || !!editor} aria-pressed={schedule} onClick={()=>{setSchedule(true);setApplication(null);}}>View schedule</button></div>
       <label htmlFor="spec-search">Find an item</label><input id="spec-search" className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Code, item or scheme" />
-      {!view ? <p role="status">{loadError || "Loading specifications…"}</p> : view.snapshot.types.length===0 ? <p className="report-empty">Start with a material or product. Add its locations and the details you already know.</p> : <ul className="report-list">{view.snapshot.types.filter(t=>`${t.code} ${t.title} ${t.scheme}`.toLowerCase().includes(search.toLowerCase())).map(t=><li key={t.id}><button disabled={busy || !!editor} aria-current={!schedule && selected===t.id?"true":undefined} onClick={()=>select(t.id)}><strong>{t.code ? `${t.code} · ` : ""}{t.title}</strong><br/>{t.scheme || words(t.kind)}{t.status==="retired"?" · retired":""}</button></li>)}</ul>}
+      {!view ? <p role="status">{loadError || <Pending delayed>Loading specifications…</Pending>}</p> : view.snapshot.types.length===0 ? <p className="report-empty">Start with a material or product. Add its locations and the details you already know.</p> : <ul className="report-list">{view.snapshot.types.filter(t=>`${t.code} ${t.title} ${t.scheme}`.toLowerCase().includes(search.toLowerCase())).map(t=><li key={t.id}><button disabled={busy || !!editor} aria-current={!schedule && selected===t.id?"true":undefined} onClick={()=>select(t.id)}><strong>{t.code ? `${t.code} · ` : ""}{t.title}</strong><br/>{t.scheme || words(t.kind)}{t.status==="retired"?" · retired":""}</button></li>)}</ul>}
       <h2>Issued schedules</h2>{issues.length===0?<p className="report-muted">No schedules issued yet.</p>:<ul className="report-list">{issues.map(i=><li key={i.id}><a href={`${specificationApi.exportURL(projectId,i.id)}?format=pdf`}>Issue {i.number}: {i.title} · PDF</a> <a href={specificationApi.exportURL(projectId,i.id)} aria-label={`Issue ${i.number} CSV`}>CSV</a><p className="report-muted">{words(i.purpose)} · {new Date(i.created_at).toLocaleDateString()}</p></li>)}</ul>}
       <h2>Import project information</h2><p className="report-muted">Read a filed schedule, specification or product sheet. Imported readings need source review. Confirming a reading does not select a product or transfer specification responsibility.</p>
       {documents.length===0?<p className="report-muted">File your documents in the project register, then return here to import them.</p>:<form onSubmit={e=>{e.preventDefault();void run(()=>specificationApi.import(projectId,importDoc,importTarget));}}>
@@ -80,11 +81,11 @@ export function Specifications({projectId, tick, documents, onSignedOut, initial
         <label>Import into<select value={importTarget} onChange={e=>setImportTarget(e.target.value)}><option value="">New candidate items</option>{view?.snapshot.types.filter(t=>t.status==="active").map(t=><option key={t.id} value={t.id}>{t.code} {t.title}</option>)}</select></label>
         <button className="btn" disabled={blocked || !importDoc || importing}>Read specification information</button>
       </form>}
-      {view?.imports?.map(i=><p className="report-muted" role="status" key={i.document_id}>{documents.find(d=>d.id===i.document_id)?.filename ?? "Source document"}: {i.status} · {i.count} candidate items retained.{i.error && ` ${i.error}`}</p>)}
+      {view?.imports?.map(i=><p className="report-muted" role="status" key={i.document_id}>{documents.find(d=>d.id===i.document_id)?.filename ?? "Source document"}: <ImportStatus status={i.status} /> · {i.count} candidate items retained.{i.error && ` ${i.error}`}</p>)}
     </div>
     <div className="report-reader" ref={reader}>
       {(error || loadError) && <div className="banner" role="alert"><p>{error || loadError}</p><button className="btn" disabled={busy} onClick={()=>setReload(n=>n+1)}>Reload specifications</button></div>}
-      <p className="sr-only" role="status">{message}</p>
+      <p className={busy ? "report-muted" : "sr-only"} role="status">{busy ? <Pending delayed>Saving…</Pending> : message}</p>
       {editor && <form className="package-scope-form" onSubmit={saveType} aria-label="Specification item">
         <h2>{editor.id?"Edit item":"Add a specification item"}</h2>
         {stale && <p className="report-conflict" role="alert">This item changed elsewhere. Cancel this edit and reopen it to use the saved version.</p>}

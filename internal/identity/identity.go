@@ -113,15 +113,16 @@ type Run struct {
 // Text is the identity text of one file.
 // TextLayer is false for a readable PDF page that has no text (a scan or a blank).
 type Text struct {
-	OCR       bool // recovered lettering; never a native PDF text layer
-	PageCount int  // physical PDF pages; zero for other formats
-	Format    string
-	TextLayer bool
-	Runs      []Run
+	Incomplete bool // some source pages remain unread; never infer absence from them
+	OCR        bool // recovered lettering; never a native PDF text layer
+	PageCount  int  // physical PDF pages; zero for other formats
+	Format     string
+	TextLayer  bool
+	Runs       []Run
 }
 
-// Extract reads identity text from a PDF, DOCX, or XLSX.
-// format is "pdf", "docx", or "xlsx". r is the file bytes of the given size.
+// Extract reads identity text from a PDF, DOCX, XLSX, or Markdown file.
+// format is "pdf", "docx", "xlsx", "md", or "markdown".
 func Extract(ctx context.Context, format string, r io.ReaderAt, size int64, limits Limits) (Text, error) {
 	if err := ctx.Err(); err != nil {
 		return Text{}, err
@@ -138,6 +139,8 @@ func Extract(ctx context.Context, format string, r io.ReaderAt, size int64, limi
 		got, err = extractDOCX(ctx, r, size, limits)
 	case "xlsx":
 		got, err = extractXLSX(ctx, r, size, limits)
+	case "md", "markdown":
+		got, err = extractMarkdown(ctx, r, size, limits)
 	default:
 		return Text{}, fmt.Errorf("%w: format %q", ErrMalformed, format)
 	}

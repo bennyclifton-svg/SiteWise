@@ -244,13 +244,13 @@ func (a *apiClient) procurementAward(ctx context.Context, n int) error {
 			return err
 		}
 		amount := strconv.Itoa(1000 + i)
-		if _, err := a.timed(ctx, "submission_write", http.MethodPut, "/projects/"+project+"/submissions/"+subs[0]+"/cells/"+url.PathEscape(first.keys[0]), []byte(`{"state":"priced","amount":"`+amount+`"}`), http.StatusOK); err != nil {
+		if _, err := a.timed(ctx, "submission_write", http.MethodPut, "/projects/"+project+"/submissions/"+subs[i%len(subs)]+"/cells/"+url.PathEscape("comparison:appointment"), []byte(`{"state":"priced","amount":"`+amount+`","note":"Benchmark confirmed appointment scope"}`), http.StatusOK); err != nil {
 			return err
 		}
 		if _, err := a.timed(ctx, "procurement_report", http.MethodGet, base+"/report", nil, http.StatusOK); err != nil {
 			return err
 		}
-		award, _ := json.Marshal(map[string]any{"submission_id": subs[i%len(subs)], "lines": []map[string]any{{"label": "Stages", "item_keys": first.keys[:min(3, len(first.keys))]}}})
+		award, _ := json.Marshal(map[string]any{"submission_id": subs[i%len(subs)], "lines": []map[string]any{{"label": "Confirmed appointment", "item_keys": []string{"comparison:appointment"}}}})
 		if _, err := a.timed(ctx, "award_write", http.MethodPost, base+"/award", award, http.StatusCreated); err != nil {
 			return err
 		}

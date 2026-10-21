@@ -55,7 +55,7 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   await expect(page.getByRole("heading", { name: "14 Hale Street, Petersham" })).toBeVisible();
   const projectUrl = page.url();
   const projectId = projectUrl.split("/projects/")[1];
-  await expect(page.getByRole("status")).toHaveText("Live");
+  await expect(page.locator(".reg-live")).toHaveText("Live");
 
   // A real drag and drop.
   await dropFile(page, "identity-page.pdf", fixture("identity-page.pdf"), "application/pdf");
@@ -72,15 +72,24 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   ).setFiles([
     { name: "docx-table.docx", mimeType: "application/octet-stream", buffer: fixture("docx-table.docx") },
     { name: "merged-cells.xlsx", mimeType: "application/octet-stream", buffer: fixture("merged-cells.xlsx") },
+    { name: "fire-strategy.md", mimeType: "text/markdown", buffer: Buffer.from("# Fire strategy\nDocument number: FS-101\nRevision: A\n") },
+    { name: "site-notes.markdown", mimeType: "text/plain", buffer: Buffer.from("# Site inspection\nDocument number: SI-102\nRevision: B\n") },
+    { name: "blank.md", mimeType: "text/markdown", buffer: Buffer.from(" \n\t") },
     { name: "scanned-empty.pdf", mimeType: "application/pdf", buffer: fixture("scanned-empty.pdf") },
     { name: "slow-padded-document.docx", mimeType: "application/octet-stream", buffer: fixture("padded-document.docx") },
   ]);
 
-  for (const name of ["docx-table.docx", "merged-cells.xlsx"]) {
+  for (const name of ["docx-table.docx", "merged-cells.xlsx", "fire-strategy.md", "site-notes.markdown"]) {
     await open(block(page, name));
     await expect(block(page, name).locator(".tb-state")).toHaveText(/Filed/);
     await expect(cell(block(page, name), "number")).toBeVisible();
   }
+
+  const blank = block(page, "blank.md");
+  await open(blank);
+  await expect(blank.locator(".tb-state")).toHaveText("Stored · not filed");
+  await expect(blank).toContainText("This file contains no readable text");
+  await expect(blank.getByRole("button", { name: "Retry OCR" })).toHaveCount(0);
 
   // Stored but not filed says so in words, not only colour.
   const scan = block(page, "scanned-empty.pdf");
@@ -125,21 +134,21 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   await page.reload();
   await open(block(page, "identity-page.pdf"));
   await expect(cell(block(page, "identity-page.pdf"), "title")).toContainText("Ground Floor Plan");
-  await expect(page.getByRole("status")).toHaveText("Live");
+  await expect(page.locator(".reg-live")).toHaveText("Live");
 
   // Drop the stream, correct from elsewhere, reconnect: the event replays
   // from the cursor without a reload.
   const docId = (await block(page, "identity-page.pdf").getAttribute("id"))!.replace("doc-", "");
   await page.context().setOffline(true);
   expect((await page.request.post("/__e2e/drop-streams")).ok()).toBeTruthy();
-  await expect(page.getByRole("status")).not.toHaveText("Live");
+  await expect(page.locator(".reg-live")).not.toHaveText("Live");
   const put = await page.request.put(`/api/documents/${docId}/fields/revision`, {
     data: { value: "C" },
     headers: { Origin: new URL(projectUrl).origin },
   });
   expect(put.ok()).toBeTruthy();
   await page.context().setOffline(false);
-  await expect(page.getByRole("status")).toHaveText("Live", { timeout: 20_000 });
+  await expect(page.locator(".reg-live")).toHaveText("Live", { timeout: 20_000 });
   const rev = cell(block(page, "identity-page.pdf"), "revision");
   await expect(rev).toContainText("C", { timeout: 20_000 });
   await expect(rev).toContainText("Set by you");
@@ -154,7 +163,7 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   const other = await signIn(browser, "b");
   await expect(other.getByText("No projects yet.")).toBeVisible();
   await other.goto(projectUrl);
-  await expect(other.getByText("This project isn't available.")).toBeVisible();
+  await expect(other.getByRole("banner").getByText("This project isn't available.")).toBeVisible();
   const list = await other.request.get(`/api/projects/${projectId}/documents`);
   expect(list.status()).toBe(404);
   const doc = await other.request.get(`/api/documents/${docId}`);

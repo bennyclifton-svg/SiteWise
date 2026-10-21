@@ -70,6 +70,10 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 	if sub.ProjectID != project || sub.PackageID != pkg {
 		return v, sub, nil, "", ErrNotFound
 	}
+	isBuilder, err := builderPackage(ctx, tx, org, pkg)
+	if err != nil {
+		return v, sub, nil, "", err
+	}
 	if sub.Status != SubmissionReceived && sub.Status != SubmissionNeedsReview {
 		return v, sub, nil, "", ErrInvalidInput
 	}
@@ -89,7 +93,7 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 		}
 		return v, sub, nil, "", err
 	}
-	rows, err := tx.Query(ctx, `SELECT id::text, COALESCE(item_key,''), label, amount_cents, state FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2`, org, sub.ID)
+	rows, err := tx.Query(ctx, `SELECT id::text, COALESCE(item_key,''), label, amount_cents, state, decided_by FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2`, org, sub.ID)
 	if err != nil {
 		return v, sub, nil, "", err
 	}
@@ -97,16 +101,17 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 		label string
 		cents *int64
 		state string
+		by    string
 	}
 	byKey, byID := map[string]priced{}, map[string]priced{}
 	for rows.Next() {
-		var id, key, label, state string
+		var id, key, label, state, by string
 		var c *int64
-		if err := rows.Scan(&id, &key, &label, &c, &state); err != nil {
+		if err := rows.Scan(&id, &key, &label, &c, &state, &by); err != nil {
 			rows.Close()
 			return v, sub, nil, "", err
 		}
-		p := priced{label, c, state}
+		p := priced{label, c, state, by}
 		if key != "" {
 			byKey[key] = p
 		} else {
@@ -117,14 +122,41 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 	if len(in.Lines) == 0 || len(in.Lines) > 100 {
 		return v, sub, nil, "", ErrInvalidInput
 	}
+	quote, err := quotedReview(ctx, tx, org, sub.ID)
+	if err != nil {
+		return v, sub, nil, "", err
+	}
+	if _, confirmed := byKey["comparison:appointment"]; !isBuilder && (quote != nil || confirmed) {
+		for _, line := range in.Lines {
+			if len(line.PriceIDs) != 0 || len(line.Keys) != 1 || line.Keys[0] != "comparison:appointment" || byKey["comparison:appointment"].by != proposals.ByUser {
+				return v, sub, nil, "", ErrInvalidInput
+			}
+		}
+	}
 	used := map[string]bool{}
+	schedule, err := readSchedule(ctx, tx, org, pkg)
+	if err != nil {
+		return v, sub, nil, "", err
+	}
+	feeKeys := map[string]bool{}
+	for _, it := range schedule {
+		if !it.Retired && it.Price() {
+			feeKeys[it.Key] = true
+		}
+	}
 	for _, l := range in.Lines {
+		if isBuilder && len(l.PriceIDs) > 0 {
+			return v, sub, nil, "", ErrInvalidInput
+		}
 		label := strings.TrimSpace(l.Label)
 		if label == "" || len(label) > 200 || len(l.Keys)+len(l.PriceIDs) == 0 {
 			return v, sub, nil, "", ErrInvalidInput
 		}
 		line := AwardLineView{Label: label, Keys: []string{}, PriceIDs: []string{}}
 		take := func(id string, p priced, ok bool) error {
+			if isBuilder && p.by != proposals.ByUser {
+				return ErrInvalidInput
+			}
 			if !ok || used[id] || p.state != proposals.StatePriced || p.cents == nil {
 				return ErrInvalidInput
 			}
@@ -133,6 +165,9 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 			return nil
 		}
 		for _, k := range l.Keys {
+			if !feeKeys[k] {
+				return v, sub, nil, "", ErrInvalidInput
+			}
 			p, ok := byKey[k]
 			if err := take("k:"+k, p, ok); err != nil {
 				return v, sub, nil, "", err
@@ -233,6 +268,9 @@ func (s *Store) Award(ctx context.Context, org, project, pkg, actor string, in A
 		return AwardView{}, err
 	}
 	defer tx.Rollback(ctx)
+	if err := lockComparison(ctx, tx, org, project, pkg); err != nil {
+		return AwardView{}, err
+	}
 	var live bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM awards WHERE org_id=$1::uuid AND package_id::text=$2 AND undone_at IS NULL)`, org, pkg).Scan(&live); err != nil {
 		return AwardView{}, err

@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // One filing drawn as a title block: a strip of boxed fields, each stating its
 // value, how sure SiteWise is, and who decided it. A box is corrected in place.
 
@@ -21,6 +22,7 @@ export interface RowModel {
   doc?: Doc;
   /** 0..1 while bytes are still going up. */
   progress?: number;
+  uploadQueued?: boolean;
   uploadError?: string;
   duplicate?: boolean;
   interrupted?: boolean;
@@ -60,12 +62,19 @@ export const REASONS: Record<string, string> = {
   ocr_failed: "OCR could not finish reading this PDF. Your original is safe. Retry, or upload a PDF with selectable text.",
   ocr_no_text: "OCR found no readable lettering on the first page. Your original is safe. Try a clearer scan or a PDF with selectable text.",
   ocr_limit: "This PDF exceeds the OCR reading limit. Your original is safe. Upload a smaller PDF or one with selectable text.",
-  unsupported_format: "SiteWise files PDF, DOCX and XLSX. This file is kept exactly as uploaded but not filed.",
+  unsupported_format: "SiteWise files PDF, DOCX, XLSX and Markdown. This file is kept exactly as uploaded but not filed.",
   unreadable:
     "The file couldn't be opened. It may be damaged or password protected. It's kept exactly as uploaded.",
   too_large: "Its identity pages are larger than intake reads. The file is kept exactly as uploaded.",
   empty: "The file is empty.",
 };
+
+export function notFiledReason(doc: Doc): string | undefined {
+  if (doc.reason === "no_text_layer" && !/\.pdf$/i.test(doc.filename)) {
+    return "This file contains no readable text. It is kept exactly as uploaded.";
+  }
+  return REASONS[doc.reason ?? ""] ?? doc.reason;
+}
 
 export function stateOf(f: Field | undefined): CellState {
   if (!f) return "unset";
@@ -171,7 +180,7 @@ export function DocumentRow({ row, catalog, priorLabel, onCorrect, onRetry, onJu
 
       {notFiled && (
         <p className="tb-note">
-          <strong>Kept, not filed.</strong> {REASONS[doc.reason ?? ""] ?? doc.reason}
+          <strong>Kept, not filed.</strong> {notFiledReason(doc)}
         </p>
       )}
       {row.uploadError && !doc && <p className="tb-note error-text">{row.uploadError}</p>}
@@ -228,7 +237,7 @@ export function HeadState({
       );
     }
     const pct = Math.round((row.progress ?? 0) * 100);
-    return <span className="tb-state">{pct < 100 ? `Uploading ${pct}%` : "Stored, filing…"}</span>;
+    return <span className="tb-state"><Pending queued={row.uploadQueued}>{row.uploadQueued ? "Queued for upload" : pct < 100 ? `Uploading ${pct}%` : "Finishing upload…"}</Pending></span>;
   }
   if (doc.status === "not_filed") {
     return (
@@ -236,11 +245,11 @@ export function HeadState({
         <IconStored />
         Stored · not filed
       </span>
-      {(doc.reason === "no_text_layer" || doc.reason?.startsWith("ocr_")) && <button type="button" className="btn btn-small" onClick={() => onRetry(doc.id)}><IconRetry />Retry OCR</button>}</>
+      {/\.pdf$/i.test(doc.filename) && (doc.reason === "no_text_layer" || doc.reason?.startsWith("ocr_")) && <button type="button" className="btn btn-small" onClick={() => onRetry(doc.id)}><IconRetry />Retry OCR</button>}</>
     );
   }
   if (doc.status === "pending") {
-    if (ocrStage(doc)) return <span className="tb-state">{ocrStage(doc)!.title}</span>;
+    if (ocrStage(doc)) return <span className="tb-state"><Pending queued={ocrStage(doc)!.reason === "ocr_queued"}>{ocrStage(doc)!.title}</Pending></span>;
     if (row.interrupted || row.stale) {
       return (
         <>
@@ -254,7 +263,7 @@ export function HeadState({
         </>
       );
     }
-    return <span className="tb-state">Filing…</span>;
+    return <span className="tb-state"><Pending queued>Waiting for filing…</Pending></span>;
   }
   const seconds = row.filedInMs !== undefined ? ` in ${(row.filedInMs / 1000).toFixed(2)} s` : "";
   return (
@@ -451,7 +460,7 @@ function CellEditor({
         />
       )}
       <span className={error ? "cell-hint error-text" : "cell-hint"} id={`${id}-hint`} role={error ? "alert" : undefined}>
-        {saving ? "Saving…" : error || (options ? "Esc to cancel" : "Enter to save · Esc to cancel")}
+        {saving ? <Pending delayed>Saving…</Pending> : error || (options ? "Esc to cancel" : "Enter to save · Esc to cancel")}
       </span>
     </form>
   );

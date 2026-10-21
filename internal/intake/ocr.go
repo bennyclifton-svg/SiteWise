@@ -88,5 +88,8 @@ func (r *Runner) RunOCR(ctx context.Context, orgID, documentID string) error {
 	if err != nil && missingOnly && ctx.Err() == nil {
 		return fail("ocr_failed")
 	}
+	if err == nil && !missingOnly && r.AfterFile != nil {
+		r.AfterFile(orgID, documentID, text)
+	}
 	return err
 }

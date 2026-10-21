@@ -37,10 +37,12 @@ type Column struct {
 func Totals(items []rfp.ScheduleItem, cells map[string]Cell, others []Cell, stated *int64) Column {
 	var c Column
 	complete := true
+	hasBase := false
 	for _, it := range items {
 		if !it.Price() {
 			continue
 		}
+		hasBase = hasBase || it.Base
 		cell, ok := cells[it.Key]
 		switch {
 		case !ok || cell.State == "":
@@ -58,8 +60,9 @@ func Totals(items []rfp.ScheduleItem, cells map[string]Cell, others []Cell, stat
 			if it.Base {
 				complete = false
 			}
-		case cell.State == StateNotPriced && it.Base:
+		case (cell.State == StateNotPriced || cell.State == StateExcluded) && it.Base:
 			c.NotPriced++
+			complete = false
 		}
 	}
 	for _, o := range others {
@@ -67,7 +70,7 @@ func Totals(items []rfp.ScheduleItem, cells map[string]Cell, others []Cell, stat
 			c.OthersTotal += *o.Cents
 		}
 	}
-	if complete {
+	if complete && hasBase {
 		v := c.KnownBase
 		c.BaseTotal = &v
 		if stated != nil {

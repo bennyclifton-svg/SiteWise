@@ -217,6 +217,15 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err != nil {
 		return 0, err
 	}
+	// Image preparation requires installed PDFium/Tesseract and is gated by
+	// check-visual.ps1 in the build, outside this foreground replay harness.
+	foreground := budgets.Paths[:0]
+	for _, b := range budgets.Paths {
+		if b.Name != "visual_identity" {
+			foreground = append(foreground, b)
+		}
+	}
+	budgets.Paths = foreground
 	if o.worksFixture != "" {
 		for _, b := range append([]latency.PathBudget{}, budgets.Paths...) {
 			if b.Name == "profile_rebuild" || b.Name == "profile_edit" {
@@ -796,6 +805,13 @@ func (a *apiClient) do(ctx context.Context, method, path string, body io.Reader,
 	req.Header.Set("Origin", a.origin)
 	if body != nil && !strings.Contains(path, "/files?") {
 		req.Header.Set("Content-Type", "application/json")
+	}
+	if method == http.MethodGet && req.URL.Path == "/api/events" {
+		// A complete replay outlives the per-request timeout. Its event stream
+		// stays open until the caller cancels it, as the browser's does.
+		streamClient := *a.http
+		streamClient.Timeout = 0
+		return streamClient.Do(req)
 	}
 	return a.http.Do(req)
 }

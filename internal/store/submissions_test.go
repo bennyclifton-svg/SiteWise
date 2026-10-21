@@ -52,6 +52,10 @@ func greenAll() proposals.Thresholds {
 
 // readInto runs one read the way the server does and commits it.
 func readInto(t *testing.T, s *store.Store, id string, text identity.Text, ask proposals.Asker) {
+	readWithQuote(t, s, id, text, ask, true)
+}
+
+func readWithQuote(t *testing.T, s *store.Store, id string, text identity.Text, ask proposals.Asker, quoted bool) {
 	t.Helper()
 	ctx := context.Background()
 	in, err := s.SubmissionForReading(ctx, orgA, id, false)
@@ -63,6 +67,10 @@ func readInto(t *testing.T, s *store.Store, id string, text identity.Text, ask p
 	out, err := proposals.Read(ctx, ask, greenAll(), in.Filename, text, pc, in.Keep)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if !quoted {
+		// Exercise historical readings stored before source quotes were retained.
+		out.Quote = nil
 	}
 	ok, err := s.CommitSubmissionRead(ctx, orgA, id, out, false, time.Now())
 	if err != nil || !ok {
@@ -126,14 +134,21 @@ func TestSubmissionFromFilingToPriceTable(t *testing.T) {
 		t.Fatalf("submission %+v", col.Submission)
 	}
 
-	// The user's correction is final, and the totals follow it.
-	before := col.Totals.KnownBase
+	// A schedule correction is preserved, but does not silently define the
+	// appointment scope or add a bundle to its component prices.
 	if err := s.SetSubmissionCell(ctx, orgA, projectA, id, stage, store.CellInput{State: "priced", Amount: "3,500"}); err != nil {
 		t.Fatal(err)
 	}
 	table, _ = s.ReadPriceTable(ctx, orgA, projectA, pkg.ID)
-	if got := table.Columns[0].Totals.KnownBase; got != before+50000 {
-		t.Fatalf("known base %d, want %d", got, before+50000)
+	if got := table.Columns[0]; got.Totals.BaseTotal != nil || got.Cells[stage].Cents == nil || *got.Cells[stage].Cents != 350000 {
+		t.Fatalf("schedule correction altered confirmed comparison: %+v", got)
+	}
+	if err := s.SetSubmissionCell(ctx, orgA, projectA, id, "comparison:appointment", store.CellInput{State: "priced", Amount: "12500", Note: "Advice and planning report, corrected scope"}); err != nil {
+		t.Fatal(err)
+	}
+	table, _ = s.ReadPriceTable(ctx, orgA, projectA, pkg.ID)
+	if got := table.Columns[0].Totals.KnownBase; got != 1250000 {
+		t.Fatalf("confirmed fee %d", got)
 	}
 	if err := s.SetSubmissionCell(ctx, orgA, projectA, id, stage, store.CellInput{State: "priced", Amount: "-1"}); !errors.Is(err, store.ErrInvalidInput) {
 		t.Fatalf("negative amount: %v", err)

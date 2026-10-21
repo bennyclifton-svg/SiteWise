@@ -52,6 +52,7 @@ type Passage struct {
 // band for accepting a label or an evidence noul. Zero accepts nothing, so a
 // missing calibration cannot become an automatic action.
 type Worker struct {
+	Visual  func(context.Context, store.ClaimedJob) error
 	OCR     func(context.Context, string, string) error
 	Store   *store.Store
 	Ask     Asker
@@ -148,6 +149,11 @@ func (w *Worker) retryAfter(err error) time.Duration {
 // the same stage replaces passages and labels instead of appending them.
 func (w *Worker) Perform(ctx context.Context, job store.ClaimedJob) error {
 	switch job.Kind {
+	case store.JobKindVisualIdentity:
+		if w.Visual == nil {
+			return errors.New("visual reader unavailable")
+		}
+		return w.Visual(ctx, job)
 	case store.JobKindSpecification:
 		return w.specification(ctx, job)
 	case store.JobKindOCR:

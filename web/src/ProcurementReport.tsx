@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // The one-page comparison report: price, non-price, recommendation. It
 // prints on A4 landscape. Ratings and the recommendation are the PM's; the
 // passages are what Jev picked from each proposal; nothing scores a firm.
@@ -23,10 +24,11 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
     setBusy(true); setError("");
     try { const d = await action(); setData(d); } catch (e) { fail(e); } finally { setBusy(false); }
   }
-  if (!data) return <section className="prices"><button type="button" className="btn btn-small" onClick={onBack}>← Price table</button>{error ? <p role="alert">{error}</p> : <p role="status">Loading report…</p>}</section>;
+  if (!data) return <section className="prices"><button type="button" className="btn btn-small" onClick={onBack}>← Price table</button>{error ? <p role="alert">{error}</p> : <p role="status"><Pending delayed>Loading report…</Pending></p>}</section>;
   const { table, report } = data;
   const cols = table.columns;
-  const base = table.items.filter(i => i.base && i.kind !== "rate" && i.kind !== "criterion");
+  const quoted = !table.builder && cols.some(c => c.quote);
+  const base = table.items.filter(i => i.base && i.kind !== "rate" && i.kind !== "criterion" && (!quoted || i.key === "comparison:appointment"));
   const name = (i: number) => cols[i].firm?.name ?? cols[i].submission.filename;
   const departures = report.criteria.find(c => c.key === "criterion:r6");
   const criteria = report.criteria.filter(c => c.key !== "criterion:r6");
@@ -47,9 +49,9 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
       <table className="report-grid">
         <thead><tr><th scope="col">Item</th>{cols.map((c, i) => <th scope="col" key={c.submission.id} className={c.totals.lowest ? "lowest" : undefined}>{name(i)}</th>)}</tr></thead>
         <tbody>
-          {base.map(it => <tr key={it.key}><th scope="row">{it.label}</th>{cols.map(c => { const cell = c.cells[it.key]; return <td key={c.submission.id}>{!cell || cell.state === "" ? "Not read" : cell.state === "priced" ? money(cell.amount) : cell.state === "included" ? "Included" : cell.state === "excluded" ? "Excluded" : "Not priced"}</td>; })}</tr>)}
-          <tr className="report-total"><th scope="row">Base fee total</th>{cols.map(c => <td key={c.submission.id} className={c.totals.lowest ? "lowest" : undefined}>{c.totals.base_total != null ? money(c.totals.base_total) : `${money(c.totals.known_base)} + ?`}{c.totals.not_priced > 0 && <small> · {c.totals.not_priced} not priced</small>}</td>)}</tr>
-          <tr><th scope="row">Options priced</th>{cols.map(c => <td key={c.submission.id}>{money(c.totals.options_total)}</td>)}</tr>
+          {base.map(it => <tr key={it.key}><th scope="row">{it.label}</th>{cols.map(c => { const cell = c.cells[it.key]; return <td key={c.submission.id}>{!cell || cell.state === "" ? "Not read" : cell.state === "priced" ? money(cell.amount) : cell.state === "included" ? "Included" : cell.state === "excluded" ? "Excluded" : "Not priced"}{cell?.basis && <small className="prices-basis">{cell.basis}</small>}</td>; })}</tr>)}
+          <tr className="report-total"><th scope="row">{quoted ? "Confirmed comparison fee" : "Base fee total"}</th>{cols.map(c => <td key={c.submission.id} className={c.totals.lowest ? "lowest" : undefined}>{c.totals.base_total != null ? money(c.totals.base_total) : c.totals.known_base && c.totals.known_base !== "0.00" ? `${money(c.totals.known_base)} known · incomplete` : "Unknown"}{c.totals.not_priced > 0 && <small> · {c.totals.not_priced} not priced</small>}</td>)}</tr>
+          {!quoted && <tr><th scope="row">Options priced</th>{cols.map(c => <td key={c.submission.id}>{money(c.totals.options_total)}</td>)}</tr>}
         </tbody>
       </table>
       <h2>Non-price <span>passages as the firms wrote them; ratings are the PM's</span></h2>

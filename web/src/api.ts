@@ -16,6 +16,8 @@ export interface Field {
 }
 
 export interface Doc {
+	visual_title?: string;
+	visual_status?: "queued" | "reading" | "ready" | "unavailable" | "not_requested";
   id: string;
   project_id: string;
   filename: string;
@@ -100,7 +102,15 @@ export async function request<T>(method: string, path: string, body?: unknown): 
   return (await res.json()) as T;
 }
 
+export interface VisualReview {
+  status: "not_requested" | "queued" | "reading" | "ready" | "unavailable";
+  elapsed_ms: number;
+  result: { pages?: number; images?: {label: string; page: number; data: string}[]; suggestions?: Record<string, {value: string; page: number}> };
+}
+
 export const api = {
+  visualReview: (id: string) => request<VisualReview>("GET", `/documents/${id}/visual-review`),
+  requestVisualReview: (id: string) => request<VisualReview>("POST", `/documents/${id}/visual-review`),
   checkSession: () => request<void>("GET", "/session"),
   signIn: (token: string) => request<void>("POST", "/session", { token }),
   projects: () => request<Project[]>("GET", "/projects"),
@@ -157,7 +167,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted", "report", "works", "packages", "delivery", "costs", "specification", "invoices", "procurement"] as const;
+export const EVENT_KINDS = ["visual", "filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted", "report", "works", "packages", "delivery", "costs", "specification", "invoices", "procurement"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {

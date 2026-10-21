@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"mime"
@@ -17,6 +18,7 @@ import (
 	"sitewise/internal/files"
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
+	"sitewise/internal/invoices"
 	"sitewise/internal/proposals"
 	"sitewise/internal/rfp"
 	"sitewise/internal/store"
@@ -36,6 +38,7 @@ const (
 // goroutine per submission, bounded by its own slots, at background
 // priority so it never takes filing's interactive reserve.
 type proposalReader struct {
+	ocr        func(context.Context, string, identity.Text) (identity.Text, error)
 	store      *store.Store
 	blobs      *files.Store
 	ask        proposals.Asker
@@ -155,8 +158,22 @@ func (r *proposalReader) outcome(ctx context.Context, orgID string, in store.Sub
 		return proposals.Outcome{}, err
 	}
 	pc := in.Context
+	if format == "pdf" && len(identity.MissingTextPages(text)) > 0 {
+		text.Incomplete = true
+		if r.ocr != nil {
+			text, err = r.ocr(ctx, path, text)
+			if err != nil {
+				text.Incomplete = true
+			}
+		}
+	}
 	pc.Lookup = r.store.FirmLookup(ctx, orgID)
 	return proposals.Read(ctx, r.ask, r.thresholds, in.Filename, text, pc, in.Keep)
+}
+
+// ProposalFiled is also used by the durable OCR worker after identity filing.
+func (s *Server) ProposalFiled(orgID, documentID string, text identity.Text) {
+	s.proposals.Filed(orgID, documentID, text)
 }
 
 func proposalFormat(name string) string {
@@ -245,13 +262,16 @@ type totalsJSON struct {
 }
 
 type columnJSON struct {
-	Submission  store.Submission              `json:"submission"`
-	Firm        *store.Firm                   `json:"firm"`
-	Cells       map[string]priceCellJSON      `json:"cells"`
-	Others      []priceCellJSON               `json:"others"`
-	Totals      totalsJSON                    `json:"totals"`
-	NeedsReview bool                          `json:"needs_review"`
-	Fields      map[string]proposals.Decision `json:"fields"`
+	Quote         *proposals.QuoteReview        `json:"quote,omitempty"`
+	Builder       *proposals.BuilderReview      `json:"builder,omitempty"`
+	UndoAlignment bool                          `json:"undo_alignment"`
+	Submission    store.Submission              `json:"submission"`
+	Firm          *store.Firm                   `json:"firm"`
+	Cells         map[string]priceCellJSON      `json:"cells"`
+	Others        []priceCellJSON               `json:"others"`
+	Totals        totalsJSON                    `json:"totals"`
+	NeedsReview   bool                          `json:"needs_review"`
+	Fields        map[string]proposals.Decision `json:"fields"`
 }
 
 type tableJSON struct {
@@ -266,6 +286,9 @@ func tableBody(t store.PriceTable, award *store.AwardView) tableJSON {
 	out := tableJSON{PriceTable: t, Columns: []columnJSON{}}
 	for _, c := range t.Columns {
 		col := columnJSON{Submission: c.Submission, Firm: c.Firm, Cells: map[string]priceCellJSON{}, Others: []priceCellJSON{}, NeedsReview: c.NeedsReview, Fields: map[string]proposals.Decision{}}
+		col.UndoAlignment = c.UndoAlignment
+		col.Builder = c.Builder
+		col.Quote = c.Quote
 		for k, v := range c.Cells {
 			col.Cells[k] = cellOf(v)
 		}
@@ -358,6 +381,15 @@ func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
+	target := r.URL.Query().Get("submission_id")
+	if target != "" && !uuidPattern.MatchString(target) {
+		http.Error(w, "invalid submission_id", http.StatusBadRequest)
+		return
+	}
+	if err := deps.Store.CheckSubmissionUpload(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"), target); err != nil {
+		procurementError(w, deps, err)
+		return
+	}
 	name := strings.TrimSpace(r.URL.Query().Get("name"))
 	body := http.MaxBytesReader(w, r.Body, deps.MaxUploadBytes)
 	defer body.Close()
@@ -377,7 +409,12 @@ func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "upload failed", http.StatusInternalServerError)
 		return
 	}
-	id, err := deps.Store.OpenSubmission(r.Context(), session.OrgID, r.PathValue("id"), filing.DocumentID, r.PathValue("pkg"), time.Now())
+	var id string
+	if target == "" {
+		id, err = deps.Store.OpenSubmission(r.Context(), session.OrgID, r.PathValue("id"), filing.DocumentID, r.PathValue("pkg"), time.Now())
+	} else {
+		id, err = deps.Store.AttachSubmissionDocument(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"), target, filing.DocumentID, time.Now())
+	}
 	if err != nil {
 		procurementError(w, deps, err)
 		return
@@ -386,7 +423,7 @@ func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 		deps.Filer.Start(session.OrgID, filing.DocumentID)
 	} else if deps.ProposalReader != nil {
 		// Bytes already filed: read now with the package the user chose.
-		deps.ProposalReader.Start(session.OrgID, id, time.Now(), true)
+		deps.ProposalReader.Start(session.OrgID, id, time.Now(), target == "")
 	}
 	if deps.Broker != nil {
 		deps.Broker.Wake(session.OrgID)
@@ -450,6 +487,49 @@ func putSubmissionCell(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	if err := deps.Store.SetSubmissionCell(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("sub"), key, in); err != nil {
+		procurementError(w, deps, err)
+		return
+	}
+	submissionWritten(w, r, deps, session)
+}
+
+func putComparisonRow(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !pathIDs(w, r, "pkg") {
+		return
+	}
+	session, ok := deliverySession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	var in store.ComparisonRowInput
+	if readProposalJSON(w, r, deps.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if err := deps.Store.SetComparisonRow(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"), in); err != nil {
+		procurementError(w, deps, err)
+		return
+	}
+	if deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	writePriceTable(w, r, deps, session, http.StatusOK)
+}
+
+func postSubmissionAlignment(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !pathIDs(w, r, "sub") {
+		return
+	}
+	session, ok := deliverySession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	var in store.AlignmentInput
+	if readProposalJSON(w, r, deps.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if err := deps.Store.AlignSubmission(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("sub"), in); err != nil {
 		procurementError(w, deps, err)
 		return
 	}
@@ -632,15 +712,88 @@ func priceSheet(t store.PriceTable) xlsx.Sheet {
 		}
 		sheet.Rows = append(sheet.Rows, r)
 	}
+	quoted := false
+	for _, c := range t.Columns {
+		quoted = quoted || c.Quote != nil
+	}
+	if quoted && !t.Builder {
+		row("Quoted fees — source amounts, not additive", true, func(c store.FirmColumn) xlsx.Cell {
+			var lines []string
+			if c.Quote != nil {
+				for _, fee := range c.Quote.Fees {
+					amount := fee.Printed + " (GST unclear)"
+					if fee.Amount != nil {
+						amount = "$" + *fee.Amount + " ex GST"
+					}
+					lines = append(lines, amount+" — "+fee.Label+" — "+fee.Role+fmt.Sprintf(" (page %d)", fee.Page))
+				}
+			}
+			return xlsx.Cell{Text: strings.Join(lines, "\n")}
+		})
+		row("Confirmed comparison fee", true, func(c store.FirmColumn) xlsx.Cell { v, ok := c.Cells["comparison:appointment"]; return cell(v, ok) })
+		row("Confirmed scope and source", false, func(c store.FirmColumn) xlsx.Cell { return xlsx.Cell{Text: c.Cells["comparison:appointment"].Basis} })
+		for _, it := range t.Items {
+			if !it.Price() || it.Key == "comparison:appointment" {
+				continue
+			}
+			row(it.Label+" — scope coverage", false, func(c store.FirmColumn) xlsx.Cell {
+				if own, ok := c.Cells[it.Key]; ok && own.DecidedBy == proposals.ByUser { return xlsx.Cell{Text: own.State+" — confirmed by you. "+own.Basis} }
+				if c.Quote == nil {
+					return xlsx.Cell{Text: "Coverage unclear"}
+				}
+				coverage := c.Quote.Coverage[it.Key]
+				label := coverage.Status
+				for _, fee := range c.Quote.Fees {
+					if fee.ID == coverage.FeeID {
+						label += ": " + fee.Label
+					}
+				}
+				return xlsx.Cell{Text: label}
+			})
+		}
+		return sheet
+	}
 	itemRow := func(it store.ScheduleItem, label string) {
 		row(label, false, func(c store.FirmColumn) xlsx.Cell { v, ok := c.Cells[it.Key]; return cell(v, ok) })
+		hasNote := false
+		for _, c := range t.Columns {
+			if c.Cells[it.Key].Basis != "" {
+				hasNote = true
+				break
+			}
+		}
+		if hasNote {
+			row(label+" — scope / allowance", false, func(c store.FirmColumn) xlsx.Cell { return xlsx.Cell{Text: c.Cells[it.Key].Basis} })
+		}
+	}
+	if t.Builder {
+		row("Quoted total ex GST (source reading; review before use)", true, func(c store.FirmColumn) xlsx.Cell {
+			if c.Builder == nil || c.Builder.ExGST == nil {
+				return xlsx.Cell{Text: "Unresolved"}
+			}
+			v, ok, err := invoices.ParseCents(*c.Builder.ExGST)
+			if !ok || err != nil {
+				return xlsx.Cell{Text: "Unresolved"}
+			}
+			return xlsx.Cell{Cents: &v}
+		})
+		row("Quoted total basis and source", false, func(c store.FirmColumn) xlsx.Cell {
+			if c.Builder == nil {
+				return xlsx.Cell{}
+			}
+			return xlsx.Cell{Text: c.Builder.Basis + "\n" + strings.Join(c.Builder.Sources, "\n") + "\n" + strings.Join(c.Builder.Issues, "\n")}
+		})
 	}
 	for _, it := range t.Items {
 		if it.Price() && it.Base {
 			itemRow(it, it.Label)
 		}
 	}
-	row("Base fee total", true, func(c store.FirmColumn) xlsx.Cell {
+	totalLabel := "Base fee total"
+	if t.Builder {
+		totalLabel = "Comparison total (separate from quoted total)"
+	}
+	row(totalLabel, true, func(c store.FirmColumn) xlsx.Cell {
 		if c.Totals.BaseTotal == nil {
 			return xlsx.Cell{Text: "Unknown", Bold: true}
 		}
@@ -656,18 +809,44 @@ func priceSheet(t store.PriceTable) xlsx.Sheet {
 			itemRow(it, "Option: "+it.Label)
 		}
 	}
-	row("Other items offered", false, func(c store.FirmColumn) xlsx.Cell {
-		var parts []string
-		for _, o := range c.Others {
-			if o.Cents != nil {
-				parts = append(parts, "$"+*cents(o.Cents)+" "+o.Label)
+	if !t.Builder {
+		row("Fees awaiting alignment", false, func(c store.FirmColumn) xlsx.Cell {
+			var parts []string
+			for _, o := range c.Others {
+				if o.Cents != nil {
+					parts = append(parts, "$"+*cents(o.Cents)+" "+o.Label)
+				}
 			}
+			return xlsx.Cell{Text: strings.Join(parts, "; ")}
+		})
+	}
+	if t.Builder && len(t.Columns) > 0 && t.Columns[0].Builder != nil {
+		for _, section := range t.Columns[0].Builder.Sections {
+			row(section.Label+" — source detail, not additive", false, func(c store.FirmColumn) xlsx.Cell {
+				var text []string
+				if c.Builder != nil {
+					for _, s := range c.Builder.Sections {
+						if s.Key == section.Key {
+							for _, d := range s.Details {
+								text = append(text, d.Relationship+": "+d.Text)
+							}
+						}
+					}
+				}
+				if len(text) == 0 {
+					return xlsx.Cell{Text: "No matching wording found"}
+				}
+				return xlsx.Cell{Text: strings.Join(text, "\n")}
+			})
 		}
-		return xlsx.Cell{Text: strings.Join(parts, "; ")}
-	})
+	}
 	for _, it := range t.Items {
 		if it.Kind == rfp.ItemRate {
-			itemRow(it, it.Label+" (per hour)")
+			unit := it.Unit
+			if unit == "" {
+				unit = "hour"
+			}
+			itemRow(it, it.Label+" (per "+unit+")")
 		}
 	}
 	return sheet

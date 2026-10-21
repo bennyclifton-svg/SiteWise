@@ -1,3 +1,4 @@
+import { Pending, Activity } from "./Activity";
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
@@ -205,7 +206,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   }, [addressLine, onIdentity]);
 
   if (!data) {
-    return <p className="muted">{error || "Loading the profile…"}</p>;
+    return <p className="muted">{error || <Pending delayed>Loading the profile…</Pending>}</p>;
   }
 
   const openSources = (system: string) => {
@@ -305,7 +306,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         </p>
         {total > 0 && (
           <div className="profile-progress">
-            <p role="status">{completed === total ? "Reading complete" : data.failed_documents > 0 ? "Reading needs attention" : data.pending_documents > 0 ? data.active_documents > 0 ? "Reading documents" : "Reading queued" : "Ready to read"} · {completed} of {total} document{total === 1 ? "" : "s"} read</p>
+            <p role="status" aria-atomic="true">{data.active_documents > 0 ? <Activity /> : data.pending_documents > 0 ? <Activity state="queued" /> : null}{" "}{completed === total ? "Reading complete" : data.failed_documents > 0 ? "Reading needs attention" : data.pending_documents > 0 ? data.active_documents > 0 ? "Reading documents" : "Reading queued" : "Ready to read"} · {data.active_documents > 0 && `${data.active_documents} processing · `}{Math.max(0, data.pending_documents - data.active_documents) > 0 && `${Math.max(0, data.pending_documents - data.active_documents)} queued · `}{completed} of {total} document{total === 1 ? "" : "s"} read</p>
             <progress aria-label="Documents read for profile" max={total} value={completed} />
           </div>
         )}
@@ -331,7 +332,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
           <div className="pf-head-actions">
             <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
             <button type="button" className="btn btn-primary btn-small" onClick={update} disabled={requesting}>
-              {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update project profile"}
+              {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update project profile"}
             </button>
           </div>
         </div>

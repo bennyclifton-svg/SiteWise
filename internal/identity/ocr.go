@@ -137,6 +137,16 @@ func (b *limitedOCRBuffer) Write(p []byte) (int, error) {
 }
 
 func parseOCR(data []byte, width, height, scale float64) ([]Run, error) {
+	runs, err := parseOCRPage(data, width, height, scale)
+	if len(runs) > 400 {
+		runs = append(runs[:200:200], runs[len(runs)-200:]...)
+	}
+	return runs, err
+}
+
+// Proposal tables can be in the middle of a dense page; only identity reading
+// may keep the beginning and end of a page.
+func parseOCRPage(data []byte, width, height, scale float64) ([]Run, error) {
 	if !bytes.HasPrefix(data, []byte("level\tpage_num\t")) {
 		return nil, errors.New("invalid OCR TSV header")
 	}
@@ -180,9 +190,6 @@ func parseOCR(data []byte, width, height, scale float64) ([]Run, error) {
 		}
 		runs = append(runs, Run{Text: row[11], Source: Source{Page: 1, X: x, Y: y, Width: w, Height: h}})
 		lastLine = line
-	}
-	if len(runs) > 400 {
-		runs = append(runs[:200:200], runs[len(runs)-200:]...)
 	}
 	return runs, nil
 }

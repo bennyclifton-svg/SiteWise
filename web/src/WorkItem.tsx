@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // One work item's detail, shown inside its system's row in Profile: what was
 // saved, where it came from, and the corrections a person can make (correct,
 // split, retire). Every write carries the version it was read at, so a
@@ -126,7 +127,7 @@ export function WorkItemDetail({ projectId, item, parts, systemLabel, busy, setB
         {!editor.base.is_group && layoutEligible(editor.base.system_id, editor.action) && <><label htmlFor="work-layout">Does this work change room or space boundaries?</label><select id="work-layout" value={editor.layout} onChange={e => setEditor({ ...editor, layout: e.target.value as Editor["layout"] })}><option value="unknown">Not recorded</option><option value="yes">Yes</option><option value="no">No</option></select><p className="report-muted">Replacing linings without moving boundaries is No. Yes requests coordination; it does not establish a design outcome.</p></>}
         <label htmlFor="work-condition-note">Condition note</label><input id="work-condition-note" maxLength={120} value={editor.note} onChange={e => setEditor({ ...editor, note: e.target.value })} />
         <label htmlFor="work-target">Target wording</label><textarea id="work-target" rows={3} maxLength={1000} value={editor.target} onChange={e => setEditor({ ...editor, target: e.target.value })} />
-        <div className="report-actions"><button className="btn btn-small" disabled={busy || stale || !editor.title.trim()}>{busy ? "Saving…" : "Save correction"}</button><button type="button" className="btn btn-small" disabled={busy} onClick={() => setEditor(null)}>Cancel correction</button></div>
+        <div className="report-actions"><button className="btn btn-small" disabled={busy || stale || !editor.title.trim()}>{busy ? <Pending delayed>Saving…</Pending> : "Save correction"}</button><button type="button" className="btn btn-small" disabled={busy} onClick={() => setEditor(null)}>Cancel correction</button></div>
       </fieldset></form>
     </section>}
   </div>;

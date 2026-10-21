@@ -188,6 +188,13 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		logger.Printf("OCR unavailable: %v; text PDFs still file normally", ocrErr)
 	}
 	srv, err := httpapi.New(httpapi.Options{
+		ProposalOCR: func(ctx context.Context, path string, text identity.Text) (identity.Text, error) {
+			if ocrErr != nil {
+				text.Incomplete = true
+				return text, identity.ErrOCRUnavailable
+			}
+			return ocr.ReadMissingPages(ctx, path, text)
+		},
 		OCR:            ocrExtract,
 		Store:          st,
 		Blobs:          blobs,
@@ -224,7 +231,10 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	ocrRunner := intake.NewRunner(blobs, st, ocrService)
 	ocrRunner.OCR = ocrExtract
 	ocrRunner.Wake = srv.WakeEvents
+	ocrRunner.AfterFile = srv.ProposalFiled
 	worker.OCR = ocrRunner.RunOCR
+	visual := &intake.VisualReader{Store: st, Blobs: blobs, Ask: client, Render: ocr.Visual}
+	worker.Visual = visual.Run
 	if !*backlog {
 		worker.Since = time.Now()
 		logger.Printf("background: old profile reading stays queued; text extraction always resumes")

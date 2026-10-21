@@ -82,7 +82,7 @@ WHERE (schedule_items.kind, schedule_items.label, schedule_items.detail, schedul
 		return err
 	}
 	_, err := tx.Exec(ctx, `UPDATE schedule_items SET retired_at = now(), updated_at = now()
-WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL AND NOT (key = ANY($3::text[]))`, org, pkg, keys)
+WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL AND NOT comparison_custom AND comparison_label IS NULL AND comparison_kind IS NULL AND NOT (key = ANY($3::text[]))`, org, pkg, keys)
 	return err
 }
 
@@ -91,11 +91,12 @@ type ScheduleItem struct {
 	rfp.ScheduleItem
 	Source  string `json:"source"`
 	Retired bool   `json:"retired"`
+	Custom  bool   `json:"custom"`
 }
 
 // readSchedule is a package's rows in print order, live first.
 func readSchedule(ctx context.Context, q querier, org, pkg string) ([]ScheduleItem, error) {
-	rows, err := q.Query(ctx, `SELECT key, kind, label, detail, base, ordinal, source, retired_at IS NOT NULL
+	rows, err := q.Query(ctx, `SELECT key, COALESCE(comparison_kind,kind), COALESCE(comparison_label,label), detail, CASE WHEN comparison_kind IS NULL THEN base ELSE comparison_kind='stage' END, ordinal, source, retired_at IS NOT NULL, comparison_unit, comparison_custom
 FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid ORDER BY retired_at IS NOT NULL, ordinal, key`, org, pkg)
 	if err != nil {
 		return nil, err
@@ -105,7 +106,7 @@ FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid ORDER BY r
 	for rows.Next() {
 		var it ScheduleItem
 		var ord int32
-		if err := rows.Scan(&it.Key, &it.Kind, &it.Label, &it.Detail, &it.Base, &ord, &it.Source, &it.Retired); err != nil {
+		if err := rows.Scan(&it.Key, &it.Kind, &it.Label, &it.Detail, &it.Base, &ord, &it.Source, &it.Retired, &it.Unit, &it.Custom); err != nil {
 			return nil, err
 		}
 		it.Ordinal = int(ord)
@@ -119,6 +120,11 @@ FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid ORDER BY r
 // resolved with no settings supplies a default, and a discipline with no RFP
 // knowledge the generic lump sum.
 func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg string) error {
+	if builder, err := builderPackage(ctx, tx, org, pkg); err != nil {
+		return err
+	} else if builder {
+		return ensureBuilderSchedule(ctx, tx, org, project, pkg)
+	}
 	if synced, err := s.syncRFPSchedule(ctx, tx, org, project, pkg); err != nil || synced {
 		return err
 	}

@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // Award in two steps. Step 1: choose what goes into the cost plan: each
 // priced item is its own line by default, extras are left out, and rows can
 // be combined under one name. Step 2: confirm the parent and children the
@@ -21,10 +22,11 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
   const rows = useMemo<Row[]>(() => {
     const out: Row[] = [];
     for (const it of table.items) {
+      if ((col.quote || col.cells["comparison:appointment"]) && !table.builder && it.key !== "comparison:appointment") continue;
       const c = col.cells[it.key];
       if (it.kind !== "rate" && it.kind !== "criterion" && c?.state === "priced" && c.amount != null) out.push({ id: `k:${it.key}`, key: it.key, priceId: "", label: it.label, amount: c.amount, extra: false });
     }
-    for (const o of col.others) if (o.amount != null) out.push({ id: `p:${o.id}`, key: "", priceId: o.id, label: o.label || "Offered item", amount: o.amount, extra: true });
+    if (!table.builder && !col.quote && !col.cells["comparison:appointment"]) for (const o of col.others) if (o.amount != null) out.push({ id: `p:${o.id}`, key: "", priceId: o.id, label: o.label || "Offered item", amount: o.amount, extra: true });
     return out;
   }, [table, col]);
   const [lines, setLines] = useState<Line[]>(() => rows.filter(r => !r.extra).map(r => ({ label: r.label, rows: [r.id] })));
@@ -94,7 +96,7 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
           const first = line && line.rows[0] === r.id;
           return <tr key={r.id} className={line ? undefined : "award-out"}>
             <td><input type="checkbox" aria-label={`Select ${r.label} to combine`} checked={picked.has(r.id)} disabled={!line} onChange={() => { const s = new Set(picked); if (s.has(r.id)) s.delete(r.id); else s.add(r.id); setPicked(s); }} /></td>
-            <td>{r.label}{r.extra && <span className="award-tag">offered, not asked for</span>}</td>
+            <td>{r.label}{r.extra && <span className="award-tag">awaiting alignment</span>}</td>
             <td className="num">{money(r.amount)}</td>
             <td>{!line ? <button type="button" className="table-action" onClick={() => toggleInclude(r.id)}>Include</button>
               : first ? <span className="award-line"><input aria-label={`Line name for ${r.label}`} value={line.label} maxLength={200} onChange={e => rename(i, e.target.value)} />{line.rows.length > 1 && <span className="award-tag">{line.rows.length} items</span>}<button type="button" className="table-action" onClick={() => toggleInclude(r.id)}>Leave out</button></span>
@@ -119,7 +121,7 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
       </div>
       <div className="award-actions">
         <button type="button" className="btn" disabled={busy} onClick={() => setStep(1)}>Back</button>
-        <button type="button" className="btn btn-primary" disabled={busy} onClick={() => void confirm()}>{busy ? "Awarding…" : "Award and write to cost plan"}</button>
+        <button type="button" className="btn btn-primary" disabled={busy} onClick={() => void confirm()}>{busy ? <Pending delayed>Awarding…</Pending> : "Award and write to cost plan"}</button>
       </div>
     </>}
   </dialog>;

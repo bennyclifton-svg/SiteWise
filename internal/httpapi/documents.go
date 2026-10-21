@@ -181,6 +181,20 @@ func uploadFile(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
 	}
+	// Re-dropping the retained original explicitly requests its missing pages
+	// again. A restart alone must not undo deliberate sheet deletions.
+	if !filing.Created && view.Status == "split" && view.Expansion != nil && view.Expansion.Status == "review" {
+		if err := deps.Store.RetryDrawingExpansion(r.Context(), session.OrgID, view.ID); err != nil {
+			http.Error(w, "sheet retry failed", 500)
+			return
+		}
+		deps.Filer.Start(session.OrgID, view.ID)
+		view, err = deps.Store.DocumentView(r.Context(), session.OrgID, view.ID)
+		if err != nil {
+			http.Error(w, "read failed", 500)
+			return
+		}
+	}
 	status := http.StatusOK
 	if filing.Created {
 		status = http.StatusCreated

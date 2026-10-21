@@ -1,3 +1,4 @@
+import { Pending, Activity } from "./Activity";
 import type { Doc } from "./api";
 import { useState } from "react";
 import { IconCheck, IconConfirmed, IconRetry } from "./icons";
@@ -37,7 +38,7 @@ export function OCRStatus({ doc, compact = false, onReprocess }: { doc: Doc; com
   };
   if (compact) return (
     <span className="ocr-summary" data-complete={complete || undefined}>
-      {!stage ? <IconCheck /> : <span className="reg-spin" aria-hidden="true" />}
+      {stage ? <Activity state={stage.reason === "ocr_queued" ? "queued" : "active"} /> : failed ? <IconRetry /> : <IconCheck />}
       {summary}
     </span>
   );
@@ -45,19 +46,19 @@ export function OCRStatus({ doc, compact = false, onReprocess }: { doc: Doc; com
   return (
     <section className="ocr-status" aria-label="Text recovery" role="status" aria-live="polite" aria-atomic="true">
       <div className="ocr-status-copy">
-        <strong>{recovery ? summary : complete ? "Text recovered · review the fields" : stage!.title}</strong>
-        <p>{recovery ? stage ? "Reading the first page for missing details. Saved values and your edits stay in place; you can keep working." : failed ? "Recovery could not finish. Your document is still filed and its saved details are unchanged. Try again, or check the original and edit the missing fields." : "Recovery finished. Check new values against the original; OCR can misread letters and numbers. Saved values and your edits were kept." : complete ? "OCR can misread letters and numbers. Check the recovered values against the original. Only the first page was read for filing." : stage!.detail}</p>
+        <strong>{stage ? <Pending queued={stage.reason === "ocr_queued"}>{summary}</Pending> : recovery ? summary : "Text recovered · review the fields"}</strong>
+        <p>{recovery ? stage ? stage.reason === "ocr_queued" ? "Detail recovery is queued. Your file is saved; you can keep working." : "Reading the first page for missing details. Saved values and your edits stay in place; you can keep working." : failed ? "Recovery could not finish. Your document is still filed and its saved details are unchanged. Try again, or check the original and edit the missing fields." : "Recovery finished. Check new values against the original; OCR can misread letters and numbers. Saved values and your edits were kept." : complete ? "OCR can misread letters and numbers. Check the recovered values against the original. Only the first page was read for filing." : stage!.detail}</p>
         {!stage && missing.length > 0 && <p><strong>Still missing:</strong> {missing.join(", ")}. {recovery && !failed ? "Check the original and edit any details that could not be recovered." : "Reprocess the first page to look for these details."}</p>}
       </div>
       {!failed && <ol className="ocr-steps" aria-label="OCR progress">
         {stages.map((s, i) => (
           <li key={s.reason} data-state={i < active ? "done" : i === active ? "active" : "waiting"} aria-current={i === active ? "step" : undefined}>
             <span className="ocr-step-mark" aria-hidden="true">{i < active ? <IconConfirmed /> : <span />}</span>
-            {recovery && i === 2 ? "Check details" : s.label}<span className="sr-only">{i < active ? ", complete" : i === active ? ", in progress" : ", waiting"}</span>
+            {recovery && i === 2 ? "Check details" : s.label}<span className="sr-only">{i < active ? ", complete" : i === active ? stage?.reason === "ocr_queued" ? ", queued" : ", in progress" : ", waiting"}</span>
           </li>
         ))}
       </ol>}
-      {!stage && missing.length > 0 && onReprocess && <button type="button" className="btn btn-small" disabled={requesting} onClick={request}><IconRetry />{requesting ? "Queuing recovery…" : "Reprocess missing details"}</button>}
+      {!stage && missing.length > 0 && onReprocess && <button type="button" className="btn btn-small" disabled={requesting} onClick={request}><IconRetry />{requesting ? <Pending delayed>Queuing recovery…</Pending> : "Reprocess missing details"}</button>}
       {error && <p className="error-text" role="alert">{error}</p>}
     </section>
   );

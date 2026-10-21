@@ -1,0 +1,44 @@
+.activity {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+}
+.activity > span:last-child { min-width: 0; }
+.activity[data-state="active"], .activity-icon[data-state="active"] {
+  color: var(--sw-info-text);
+}
+.activity[data-state="queued"] { color: var(--ink-muted); }
+/* Reading is a process state, not an accepted value or a confidence band. */
+.project-side-panel .reg-doc[data-activity="active"]:not([data-selected]) .reg-line td {
+  background: color-mix(in srgb, var(--sw-info-icon) 9%, var(--paper));
+}
+.activity-icon {
+  display: inline-flex;
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  align-self: center;
+  vertical-align: -2px;
+  color: inherit;
+}
+.activity-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.activity-track { opacity: .22; }
+.activity-icon[data-state="active"] svg { animation: activity-turn 1s linear infinite; }
+/* Reserve the space immediately; quick requests finish without a flashing ring. */
+.activity-icon[data-delayed] { animation: activity-appear 0s 300ms both; }
+@keyframes activity-turn { to { transform: rotate(360deg); } }
+@keyframes activity-appear { from { visibility: hidden; } to { visibility: visible; } }
+.reg-activity { margin: 0; padding: 6px 12px; color: var(--ink-muted); font-size: 12px; }
+@media (prefers-reduced-motion: reduce) {
+  .activity-icon[data-state="active"] svg { animation: none; }
+}
+@media print {
+  .activity-icon { display: none; }
+}

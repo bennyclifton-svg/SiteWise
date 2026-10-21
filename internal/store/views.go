@@ -35,6 +35,8 @@ type FieldView struct {
 
 // DocumentView is one filing with its fields, for the project list.
 type DocumentView struct {
+	VisualTitle       string `json:"visual_title,omitempty"`
+	VisualStatus      string `json:"visual_status,omitempty"`
 	ID                string `json:"id"`
 	ProjectID         string `json:"project_id"`
 	Filename          string `json:"filename"`
@@ -123,6 +125,9 @@ func (s *Store) ProjectDocumentViews(ctx context.Context, orgID, projectID strin
 	if err := s.sheetViews(ctx, orgID, projectID, out); err != nil {
 		return nil, err
 	}
+	if err := s.visualTitles(ctx, orgID, out); err != nil {
+		return nil, err
+	}
 	byID := make(map[string]DocumentView, len(out))
 	for _, d := range out {
 		byID[d.ID] = d
@@ -175,6 +180,9 @@ func (s *Store) DocumentView(ctx context.Context, orgID, documentID string) (Doc
 	}
 	views := []DocumentView{out}
 	if err := s.sheetViews(ctx, orgID, row.ProjectID, views); err != nil {
+		return DocumentView{}, err
+	}
+	if err := s.visualTitles(ctx, orgID, views); err != nil {
 		return DocumentView{}, err
 	}
 	return views[0], nil

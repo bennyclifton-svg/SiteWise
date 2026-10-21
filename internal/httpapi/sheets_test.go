@@ -119,6 +119,50 @@ func TestUploadDrawingSheetsAndReportRetention(t *testing.T) {
 			if len(list.Documents) != want {
 				t.Fatal("duplicate children")
 			}
+			if kind == "drawing" {
+				var removed, kept string
+				for _, d := range list.Documents {
+					if d.SheetPage == 1 {
+						removed = d.ID
+					}
+					if d.SheetPage == 2 {
+						kept = d.ID
+					}
+				}
+				m.correct(t, kept, "title", "Saved sheet title", http.StatusOK)
+				if _, err := app.store.DeleteDocuments(context.Background(), m.orgID, p, []string{removed}, ""); err != nil {
+					t.Fatal(err)
+				}
+				var partial store.DocumentView
+				m.getJSON(t, "/api/documents/"+doc.ID, &partial)
+				if partial.Expansion == nil || partial.Expansion.Status != "review" {
+					t.Fatalf("partial set claims completion: %+v", partial)
+				}
+				m.upload(t, p, "rotated-title-block.pdf", http.StatusOK)
+				deadline = time.Now().Add(8 * time.Second)
+				for {
+					m.getJSON(t, "/api/projects/"+p+"/documents", &list)
+					if len(list.Documents) == want {
+						break
+					}
+					if time.Now().After(deadline) {
+						t.Fatal("re-upload did not restore missing sheet")
+					}
+					time.Sleep(10 * time.Millisecond)
+				}
+				for _, d := range list.Documents {
+					if d.ID == removed {
+						t.Fatal("deleted filing reused")
+					}
+					if d.ID == kept {
+						for _, f := range d.Fields {
+							if f.Field == "title" && f.Value != "Saved sheet title" {
+								t.Fatal("surviving edit overwritten")
+							}
+						}
+					}
+				}
+			}
 			other := app.member(t, "Other tenant")
 			if got := other.status(t, http.MethodGet, "/api/documents/"+doc.ID+"/file", nil); got != 404 {
 				t.Fatal("cross-org download", got)

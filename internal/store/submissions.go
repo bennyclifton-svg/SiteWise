@@ -231,7 +231,7 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND lifecyc
 			return in, err
 		}
 		for _, it := range items {
-			if !it.Retired {
+			if !it.Retired && !it.Custom {
 				pc.Schedules[p.ID] = append(pc.Schedules[p.ID], it.ScheduleItem)
 			}
 		}
@@ -433,9 +433,20 @@ func (s *Store) CommitSubmissionRead(ctx context.Context, org, id string, out pr
 			pkg = ""
 		}
 	}
-	firm, err := s.resolveFirm(ctx, tx, org, out.Firm, decs)
-	if err != nil {
-		return false, err
+	match := out.Firm
+	var firm string
+	if decs[proposals.FieldFirmName].DecidedBy == proposals.ByUser {
+		// The upload targets the user's chosen directory firm. A newly read
+		// ABN must not silently move the proposal into another firm's column.
+		if err = tx.QueryRow(ctx, `SELECT COALESCE(firm_id::text,'') FROM submissions WHERE org_id=$1::uuid AND id=$2::uuid`, org, id).Scan(&firm); err != nil {
+			return false, err
+		}
+	}
+	if firm == "" {
+		firm, err = s.resolveFirm(ctx, tx, org, match, decs)
+		if err != nil {
+			return false, err
+		}
 	}
 	if err := replaceMachinePrices(ctx, tx, org, project, id, out.Prices); err != nil {
 		return false, err
@@ -458,6 +469,15 @@ func (s *Store) CommitSubmissionRead(ctx context.Context, org, id string, out pr
 VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7)
 ON CONFLICT (org_id,submission_id,item_key) DO UPDATE SET passages=EXCLUDED.passages, band=EXCLUDED.band, decided_by=EXCLUDED.decided_by, updated_at=now()
 WHERE submission_responses.decided_by <> 'user'`, org, project, id, r.Key, passages, r.Band, r.DecidedBy); err != nil {
+			return false, err
+		}
+	}
+	if out.Quote != nil {
+		raw, err := json.Marshal(out.Quote)
+		if err != nil {
+			return false, err
+		}
+		if _, err = tx.Exec(ctx, `UPDATE submissions SET quote_review=$3::jsonb WHERE org_id=$1::uuid AND id=$2::uuid`, org, id, string(raw)); err != nil {
 			return false, err
 		}
 	}
@@ -524,6 +544,13 @@ func (s *Store) resolveFirm(ctx context.Context, tx pgx.Tx, org string, match *p
 	if abn != "" {
 		err := tx.QueryRow(ctx, `SELECT id::text FROM firms WHERE org_id=$1::uuid AND abn=$2`, org, abn).Scan(&id)
 		if err == nil {
+			// Repair only a draft machine identity, never a confirmed directory firm.
+			if name != "" && decs[proposals.FieldFirmName].DecidedBy != proposals.ByUser {
+				_, err = tx.Exec(ctx, `UPDATE firms SET name=$3,name_key=$4,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid AND status='draft' AND name <> $3 AND NOT EXISTS(SELECT 1 FROM submissions s JOIN submission_decisions d ON d.org_id=s.org_id AND d.submission_id=s.id WHERE s.org_id=$1::uuid AND s.firm_id=$2::uuid AND d.field='firm_name' AND d.decided_by='user')`, org, id, name, proposals.NameKey(name))
+				if err != nil {
+					return "", err
+				}
+			}
 			return id, nil
 		}
 		if !errors.Is(err, pgx.ErrNoRows) {
@@ -564,6 +591,13 @@ RETURNING id::text`, org, id, clipText(name, 200), key, abn,
 // replaceMachinePrices rewrites the read's cells and keeps every cell a user
 // set. Other items are rewritten whole: they have no key to keep.
 func replaceMachinePrices(ctx context.Context, tx pgx.Tx, org, project, id string, prices []proposals.Price) error {
+	var aligned bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM comparison_alignment WHERE org_id=$1::uuid AND submission_id=$2::uuid)`, org, id).Scan(&aligned); err != nil {
+		return err
+	}
+	if aligned {
+		return nil
+	}
 	if _, err := tx.Exec(ctx, `DELETE FROM submission_prices WHERE org_id=$1::uuid AND submission_id=$2::uuid AND decided_by <> 'user'`, org, id); err != nil {
 		return err
 	}

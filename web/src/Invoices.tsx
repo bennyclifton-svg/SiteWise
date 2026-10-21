@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { ApiError } from "./api";
 import { fmt } from "./CostGrid";
@@ -48,7 +49,7 @@ export function Chip({ field }: { field: InvoiceField | undefined }) {
   return <span className="inv-chip" data-state={state} title={state === "unchecked" ? "Jev didn't answer in time. Rule values stand; this is re-checked in the background." : undefined}>{body}</span>;
 }
 
-interface Upload { key: string; name: string; progress: number; state: "uploading" | "reading" | "already" | "failed"; id?: string; error?: string }
+interface Upload { key: string; name: string; progress: number; state: "queued" | "uploading" | "reading" | "already" | "failed"; id?: string; error?: string }
 const PARALLEL = 6;
 
 export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onSelect, onLedger, onSignedOut, reload, incoming, onIncoming }: {
@@ -68,6 +69,7 @@ export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onS
     while (active.current < PARALLEL && queue.current.length) {
       const next = queue.current.shift()!;
       active.current++;
+      setUploads(u => u.map(x => x.key === next.key ? { ...x, state: "uploading" } : x));
       const { done } = uploadInvoice(projectId, next.file, p => setUploads(u => u.map(x => x.key === next.key ? { ...x, progress: p } : x)));
       done.then(r => {
         setUploads(u => u.map(x => x.key === next.key ? { ...x, progress: 1, id: r.id, state: r.created ? "reading" : "already" } : x));
@@ -82,7 +84,7 @@ export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onS
     const list = Array.from(files);
     if (!list.length) return;
     const items = list.map(f => ({ key: `${f.name}:${f.size}:${Math.random().toString(36).slice(2)}`, file: f }));
-    setUploads(u => [...items.map(i => ({ key: i.key, name: i.file.name, progress: 0, state: "uploading" as const })), ...u]);
+    setUploads(u => [...items.map(i => ({ key: i.key, name: i.file.name, progress: 0, state: "queued" as const })), ...u]);
     queue.current.push(...items);
     setMessage(`${list.length} ${list.length === 1 ? "invoice" : "invoices"} added. Each row appears as it is read.`);
     pump();
@@ -96,7 +98,7 @@ export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onS
   useEffect(() => {
     if (!ledger) return;
     const status = new Map(ledger.invoices.map(i => [i.id, i.status]));
-    setUploads(u => u.filter(x => x.state === "uploading" || x.state === "failed" || x.state === "already" || (x.state === "reading" && (!x.id || status.get(x.id) === "reading" || !status.has(x.id)))));
+    setUploads(u => u.filter(x => x.state === "queued" || x.state === "uploading" || x.state === "failed" || x.state === "already" || (x.state === "reading" && (!x.id || status.get(x.id) === "reading" || !status.has(x.id)))));
   }, [ledger]);
 
   // The panel is its own drop target: invoices never fall through to the
@@ -126,7 +128,7 @@ export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onS
     <p className="sr-only" role="status" aria-live="polite">{message}{reading ? ` ${reading} still reading.` : ""}</p>
     {uploads.length > 0 && <ul className="inv-uploads" aria-label="Uploads">{uploads.map(u => <li key={u.key} data-state={u.state}>
       <span className="inv-upload-name">{u.name}</span>
-      <span>{u.state === "uploading" ? `Uploading ${Math.round(u.progress * 100)}%` : u.state === "reading" ? "Reading…" : u.state === "already" ? "Already filed" : u.error}</span>
+      <span>{u.state === "queued" ? <Pending queued>Queued for upload</Pending> : u.state === "uploading" ? <Pending>{u.progress < 1 ? `Uploading ${Math.round(u.progress * 100)}%` : "Finishing upload…"}</Pending> : u.state === "reading" ? <Pending>Reading invoice…</Pending> : u.state === "already" ? "Already filed" : u.error}</span>
       {(u.state === "already" || u.state === "failed") && <button type="button" className="btn btn-small" onClick={() => setUploads(x => x.filter(y => y.key !== u.key))}>Dismiss</button>}
     </li>)}</ul>}
     <div className="inv-filters" role="group" aria-label="Filter invoices">
@@ -136,7 +138,7 @@ export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onS
       <label>Status<select aria-label="Status filter" value={filter.status} onChange={e => onFilter({ ...filter, status: e.target.value })}><option value="">All statuses</option>{Object.entries(STATUS_WORD).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
       {filtered && <button type="button" className="btn btn-small" onClick={() => onFilter({ supplier: "", month: "", line: "", status: "" })}>Clear filters</button>}
     </div>
-    {!ledger ? <p role="status">Loading invoices…</p> : invoices.length === 0 ? <div className="inv-empty"><p><strong>No invoices yet.</strong> Drop the month's invoices above. Each one is read, mapped to a cost plan line, and counted in the Cost plan tab's invoiced to date.</p></div> :
+    {!ledger ? <p role="status"><Pending delayed>Loading invoices…</Pending></p> : invoices.length === 0 ? <div className="inv-empty"><p><strong>No invoices yet.</strong> Drop the month's invoices above. Each one is read, mapped to a cost plan line, and counted in the Cost plan tab's invoiced to date.</p></div> :
       <div className="inv-table-scroll"><table className="inv-table">
         <caption className="sr-only">Invoice ledger, newest first, one row per activity line</caption>
         <thead><tr><th scope="col">Invoice no.</th><th scope="col">Supplier</th><th scope="col">Invoice date</th><th scope="col">Month</th><th scope="col">Activity line</th><th scope="col" className="num">Ex GST (AUD)</th><th scope="col" className="num">GST (AUD)</th><th scope="col" className="num">Total inc GST (AUD)</th><th scope="col">Status</th></tr></thead>
@@ -152,7 +154,7 @@ export function InvoicesTab({ projectId, ledger, filter, onFilter, selected, onS
             <td className="num">{fmt(row.ex_gst)}{row.share === 0 && <Chip field={f.ex_gst} />}</td>
             <td className="num">{fmt(row.gst)}{row.share === 0 && <Chip field={f.gst} />}</td>
             <td className="num">{fmt(row.total)}{row.share === 0 && <Chip field={f.total} />}</td>
-            <td><span className="inv-status" data-status={inv.status}>{STATUS_WORD[inv.status] ?? inv.status}</span>{!inv.counted && inv.status !== "reading" && <span className="inv-out">not in totals</span>}{inv.flags.filter(x => !x.info).slice(0, 2).map(x => <span key={x.code} className="inv-flag">{x.reason}</span>)}</td>
+            <td><span className="inv-status" data-status={inv.status}>{inv.status === "reading" ? <Pending>Reading invoice…</Pending> : STATUS_WORD[inv.status] ?? inv.status}</span>{!inv.counted && inv.status !== "reading" && <span className="inv-out">not in totals</span>}{inv.flags.filter(x => !x.info).slice(0, 2).map(x => <span key={x.code} className="inv-flag">{x.reason}</span>)}</td>
           </tr>;
         })}</tbody>
       </table></div>}
@@ -178,7 +180,8 @@ function InvoicePanel({ projectId, ledger, invoice, onClose, onLedger, onSignedO
   const twin = dup ? ledger.invoices.find(o => o.id !== invoice.id && o.status !== "void" && o.status !== "superseded" && (o.supplier_id && o.supplier_id === invoice.supplier_id || o.abn && o.abn === invoice.abn) && (o.number === dup.reason.replace(/^(Possible duplicate of|Looks like) /, "") || o.filename === dup.reason.replace(/^(Possible duplicate of|Looks like) /, ""))) : undefined;
   const money = (field: string, label: string) => <div className="inv-field"><label htmlFor={`inv-${field}`}>{label}</label><input id={`inv-${field}`} key={`${invoice.id}:${field}:${f[field]?.value}`} inputMode="decimal" defaultValue={f[field]?.value ? fmt(centsToDecimal(f[field].value)) : ""} disabled={busy} onBlur={e => save(field, e.target.value.replace(/[,$\s]/g, ""))} onKeyDown={e => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} /><Chip field={f[field]} /></div>;
   return <aside className="inv-panel" aria-label={`Invoice ${invoice.number || invoice.filename}`}>
-    <div className="inv-panel-head"><h2>{invoice.number || invoice.filename}</h2><span className="inv-status" data-status={invoice.status}>{STATUS_WORD[invoice.status]}</span><button type="button" className="btn btn-small" onClick={onClose}>Close</button></div>
+    <span role="status">{busy && <Pending delayed>Saving…</Pending>}</span>
+    <div className="inv-panel-head"><h2>{invoice.number || invoice.filename}</h2><span className="inv-status" data-status={invoice.status}>{invoice.status === "reading" ? <Pending>Reading invoice…</Pending> : STATUS_WORD[invoice.status]}</span><button type="button" className="btn btn-small" onClick={onClose}>Close</button></div>
     <div className="inv-panel-body">
       <div className="inv-pdf">{/\.pdf$/i.test(invoice.filename) ? <iframe title={`PDF of ${invoice.filename}`} src={invoiceApi.fileURL(projectId, invoice.id)} /> : <p><a href={invoiceApi.fileURL(projectId, invoice.id).replace("?view=1", "")}>Download {invoice.filename}</a></p>}</div>
       <form className="inv-fields" aria-busy={busy} onSubmit={e => e.preventDefault()}>

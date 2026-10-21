@@ -24,6 +24,32 @@ import (
 
 type stubTransport struct{ calls int }
 
+type inspectTransport func(*http.Request) (*http.Response, error)
+
+func (f inspectTransport) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+func TestEventStreamUsesCallerLifetimeWithoutChangingRequestTimeout(t *testing.T) {
+	client := &http.Client{Timeout: time.Minute}
+	a := apiClient{origin: "http://bench.test", http: client}
+	for _, path := range []string{"/events?after=0", "/projects"} {
+		client.Transport = inspectTransport(func(r *http.Request) (*http.Response, error) {
+			_, bounded := r.Context().Deadline()
+			if want := path != "/events?after=0"; bounded != want {
+				t.Errorf("%s: request deadline=%v, want %v", path, bounded, want)
+			}
+			return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader("")), Request: r}, nil
+		})
+		resp, err := a.do(context.Background(), http.MethodGet, path, nil, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+	}
+	if client.Timeout != time.Minute {
+		t.Fatal("stream changed the shared HTTP client timeout")
+	}
+}
+
 func TestIntegratedProposalsRequiresNonReleaseDiagnostic(t *testing.T) {
 	for _, args := range [][]string{
 		{"-integrated-proposals"},
