@@ -241,12 +241,19 @@ func prepareCostPlan(w http.ResponseWriter, r *http.Request, d Deps) {
 		http.Error(w, "invalid body", 400)
 		return
 	}
+	// Proposed consultants become packages first, so their fee lines are
+	// prepared in the same request (owner decision 3, 2026-10-21).
+	adopted, e := d.Store.AdoptServiceSuggestions(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, disciplines(d))
+	if e != nil {
+		costError(w, e)
+		return
+	}
 	result, e := d.Store.PrepareCostPlan(r.Context(), session.OrgID, r.PathValue("id"), session.UserID)
 	if e != nil {
 		costError(w, e)
 		return
 	}
-	if result.Changed && d.Broker != nil {
+	if (adopted > 0 || result.Changed) && d.Broker != nil {
 		d.Broker.Wake(session.OrgID)
 	}
 	writeJSON(w, 200, result)

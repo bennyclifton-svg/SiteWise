@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
@@ -82,19 +83,83 @@ func (s *Store) acceptProposalTx(ctx context.Context, tx pgx.Tx, org, project, a
 		if sug.Key != key {
 			continue
 		}
-		p = procurement.Package{Kind: "services", DisciplineID: disciplineID, Title: sug.Title, Novation: sug.Novation, LifecycleStatus: "planned"}
 		plan, err := readStagePlan(ctx, tx, org, project, false)
 		if err != nil {
 			return p, err
 		}
-		p.Stages = s.defaultStages(p, plan)
-		if p, err = s.insertProposedPackage(ctx, tx, org, project, p, provenance, plan); err != nil {
-			return p, err
-		}
-		return p, nil
+		return s.insertSuggestedService(ctx, tx, org, project, sug, disciplineID, provenance, plan)
 	}
 	// Already accepted or no longer proposed: the inputs changed.
 	return p, ErrNotFound
+}
+
+// insertSuggestedService saves one suggested consultant as a planned package
+// with the program's default stages.
+func (s *Store) insertSuggestedService(ctx context.Context, tx pgx.Tx, org, project string, sug procurement.PackageSuggestion, disciplineID string, provenance []byte, plan *stagePlan) (procurement.Package, error) {
+	p := procurement.Package{Kind: "services", DisciplineID: disciplineID, Title: sug.Title, Novation: sug.Novation, LifecycleStatus: "planned"}
+	p.Stages = s.defaultStages(p, plan)
+	return s.insertProposedPackage(ctx, tx, org, project, p, provenance, plan)
+}
+
+// AdoptServiceSuggestions saves every consultant the profile proposes as a
+// package, so Procurement and the cost plan list them from the start (owner
+// decision 3, docs/plans/2026-10-21-source-to-cost-plan-design.md). A
+// consultant the PM removed or dismissed is no longer proposed, so this never
+// brings one back.
+func (s *Store) AdoptServiceSuggestions(ctx context.Context, org, project, actor string, disciplines []procurement.Discipline) (int, error) {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return 0, err
+	}
+	if err := packageActor(ctx, tx, org, actor); err != nil {
+		return 0, err
+	}
+	n, err := s.adoptServiceSuggestionsTx(ctx, tx, org, project, actor, disciplines)
+	if err != nil || n == 0 {
+		return n, err
+	}
+	return n, s.finishPackagesWrite(ctx, tx, org, project)
+}
+
+// adoptServiceSuggestionsTx needs the project lock and does not commit or
+// announce, so the cost plan's preparation can share its transaction.
+func (s *Store) adoptServiceSuggestionsTx(ctx context.Context, tx pgx.Tx, org, project, actor string, disciplines []procurement.Discipline) (int, error) {
+	var exists bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
+		return 0, err
+	}
+	if !exists {
+		return 0, ErrNotFound
+	}
+	o, err := s.packageOverview(ctx, tx, org, project)
+	if err != nil || len(o.Suggestions) == 0 {
+		return 0, err
+	}
+	plan, err := readStagePlan(ctx, tx, org, project, false)
+	if err != nil {
+		return 0, err
+	}
+	n := 0
+	for _, sug := range o.Suggestions {
+		if sug.Kind != "services" {
+			continue
+		}
+		provenance, _ := json.Marshal(map[string]any{"actor": actor, "proposal": sug.Key, "procurement_route": o.Route.Value, "adopted": true})
+		_, err := s.insertSuggestedService(ctx, tx, org, project, sug, procurement.ProposalDiscipline(sug.Key, disciplines), provenance, plan)
+		// Two suggestions can name one discipline; the first keeps the row.
+		if errors.Is(err, ErrDuplicatePackage) {
+			continue
+		}
+		if err != nil {
+			return n, err
+		}
+		n++
+	}
+	return n, nil
 }
 
 // plan is the program's stage plan, nil when the project has none.

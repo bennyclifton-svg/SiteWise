@@ -9,13 +9,12 @@ test("removing a procurement discipline offers its draft cost lines", async ({pa
   await page.getByRole('button', {name:'Add discipline', exact:true}).click();
   await page.getByLabel('Discipline', {exact:true}).selectOption('consultant.structural');
   await page.getByRole('button', {name:'Add row', exact:true}).click();
-  await expect(page.getByLabel('More for Structural', {exact:true})).toBeVisible();
+  await expect(page.getByRole('button', {name:'Remove Structural', exact:true})).toBeVisible();
   await page.getByRole('button', {name:'Costs', exact:true}).click();
   await expect(page.getByRole('button', {name:'Delete Structural', exact:true})).toBeVisible();
   await page.getByRole('button', {name:'Procurement', exact:true}).click();
   const review = async () => {
-    await page.getByLabel('More for Structural', {exact:true}).click();
-    await page.getByRole('button', {name:'Remove', exact:true}).click();
+    await page.getByRole('button', {name:'Remove Structural', exact:true}).click();
     await expect(page.getByRole('dialog')).toContainText('Structural');
     await expect(page.getByRole('dialog')).toContainText('1 linked cost-plan line');
   };
@@ -24,11 +23,11 @@ test("removing a procurement discipline offers its draft cost lines", async ({pa
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:testInfo.outputPath('remove-mobile.png')});
   await page.getByRole('button', {name:'Cancel', exact:true}).click();
-  await expect(page.getByLabel('More for Structural', {exact:true})).toBeVisible();
+  await expect(page.getByRole('button', {name:'Remove Structural', exact:true})).toBeVisible();
   await review();
   const start = Date.now();
   await page.getByRole('button', {name:'Remove and delete cost lines', exact:true}).click();
-  await expect(page.getByLabel('More for Structural', {exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button', {name:'Remove Structural', exact:true})).toHaveCount(0);
   testInfo.annotations.push({type:'timing',description:`confirmed removal UI: ${Date.now()-start}ms`});
   await page.getByRole('button', {name:'Costs', exact:true}).click();
   await expect(page.getByRole('button', {name:'Delete Structural', exact:true})).toHaveCount(0);

@@ -166,6 +166,7 @@ var programReviewRoutes = map[string]bool{
 	"POST /projects/{id}/procurement/rows":               true,
 	"POST /projects/{id}/procurement/create":             true,
 	"POST /projects/{id}/procurement/dismiss":            true,
+	"POST /projects/{id}/procurement/adopt":              true,
 	"GET /projects/{id}/program":                         true,
 	"POST /projects/{id}/program/ops":                    true,
 	"POST /projects/{id}/program/undo":                   true,

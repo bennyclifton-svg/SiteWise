@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("procurement creates suggested and chosen disciplines, edits scope and removes rows", async ({ page }) => {
+test("procurement creates proposed and chosen disciplines, edits scope and removes rows", async ({ page }) => {
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Procurement table");
@@ -21,8 +21,7 @@ test("procurement creates suggested and chosen disciplines, edits scope and remo
   await expect(page.getByText("Every accepted work item is covered.", { exact: true })).toBeVisible();
   const moreWork = await page.request.post(`/api/projects/${project}/works`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { part_id: profile.parts[0].id, system_id: "hydraulic.gas", action: "new", title: "Gas service" } });
   expect(moreWork.ok()).toBeTruthy();
-  await page.getByLabel("More for Main Works", { exact: true }).click();
-  await page.getByRole("button", { name: "Scope", exact: true }).click();
+  await page.getByRole("button", { name: "Scope for Main Works", exact: true }).click();
   await expect(page.getByRole("region", { name: "Suggested scope" })).toContainText("Gas service");
   await page.getByRole("button", { name: "Accept suggested scope", exact: true }).click();
   await expect(page.getByRole("region", { name: "Suggested scope" })).toHaveCount(0);
@@ -37,34 +36,29 @@ test("procurement creates suggested and chosen disciplines, edits scope and remo
   await page.getByRole("button", { name: "Add discipline", exact: true }).click();
   await expect(page.getByLabel("Discipline", { exact: true }).locator('option[value="consultant.structural"]')).toHaveCount(0);
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
-  await expect(page.getByRole("row", { name: /^Structural/ }).getByText("Drop a proposal here")).toBeVisible();
-  // Who engages a consultant is asked per row and saved to the package.
-  await expect(page.getByLabel("Who engages Structural", { exact: true })).toHaveValue("");
-  await page.getByLabel("Who engages Structural", { exact: true }).selectOption("lead_consultant");
-  await expect(page.getByLabel("Who engages Structural", { exact: true })).toHaveValue("lead_consultant");
-  const engaged = await (await page.request.get(`/api/projects/${project}/packages`)).json();
-  expect(engaged.items.find((p: { title: string }) => p.title === "Structural")?.engaged_by).toBe("lead_consultant");
+  // Three firm slots wait for proposals; nobody asks who engages the firm.
+  await expect(page.getByRole("columnheader", { name: "Firm 3", exact: true })).toBeVisible();
+  await expect(page.getByRole("row", { name: /^Structural/ }).getByText("Drop a proposal", { exact: true })).toHaveCount(3);
+  await expect(page.getByLabel("Who engages Structural", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("suggested", { exact: true })).toHaveCount(0);
   await page.screenshot({ path: "../.tools/procurement-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   await page.screenshot({ path: "../.tools/procurement-mobile.png", fullPage: true });
-  await page.getByLabel("More for Structural", { exact: true }).click();
-  await page.getByRole("button", { name: "Scope", exact: true }).click();
+  await page.getByRole("button", { name: "Scope for Structural", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Structural", exact: true })).toBeVisible();
   await page.getByLabel("Scope wording", { exact: true }).fill("Review the existing structure.");
   await page.getByRole("button", { name: "Add scope item", exact: true }).click();
   await expect(page.locator(".report-wording")).toHaveText("Review the existing structure.");
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
-  await page.getByLabel("More for Structural", { exact: true }).click();
-  await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await page.getByRole("button", { name: "Remove Structural", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Remove", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("Resolve those assignments before removing it.");
   await expect(page.getByRole("button", { name: "View RFP for Structural", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Add discipline", exact: true }).click();
   await page.getByLabel("Discipline", { exact: true }).selectOption("consultant.civil");
   await page.getByRole("button", { name: "Add row", exact: true }).click();
-  await page.getByLabel("More for Civil", { exact: true }).click();
-  await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await page.getByRole("button", { name: "Remove Civil", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Remove", exact: true }).click();
   await expect(page.getByRole("button", { name: "Create RFP for Civil", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Create project management plan", exact: true }).click();

@@ -100,6 +100,36 @@ func postProcurementDismiss(w http.ResponseWriter, r *http.Request, deps Deps) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// postProcurementAdopt saves every proposed consultant as a row, so the
+// table has no suggested state (owner decision 3, 2026-10-21). It answers
+// how many rows it added; a repeat adds none.
+func postProcurementAdopt(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	project := r.PathValue("id")
+	if !uuidPattern.MatchString(project) {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	n, err := deps.Store.AdoptServiceSuggestions(r.Context(), session.OrgID, project, session.UserID, disciplines(deps))
+	if err != nil {
+		packageError(w, err)
+		return
+	}
+	if n > 0 && deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	writeJSON(w, http.StatusOK, struct {
+		Added int `json:"added"`
+	}{n})
+}
+
 // postProcurementCreate makes a row's RFP or RFT in one request; the report
 // kind follows the package kind, never the client.
 func postProcurementCreate(w http.ResponseWriter, r *http.Request, deps Deps) {
