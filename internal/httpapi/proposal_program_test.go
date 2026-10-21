@@ -126,7 +126,10 @@ func TestR7ReturnableReadAfterProposalShowsOnlyOnceAwarded(t *testing.T) {
 	}
 	cell := "/api/projects/" + project + "/submissions/" + up.SubmissionID + "/cells/" + url.PathEscape(first)
 	m.call(t, http.MethodPut, cell, []byte(`{"state":"priced","amount":"2,000"}`), http.StatusOK, &table)
-	award := `{"submission_id":"` + up.SubmissionID + `","lines":[{"label":"Fee","item_keys":["` + first + `"]}],"total":"2000.00"}`
+	// A quoted proposal is awarded on the PM's confirmed appointment fee.
+	appointment := "/api/projects/" + project + "/submissions/" + up.SubmissionID + "/cells/" + url.PathEscape("comparison:appointment")
+	m.call(t, http.MethodPut, appointment, []byte(`{"state":"priced","amount":"2000","note":"Confirmed against the proposal"}`), http.StatusOK, &table)
+	award := `{"submission_id":"` + up.SubmissionID + `","lines":[{"label":"Fee","item_keys":["comparison:appointment"]}],"total":"2000.00"}`
 	m.call(t, http.MethodPost, base+"/award", []byte(award), http.StatusCreated, &table)
 	got := proposalR7()
 	if len(got) != len(labels) || v.ReadingsPending != len(labels) {

@@ -85,10 +85,12 @@ func awardable(t *testing.T) (s *store.Store, pkg procurement.Package, submissio
 	if err != nil {
 		t.Fatal(err)
 	}
-	readInto(t, s, submission, pageText(
+	// Read without a retained quote, so the award may name the stage price
+	// directly (the quoted-fee rule is tested in quoted_fees_test.go).
+	readWithQuote(t, s, submission, pageText(
 		[]string{"Smith Architects Pty Ltd"}, []string{"ABN 88 071 762 537"}, []string{"1. FEE PROPOSAL"},
 		[]string{"Lump sum fee", "$5,500"},
-	), answers{"price:" + keys[0]: "a1", "firm_name": "c1"})
+	), answers{"price:" + keys[0]: "a1", "firm_name": "c1"}, false)
 	return s, pkg, submission, []store.AwardLine{{Label: "Architect", Keys: keys}}
 }
 

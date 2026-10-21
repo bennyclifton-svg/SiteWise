@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // Shell: sign in with an invite token, choose or create a project, then file.
 // Routing is two paths, so it is done with the History API directly.
 
@@ -194,7 +195,7 @@ function SignIn({ initialError, onSignedIn }: { initialError: string; onSignedIn
             </span>
           )}
           <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? "Signing in…" : "Sign in"}
+            {busy ? <Pending delayed>Signing in…</Pending> : "Sign in"}
           </button>
         </form>
       </div>
@@ -277,7 +278,7 @@ function Projects({
             aria-describedby={error ? "new-project-error" : undefined}
           />
           <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? "Creating…" : "Create project"}
+            {busy ? <Pending delayed>Creating…</Pending> : "Create project"}
           </button>
         </div>
         {error && (
@@ -287,7 +288,7 @@ function Projects({
         )}
       </form>
       {projects === null ? (
-        <p className="drop-sub">Loading projects…</p>
+        <p className="drop-sub"><Pending delayed>Loading projects…</Pending></p>
       ) : projects.length === 0 ? (
         <div className="empty">
           <strong>No projects yet.</strong>

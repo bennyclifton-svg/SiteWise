@@ -288,6 +288,9 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 	if err := enqueueKind(ctx, q, orgID, documentID, JobKindFullText); err != nil {
 		return FilingOutcome{}, err
 	}
+	if err := queueVisual(ctx, tx, orgID, documentID); err != nil {
+		return FilingOutcome{}, err
+	}
 	if in.RetryJev {
 		if err := enqueueKind(ctx, q, orgID, documentID, JobKindJevRetry); err != nil {
 			return FilingOutcome{}, err

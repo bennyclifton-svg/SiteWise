@@ -30,17 +30,46 @@ func DrawingSetPageKind(kind, band string) bool {
 }
 
 func (s *Store) RetryDrawingExpansion(ctx context.Context, orgID, sourceID string) error {
-	_, err := s.pool.Exec(ctx, `UPDATE drawing_expansions SET status='pending',reason='' WHERE org_id=$1::uuid AND source_id=$2::uuid AND status='review'`, orgID, sourceID)
+	_, err := s.pool.Exec(ctx, `UPDATE drawing_expansions e SET status='pending',reason='' WHERE org_id=$1::uuid AND source_id=$2::uuid AND (status='review' OR (status='complete' AND page_count>(SELECT count(*) FROM drawing_sheets sh WHERE sh.org_id=e.org_id AND sh.source_id=e.source_id)))`, orgID, sourceID)
 	return err
 }
 
 func (s *Store) DrawingExpansion(ctx context.Context, orgID, sourceID string) (DrawingExpansion, error) {
 	var out DrawingExpansion
-	err := s.pool.QueryRow(ctx, `SELECT source_id::text,page_count,status,reason FROM drawing_expansions WHERE org_id=$1::uuid AND source_id=$2::uuid`, orgID, sourceID).Scan(&out.SourceID, &out.PageCount, &out.Status, &out.Reason)
+	var present int
+	err := s.pool.QueryRow(ctx, `SELECT source_id::text,page_count,status,reason,(SELECT count(*) FROM drawing_sheets sh WHERE sh.org_id=e.org_id AND sh.source_id=e.source_id) FROM drawing_expansions e WHERE org_id=$1::uuid AND source_id=$2::uuid`, orgID, sourceID).Scan(&out.SourceID, &out.PageCount, &out.Status, &out.Reason, &present)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return out, ErrNotFound
 	}
+	if err == nil {
+		out.checkPresent(present)
+	}
 	return out, err
+}
+
+func (e *DrawingExpansion) checkPresent(present int) {
+	if e.Status == "complete" && present < e.PageCount {
+		e.Status = "review"
+		e.Reason = fmt.Sprintf("%d of %d sheets remain listed. Retry sheet processing to restore missing pages from the original.", present, e.PageCount)
+	}
+}
+
+// ExistingDrawingPages lets recovery skip surviving sheets and their edits.
+func (s *Store) ExistingDrawingPages(ctx context.Context, orgID, sourceID string) (map[int]bool, error) {
+	rows, err := s.pool.Query(ctx, `SELECT page_number FROM drawing_sheets WHERE org_id=$1::uuid AND source_id=$2::uuid`, orgID, sourceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int]bool{}
+	for rows.Next() {
+		var page int
+		if err := rows.Scan(&page); err != nil {
+			return nil, err
+		}
+		out[page] = true
+	}
+	return out, rows.Err()
 }
 
 func (s *Store) PendingDrawingExpansions(ctx context.Context) ([]PendingIntake, error) {
@@ -82,7 +111,7 @@ func (s *Store) sheetViews(ctx context.Context, orgID, projectID string, views [
 		byID[views[i].ID] = &views[i]
 	}
 	rows, err := s.pool.Query(ctx, `SELECT e.source_id::text,e.page_count,e.status,e.reason,d.filename,
-	COALESCE(sh.document_id::text,''),COALESCE(sh.page_number,0)
+	COALESCE(sh.document_id::text,''),COALESCE(sh.page_number,0),count(sh.document_id) OVER (PARTITION BY e.source_id)
 	FROM drawing_expansions e JOIN documents d ON d.org_id=e.org_id AND d.id=e.source_id
 	LEFT JOIN drawing_sheets sh ON sh.org_id=e.org_id AND sh.source_id=e.source_id
 	WHERE e.org_id=$1::uuid AND d.project_id=$2::uuid`, orgID, projectID)
@@ -93,11 +122,12 @@ func (s *Store) sheetViews(ctx context.Context, orgID, projectID string, views [
 	for rows.Next() {
 		var e DrawingExpansion
 		var filename, child string
-		var page int
-		if err := rows.Scan(&e.SourceID, &e.PageCount, &e.Status, &e.Reason, &filename, &child, &page); err != nil {
+		var page, present int
+		if err := rows.Scan(&e.SourceID, &e.PageCount, &e.Status, &e.Reason, &filename, &child, &page, &present); err != nil {
 			return err
 		}
 		if v := byID[e.SourceID]; v != nil {
+			e.checkPresent(present)
 			v.Expansion = &e
 		}
 		if v := byID[child]; v != nil {
@@ -116,7 +146,7 @@ func (s *Store) PublishDrawingSheets(ctx context.Context, orgID, sourceID string
 	if len(sheets) < 2 || len(sheets) > 200 {
 		return errors.New("invalid sheet count")
 	}
-	for _, sheet := range sheets {
+	validateSheet := func(sheet SheetWrite) error {
 		if len(sheet.SHA256) != 32 || sheet.ByteSize <= 0 {
 			return ErrMetadata
 		}
@@ -129,6 +159,7 @@ func (s *Store) PublishDrawingSheets(ctx context.Context, orgID, sourceID string
 		if !drawing {
 			return errors.New("sheet kind is not admitted within a drawing set")
 		}
+		return nil
 	}
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -174,6 +205,16 @@ func (s *Store) PublishDrawingSheets(ctx context.Context, orgID, sourceID string
 		return err
 	}
 	for page, sheet := range sheets {
+		var exists bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM drawing_sheets WHERE org_id=$1::uuid AND source_id=$2::uuid AND page_number=$3)`, orgID, sourceID, page+1).Scan(&exists); err != nil {
+			return err
+		}
+		if exists {
+			continue
+		}
+		if err := validateSheet(sheet); err != nil {
+			return err
+		}
 		fileID := newID()
 		err = tx.QueryRow(ctx, `INSERT INTO files(org_id,id,project_id,sha256,byte_size,media_type)
 		VALUES($1::uuid,$2::uuid,$3::uuid,$4,$5,'application/pdf')

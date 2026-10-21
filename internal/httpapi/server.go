@@ -37,6 +37,7 @@ const (
 
 // Options is the process wiring for one server.
 type Options struct {
+	ProposalOCR    func(context.Context, string, identity.Text) (identity.Text, error)
 	OCR            func(context.Context, string) (identity.Text, error)
 	Store          *store.Store
 	Blobs          *files.Store
@@ -177,6 +178,7 @@ func New(opts Options) (*Server, error) {
 		reader.thresholds.QuestionVersion = invoices.QuestionVersion
 	}
 	preader := &proposalReader{
+		ocr:        opts.ProposalOCR,
 		store:      opts.Store,
 		blobs:      opts.Blobs,
 		ask:        opts.Jev,

@@ -142,6 +142,45 @@ func TestDrawingSheetsAtomicPublicationAndIsolation(t *testing.T) {
 	if err := st.CorrectDecision(ctx, orgA, child, "title", "Owner title"); err != nil {
 		t.Fatal(err)
 	}
+	// Removing a child must not leave a complete-looking container. An
+	// explicit retry restores only that page and retains the owner's edit.
+	missing := priorPages[1]
+	if missing == child {
+		missing = priorPages[2]
+	}
+	if _, err := st.DeleteDocuments(ctx, orgA, projectA, []string{missing}, userA); err != nil {
+		t.Fatal(err)
+	}
+	exp, err = st.DrawingExpansion(ctx, orgA, up.DocumentID)
+	if err != nil || exp.Status != "review" {
+		t.Fatalf("deleted sheet still reported complete: %+v %v", exp, err)
+	}
+	if err := st.RetryDrawingExpansion(ctx, orgA, up.DocumentID); err != nil {
+		t.Fatal(err)
+	}
+	if err := st.PublishDrawingSheets(ctx, orgA, up.DocumentID, sheets); err != nil {
+		t.Fatal(err)
+	}
+	restored, err := st.ProjectDocumentViews(ctx, orgA, projectA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	count := 0
+	for _, v := range restored {
+		if v.SourceID == up.DocumentID {
+			count++
+		}
+		if v.ID == child {
+			for _, f := range v.Fields {
+				if f.Field == "title" && f.Value != "Owner title" {
+					t.Fatal("restoration changed surviving correction")
+				}
+			}
+		}
+	}
+	if count != 2 {
+		t.Fatalf("restored %d sheets, want 2", count)
+	}
 	writes := []store.DecisionWrite{
 		{Field: "number", Value: "S-7", Band: "green", DecidedBy: "rule", ExpectedVersion: 1},
 		{Field: "revision", Value: "3", Band: "green", DecidedBy: "rule", ExpectedVersion: 1},

@@ -28,6 +28,7 @@ type ScheduleItem struct {
 	Detail  string `json:"detail,omitempty"`
 	Base    bool   `json:"base"`
 	Ordinal int    `json:"ordinal"`
+	Unit    string `json:"unit,omitempty"`
 }
 
 // Price reports whether the item is priced as a fee (not a rate or criterion).

@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { ApiError } from "./api";
 import { proposalApi, type ProposalRecord, type ProposalAssignment } from "./proposalApi";
@@ -142,7 +143,7 @@ export function Implications({ projectId, tick, onSignedOut }: { projectId: stri
             {pkg && <><label htmlFor="implication-stage">Stage (optional)</label><select id="implication-stage" value={r.assignment.stage_id} onChange={e => setReview({ ...r, assignment: { ...r.assignment, stage_id: e.target.value } })}><option value="">No stage assignment</option>{pkg.stages.map(s => <option key={s.id} value={s.id}>{s.label}{s.novation_phase !== "none" ? ` · ${words(s.novation_phase)}` : ""}</option>)}</select></>}
           </>}
         </>}
-        <div className="report-actions"><button className="btn" disabled={busy || stale || !!loadError || r.mode === "accept" && invalidAssignment}>{busy ? "Saving…" : r.mode === "accept" ? "Accept for planning" : "Save dismissal"}</button><button type="button" className="btn" disabled={busy} onClick={() => { setReview(null); setError(""); }}>Cancel</button></div>
+        <div className="report-actions"><button className="btn" disabled={busy || stale || !!loadError || r.mode === "accept" && invalidAssignment}>{busy ? <Pending delayed>Saving…</Pending> : r.mode === "accept" ? "Accept for planning" : "Save dismissal"}</button><button type="button" className="btn" disabled={busy} onClick={() => { setReview(null); setError(""); }}>Cancel</button></div>
       </fieldset></form>
     </section>;
   }
@@ -175,7 +176,7 @@ export function Implications({ projectId, tick, onSignedOut }: { projectId: stri
       <div className="report-actions">{decidedCount > 0 && <button type="button" className="btn btn-small" aria-pressed={showDecided} disabled={busy} onClick={() => setShowDecided(!showDecided)}>{showDecided ? "Hide decided" : `Show decided (${decidedCount})`}</button>}<button type="button" className="btn btn-small" disabled={busy} onClick={() => setReload(n => n + 1)}>Reload implications</button></div></header>
     {(loadError || error) && <div className="banner" role="alert"><p>{loadError || error}</p></div>}
     {message && <p role="status">{message}</p>}
-    {!loaded ? <p role="status">{loadError ? "Implications unavailable." : "Loading implications…"}</p>
+    {!loaded ? <p role="status">{loadError ? "Implications unavailable." : <Pending delayed>Loading implications…</Pending>}</p>
       : !items.length ? <p>No implications yet. This does not establish that all obligations have been identified.</p>
       : !visible.length ? <p>No open implications. {decidedCount} decided.</p>
       : <table className="implications-table">

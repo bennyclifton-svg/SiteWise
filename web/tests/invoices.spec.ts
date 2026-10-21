@@ -59,7 +59,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await dropInvoices(page, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   const table = page.getByRole("table");
   await expect(table.getByRole("row")).toHaveCount(11, { timeout: 15_000 });
-  await expect(table.getByText("Reading…")).toHaveCount(0, { timeout: 15_000 });
+  await expect(table.getByText("Reading invoice…")).toHaveCount(0, { timeout: 15_000 });
   testInfo.annotations.push({ type: "batch of 10, last row read", description: `${Date.now() - started} ms in the browser` });
   for (const n of [1, 5, 10]) await expect(table.getByRole("button", { name: `INV-${String(n).padStart(5, "0")}`, exact: true })).toBeVisible();
   // Rules read the synthetic layout: amounts are from the document.

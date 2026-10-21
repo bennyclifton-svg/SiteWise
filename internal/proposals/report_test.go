@@ -69,7 +69,7 @@ func TestTotalsAndLowest(t *testing.T) {
 	if *cols[0].BaseTotal != 1200000 || cols[0].OptionsTotal != 50000 || cols[0].Gap == nil || *cols[0].Gap != 50000 || !cols[0].Lowest {
 		t.Fatalf("full %+v", cols[0])
 	}
-	if cols[1].Lowest || cols[1].NotPriced != 1 || *cols[1].BaseTotal != 200000 || cols[1].OthersTotal != 5000 {
+	if cols[1].Lowest || cols[1].NotPriced != 1 || cols[1].BaseTotal != nil || cols[1].KnownBase != 200000 || cols[1].OthersTotal != 5000 {
 		t.Fatalf("a cheaper total with an item not priced is not lowest: %+v", cols[1])
 	}
 	if cols[2].BaseTotal != nil || cols[2].Unread != 2 {

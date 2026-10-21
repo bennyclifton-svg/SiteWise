@@ -165,12 +165,13 @@ type Draft struct {
 	firm      *Firm
 	items     []rfp.ScheduleItem
 	flags     map[string]bool
+	coverage  map[string]string
 }
 
 // NewDraft settles what rules can. users holds the user's own decisions,
 // which are never replaced.
 func NewDraft(ev Evidence, pc Context, users map[string]Decision) *Draft {
-	d := &Draft{ev: ev, ctx: pc, by: map[string]Decision{}, questions: map[string]question{}, flags: map[string]bool{}}
+	d := &Draft{ev: ev, ctx: pc, by: map[string]Decision{}, questions: map[string]question{}, flags: map[string]bool{}, coverage: map[string]string{}}
 	for f, u := range users {
 		d.by[f] = u
 	}
@@ -257,7 +258,7 @@ func (d *Draft) settleFirm() {
 		keys = []string{NameKey(u.Value)}
 	}
 	if d.ctx.Lookup != nil {
-		if f := d.ctx.Lookup(abns, keys); f != nil {
+		if f := d.ctx.Lookup(abns, keys); f != nil && cleanFirmCandidate(f.Name) == f.Name {
 			d.firm = f
 			for field, v := range map[string]string{FieldFirmName: f.Name, FieldFirmABN: f.ABN, FieldFirmAddress: f.Address, FieldFirmContact: f.Contact, FieldFirmEmail: f.Email, FieldFirmPhone: f.Phone} {
 				d.rule(field, v)
@@ -308,20 +309,29 @@ func (d *Draft) corroboratedName() string {
 		own[NameKey(label)] = true
 	}
 	best, bestKey := "", ""
+	legal := false
 	for _, n := range d.ev.Names[:min(d.ev.Printed, len(d.ev.Names))] {
 		k := NameKey(n)
-		if len(k) < 3 || len(n) > 60 || !companyRe.MatchString(n) {
+		if len(k) < 2 || len(n) > 60 || !companyRe.MatchString(n) {
 			continue
 		}
 		for _, h := range hints {
-			if own[h] || !strings.Contains(k, h) {
+			if own[h] || !(strings.Contains(k, h) || strings.Contains(compactName(n), h)) {
+				continue
+			}
+			isLegal := strings.Contains(strings.ToLower(n), "pty")
+			if legal && !isLegal {
+				continue
+			}
+			if isLegal && !legal {
+				best, bestKey, legal = n, k, true
 				continue
 			}
 			switch {
 			case bestKey == "":
 				best, bestKey = n, k
 			case strings.Contains(k, bestKey) || strings.Contains(bestKey, k):
-				if len(n) > len(best) {
+				if len(n) < len(best) {
 					best = n
 				}
 			default:
@@ -400,6 +410,12 @@ func (d *Draft) settleTotal() {
 // settlePrices reads a returned response form by key, and marks every fee
 // row not priced when the proposal holds hourly rates only.
 func (d *Draft) settlePrices() {
+	if d.ev.Incomplete {
+		d.flags["incomplete_text"] = true
+	}
+	if d.ev.OCR {
+		d.flags["ocr_review"] = true
+	}
 	if d.ev.Form != nil {
 		d.flags[FlagResponseForm] = true
 		for _, it := range d.items {
@@ -420,7 +436,7 @@ func (d *Draft) settlePrices() {
 			fees++
 		}
 	}
-	if fees == 0 && len(d.ev.Amounts) > 0 {
+	if fees == 0 && len(d.ev.Amounts) > 0 && !d.ev.Incomplete && !d.ev.OCR {
 		d.flags[FlagRatesOnly] = true
 		for _, it := range d.items {
 			if it.Price() {
@@ -512,6 +528,7 @@ func (d *Draft) ask() {
 	if _, ok := d.by[FieldGSTBasis]; !ok {
 		add(question{Field: FieldGSTBasis, Family: FieldGSTBasis, Instructions: instructions[FieldGSTBasis], Options: []choice{{ID: "ex", Value: "ex", Describe: "Excluding GST."}, {ID: "inc", Value: "inc", Describe: "Including GST."}}})
 	}
+	d.askCoverage(add)
 	fees, rates, totals := d.candidates()
 	lump := lumpSum(fees, d.items)
 	if _, ok := d.by[FieldStatedTotal]; !ok && len(totals) > 0 {
@@ -524,7 +541,7 @@ func (d *Draft) ask() {
 			opts := append(amountOptions(fees),
 				choice{ID: choiceNotPrice, Value: choiceNotPrice, Describe: map[string]string{"what": "The proposal gives no fee for this item."}},
 				choice{ID: choiceIncluded, Value: choiceIncluded, Describe: map[string]string{"what": "The proposal says this item is included in another fee."}})
-			add(question{Field: field, Family: "price", Instructions: priceQuestion(it), Options: opts, AmberAtMost: lump})
+			add(question{Field: field, Family: "price", Instructions: priceQuestion(it), Options: opts, AmberAtMost: lump || d.ev.OCR || d.ev.Incomplete})
 		case it.Kind == rfp.ItemRate && len(rates) > 0:
 			opts := append(amountOptions(rates), choice{ID: choiceNotPrice, Value: choiceNotPrice, Describe: map[string]string{"what": "No rate is given for this role."}})
 			add(question{Field: field, Family: "rate", Instructions: rateQuestion(it), Options: opts})
@@ -586,10 +603,7 @@ func distinct(as []Amount) []Amount {
 	seen := map[string]bool{}
 	var out []Amount
 	for _, a := range as {
-		name := a.Label
-		if name == "" {
-			name = strings.Replace(a.Context, a.Display, "", 1)
-		}
+		name := a.Context + " " + a.Under
 		key := strconv.FormatInt(a.Cents, 10) + "|" + strconv.Itoa(a.PercentBP) + "|" + NameKey(digitsRe.ReplaceAllString(name, ""))
 		if seen[key] {
 			continue
@@ -647,7 +661,7 @@ func amountOptions(as []Amount) []choice {
 		if a.PerHour {
 			full["rate"] = "per hour"
 		}
-		out[i] = choice{ID: a.ID, Value: a.ID, Describe: full, Short: a.Display + " | " + clip(a.Context, 50)}
+		out[i] = choice{ID: a.ID, Value: a.ID, Describe: full, Short: a.Display + " | " + clip(a.Context, 28)}
 	}
 	return out
 }
@@ -675,8 +689,9 @@ func rateQuestion(it rfp.ScheduleItem) roleQuestion {
 }
 
 type state struct {
-	Filename string `json:"filename"`
-	Excerpt  string `json:"proposal_text,omitempty"`
+	QuotedFees []Amount `json:"quoted_fees,omitempty"`
+	Filename   string   `json:"filename"`
+	Excerpt    string   `json:"proposal_text,omitempty"`
 }
 
 // Call is the one fan-out for what is still open, or false when nothing is.
@@ -698,7 +713,7 @@ func (d *Draft) Call() (jev.Call, bool) {
 		}
 		return qs
 	}
-	st := state{Filename: d.ev.Filename}
+	st := state{Filename: d.ev.Filename, QuotedFees: coverageAmounts(d.ev)}
 	call := jev.Call{QuestionVersion: QuestionVersion, Priority: jev.PriorityBackground, Deadline: 6 * time.Second}
 	// A long proposal keeps every candidate and question: the excerpt gives
 	// way first, then the words printed with each option.
@@ -708,6 +723,17 @@ func (d *Draft) Call() (jev.Call, bool) {
 	}{{false, 9000}, {false, 4000}, {true, 4000}, {true, 1500}, {true, 0}} {
 		call.Questions = build(step.short)
 		st.Excerpt = clip(d.ev.Excerpt, step.excerpt)
+		st.QuotedFees = coverageAmounts(d.ev)
+		if step.short {
+			for i := range st.QuotedFees {
+				a := &st.QuotedFees[i]
+				a.Context = clip(a.Context, 100)
+				a.Under = clip(a.Under, 60)
+				a.Before = ""
+				a.Column = ""
+				a.Label = clip(a.Label, 70)
+			}
+		}
 		call.State = st
 		if fits(call) {
 			return call, true
@@ -743,6 +769,10 @@ func (d *Draft) Apply(res jev.Result, err error, th Thresholds) (grey bool) {
 			continue
 		}
 		if a, ok := res.Answers[f]; ok && a.Type == jev.TypeChoice {
+			if q.Family == "coverage-1" {
+				d.captureCoverage(f, q, a)
+				continue
+			}
 			for _, o := range q.Options {
 				if o.ID != a.Choice {
 					continue
@@ -813,6 +843,7 @@ type Response struct {
 
 // Reading is the code result of one proposal read.
 type Reading struct {
+	Quote       *QuoteReview
 	Kind        string
 	PackageID   string
 	Firm        *Firm // directory match, or nil
@@ -847,6 +878,7 @@ func (d *Draft) Finish() Reading {
 		byID[a.ID] = a
 	}
 	claimed := map[string]bool{}
+	feeRows := map[string]int{}
 	var base int64
 	baseKnown := true
 	for _, it := range d.items {
@@ -863,6 +895,10 @@ func (d *Draft) Finish() Reading {
 			p.State = "" // unread: the cell shows the band, not a figure
 		case v == choiceNotPrice:
 			p.State = StateNotPriced
+			if d.ev.Incomplete && p.DecidedBy != ByUser {
+				p.State = ""
+				p.Band = BandBlank
+			}
 		case v == choiceIncluded:
 			p.State = StateIncluded
 		case strings.HasPrefix(v, "cents:"):
@@ -880,17 +916,32 @@ func (d *Draft) Finish() Reading {
 			}
 			claimed[a.ID] = true
 			p.Page, p.Passage = a.Page, a.Context
+			if it.Price() && p.DecidedBy != ByUser {
+				if index, shared := feeRows[a.ID]; shared {
+					first := &r.Prices[index]
+					first.Band = BandAmber
+					p.State, p.Band = "", BandBlank
+					p.Basis = "Same quoted fee selected under " + first.Label + "; coverage needs checking"
+					first.Basis = "Same quoted fee selected for " + it.Label + "; counted once"
+					d.flags["shared_fee"] = true
+					break
+				}
+				feeRows[a.ID] = len(r.Prices)
+			}
 			c, basis, known := d.amountExGST(a, r.GSTBasis)
 			p.State, p.Basis = StatePriced, basis
 			if known {
 				p.Cents = &c
 			}
 		}
+		if d.ev.OCR && p.DecidedBy != ByUser && p.Band == BandGreen {
+			p.Band = BandAmber
+		}
 		if it.Base && it.Price() {
 			switch {
 			case p.State == StatePriced && p.Cents != nil:
 				base += *p.Cents
-			case p.State == StatePriced, p.State == "":
+			case p.State == StatePriced, p.State == "", p.State == StateNotPriced:
 				baseKnown = false
 			}
 		}
@@ -902,25 +953,11 @@ func (d *Draft) Finish() Reading {
 	// Amounts no item claimed, that are not totals, rates or unit prices,
 	// are what the firm offered unasked: kept, out of totals until award.
 	if d.ev.Form == nil && len(d.items) > 0 {
-		seen := map[int64]bool{}
-		for _, p := range r.Prices {
-			if p.Cents != nil {
-				seen[*p.Cents] = true
-			}
-		}
-		if r.StatedTotal != nil {
-			seen[*r.StatedTotal] = true
-		}
-		seen[base] = true
 		for _, a := range d.ev.Amounts {
-			if claimed[a.ID] || a.PerHour || a.Total || a.Kind != "" || a.Unit || a.GSTPart || a.IncTwin || a.Cents < 10000 || seen[a.Cents] || unitPrice(a.Context) {
+			if claimed[a.ID] || a.PerHour || a.Total || a.Kind != "" || a.Unit || a.GSTPart || a.IncTwin || unitPrice(a.Context) {
 				continue
 			}
 			c, basis, _ := d.amountExGST(a, r.GSTBasis)
-			if seen[c] {
-				continue
-			}
-			seen[c], seen[a.Cents] = true, true
 			label := strings.TrimSpace(strings.Replace(a.Context, a.Display, "", 1))
 			if len(label) < 4 {
 				label = a.Under
@@ -979,6 +1016,7 @@ func (d *Draft) Finish() Reading {
 	for _, f := range fields {
 		r.Decisions = append(r.Decisions, d.by[f])
 	}
+	r.Quote = d.quotedReview()
 	return r
 }
 
@@ -1060,7 +1098,7 @@ const (
 
 // Read reads one proposal: rules, at most one Jev fan-out, then code.
 func Read(ctx context.Context, ask Asker, th Thresholds, filename string, text identity.Text, pc Context, users map[string]Decision) (Outcome, error) {
-	if !text.TextLayer {
+	if !text.TextLayer && !text.OCR {
 		return Outcome{NotRead: NotReadNoText, Reading: Reading{Flags: []string{FlagNoText}}}, nil
 	}
 	ev := Harvest(filename, text)

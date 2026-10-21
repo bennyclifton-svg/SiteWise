@@ -148,10 +148,11 @@ type Amount struct {
 	GSTPart bool `json:"-"`
 	IncTwin bool `json:"-"`
 	// Percent is a fee stated as a percentage of a cost, in basis points.
-	PercentBP int    `json:"-"`
-	Section   int    `json:"section"`
-	Line      int    `json:"-"`
-	Kind      string `json:"-"` // "", "percent"
+	PercentBP int      `json:"-"`
+	Section   int      `json:"section"`
+	Line      int      `json:"-"`
+	Kind      string   `json:"-"` // "", "percent"
+	Breakdown []string `json:"printed_breakdown_headings,omitempty"`
 }
 
 // Section is the proposal split at its headings.
@@ -164,10 +165,12 @@ type Section struct {
 
 // Evidence is everything harvested from one proposal. It decides nothing.
 type Evidence struct {
-	Filename  string
-	TextLayer bool
-	Readable  bool
-	Amounts   []Amount
+	OCR        bool
+	Incomplete bool
+	Filename   string
+	TextLayer  bool
+	Readable   bool
+	Amounts    []Amount
 	// GSTWords counts "excl. GST" and "incl. GST" wording across the text.
 	GSTEx, GSTInc int
 	ABNs          []string
@@ -194,10 +197,10 @@ type Evidence struct {
 
 var (
 	// A figure is money when it has a dollar sign, or thousands groups with cents.
-	moneyRe   = regexp.MustCompile(`(?i)(\$\s?|AUD\s?)(\d{1,3}(?:, ?\d{3})+|\d+)(\.\d{2})?(\s?(?:k|m|million)\b)?|\b(\d{1,3}(?:,\d{3})+)\.(\d{2})\b`)
+	moneyRe   = regexp.MustCompile(`(?i)(\$\s?|AUD\s?)(\d{1,3}(?:(?:, ?| )\d{3})+|\d+)(\.\d{2})?(\s?(?:k|m|million)\b)?|\b(\d{1,3}(?:,\d{3})+)\.(\d{2})\b`)
 	percentRe = regexp.MustCompile(`(?i)\b(\d{1,2}(?:\.\d{1,2})?)\s?%\s+(?:of\s+(?:the\s+)?)?(?:total\s+)?(?:construction|build|building|contract|project|works)\s+(?:cost|value|sum|budget)`)
 	perHourRe = regexp.MustCompile(`(?i)^\s*(?:\+\s?GST\s*)?(?:/|per\s+|p/?)\s?(?:h\b|hr\b|hrs\b|hour|hourly)|^\s*(?:ph|p\.h\.)\b`)
-	exGSTRe   = regexp.MustCompile(`(?i)(?:\b(?:excl?\.?(?:uding|usive of)?|ex\.?|exclusive of|plus)\s?|\+\s?(?:10%\s)?)GST\b|\bGST\s+(?:excl?\.?|exclusive)`)
+	exGSTRe   = regexp.MustCompile(`(?i)(?:\b(?:excl?\.?(?:uding|usive of)?|ex\.?|exclusive of|plus(?: 10%)?)\s?|\+\s?(?:10%\s)?)GST\b|\bGST\s+(?:excl?\.?|exclusive)`)
 	incGSTRe  = regexp.MustCompile(`(?i)\b(?:incl?\.?(?:uding|usive of)?|inclusive of)\s?GST\b|\bGST\s+incl`)
 	emailRe   = regexp.MustCompile(`(?i)\b[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}\b`)
 	phoneRe   = regexp.MustCompile(`(?:\+61\s?\(?0?\)?\s?[2-478]|\(0[2-478]\)|\b0[2-478])[\s\-]?\d{4}[\s\-]?\d{4}\b|\b04\d{2}[\s\-]?\d{3}[\s\-]?\d{3}\b|\b1[38]00[\s\-]?\d{3}[\s\-]?\d{3}\b`)
@@ -212,13 +215,13 @@ var (
 
 // excludedContext marks a figure that is not a fee: insurance cover, the
 // project's own value, a turnover or a staff count.
-var excludedContext = regexp.MustCompile(`(?i)insurance|insurer|indemnity|public liability|liability\b|\bworkers\b|any one (?:claim|occurrence)|aggregate|valued (?:at|over|up to)|projects? (?:valued|worth|value)|value of the (?:project|works)|estimated value|contract value|turnover|construction (?:cost|value|budget) of|capital (?:value|investment)|\$\s?\d+(?:\.\d+)?\s?(?:m|million|billion|bn)\b`)
+var excludedContext = regexp.MustCompile(`(?i)services concerned|failure to exercise reasonable care|policy value|imprisonment|if no invoice has been issued|insurance|insurer|indemnity|public liability|liability\b|\bworkers\b|any one (?:claim|occurrence)|aggregate|valued (?:at|over|up to)|projects? (?:valued|worth|value)|value of the (?:project|works)|estimated value|contract value|turnover|construction (?:cost|value|budget) of|capital (?:value|investment)|\$\s?\d+(?:\.\d+)?\s?(?:m|million|billion|bn)\b`)
 
-var totalWords = regexp.MustCompile(`(?i)\btotal\b|\bsub-?total\b|\blump\s?sum\b|\bfee\s+(?:total|summary)\b`)
+var totalWords = regexp.MustCompile(`(?i)\b(?:cost|fee) estimate\b|\btotal\b|\bsub-?total\b|\blump\s?sum\b|\bfee\s+(?:total|summary)\b`)
 
 // Harvest collects candidates from a proposal's text.
 func Harvest(filename string, text identity.Text) Evidence {
-	ev := Evidence{Filename: filename, TextLayer: text.TextLayer}
+	ev := Evidence{Filename: filename, TextLayer: text.TextLayer, OCR: text.OCR, Incomplete: text.Incomplete}
 	lines := Lines(text)
 	ev.Readable = readable(lines)
 	ev.Form, ev.FormFirm = formCells(lines)
@@ -248,7 +251,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 			newSection(t, l.Page)
 		}
 		s := &ev.Sections[section]
-		if len(s.Body) < 6000 {
+		if len(s.Body) < 20000 {
 			s.Body += t + "\n"
 		}
 		if strings.Contains(lower, "hourly rate") || strings.Contains(lower, "schedule of rates") || strings.Contains(lower, "charge out rate") || strings.Contains(lower, "charge-out rate") {
@@ -273,7 +276,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 			}
 		}
 		if companyRe.MatchString(t) && len(strings.Fields(t)) <= 8 && !moneyRe.MatchString(t) && !emailRe.MatchString(t) {
-			addUnique(&ev.Names, strings.Trim(t, " ,.-|"))
+			addUnique(&ev.Names, cleanFirmCandidate(strings.Trim(t, " ,.-|")))
 		}
 		if signoffRe.MatchString(strings.TrimSpace(t)) {
 			for _, next := range lines[i+1 : min(len(lines), i+5)] {
@@ -286,14 +289,24 @@ func Harvest(filename string, text identity.Text) Evidence {
 		for j, cell := range l.Cells {
 			for _, m := range moneyIn(cell) {
 				ctx := t
-				if excludedContext.MatchString(ctx) || excludedContext.MatchString(before) && !strings.Contains(lower, "fee") {
+				// A drawing's area schedule can OCR a dimension as "$700".
+				// Its GLA/GFA total is physical area, not a quoted fee.
+				if drawingArea.MatchString(ctx) && !feeContext.MatchString(ctx) {
+					continue
+				}
+				label := rowLabel(l.Cells, j, m.before)
+				above, localHeading := amountColumnContext(lines, i, j, m.before)
+				if excludedContext.MatchString(localHeading) || excludedContext.MatchString(label+" "+cell) || excludedContext.MatchString(above) && !strings.Contains(strings.ToLower(label+" "+cell), "fee") {
 					continue
 				}
 				a := Amount{Cents: m.cents, Display: m.display, Context: clip(ctx, 240), Under: clip(heading, 160), Before: clip(before, 160), Page: l.Page, Section: section, Line: i}
-				a.Label = rowLabel(l.Cells, j, m.before)
+				a.Label = label
+				if localHeading != "" {
+					a.Under = localHeading
+				}
 				a.Column = columnHeading(lines, i, l, j)
 				after := strings.ToLower(m.after)
-				a.PerHour = perHourRe.MatchString(m.after) || strings.Contains(after, "per hour") || (ratesBlock > 0 && !totalWords.MatchString(ctx) && m.cents < 100000)
+				a.PerHour = perHourRe.MatchString(m.after) || strings.Contains(after, "per hour") || ((ratesBlock > 0 || strings.Contains(strings.ToLower(localHeading), "rate")) && !totalWords.MatchString(ctx) && m.cents < 100000)
 				// A total is printed as one: a short label or line, not a
 				// sentence that mentions "the fee summary table".
 				a.Total = (totalWords.MatchString(a.Label) && len(strings.Fields(a.Label)) <= 10) ||
@@ -318,6 +331,28 @@ func Harvest(filename string, text identity.Text) Evidence {
 	}
 	dropGSTPairs(ev.Amounts, lines)
 	markUnitRates(ev.Amounts, lines)
+	// Keep table structure with a subtotal: the headings above its component
+	// rows explain the scope a single bundled figure covers.
+	for i := range ev.Amounts {
+		a := &ev.Amounts[i]
+		if !a.Total || a.IncTwin || a.GSTPart {
+			continue
+		}
+		seenHeading := map[string]bool{}
+		for j := i - 1; j >= 0 && ev.Amounts[j].Page == a.Page; j-- {
+			b := ev.Amounts[j]
+			if b.Total {
+				break
+			}
+			if b.Under != "" && !seenHeading[b.Under] {
+				a.Breakdown = append(a.Breakdown, b.Under)
+				seenHeading[b.Under] = true
+				if len(a.Breakdown) == 10 {
+					break
+				}
+			}
+		}
+	}
 	for i := range ev.Amounts {
 		ev.Amounts[i].ID = "a" + strconv.Itoa(i+1)
 	}
@@ -336,6 +371,47 @@ func Harvest(filename string, text identity.Text) Evidence {
 	ev.OptionsAB = optionAB.MatchString(sectionHeadings(ev.Sections))
 	ev.Excerpt = feeExcerpt(lines, ev.Amounts, 9000)
 	return ev
+}
+
+// A facing column may hold insurance or a different stage. Keep the heading
+// above this row's label, instead of borrowing prose from the facing column.
+func amountColumnContext(lines []Line, i, j int, prefix string) (string, string) {
+	l := lines[i]
+	if len(l.X) != len(l.Cells) || j >= len(l.X) {
+		if i > 0 && lines[i-1].Page == l.Page {
+			return lines[i-1].Text, ""
+		}
+		return "", ""
+	}
+	label := j
+	if strings.TrimSpace(prefix) == "" {
+		for k := j - 1; k >= 0; k-- {
+			if !moneyRe.MatchString(l.Cells[k]) {
+				label = k
+				break
+			}
+		}
+	}
+	x := l.X[label]
+	var nearby []string
+	for k := i - 1; k >= 0 && k >= i-80 && lines[k].Page == l.Page; k-- {
+		h := lines[k]
+		for c, cell := range h.Cells {
+			if c >= len(h.X) || math.Abs(h.X[c]-x) > 16 {
+				continue
+			}
+			if len(nearby) < 3 {
+				nearby = append(nearby, cell)
+			}
+			if strings.Contains(strings.ToLower(h.Text), "role/title") && strings.Contains(strings.ToLower(h.Text), "rate") {
+				return strings.Join(nearby, " "), "Role/Title Rate"
+			}
+			if isHeading(cell) {
+				return strings.Join(nearby, " "), clip(cell, 160)
+			}
+		}
+	}
+	return strings.Join(nearby, " "), ""
 }
 
 type money struct {
@@ -410,6 +486,24 @@ func dropGSTPairs(amounts []Amount, lines []Line) {
 			if t.Line != x.Line && !t.Total {
 				continue
 			}
+			// Arithmetic alone cannot distinguish GST from a genuinely
+			// different offer. In particular, never replace explicit ex-GST
+			// wording on a separate alternative.
+			taxEvidence := t.GST == "inc"
+			if t.Line == x.Line {
+				taxEvidence = taxEvidence || strings.Contains(strings.ToLower(x.Context), "gst")
+			} else if t.GST == "ex" {
+				continue
+			}
+			for k := range amounts {
+				g := &amounts[k]
+				if k != i && k != j && near(*x, *g) && abs64(g.Cents-invoices.GSTOf(x.Cents)) <= 1 && strings.Contains(strings.ToLower(lines[g.Line].Text+" "+g.Column), "gst") {
+					taxEvidence = true
+				}
+			}
+			if !taxEvidence {
+				continue
+			}
 			// t is x plus GST. Mark t inclusive, and the GST figure itself.
 			if x.GST == "" {
 				x.GST = "ex"
@@ -417,7 +511,7 @@ func dropGSTPairs(amounts []Amount, lines []Line) {
 			t.GST, t.IncTwin = "inc", true
 			for k := range amounts {
 				g := &amounts[k]
-				if k != i && k != j && near(*x, *g) && g.Kind == "" && abs64(g.Cents-invoices.GSTOf(x.Cents)) <= 1 && strings.Contains(strings.ToLower(lines[g.Line].Text), "gst") {
+				if k != i && k != j && near(*x, *g) && g.Kind == "" && abs64(g.Cents-invoices.GSTOf(x.Cents)) <= 1 && strings.Contains(strings.ToLower(lines[g.Line].Text+" "+g.Column), "gst") {
 					g.GSTPart = true
 				}
 			}
@@ -426,6 +520,8 @@ func dropGSTPairs(amounts []Amount, lines []Line) {
 }
 
 var unitWord = regexp.MustCompile(`(?i)\b(?:hours?|hrs?|days?|weeks?|sum|each|ea|item|tests?|samples?|suites?|visits?|box(?:es)?|cores?|holes?|carts?|wells?|mob|no\.?|m2|lm|sheets?|copies)\b`)
+var drawingArea = regexp.MustCompile(`(?i)\btotal\s+(?:gla|gfa)\b`)
+var feeContext = regexp.MustCompile(`(?i)\b(?:fee|price|rate|cost|gst)\b`)
 
 // markUnitRates marks a rate printed just before its extended amount on a
 // quantity line ("30  hour  $220  $6,600"): the extended amount is the fee.
@@ -467,7 +563,7 @@ func rowLabel(cells []string, j int, prefix string) string {
 		if moneyRe.MatchString(c) {
 			continue
 		}
-		if len(c) >= 3 {
+		if len(c) >= 3 && !strings.EqualFold(unitWord.FindString(c), c) {
 			return clip(c, 100)
 		}
 	}
@@ -490,18 +586,11 @@ func columnHeading(lines []Line, i int, l Line, j int) string {
 		if moneyRe.MatchString(h.Text) {
 			continue
 		}
-		short := true
-		for _, c := range h.Cells {
-			short = short && len(c) <= 40
-		}
-		if len(h.Cells) < 2 || len(h.X) != len(h.Cells) || !short {
-			if isHeading(h.Text) {
-				return ""
-			}
+		if len(h.X) != len(h.Cells) {
 			continue
 		}
 		for c := range h.Cells {
-			if h.X[c] <= x1+4 && x0 <= h.X[c]+h.W[c]+4 {
+			if len(h.Cells[c]) <= 40 && h.X[c] <= x1+4 && x0 <= h.X[c]+h.W[c]+4 {
 				return clip(h.Cells[c], 60)
 			}
 		}

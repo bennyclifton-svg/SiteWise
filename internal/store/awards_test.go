@@ -66,10 +66,10 @@ func TestAwardWritesTheBreakdownAndUndoRestores(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	readInto(t, s, id, pageText(
+	readWithQuote(t, s, id, pageText(
 		[]string{"Mecone Pty Ltd"}, []string{"ABN 88 071 762 537"}, []string{"1. FEE PROPOSAL"},
 		[]string{"Advice", "$3,000"}, []string{"Pre-lodgement", "$2,500"}, []string{"Report", "$9,000"},
-	), answers{"price:" + keys[0]: "a1", "price:" + keys[1]: "a2", "price:" + keys[2]: "a3", "firm_name": "c1"})
+	), answers{"price:" + keys[0]: "a1", "price:" + keys[1]: "a2", "price:" + keys[2]: "a3", "firm_name": "c1"}, false)
 
 	lines := []store.AwardLine{{Label: "Preliminary advice", Keys: keys[:1]}, {Label: "Pre-lodgement and report", Keys: keys[1:3]}}
 	if _, err := s.PreviewAward(ctx, orgA, projectA, pkg.ID, store.AwardInput{SubmissionID: id, Lines: lines, Total: "14000.00"}); !errors.Is(err, store.ErrInvalidInput) {

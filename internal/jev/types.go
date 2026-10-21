@@ -81,6 +81,9 @@ type Question struct {
 // relevant evidence: Jev is not asked to count, compare dates or draft text.
 // https://docs.typesafe.ai/model-jaggedness/jev-1.13
 type Call struct {
+	// Images are background-only experimental assets. Text-only calls retain
+	// the existing pinned model. https://docs.typesafe.ai/images
+	Images          map[string]ImageAsset
 	State           any
 	Questions       map[string]Question
 	Priority        Priority

@@ -55,6 +55,9 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & "$PSScriptRoot/check-ocr.ps1"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+& "$PSScriptRoot/check-visual.ps1"
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 & $Npm --prefix web run test:e2e
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

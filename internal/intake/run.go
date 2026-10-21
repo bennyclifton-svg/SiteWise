@@ -39,6 +39,8 @@ func formatOf(filename string) string {
 		return "docx"
 	case ".xlsx":
 		return "xlsx"
+	case ".md", ".markdown":
+		return "markdown"
 	default:
 		return ""
 	}
@@ -128,6 +130,11 @@ func (r *Runner) notFiled(ctx context.Context, orgID, documentID, reason string)
 	err := r.store.MarkNotFiled(ctx, orgID, documentID, reason)
 	if errors.Is(err, store.ErrNotFound) {
 		return nil
+	}
+	if err == nil && r.AfterFile != nil {
+		// A proposal attached during upload must leave Reading even when
+		// identity extraction fails. Its reader records unknown fee cells.
+		r.AfterFile(orgID, documentID, identity.Text{Incomplete: true})
 	}
 	return err
 }

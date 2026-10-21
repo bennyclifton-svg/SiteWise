@@ -195,6 +195,8 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["program_changes"] = row{"org_id": org, "id": id(4200 + n), "program_id": program, "source": "profile", "kind": "add", "source_key": "fixture", "proposal": row{}, "summary": "Add", "default_choice": "adopt"}
 		f["program_readings"] = row{"org_id": org, "id": id(4300 + n), "program_id": program, "source": "program_file", "field": "start", "band": "blank", "decided_by": "rule"}
 		f["program_imports"] = row{"org_id": org, "id": id(4400 + n), "program_id": program, "document_id": id(1900 + n), "filename": "program.xlsx"}
+		f["comparison_alignment"] = row{"org_id": org, "submission_id": submission, "prices": []any{}, "decisions": row{}, "version": 1}
+		f["visual_identity"] = row{"org_id": org, "document_id": id(1900 + n)}
 		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)

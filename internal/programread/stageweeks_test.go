@@ -320,7 +320,9 @@ func TestParseStated(t *testing.T) {
 // for proposalFixture. Reading B never changes that map (plan 13.3 Q3):
 // a change there is a new proposals.QuestionVersion and a new calibration
 // of every proposal question.
-const proposalMapSHA256 = "4438efcf684bb2e657a3cf1a50ee0c190f03889603749f06036957ec1e91d53f"
+// Re-pinned 21 October 2026 after main's quoted-fee work changed the
+// proposal-1 map; the R7 reading itself still adds nothing to it.
+const proposalMapSHA256 = "52bebe8e657c0134864332dff93ce6d3d0340f8b34c278dd528789f864556cd3"
 
 func TestProposalOneQuestionMapIsUnchanged(t *testing.T) {
 	if proposals.QuestionVersion != "proposal-1" {

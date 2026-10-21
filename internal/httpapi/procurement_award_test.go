@@ -2,7 +2,6 @@ package httpapi_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -25,8 +24,9 @@ type priceTableBody struct {
 	} `json:"items"`
 	Columns []struct {
 		Submission struct {
-			ID     string `json:"id"`
-			Status string `json:"status"`
+			ID         string `json:"id"`
+			Status     string `json:"status"`
+			DocumentID string `json:"document_id"`
 		} `json:"submission"`
 		Firm *struct {
 			Name string `json:"name"`
@@ -76,8 +76,16 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 	pdf := psample.PDF(psample.Proposal{Firm: "Example Planning Pty Ltd", ABN: "88071762537", Email: "office@example-planning.test", Lines: lines, Rates: []psample.Line{{Label: "Director", Cents: 45000}}})
 	var up struct {
 		SubmissionID string `json:"submission_id"`
+		DocumentID   string `json:"document_id"`
 	}
 	m.call(t, http.MethodPost, base+"/submissions?name="+url.QueryEscape("Fee proposal (Example Planning).pdf"), pdf, http.StatusCreated, &up)
+	var repositoryDocument struct {
+		ID string `json:"id"`
+	}
+	m.getJSON(t, "/api/documents/"+up.DocumentID, &repositoryDocument)
+	if repositoryDocument.ID != up.DocumentID || up.DocumentID == "" {
+		t.Fatal("procurement upload missing from document repository")
+	}
 	deadline := time.Now().Add(15 * time.Second)
 	for {
 		m.getJSON(t, base+"/prices", &table)
@@ -90,9 +98,8 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 		time.Sleep(50 * time.Millisecond)
 	}
 	col := table.Columns[0]
-	want := fmt.Sprintf("%d.00", len(lines)*1000)
-	if col.Firm == nil || col.Totals.BaseTotal == nil || *col.Totals.BaseTotal != want {
-		t.Fatalf("column %+v, want base total %s", col, want)
+	if col.Firm == nil || col.Totals.BaseTotal != nil {
+		t.Fatalf("source reading must not confirm appointment: %+v", col)
 	}
 	sub := col.Submission.ID
 	first := ""
@@ -110,6 +117,8 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 		{"GET", base + "/prices/export", ""},
 		{"GET", "/api/projects/" + project + "/procurement/board", ""},
 		{"PUT", cell + "/cells/" + url.PathEscape(first), `{"state":"not_priced"}`},
+		{"PUT", base + "/comparison-row", `{"key":"` + first + `","label":"Private","section":"base"}`},
+		{"POST", cell + "/alignment", `{"target":"` + first + `","price_ids":["private"],"version":1}`},
 		{"PATCH", cell, `{"status":"withdrawn"}`},
 		{"GET", cell + "/file", ""},
 		{"POST", base + "/award/preview", `{"submission_id":"` + sub + `","lines":[{"label":"All","item_keys":["` + first + `"]}]}`},
@@ -140,14 +149,18 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 		t.Fatalf("own directory %d firms", len(firms.Firms))
 	}
 
-	// A user's cell is final and the totals follow.
+	// A corrected component does not silently set the appointment total.
 	m.call(t, http.MethodPut, cell+"/cells/"+url.PathEscape(first), []byte(`{"state":"priced","amount":"2,000"}`), http.StatusOK, &table)
-	want = fmt.Sprintf("%d.00", len(lines)*1000+1000)
-	if got := table.Columns[0].Totals.BaseTotal; got == nil || *got != want {
-		t.Fatalf("after correction %v, want %s", got, want)
+	if got := table.Columns[0].Totals.BaseTotal; got != nil {
+		t.Fatalf("component became appointment total: %v", got)
 	}
 	if got := m.status(t, http.MethodPut, cell+"/cells/"+url.PathEscape(first), []byte(`{"state":"priced","amount":"lots"}`)); got != http.StatusUnprocessableEntity {
 		t.Fatalf("bad amount = %d", got)
+	}
+	appointment := cell + "/cells/" + url.PathEscape("comparison:appointment")
+	m.call(t, http.MethodPut, appointment, []byte(`{"state":"priced","amount":"2000","note":"First stage only, confirmed against the proposal"}`), http.StatusOK, &table)
+	if got := table.Columns[0].Totals.BaseTotal; got == nil || *got != "2000.00" {
+		t.Fatalf("confirmed fee: %v", got)
 	}
 
 	// Export is a workbook in the screen's layout.
@@ -159,7 +172,9 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 	}
 
 	// Award, then undo.
-	award := `{"submission_id":"` + sub + `","lines":[{"label":"First stage","item_keys":["` + first + `"]}],"total":"2000.00"}`
+	unsafeAward := `{"submission_id":"` + sub + `","lines":[{"label":"First stage","item_keys":["` + first + `"]}],"total":"2000.00"}`
+	m.call(t, http.MethodPost, base+"/award/preview", []byte(unsafeAward), http.StatusUnprocessableEntity, nil)
+	award := `{"submission_id":"` + sub + `","lines":[{"label":"First stage","item_keys":["comparison:appointment"]}],"total":"2000.00"}`
 	var preview struct {
 		Total string `json:"total"`
 	}

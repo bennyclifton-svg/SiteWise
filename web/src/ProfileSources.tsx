@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 import { useEffect, useState } from "react";
 import { profileApi, type Profile, type SourceRecords } from "./profileApi";
 
@@ -50,11 +51,11 @@ export function ProfileSources({ projectId, data, system, onSystem, onClose }: {
           <option value="needs_mapping">Needs mapping or review</option><option value="background">Background and references</option>
         </select></label>
       </div>
-      {error ? <p role="alert">{error} <button className="cell-link" onClick={() => setRetry(n => n + 1)}>Retry</button></p> : !result ? <p role="status">Loading source requirements…</p> : <>
+      {error ? <p role="alert">{error} <button className="cell-link" onClick={() => setRetry(n => n + 1)}>Retry</button></p> : !result ? <p role="status"><Pending delayed>Loading source requirements…</Pending></p> : <>
         {result.records.length === 0 && <p className="muted">No source passages match this view.</p>}
         <ol className="pf-source-list" start={offset + 1}>{result.records.map(r => <li key={r.id}>
           <div className="pf-source-meta"><a href={`/api/documents/${r.document_id}/file?view=1${r.page ? `#page=${r.page}` : ""}`} target="_blank" rel="noreferrer">{r.filename}{r.location ? ` · ${r.location}` : ""}</a>
-            <span>{r.outcome === "pending" ? "Awaiting reading" : r.outcome === "needs_mapping" ? "Needs mapping or review" : categoryLabel(r.category)}</span>
+            <span>{r.outcome === "pending" ? <Pending queued>Awaiting reading</Pending> : r.outcome === "needs_mapping" ? "Needs mapping or review" : categoryLabel(r.category)}</span>
           </div>
           {r.section && <h3>{r.section}</h3>}
           {r.context && <p className="muted pf-source-context">{r.context}</p>}

@@ -76,9 +76,10 @@ type Client struct {
 }
 
 type outbound struct {
-	State     any                 `json:"state"`
-	Model     string              `json:"model"`
-	Questions map[string]Question `json:"questions"`
+	Assets    map[string]ImageAsset `json:"assets,omitempty"`
+	State     any                   `json:"state"`
+	Model     string                `json:"model"`
+	Questions map[string]Question   `json:"questions"`
 }
 
 type responseWire struct {
@@ -311,12 +312,16 @@ func (c *Client) Ask(ctx context.Context, call Call) (Result, error) {
 	if err := validateCall(&call); err != nil {
 		return Result{}, err
 	}
+	if err := validateImages(call); err != nil {
+		return Result{}, err
+	}
 	if _, err := CheckRequestSize(call); err != nil {
 		return Result{}, err
 	}
 	payload, err := json.Marshal(outbound{
 		State:     call.State,
-		Model:     c.model,
+		Model:     c.callModel(call),
+		Assets:    call.Images,
 		Questions: call.Questions,
 	})
 	if err != nil {
@@ -367,7 +372,7 @@ func (c *Client) attempt(parent context.Context, payload []byte, call Call) (Res
 	}
 	defer c.admission.Release(call.Priority)
 
-	status, body, err := c.post(ctx, payload)
+	status, body, err := c.post(ctx, payload, len(call.Images) > 0)
 	latency := c.now().Sub(start)
 	if err != nil {
 		if errors.Is(err, ErrBodyLimit) {
@@ -398,7 +403,7 @@ func (c *Client) withDeadline(parent context.Context, call Call) (context.Contex
 	return context.WithTimeout(parent, d)
 }
 
-func (c *Client) post(ctx context.Context, payload []byte) (int, []byte, error) {
+func (c *Client) post(ctx context.Context, payload []byte, images bool) (int, []byte, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL, bytes.NewReader(payload))
 	if err != nil {
 		return 0, nil, err
@@ -406,6 +411,9 @@ func (c *Client) post(ctx context.Context, payload []byte) (int, []byte, error) 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "sitewise")
+	if images {
+		req.Header.Set("TypeSafe-Danger-Zone-Images", "true")
+	}
 	req.Header.Set("Authorization", "Bearer "+c.apiKey)
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -458,7 +466,7 @@ func (c *Client) interpret(call Call, status int, body []byte, latency time.Dura
 		return Result{}, ErrBadResponse, false
 	}
 	usage := Usage{InputTokens: wire.Usage.InputTokens, OutputTokens: wire.Usage.OutputTokens}
-	if wire.Model != c.model {
+	if wire.Model != c.callModel(call) {
 		c.breaker.Success()
 		c.logCall(slog.LevelWarn, call, status, latency, usage, nil, nil, "wrong_model")
 		return Result{}, ErrBadResponse, false
@@ -765,7 +773,7 @@ func uncertaintyOf(answers map[string]Answer) map[string]float64 {
 
 func (c *Client) logCall(level slog.Level, call Call, status int, latency time.Duration, usage Usage, uncertainty map[string]float64, unresolved []string, class string) {
 	attrs := []any{
-		slog.String("model", c.model),
+		slog.String("model", c.callModel(call)),
 		slog.String("question_version", call.QuestionVersion),
 		slog.Int64("latency_us", latency.Microseconds()),
 		slog.String("priority", string(call.Priority)),

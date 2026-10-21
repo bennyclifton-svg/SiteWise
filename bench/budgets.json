@@ -1,6 +1,7 @@
 {
   "min_samples": 20,
   "paths": [
+    {"name":"visual_identity","p50_us":10000000,"p90_us":20000000,"note":"background preparation and one image fan-out; excludes burst queue time"},
 	{"name":"specification_read","p50_us":100000,"p90_us":250000},
 	{"name":"specification_write","p50_us":100000,"p90_us":250000},
 	{"name":"specification_issue","p50_us":100000,"p90_us":250000},

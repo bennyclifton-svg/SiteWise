@@ -1,12 +1,15 @@
+import { Pending } from "./Activity";
 // The document register: one compact line per filing, sortable, opening to
 // the full title block for correction. Modelled on the Clerk register.
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import type { Catalog, Doc, ReadSetting } from "./api";
-import { FIELDS, FieldCell, HeadState, REASONS, stateOf, type RowModel } from "./DocumentRow";
+import { FIELDS, FieldCell, HeadState, notFiledReason, stateOf, type RowModel } from "./DocumentRow";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { IconBin, IconCheck, IconNotChecked, IconRetry, IconStored, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
+import { documentActivity } from "./documentActivity";
+import { VisualIdentityReview } from "./VisualIdentityReview";
 
 type Col = "number" | "title" | "revision" | "date" | "discipline" | "kind";
 
@@ -62,8 +65,14 @@ function shortDate(iso: string): string {
 }
 
 function sortValue(row: RowModel, col: Col): string {
-  if (col === "title") return (fieldValue(row.doc, "title") || row.filename).toLowerCase();
+  if (col === "title") return (fieldValue(row.doc, "title") || suggestedTitle(row.doc) || row.filename).toLowerCase();
   return fieldValue(row.doc, col).toLowerCase();
+}
+
+function suggestedTitle(doc: Doc | undefined): string {
+	if (doc?.status !== "filed") return "";
+  if (doc?.fields.some(f => f.field === "title" && (f.value || f.decided_by === "user"))) return "";
+  return doc?.visual_title ?? "";
 }
 
 export function Register({
@@ -106,6 +115,14 @@ export function Register({
     const shown = notReadOnly ? docs.filter((r) => !profileReads(r.doc!, readKinds)) : docs;
     return [...(notReadOnly ? [] : uploads), ...shown];
   }, [rows, sort, notReadOnly, readKinds]);
+
+  const activity = ordered.map(row => {
+    if (row.uploadError || row.interrupted) return null;
+    if (row.doc?.text_status === "leased") return { state: "active" };
+    return documentActivity(row) ?? (row.doc?.text_status === "queued" ? { state: "queued" } : null);
+  }).filter(a => a !== null);
+  const activeCount = activity.filter(a => a.state === "active").length;
+  const queuedCount = activity.length - activeCount;
 
   // Selection is by document id, in display order; rows that leave the list
   // leave the selection.
@@ -195,6 +212,7 @@ export function Register({
           <IconUpload />
         </button>
       </div>
+      {activity.length > 0 && <p className="reg-activity" role="status" aria-atomic="true"><Pending queued={!activeCount}>{[activeCount > 0 && `${activeCount} processing`, queuedCount > 0 && `${queuedCount} waiting`].filter(Boolean).join(" · ")}</Pending></p>}
       {notReadOnly && (
         <p className="reg-filter">
           Showing documents excluded from profile reading.{" "}
@@ -331,14 +349,8 @@ function RowMark({ row }: { row: RowModel }) {
       </span>
     );
   }
-  if (!doc || doc.status === "pending") {
-    return (
-      <span className="reg-flag" title="Filing…">
-        <span className="reg-spin" aria-hidden />
-        <span className="sr-only">Filing</span>
-      </span>
-    );
-  }
+  if (documentActivity(row)) return null; // The status beside the title carries the activity.
+  if (!doc) return null;
   if (doc.status === "split") {
     return (
       <span className="reg-flag" title="Drawing set: each sheet is listed separately; the original is retained">
@@ -410,8 +422,19 @@ function RegisterRow({
   onDelete: (doc: Doc) => void;
 }) {
   const doc = row.doc;
-  const title = fieldValue(doc, "title");
+  const suggested = suggestedTitle(doc);
+  const [accepting, setAccepting] = useState(false);
+  const [acceptError, setAcceptError] = useState("");
+  const acceptTitle = async () => {
+    if (!doc || !suggested || accepting) return;
+    setAccepting(true); setAcceptError("");
+    try { await onCorrect(doc.id, "title", suggested); }
+    catch { setAcceptError("Could not save title. Try Accept again."); }
+    finally { setAccepting(false); }
+  };
+  const title = fieldValue(doc, "title") || suggested || (doc?.status === "split" ? row.filename : "");
   const titleNeedsReview = doc?.fields.some((f) => f.field === "title" && f.decided_by === "jev" && f.band === "blank");
+  const activity = documentActivity(row);
   const missingTitle = titleNeedsReview ? "Title needs review" : "Title not extracted";
   const discipline = fieldValue(doc, "discipline");
   const kind = fieldValue(doc, "kind");
@@ -443,6 +466,7 @@ function RegisterRow({
       className="reg-doc"
       id={doc ? `doc-${doc.id}` : undefined}
       data-filename={row.filename}
+      data-activity={activity?.state ?? (doc?.text_status === "leased" ? "active" : undefined)}
       data-open={open ? "true" : undefined}
       data-flash={row.flash ? "true" : undefined}
       data-landed={row.landed ? "true" : undefined}
@@ -471,22 +495,26 @@ function RegisterRow({
         <td className="reg-no" title={fieldValue(doc, "number")} data-user={userSet("number") || undefined}>
           {fieldValue(doc, "number")}
         </td>
-        <td className="reg-title" title={`${title || (titleNeedsReview ? "No title accepted automatically. Open this row to enter the title from the document." : missingTitle)}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
+        <td className="reg-title" data-suggested={!!suggested || undefined} title={`${title || (titleNeedsReview ? "No title accepted automatically. Open this row to enter the title from the document." : missingTitle)}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
           {row.uploadError ? <span className="error-text">{row.uploadError}</span> : title || (
             <>
-              <span className="muted">{ocrStage(doc) ? "Recovering document details" : !doc || doc.status === "pending" ? "Reading title…" : missingTitle}</span>
-              <span className="reg-file-hint">File: {row.filename}</span>
+              <span className={ocrStage(doc) ? "ocr-summary" : "muted"}>{activity ? <Pending queued={activity!.state === "queued"}>{activity!.label}</Pending> : missingTitle}</span>
+              <span className="reg-file-hint"> · File: {row.filename}</span>
             </>
           )}
-          {doc && <OCRStatus doc={doc} compact />}
+          {title && activity && !ocrStage(doc) && <span className="reg-file-hint"><Pending queued={activity!.state === "queued"}>{activity!.label}</Pending></span>}
+          {doc && (title || !ocrStage(doc)) && <OCRStatus doc={doc} compact />}
+          {suggested && <span className="reg-title-accept"><span>Suggested · review</span><button type="button" className="cell-link" aria-label="Accept suggested title" disabled={accepting} onClick={e => { e.stopPropagation(); void acceptTitle(); }}>{accepting ? <Pending delayed>Saving…</Pending> : "Accept"}</button></span>}
+          {acceptError && <span className="error-text" role="alert">{acceptError}</span>}
+          {doc?.status === "split" && <span className="reg-file-hint">Original drawing set</span>}
           {doc?.status === "not_filed" && (
-            <span className="reg-file-hint" title={REASONS[doc.reason ?? ""] ?? doc.reason}>
+            <span className="reg-file-hint" title={notFiledReason(doc)}>
               {doc.reason === "no_text_layer" ? "Not filed · no readable text" : "Not filed · open for details"}
             </span>
           )}
           {doc?.text_status && (
             <span className="reg-text-status" data-state={doc.text_status} title={doc.text_status === "done" ? "Extracted text is saved. Check source coverage in the profile for unreadable pages and unresolved requirements." : undefined}>
-              {doc.text_status === "done" ? (doc.text_empty_pages ? "! Check text coverage" : doc.text_source_version ? `✓ Text ready${doc.text_pages ? ` · ${doc.text_pages} pages` : ""}` : "Text prepared · update profile") : doc.text_status === "failed" ? "! Text preparation failed" : "◷ Preparing text…"}
+              {doc.text_status === "done" ? (doc.text_empty_pages ? "! Check text coverage" : doc.text_source_version ? `✓ Text ready${doc.text_pages ? ` · ${doc.text_pages} pages` : ""}` : "Text prepared · update profile") : doc.text_status === "failed" ? "! Text preparation failed" : <Pending queued={doc.text_status === "queued"}>{doc.text_status === "queued" ? "Text preparation queued" : "Preparing text…"}</Pending>}
             </span>
           )}
           {row.progress !== undefined && !doc && <span className="reg-progress" style={{ transform: `scaleX(${row.progress})` }} />}
@@ -579,7 +607,7 @@ function RegisterRow({
             )}
             {doc?.status === "not_filed" && (
               <p className="tb-note">
-                <strong>Kept, not filed.</strong> {REASONS[doc.reason ?? ""] ?? doc.reason}
+                <strong>Kept, not filed.</strong> {notFiledReason(doc)}
               </p>
             )}
             {doc?.status === "filed" && (
@@ -598,6 +626,7 @@ function RegisterRow({
                 ))}
               </div>
             )}
+            {doc?.status === "filed" && doc.filename.toLowerCase().endsWith(".pdf") && <VisualIdentityReview doc={doc} onCorrect={onCorrect} />}
           </td>
         </tr>
       )}

@@ -46,6 +46,25 @@ WHERE org_id = $1::uuid AND project_id = $2::uuid AND id::text = ANY($3::text[])
 	if found != len(unique(ids)) {
 		return res, ErrNotFound
 	}
+	// Surviving containers need a refresh too: their separate-sheet count
+	// changes even though the source document itself was not deleted.
+	parents, err := tx.Query(ctx, `SELECT DISTINCT source_id::text FROM drawing_sheets WHERE org_id=$1::uuid AND document_id::text=ANY($2::text[]) AND NOT(source_id::text=ANY($2::text[]))`, orgID, ids)
+	if err != nil {
+		return res, err
+	}
+	var sources []string
+	for parents.Next() {
+		var id string
+		if err := parents.Scan(&id); err != nil {
+			parents.Close()
+			return res, err
+		}
+		sources = append(sources, id)
+	}
+	parents.Close()
+	if err := parents.Err(); err != nil {
+		return res, err
+	}
 	rows, err := tx.Query(ctx, `
 WITH chosen AS (
   SELECT id FROM documents WHERE org_id = $1::uuid AND project_id = $2::uuid AND id::text = ANY($3::text[])
@@ -95,6 +114,11 @@ RETURNING f.sha256`, orgID, projectID, fileIDs)
 		return res, err
 	}
 	q := s.q.WithTx(tx)
+	for _, source := range sources {
+		if _, err := appendEvent(ctx, q, orgID, "sheets", source, `{}`); err != nil {
+			return res, err
+		}
+	}
 	for _, id := range res.Deleted {
 		payload, _ := json.Marshal(map[string]string{"document_id": id, "project_id": projectID, "user_id": userID})
 		if _, err := appendEvent(ctx, q, orgID, "deleted", id, string(payload)); err != nil {

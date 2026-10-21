@@ -1277,26 +1277,6 @@ button.cell[data-state="check"]:hover {
   color: var(--alert);
 }
 
-.reg-spin {
-  width: 10px;
-  height: 10px;
-  border: 1.5px solid var(--line-strong);
-  border-top-color: var(--azure);
-  border-radius: 50%;
-  animation: reg-spin 900ms linear infinite;
-}
-
-@keyframes reg-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reg-spin {
-    animation: none;
-  }
-}
 
 .reg-detail td {
   padding: 8px 10px 12px;

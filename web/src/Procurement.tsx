@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // Procurement is one table with one row per package, grouped Consultants and
 // Trades (docs/plans/2026-10-10-procurement-table.md). Choosing a discipline
 // saves a package; Create makes its RFP or RFT in one request; View opens the
@@ -44,6 +45,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   const [reload, setReload] = useState(0);
   const [error, setError] = useState("");
   const [busyRow, setBusyRow] = useState("");
+  const [uploadingRow, setUploadingRow] = useState("");
   const [draft, setDraft] = useState<string | null>(null);
   const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
   const [dropRow, setDropRow] = useState("");
@@ -139,9 +141,9 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
     e.preventDefault(); e.stopPropagation(); setDropRow("");
     const files = Array.from(e.dataTransfer.files);
     if (!files.length) return;
-    setBusyRow(pkg.id); setError("");
+    setBusyRow(pkg.id); setUploadingRow(pkg.id); setError("");
     try { for (const f of files) await uploadProposal(projectId, pkg.id, f); setReload(n => n + 1); }
-    catch (err) { fail(err); } finally { setBusyRow(""); }
+    catch (err) { fail(err); } finally { setBusyRow(""); setUploadingRow(""); }
   }
   async function assign(card: FirmCard, pkg: string) {
     if (!pkg) return;
@@ -197,10 +199,10 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
           <option value="client">Client</option>
           <option value="lead_consultant">Lead consultant</option>
         </select>}</td>
-      <td className="firms-cell">{row.pkg ? <FirmChips cards={data?.board.packages[row.pkg.id] ?? []} onOpen={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })} /> : <span className="firms-none">—</span>}</td>
+      <td className="firms-cell">{row.pkg && uploadingRow === row.pkg.id && <Pending>Uploading proposals…</Pending>}{row.pkg ? <FirmChips cards={data?.board.packages[row.pkg.id] ?? []} onOpen={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })} /> : <span className="firms-none">—</span>}</td>
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
-        : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? "Creating…" : "Create"}</button>}</td>
+        : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</td>
       <td>{row.pkg ? (() => {
         const n = data?.board.packages[row.pkg.id]?.length ?? 0;
         return <button type="button" className="table-action" aria-label={`${n > 1 ? "Compare" : n === 1 ? "Review" : "Prices for"} ${row.label}`} onClick={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })}>{n > 1 ? `Compare ${n}` : n === 1 ? "Review" : "Prices"}</button>;
@@ -246,7 +248,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
           {live.map(p => <option key={p.id} value={p.id}>{label(p)}</option>)}
         </select></label>)}
     </div>}
-    {!data ? !error && <p role="status">Loading procurement…</p> : <div className="procurement-scroll">
+    {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll">
       <table className="procurement-table">
         <thead><tr><th scope="col">Discipline</th><th scope="col" title="The client engages the consultant directly, or the lead design consultant engages it as a subconsultant and includes its fee">Engaged by</th><th scope="col" title="Drop a proposal on a row to add it to that package">Firms</th><th scope="col">RFP / RFT</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
         {group("Consultants", consultants)}
@@ -267,7 +269,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
     </div>}
     {data && <p className="procurement-line procurement-pmp">Project management plan:{" "}
       {pmp ? <button type="button" className="table-action" aria-label="View project management plan" onClick={() => setView({ at: "report", id: pmp.id })}>View</button>
-        : <button type="button" className="table-action" aria-label="Create project management plan" disabled={busyRow === "pmp"} onClick={() => void createPmp()}>{busyRow === "pmp" ? "Creating…" : "Create"}</button>}</p>}
+        : <button type="button" className="table-action" aria-label="Create project management plan" disabled={busyRow === "pmp"} onClick={() => void createPmp()}>{busyRow === "pmp" ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</p>}
     {removing && <ConfirmDialog title={`Remove ${removing.label}?`} message={removing.costLabels.length ? `Also delete ${removing.costLabels.length} linked cost-plan line(s), including any subdivisions and their amounts: ${removing.costLabels.join(", ")}? Frozen baselines are kept. Any RFP or RFT will show the package as retired.` : "The row leaves the table. Any RFP or RFT made from it will show its package as retired."} confirmLabel={removing.costLabels.length ? "Remove and delete cost lines" : "Remove"} busy={busyRow === removing.pkg.id} busyLabel="Removing…" onConfirm={() => void remove()} onCancel={() => setRemoving(null)} />}
   </section>;
 }
@@ -280,7 +282,7 @@ function FirmChips({ cards, onOpen }: { cards: FirmCard[]; onOpen: () => void })
     <button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
       title={`${c.filename} · received ${c.received_on}${c.not_priced ? ` · ${c.not_priced} not priced` : ""}`}>
       <span className="firm-chip-name">{c.firm_name || c.filename}</span>
-      <span className="firm-chip-figure">{c.status === "reading" ? "Reading…" : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : "—"}</span>
+      <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : "—"}</span>
       {c.status !== "received" && c.status !== "reading" && <span className="firm-chip-status">{STATUS_WORDS[c.status]}</span>}
       {c.status === "received" && c.needs_review && <span className="firm-chip-status warn">Check</span>}
     </button>

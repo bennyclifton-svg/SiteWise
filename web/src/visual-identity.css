@@ -1,0 +1,32 @@
+.visual-review { margin-block: 1rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+.visual-review h3 { font-size: .875rem; margin: 0 0 .5rem; }
+.visual-review-layout { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(0, 2fr); gap: 1.5rem; }
+.visual-review-field { padding-block: .75rem; overflow-wrap: anywhere; }
+.visual-review-field p { margin-block: .25rem; }
+.visual-review-field span { font-size: .875rem; }
+.visual-review-tabs { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: .75rem; }
+.visual-review-tabs [aria-pressed="true"] { font-weight: 700; text-decoration: underline; }
+.visual-review-evidence img { display: block; width: 100%; max-height: 38rem; object-fit: contain; background: white; margin-bottom: .5rem; }
+.visual-review-image { overflow: auto; max-height: 38rem; margin-block: .5rem; }
+.visual-review-image[data-enlarged] img { width: auto; max-width: none; max-height: none; }
+@media (max-width: 720px) { .visual-review-layout { grid-template-columns: minmax(0, 1fr); } }
+/* Suggested titles must remain readable and actionable in the narrow register. */
+.project-side-panel .reg-line td.reg-title[data-suggested],
+.reg-line td.reg-title[data-suggested] {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.reg-title-accept {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.reg-title-accept .cell-link {
+  flex: none;
+  min-height: 28px;
+  padding: 3px 6px;
+  white-space: nowrap;
+}

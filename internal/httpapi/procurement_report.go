@@ -2,6 +2,8 @@ package httpapi
 
 import (
 	"net/http"
+	"sitewise/internal/invoices"
+	"strings"
 
 	"sitewise/internal/proposals"
 	"sitewise/internal/store"
@@ -54,6 +56,27 @@ func writeProcurementReport(w http.ResponseWriter, r *http.Request, deps Deps, s
 		facts = append(facts, f)
 	}
 	rep.Draft = proposals.DraftRecommendation(t.Title, facts)
+	for _, col := range t.Columns {
+		if col.Quote != nil && !t.Builder {
+			lines := []string{"Quoted packages, alternatives and breakdowns are not additive. Confirm equivalent scope before selecting a firm."}
+			for _, c := range t.Columns {
+				name := c.Submission.Filename
+				if c.Firm != nil {
+					name = c.Firm.Name
+				}
+				fee := c.Cells["comparison:appointment"]
+				if fee.Cents == nil {
+					lines = append(lines, name+": comparison fee not confirmed.")
+				} else {
+					lines = append(lines, name+": confirmed comparison fee $"+invoices.DisplayCents(*fee.Cents)+" ex GST. Scope: "+fee.Basis)
+				}
+			}
+			lines = append(lines, "Recommendation for "+t.Title+": [state the firm to appoint and why].")
+			rep.Draft = strings.Join(lines, "\n")
+			break
+		}
+	}
+
 	award, err := deps.Store.ReadAward(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"))
 	if err != nil {
 		procurementError(w, deps, err)

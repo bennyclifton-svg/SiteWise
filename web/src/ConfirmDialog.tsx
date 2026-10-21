@@ -1,3 +1,4 @@
+import { Pending } from "./Activity";
 // A modal confirmation for an action that cannot be undone. Cancel has the
 // initial focus so Enter never confirms by accident; Escape cancels.
 
@@ -46,7 +47,7 @@ export function ConfirmDialog({ title, message, confirmLabel, busy, busyLabel = 
           Cancel
         </button>
         <button type="button" className={`btn btn-small${tone === "danger" ? " btn-danger" : ""}`} onClick={onConfirm} disabled={busy || confirmDisabled}>
-          {busy ? busyLabel : confirmLabel}
+          {busy ? <Pending delayed>{busyLabel}</Pending> : confirmLabel}
         </button>
       </div>
     </dialog>

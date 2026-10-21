@@ -69,6 +69,13 @@ func TestUploadOCRIsConditionalDurableAndReviewOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 	worker := &jobs.Worker{Store: st, OCR: runner.RunOCR, Kinds: []string{store.JobKindOCR}}
+	proposalHooks := 0
+	runner.AfterFile = func(gotOrg, gotDoc string, text identity.Text) {
+		if gotOrg != org || gotDoc != scanned.DocumentID || !text.OCR {
+			t.Fatal("wrong OCR filing hook")
+		}
+		proposalHooks++
+	}
 	if err := worker.Once(ctx, org); err != nil {
 		t.Fatal(err)
 	}
@@ -78,6 +85,9 @@ func TestUploadOCRIsConditionalDurableAndReviewOnly(t *testing.T) {
 	view, _ = st.DocumentView(ctx, org, scanned.DocumentID)
 	if calls != 1 || view.Status != store.StatusFiled {
 		t.Fatalf("outcome %+v calls=%d", view, calls)
+	}
+	if proposalHooks != 1 {
+		t.Fatalf("OCR filing must notify the proposal reader exactly once, got %d", proposalHooks)
 	}
 	if !reflect.DeepEqual(delivered, []string{"ocr_reading", "ocr_classifying", "ocr_review"}) {
 		t.Fatalf("live OCR stages must be delivered after commit: %v", delivered)
@@ -111,6 +121,13 @@ func TestOCRFailureAndExplicitRetry(t *testing.T) {
 			calls := 0
 			runner.OCR = func(context.Context, string) (identity.Text, error) { calls++; return identity.Text{}, tc.err }
 			doc := uploadFixture(t, up, project, "scanned-empty.pdf")
+			hooks := 0
+			runner.AfterFile = func(org, id string, text identity.Text) {
+				if org != runOrg || id != doc.DocumentID || !text.Incomplete {
+					t.Fatal("failure hook must identify unread source")
+				}
+				hooks++
+			}
 			if err := runner.Run(ctx, runOrg, doc.DocumentID); err != nil {
 				t.Fatal(err)
 			}
@@ -132,6 +149,9 @@ func TestOCRFailureAndExplicitRetry(t *testing.T) {
 			view, _ := st.DocumentView(ctx, runOrg, doc.DocumentID)
 			if view.Status != store.StatusNotFiled || view.Reason != tc.reason || calls != 1 || hits.Load() != 0 {
 				t.Fatalf("outcome %+v calls=%d", view, calls)
+			}
+			if hooks != 1 {
+				t.Fatalf("proposal remains pending after OCR failure: hooks=%d", hooks)
 			}
 			if !reflect.DeepEqual(delivered, []string{"ocr_reading", tc.reason}) {
 				t.Fatalf("live failure must be delivered after commit: %v", delivered)

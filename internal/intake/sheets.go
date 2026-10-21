@@ -47,6 +47,10 @@ func (r *Runner) ExpandDrawing(ctx context.Context, orgID, documentID string) er
 	}
 	defer f.Close()
 	sheets := make([]store.SheetWrite, 0, expansion.PageCount)
+	existing, err := r.store.ExistingDrawingPages(ctx, orgID, documentID)
+	if err != nil {
+		return err
+	}
 	project, err := r.store.ProjectDocuments(ctx, orgID, doc.ProjectID)
 	if err != nil {
 		return err
@@ -58,6 +62,10 @@ func (r *Runner) ExpandDrawing(ctx context.Context, orgID, documentID string) er
 	for page := 1; page <= expansion.PageCount; page++ {
 		if err := ctx.Err(); err != nil {
 			return err
+		}
+		if existing[page] {
+			sheets = append(sheets, store.SheetWrite{})
+			continue
 		}
 		var pdf bytes.Buffer
 		count, err := identity.PDFSheet(ctx, f, file.ByteSize, page, 200, &pdf)
