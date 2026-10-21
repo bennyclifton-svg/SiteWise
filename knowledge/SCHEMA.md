@@ -918,8 +918,12 @@ the owner marks a row `reviewed`. Rows use the predicate operators above,
 including the program-only `cond` and `work_action`. Keys are checked
 strictly: an unknown or misspelt key is an error, because a misspelt
 `applies_when` would load as a row that always applies. Content is authored
-separately by the owner (WP-P15): never fill a number, a calendar day or a
-fragment from memory, seeds or the web.
+separately (WP-P15). Owner decision, 21 October 2026: library rows may be
+drafted from general industry knowledge, provided each row cites a heading in
+a research note under `docs/research/` that states its basis, every row stays
+`status: draft` until the owner reviews it, and statutory periods stay
+`verified: false`. The aim is a reasonably accurate framework, not a precise
+one.
 
 | Kind | Form | Example |
 |---|---|---|
