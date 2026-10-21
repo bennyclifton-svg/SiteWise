@@ -1,8 +1,2548 @@
-# Program fragments (SCHEMA.md "Program library (2026-10-18)"): the
-# activities a system's work items bring to a stage. Empty until the owner
-# authors content (WP-P15); never filled from memory, seeds or the web.
+# Draft program library for owner review. See docs/research/2026-10-21-program-library.md.
 version: 1
 status: draft
 sources:
-  - {design: docs/plans/2026-10-18-program.md, anchor: "### 4.2 `fragments.yaml` — activities a system brings"}
-fragments: []
+  - {design: docs/research/2026-10-21-program-library.md, anchor: "### Overview"}
+notes: Draft construction fragments for owner review. Project-level process fragments are in the research note until scope project is accepted.
+fragments:
+- id: fr.temporary-power
+  label: "Temporary power"
+  stage: construction
+  systems: [electrical.temporary-power]
+  applies_when: {work_action: {system: electrical.temporary-power, any_of: [new, replace]}}
+  activities:
+    - {key: connect, label: "Connect temporary builders power", systems: [electrical.temporary-power], duration: du.temporary-power}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.temporary-power"}
+- id: fr.erosion-control
+  label: "Erosion and sediment control"
+  stage: construction
+  systems: [site.erosion-sediment-control]
+  applies_when: {work_action: {system: site.erosion-sediment-control, any_of: [new, alter]}}
+  activities:
+    - {key: install, label: "Install erosion and sediment controls", systems: [site.erosion-sediment-control], duration: du.erosion-control}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.erosion-control"}
+- id: fr.tree-protection
+  label: "Tree protection"
+  stage: construction
+  systems: [site.trees]
+  applies_when: {work_action: {system: site.trees, any_of: [new, alter, repair]}}
+  activities:
+    - {key: protect, label: "Install tree protection", systems: [site.trees], duration: du.tree-protection}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tree-protection"}
+- id: fr.occupied-protection
+  label: "Occupied-building protection"
+  stage: construction
+  systems: [site.impact-protection]
+  applies_when:
+    all:
+      - {work_action: {system: site.impact-protection, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a", "2", "5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+      - {det: existing_building, is: true}
+  activities:
+    - {key: hoard, label: "Install hoardings and protection to occupied areas", systems: [site.impact-protection], duration: du.occupied-protection}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.occupied-protection"}
+- id: fr.demolition-1a
+  label: "Demolition (house)"
+  stage: construction
+  systems: [site.demolition]
+  applies_when:
+    all:
+      - {work_action: {system: site.demolition, any_of: [remove]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: demolish, label: "Isolate, demolish and clear", systems: [site.demolition], duration: du.demolition-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-1a"}
+- id: fr.strip-out-1a
+  label: "Strip-out (house renovation)"
+  stage: construction
+  systems: [site.demolition]
+  applies_when:
+    all:
+      - {work_action: {system: site.demolition, any_of: [remove]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: strip, label: "Isolate services and strip out finishes", systems: [site.demolition], duration: du.strip-out-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.strip-out-1a"}
+- id: fr.earthworks-1a
+  label: "Earthworks (house)"
+  stage: construction
+  systems: [site.earthworks]
+  applies_when:
+    all:
+      - {work_action: {system: site.earthworks, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: cut, label: "Cut, fill and trim levels", systems: [site.earthworks], duration: du.earthworks-1a}
+  attach: {after: fr.demolition-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-1a"}
+- id: fr.underpinning-1a
+  label: "Underpinning (house)"
+  stage: construction
+  systems: [substructure.underpinning]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.underpinning, any_of: [new, alter, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [extend, refurb]}
+  activities:
+    - {key: underpin, label: "Underpin existing walls", systems: [substructure.underpinning], duration: du.underpinning-1a}
+  attach: {after: fr.earthworks-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.underpinning-1a"}
+- id: fr.footings-1a
+  label: "Footings (house)"
+  stage: construction
+  systems: [substructure.footings]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.footings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: excavate, label: "Excavate and inspect footings", systems: [substructure.footings], duration: du.footings-excavate-1a}
+    - {key: pour, label: "Pour footings", systems: [substructure.footings], duration: du.footings-pour-1a}
+    - {key: cure, label: "Cure footings", systems: [substructure.footings], duration: du.concrete-cure}
+  links:
+    - {from: excavate, to: pour, type: FS, lag: null}
+    - {from: pour, to: cure, type: FS, lag: null}
+  attach: {after: fr.underpinning-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-1a"}
+- id: fr.termite-1a
+  label: "Termite management (house)"
+  stage: construction
+  systems: [substructure.termite-management]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.termite-management, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: barrier, label: "Install termite management system", systems: [substructure.termite-management], duration: du.termite-1a}
+  attach: {after: fr.footings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.termite-1a"}
+- id: fr.damp-1a
+  label: "Damp-proofing (house)"
+  stage: construction
+  systems: [substructure.damp-waterproofing]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.damp-waterproofing, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: membrane, label: "Install damp-proof membrane", systems: [substructure.damp-waterproofing], duration: du.damp-1a}
+  attach: {after: fr.footings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.damp-1a"}
+- id: fr.stormwater-1a
+  label: "Stormwater (house)"
+  stage: construction
+  systems: [site.stormwater-detention]
+  applies_when:
+    all:
+      - {work_action: {system: site.stormwater-detention, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: drain, label: "Install stormwater drainage", systems: [site.stormwater-detention], duration: du.stormwater-1a}
+  attach: {after: fr.earthworks-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-1a"}
+- id: fr.flood-1a
+  label: "Flood works (house)"
+  stage: construction
+  systems: [site.flooding]
+  applies_when:
+    all:
+      - {work_action: {system: site.flooding, any_of: [new, alter]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {det: flood_hazard, is: true}
+  activities:
+    - {key: protect, label: "Construct flood protection", systems: [site.flooding], duration: du.flood-1a}
+  attach: {after: fr.earthworks-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.flood-1a"}
+- id: fr.slab-on-ground-1a
+  label: "Slab on ground (house)"
+  stage: construction
+  systems: [substructure.slab-on-ground]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.slab-on-ground, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: set-out, label: "Set out and excavate slab", systems: [substructure.slab-on-ground], duration: du.slab-setout-1a}
+    - {key: under-slab, label: "Under-slab sanitary drainage", systems: [hydraulic.sanitary], duration: du.under-slab-services-1a}
+    - {key: pour, label: "Reinforce and pour slab", systems: [substructure.slab-on-ground, structure.concrete], duration: du.slab-pour-1a}
+    - {key: cure, label: "Cure slab", systems: [substructure.slab-on-ground], duration: du.concrete-cure}
+  links:
+    - {from: set-out, to: under-slab, type: FS, lag: null}
+    - {from: under-slab, to: pour, type: FS, lag: null}
+    - {from: pour, to: cure, type: FS, lag: null}
+  attach: {after: fr.footings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-on-ground-1a"}
+- id: fr.frame-timber-1a
+  label: "Timber frame (house)"
+  stage: construction
+  systems: [structure.timber]
+  applies_when:
+    all:
+      - {work_action: {system: structure.timber, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: walls, label: "Stand wall frames", systems: [structure.timber], duration: du.frame-walls-1a}
+    - {key: roof, label: "Install roof trusses and bracing", systems: [structure.timber], duration: du.frame-roof-1a}
+  links:
+    - {from: walls, to: roof, type: FS, lag: null}
+  attach: {after: fr.slab-on-ground-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.frame-timber-1a"}
+- id: fr.masonry-1a
+  label: "Brick veneer (house)"
+  stage: construction
+  systems: [structure.masonry]
+  applies_when:
+    all:
+      - {work_action: {system: structure.masonry, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: lay, label: "Lay brick veneer", systems: [structure.masonry], duration: du.masonry-1a}
+  attach: {after: fr.frame-timber-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.masonry-1a"}
+- id: fr.roof-1a
+  label: "Roof cover (house)"
+  stage: construction
+  systems: [envelope.roof-coverings]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.roof-coverings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: sark, label: "Install sarking", systems: [envelope.roof-coverings], duration: du.roof-sark-1a}
+    - {key: cover, label: "Install roof cover", systems: [envelope.roof-coverings], duration: du.roof-cover-1a}
+  links:
+    - {from: sark, to: cover, type: FS, lag: null}
+  attach: {after: fr.frame-timber-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-1a"}
+- id: fr.external-walls-1a
+  label: "External walls (house)"
+  stage: construction
+  systems: [envelope.external-walls]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.external-walls, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: clad, label: "Wrap and clad external walls", systems: [envelope.external-walls], duration: du.external-walls-1a}
+  attach: {after: fr.frame-timber-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.external-walls-1a"}
+- id: fr.insulation-1a
+  label: "Insulation (house)"
+  stage: construction
+  systems: [envelope.thermal-insulation]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.thermal-insulation, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: insulate, label: "Install wall and ceiling insulation", systems: [envelope.thermal-insulation], duration: du.insulation-1a}
+  attach: {after: fr.frame-timber-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.insulation-1a"}
+- id: fr.windows-1a
+  label: "Windows and external doors (house)"
+  stage: construction
+  systems: [envelope.windows-doors]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.windows-doors, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Deliver windows and external doors", systems: [envelope.windows-doors], duration: du.windows-lead-1a}
+    - {key: install, label: "Install windows and external doors", systems: [envelope.windows-doors], duration: du.windows-install-1a}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.frame-timber-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.windows-1a"}
+- id: fr.bushfire-1a
+  label: "Bushfire construction (house)"
+  stage: construction
+  systems: [envelope.bushfire-construction]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.bushfire-construction, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {det: bushfire_prone_land, is: true}
+  activities:
+    - {key: screen, label: "Install bushfire construction measures", systems: [envelope.bushfire-construction], duration: du.bushfire-1a}
+  attach: {after: fr.external-walls-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.bushfire-1a"}
+- id: fr.roof-drainage-1a
+  label: "Roof drainage (house)"
+  stage: construction
+  systems: [hydraulic.roof-drainage]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.roof-drainage, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: gutters, label: "Install gutters and downpipes", systems: [hydraulic.roof-drainage], duration: du.roof-drainage-1a}
+  attach: {after: fr.roof-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-drainage-1a"}
+- id: fr.linings-1a
+  label: "Walls and linings (house)"
+  stage: construction
+  systems: [interiors.walls-linings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.walls-linings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: partitions, label: "Frame internal partitions", systems: [interiors.walls-linings], duration: du.partitions-1a}
+    - {key: sheet, label: "Sheet and set plasterboard", systems: [interiors.walls-linings], duration: du.sheet-1a}
+  links:
+    - {from: partitions, to: sheet, type: FS, lag: null}
+  attach: {after: fr.roof-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-1a"}
+- id: fr.ceilings-1a
+  label: "Ceilings (house)"
+  stage: construction
+  systems: [interiors.ceilings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.ceilings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: ceilings, label: "Install ceilings", systems: [interiors.ceilings], duration: du.ceilings-1a}
+  attach: {after: fr.linings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-1a"}
+- id: fr.wet-area-1a
+  label: "Wet-area waterproofing (house)"
+  stage: construction
+  systems: [interiors.wet-area-waterproofing]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.wet-area-waterproofing, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: membrane, label: "Waterproof wet areas", systems: [interiors.wet-area-waterproofing], duration: du.wet-area-1a}
+  attach: {after: fr.linings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-1a"}
+- id: fr.internal-doors-1a
+  label: "Internal doors (house)"
+  stage: construction
+  systems: [interiors.internal-doors]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.internal-doors, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: hang, label: "Hang internal doors", systems: [interiors.internal-doors], duration: du.internal-doors-1a}
+  attach: {after: fr.linings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.internal-doors-1a"}
+- id: fr.hydraulic-sanitary-1a
+  label: "Sanitary plumbing (house)"
+  stage: construction
+  systems: [hydraulic.sanitary]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.sanitary, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in above-slab sanitary plumbing", systems: [hydraulic.sanitary], duration: du.sanitary-rough-1a}
+    - {key: fit-off, label: "Fit off sanitary fixtures", systems: [hydraulic.sanitary], duration: du.sanitary-fit-1a}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-1a}
+  attach: {after: fr.slab-on-ground-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-1a"}
+- id: fr.hydraulic-cold-1a
+  label: "Cold water (house)"
+  stage: construction
+  systems: [hydraulic.cold-water]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.cold-water, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.cold-water], duration: du.cold-rough-1a}
+    - {key: fit-off, label: "Fit off", systems: [hydraulic.cold-water], duration: du.cold-fit-1a}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-1a}
+  attach: {after: fr.slab-on-ground-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-cold-1a"}
+- id: fr.hydraulic-hot-1a
+  label: "Hot water (house)"
+  stage: construction
+  systems: [hydraulic.hot-water]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.hot-water, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.hot-water], duration: du.hot-rough-1a}
+    - {key: fit-off, label: "Install hot-water unit", systems: [hydraulic.hot-water], duration: du.hot-fit-1a}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-1a}
+  attach: {after: fr.slab-on-ground-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-hot-1a"}
+- id: fr.gas-1a
+  label: "Gas (house)"
+  stage: construction
+  systems: [hydraulic.gas]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.gas, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pipe, label: "Install consumer gas piping", systems: [hydraulic.gas], duration: du.gas-1a}
+  attach: {after: fr.slab-on-ground-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.gas-1a"}
+- id: fr.electrical-1a
+  label: "Electrical wiring (house)"
+  stage: construction
+  systems: [electrical.cabling-wiring]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.cabling-wiring, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-1a}
+    - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-1a}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-1a}
+  attach: {after: fr.frame-timber-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-1a"}
+- id: fr.lighting-1a
+  label: "Lighting (house)"
+  stage: construction
+  systems: [electrical.lighting]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.lighting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: fit, label: "Install luminaires", systems: [electrical.lighting], duration: du.lighting-1a}
+  attach: {after: fr.linings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-1a"}
+- id: fr.switchboard-1a
+  label: "Switchboard (house)"
+  stage: construction
+  systems: [electrical.switchboards]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.switchboards, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: board, label: "Install the switchboard", systems: [electrical.switchboards], duration: du.switchboard-1a}
+  attach: {after: fr.frame-timber-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.switchboard-1a"}
+- id: fr.smoke-alarms-1a
+  label: "Smoke alarms (house)"
+  stage: construction
+  systems: [fire-active.smoke-alarms]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.smoke-alarms, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: alarms, label: "Install smoke alarms", systems: [fire-active.smoke-alarms], duration: du.smoke-alarms-1a}
+  attach: {after: fr.linings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.smoke-alarms-1a"}
+- id: fr.ac-1a
+  label: "Air-conditioning (house)"
+  stage: construction
+  systems: [mechanical.air-conditioning]
+  applies_when:
+    all:
+      - {work_action: {system: mechanical.air-conditioning, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: install, label: "Install air-conditioning", systems: [mechanical.air-conditioning], duration: du.ac-1a}
+  attach: {after: fr.linings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ac-1a"}
+- id: fr.tiling-1a
+  label: "Tiling (house)"
+  stage: construction
+  systems: [interiors.tiling]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.tiling, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: tile, label: "Tile wet areas", systems: [interiors.tiling], duration: du.tiling-1a}
+  attach: {after: fr.wet-area-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tiling-1a"}
+- id: fr.joinery-1a
+  label: "Joinery (house)"
+  stage: construction
+  systems: [interiors.joinery]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.joinery, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Manufacture joinery", systems: [interiors.joinery], duration: du.joinery-lead-1a}
+    - {key: install, label: "Install joinery", systems: [interiors.joinery], duration: du.joinery-install-1a}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.linings-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-1a"}
+- id: fr.painting-1a
+  label: "Painting (house)"
+  stage: construction
+  systems: [interiors.painting]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.painting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: paint, label: "Paint internally", systems: [interiors.painting], duration: du.painting-1a}
+  attach: {after: fr.joinery-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-1a"}
+- id: fr.floors-1a
+  label: "Floor finishes (house)"
+  stage: construction
+  systems: [interiors.floor-finishes]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.floor-finishes, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: lay, label: "Lay floor finishes", systems: [interiors.floor-finishes], duration: du.floors-1a}
+  attach: {after: fr.painting-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-1a"}
+- id: fr.landscape-1a
+  label: "Landscape (house)"
+  stage: construction
+  systems: [site.landscape]
+  applies_when:
+    all:
+      - {work_action: {system: site.landscape, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: landscape, label: "Pave, turf and plant", systems: [site.landscape], duration: du.landscape-1a}
+  attach: {after: fr.external-walls-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-1a"}
+- id: fr.linings-1a-reno
+  label: "Linings (house renovation)"
+  stage: construction
+  systems: [interiors.walls-linings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.walls-linings, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: reline, label: "Reline and set altered walls", systems: [interiors.walls-linings], duration: du.linings-1a-reno}
+  attach: {after: fr.strip-out-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-1a-reno"}
+- id: fr.wet-area-1a-reno
+  label: "Wet areas (house renovation)"
+  stage: construction
+  systems: [interiors.wet-area-waterproofing]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.wet-area-waterproofing, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: membrane, label: "Waterproof renovated wet areas", systems: [interiors.wet-area-waterproofing], duration: du.wet-area-1a-reno}
+  attach: {after: fr.linings-1a-reno}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-1a-reno"}
+- id: fr.hydraulic-1a-reno
+  label: "Sanitary alterations (house renovation)"
+  stage: construction
+  systems: [hydraulic.sanitary]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.sanitary, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.hydraulic-rough-reno}
+    - {key: fit-off, label: "Fit off", systems: [hydraulic.sanitary], duration: du.hydraulic-fit-reno}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-reno}
+  attach: {after: fr.strip-out-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-1a-reno"}
+- id: fr.water-1a-reno
+  label: "Water alterations (house renovation)"
+  stage: construction
+  systems: [hydraulic.cold-water]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.cold-water, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: alter, label: "Alter cold-water pipework", systems: [hydraulic.cold-water], duration: du.water-1a-reno}
+  attach: {after: fr.strip-out-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.water-1a-reno"}
+- id: fr.electrical-1a-reno
+  label: "Electrical alterations (house renovation)"
+  stage: construction
+  systems: [electrical.cabling-wiring]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.cabling-wiring, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-reno}
+    - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-reno}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-reno}
+  attach: {after: fr.strip-out-1a}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-1a-reno"}
+- id: fr.joinery-1a-reno
+  label: "Joinery (house renovation)"
+  stage: construction
+  systems: [interiors.joinery]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.joinery, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: install, label: "Manufacture and install replacement joinery", systems: [interiors.joinery], duration: du.joinery-1a-reno}
+  attach: {after: fr.linings-1a-reno}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-1a-reno"}
+- id: fr.painting-1a-reno
+  label: "Painting (house renovation)"
+  stage: construction
+  systems: [interiors.painting]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.painting, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: paint, label: "Paint renovated rooms", systems: [interiors.painting], duration: du.painting-1a-reno}
+  attach: {after: fr.joinery-1a-reno}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-1a-reno"}
+- id: fr.floors-1a-reno
+  label: "Floors (house renovation)"
+  stage: construction
+  systems: [interiors.floor-finishes]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.floor-finishes, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: lay, label: "Lay floor finishes to renovated rooms", systems: [interiors.floor-finishes], duration: du.floors-1a-reno}
+  attach: {after: fr.painting-1a-reno}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-1a-reno"}
+- id: fr.demolition-2
+  label: "Demolition (apartments)"
+  stage: construction
+  systems: [site.demolition]
+  applies_when:
+    all:
+      - {work_action: {system: site.demolition, any_of: [remove]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: demolish, label: "Demolish existing structures and clear", systems: [site.demolition], duration: du.demolition-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-2"}
+- id: fr.earthworks-2
+  label: "Earthworks (apartments)"
+  stage: construction
+  systems: [site.earthworks]
+  applies_when:
+    all:
+      - {work_action: {system: site.earthworks, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: cut, label: "Bulk earthworks", systems: [site.earthworks], duration: du.earthworks-2}
+  attach: {after: fr.demolition-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-2"}
+- id: fr.underpinning-2
+  label: "Underpinning (apartments)"
+  stage: construction
+  systems: [substructure.underpinning]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.underpinning, any_of: [new, alter, repair]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: underpin, label: "Underpin adjoining structures", systems: [substructure.underpinning], duration: du.underpinning-2}
+  attach: {after: fr.earthworks-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.underpinning-2"}
+- id: fr.piles-2
+  label: "Piles (apartments)"
+  stage: construction
+  systems: [substructure.piles]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.piles, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: establish, label: "Establish the piling platform", systems: [substructure.piles], duration: du.piles-platform-2}
+    - {key: install, label: "Install piles", systems: [substructure.piles], duration: du.piles-install-2}
+  links:
+    - {from: establish, to: install, type: FS, lag: null}
+  attach: {after: fr.earthworks-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.piles-2"}
+- id: fr.basement-2
+  label: "Basement retention (apartments)"
+  stage: construction
+  systems: [substructure.basement-retention]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.basement-retention, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: shoring, label: "Install retention shoring", systems: [substructure.basement-retention], duration: du.basement-shoring-2}
+    - {key: excavate, label: "Excavate the basement", systems: [substructure.basement-retention], duration: du.basement-excavate-2}
+    - {key: anchors, label: "Install anchors or props", systems: [substructure.basement-retention], duration: du.basement-anchors-2}
+    - {key: slab, label: "Pour the basement slab", systems: [substructure.basement-retention], duration: du.basement-slab-2}
+    - {key: cure, label: "Cure the basement slab", systems: [substructure.basement-retention], duration: du.concrete-cure}
+  links:
+    - {from: shoring, to: excavate, type: FS, lag: null}
+    - {from: excavate, to: anchors, type: FS, lag: null}
+    - {from: anchors, to: slab, type: FS, lag: null}
+    - {from: slab, to: cure, type: FS, lag: null}
+  attach: {after: fr.piles-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.basement-2"}
+- id: fr.footings-2
+  label: "Footings (apartments)"
+  stage: construction
+  systems: [substructure.footings]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.footings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pour, label: "Excavate and pour footings", systems: [substructure.footings], duration: du.footings-2}
+  attach: {after: fr.earthworks-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-2"}
+- id: fr.slab-2
+  label: "Slab on ground (apartments)"
+  stage: construction
+  systems: [substructure.slab-on-ground]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.slab-on-ground, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pour, label: "Reinforce and pour the ground slab", systems: [substructure.slab-on-ground], duration: du.slab-2}
+  attach: {after: fr.footings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-2"}
+- id: fr.lift-shafts-2
+  label: "Lift shafts and pits (apartments)"
+  stage: construction
+  systems: [vertical-transport.lift-shafts-pits]
+  applies_when:
+    all:
+      - {work_action: {system: vertical-transport.lift-shafts-pits, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pits, label: "Form lift pits", systems: [vertical-transport.lift-shafts-pits], duration: du.lift-pits-2}
+    - {key: shafts, label: "Build lift shafts", systems: [vertical-transport.lift-shafts-pits], duration: du.lift-shafts-2}
+  links:
+    - {from: pits, to: shafts, type: FS, lag: null}
+  attach: {after: fr.basement-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lift-shafts-2"}
+- id: fr.structure-concrete-2
+  label: "Concrete structure (apartments)"
+  stage: construction
+  systems: [structure.concrete]
+  applies_when:
+    all:
+      - {work_action: {system: structure.concrete, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: cycle, label: "Floor cycle: columns, form, reinforce and pour", systems: [structure.concrete], duration: du.floor-cycle-2}
+    - {key: roof, label: "Roof slab and plant plinths", systems: [structure.concrete], duration: du.structure-roof-2}
+  links:
+    - {from: cycle, to: roof, type: FS, lag: null}
+  attach: {after: fr.basement-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.structure-concrete-2"}
+- id: fr.precast-2
+  label: "Precast (apartments)"
+  stage: construction
+  systems: [structure.precast]
+  applies_when:
+    all:
+      - {work_action: {system: structure.precast, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Manufacture precast", systems: [structure.precast], duration: du.precast-lead-2}
+    - {key: install, label: "Erect precast", systems: [structure.precast], duration: du.precast-install-2}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.precast-2"}
+- id: fr.stairs-2
+  label: "Stairs (apartments)"
+  stage: construction
+  systems: [access-egress.stairs-and-ramps]
+  applies_when:
+    all:
+      - {work_action: {system: access-egress.stairs-and-ramps, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: stairs, label: "Form stairs and ramps", systems: [access-egress.stairs-and-ramps], duration: du.stairs-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stairs-2"}
+- id: fr.roof-2
+  label: "Roof (apartments)"
+  stage: construction
+  systems: [envelope.roof-coverings]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.roof-coverings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: membrane, label: "Install the roof membrane", systems: [envelope.roof-coverings], duration: du.roof-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-2"}
+- id: fr.facade-2
+  label: "Facade (apartments)"
+  stage: construction
+  systems: [envelope.external-walls]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.external-walls, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: facade, label: "Install the facade", systems: [envelope.external-walls], duration: du.facade-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.facade-2"}
+- id: fr.windows-2
+  label: "Windows (apartments)"
+  stage: construction
+  systems: [envelope.windows-doors]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.windows-doors, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [envelope.windows-doors], duration: du.windows-lead-2}
+    - {key: install, label: "Install", systems: [envelope.windows-doors], duration: du.windows-install-2}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.windows-2"}
+- id: fr.balcony-waterproof-2
+  label: "Balcony waterproofing (apartments)"
+  stage: construction
+  systems: [envelope.external-waterproofing]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.external-waterproofing, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: membrane, label: "Waterproof balconies and the podium", systems: [envelope.external-waterproofing], duration: du.balcony-waterproof-2}
+  attach: {after: fr.facade-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.balcony-waterproof-2"}
+- id: fr.insulation-2
+  label: "Insulation (apartments)"
+  stage: construction
+  systems: [envelope.thermal-insulation]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.thermal-insulation, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: insulate, label: "Install facade and roof insulation", systems: [envelope.thermal-insulation], duration: du.insulation-2}
+  attach: {after: fr.facade-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.insulation-2"}
+- id: fr.roof-drainage-2
+  label: "Roof drainage (apartments)"
+  stage: construction
+  systems: [hydraulic.roof-drainage]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.roof-drainage, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: drains, label: "Install roof drainage", systems: [hydraulic.roof-drainage], duration: du.roof-drainage-2}
+  attach: {after: fr.roof-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-drainage-2"}
+- id: fr.linings-2
+  label: "Walls and linings (apartments)"
+  stage: construction
+  systems: [interiors.walls-linings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.walls-linings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: line, label: "Frame and line internal walls", systems: [interiors.walls-linings], duration: du.linings-2}
+  attach: {after: fr.facade-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-2"}
+- id: fr.ceilings-2
+  label: "Ceilings (apartments)"
+  stage: construction
+  systems: [interiors.ceilings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.ceilings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: ceilings, label: "Install ceilings", systems: [interiors.ceilings], duration: du.ceilings-2}
+  attach: {after: fr.linings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-2"}
+- id: fr.wet-area-2
+  label: "Wet-area waterproofing (apartments)"
+  stage: construction
+  systems: [interiors.wet-area-waterproofing]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.wet-area-waterproofing, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: membrane, label: "Waterproof apartment wet areas", systems: [interiors.wet-area-waterproofing], duration: du.wet-area-2}
+  attach: {after: fr.linings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-2"}
+- id: fr.internal-doors-2
+  label: "Internal doors (apartments)"
+  stage: construction
+  systems: [interiors.internal-doors]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.internal-doors, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: hang, label: "Hang apartment doors", systems: [interiors.internal-doors], duration: du.internal-doors-2}
+  attach: {after: fr.linings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.internal-doors-2"}
+- id: fr.hydraulic-sanitary-2
+  label: "Sanitary plumbing (apartments)"
+  stage: construction
+  systems: [hydraulic.sanitary]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.sanitary, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-2}
+    - {key: fit-off, label: "Fit off", systems: [hydraulic.sanitary], duration: du.sanitary-fit-2}
+    - {key: commission, label: "Commission sanitary systems", systems: [hydraulic.sanitary], duration: du.sanitary-commission-2}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-2}
+    - {from: fit-off, to: commission, type: FS, lag: null}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-2"}
+- id: fr.hydraulic-cold-2
+  label: "Cold water (apartments)"
+  stage: construction
+  systems: [hydraulic.cold-water]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.cold-water, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.cold-water], duration: du.cold-rough-2}
+    - {key: fit-off, label: "Fit off", systems: [hydraulic.cold-water], duration: du.cold-fit-2}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-cold-2"}
+- id: fr.hydraulic-hot-2
+  label: "Hot water (apartments)"
+  stage: construction
+  systems: [hydraulic.hot-water]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.hot-water, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Deliver hot-water plant", systems: [hydraulic.hot-water], duration: du.hot-plant-lead-2}
+    - {key: fit-off, label: "Fit off hot water", systems: [hydraulic.hot-water], duration: du.hot-fit-2}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: null}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-hot-2"}
+- id: fr.electrical-2
+  label: "Electrical wiring (apartments)"
+  stage: construction
+  systems: [electrical.cabling-wiring]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.cabling-wiring, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-2}
+    - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-2}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-2"}
+- id: fr.lighting-2
+  label: "Lighting (apartments)"
+  stage: construction
+  systems: [electrical.lighting]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.lighting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: fit, label: "Install luminaires", systems: [electrical.lighting], duration: du.lighting-2}
+  attach: {after: fr.linings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-2"}
+- id: fr.sprinklers-2
+  label: "Sprinklers (apartments)"
+  stage: construction
+  systems: [fire-active.sprinklers]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.sprinklers, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [fire-active.sprinklers], duration: du.sprinklers-rough-2}
+    - {key: fit-off, label: "Fit off and commission sprinklers", systems: [fire-active.sprinklers], duration: du.sprinklers-fit-2}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-2"}
+- id: fr.hydrants-2
+  label: "Hydrants (apartments)"
+  stage: construction
+  systems: [fire-active.hydrants]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.hydrants, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: hydrants, label: "Install hydrants and boosters", systems: [fire-active.hydrants], duration: du.hydrants-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydrants-2"}
+- id: fr.detection-2
+  label: "Detection (apartments)"
+  stage: construction
+  systems: [fire-active.detection]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.detection, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: detect, label: "Install detection and warning", systems: [fire-active.detection], duration: du.detection-2}
+  attach: {after: fr.structure-concrete-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.detection-2"}
+- id: fr.smoke-alarms-2
+  label: "Smoke alarms (apartments)"
+  stage: construction
+  systems: [fire-active.smoke-alarms]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.smoke-alarms, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: alarms, label: "Install apartment smoke alarms", systems: [fire-active.smoke-alarms], duration: du.smoke-alarms-2}
+  attach: {after: fr.linings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.smoke-alarms-2"}
+- id: fr.ac-2
+  label: "Air-conditioning (apartments)"
+  stage: construction
+  systems: [mechanical.air-conditioning]
+  applies_when:
+    all:
+      - {work_action: {system: mechanical.air-conditioning, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Deliver air-conditioning plant", systems: [mechanical.air-conditioning], duration: du.ac-plant-lead-2}
+    - {key: install, label: "Install air-conditioning", systems: [mechanical.air-conditioning], duration: du.ac-install-2}
+    - {key: commission, label: "Commission air-conditioning", systems: [mechanical.air-conditioning], duration: du.ac-commission-2}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+    - {from: install, to: commission, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ac-2"}
+- id: fr.carpark-vent-2
+  label: "Carpark ventilation (apartments)"
+  stage: construction
+  systems: [mechanical.carpark-ventilation]
+  applies_when:
+    all:
+      - {work_action: {system: mechanical.carpark-ventilation, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: vent, label: "Install carpark ventilation", systems: [mechanical.carpark-ventilation], duration: du.carpark-vent-2}
+  attach: {after: fr.basement-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.carpark-vent-2"}
+- id: fr.comms-2
+  label: "Communications (apartments)"
+  stage: construction
+  systems: [comms-security.structured-cabling]
+  applies_when:
+    all:
+      - {work_action: {system: comms-security.structured-cabling, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: cable, label: "Install communications cabling", systems: [comms-security.structured-cabling], duration: du.comms-2}
+  attach: {after: fr.linings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.comms-2"}
+- id: fr.tiling-2
+  label: "Tiling (apartments)"
+  stage: construction
+  systems: [interiors.tiling]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.tiling, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: tile, label: "Tile apartment wet areas", systems: [interiors.tiling], duration: du.tiling-2}
+  attach: {after: fr.wet-area-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tiling-2"}
+- id: fr.joinery-2
+  label: "Joinery (apartments)"
+  stage: construction
+  systems: [interiors.joinery]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.joinery, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [interiors.joinery], duration: du.joinery-lead-2}
+    - {key: install, label: "Install", systems: [interiors.joinery], duration: du.joinery-install-2}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.linings-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-2"}
+- id: fr.painting-2
+  label: "Painting (apartments)"
+  stage: construction
+  systems: [interiors.painting]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.painting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: paint, label: "Paint apartments and common areas", systems: [interiors.painting], duration: du.painting-2}
+  attach: {after: fr.joinery-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-2"}
+- id: fr.floors-2
+  label: "Floor finishes (apartments)"
+  stage: construction
+  systems: [interiors.floor-finishes]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.floor-finishes, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: lay, label: "Lay apartment floor finishes", systems: [interiors.floor-finishes], duration: du.floors-2}
+  attach: {after: fr.painting-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-2"}
+- id: fr.landscape-2
+  label: "Landscape (apartments)"
+  stage: construction
+  systems: [site.landscape]
+  applies_when:
+    all:
+      - {work_action: {system: site.landscape, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: landscape, label: "Landscape the ground and podium", systems: [site.landscape], duration: du.landscape-2}
+  attach: {after: fr.facade-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-2"}
+- id: fr.stormwater-2
+  label: "Stormwater (apartments)"
+  stage: construction
+  systems: [site.stormwater-detention]
+  applies_when:
+    all:
+      - {work_action: {system: site.stormwater-detention, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: detention, label: "Install on-site detention and stormwater", systems: [site.stormwater-detention], duration: du.stormwater-2}
+  attach: {after: fr.earthworks-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-2"}
+- id: fr.flood-2
+  label: "Flood works (apartments)"
+  stage: construction
+  systems: [site.flooding]
+  applies_when:
+    all:
+      - {work_action: {system: site.flooding, any_of: [new, alter]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {det: flood_hazard, is: true}
+  activities:
+    - {key: protect, label: "Construct flood protection", systems: [site.flooding], duration: du.flood-2}
+  attach: {after: fr.earthworks-2}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.flood-2"}
+- id: fr.demolition-7b
+  label: "Demolition (warehouse)"
+  stage: construction
+  systems: [site.demolition]
+  applies_when:
+    all:
+      - {work_action: {system: site.demolition, any_of: [remove]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: demolish, label: "Demolish and clear the pad", systems: [site.demolition], duration: du.demolition-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-7b"}
+- id: fr.earthworks-7b
+  label: "Earthworks (warehouse)"
+  stage: construction
+  systems: [site.earthworks]
+  applies_when:
+    all:
+      - {work_action: {system: site.earthworks, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pad, label: "Prepare the warehouse pad", systems: [site.earthworks], duration: du.earthworks-7b}
+  attach: {after: fr.demolition-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-7b"}
+- id: fr.footings-7b
+  label: "Footings (warehouse)"
+  stage: construction
+  systems: [substructure.footings]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.footings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pour, label: "Excavate and pour pad footings", systems: [substructure.footings], duration: du.footings-7b}
+  attach: {after: fr.earthworks-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-7b"}
+- id: fr.steel-7b
+  label: "Steel portal frame (warehouse)"
+  stage: construction
+  systems: [structure.steel]
+  applies_when:
+    all:
+      - {work_action: {system: structure.steel, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Fabricate the portal frame", systems: [structure.steel], duration: du.steel-lead-7b}
+    - {key: install, label: "Erect the portal frame", systems: [structure.steel], duration: du.steel-erect-7b}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.footings-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.steel-7b"}
+- id: fr.roof-7b
+  label: "Roof (warehouse)"
+  stage: construction
+  systems: [envelope.roof-coverings]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.roof-coverings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: roof, label: "Install the metal roof", systems: [envelope.roof-coverings], duration: du.roof-7b}
+  attach: {after: fr.steel-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-7b"}
+- id: fr.cladding-7b
+  label: "Wall cladding (warehouse)"
+  stage: construction
+  systems: [envelope.external-walls]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.external-walls, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: clad, label: "Install wall cladding", systems: [envelope.external-walls], duration: du.cladding-7b}
+  attach: {after: fr.steel-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.cladding-7b"}
+- id: fr.slab-7b
+  label: "Slab on ground (warehouse)"
+  stage: construction
+  systems: [substructure.slab-on-ground]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.slab-on-ground, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: prepare, label: "Prepare the subgrade and membrane", systems: [substructure.slab-on-ground], duration: du.slab-prepare-7b}
+    - {key: pour, label: "Pour and finish the slab", systems: [substructure.slab-on-ground], duration: du.slab-pour-7b}
+    - {key: cure, label: "Cure the slab", systems: [substructure.slab-on-ground], duration: du.concrete-cure}
+  links:
+    - {from: prepare, to: pour, type: FS, lag: null}
+    - {from: pour, to: cure, type: FS, lag: null}
+  attach: {after: fr.roof-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-7b"}
+- id: fr.vehicle-doors-7b
+  label: "Vehicle doors (warehouse)"
+  stage: construction
+  systems: [envelope.vehicle-doors]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.vehicle-doors, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [envelope.vehicle-doors], duration: du.vehicle-doors-lead-7b}
+    - {key: install, label: "Install", systems: [envelope.vehicle-doors], duration: du.vehicle-doors-install-7b}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.cladding-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.vehicle-doors-7b"}
+- id: fr.hydraulic-sanitary-7b
+  label: "Amenities plumbing (warehouse)"
+  stage: construction
+  systems: [hydraulic.sanitary]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.sanitary, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: amenities, label: "Rough-in and fit off amenities", systems: [hydraulic.sanitary], duration: du.sanitary-7b}
+  attach: {after: fr.slab-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-7b"}
+- id: fr.electrical-7b
+  label: "Electrical (warehouse)"
+  stage: construction
+  systems: [electrical.cabling-wiring]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.cabling-wiring, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: wire, label: "Install warehouse power cabling", systems: [electrical.cabling-wiring], duration: du.electrical-7b}
+  attach: {after: fr.steel-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-7b"}
+- id: fr.lighting-7b
+  label: "High-bay lighting (warehouse)"
+  stage: construction
+  systems: [electrical.lighting]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.lighting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: lights, label: "Install high-bay lighting", systems: [electrical.lighting], duration: du.lighting-7b}
+  attach: {after: fr.cladding-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-7b"}
+- id: fr.sprinklers-7b
+  label: "Sprinklers (warehouse)"
+  stage: construction
+  systems: [fire-active.sprinklers]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.sprinklers, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: sprinklers, label: "Install and commission warehouse sprinklers", systems: [fire-active.sprinklers], duration: du.sprinklers-7b}
+  attach: {after: fr.cladding-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-7b"}
+- id: fr.hydrants-7b
+  label: "Hydrants (warehouse)"
+  stage: construction
+  systems: [fire-active.hydrants]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.hydrants, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: hydrants, label: "Install hydrants", systems: [fire-active.hydrants], duration: du.hydrants-7b}
+  attach: {after: fr.slab-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydrants-7b"}
+- id: fr.stormwater-7b
+  label: "Stormwater (warehouse)"
+  stage: construction
+  systems: [site.stormwater-detention]
+  applies_when:
+    all:
+      - {work_action: {system: site.stormwater-detention, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: detention, label: "Install stormwater detention", systems: [site.stormwater-detention], duration: du.stormwater-7b}
+  attach: {after: fr.earthworks-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-7b"}
+- id: fr.landscape-7b
+  label: "Landscape (warehouse)"
+  stage: construction
+  systems: [site.landscape]
+  applies_when:
+    all:
+      - {work_action: {system: site.landscape, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: landscape, label: "Landscape the warehouse frontage", systems: [site.landscape], duration: du.landscape-7b}
+  attach: {after: fr.cladding-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-7b"}
+- id: fr.painting-7b
+  label: "Painting (warehouse)"
+  stage: construction
+  systems: [interiors.painting]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.painting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: paint, label: "Paint the office and mark the floor", systems: [interiors.painting], duration: du.painting-7b}
+  attach: {after: fr.slab-7b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-7b"}
+- id: fr.demolition-9b
+  label: "Demolition (school)"
+  stage: construction
+  systems: [site.demolition]
+  applies_when:
+    all:
+      - {work_action: {system: site.demolition, any_of: [remove]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: demolish, label: "Demolish and clear", systems: [site.demolition], duration: du.demolition-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-9b"}
+- id: fr.earthworks-9b
+  label: "Earthworks (school)"
+  stage: construction
+  systems: [site.earthworks]
+  applies_when:
+    all:
+      - {work_action: {system: site.earthworks, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: cut, label: "Bulk earthworks", systems: [site.earthworks], duration: du.earthworks-9b}
+  attach: {after: fr.demolition-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-9b"}
+- id: fr.piles-9b
+  label: "Piles (school)"
+  stage: construction
+  systems: [substructure.piles]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.piles, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: install, label: "Install piles", systems: [substructure.piles], duration: du.piles-9b}
+  attach: {after: fr.earthworks-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.piles-9b"}
+- id: fr.footings-9b
+  label: "Footings (school)"
+  stage: construction
+  systems: [substructure.footings]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.footings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pour, label: "Excavate and pour footings", systems: [substructure.footings], duration: du.footings-9b}
+  attach: {after: fr.earthworks-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-9b"}
+- id: fr.slab-9b
+  label: "Slab on ground (school)"
+  stage: construction
+  systems: [substructure.slab-on-ground]
+  applies_when:
+    all:
+      - {work_action: {system: substructure.slab-on-ground, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: pour, label: "Reinforce and pour the ground slab", systems: [substructure.slab-on-ground], duration: du.slab-9b}
+    - {key: cure, label: "Cure the slab", systems: [substructure.slab-on-ground], duration: du.concrete-cure}
+  links:
+    - {from: pour, to: cure, type: FS, lag: null}
+  attach: {after: fr.footings-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-9b"}
+- id: fr.structure-concrete-9b
+  label: "Concrete structure (school)"
+  stage: construction
+  systems: [structure.concrete]
+  applies_when:
+    all:
+      - {work_action: {system: structure.concrete, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: frame, label: "Construct the concrete frame", systems: [structure.concrete], duration: du.structure-9b}
+  attach: {after: fr.slab-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.structure-concrete-9b"}
+- id: fr.steel-9b
+  label: "Steel structure (school)"
+  stage: construction
+  systems: [structure.steel]
+  applies_when:
+    all:
+      - {work_action: {system: structure.steel, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [structure.steel], duration: du.steel-lead-9b}
+    - {key: install, label: "Install", systems: [structure.steel], duration: du.steel-erect-9b}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.footings-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.steel-9b"}
+- id: fr.roof-9b
+  label: "Roof (school)"
+  stage: construction
+  systems: [envelope.roof-coverings]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.roof-coverings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: roof, label: "Install the roof", systems: [envelope.roof-coverings], duration: du.roof-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-9b"}
+- id: fr.external-walls-9b
+  label: "External walls (school)"
+  stage: construction
+  systems: [envelope.external-walls]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.external-walls, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: walls, label: "Construct external walls", systems: [envelope.external-walls], duration: du.external-walls-9b}
+  attach: {after: fr.roof-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.external-walls-9b"}
+- id: fr.windows-9b
+  label: "Windows (school)"
+  stage: construction
+  systems: [envelope.windows-doors]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.windows-doors, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [envelope.windows-doors], duration: du.windows-lead-9b}
+    - {key: install, label: "Install", systems: [envelope.windows-doors], duration: du.windows-install-9b}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.external-walls-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.windows-9b"}
+- id: fr.bushfire-9b
+  label: "Bushfire construction (school)"
+  stage: construction
+  systems: [envelope.bushfire-construction]
+  applies_when:
+    all:
+      - {work_action: {system: envelope.bushfire-construction, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {det: bushfire_prone_land, is: true}
+  activities:
+    - {key: screen, label: "Install bushfire construction measures", systems: [envelope.bushfire-construction], duration: du.bushfire-9b}
+  attach: {after: fr.external-walls-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.bushfire-9b"}
+- id: fr.stairs-9b
+  label: "Stairs (school)"
+  stage: construction
+  systems: [access-egress.stairs-and-ramps]
+  applies_when:
+    all:
+      - {work_action: {system: access-egress.stairs-and-ramps, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: stairs, label: "Form stairs and ramps", systems: [access-egress.stairs-and-ramps], duration: du.stairs-9b}
+  attach: {after: fr.roof-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stairs-9b"}
+- id: fr.linings-9b
+  label: "Walls and linings (school)"
+  stage: construction
+  systems: [interiors.walls-linings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.walls-linings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: line, label: "Frame and line internal walls", systems: [interiors.walls-linings], duration: du.linings-9b}
+  attach: {after: fr.external-walls-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-9b"}
+- id: fr.ceilings-9b
+  label: "Ceilings (school)"
+  stage: construction
+  systems: [interiors.ceilings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.ceilings, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: ceilings, label: "Install ceilings", systems: [interiors.ceilings], duration: du.ceilings-9b}
+  attach: {after: fr.linings-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-9b"}
+- id: fr.wet-area-9b
+  label: "Wet areas (school)"
+  stage: construction
+  systems: [interiors.wet-area-waterproofing]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.wet-area-waterproofing, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: membrane, label: "Waterproof amenities", systems: [interiors.wet-area-waterproofing], duration: du.wet-area-9b}
+  attach: {after: fr.linings-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-9b"}
+- id: fr.joinery-9b
+  label: "Joinery (school)"
+  stage: construction
+  systems: [interiors.joinery]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.joinery, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: install, label: "Manufacture and install joinery", systems: [interiors.joinery], duration: du.joinery-9b}
+  attach: {after: fr.linings-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-9b"}
+- id: fr.painting-9b
+  label: "Painting (school)"
+  stage: construction
+  systems: [interiors.painting]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.painting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: paint, label: "Paint teaching spaces", systems: [interiors.painting], duration: du.painting-9b}
+  attach: {after: fr.joinery-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-9b"}
+- id: fr.floors-9b
+  label: "Floor finishes (school)"
+  stage: construction
+  systems: [interiors.floor-finishes]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.floor-finishes, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: lay, label: "Lay floor finishes", systems: [interiors.floor-finishes], duration: du.floors-9b}
+  attach: {after: fr.painting-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-9b"}
+- id: fr.hydraulic-sanitary-9b
+  label: "Sanitary plumbing (school)"
+  stage: construction
+  systems: [hydraulic.sanitary]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.sanitary, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-9b}
+    - {key: fit-off, label: "Fit off", systems: [hydraulic.sanitary], duration: du.sanitary-fit-9b}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-9b}
+  attach: {after: fr.slab-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-9b"}
+- id: fr.electrical-9b
+  label: "Electrical (school)"
+  stage: construction
+  systems: [electrical.cabling-wiring]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.cabling-wiring, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-9b}
+    - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-9b}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-9b}
+  attach: {after: fr.structure-concrete-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-9b"}
+- id: fr.lighting-9b
+  label: "Lighting (school)"
+  stage: construction
+  systems: [electrical.lighting]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.lighting, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: fit, label: "Install luminaires", systems: [electrical.lighting], duration: du.lighting-9b}
+  attach: {after: fr.ceilings-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-9b"}
+- id: fr.ac-9b
+  label: "Air-conditioning (school)"
+  stage: construction
+  systems: [mechanical.air-conditioning]
+  applies_when:
+    all:
+      - {work_action: {system: mechanical.air-conditioning, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [mechanical.air-conditioning], duration: du.ac-lead-9b}
+    - {key: install, label: "Install", systems: [mechanical.air-conditioning], duration: du.ac-install-9b}
+    - {key: commission, label: "Commission air-conditioning", systems: [mechanical.air-conditioning], duration: du.ac-commission-9b}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+    - {from: install, to: commission, type: FS, lag: null}
+  attach: {after: fr.slab-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ac-9b"}
+- id: fr.sprinklers-9b
+  label: "Sprinklers (school)"
+  stage: construction
+  systems: [fire-active.sprinklers]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.sprinklers, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: sprinklers, label: "Install and commission sprinklers", systems: [fire-active.sprinklers], duration: du.sprinklers-9b}
+  attach: {after: fr.roof-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-9b"}
+- id: fr.detection-9b
+  label: "Detection (school)"
+  stage: construction
+  systems: [fire-active.detection]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.detection, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: detect, label: "Install detection and warning", systems: [fire-active.detection], duration: du.detection-9b}
+  attach: {after: fr.roof-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.detection-9b"}
+- id: fr.comms-9b
+  label: "Communications (school)"
+  stage: construction
+  systems: [comms-security.structured-cabling]
+  applies_when:
+    all:
+      - {work_action: {system: comms-security.structured-cabling, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: cable, label: "Install structured cabling", systems: [comms-security.structured-cabling], duration: du.comms-9b}
+  attach: {after: fr.linings-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.comms-9b"}
+- id: fr.landscape-9b
+  label: "Landscape (school)"
+  stage: construction
+  systems: [site.landscape]
+  applies_when:
+    all:
+      - {work_action: {system: site.landscape, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: landscape, label: "Landscape play areas and paths", systems: [site.landscape], duration: du.landscape-9b}
+  attach: {after: fr.external-walls-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-9b"}
+- id: fr.stormwater-9b
+  label: "Stormwater (school)"
+  stage: construction
+  systems: [site.stormwater-detention]
+  applies_when:
+    all:
+      - {work_action: {system: site.stormwater-detention, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: detention, label: "Install stormwater detention", systems: [site.stormwater-detention], duration: du.stormwater-9b}
+  attach: {after: fr.earthworks-9b}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-9b"}
+- id: fr.strip-out-fitout
+  label: "Strip-out (fit-out)"
+  stage: construction
+  systems: [site.demolition]
+  applies_when:
+    all:
+      - {work_action: {system: site.demolition, any_of: [remove]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: isolate, label: "Isolate services and protect adjacent areas", systems: [site.demolition], duration: du.strip-isolate-fitout}
+    - {key: strip, label: "Soft-strip partitions, ceilings and services", systems: [site.demolition], duration: du.strip-fitout}
+    - {key: makegood, label: "Make good retained structure and services", systems: [site.demolition], duration: du.makegood-fitout}
+  links:
+    - {from: isolate, to: strip, type: FS, lag: null}
+    - {from: strip, to: makegood, type: FS, lag: null}
+  attach: {after: fr.occupied-protection}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.strip-out-fitout"}
+- id: fr.structure-alterations
+  label: "Structural alterations"
+  stage: construction
+  systems: [structure.alterations]
+  applies_when:
+    all:
+      - {work_action: {system: structure.alterations, any_of: [alter, repair, upgrade]}}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: alter, label: "Alter and protect retained structure", systems: [structure.alterations], duration: du.structure-alterations}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.structure-alterations"}
+- id: fr.partitions-fitout
+  label: "Partitions (fit-out)"
+  stage: construction
+  systems: [interiors.walls-linings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.walls-linings, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: frame, label: "Frame and line partitions", systems: [interiors.walls-linings], duration: du.partitions-fitout}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.partitions-fitout"}
+- id: fr.ceilings-fitout
+  label: "Ceilings (fit-out)"
+  stage: construction
+  systems: [interiors.ceilings]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.ceilings, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: ceilings, label: "Install ceilings", systems: [interiors.ceilings], duration: du.ceilings-fitout}
+  attach: {after: fr.partitions-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-fitout"}
+- id: fr.wet-area-fitout
+  label: "Wet areas (fit-out)"
+  stage: construction
+  systems: [interiors.wet-area-waterproofing]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.wet-area-waterproofing, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: membrane, label: "Waterproof amenities", systems: [interiors.wet-area-waterproofing], duration: du.wet-area-fitout}
+  attach: {after: fr.partitions-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-fitout"}
+- id: fr.internal-doors-fitout
+  label: "Doors (fit-out)"
+  stage: construction
+  systems: [interiors.internal-doors]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.internal-doors, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: hang, label: "Hang doors", systems: [interiors.internal-doors], duration: du.internal-doors-fitout}
+  attach: {after: fr.partitions-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.internal-doors-fitout"}
+- id: fr.hydraulic-sanitary-fitout
+  label: "Sanitary alterations (fit-out)"
+  stage: construction
+  systems: [hydraulic.sanitary]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.sanitary, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-fitout}
+    - {key: fit-off, label: "Fit off", systems: [hydraulic.sanitary], duration: du.sanitary-fit-fitout}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-fitout}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-fitout"}
+- id: fr.hydraulic-cold-fitout
+  label: "Cold-water alterations (fit-out)"
+  stage: construction
+  systems: [hydraulic.cold-water]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.cold-water, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: alter, label: "Alter cold water", systems: [hydraulic.cold-water], duration: du.cold-fitout}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-cold-fitout"}
+- id: fr.hydraulic-hot-fitout
+  label: "Hot-water alterations (fit-out)"
+  stage: construction
+  systems: [hydraulic.hot-water]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.hot-water, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: unit, label: "Install or alter the local hot-water unit", systems: [hydraulic.hot-water], duration: du.hot-fitout}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-hot-fitout"}
+- id: fr.electrical-fitout
+  label: "Electrical alterations (fit-out)"
+  stage: construction
+  systems: [electrical.cabling-wiring]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.cabling-wiring, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-fitout}
+    - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-fitout}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-fitout}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-fitout"}
+- id: fr.lighting-fitout
+  label: "Lighting (fit-out)"
+  stage: construction
+  systems: [electrical.lighting]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.lighting, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: fit, label: "Install luminaires", systems: [electrical.lighting], duration: du.lighting-fitout}
+  attach: {after: fr.ceilings-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-fitout"}
+- id: fr.mechanical-fitout
+  label: "Air-conditioning alterations (fit-out)"
+  stage: construction
+  systems: [mechanical.air-conditioning]
+  applies_when:
+    all:
+      - {work_action: {system: mechanical.air-conditioning, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: rough-in, label: "Alter ductwork and pipework", systems: [mechanical.air-conditioning], duration: du.mechanical-rough-fitout}
+    - {key: fit-off, label: "Commission the altered system", systems: [mechanical.air-conditioning], duration: du.mechanical-commission-fitout}
+  links:
+    - {from: rough-in, to: fit-off, type: FS, lag: du.closein-fitout}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.mechanical-fitout"}
+- id: fr.ventilation-fitout
+  label: "Exhaust ventilation (fit-out)"
+  stage: construction
+  systems: [mechanical.ventilation]
+  applies_when:
+    all:
+      - {work_action: {system: mechanical.ventilation, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: exhaust, label: "Alter exhaust ventilation", systems: [mechanical.ventilation], duration: du.ventilation-fitout}
+  attach: {after: fr.strip-out-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ventilation-fitout"}
+- id: fr.sprinklers-fitout
+  label: "Sprinkler alterations (fit-out)"
+  stage: construction
+  systems: [fire-active.sprinklers]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.sprinklers, any_of: [alter, upgrade, replace]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: heads, label: "Alter and test sprinklers", systems: [fire-active.sprinklers], duration: du.sprinklers-fitout}
+  attach: {after: fr.ceilings-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-fitout"}
+- id: fr.detection-fitout
+  label: "Detection alterations (fit-out)"
+  stage: construction
+  systems: [fire-active.detection]
+  applies_when:
+    all:
+      - {work_action: {system: fire-active.detection, any_of: [alter, upgrade, replace]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: detectors, label: "Alter detection and warning", systems: [fire-active.detection], duration: du.detection-fitout}
+  attach: {after: fr.ceilings-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.detection-fitout"}
+- id: fr.comms-fitout
+  label: "Communications (fit-out)"
+  stage: construction
+  systems: [comms-security.structured-cabling]
+  applies_when:
+    all:
+      - {work_action: {system: comms-security.structured-cabling, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: cable, label: "Install structured cabling", systems: [comms-security.structured-cabling], duration: du.comms-fitout}
+  attach: {after: fr.partitions-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.comms-fitout"}
+- id: fr.tiling-fitout
+  label: "Tiling (fit-out)"
+  stage: construction
+  systems: [interiors.tiling]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.tiling, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: tile, label: "Tile amenities", systems: [interiors.tiling], duration: du.tiling-fitout}
+  attach: {after: fr.wet-area-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tiling-fitout"}
+- id: fr.joinery-fitout
+  label: "Joinery (fit-out)"
+  stage: construction
+  systems: [interiors.joinery]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.joinery, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [interiors.joinery], duration: du.joinery-lead-fitout}
+    - {key: install, label: "Install", systems: [interiors.joinery], duration: du.joinery-install-fitout}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: fr.partitions-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-fitout"}
+- id: fr.painting-fitout
+  label: "Painting (fit-out)"
+  stage: construction
+  systems: [interiors.painting]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.painting, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: paint, label: "Paint the fit-out", systems: [interiors.painting], duration: du.painting-fitout}
+  attach: {after: fr.joinery-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-fitout"}
+- id: fr.floors-fitout
+  label: "Floor finishes (fit-out)"
+  stage: construction
+  systems: [interiors.floor-finishes]
+  applies_when:
+    all:
+      - {work_action: {system: interiors.floor-finishes, any_of: [new, alter, upgrade, replace, repair]}}
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+  activities:
+    - {key: lay, label: "Lay floor finishes", systems: [interiors.floor-finishes], duration: du.floors-fitout}
+  attach: {after: fr.painting-fitout}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-fitout"}
+- id: fr.fire-stopping
+  label: "Fire stopping"
+  stage: construction
+  systems: [fire-passive.penetrations]
+  applies_when:
+    all:
+      - {work_action: {system: fire-passive.penetrations, any_of: [new, alter, upgrade]}}
+      - {det: ncc_class, any_of: ["2", "5", "6", "9b"]}
+  activities:
+    - {key: seal, label: "Seal service penetrations", systems: [fire-passive.penetrations], duration: du.fire-stopping}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.fire-stopping"}
+- id: fr.gas-commercial
+  label: "Gas (commercial)"
+  stage: construction
+  systems: [hydraulic.gas]
+  applies_when:
+    all:
+      - {work_action: {system: hydraulic.gas, any_of: [new, alter, upgrade]}}
+      - {det: ncc_class, any_of: ["2", "5", "6", "9b"]}
+  activities:
+    - {key: pipe, label: "Install consumer gas", systems: [hydraulic.gas], duration: du.gas-commercial}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.gas-commercial"}
+- id: fr.lifts
+  label: "Passenger lifts"
+  stage: construction
+  systems: [vertical-transport.passenger-lifts]
+  applies_when:
+    all:
+      - {work_action: {system: vertical-transport.passenger-lifts, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["2", "3", "5", "6", "9b"]}
+  activities:
+    - {key: procure, label: "Manufacture lifts", systems: [vertical-transport.passenger-lifts], duration: du.lift-lead}
+    - {key: install, label: "Install lifts", systems: [vertical-transport.passenger-lifts], duration: du.lift-install}
+    - {key: commission, label: "Commission lifts", systems: [vertical-transport.passenger-lifts], duration: du.lift-commission}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+    - {from: install, to: commission, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lifts"}
+- id: fr.switchboard-2
+  label: "Main switchboard (apartments)"
+  stage: construction
+  systems: [electrical.switchboards]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.switchboards, any_of: [new, replace]}}
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [electrical.switchboards], duration: du.switchboard-lead-2}
+    - {key: install, label: "Install", systems: [electrical.switchboards], duration: du.switchboard-install-2}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.switchboard-2"}
+- id: fr.switchboard-major
+  label: "Main switchboard (commercial or school)"
+  stage: construction
+  systems: [electrical.switchboards]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.switchboards, any_of: [new, replace, upgrade]}}
+      - {det: ncc_class, any_of: ["5", "6", "7b", "9b"]}
+  activities:
+    - {key: procure, label: "Procure and deliver", systems: [electrical.switchboards], duration: du.switchboard-lead-major}
+    - {key: install, label: "Install", systems: [electrical.switchboards], duration: du.switchboard-install-major}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.switchboard-major"}
+- id: fr.utility-1a
+  label: "Utility supply (house)"
+  stage: construction
+  systems: [electrical.utility-supply]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.utility-supply, any_of: [new, alter, upgrade]}}
+      - {det: ncc_class, any_of: ["1a"]}
+  activities:
+    - {key: procure, label: "Lodge the supply application", systems: [electrical.utility-supply], duration: du.utility-apply-1a}
+    - {key: install, label: "Authority connection", systems: [electrical.utility-supply], duration: du.utility-lead-1a}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.utility-1a"}
+- id: fr.utility-major
+  label: "Utility supply (larger building)"
+  stage: construction
+  systems: [electrical.utility-supply]
+  applies_when:
+    all:
+      - {work_action: {system: electrical.utility-supply, any_of: [new, alter, upgrade]}}
+      - {det: ncc_class, any_of: ["2", "7b", "9b"]}
+  activities:
+    - {key: procure, label: "Lodge the supply application", systems: [electrical.utility-supply], duration: du.utility-apply-major}
+    - {key: install, label: "Authority connection", systems: [electrical.utility-supply], duration: du.utility-lead-major}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.utility-major"}
+- id: fr.services-connections-1a
+  label: "Services connections (house)"
+  stage: construction
+  systems: [site.services-connections]
+  applies_when:
+    all:
+      - {work_action: {system: site.services-connections, any_of: [new, alter, upgrade]}}
+      - {det: ncc_class, any_of: ["1a"]}
+  activities:
+    - {key: procure, label: "Lodge services applications", systems: [site.services-connections], duration: du.services-apply-1a}
+    - {key: install, label: "Lead-in connections", systems: [site.services-connections], duration: du.services-lead-1a}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.services-connections-1a"}
+- id: fr.services-connections-major
+  label: "Services connections (larger building)"
+  stage: construction
+  systems: [site.services-connections]
+  applies_when:
+    all:
+      - {work_action: {system: site.services-connections, any_of: [new, alter, upgrade]}}
+      - {det: ncc_class, any_of: ["2", "5", "6", "7b", "9b"]}
+  activities:
+    - {key: procure, label: "Lodge services applications", systems: [site.services-connections], duration: du.services-apply-major}
+    - {key: install, label: "Lead-in connections", systems: [site.services-connections], duration: du.services-lead-major}
+  links:
+    - {from: procure, to: install, type: FS, lag: null}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.services-connections-major"}

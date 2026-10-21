@@ -1,14 +1,10 @@
-# Program skeletons (SCHEMA.md "Program library (2026-10-18)"). A skeleton
-# picks which stages a program has and how they link. Only the fallback
-# sk.generic is here: every catalogue stage in knowledge/works/stages.yaml
-# order, with a top-level stage replaced by its sub-stages where it has more than one,
-# chained finish-to-start with no lags. `other` is left out: it names a stage
-# a user makes, never a library stage. Further skeletons are owner content
-# (WP-P15). Draft for owner review.
+# Program skeletons. sk.generic is the unchanged fallback. Further skeletons
+# are drafts for owner review.
 version: 1
 status: draft
 sources:
-  - {design: docs/plans/2026-10-18-program.md, anchor: "### 4.1 `skeletons.yaml` — stage patterns"}
+  - {design: docs/research/2026-10-21-program-library.md, anchor: "### Overview"}
+notes: Draft stage patterns for owner review. sk.generic is unchanged.
 skeletons:
   - id: sk.generic
     label: Generic stage sequence
@@ -26,3 +22,111 @@ skeletons:
     status: draft
     sources:
       - {design: docs/plans/2026-10-18-program.md, anchor: "### 4.1 `skeletons.yaml` — stage patterns"}
+  - id: sk.new-traditional-da
+    label: "New building, traditional procurement, development consent"
+    applies_when:
+      all:
+        - {det: work_type, eq: new}
+        - {cond: procurement_route, eq: traditional}
+        - {cond: planning, any_of: [da, planning_permit]}
+    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.new-traditional-da"}
+  - id: sk.new-traditional-cdc
+    label: "New building, traditional procurement, complying development or exempt"
+    applies_when:
+      all:
+        - {det: work_type, eq: new}
+        - {cond: procurement_route, eq: traditional}
+        - {cond: planning, any_of: [cdc, exempt]}
+    stages: [investigation, concept_design, approval_documentation, approvals, procurement, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.new-traditional-cdc"}
+  - id: sk.new-dc-da
+    label: "New building, design and construct, development consent"
+    applies_when:
+      all:
+        - {det: work_type, eq: new}
+        - {cond: procurement_route, eq: design_construct}
+        - {cond: planning, any_of: [da, planning_permit]}
+    stages: [investigation, concept_design, approval_documentation, approvals, procurement, construction_documentation, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.new-dc-da"}
+  - id: sk.new-eci-da
+    label: "New building, early contractor or managing contractor, development consent"
+    applies_when:
+      all:
+        - {det: work_type, eq: new}
+        - {cond: procurement_route, any_of: [eci, managing_contractor]}
+        - {cond: planning, any_of: [da, planning_permit]}
+    stages: [investigation, concept_design, procurement, approval_documentation, approvals, construction_documentation, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.new-eci-da"}
+  - id: sk.refurb-traditional-da
+    label: "Refurbishment, traditional procurement, development consent"
+    applies_when:
+      all:
+        - {det: work_type, eq: refurb}
+        - {cond: procurement_route, eq: traditional}
+        - {cond: planning, any_of: [da, planning_permit]}
+    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.refurb-traditional-da"}
+  - id: sk.refurb-traditional-cdc
+    label: "Refurbishment, traditional procurement, complying development or exempt"
+    applies_when:
+      all:
+        - {det: work_type, eq: refurb}
+        - {cond: procurement_route, eq: traditional}
+        - {cond: planning, any_of: [cdc, exempt]}
+    stages: [investigation, concept_design, construction_documentation, approvals, procurement, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.refurb-traditional-cdc"}
+  - id: sk.extend-traditional
+    label: "Extension, traditional procurement"
+    applies_when:
+      all:
+        - {det: work_type, eq: extend}
+        - {cond: procurement_route, eq: traditional}
+        - {cond: planning, any_of: [da, cdc, exempt, planning_permit]}
+    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.extend-traditional"}
+  - id: sk.ssd-traditional
+    label: "State significant development, traditional procurement"
+    applies_when:
+      all:
+        - {det: work_type, any_of: [new, extend]}
+        - {cond: procurement_route, eq: traditional}
+        - {cond: planning, eq: ssd}
+    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.ssd-traditional"}
+  - id: sk.ssd-dc
+    label: "State significant development, contractor-led procurement"
+    applies_when:
+      all:
+        - {det: work_type, any_of: [new, extend]}
+        - {cond: procurement_route, any_of: [design_construct, eci, managing_contractor]}
+        - {cond: planning, eq: ssd}
+    stages: [investigation, concept_design, approval_documentation, approvals, procurement, construction_documentation, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.ssd-dc"}

@@ -1,9 +1,3813 @@
-# Program durations (SCHEMA.md "Program library (2026-10-18)"): the only
-# source of library durations. With no reviewed applicable row a duration
-# stays unknown. Empty until the owner authors content (WP-P15); never filled
-# from memory, seeds or the web.
+# Draft program library for owner review. See docs/research/2026-10-21-program-library.md.
 version: 1
 status: draft
 sources:
-  - {design: docs/plans/2026-10-18-program.md, anchor: "### 4.3 `durations.yaml` — the only source of library durations"}
-durations: []
+  - {design: docs/research/2026-10-21-program-library.md, anchor: "### Overview"}
+notes: Draft duration ranges for owner review. Statutory rows are verified false.
+durations:
+- id: du.concrete-cure
+  version: 1
+  basis: fixed
+  unit_days: calendar
+  low: "7"
+  typical: "7"
+  high: "14"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Does not prove the concrete has reached the specified strength."
+    - "Counted in calendar days, including weekends."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.concrete-cure"}
+- id: du.closein-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "8"
+  typical: "12"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.closein-1a"}
+- id: du.closein-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "30"
+  high: "50"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.closein-2"}
+- id: du.closein-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.closein-fitout"}
+- id: du.closein-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "35"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.closein-9b"}
+- id: du.closein-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.closein-7b"}
+- id: du.closein-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "8"
+  high: "12"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.closein-reno"}
+- id: du.dc-site-overlap
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.dc-site-overlap"}
+- id: du.eci-overlap
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.eci-overlap"}
+- id: du.da-assessment-period
+  version: 1
+  basis: statutory
+  unit_days: calendar
+  low: "40"
+  typical: "60"
+  high: "90"
+  instrument: "Environmental Planning and Assessment Regulation 2021"
+  clause: "section 91"
+  verified: false
+  geography: "NSW"
+  limitations:
+    - "Not the observed determination time. Sydney metropolitan councils often take longer once the clock stops."
+    - "Legislated clock only. Information requests that stop the clock are not included."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.da-assessment-period"}
+- id: du.da-exhibition-period
+  version: 1
+  basis: statutory
+  unit_days: calendar
+  low: "14"
+  typical: "14"
+  high: "28"
+  instrument: "Environmental Planning and Assessment Act 1979"
+  clause: "Schedule 1, clauses 7, 8 and 8A"
+  verified: false
+  geography: "NSW"
+  limitations:
+    - "Legislated clock only. Information requests that stop the clock are not included."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.da-exhibition-period"}
+- id: du.cdc-determination-period
+  version: 1
+  basis: statutory
+  unit_days: calendar
+  low: "10"
+  typical: "20"
+  high: "20"
+  instrument: "Environmental Planning and Assessment Regulation 2021"
+  clause: "section 133"
+  verified: false
+  geography: "NSW"
+  limitations:
+    - "This is the determination clock after a complete application, not the time to prepare the drawings."
+    - "Legislated clock only. Information requests that stop the clock are not included."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cdc-determination-period"}
+- id: du.ssd-exhibition-period
+  version: 1
+  basis: statutory
+  unit_days: calendar
+  low: "14"
+  typical: "28"
+  high: "28"
+  instrument: "Environmental Planning and Assessment Act 1979"
+  clause: "Schedule 1, clause 9"
+  verified: false
+  geography: "NSW"
+  limitations:
+    - "A longer exhibition applies under the Department's practice when the period overlaps Christmas and New Year. That extension is not in this row."
+    - "Legislated clock only. Information requests that stop the clock are not included."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ssd-exhibition-period"}
+- id: du.da-program-allowance
+  version: 1
+  basis: fixed
+  unit_days: calendar
+  low: "40"
+  typical: "90"
+  high: "180"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Use du.da-assessment-period for the legislated clock itself."
+    - "Counted in calendar days, including weekends."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.da-program-allowance"}
+- id: du.ssd-program-allowance
+  version: 1
+  basis: fixed
+  unit_days: calendar
+  low: "90"
+  typical: "180"
+  high: "365"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Counted in calendar days, including weekends."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ssd-program-allowance"}
+- id: du.defects-liability
+  version: 1
+  basis: fixed
+  unit_days: calendar
+  low: "90"
+  typical: "365"
+  high: "730"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Not a statutory warranty period. The contract states the real defects liability period."
+    - "Counted in calendar days, including weekends."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.defects-liability"}
+- id: du.temporary-power
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.temporary-power"}
+- id: du.erosion-control
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.erosion-control"}
+- id: du.tree-protection
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tree-protection"}
+- id: du.occupied-protection
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.occupied-protection"}
+- id: du.demolition-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.demolition-1a"}
+- id: du.strip-out-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.strip-out-1a"}
+- id: du.earthworks-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.earthworks-1a"}
+- id: du.underpinning-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.underpinning-1a"}
+- id: du.footings-excavate-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.footings-excavate-1a"}
+- id: du.footings-pour-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.footings-pour-1a"}
+- id: du.termite-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "1"
+  high: "2"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.termite-1a"}
+- id: du.damp-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "1"
+  high: "2"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.damp-1a"}
+- id: du.stormwater-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.stormwater-1a"}
+- id: du.flood-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.flood-1a"}
+- id: du.slab-setout-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.slab-setout-1a"}
+- id: du.under-slab-services-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.under-slab-services-1a"}
+- id: du.slab-pour-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.02"
+  typical: "0.03"
+  high: "0.05"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.slab-pour-1a"}
+- id: du.frame-walls-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.02"
+  typical: "0.03"
+  high: "0.05"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.frame-walls-1a"}
+- id: du.frame-roof-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.frame-roof-1a"}
+- id: du.masonry-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.03"
+  typical: "0.05"
+  high: "0.08"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.masonry-1a"}
+- id: du.roof-sark-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "3"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.roof-sark-1a"}
+- id: du.roof-cover-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.roof-cover-1a"}
+- id: du.external-walls-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.02"
+  typical: "0.03"
+  high: "0.05"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.external-walls-1a"}
+- id: du.insulation-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.insulation-1a"}
+- id: du.windows-lead-1a
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.windows-lead-1a"}
+- id: du.windows-install-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.windows-install-1a"}
+- id: du.bushfire-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.bushfire-1a"}
+- id: du.roof-drainage-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.roof-drainage-1a"}
+- id: du.partitions-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.partitions-1a"}
+- id: du.sheet-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.03"
+  typical: "0.04"
+  high: "0.06"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sheet-1a"}
+- id: du.ceilings-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.02"
+  typical: "0.03"
+  high: "0.04"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ceilings-1a"}
+- id: du.wet-area-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.wet-area-1a"}
+- id: du.internal-doors-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.internal-doors-1a"}
+- id: du.sanitary-rough-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-rough-1a"}
+- id: du.sanitary-fit-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-fit-1a"}
+- id: du.cold-rough-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cold-rough-1a"}
+- id: du.cold-fit-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "3"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cold-fit-1a"}
+- id: du.hot-rough-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hot-rough-1a"}
+- id: du.hot-fit-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "1"
+  high: "2"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hot-fit-1a"}
+- id: du.gas-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.gas-1a"}
+- id: du.electrical-rough-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.02"
+  typical: "0.03"
+  high: "0.05"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-rough-1a"}
+- id: du.electrical-fit-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-fit-1a"}
+- id: du.lighting-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lighting-1a"}
+- id: du.switchboard-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.switchboard-1a"}
+- id: du.smoke-alarms-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "1"
+  high: "2"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.smoke-alarms-1a"}
+- id: du.ac-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ac-1a"}
+- id: du.tiling-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "6"
+  high: "12"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tiling-1a"}
+- id: du.joinery-lead-1a
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-lead-1a"}
+- id: du.joinery-install-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-install-1a"}
+- id: du.painting-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.03"
+  typical: "0.05"
+  high: "0.08"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.painting-1a"}
+- id: du.floors-1a
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.04"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.floors-1a"}
+- id: du.landscape-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.landscape-1a"}
+- id: du.linings-1a-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.linings-1a-reno"}
+- id: du.wet-area-1a-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.wet-area-1a-reno"}
+- id: du.hydraulic-rough-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hydraulic-rough-reno"}
+- id: du.hydraulic-fit-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hydraulic-fit-reno"}
+- id: du.water-1a-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "6"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.water-1a-reno"}
+- id: du.electrical-rough-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-rough-reno"}
+- id: du.electrical-fit-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-fit-reno"}
+- id: du.joinery-1a-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-1a-reno"}
+- id: du.painting-1a-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "4"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.painting-1a-reno"}
+- id: du.floors-1a-reno
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.floors-1a-reno"}
+- id: du.demolition-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.demolition-2"}
+- id: du.earthworks-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.earthworks-2"}
+- id: du.underpinning-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.underpinning-2"}
+- id: du.piles-platform-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.piles-platform-2"}
+- id: du.piles-install-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.piles-install-2"}
+- id: du.basement-shoring-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "25"
+  high: "45"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.basement-shoring-2"}
+- id: du.basement-excavate-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.basement-excavate-2"}
+- id: du.basement-anchors-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.basement-anchors-2"}
+- id: du.basement-slab-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "8"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.basement-slab-2"}
+- id: du.footings-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.footings-2"}
+- id: du.slab-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.slab-2"}
+- id: du.lift-pits-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lift-pits-2"}
+- id: du.lift-shafts-2
+  version: 1
+  basis: floor_cycle
+  driver: {determinant: rise_in_storeys, unit: storeys}
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "3"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Multiplied by rise in storeys. An unknown storey count leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lift-shafts-2"}
+- id: du.floor-cycle-2
+  version: 1
+  basis: floor_cycle
+  driver: {determinant: rise_in_storeys, unit: storeys}
+  unit_days: working
+  low: "6"
+  typical: "9"
+  high: "12"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Multiplied by rise in storeys. An unknown storey count leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.floor-cycle-2"}
+- id: du.structure-roof-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "8"
+  typical: "12"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.structure-roof-2"}
+- id: du.precast-lead-2
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "70"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.precast-lead-2"}
+- id: du.precast-install-2
+  version: 1
+  basis: floor_cycle
+  driver: {determinant: rise_in_storeys, unit: storeys}
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "3"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Multiplied by rise in storeys. An unknown storey count leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.precast-install-2"}
+- id: du.stairs-2
+  version: 1
+  basis: floor_cycle
+  driver: {determinant: rise_in_storeys, unit: storeys}
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Multiplied by rise in storeys. An unknown storey count leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.stairs-2"}
+- id: du.roof-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.roof-2"}
+- id: du.facade-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.facade-2"}
+- id: du.windows-lead-2
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "15"
+  typical: "25"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.windows-lead-2"}
+- id: du.windows-install-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.windows-install-2"}
+- id: du.balcony-waterproof-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.balcony-waterproof-2"}
+- id: du.insulation-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.insulation-2"}
+- id: du.roof-drainage-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.roof-drainage-2"}
+- id: du.linings-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.linings-2"}
+- id: du.ceilings-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ceilings-2"}
+- id: du.wet-area-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.wet-area-2"}
+- id: du.internal-doors-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.internal-doors-2"}
+- id: du.sanitary-rough-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-rough-2"}
+- id: du.sanitary-fit-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-fit-2"}
+- id: du.sanitary-commission-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-commission-2"}
+- id: du.cold-rough-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cold-rough-2"}
+- id: du.cold-fit-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cold-fit-2"}
+- id: du.hot-plant-lead-2
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "15"
+  typical: "25"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hot-plant-lead-2"}
+- id: du.hot-fit-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hot-fit-2"}
+- id: du.electrical-rough-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-rough-2"}
+- id: du.electrical-fit-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-fit-2"}
+- id: du.lighting-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lighting-2"}
+- id: du.sprinklers-rough-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sprinklers-rough-2"}
+- id: du.sprinklers-fit-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sprinklers-fit-2"}
+- id: du.hydrants-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hydrants-2"}
+- id: du.detection-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.detection-2"}
+- id: du.smoke-alarms-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.smoke-alarms-2"}
+- id: du.ac-plant-lead-2
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "40"
+  typical: "80"
+  high: "140"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ac-plant-lead-2"}
+- id: du.ac-install-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ac-install-2"}
+- id: du.ac-commission-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ac-commission-2"}
+- id: du.carpark-vent-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.carpark-vent-2"}
+- id: du.comms-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.comms-2"}
+- id: du.tiling-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tiling-2"}
+- id: du.joinery-lead-2
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "15"
+  typical: "25"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-lead-2"}
+- id: du.joinery-install-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-install-2"}
+- id: du.painting-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.painting-2"}
+- id: du.floors-2
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.floors-2"}
+- id: du.landscape-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.landscape-2"}
+- id: du.stormwater-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.stormwater-2"}
+- id: du.flood-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.flood-2"}
+- id: du.demolition-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.demolition-7b"}
+- id: du.earthworks-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.earthworks-7b"}
+- id: du.footings-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.footings-7b"}
+- id: du.steel-lead-7b
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "70"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.steel-lead-7b"}
+- id: du.steel-erect-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.steel-erect-7b"}
+- id: du.roof-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.roof-7b"}
+- id: du.cladding-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "8"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cladding-7b"}
+- id: du.slab-prepare-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.slab-prepare-7b"}
+- id: du.slab-pour-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.slab-pour-7b"}
+- id: du.vehicle-doors-lead-7b
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.vehicle-doors-lead-7b"}
+- id: du.vehicle-doors-install-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.vehicle-doors-install-7b"}
+- id: du.sanitary-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-7b"}
+- id: du.electrical-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-7b"}
+- id: du.lighting-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lighting-7b"}
+- id: du.sprinklers-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sprinklers-7b"}
+- id: du.hydrants-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hydrants-7b"}
+- id: du.stormwater-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.stormwater-7b"}
+- id: du.landscape-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.landscape-7b"}
+- id: du.painting-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.painting-7b"}
+- id: du.demolition-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.demolition-9b"}
+- id: du.earthworks-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.earthworks-9b"}
+- id: du.piles-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.piles-9b"}
+- id: du.footings-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.footings-9b"}
+- id: du.slab-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.slab-9b"}
+- id: du.structure-9b
+  version: 1
+  basis: floor_cycle
+  driver: {determinant: rise_in_storeys, unit: storeys}
+  unit_days: working
+  low: "8"
+  typical: "12"
+  high: "18"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Multiplied by rise in storeys. An unknown storey count leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.structure-9b"}
+- id: du.steel-lead-9b
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "60"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.steel-lead-9b"}
+- id: du.steel-erect-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.steel-erect-9b"}
+- id: du.roof-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.roof-9b"}
+- id: du.external-walls-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.external-walls-9b"}
+- id: du.windows-lead-9b
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "15"
+  typical: "30"
+  high: "50"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.windows-lead-9b"}
+- id: du.windows-install-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.windows-install-9b"}
+- id: du.bushfire-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.bushfire-9b"}
+- id: du.stairs-9b
+  version: 1
+  basis: floor_cycle
+  driver: {determinant: rise_in_storeys, unit: storeys}
+  unit_days: working
+  low: "2"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Multiplied by rise in storeys. An unknown storey count leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.stairs-9b"}
+- id: du.linings-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.linings-9b"}
+- id: du.ceilings-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ceilings-9b"}
+- id: du.wet-area-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "6"
+  high: "12"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.wet-area-9b"}
+- id: du.joinery-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "35"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-9b"}
+- id: du.painting-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.painting-9b"}
+- id: du.floors-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.floors-9b"}
+- id: du.sanitary-rough-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-rough-9b"}
+- id: du.sanitary-fit-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-fit-9b"}
+- id: du.electrical-rough-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-rough-9b"}
+- id: du.electrical-fit-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-fit-9b"}
+- id: du.lighting-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lighting-9b"}
+- id: du.ac-lead-9b
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "60"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ac-lead-9b"}
+- id: du.ac-install-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ac-install-9b"}
+- id: du.ac-commission-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ac-commission-9b"}
+- id: du.sprinklers-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sprinklers-9b"}
+- id: du.detection-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.detection-9b"}
+- id: du.comms-9b
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.comms-9b"}
+- id: du.landscape-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.landscape-9b"}
+- id: du.stormwater-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.stormwater-9b"}
+- id: du.strip-isolate-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.strip-isolate-fitout"}
+- id: du.strip-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.strip-fitout"}
+- id: du.makegood-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.makegood-fitout"}
+- id: du.structure-alterations
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.structure-alterations"}
+- id: du.partitions-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.partitions-fitout"}
+- id: du.ceilings-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ceilings-fitout"}
+- id: du.wet-area-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.wet-area-fitout"}
+- id: du.internal-doors-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.internal-doors-fitout"}
+- id: du.sanitary-rough-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-rough-fitout"}
+- id: du.sanitary-fit-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sanitary-fit-fitout"}
+- id: du.cold-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cold-fitout"}
+- id: du.hot-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "4"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hot-fitout"}
+- id: du.electrical-rough-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.02"
+  high: "0.03"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-rough-fitout"}
+- id: du.electrical-fit-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.electrical-fit-fitout"}
+- id: du.lighting-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lighting-fitout"}
+- id: du.mechanical-rough-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.mechanical-rough-fitout"}
+- id: du.mechanical-commission-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.mechanical-commission-fitout"}
+- id: du.ventilation-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "4"
+  high: "8"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ventilation-fitout"}
+- id: du.sprinklers-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.sprinklers-fitout"}
+- id: du.detection-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.detection-fitout"}
+- id: du.comms-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.comms-fitout"}
+- id: du.tiling-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tiling-fitout"}
+- id: du.joinery-lead-fitout
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-lead-fitout"}
+- id: du.joinery-install-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.joinery-install-fitout"}
+- id: du.painting-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.painting-fitout"}
+- id: du.floors-fitout
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.floors-fitout"}
+- id: du.fire-stopping
+  version: 1
+  basis: per_unit
+  driver: {planning_key: gross_floor_area, unit: m2}
+  unit_days: working
+  low: "0.01"
+  typical: "0.01"
+  high: "0.02"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Scaled by gross floor area. An unknown area leaves the duration unknown."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.fire-stopping"}
+- id: du.gas-commercial
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.gas-commercial"}
+- id: du.lift-lead
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "60"
+  typical: "100"
+  high: "160"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lift-lead"}
+- id: du.lift-install
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lift-install"}
+- id: du.lift-commission
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.lift-commission"}
+- id: du.switchboard-lead-2
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "70"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.switchboard-lead-2"}
+- id: du.switchboard-install-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.switchboard-install-2"}
+- id: du.switchboard-lead-major
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "15"
+  typical: "30"
+  high: "60"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.switchboard-lead-major"}
+- id: du.switchboard-install-major
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.switchboard-install-major"}
+- id: du.utility-apply-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.utility-apply-1a"}
+- id: du.utility-lead-1a
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.utility-lead-1a"}
+- id: du.utility-apply-major
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.utility-apply-major"}
+- id: du.utility-lead-major
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "80"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.utility-lead-major"}
+- id: du.services-apply-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.services-apply-1a"}
+- id: du.services-lead-1a
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.services-lead-1a"}
+- id: du.services-apply-major
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.services-apply-major"}
+- id: du.services-lead-major
+  version: 1
+  basis: lead_time
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "80"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Manufacture and delivery only. Installation is a separate activity where the fragment has one."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.services-lead-major"}
+- id: du.concept-design-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.concept-design-1a"}
+- id: du.concept-design-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "80"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.concept-design-2"}
+- id: du.concept-design-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.concept-design-fitout"}
+- id: du.concept-design-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.concept-design-7b"}
+- id: du.concept-design-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "30"
+  high: "50"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.concept-design-9b"}
+- id: du.design-development-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.design-development-1a"}
+- id: du.design-development-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "20"
+  typical: "45"
+  high: "80"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.design-development-2"}
+- id: du.design-development-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.design-development-fitout"}
+- id: du.design-development-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.design-development-7b"}
+- id: du.design-development-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "30"
+  high: "45"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.design-development-9b"}
+- id: du.approval-docs-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "25"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.approval-docs-1a"}
+- id: du.approval-docs-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "30"
+  typical: "50"
+  high: "80"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.approval-docs-2"}
+- id: du.approval-docs-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.approval-docs-7b"}
+- id: du.approval-docs-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "20"
+  typical: "40"
+  high: "60"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.approval-docs-9b"}
+- id: du.fitout-documentation
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.fitout-documentation"}
+- id: du.construction-docs-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "30"
+  high: "50"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.construction-docs-1a"}
+- id: du.construction-docs-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "40"
+  typical: "70"
+  high: "110"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.construction-docs-2"}
+- id: du.construction-docs-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.construction-docs-7b"}
+- id: du.construction-docs-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "25"
+  typical: "40"
+  high: "70"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.construction-docs-9b"}
+- id: du.measure-existing
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.measure-existing"}
+- id: du.hazmat-survey
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.hazmat-survey"}
+- id: du.trace-services
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.trace-services"}
+- id: du.da-lodgement
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.da-lodgement"}
+- id: du.cdc-prepare
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.cdc-prepare"}
+- id: du.exempt-confirmation
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.exempt-confirmation"}
+- id: du.ssd-sears
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "30"
+  high: "45"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ssd-sears"}
+- id: du.ssd-eis
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "40"
+  typical: "80"
+  high: "140"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.ssd-eis"}
+- id: du.construction-certificate
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.construction-certificate"}
+- id: du.heritage-referral
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.heritage-referral"}
+- id: du.tender-docs-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-docs-1a"}
+- id: du.tender-docs-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "25"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-docs-2"}
+- id: du.tender-docs-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-docs-fitout"}
+- id: du.tender-docs-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-docs-7b"}
+- id: du.tender-docs-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-docs-9b"}
+- id: du.tender-period-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-period-1a"}
+- id: du.tender-period-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-period-2"}
+- id: du.tender-period-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-period-fitout"}
+- id: du.tender-period-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-period-7b"}
+- id: du.tender-period-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "15"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-period-9b"}
+- id: du.tender-evaluation-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-evaluation-1a"}
+- id: du.tender-evaluation-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-evaluation-2"}
+- id: du.tender-evaluation-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-evaluation-fitout"}
+- id: du.tender-evaluation-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-evaluation-7b"}
+- id: du.tender-evaluation-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.tender-evaluation-9b"}
+- id: du.contract-award
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.contract-award"}
+- id: du.novation
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.novation"}
+- id: du.site-establishment-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.site-establishment-1a"}
+- id: du.site-establishment-2
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.site-establishment-2"}
+- id: du.site-establishment-fitout
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.site-establishment-fitout"}
+- id: du.site-establishment-7b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "8"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.site-establishment-7b"}
+- id: du.site-establishment-9b
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.site-establishment-9b"}
+- id: du.practical-completion
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "3"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.practical-completion"}
+- id: du.occupation-certificate
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.occupation-certificate"}
+- id: du.handover
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "2"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.handover"}
+- id: du.defects-inspection
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.defects-inspection"}
+- id: du.final-defects
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "1"
+  typical: "2"
+  high: "5"
+  geography: "NSW metropolitan"
+  limitations:
+    - "Excludes major wet-weather extensions and industrial action."
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.final-defects"}
