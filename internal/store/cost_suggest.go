@@ -98,6 +98,9 @@ func (s *Store) decorateCostPlan(ctx context.Context, tx pgx.Tx, org, project st
 	if p.Status != "draft" && p.Status != "unavailable" {
 		return nil
 	}
+	if e := s.attachConstructionBudget(ctx, tx, org, project, p); e != nil {
+		return e
+	}
 	cat := s.workCatalog()
 	if cat == nil {
 		return nil
@@ -363,6 +366,18 @@ func (s *Store) PrepareCostPlan(ctx context.Context, org, project, actor string)
 	if e != nil {
 		return PreparedCostPlan{}, e
 	}
+	// The stated budget is spread over the lines just prepared, so the
+	// plan is read again inside the transaction first.
+	if count > 0 {
+		if p, e = readCostPlan(ctx, tx, org, project, p.ID); e != nil {
+			return PreparedCostPlan{}, e
+		}
+	}
+	spread, e := s.spreadConstructionBudget(ctx, tx, org, project, actor, p)
+	if e != nil {
+		return PreparedCostPlan{}, e
+	}
+	count += spread
 	if count > 0 {
 		p, e = s.finishCost(ctx, tx, org, project, p.ID)
 	} else {
