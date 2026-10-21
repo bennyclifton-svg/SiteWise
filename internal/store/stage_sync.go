@@ -18,7 +18,7 @@ import (
 // One stage plan shared with Procurement and the Cost Plan (plan
 // docs/plans/2026-10-18-program.md section 7.6, WP-P10). The program's
 // stages are the project's stage plan; package stage sets and RFP versions
-// record the plan as it was when they were built (036_stage_sync.sql). When
+// record the plan as it was when they were built (038_stage_sync.sql). When
 // the program's stage revision has moved on, the document shows the
 // differences, keyed by the stable program stage id, and offers Update or
 // Keep. Flow is one way, Program to downstream. All of it is code; no Jev.
