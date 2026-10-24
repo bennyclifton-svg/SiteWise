@@ -122,6 +122,7 @@ func Build(in Input, cat *knowledge.Catalog) []Row {
 	rows = Reconcile(in, cat)
 	rows = withExistingSystems(rows, whole)
 	rows = withScope(rows, whole, suggested)
+	rows = withAddressState(rows, whole)
 	// Scope suggestions are added after reconciliation and need provenance too.
 	Annotate(rows, cat)
 	return rows

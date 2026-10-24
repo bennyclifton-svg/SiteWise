@@ -22,8 +22,10 @@ type Group = { id: string; label: string; rows: ProposalRecord[] };
 const signalName = (id: string) => { const s = words(id.replace(/^sig\./, "").replaceAll("-", " ")); return s.charAt(0).toUpperCase() + s.slice(1); };
 function signalState(state: string) {
   if (state === "true" || state === "stated_true") return "stated in the documents";
-  if (state === "false" || state === "stated_false") return "documents say it is not present";
-  if (state === "unknown" || state === "stated_unknown") return "not stated in the documents";
+  // A signal is "X is stated"; false means the documents read are silent on
+  // it, not that they deny it.
+  if (state === "stated_false") return "documents say it is not present";
+  if (state === "false" || state === "unknown" || state === "stated_unknown") return "not stated in the documents";
   if (state === "set") return "recorded";
   return words(state);
 }

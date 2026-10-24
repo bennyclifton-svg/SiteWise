@@ -19,6 +19,8 @@ details:
       - '\b(?:principal|client|owner|proponent|applicant|developer|landowner)\b(?:\s*\([^)]{0,40}\))?\s*[:–]'
       - 'prepared for\s'
       - 'commissioned by\s'
+      # A letter or proposal's addressee line: "To: X Pty Ltd".
+      - '(?m)^[*_ \t]*to[*_ \t]*:'
     asks: >-
       Using `excerpt` and `candidates`, which candidate does the passage state as this project's client:
       the principal, owner or proponent the works are for? Select none when absent, or when the candidate is

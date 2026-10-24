@@ -72,7 +72,7 @@ func detailCandidates(key, text string) []Candidate {
 	case "site.lot":
 		return lotCandidates(text)
 	case "proj.client":
-		return clientCandidates(text)
+		return append(clientCandidates(text), addresseeCandidates(text)...)
 	case "proj.lga":
 		return lgaCandidates(text)
 	case "proj.zone":
