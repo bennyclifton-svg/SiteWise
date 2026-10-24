@@ -459,6 +459,7 @@ func (c *Catalog) loadProgram(root string) error {
 
 // programFile holds the common fields of every program library file.
 type programFile struct {
+	Notes   string              `yaml:"notes"`
 	Version int                 `yaml:"version"`
 	Status  string              `yaml:"status"`
 	Sources []map[string]string `yaml:"sources"`
