@@ -187,7 +187,10 @@ func sourceUnits(p store.SourcePage, section, lead string, furniture map[string]
 			}
 		}
 		heading := looksLikeHeading(clean) && !footerLine.MatchString(clean) && !furniture[clean] && len(clean) < 100
-		if heading || (!headingOnly && (clauseStart.MatchString(clean) || clean == "")) {
+		// A To / Project / Site block after a letterhead is its own unit, so
+		// the firm's office address is not read as the project's.
+		addressee := i > 0 && addresseeLine.MatchString(clean) && !addresseeLine.MatchString(strings.TrimSpace(lines[i-1]))
+		if heading || addressee || (!headingOnly && (clauseStart.MatchString(clean) || clean == "")) {
 			emit(offset)
 		}
 		if heading {

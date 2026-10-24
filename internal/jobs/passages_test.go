@@ -1,10 +1,13 @@
 package jobs_test
 
 import (
+	"bytes"
+	"context"
 	"os"
 	"strings"
 	"testing"
 
+	"sitewise/internal/identity"
 	"sitewise/internal/jobs"
 )
 
@@ -54,5 +57,30 @@ func TestBoilerplatePassagesAreNotRead(t *testing.T) {
 		if got := jobs.Boilerplate(tc.p); got != tc.skip {
 			t.Errorf("%q: boilerplate %v, want %v", tc.p.Text, got, tc.skip)
 		}
+	}
+}
+
+// The upload path builds Markdown units with SourceFromText, whose text has
+// no blank lines; the addressee block must still be its own unit.
+func TestAddresseeBlockIsItsOwnSourceUnit(t *testing.T) {
+	body, err := os.ReadFile("../proposals/testdata/kavanagh/01-fee-proposal-quoin-architecture.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text, err := identity.Extract(context.Background(), "md", bytes.NewReader(body), int64(len(body)), identity.DefaultLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	var site, letterhead string
+	for _, u := range jobs.SourceFromText(text).Units {
+		if strings.Contains(u.Body, "Paperbark Lane") {
+			site = u.Body
+		}
+		if strings.Contains(u.Body, "Hickson Road") {
+			letterhead = u.Body
+		}
+	}
+	if site == "" || site == letterhead || strings.Contains(letterhead, "Kavanagh Property Holdings") {
+		t.Fatalf("site unit %q\nletterhead unit %q", site, letterhead)
 	}
 }
