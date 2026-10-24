@@ -56,6 +56,9 @@ type proposalReader struct {
 	// after runs once a read commits: the proposal_program read queued
 	// after this read finishes (plan 10.3). Nil runs nothing.
 	after func(orgID, submissionID string)
+	// disciplines names each filing discipline as Procurement shows it, so
+	// a proposal's package can be made before it is read.
+	disciplines map[string]string
 }
 
 // Filed is the filing hook: a proposal-like document gets a submission and
@@ -84,6 +87,11 @@ func (r *proposalReader) Filed(orgID, documentID string, text identity.Text) {
 			if id, err = r.store.OpenSubmission(ctx, orgID, doc.ProjectID, documentID, "", began); err != nil {
 				r.log.Printf("proposal open org=%s doc=%s: %v", orgID, documentID, err)
 				return
+			}
+			// A proposal for a consultancy with no row yet gets one, so the
+			// read lands it under that consultancy with its firm and fee.
+			if _, _, err := r.store.EnsureProposalPackage(ctx, orgID, doc.ProjectID, documentID, func(id string) string { return r.disciplines[id] }); err != nil {
+				r.log.Printf("proposal package org=%s doc=%s: %v", orgID, documentID, err)
 			}
 			r.broker.Wake(orgID)
 		}
@@ -349,8 +357,9 @@ func writePriceTable(w http.ResponseWriter, r *http.Request, deps Deps, session 
 
 type cardJSON struct {
 	store.FirmCard
-	BaseTotal moneyField `json:"base_total"`
-	KnownBase moneyField `json:"known_base"`
+	BaseTotal   moneyField `json:"base_total"`
+	KnownBase   moneyField `json:"known_base"`
+	StatedTotal moneyField `json:"stated_total"`
 }
 
 func getProcurementBoard(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -368,7 +377,7 @@ func getProcurementBoard(w http.ResponseWriter, r *http.Request, deps Deps) {
 		Unassigned []cardJSON            `json:"unassigned"`
 	}{Packages: map[string][]cardJSON{}, Unassigned: []cardJSON{}}
 	conv := func(c store.FirmCard) cardJSON {
-		return cardJSON{FirmCard: c, BaseTotal: cents(c.BaseTotal), KnownBase: centsValue(c.KnownBase)}
+		return cardJSON{FirmCard: c, BaseTotal: cents(c.BaseTotal), KnownBase: centsValue(c.KnownBase), StatedTotal: cents(c.StatedTotal)}
 	}
 	for pkg, cards := range board {
 		for _, c := range cards {

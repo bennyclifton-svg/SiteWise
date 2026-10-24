@@ -288,7 +288,7 @@ function FirmChip({ card: c, onOpen }: { card: FirmCard; onOpen: () => void }) {
   return <button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
     title={`${c.filename} · received ${c.received_on}${c.not_priced ? ` · ${c.not_priced} not priced` : ""}`}>
     <span className="firm-chip-name">{c.firm_name || c.filename}</span>
-    <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : "—"}</span>
+    <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? <>{`$${fmt(c.stated_total).replace(/\.00$/, "")}`} <small title="The firm's own total, ex GST; the fee schedule is not priced yet">stated</small></> : "—"}</span>
     {c.status !== "received" && c.status !== "reading" && <span className="firm-chip-status">{STATUS_WORDS[c.status]}</span>}
     {c.status === "received" && c.needs_review && <span className="firm-chip-status warn">Check</span>}
   </button>;

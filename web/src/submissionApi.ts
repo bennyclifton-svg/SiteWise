@@ -10,7 +10,7 @@ export interface ScheduleItem { unit?: string; key: string; kind: "stage" | "ele
 export interface Cell { id: string; item_key: string; label: string; state: CellState; basis?: string; page?: number; passage?: string; band: "green" | "amber" | "blank" | "grey"; decided_by: "rule" | "jev" | "user"; amount: Money }
 export interface Firm { id: string; name: string; abn: string; address: string; contact: string; email: string; phone: string; status: "draft" | "confirmed"; version: number }
 export interface Submission { id: string; project_id: string; package_id: string; firm_id: string; document_id: string; filename: string; kind: string; status: SubmissionStatus; received_on: string; superseded_by: string; gst_basis: string; flags: string[]; created_at: string; version: number }
-export interface Totals { base_total: Money; known_base: Money; not_priced: number; unread: number; options_total: Money; others_total: Money; stated_total: Money; gap: Money; lowest: boolean }
+export interface Totals { base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; options_total: Money; others_total: Money; stated_total: Money; gap: Money; lowest: boolean }
 export interface FieldDecision { field: string; value: string; band: "green" | "amber" | "blank" | "grey"; decided_by: "rule" | "jev" | "user" }
 export interface BuilderDetail { text: string; relationship: string; section_page: number }
 export interface BuilderSection { key: string; label: string; summary?: string; details: BuilderDetail[] }

@@ -243,18 +243,21 @@ func readFirm(ctx context.Context, q querier, org, id string) (Firm, error) {
 
 // FirmCard is one firm under a package on the Procurement page.
 type FirmCard struct {
-	SubmissionID string   `json:"submission_id"`
-	FirmName     string   `json:"firm_name"`
-	Filename     string   `json:"filename"`
-	ReceivedOn   string   `json:"received_on"`
-	Status       string   `json:"status"`
-	BaseTotal    *int64   `json:"-"`
-	KnownBase    int64    `json:"-"`
-	NotPriced    int      `json:"not_priced"`
-	Unread       int      `json:"unread"`
-	Lowest       bool     `json:"lowest"`
-	NeedsReview  bool     `json:"needs_review"`
-	Flags        []string `json:"flags"`
+	SubmissionID string `json:"submission_id"`
+	FirmName     string `json:"firm_name"`
+	Filename     string `json:"filename"`
+	ReceivedOn   string `json:"received_on"`
+	Status       string `json:"status"`
+	BaseTotal    *int64 `json:"-"`
+	KnownBase    int64  `json:"-"`
+	// StatedTotal is the firm's own printed total (ex GST), shown until the
+	// schedule cells are priced.
+	StatedTotal *int64   `json:"-"`
+	NotPriced   int      `json:"not_priced"`
+	Unread      int      `json:"unread"`
+	Lowest      bool     `json:"lowest"`
+	NeedsReview bool     `json:"needs_review"`
+	Flags       []string `json:"flags"`
 }
 
 // ProcurementBoard is every package's live firm cards, and the submissions
@@ -334,7 +337,7 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 
 func cardOf(c FirmColumn) FirmCard {
 	card := FirmCard{SubmissionID: c.Submission.ID, Filename: c.Submission.Filename, ReceivedOn: c.Submission.ReceivedOn, Status: c.Submission.Status,
-		BaseTotal: c.Totals.BaseTotal, KnownBase: c.Totals.KnownBase, NotPriced: c.Totals.NotPriced, Unread: c.Totals.Unread, Lowest: c.Totals.Lowest,
+		BaseTotal: c.Totals.BaseTotal, KnownBase: c.Totals.KnownBase, StatedTotal: c.Submission.StatedTotal, NotPriced: c.Totals.NotPriced, Unread: c.Totals.Unread, Lowest: c.Totals.Lowest,
 		NeedsReview: c.NeedsReview, Flags: stringsOrEmpty(c.Submission.Flags)}
 	if c.Firm != nil {
 		card.FirmName = c.Firm.Name

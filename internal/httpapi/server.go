@@ -197,6 +197,10 @@ func New(opts Options) (*Server, error) {
 	if preader.thresholds.QuestionVersion == "" {
 		preader.thresholds.QuestionVersion = proposals.QuestionVersion
 	}
+	preader.disciplines = map[string]string{}
+	for _, d := range opts.Catalog.Disciplines {
+		preader.disciplines[d.ID] = d.Label
+	}
 	importer := &programImporter{
 		store:      opts.Store,
 		blobs:      opts.Blobs,
