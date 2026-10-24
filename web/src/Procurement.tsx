@@ -6,7 +6,8 @@ import { Pending } from "./Activity";
 // (docs/plans/2026-10-16-procurement-to-award-implementation.md): a proposal
 // filed anywhere lands here, and one dropped on a row lands in that package.
 import { useCallback, useEffect, useState, type DragEvent } from "react";
-import { api, ApiError, type Option } from "./api";
+import { api, ApiError, type Option, type Doc } from "./api";
+import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
 import { PackageScope } from "./PackageScope";
@@ -50,6 +51,10 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   const [draft, setDraft] = useState<string | null>(null);
   const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
   const [dropRow, setDropRow] = useState("");
+  const [picker, setPicker] = useState<PackageRecord | null>(null);
+  const [filed, setFiled] = useState<Doc[]>([]);
+  const [chosen, setChosen] = useState("");
+  const [loadingFiles, setLoadingFiles] = useState(false);
 
   // The three reads go out together, so the table waits for one round trip.
   useEffect(() => {
@@ -143,11 +148,23 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   // is the row's: the firm column appears once it is read.
   async function dropOn(pkg: PackageRecord, e: DragEvent) {
     e.preventDefault(); e.stopPropagation(); setDropRow("");
+    const document = e.dataTransfer.getData(FILED_DOCUMENT_TYPE);
+    if (document) { await linkDocument(pkg, document); return; }
     const files = Array.from(e.dataTransfer.files);
     if (!files.length) return;
     setBusyRow(pkg.id); setUploadingRow(pkg.id); setError("");
     try { for (const f of files) await uploadProposal(projectId, pkg.id, f); setReload(n => n + 1); }
     catch (err) { fail(err); } finally { setBusyRow(""); setUploadingRow(""); }
+  }
+  async function linkDocument(pkg: PackageRecord, document: string) {
+    setBusyRow(pkg.id); setError("");
+    try { await submissionApi.linkDocument(projectId, pkg.id, document); setPicker(null); setReload(n => n + 1); }
+    catch (err) { fail(err); } finally { setBusyRow(""); }
+  }
+  async function chooseFiled(pkg: PackageRecord) {
+    setPicker(pkg); setChosen(""); setFiled([]); setLoadingFiles(true); setError("");
+    try { const list = await api.documents(projectId); setFiled(list.documents.filter(d => d.status === "filed")); }
+    catch (err) { fail(err); } finally { setLoadingFiles(false); }
   }
   async function assign(card: FirmCard, pkg: string) {
     if (!pkg) return;
@@ -190,7 +207,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
     const doc = row.kind === "services" ? "RFP" : "RFT";
     const dropping = row.pkg && dropRow === row.pkg.id;
     return <tr key={row.key} className={[row.pkg ? "" : "row-suggested", dropping ? "row-drop" : ""].filter(Boolean).join(" ") || undefined}
-      onDragOver={row.pkg ? (e => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); e.stopPropagation(); setDropRow(row.pkg!.id); } }) : undefined}
+      data-proposal-drop={row.pkg ? "true" : undefined}
+      onDragOver={row.pkg ? (e => { if (e.dataTransfer.types.includes("Files") || e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE)) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE) ? "link" : "copy"; setDropRow(row.pkg!.id); } }) : undefined}
       onDragLeave={row.pkg ? (() => setDropRow("")) : undefined}
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
       <th scope="row" className="discipline-cell">
@@ -199,6 +217,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
         {row.pkg && <PackageStages projectId={projectId} pkgId={row.pkg.id} label={row.label} tick={tick} onSignedOut={onSignedOut} />}
       </th>
       <FirmSlots cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
+        onChoose={() => row.pkg && void chooseFiled(row.pkg)}
         onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })} />
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
@@ -231,6 +250,15 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
     {data && <p className="procurement-line">{!gaps.length
       ? <>Every accepted work item is covered.{waiting ? ` ${waiting} work item${waiting === 1 ? " is" : "s are"} not yet accepted in Profile under Scope and works.` : ""}</>
       : <>{gapItems} work item{gapItems === 1 ? " has" : "s have"} a gap: {gaps.map(g => `${workTitle(g.work_item_id)} (${g.state === "overlap" ? `two packages hold ${words(g.role ?? "")}` : gapWords[g.role ?? ""] ?? words(g.role ?? "")})`).join(", ")}</>}</p>}
+    {picker && <form className="procurement-line procurement-unassigned" aria-label="Link filed proposal" onSubmit={e => { e.preventDefault(); if (chosen) void linkDocument(picker, chosen); }}>
+      <label>Filed document for {label(picker)}<select autoFocus value={chosen} onChange={e => setChosen(e.target.value)} disabled={loadingFiles || !!busyRow}>
+        <option value="">{loadingFiles ? "Loading documents…" : "Choose a filed document"}</option>
+        {filed.map(d => <option key={d.id} value={d.id}>{d.fields.find(f => f.field === "title")?.value || d.filename} · {d.filename}</option>)}
+      </select></label>
+      <p>Links the existing document. If it is already a proposal, moves it to this package with its saved firm and fees.</p>
+      <button className="btn btn-small" disabled={!chosen || !!busyRow}>Link proposal</button>
+      <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => setPicker(null)}>Cancel</button>
+    </form>}
     {data && data.board.unassigned.length > 0 && <div className="procurement-line procurement-unassigned" role="note">
       <p><strong>{data.board.unassigned.length} proposal{data.board.unassigned.length === 1 ? " needs" : "s need"} a package.</strong></p>
       {data.board.unassigned.map(c => <label key={c.submission_id}>{c.firm_name || c.filename}
@@ -272,11 +300,11 @@ const COLUMNS = 7;
  * so every row reads as the place firms are compared (owner decision 5,
  * docs/plans/2026-10-21-source-to-cost-plan-design.md). A fourth firm and
  * later show as "+n more" in Firm 3. */
-function FirmSlots({ cards, droppable, uploading, onOpen }: { cards: FirmCard[]; droppable: boolean; uploading: boolean; onOpen: () => void }) {
+function FirmSlots({ cards, droppable, uploading, onOpen, onChoose }: { cards: FirmCard[]; droppable: boolean; uploading: boolean; onOpen: () => void; onChoose: () => void }) {
   const extra = cards.length - 3;
   return <>{[0, 1, 2].map(i => {
     const c = cards[i];
-    const empty = droppable ? <span className="firms-none">{uploading && i === cards.length ? <Pending>Uploading…</Pending> : "Drop a proposal"}</span> : <span className="firms-none">—</span>;
+    const empty = droppable ? <span className="firms-none">{uploading && i === cards.length ? <Pending>Uploading…</Pending> : <>Drop a proposal<br /><button type="button" className="table-action" onClick={onChoose}>Choose filed proposal</button></>}</span> : <span className="firms-none">—</span>;
     return <td key={i} className="firm-slot">{c ? <FirmChip card={c} onOpen={onOpen} /> : empty}
       {i === 2 && extra > 0 && <button type="button" className="table-action" onClick={onOpen}>+{extra} more</button>}</td>;
   })}</>;

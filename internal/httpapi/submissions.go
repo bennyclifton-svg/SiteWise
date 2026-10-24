@@ -392,6 +392,48 @@ func getProcurementBoard(w http.ResponseWriter, r *http.Request, deps Deps) {
 
 // uploadSubmission files a proposal dropped on a package row: it goes into
 // the document register like any upload, and the package is the user's.
+func linkProposalDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !pathIDs(w, r, "pkg") {
+		return
+	}
+	session, ok := deliverySession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	var body struct {
+		DocumentID string `json:"document_id"`
+	}
+	if readProposalJSON(w, r, deps.MaxBodyBytes, &body) != nil || !uuidPattern.MatchString(body.DocumentID) {
+		http.Error(w, "invalid document", http.StatusBadRequest)
+		return
+	}
+	doc, err := deps.Store.GetDocument(r.Context(), session.OrgID, body.DocumentID)
+	if err != nil {
+		procurementError(w, deps, err)
+		return
+	}
+	if doc.ProjectID != r.PathValue("id") {
+		http.NotFound(w, r)
+		return
+	}
+	if doc.Status != store.StatusFiled {
+		http.Error(w, "Wait for the document to finish filing.", http.StatusConflict)
+		return
+	}
+	id, err := deps.Store.OpenSubmission(r.Context(), session.OrgID, doc.ProjectID, doc.ID, r.PathValue("pkg"), time.Now())
+	if err != nil {
+		procurementError(w, deps, err)
+		return
+	}
+	if deps.ProposalReader != nil {
+		deps.ProposalReader.Start(session.OrgID, id, time.Now(), false)
+	}
+	if deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"submission_id": id, "document_id": doc.ID})
+}
+
 func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !pathIDs(w, r, "pkg") {
 		return

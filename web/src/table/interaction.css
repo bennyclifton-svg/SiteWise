@@ -1,0 +1,21 @@
+:root { --table-selection-bg: var(--ember-soft); --table-edit-bg: color-mix(in oklab, var(--ember) 12%, var(--paper)); }
+:root[data-theme="dark"] { --table-selection-bg: color-mix(in oklab, var(--ember) 22%, transparent); }
+/* Shared by every double-click editor; focus changes colour, never geometry. */
+.inline-cell-editor,
+.inline-cell-editor:focus,
+.inline-cell-editor:focus-visible {
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  background: var(--table-edit-bg);
+  color: var(--ink);
+  font: inherit;
+}
+.inline-cell-editor[aria-invalid="true"] { background: color-mix(in oklab, var(--alert) 12%, var(--paper)); }
+
+.table-row-handle { position: absolute; left: 2px; top: 50%; width: 10px; height: 14px; margin-top: -7px; cursor: grab; opacity: 0; touch-action: none;
+  background: radial-gradient(circle, var(--ink-muted) 1.2px, transparent 1.4px) 0 0 / 5px 5px; }
+:is(.pg-row, .cost-row):hover .table-row-handle, [aria-selected="true"] .table-row-handle { opacity: 0.8; }
+
+.table-row-handle[data-disabled] { opacity: .2; cursor: default; }

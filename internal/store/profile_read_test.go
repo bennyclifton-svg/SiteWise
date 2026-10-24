@@ -211,7 +211,7 @@ func TestRequestProfileReadRereadsDocumentsBehindTheReadRevision(t *testing.T) {
 	ctx := context.Background()
 	st := profileStore(t)
 	pool := rawPool(t)
-	for _, kind := range []string{store.JobKindFullText, store.JobKindLabel} {
+	for _, kind := range []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence} {
 		if err := st.EnqueueStage(ctx, orgA, docA, kind); err != nil {
 			t.Fatal(err)
 		}
@@ -239,6 +239,13 @@ ON CONFLICT(org_id,document_id) DO UPDATE SET version=EXCLUDED.version`, orgA, d
 	}
 	if status, _ := label(); status != "queued" {
 		t.Fatalf("label job is %s", status)
+	}
+	var evidenceStatus string
+	if err := pool.QueryRow(ctx, `SELECT status FROM jobs WHERE org_id=$1 AND document_id=$2 AND kind='evidence'`, orgA, docA).Scan(&evidenceStatus); err != nil || evidenceStatus != "queued" {
+		t.Fatalf("stale scope evidence was not requeued: %s %v", evidenceStatus, err)
+	}
+	if _, err := st.ClaimJob(ctx, orgA, time.Minute, []string{store.JobKindEvidence}); err != store.ErrIdle {
+		t.Fatalf("evidence must wait for new labels: %v", err)
 	}
 	// The worker finishes it and records the revision it read.
 	job, err := st.ClaimJob(ctx, orgA, time.Minute, []string{store.JobKindLabel})

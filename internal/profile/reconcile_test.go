@@ -351,3 +351,21 @@ func TestPlanningValuesShowAsAssumptions(t *testing.T) {
 		}
 	}
 }
+
+// One address written with and without its state and postcode is one answer
+// (Meridian fitout, 2026-10-24); a different address is still a conflict.
+func TestDetailValuesThatExtendEachOtherAgree(t *testing.T) {
+	cat := repoCatalog(t)
+	in := input(jevFact("site.address", "88 Westgate Street, Parramatta", "brief", 1),
+		jevFact("site.address", "88 Westgate Street, Parramatta NSW 2150", "advice", 1),
+		jevFact("site.address", "88 westgate street parramatta", "letter", .96))
+	in.Thresholds.Amber["detail"] = .6
+	r := row(t, profile.Reconcile(in, cat), whole, "site.address")
+	if r.Band != "amber" || r.Value != "88 Westgate Street, Parramatta NSW 2150" || len(r.Sources) != 3 {
+		t.Fatalf("one address read as several: %+v", r)
+	}
+	in.Facts = append(in.Facts, jevFact("site.address", "100 George Street, Parramatta NSW 2150", "planner", 1))
+	if r := row(t, profile.Reconcile(in, cat), whole, "site.address"); r.Band != "red" || len(r.Alternatives) != 2 {
+		t.Fatalf("different addresses must conflict: %+v", r)
+	}
+}

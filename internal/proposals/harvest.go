@@ -39,9 +39,11 @@ func ExtractLimits() identity.Limits {
 // Line is one printed line: the runs on one baseline of a page, left to
 // right, or one cell row of a workbook or Word table.
 type Line struct {
-	Page  int
-	Text  string
-	Cells []string
+	Heading     bool
+	HeadingText string
+	Page        int
+	Text        string
+	Cells       []string
 	// Cols are the 1-based columns of Cells for a workbook or table row.
 	Cols []int
 	// X and W are each cell's left edge and width in PDF points; nil for a
@@ -65,12 +67,8 @@ func Lines(text identity.Text) []Line {
 	var keyed []rowKey
 	byKey := map[rowKey][]string{}
 	colsOf := map[rowKey][]int{}
-	markdown := text.Format == "md" || text.Format == "markdown"
 	for _, r := range text.Runs {
 		t := strings.TrimSpace(strings.Join(strings.Fields(r.Text), " "))
-		if markdown {
-			t = stripEmphasis(t)
-		}
 		if t == "" {
 			continue
 		}
@@ -85,7 +83,7 @@ func Lines(text identity.Text) []Line {
 				colsOf[k] = append(colsOf[k], src.Col)
 				continue
 			}
-			out = append(out, Line{Page: src.Page, Text: t, Cells: []string{t}})
+			out = append(out, Line{Page: src.Page, Text: t, Cells: []string{t}, Heading: src.Heading})
 			continue
 		}
 		if _, ok := byPage[src.Page]; !ok {
@@ -157,6 +155,7 @@ type Amount struct {
 	Line      int      `json:"-"`
 	Kind      string   `json:"-"` // "", "percent"
 	Breakdown []string `json:"printed_breakdown_headings,omitempty"`
+	RepeatOf  string   `json:"repeat_of,omitempty"`
 }
 
 // Section is the proposal split at its headings.
@@ -226,12 +225,16 @@ var (
 // project's own value, a turnover or a staff count.
 var excludedContext = regexp.MustCompile(`(?i)services concerned|failure to exercise reasonable care|policy value|imprisonment|if no invoice has been issued|insurance|insurer|indemnity|public liability|liability\b|\bworkers\b|any one (?:claim|occurrence)|aggregate|valued (?:at|over|up to)|projects? (?:valued|worth|value)|value of the (?:project|works)|estimated value|contract value|turnover|construction (?:cost|value|budget) of|capital (?:value|investment)|\$\s?\d+(?:\.\d+)?\s?(?:m|million|billion|bn)\b`)
 
-var totalWords = regexp.MustCompile(`(?i)\b(?:cost|fee) estimate\b|\btotal\b|\bsub-?total\b|\blump\s?sum\b|\bfee\s+(?:total|summary)\b`)
+var totalWords = regexp.MustCompile(`(?i)\b(?:cost|fee) estimate\b|\btotal\b|\bsub-?total\b|\blump\s?sum\b|\bfixed\s+(?:professional\s+)?fee\b|\bfee\s+(?:total|summary)\b`)
 
 // Harvest collects candidates from a proposal's text.
 func Harvest(filename string, text identity.Text) Evidence {
 	ev := Evidence{Filename: filename, TextLayer: text.TextLayer, OCR: text.OCR, Incomplete: text.Incomplete}
 	lines := Lines(text)
+	markdown := strings.EqualFold(filepath.Ext(filename), ".md") || strings.EqualFold(filepath.Ext(filename), ".markdown")
+	if markdown {
+		lines = markdownLines(lines)
+	}
 	ev.Readable = readable(lines)
 	ev.Form, ev.FormFirm = formCells(lines)
 	running := runningLines(lines)
@@ -257,9 +260,12 @@ func Harvest(filename string, text identity.Text) Evidence {
 	for i, l := range lines {
 		t := l.Text
 		lower := strings.ToLower(t)
-		if isHeading(t) && !running[runningKey(t)] {
+		if (l.Heading || !markdown && isHeading(t)) && !running[runningKey(t)] {
 			heading = t
-			newSection(t, l.Page)
+			if l.HeadingText != "" {
+				heading = l.HeadingText
+			}
+			newSection(heading, l.Page)
 		}
 		s := &ev.Sections[section]
 		if len(s.Body) < 20000 {
@@ -300,6 +306,9 @@ func Harvest(filename string, text identity.Text) Evidence {
 		}
 		if companyRe.MatchString(t) && len(strings.Fields(t)) <= 8 && !moneyRe.MatchString(t) && !emailRe.MatchString(t) {
 			addUnique(&ev.Names, cleanFirmCandidate(strings.Trim(t, " ,.-|")))
+			if signatureRole.MatchString(t) && i > 0 && personName(lines[i-1].Text) {
+				addUnique(&ev.Contacts, lines[i-1].Text)
+			}
 		}
 		if signoffRe.MatchString(strings.TrimSpace(t)) {
 			for _, next := range lines[i+1 : min(len(lines), i+5)] {
@@ -318,6 +327,9 @@ func Harvest(filename string, text identity.Text) Evidence {
 					continue
 				}
 				label := rowLabel(l.Cells, j, m.before)
+				if markdown && len(l.Cells) > 1 && j > 0 {
+					label = l.Cells[0]
+				}
 				above, localHeading := amountColumnContext(lines, i, j, m.before)
 				if excludedContext.MatchString(localHeading) || excludedContext.MatchString(label+" "+cell) || excludedContext.MatchString(above) && !strings.Contains(strings.ToLower(label+" "+cell), "fee") {
 					continue
@@ -335,10 +347,20 @@ func Harvest(filename string, text identity.Text) Evidence {
 				a.Total = (totalWords.MatchString(a.Label) && len(strings.Fields(a.Label)) <= 10) ||
 					(totalWords.MatchString(ctx) && len(strings.Fields(ctx)) <= 8) ||
 					(totalWords.MatchString(before) && len(strings.Fields(before)) <= 4 && len(strings.Fields(ctx)) <= 4)
+				if (feeHeading.MatchString(heading) || feeHeading.MatchString(label)) && len(l.Cells) == 1 && len(moneyIn(t)) == 1 && len(strings.Fields(t)) <= 12 {
+					a.Total = true
+				}
 				if incGSTRe.MatchString(ctx) && !exGSTRe.MatchString(ctx) {
 					a.GST = "inc"
 				} else if exGSTRe.MatchString(ctx) && !incGSTRe.MatchString(ctx) {
 					a.GST = "ex"
+				}
+				if a.GST == "" {
+					if exGSTRe.MatchString(a.Column) && !incGSTRe.MatchString(a.Column) {
+						a.GST = "ex"
+					} else if incGSTRe.MatchString(a.Column) && !exGSTRe.MatchString(a.Column) {
+						a.GST = "inc"
+					}
 				}
 				ev.Amounts = append(ev.Amounts, a)
 			}
@@ -389,6 +411,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 	for i := range ev.Amounts {
 		ev.Amounts[i].ID = "a" + strconv.Itoa(i+1)
 	}
+	markRepeatedReferences(ev.Amounts)
 	ev.Printed = len(ev.Names)
 	for _, n := range filenameNames(filename) {
 		ev.Hints = append(ev.Hints, n)
@@ -607,6 +630,17 @@ func rowLabel(cells []string, j int, prefix string) string {
 // nearest line above, on the same page and before the next heading, whose
 // cells hold no figures and one of which sits over this cell.
 func columnHeading(lines []Line, i int, l Line, j int) string {
+	if len(l.X) == 0 && len(l.Cells) > 1 {
+		for k := i - 1; k >= 0 && k >= i-30; k-- {
+			h := lines[k]
+			if h.Page != l.Page || len(h.Cells) != len(l.Cells) {
+				break
+			}
+			if !moneyRe.MatchString(h.Text) && j < len(h.Cells) && (exGSTRe.MatchString(h.Cells[j]) || incGSTRe.MatchString(h.Cells[j])) {
+				return h.Cells[j]
+			}
+		}
+	}
 	if j >= len(l.X) || len(l.Cells) < 2 {
 		return ""
 	}

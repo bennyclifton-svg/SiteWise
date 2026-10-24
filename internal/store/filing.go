@@ -162,6 +162,11 @@ func (s *Store) CorrectDecision(ctx context.Context, orgID, documentID, field, v
 	if _, err := appendEvent(ctx, q, orgID, EventCorrection, documentID, payload); err != nil {
 		return err
 	}
+	if field == "discipline" {
+		if err := matchUnassignedSubmissions(ctx, tx, orgID, projectID, documentID); err != nil {
+			return err
+		}
+	}
 	return s.finishProfileWrite(ctx, tx, orgID, projectID)
 }
 
@@ -327,6 +332,9 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 		}
 	}
 	if err := BumpRevision(ctx, tx, orgID, projectID, "profile_inputs"); err != nil {
+		return FilingOutcome{}, err
+	}
+	if err := matchUnassignedSubmissions(ctx, tx, orgID, projectID, documentID); err != nil {
 		return FilingOutcome{}, err
 	}
 	out, err := readOutcome(ctx, q, orgID, documentID)

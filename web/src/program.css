@@ -135,8 +135,8 @@
 .pg-rows { will-change: transform; }
 .pg-row { box-sizing: border-box; border-bottom: 1px solid var(--line); cursor: default; user-select: none; }
 .pg-row:hover { background: var(--ground); }
-.pg-row.is-selected { background: var(--ember-soft); box-shadow: inset 2px 0 0 var(--ember); }
-:root[data-theme="dark"] .pg-row.is-selected { background: color-mix(in oklab, var(--ember) 22%, transparent); }
+.pg-row.is-selected { background: var(--table-selection-bg); box-shadow: inset 2px 0 0 var(--ember); }
+
 .pg-row.is-stage .pg-label { font-weight: 600; color: var(--ink); }
 .pg-row:not(.is-stage) .pg-name { padding-left: 30px; }
 .pg-num { font-family: var(--mono); font-size: 11px; color: var(--ink-muted); text-align: right; }
@@ -206,14 +206,11 @@
 /* Editing (WP-P8) */
 .pg-row.is-editing { position: relative; z-index: 3; }
 .pg-cell:focus-visible { outline: 2px solid var(--sw-action-focus); outline-offset: -2px; }
-.pg-edit { width: 100%; min-width: 0; height: calc(var(--pg-row-h) - 6px); padding: 0 6px; border: 1px solid var(--ember); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; }
-.pg-edit[aria-invalid="true"] { border-color: var(--alert); }
+.pg-edit { width: 100%; min-width: 0; height: calc(var(--pg-row-h) - 6px); padding: 0 6px; }
+
 .pg-cell-error { position: absolute; left: 40px; top: 100%; z-index: 4; max-width: 420px; padding: 4px 8px; border: 1px solid var(--alert); border-radius: var(--radius-sm); background: var(--alert-soft); color: var(--ink); font-size: 12px; white-space: normal; }
 .pg-pred { font-family: var(--mono); font-size: 11.5px; color: var(--ink-body); }
 .pg-num { position: relative; }
-.pg-handle { position: absolute; left: 2px; top: 50%; width: 10px; height: 14px; margin-top: -7px; cursor: grab; opacity: 0; touch-action: none;
-  background: radial-gradient(circle, var(--ink-muted) 1.2px, transparent 1.4px) 0 0 / 5px 5px; }
-.pg-row:hover .pg-handle, .pg-row.is-selected .pg-handle { opacity: 0.8; }
 .pg-insert { position: absolute; left: 0; right: 0; height: 2px; background: var(--ember); pointer-events: none; z-index: 4; }
 .pg-insert.is-into { background: color-mix(in oklab, var(--ember) 14%, transparent); outline: 2px solid var(--ember); outline-offset: -2px; }
 .pg-cat { flex: none; max-width: 110px; height: 20px; margin-left: auto; padding: 0 2px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); background: none; color: var(--ink-muted); font: inherit; font-size: 11px; }

@@ -20,6 +20,7 @@ import { CockpitFrame } from "./CockpitFrame";
 import { LeftNav, type WorkbenchView } from "./LeftNav";
 import { Profile } from "./Profile";
 import { Register } from "./Register";
+import { DocumentWorkspace } from "./DocumentWorkspace";
 import { Procurement } from "./Procurement";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
@@ -238,8 +239,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [over, setOver] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [flash, setFlash] = useState<string | null>(null);
+  const [openDocument, setOpenDocument] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [profileTick, setProfileTick] = useState(0);
+  const [profileFeedbackTarget, setProfileFeedbackTarget] = useState<HTMLDivElement | null>(null);
   const [showReports, setShowReports] = useState(false);
   const [showCosts, setShowCosts] = useState(false);
   const [showSpecifications, setShowSpecifications] = useState(false);
@@ -571,6 +574,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   );
 
   const jump = useCallback((docId: string) => {
+    setOpenDocument(docId);
     const el = document.getElementById(`doc-${docId}`);
     if (!el) return;
     el.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -615,6 +619,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     [state, now, flash],
   );
 
+  const viewingRow = rows.find(row => row.key === openDocument);
+
   const view: WorkbenchView = showProgram
     ? "program"
     : showSpecifications
@@ -626,6 +632,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         : "profile";
 
   const showView = (next: WorkbenchView) => {
+    setOpenDocument(null);
     setShowProgram(next === "program");
     if (next === "program") {
       setProgramOpened(true);
@@ -666,17 +673,15 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       rows={rows}
       catalog={catalog}
       live={live}
-      priorLabel={priorLabel}
       onCorrect={correct}
-      onRetry={retry}
-      onJump={jump}
-      onDismiss={(key) => dispatch({ type: "dismiss", key })}
       onAddFiles={() => fileInput.current?.click()}
       onSetReading={setReading}
       notReadOnly={notReadOnly}
       onClearFilter={() => setNotReadOnly(false)}
       onDelete={remove}
       fileOver={over}
+      openKey={openDocument}
+      onOpen={setOpenDocument}
     />
   );
 
@@ -721,19 +726,28 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
-      wideWorkspace={showSpecifications || showReports || showCosts || showProgram}
+      wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram)}
+      profileFeedbackRef={setProfileFeedbackTarget}
+      showProfileFeedback={!viewingRow && !showSpecifications && !showReports && !showCosts && !showProgram}
       onDragEnter={onDragEnter}
+      onDragOverCapture={e => { if ((e.target as HTMLElement).closest("[data-proposal-drop]")) { dragDepth.current = 0; setOver(false); } }}
+      onDropCapture={() => { dragDepth.current = 0; setOver(false); }}
+      onDragEndCapture={() => { dragDepth.current = 0; setOver(false); }}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <section className="profile-col" aria-label="Project profile" hidden={showSpecifications || showReports || showCosts || showProgram}>
-        <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} />
+      <section className="profile-col" aria-label="Project profile" hidden={!!viewingRow || showSpecifications || showReports || showCosts || showProgram}>
+        <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget} />
       </section>
-      {costsOpened && <div className="project-reports" hidden={!showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
-      {specificationsOpened && <div className="project-reports" hidden={!showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
-      {programOpened && <div className="project-reports" hidden={!showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} onOpenCostPlan={() => showView("costs")} /></div>}
+      {costsOpened && <div className="project-reports" hidden={!!viewingRow || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
+      {specificationsOpened && <div className="project-reports" hidden={!!viewingRow || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
+      {programOpened && <div className="project-reports" hidden={!!viewingRow || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !viewingRow} onSignedOut={onSignedOut} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenProfile={() => showView("profile")} onOpenCostPlan={() => showView("costs")} /></div>}
+      {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
+        setOpenDocument(null);
+        document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });
+      }} />}
       <input
         ref={fileInput}
         type="file"

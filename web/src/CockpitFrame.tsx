@@ -8,8 +8,13 @@ interface Props {
   children: ReactNode;
   repository: ReactNode;
   wideWorkspace?: boolean;
+  profileFeedbackRef?: (element: HTMLDivElement | null) => void;
+  showProfileFeedback?: boolean;
   onDragEnter?: (e: DragEvent) => void;
   onDragOver?: (e: DragEvent) => void;
+  onDragOverCapture?: (e: DragEvent) => void;
+  onDropCapture?: (e: DragEvent) => void;
+  onDragEndCapture?: (e: DragEvent) => void;
   onDragLeave?: () => void;
   onDrop?: (e: DragEvent) => void;
 }
@@ -27,11 +32,11 @@ const WIDE_SHELL = "(min-width: 1101px)";
 function repoMax(viewport: number) {
   // The rail can be dragged until the working view is about 200px, which is
   // wide enough to open every document column.
-  return Math.max(REPO_MIN, Math.min(REPO_ABS_MAX, viewport - 268 - MAIN_FLOOR - 56));
+  return Math.max(REPO_MIN, Math.min(REPO_ABS_MAX, viewport - 236 - MAIN_FLOOR - 56));
 }
 
 function repoDefault(viewport: number) {
-  const room = viewport - 268 - MAIN_DEFAULT - 56;
+  const room = viewport - 236 - MAIN_DEFAULT - 56;
   return Math.min(repoMax(viewport), Math.max(REPO_MIN, Math.min(REPO_PREFERRED, room)));
 }
 
@@ -62,7 +67,7 @@ function storeRepoWidth(px: number) {
 // view, and the document repository. The repository stays up on every view.
 // Its width is dragged from the left edge; columns fold in cockpit.css when
 // the rail is too narrow to read them.
-export function CockpitFrame({ nav, title, subtitle, children, repository, wideWorkspace=false, onDragEnter, onDragOver, onDragLeave, onDrop }: Props) {
+export function CockpitFrame({ nav, title, subtitle, children, repository, wideWorkspace=false, profileFeedbackRef, showProfileFeedback=false, onDragEnter, onDragOver, onDragLeave, onDrop, onDragOverCapture, onDropCapture, onDragEndCapture }: Props) {
   const [showDocuments,setShowDocuments]=useState(false);
   const focusWorkspace=wideWorkspace&&!showDocuments;
   const [wide, setWide] = useState(() => window.matchMedia(WIDE_SHELL).matches);
@@ -139,9 +144,12 @@ export function CockpitFrame({ nav, title, subtitle, children, repository, wideW
     <div className={`cockpit-page${wideWorkspace?" specification-page":""}`}>
       <div
         className={dragging ? "cockpit-shell is-resizing" : "cockpit-shell"}
-        style={wide ? { gridTemplateColumns: focusWorkspace?"minmax(220px, 268px) minmax(0, 1fr)":`minmax(220px, 268px) minmax(0, 1fr) ${width}px` } : undefined}
+        style={wide ? { gridTemplateColumns: focusWorkspace?"minmax(200px, 236px) minmax(0, 1fr)":`minmax(200px, 236px) minmax(0, 1fr) ${width}px` } : undefined}
         onDragEnter={onDragEnter}
         onDragOver={onDragOver}
+        onDragOverCapture={onDragOverCapture}
+        onDropCapture={onDropCapture}
+        onDragEndCapture={onDragEndCapture}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
@@ -151,12 +159,15 @@ export function CockpitFrame({ nav, title, subtitle, children, repository, wideW
             <h1 className="cockpit-title">{title}</h1>
             <p className="cockpit-address">{subtitle}</p>
           </div>
-          <ThemeButton />
-          {wideWorkspace&&<button className="btn" aria-expanded={showDocuments} onClick={()=>setShowDocuments(v=>!v)}>{showDocuments?"Hide documents":"Show documents"}</button>}
+          <div className="cockpit-header-actions">
+            {wideWorkspace&&<button className="btn" aria-expanded={showDocuments} onClick={()=>setShowDocuments(v=>!v)}>{showDocuments?"Hide documents":"Show documents"}</button>}
+            <ThemeButton />
+          </div>
         </header>
         <main className="project-main-panel" id="main">
           <div className="cockpit-scroll">{children}</div>
-          <AskBar />
+          <div ref={profileFeedbackRef} hidden={!showProfileFeedback} className="profile-feedback-slot" />
+          {!showProfileFeedback && <AskBar />}
         </main>
         <aside className="project-side-panel" aria-label="Document register" style={focusWorkspace?{display:"none"}:undefined}>
           {wide && (

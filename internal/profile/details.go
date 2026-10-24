@@ -26,7 +26,7 @@ var (
 	lotRe = regexp.MustCompile(`(?i)\bLots?\s+\d+[A-Z]?(?:\s*(?:,|and|&)\s*\d+[A-Z]?)*(?:\s+(?:in|on|of))?(?:,?\s+Section\s+\d+[A-Z]?)?,?\s*(?:DP|D\.P\.|SP|RP|PS|CP|Deposited Plan|Strata Plan)\s*\d+`)
 	lotIn = regexp.MustCompile(`(?i)\s+(?:in|on|of)\s+`)
 
-	clientCueRe = regexp.MustCompile(`(?i)\b(?:Principal|Client|Owner|Proponent|Applicant|Developer|Landowner)\b(?:\s*\([^)]{0,40}\))?\s*[:–]\s*|\b(?:prepared for|commissioned by)\s+`)
+	clientCueRe = regexp.MustCompile(`(?i)\b(?:Principal|Client|Owner|Proponent|Applicant|Developer|Landowner)\b(?:\s*\([^)]{0,40}\))?\s*\**\s*[:–]\s*\**\s*|\b(?:prepared for|commissioned by)\s+`)
 	wordRe      = regexp.MustCompile(`\S+`)
 	// clientStop ends a name: the next label or number on a cover block.
 	clientStop = map[string]bool{"ABN": true, "ACN": true, "DRAFT": true, "Revision": true, "Rev": true, "Date": true,
@@ -50,7 +50,9 @@ var (
 	// both: "$1.8 million excluding GST".
 	moneyRe = regexp.MustCompile(`(?i)(?:\$|\bAUD\s*)\s*\d[\d,]*(?:\.\d+)?(?:\s*(?:million|m|k)\b)?(?:\s*\(?(?:excl(?:uding|\.)?|ex\.?|incl(?:uding|\.)?|inc\.?)\s*(?:of\s+)?GST\)?)?`)
 
-	sustainRe = regexp.MustCompile(`(?i)\b(?:\d(?:\.\d)?\s*[- ]?star\s+)?(?:Green\s+Star|NABERS|NatHERS|Passive\s*Haus|Passive\s*House|LEED|Net[- ]Zero)\b[^.;\n]{0,60}`)
+	// A full stop inside a number (4.5 stars) does not end the sentence; a
+	// Markdown table cell border does.
+	sustainRe = regexp.MustCompile(`(?i)\b(?:\d(?:\.\d)?\s*[- ]?star\s+)?(?:Green\s+Star|NABERS|NatHERS|Passive\s*Haus|Passive\s*House|LEED|Net[- ]Zero)\b(?:[^.;\n|]|\.\d){0,60}`)
 )
 
 // streetTypeFull writes abbreviated street types out, so "Parramatta Rd" and
@@ -77,6 +79,8 @@ func detailCandidates(key, text string) []Candidate {
 		return lgaCandidates(text)
 	case "proj.zone":
 		return zoneCandidates(text)
+	case "proj.program":
+		return programCandidates(text)
 	case "proj.sustainability":
 		return sustainabilityCandidates(text)
 	case "proj.budget_stated", "proj.contingency_stated":
@@ -87,6 +91,26 @@ func detailCandidates(key, text string) []Candidate {
 		return clauseCandidates(text, exclusionRe)
 	}
 	return nil
+}
+
+var programTarget = regexp.MustCompile(`(?i)\b(?:target|aspiration|aspirational|planned)\b`)
+var programYear = regexp.MustCompile(`\b20\d{2}\b`)
+
+// Keep the entire dated target paragraph, including its qualification. Jev
+// chooses a literal statement; neither dates nor commitments are generated.
+func programCandidates(text string) []Candidate {
+	var spans []span
+	start := 0
+	for _, paragraph := range strings.Split(text, "\n\n") {
+		// The Profile field is a narrative target summary. Activity tables
+		// belong to the Program reader; treating each table as a competing
+		// summary creates false conflicts with the programme's own purpose.
+		if !strings.Contains(paragraph, "|") && programTarget.MatchString(paragraph) && programYear.MatchString(paragraph) {
+			spans = append(spans, span{start, start + len(paragraph), paragraph})
+		}
+		start += len(paragraph) + 2
+	}
+	return collect(text, spans)
 }
 
 var (
@@ -216,7 +240,9 @@ func lotCandidates(text string) []Candidate {
 // a line break or punctuation; "Pty." and "Ltd." keep their full stop.
 func clientCandidates(text string) []Candidate {
 	var spans []span
-	for _, cue := range clientCueRe.FindAllStringIndex(text, -1) {
+	cues := clientCueRe.FindAllStringIndex(text, -1)
+	for i := 0; i < len(cues); i++ {
+		cue := cues[i]
 		rest := text[cue[1]:]
 		if len(rest) > 160 {
 			rest = rest[:160]
@@ -257,6 +283,12 @@ func clientCandidates(text string) []Candidate {
 		}
 		start, end := words[0][0], words[len(words)-1][1]
 		spans = append(spans, span{cue[1] + start, cue[1] + end, strings.TrimRight(rest[start:end], ".")})
+		// "Client: Studio Pty Ltd for Tenant Pty Ltd" names the agent and the
+		// party it acts for; offer both and let Jev pick the project's client.
+		if after := rest[end:]; strings.HasPrefix(after, " for ") {
+			at := cue[1] + end + len(" for ")
+			cues = append(cues, []int{at, at})
+		}
 	}
 	return collect(text, spans)
 }
@@ -326,7 +358,7 @@ func sustainabilityCandidates(text string) []Candidate {
 	for _, m := range sustainRe.FindAllStringIndex(text, -1) {
 		end := m[1]
 		// The 60-character tail may stop mid-word; end at the last word.
-		if end < len(text) && text[end] != ' ' && text[end] != '.' && text[end] != ',' {
+		if end < len(text) && !strings.ContainsRune(" .,;|\n", rune(text[end])) {
 			if i := strings.LastIndex(text[m[0]:end], " "); i > 0 {
 				end = m[0] + i
 			}

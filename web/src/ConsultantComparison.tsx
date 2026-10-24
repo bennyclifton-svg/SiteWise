@@ -3,7 +3,7 @@ import { fmt } from "./CostGrid";
 import { submissionApi, type Column, type PriceTable, type QuoteFee } from "./submissionApi";
 
 const money = (value: string | null) => value === null ? "Tax basis unclear" : `$${fmt(value)}`;
-const feeRole = (f: QuoteFee) => f.role.startsWith("Alternative") ? "Alternative · includes other work" : f.role.startsWith("Breakdown") ? "Breakdown · included in package" : f.role.startsWith("Conditional") ? "Conditional / optional" : f.role.includes("total") ? "Package total" : "Quoted fee";
+const feeRole = (f: QuoteFee) => f.role.startsWith("Repeated") ? "Repeated reference · do not add again" : f.role.startsWith("Alternative") ? "Alternative · includes other work" : f.role.startsWith("Breakdown") ? "Breakdown · included in package" : f.role.startsWith("Conditional") ? "Conditional / optional" : f.role.includes("total") ? "Package total" : "Quoted fee";
 const roleNote = (f: QuoteFee) => `${feeRole(f)}${f.suggestion && f.suggestion !== "Current offer" ? ` · Suggested: ${f.suggestion}` : ""}`;
 function headlineFees(fees: QuoteFee[]) {
   const offers = fees.filter(f => (f.role.includes("Package") || f.role.includes("Alternative")) && !f.suggestion?.startsWith("Earlier"));
@@ -43,6 +43,7 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
       <thead><tr><th scope="col">Quoted fees <span>ex GST where established</span></th>{table.columns.map(c => <th scope="col" key={c.submission.id}>
         <button className="table-action" onClick={() => onOpen(c.submission.id)}>{c.firm?.name || c.submission.filename}</button>
         <small className="quote-filename">{c.submission.filename}</small>
+        {c.firm && table.columns.some(other => other.submission.id !== c.submission.id && other.firm?.id === c.firm?.id) && <small>Another document for this firm is shown. Do not add their fees together.</small>}
         <a href={submissionApi.fileURL(projectId, c.submission.id)} target="_blank" rel="noreferrer">Open proposal</a>
       </th>)}</tr></thead>
       <tbody>
@@ -53,7 +54,7 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
                 <strong>{f.amount !== null ? money(f.amount) : f.printed}</strong> <span>{f.label}</span>
                 {/^sub\s*total$/i.test(f.label) && <small>{f.heading}</small>}
                 <small>{roleNote(f)}{f.amount === null ? " · GST basis unclear" : ""}</small>
-                <a href={submissionApi.fileURL(projectId, c.submission.id, f.page)} target="_blank" rel="noreferrer">Page {f.page}</a>
+                <a href={submissionApi.fileURL(projectId, c.submission.id, f.page)} target="_blank" rel="noreferrer">{f.page > 0 ? `Page ${f.page}` : "Open source"}</a>
                 <button className="table-action" disabled={locked || !f.amount} onClick={() => edit(c, f)}>Review for comparison</button>
               </li>)}</ul>
               {!c.quote.fees.some(f => f.role.includes("Package") || f.role.includes("Alternative")) && <p>No single package total established. Review the quoted fee lines below.</p>}
@@ -61,12 +62,16 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
             </>}
           </td>)}
         </tr>
-        <tr><th scope="row">Conditions and alternatives<span>Check before selecting the appointment</span></th>{table.columns.map(c => <td key={c.submission.id}><ul className="quoted-fees">{c.quote?.fees.filter(f => f.role.includes("Conditional") || f.suggestion?.startsWith("Conditional")).map(f => <li key={f.id}><strong>{f.amount ? money(f.amount) : f.printed}</strong> {f.label}<small>{f.source}</small><a href={submissionApi.fileURL(projectId, c.submission.id, f.page)} target="_blank" rel="noreferrer">Page {f.page}</a></li>)}</ul></td>)}</tr>
+        {([['scope', 'Scope stated in the source'], ['exclusions and qualifications', 'Exclusions and qualifications'], ['conditions', 'Conditions']] as const).map(([kind, label]) => <tr key={kind}><th scope="row">{label}<span>Source wording · check before appointment</span></th>{table.columns.map(c => {
+          const terms = c.quote?.terms?.filter(t => t.kind === kind) ?? [];
+          return <td key={c.submission.id}>{terms.length ? terms.map((term, i) => <details key={i} open={kind === 'exclusions and qualifications'}><summary>{term.heading}</summary><p style={{ whiteSpace: 'pre-line' }}>{term.text}</p><a href={submissionApi.fileURL(projectId, c.submission.id, term.page)} target="_blank" rel="noreferrer">Open source</a></details>) : <span>{kind === 'exclusions and qualifications' ? 'No explicit exclusions or qualifications identified. This does not confirm full coverage.' : 'No labelled source section identified.'}</span>}</td>;
+        })}</tr>)}
+        <tr><th scope="row">Conditional fees and alternatives<span>Check before selecting the appointment</span></th>{table.columns.map(c => <td key={c.submission.id}><ul className="quoted-fees">{c.quote?.fees.filter(f => f.role.includes("Conditional") || f.suggestion?.startsWith("Conditional")).map(f => <li key={f.id}><strong>{f.amount ? money(f.amount) : f.printed}</strong> {f.label}<small>{f.source}</small><a href={submissionApi.fileURL(projectId, c.submission.id, f.page)} target="_blank" rel="noreferrer">Open source</a></li>)}</ul></td>)}</tr>
         <tr><th scope="row">Quoted fee lines<span>Source amounts, not an additional total</span></th>{table.columns.map(c => <td key={c.submission.id}>
           <details><summary>{c.quote?.fees.length ?? 0} source fee lines</summary><ul className="quoted-fees">
             {c.quote?.fees.map(f => <li key={f.id}><strong>{f.amount !== null ? money(f.amount) : f.printed}</strong> {f.label}
               <small>{roleNote(f)}</small><p>{f.source}</p>
-              <a href={submissionApi.fileURL(projectId, c.submission.id, f.page)} target="_blank" rel="noreferrer">Page {f.page}</a>
+              <a href={submissionApi.fileURL(projectId, c.submission.id, f.page)} target="_blank" rel="noreferrer">{f.page > 0 ? `Page ${f.page}` : "Open source"}</a>
               <button className="table-action" disabled={locked || !f.amount} onClick={() => edit(c, f)}>Review for comparison</button>
             </li>)}
           </ul></details>
@@ -90,8 +95,8 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
           const fee = c.quote?.fees.find(f => f.id === coverage?.fee_id);
           const cell = c.cells[row.key];
           const user = cell?.decided_by === "user";
-          return <td key={c.submission.id}>{user ? <><strong>{cell.state === "included" ? "Included — confirmed by you" : cell.state === "excluded" ? "Excluded — confirmed by you" : cell.state === "priced" ? "Separately priced — confirmed by you" : "Not separately priced"}</strong><p>{cell.basis}</p></> : fee ? <><span>Covered by {fee.label}</span><small className="prices-note">{fee.suggestion?.startsWith("Earlier") ? "Earlier source · check revised offer" : "Suggested coverage · check source"}</small><a href={submissionApi.fileURL(projectId, c.submission.id, fee.page)} target="_blank" rel="noreferrer">Page {fee.page}</a></> : <span>{coverage?.status || "Coverage unclear"}</span>}
-            {!user && fee && !fee.suggestion?.startsWith("Earlier") && <button className="table-action" disabled={locked} onClick={() => void onCoverage(c.submission.id, row.key, "included", `Included in ${fee.label}; source page ${fee.page}. ${fee.source}`.slice(0, 500))}>Confirm coverage</button>}
+          return <td key={c.submission.id}>{user ? <><strong>{cell.state === "included" ? "Included — confirmed by you" : cell.state === "excluded" ? "Excluded — confirmed by you" : cell.state === "priced" ? "Separately priced — confirmed by you" : "Not separately priced"}</strong><p>{cell.basis}</p></> : fee ? <><span>{coverage?.status.startsWith("Partial") ? "Partly covered by" : "Covered by"} {fee.label}</span><small className="prices-note">{fee.suggestion?.startsWith("Earlier") ? "Earlier source · check revised offer" : "Suggested coverage · check source"}</small><a href={submissionApi.fileURL(projectId, c.submission.id, fee.page)} target="_blank" rel="noreferrer">{fee.page > 0 ? `Page ${fee.page}` : "Open source"}</a></> : <span>{coverage?.status || "Coverage unclear"}</span>}
+            {!user && fee && !coverage?.status.startsWith("Partial") && !fee.suggestion?.startsWith("Earlier") && <button className="table-action" disabled={locked} onClick={() => void onCoverage(c.submission.id, row.key, "included", `Included in ${fee.label}; source page ${fee.page}. ${fee.source}`.slice(0, 500))}>Confirm coverage</button>}
           </td>;
         })}</tr>)}
       </tbody>

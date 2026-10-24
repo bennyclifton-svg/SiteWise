@@ -19,7 +19,7 @@ flags:
     asks: does the passage state that Connecting with Country input is required for this project?
   - key: staged
     triggers: ['\bstages? [1-9a-c]\b', 'staged (?:construction|delivery|development|handover|works|release)', 'in (?:two|three|four|\d) stages']
-    asks: does the passage state that the project is delivered in stages?
+    asks: does the passage state that the construction works are delivered in stages? Fee, payment, design or approval stages are not construction stages.
   - key: multi_building
     triggers: ['\bbuildings? [a-d]\b', '\bcampus\b', 'multiple buildings', '(?:two|three|four|five|\d+) buildings']
     asks: does the passage state that the project has several buildings, or is a campus?
@@ -79,7 +79,7 @@ flags:
     asks: does the passage state that community consultation is required?
   - key: architect_lodges
     triggers: ['\blodge(?:d|s|ment)?\b', '\blodging\b']
-    asks: does the passage state that the architect lodges the development application or complying development application for this project?
+    asks: does the passage state that the architect lodges the development application, state significant development application or complying development application for this project?
   - key: sustainability_target
     triggers: ['green star', 'nabers', 'passive ?haus|passive ?house', '\bleed\b', 'net[- ]zero']
     asks: does the passage state that a Green Star, NABERS or similar rating target is set for this project?

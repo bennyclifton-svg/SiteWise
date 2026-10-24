@@ -1,27 +1,26 @@
 import { Pending } from "./Activity";
-// The document register: one compact line per filing, sortable, opening to
-// the full title block for correction. Modelled on the Clerk register.
+import { FILED_DOCUMENT_TYPE } from "./documentDrag";
+// The document register: one compact line per filing, sortable, opening the
+// source and filing details in the centre workspace.
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode, type HTMLAttributes } from "react";
 import type { Catalog, Doc, ReadSetting } from "./api";
-import { FIELDS, FieldCell, HeadState, notFiledReason, stateOf, type RowModel } from "./DocumentRow";
+import { FIELDS, notFiledReason, type RowModel } from "./DocumentRow";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { IconBin, IconCheck, IconNotChecked, IconRetry, IconStored, IconUpload } from "./icons";
+import { IconBin, IconRetry, IconStored, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
 import { documentActivity } from "./documentActivity";
-import { VisualIdentityReview } from "./VisualIdentityReview";
+import { clickRow, emptySelection, prune, selectAll as selectEveryRow, type Selection } from "./table/selection";
+import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
+import "./register-edit.css";
 
-type Col = "number" | "title" | "revision" | "date" | "discipline" | "kind";
+type Col = "number" | "title" | "revision" | "date" | "discipline" | "kind" | "lifecycle";
 
 interface Props {
   rows: RowModel[];
   catalog: Catalog | null;
   live: "live" | "reconnecting" | "offline";
-  priorLabel: (id: string) => string | undefined;
   onCorrect: (docId: string, field: string, value: string) => Promise<void>;
-  onRetry: (docId: string, missingOnly?: boolean) => Promise<boolean>;
-  onJump: (docId: string) => void;
-  onDismiss: (key: string) => void;
   onAddFiles: () => void;
   /** Sets the profile reading setting for documents; resolves when saved. */
   onSetReading: (ids: string[], setting: ReadSetting) => Promise<void>;
@@ -32,15 +31,18 @@ interface Props {
   onDelete: (ids: string[]) => Promise<boolean>;
   /** A file is being dragged onto the page. Highlights this panel with the shared drop treatment. */
   fileOver?: boolean;
+  openKey: string | null;
+  onOpen: (key: string | null) => void;
 }
 
 const COLUMNS: { col: Col; label: string; className: string }[] = [
-  { col: "number", label: "DWG No.", className: "reg-no" },
+  { col: "number", label: "Doc No.", className: "reg-no" },
   { col: "title", label: "Title", className: "reg-title" },
   { col: "revision", label: "Rev", className: "reg-rev" },
   { col: "date", label: "Date", className: "reg-date" },
   { col: "discipline", label: "Discipline", className: "reg-disc" },
   { col: "kind", label: "Kind", className: "reg-kind" },
+  { col: "lifecycle", label: "Lifecycle", className: "reg-life" },
 ];
 
 function fieldValue(doc: Doc | undefined, field: string): string {
@@ -61,7 +63,12 @@ export function profileReads(doc: Doc, readKinds: string[]): boolean {
 
 function shortDate(iso: string): string {
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  return m ? `${m[3]}/${m[2]}/${m[1].slice(2)}` : iso;
+  if (m) return `${m[3]}/${m[2]}/${m[1].slice(2)}`;
+  const numeric = iso.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+  if (numeric) return `${numeric[1].padStart(2, "0")}/${numeric[2].padStart(2, "0")}/${numeric[3].slice(2)}`;
+  const named = iso.match(/^(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})$/);
+  const month = named ? ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].indexOf(named[2].slice(0, 3).toLowerCase()) + 1 : 0;
+  return named && month ? `${named[1].padStart(2, "0")}/${String(month).padStart(2, "0")}/${named[3].slice(2)}` : iso;
 }
 
 function sortValue(row: RowModel, col: Col): string {
@@ -75,27 +82,92 @@ function suggestedTitle(doc: Doc | undefined): string {
   return doc?.visual_title ?? "";
 }
 
+function RegisterCell({ doc, field, catalog, onCorrect, children, ...attrs }: {
+  doc: Doc | undefined;
+  field: Col;
+  catalog: Catalog | null;
+  onCorrect: Props["onCorrect"];
+  children: ReactNode;
+} & HTMLAttributes<HTMLTableCellElement>) {
+  const [editing, setEditing] = useState(false);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const saving = useRef(false);
+  const cell = useRef<HTMLTableCellElement>(null);
+  const spec = FIELDS.find(spec => spec.field === field)!;
+  const options = spec.vocab ? catalog?.[spec.vocab] : undefined;
+  const editable = doc?.status === "filed" && (!spec.vocab || !!options);
+  const begin = () => {
+    if (!editable || editing) return;
+    setError("");
+    setEditing(true);
+  };
+  const finish = (key: CommitKey | "cancel") => {
+    setEditing(false);
+    if (key === "blur") return;
+    const cells = Array.from(cell.current?.parentElement?.querySelectorAll<HTMLElement>('td[data-editable="true"]') ?? [])
+      .filter(el => el.getClientRects().length > 0);
+    const index = cells.indexOf(cell.current!);
+    const next = key === "tab" ? cells[index + 1] : key === "shift-tab" ? cells[index - 1] : cell.current;
+    (next ?? cell.current)?.focus({ preventScroll: true });
+  };
+  const commit = async (value: string, key: CommitKey) => {
+    if (!doc || saving.current) return;
+    saving.current = true;
+    setBusy(true); setError("");
+    try {
+      const next = value.trim();
+      // Explicitly confirming the same rule/model value still makes it the
+      // user's value, just as correction in Filing details does.
+      if (next !== fieldValue(doc, field) || doc.fields.find(saved => saved.field === field)?.decided_by !== "user") {
+        await onCorrect(doc.id, field, next);
+      }
+      finish(key);
+    } catch (e) {
+      setError(e instanceof Error ? `Couldn't save: ${e.message}` : "Couldn't save. Try again.");
+    } finally {
+      saving.current = false;
+      setBusy(false);
+    }
+  };
+  return <td {...attrs} ref={cell} data-editable={editable || undefined} data-editing={editing || undefined}
+    tabIndex={editable ? 0 : undefined} aria-label={editable ? `${spec.label}: ${options?.find(option => option.id === fieldValue(doc, field))?.label || fieldValue(doc, field) || "Not set"}. Double-click or press F2 to edit` : undefined}
+    onDoubleClick={e => { e.stopPropagation(); begin(); }}
+    onKeyDown={e => {
+      if (e.target !== e.currentTarget) return;
+      if (e.key === "F2" || e.key === "Enter") { e.preventDefault(); e.stopPropagation(); begin(); }
+    }}>
+    {editing ? <>
+      <InlineCellEditor className="reg-edit" value={fieldValue(doc, field)} label={`Edit ${spec.label}`} error={error} busy={busy}
+        maxLength={500} options={options} onCommit={(value, key) => void commit(value, key)} onCancel={() => finish("cancel")} />
+      {busy && <span className="sr-only" role="status">Saving…</span>}
+      {error && <span className="reg-edit-error" role="alert">{error}</span>}
+    </> : children}
+  </td>;
+}
+
 export function Register({
   rows,
   catalog,
   live,
-  priorLabel,
   onCorrect,
-  onRetry,
-  onJump,
-  onDismiss,
   onAddFiles,
   onSetReading,
   notReadOnly,
   onClearFilter,
   onDelete,
   fileOver = false,
+  openKey,
+  onOpen,
 }: Props) {
   const [sort, setSort] = useState<{ col: Col; dir: 1 | -1 } | null>(null);
-  const [open, setOpen] = useState<Record<string, boolean>>({});
-  const [selected, setSelected] = useState<Set<string>>(() => new Set());
-  const anchor = useRef<string | null>(null);
+  const [selection, setSelection] = useState<Selection>(emptySelection);
+  const selected = useMemo(() => new Set(selection.ids), [selection]);
   const [busy, setBusy] = useState(false);
+  const [bulkField, setBulkField] = useState("discipline");
+  const [bulkValue, setBulkValue] = useState<string | null>(null);
+  const [bulkMessage, setBulkMessage] = useState("");
+  const bulkSaving = useRef(false);
   const [confirm, setConfirm] = useState<string[] | null>(null);
   const [deleting, setDeleting] = useState(false);
   const readKinds = useMemo(() => catalog?.profile_read_kinds ?? [], [catalog]);
@@ -127,34 +199,16 @@ export function Register({
   // Selection is by document id, in display order; rows that leave the list
   // leave the selection.
   const docIds = useMemo(() => ordered.flatMap((r) => (r.doc ? [r.doc.id] : [])), [ordered]);
-  useEffect(() => {
-    setSelected((sel) => {
-      const shown = new Set(docIds);
-      const next = new Set([...sel].filter((id) => shown.has(id)));
-      return next.size === sel.size ? sel : next;
-    });
-  }, [docIds]);
+  useEffect(() => { setSelection(s => prune(s, docIds)); }, [docIds]);
 
   const select = (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => {
-    const from = anchor.current ? docIds.indexOf(anchor.current) : -1;
-    setSelected((sel) => {
-      const next = new Set(sel);
-      if (e.shiftKey && from >= 0) {
-        const to = docIds.indexOf(id);
-        const [a, b] = from < to ? [from, to] : [to, from];
-        for (const x of docIds.slice(a, b + 1)) next.add(x);
-      } else if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-    if (!e.shiftKey || from < 0) anchor.current = id;
+    if (bulkSaving.current) return;
+    setBulkMessage("");
+    setSelection(s => clickRow(s, id, docIds, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey }));
   };
-  const allSelected = docIds.length > 0 && docIds.every((id) => selected.has(id));
+  const allSelected = docIds.length > 0 && docIds.every(id => selected.has(id));
   const someSelected = selected.size > 0 && !allSelected;
-  const selectAll = () => setSelected(allSelected ? new Set() : new Set(docIds));
+  const selectAll = () => { setBulkMessage(""); setSelection(allSelected ? emptySelection : selectEveryRow(docIds)); };
 
   const titleOf = (id: string) => {
     const doc = rows.find((r) => r.doc?.id === id)?.doc;
@@ -175,7 +229,7 @@ export function Register({
     const done = await onDelete(confirm);
     setDeleting(false);
     if (done) {
-      setSelected(new Set());
+      setSelection(emptySelection);
       setConfirm(null);
     }
   };
@@ -189,13 +243,29 @@ export function Register({
     }
   };
 
-  const toggle = (key: string) => setOpen((o) => ({ ...o, [key]: !o[key] }));
-  // A jump from the profile flashes a row; open it so its fields show.
-  useEffect(() => {
-    const flashed = rows.find((r) => r.flash);
-    if (flashed) setOpen((o) => (o[flashed.key] ? o : { ...o, [flashed.key]: true }));
-  }, [rows]);
   const disciplineLabel = (id: string) => catalog?.disciplines.find((d) => d.id === id)?.label ?? id;
+  const bulkOptions = catalog?.[bulkField === "discipline" ? "disciplines" : bulkField === "kind" ? "kinds" : "lifecycle"] ?? [];
+  const allFiled = [...selected].every(id => rows.find(row => row.doc?.id === id)?.doc?.status === "filed");
+  const correctSelected = async () => {
+    if (bulkSaving.current || bulkValue === null || !allFiled) return;
+    bulkSaving.current = true;
+    setBusy(true); setBulkMessage("");
+    const ids = [...selected];
+    const failed: string[] = [];
+    // Bound concurrent requests while retaining the validated correction path.
+    let next = 0;
+    await Promise.all(Array.from({ length: Math.min(4, ids.length) }, async () => {
+      while (next < ids.length) {
+        const id = ids[next++];
+        try { await onCorrect(id, bulkField, bulkValue); }
+        catch { failed.push(id); }
+      }
+    }));
+    setBulkMessage(failed.length ? `${ids.length - failed.length} saved; ${failed.length} could not be saved. Failed documents remain selected. Apply again to retry.` : `Updated ${bulkField} for ${ids.length} documents.`);
+    if (failed.length) setSelection(selectEveryRow(failed));
+    bulkSaving.current = false;
+    setBusy(false);
+  };
 
   return (
     <div className="register file-drop" data-over={fileOver ? "true" : undefined}>
@@ -231,7 +301,7 @@ export function Register({
               <col key={c.col} className={c.className} />
             ))}
             <col className="reg-prof" />
-            <col className="reg-mark" />
+            <col className="reg-open" />
             <col className="reg-bin" />
           </colgroup>
           <thead>
@@ -245,7 +315,7 @@ export function Register({
                     if (el) el.indeterminate = someSelected;
                   }}
                   onChange={selectAll}
-                  disabled={docIds.length === 0}
+                  disabled={busy || docIds.length === 0}
                 />
               </th>
               {COLUMNS.map((c) => {
@@ -265,9 +335,7 @@ export function Register({
                 <span className="reg-th-text" aria-hidden>Use</span>
                 <span className="sr-only">Included for profile reading</span>
               </th>
-              <th scope="col" className="reg-mark">
-                <span className="sr-only">State</span>
-              </th>
+              <th scope="col" className="reg-open"><span className="sr-only">Open document</span></th>
               <th scope="col" className="reg-bin">
                 <button
                   type="button"
@@ -286,15 +354,11 @@ export function Register({
             <RegisterRow
               key={row.key}
               row={row}
-              open={!!open[row.key]}
-              onToggle={() => toggle(row.key)}
+              open={openKey === row.key}
+              onOpen={() => onOpen(row.key)}
               catalog={catalog}
               disciplineLabel={disciplineLabel}
-              priorLabel={priorLabel}
               onCorrect={onCorrect}
-              onRetry={onRetry}
-              onJump={onJump}
-              onDismiss={onDismiss}
               selected={!!row.doc && selected.has(row.doc.id)}
               onSelect={select}
               reads={row.doc ? profileReads(row.doc, readKinds) : null}
@@ -307,6 +371,19 @@ export function Register({
       {selected.size > 0 && (
         <div className="reg-bulk" role="toolbar" aria-label="Selected documents">
           <span className="reg-bulk-count">{selected.size} selected</span>
+          <div className="reg-bulk-edit">
+            <select className="select" aria-label="Bulk edit field" disabled={busy} value={bulkField} onChange={e => { setBulkField(e.target.value); setBulkValue(null); setBulkMessage(""); }}>
+              <option value="discipline">Discipline</option><option value="kind">Kind</option><option value="lifecycle">Lifecycle</option>
+            </select>
+            <select className="select" aria-label="Bulk edit value" disabled={busy || !catalog} value={bulkValue ?? "__choose"} onChange={e => { setBulkValue(e.target.value); setBulkMessage(""); }}>
+              <option value="__choose" disabled>Choose value…</option>
+              <option value="">None (clear value)</option>
+              {bulkOptions.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
+            </select>
+            <button type="button" className="btn btn-small" disabled={busy || bulkValue === null || !allFiled} onClick={() => void correctSelected()}>{busy ? "Saving…" : `Apply to ${selected.size}`}</button>
+            {!allFiled && <span>Only filed documents can be edited together.</span>}
+          </div>
+          {bulkMessage && <p className="reg-bulk-message" role="status">{bulkMessage}</p>}
           <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "read")}>
             Include for profile
           </button>
@@ -320,7 +397,7 @@ export function Register({
             <IconBin />
             Delete
           </button>
-          <button type="button" className="cell-link" onClick={() => setSelected(new Set())}>
+          <button type="button" className="cell-link" disabled={busy} onClick={() => { setSelection(emptySelection); setBulkMessage(""); }}>
             Clear
           </button>
         </div>
@@ -366,39 +443,16 @@ function RowMark({ row }: { row: RowModel }) {
       </span>
     );
   }
-  const states = doc.fields.filter((f) => f.field !== "supersedes").map(stateOf);
-  const check = states.filter((s) => s === "check").length;
-  if (check > 0) {
-    const text = `${check} field${check === 1 ? "" : "s"} to check`;
-    return (
-      <span className="reg-flag" data-tone="warn" title={text}>
-        <IconCheck />
-        <span className="sr-only">{text}</span>
-      </span>
-    );
-  }
-  if (states.includes("unchecked")) {
-    return (
-      <span className="reg-flag" title="Not checked: Jev didn't answer in time">
-        <IconNotChecked />
-        <span className="sr-only">Not checked</span>
-      </span>
-    );
-  }
   return null;
 }
 
 function RegisterRow({
   row,
   open,
-  onToggle,
+  onOpen,
   catalog,
   disciplineLabel,
-  priorLabel,
   onCorrect,
-  onRetry,
-  onJump,
-  onDismiss,
   selected,
   onSelect,
   reads,
@@ -407,14 +461,10 @@ function RegisterRow({
 }: {
   row: RowModel;
   open: boolean;
-  onToggle: () => void;
+  onOpen: () => void;
   catalog: Catalog | null;
   disciplineLabel: (id: string) => string;
-  priorLabel: (id: string) => string | undefined;
   onCorrect: (docId: string, field: string, value: string) => Promise<void>;
-  onRetry: (docId: string, missingOnly?: boolean) => Promise<boolean>;
-  onJump: (docId: string) => void;
-  onDismiss: (key: string) => void;
   selected: boolean;
   onSelect: (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => void;
   reads: boolean | null;
@@ -442,23 +492,19 @@ function RegisterRow({
   const date = fieldValue(doc, "date");
   const userSet = (field: string) => doc?.fields.find((f) => f.field === field)?.decided_by === "user";
   const keys = (e: KeyboardEvent) => {
-    if (e.target !== e.currentTarget) return;
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onToggle();
-    }
-    if (e.key === "Escape" && open) onToggle();
-  };
-  const detailId = `reg-detail-${row.key}`;
-  // Ctrl/Cmd-click and Shift-click on a row select it instead of opening it.
-  const click = (e: MouseEvent) => {
-    if (doc && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+    if (e.target !== e.currentTarget && !(e.target instanceof HTMLTableCellElement)) return;
+    if (doc && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       onSelect(doc.id, e);
-      return;
     }
-    onToggle();
   };
+  const click = (e: MouseEvent) => {
+    if (doc) {
+      if (e.shiftKey) e.preventDefault();
+      onSelect(doc.id, e);
+    }
+  };
+  const cell = (field: Col) => ({ doc, field, catalog, onCorrect });
   const override = doc?.profile_read === "read" || doc?.profile_read === "skip";
   const readLabel = reads ? "Included for profile reading" : "Excluded from profile reading";
   return (
@@ -475,9 +521,13 @@ function RegisterRow({
     >
       <tr
         className="reg-line"
+        draggable={doc?.status === "filed"}
+        onDragStart={e => {
+          if (!doc || doc.status !== "filed" || (e.target as HTMLElement).closest("input,select,textarea,button")) { e.preventDefault(); return; }
+          e.dataTransfer.setData(FILED_DOCUMENT_TYPE, doc.id);
+          e.dataTransfer.effectAllowed = "link";
+        }}
         tabIndex={0}
-        aria-expanded={open}
-        aria-controls={open ? detailId : undefined}
         onClick={click}
         onKeyDown={keys}
       >
@@ -488,14 +538,15 @@ function RegisterRow({
               aria-label={`Select ${title || row.filename}`}
               checked={selected}
               onChange={() => undefined}
-              onClick={(e) => onSelect(doc.id, e)}
+              onClick={(e) => onSelect(doc.id, { shiftKey: e.shiftKey, ctrlKey: !e.shiftKey || e.ctrlKey, metaKey: e.metaKey })}
             />
           )}
         </td>
-        <td className="reg-no" title={fieldValue(doc, "number")} data-user={userSet("number") || undefined}>
+        <RegisterCell {...cell("number")} className="reg-no" title={fieldValue(doc, "number")} data-user={userSet("number") || undefined}>
           {fieldValue(doc, "number")}
-        </td>
-        <td className="reg-title" data-suggested={!!suggested || undefined} title={`${title || (titleNeedsReview ? "No title accepted automatically. Open this row to enter the title from the document." : missingTitle)}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
+        </RegisterCell>
+        <RegisterCell {...cell("title")} className="reg-title" data-suggested={!!suggested || undefined} title={`${title || (titleNeedsReview ? "No title accepted automatically. Open this row to enter the title from the document." : missingTitle)}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
+          <RowMark row={row} />
           {row.uploadError ? <span className="error-text">{row.uploadError}</span> : title || (
             <>
               <span className={ocrStage(doc) ? "ocr-summary" : "muted"}>{activity ? <Pending queued={activity!.state === "queued"}>{activity!.label}</Pending> : missingTitle}</span>
@@ -518,17 +569,20 @@ function RegisterRow({
             </span>
           )}
           {row.progress !== undefined && !doc && <span className="reg-progress" style={{ transform: `scaleX(${row.progress})` }} />}
-        </td>
-        <td className="reg-rev" data-user={userSet("revision") || undefined}>
+        </RegisterCell>
+        <RegisterCell {...cell("revision")} className="reg-rev" data-user={userSet("revision") || undefined}>
           {fieldValue(doc, "revision")}
-        </td>
-        <td className="reg-date">{date ? shortDate(date) : ""}</td>
-        <td className="reg-disc" title={discipline ? disciplineLabel(discipline) : undefined} data-user={userSet("discipline") || undefined}>
+        </RegisterCell>
+        <RegisterCell {...cell("date")} className="reg-date" title={date}>{date ? shortDate(date) : ""}</RegisterCell>
+        <RegisterCell {...cell("discipline")} className="reg-disc" title={discipline ? disciplineLabel(discipline) : undefined} data-user={userSet("discipline") || undefined}>
           {discipline ? disciplineLabel(discipline) : ""}
-        </td>
-        <td className="reg-kind" title={kindLabel || undefined} data-user={userSet("kind") || undefined}>
+        </RegisterCell>
+        <RegisterCell {...cell("kind")} className="reg-kind" title={kindLabel || undefined} data-user={userSet("kind") || undefined}>
           {kindLabel}
-        </td>
+        </RegisterCell>
+        <RegisterCell {...cell("lifecycle")} className="reg-life" data-user={userSet("lifecycle") || undefined}>
+          {catalog?.lifecycle.find(option => option.id === fieldValue(doc, "lifecycle"))?.label || fieldValue(doc, "lifecycle")}
+        </RegisterCell>
         <td className="reg-prof">
           {doc && reads !== null && (
             <button
@@ -548,8 +602,8 @@ function RegisterRow({
             </button>
           )}
         </td>
-        <td className="reg-mark">
-          <RowMark row={row} />
+        <td className="reg-open">
+          <button type="button" className="cell-link" aria-label={`Open document: ${title || row.filename}`} aria-controls={open ? "document-workspace" : undefined} aria-expanded={open} onClick={e => { e.stopPropagation(); onOpen(); }}>Open</button>
         </td>
         <td className="reg-bin">
           {doc && (
@@ -568,68 +622,6 @@ function RegisterRow({
           )}
         </td>
       </tr>
-      {open && (
-        <tr className="reg-detail" id={detailId}>
-          <td colSpan={COLUMNS.length + 4}>
-            <div className="reg-detail-head">
-              <span className="reg-file" title={row.filename}>
-                {row.filename}
-              </span>
-              <HeadState row={row} onRetry={onRetry} onDismiss={onDismiss} />
-              {doc && (
-                <a className="cell-link" href={`/api/documents/${doc.id}/file`}>
-                  Download
-                </a>
-              )}
-            </div>
-            {doc && <OCRStatus doc={doc} onReprocess={onRetry} />}
-            {doc?.source_id && (
-              <p className="tb-note">
-                Sheet {doc.sheet_page} of {doc.sheet_total} ·{" "}
-                <button type="button" className="cell-link" onClick={() => onJump(doc.source_id!)}>
-                  {doc.source_filename}
-                </button>
-              </p>
-            )}
-            {doc?.expansion && (
-              <p className="tb-note">
-                {doc.expansion.status === "complete"
-                  ? `${doc.expansion.page_count} sheets listed separately. Original drawing set retained.`
-                  : doc.expansion.status === "pending"
-                    ? `Checking ${doc.expansion.page_count} pages for separate drawing sheets…`
-                    : doc.expansion.reason}
-                {doc.expansion.status === "review" && (
-                  <button type="button" className="btn btn-small" onClick={() => onRetry(doc.id)}>
-                    Retry sheet processing
-                  </button>
-                )}
-              </p>
-            )}
-            {doc?.status === "not_filed" && (
-              <p className="tb-note">
-                <strong>Kept, not filed.</strong> {notFiledReason(doc)}
-              </p>
-            )}
-            {doc?.status === "filed" && (
-              <div className="reg-grid">
-                {FIELDS.map((spec, i) => (
-                  <FieldCell
-                    key={spec.field}
-                    index={i}
-                    spec={spec}
-                    doc={doc}
-                    catalog={catalog}
-                    priorLabel={priorLabel}
-                    onCorrect={onCorrect}
-                    onJump={onJump}
-                  />
-                ))}
-              </div>
-            )}
-            {doc?.status === "filed" && doc.filename.toLowerCase().endsWith(".pdf") && <VisualIdentityReview doc={doc} onCorrect={onCorrect} />}
-          </td>
-        </tr>
-      )}
     </tbody>
   );
 }

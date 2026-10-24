@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"sitewise/internal/costs"
+	"sort"
 	"testing"
+	"time"
 )
 
 func TestCostPlanAPIContractAndIsolation(t *testing.T) {
@@ -32,7 +34,7 @@ func TestCostPlanAPIContractAndIsolation(t *testing.T) {
 	for _, route := range []struct{ method, path string }{
 		{http.MethodPost, base + "/prepare"}, {http.MethodPost, base + "/suggestions/accept"}, {http.MethodPost, base + "/suggestions/pw:escalation/accept"}, {http.MethodPost, base + "/suggestions/pw:escalation/dismiss"}, {http.MethodDelete, base + "/suggestions/pw:escalation/dismiss"},
 		{http.MethodGet, base + "/totals?by=system"}, {http.MethodGet, base + "/items/" + p.Items[0].ID + "/benchmarks"},
-		{http.MethodPut, base}, {http.MethodPost, base + "/items"}, {http.MethodPatch, base + "/items/" + p.Items[0].ID}, {http.MethodPut, base + "/items/" + p.Items[0].ID + "/values/budget"},
+		{http.MethodPut, base + "/order"}, {http.MethodPut, base}, {http.MethodPost, base + "/items"}, {http.MethodPatch, base + "/items/" + p.Items[0].ID}, {http.MethodPut, base + "/items/" + p.Items[0].ID + "/values/budget"},
 		{http.MethodPost, base + "/items/" + p.Items[0].ID + "/subdivide"}, {http.MethodPost, base + "/baseline"}, {http.MethodPut, base + "/links"}, {http.MethodPost, base + "/items/" + p.Items[0].ID + "/benchmarks"}, {http.MethodDelete, base + "/items/" + p.Items[0].ID},
 	} {
 		foreign.call(t, route.method, route.path, []byte(`{}`), http.StatusNotFound, nil)
@@ -106,5 +108,38 @@ func TestCostPrepareAPI(t *testing.T) {
 	m.call(t, http.MethodPost, base+"/prepare", []byte(`{"budget":"123"}`), 400, nil)
 	if a.jevHits.Load() != 0 {
 		t.Fatal("preparation called Jev")
+	}
+}
+
+func TestCostOrderEndpointBudget(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Cost ordering")
+	base := "/api/projects/" + project + "/cost-plan"
+	var p costs.Plan
+	for _, label := range []string{"One", "Two", "Three"} {
+		raw, _ := json.Marshal(map[string]any{"plan_version_id": p.ID, "version": p.Version, "label": label, "line_kind": "project_wide", "category": "contingency", "posting": true, "origin": "user", "meaning": "allowance"})
+		m.call(t, http.MethodPost, base+"/items", raw, http.StatusOK, &p)
+	}
+	var samples []time.Duration
+	for n := 0; n < 20; n++ {
+		ids := []string{p.Items[2].ID, p.Items[1].ID, p.Items[0].ID}
+		raw, _ := json.Marshal(map[string]any{"plan_version_id": p.ID, "version": p.Version, "ids": ids})
+		started := time.Now()
+		m.call(t, http.MethodPut, base+"/order", raw, http.StatusOK, &p)
+		samples = append(samples, time.Since(started))
+		for i, id := range ids {
+			if p.Items[i].ID != id {
+				t.Fatal("saved order not returned", p)
+			}
+		}
+	}
+	sort.Slice(samples, func(i, j int) bool { return samples[i] < samples[j] })
+	t.Logf("cost reorder endpoint p50=%s p90=%s; budget 100ms/250ms", samples[9], samples[17])
+	if samples[9] > 100*time.Millisecond || samples[17] > 250*time.Millisecond {
+		t.Fatal("cost write budget exceeded")
+	}
+	if a.jevHits.Load() != 0 {
+		t.Fatal("reorder called Jev")
 	}
 }

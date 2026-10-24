@@ -37,7 +37,7 @@ interface Props {
   onSignedOut: () => void;
 }
 
-const PROVIDERS: Record<string, string> = { contractor: "Contractor", owner: "Owner", others: "Others" };
+const PROVIDERS: Record<string, string> = { contractor: "Contractor", owner: "Owner", landlord: "Landlord", others: "Others" };
 
 const ORIGINS: Record<string, string> = {
   default: "Typical",

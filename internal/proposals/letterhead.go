@@ -28,7 +28,11 @@ func stripEmphasis(s string) string {
 	return strings.TrimSpace(emphasis.ReplaceAllString(s, ""))
 }
 
-func addressee(s string) bool { return addresseeRe.MatchString(s) || bareLabelRe.MatchString(s) }
+// Markdown bold is stripped where a label is matched: "**To:**" is "To:".
+func addressee(s string) bool {
+	s = stripEmphasis(s)
+	return addresseeRe.MatchString(s) || bareLabelRe.MatchString(s)
+}
 
 // letterhead reads the firm from the lines around the proposal's only ABN:
 // the company name printed just above it (or before it on its line) and the
@@ -56,7 +60,7 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 	}
 	name := ""
 	for j := at; j >= max(0, at-3) && name == ""; j-- {
-		t := lines[j].Text
+		t := stripEmphasis(lines[j].Text)
 		if j == at {
 			cut := strings.Index(strings.ToUpper(t), "ABN")
 			if cut <= 0 {
@@ -74,7 +78,7 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 	}
 	var addresses []string
 	for j := max(0, at-3); j <= min(len(lines)-1, at+3); j++ {
-		t := lines[j].Text
+		t := stripEmphasis(lines[j].Text)
 		if j > at && (addressee(t) || isHeading(t) || strings.HasPrefix(t, "#")) {
 			break
 		}
@@ -99,7 +103,7 @@ func headerDate(lines []Line) string {
 		if i >= 25 || strings.HasPrefix(l.Text, "## ") {
 			break
 		}
-		m := dateLabelRe.FindStringSubmatch(l.Text)
+		m := dateLabelRe.FindStringSubmatch(stripEmphasis(l.Text))
 		if m == nil {
 			continue
 		}

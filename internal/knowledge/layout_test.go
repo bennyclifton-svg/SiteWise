@@ -21,6 +21,10 @@ func TestLayoutPlacesInputsInBuildOrder(t *testing.T) {
 		"proj.flag.panel":         HomePlanning,
 		"det.climate_zone":        "envelope",
 		"det.ncc_class":           HomeProject,
+		"det.flood_hazard":        HomeProject,
+		"det.bushfire_prone_land": HomeProject,
+		"det.bal":                 "envelope",
+		"det.heritage_status":     HomeProject,
 		"det.site_class":          "substructure", // first of its systems
 		"det.water_supply_source": "hydraulic",    // a leaf system's top level
 		"proj.client":             "",             // not placed

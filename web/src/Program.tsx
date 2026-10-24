@@ -1,5 +1,6 @@
+import { startRowDrag } from "./table/RowHandle";
 // The Program view (plan docs/plans/2026-10-18-program.md section 9):
-// toolbar, the one question, the completion header and a split pane with
+// toolbar, the completion header and a split pane with
 // the grid on the left and the chart on the right sharing one vertical
 // scroll. Every date comes from the server's `computed`, except during a
 // drag, when the TypeScript engine previews it (chart/useDrag.ts).
@@ -33,7 +34,7 @@ import {
   type Row,
   type Viewport,
 } from "./program/layout";
-import { clickRow, emptySelection, prune, selectAll, type Selection } from "./program/selection";
+import { clickRow, emptySelection, prune, selectAll, type Selection } from "./table/selection";
 import { Grid, GRID_COLUMNS, type CellFocus, type CommitKey, type EditCol, type Editing } from "./program/grid/Grid";
 import { parseDuration, parsePredecessors } from "./program/grid/parse";
 import { SCALE_H, TimescaleGrid, TimescaleHeader } from "./program/chart/Timescale";
@@ -825,47 +826,20 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
       const col = gridcol.current;
       const line = insert.current;
       if (!col || !line) return;
-      const y0 = e.clientY;
-      let started = false;
       let drop: ReturnType<typeof dropTarget> = null;
-      const hide = () => line.setAttribute("hidden", "");
-      const stop = () => {
-        window.removeEventListener("pointermove", move);
-        window.removeEventListener("pointerup", up);
-        window.removeEventListener("pointercancel", cancel);
-        window.removeEventListener("keydown", key, true);
-        hide();
-        if (started) releaseDrag();
-      };
-      const move = (ev: PointerEvent) => {
-        if (!started && Math.abs(ev.clientY - y0) < 4) return;
-        if (!started) {
-          started = true;
-          dragging.current = true;
-        }
-        drop = dropTarget(rows, ids, ev.clientY - col.getBoundingClientRect().top, rowH, view.activities);
-        if (!drop) return hide();
-        line.removeAttribute("hidden");
-        line.className = drop.line >= 0 ? "pg-insert" : "pg-insert is-into";
-        line.style.top = `${drop.line >= 0 ? drop.line * rowH - 1 : drop.into * rowH}px`;
-        line.style.height = drop.line >= 0 ? "2px" : `${rowH}px`;
-      };
-      const up = () => {
-        stop();
-        if (started && drop) commit([drop.op]);
-      };
-      const cancel = () => stop();
-      const key = (ev: globalThis.KeyboardEvent) => {
-        if (ev.key !== "Escape") return;
-        ev.preventDefault();
-        ev.stopPropagation();
-        drop = null;
-        stop();
-      };
-      window.addEventListener("pointermove", move);
-      window.addEventListener("pointerup", up);
-      window.addEventListener("pointercancel", cancel);
-      window.addEventListener("keydown", key, true);
+      startRowDrag(e, {
+        onStart: () => { dragging.current = true; },
+        onMove: ev => {
+          drop = dropTarget(rows, ids, ev.clientY - col.getBoundingClientRect().top, rowH, view.activities);
+          if (!drop) { line.setAttribute("hidden", ""); return; }
+          line.removeAttribute("hidden");
+          line.className = drop.line >= 0 ? "pg-insert" : "pg-insert is-into";
+          line.style.top = `${drop.line >= 0 ? drop.line * rowH - 1 : drop.into * rowH}px`;
+          line.style.height = drop.line >= 0 ? "2px" : `${rowH}px`;
+        },
+        onDrop: () => { if (drop) commit([drop.op]); },
+        onStop: () => { line.setAttribute("hidden", ""); if (dragging.current) releaseDrag(); },
+      });
     },
     [view, model, selected, sel, rows, rowH, commit, releaseDrag],
   );
@@ -1176,6 +1150,22 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
 
       <div className="pg-toolbar" role="toolbar" aria-label="Program tools">
         <div className="pg-tools">
+          <label className="pg-start">
+            <span>Start</span>
+            <input
+              type="date"
+              className="input"
+              aria-label="Start date"
+              value={view.program.start_date ?? ""}
+              disabled={busy}
+              onChange={(e) => {
+                const next = e.target.value;
+                if (/^\d{4}-\d{2}-\d{2}$/.test(next) && next !== view.program.start_date) {
+                  apply((cur) => programApi.setStart(projectId, cur!, next));
+                }
+              }}
+            />
+          </label>
           <button type="button" className="btn btn-small" onClick={collapseAll} title="Ctrl+[">Collapse all</button>
           <button type="button" className="btn btn-small" onClick={expandAll} title="Ctrl+]">Expand all</button>
         </div>

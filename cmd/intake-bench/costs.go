@@ -45,6 +45,21 @@ func (a *apiClient) costs(ctx context.Context, st *store.Store, n int) error {
 			return fmt.Errorf("cost totals did not reconcile")
 		}
 	}
+	for i := 0; i < n; i++ {
+		ids := make([]string, len(plan.Items))
+		for j, item := range plan.Items {
+			ids[len(ids)-1-j] = item.ID
+		}
+		body, _ := json.Marshal(map[string]any{"plan_version_id": plan.ID, "version": plan.Version, "ids": ids})
+		raw, err := a.timed(ctx, "costs_write", http.MethodPut, base+"/order", body, http.StatusOK)
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(raw, &plan); err != nil {
+			return err
+		}
+	}
+
 	return a.costAutofill(ctx, st, n)
 }
 

@@ -11,6 +11,7 @@ import { ComparisonRowEditor } from "./ComparisonAlignment";
 import { fmt } from "./CostGrid";
 import { Chip } from "./Invoices";
 import { ProcurementReport } from "./ProcurementReport";
+import { packageApi, type PackageRecord } from "./packageApi";
 import { FLAG_WORDS, STATUS_WORDS, submissionApi, uploadProposal, type Cell, type CellState, type Column, type FirmFields, type PriceTable, type ScheduleItem } from "./submissionApi";
 import "./prices.css";
 
@@ -55,6 +56,12 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
   async function run(action: () => Promise<PriceTable>) {
     setBusy(true); setError("");
     try { setTable(await action()); return true; } catch (e) { fail(e); return false; } finally { setBusy(false); }
+  }
+
+  async function reassign(sub: string, destination: string) {
+    setBusy(true); setError("");
+    try { await submissionApi.edit(projectId, sub, { package_id: destination }); onBack(); }
+    catch (e) { fail(e); } finally { setBusy(false); }
   }
 
   const [uploading, setUploading] = useState("");
@@ -200,7 +207,8 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <ul>{table.earlier.map(s => <li key={s.id}>{s.filename} · {day(s.received_on)} · {STATUS_WORDS[s.status]}
         {(s.status === "withdrawn" || s.status === "not_proposal") && <button type="button" className="table-action" onClick={() => void run(() => submissionApi.edit(projectId, s.id, { status: "received" }))}>Restore</button>}</li>)}</ul>
     </details>}
-    {selected && <SubmissionPanel projectId={projectId} col={selected} busy={busy} onClose={() => setPanel("")}
+    {selected && <SubmissionPanel key={selected.submission.id} projectId={projectId} col={selected} busy={busy} error={error} onClose={() => setPanel("")}
+      onReassign={destination => void reassign(selected.submission.id, destination)}
       onSave={edit => void run(() => submissionApi.edit(projectId, selected.submission.id, edit))} />}
     {awardFor && table && <AwardDialog projectId={projectId} table={table} submissionId={awardFor} onClose={() => setAwardFor("")} onAwarded={t => { setTable(t); setAwardFor(""); }} onSignedOut={onSignedOut} />}
   </section>;
@@ -274,8 +282,17 @@ function CellEditor({ cell, busy, onSave, onCancel }: { cell?: Cell; busy: boole
   </div>;
 }
 
-function SubmissionPanel({ projectId, col, busy, onClose, onSave }: { projectId: string; col: Column; busy: boolean; onClose: () => void; onSave: (e: { firm?: FirmFields; status?: string; received_on?: string }) => void }) {
+function SubmissionPanel({ projectId, col, busy, error, onClose, onSave, onReassign }: { projectId: string; col: Column; busy: boolean; error: string; onClose: () => void; onSave: (e: { firm?: FirmFields; status?: string; received_on?: string }) => void; onReassign: (destination: string) => void }) {
   const f = col.firm;
+  const [packages, setPackages] = useState<PackageRecord[] | null>(null);
+  const [destination, setDestination] = useState(col.submission.package_id);
+  const [packageError, setPackageError] = useState("");
+  useEffect(() => {
+    let stopped = false;
+    packageApi.list(projectId).then(p => { if (!stopped) setPackages(p.items.filter(p => !p.retired_at && p.lifecycle_status !== "cancelled")); })
+      .catch(() => { if (!stopped) setPackageError("Could not load packages. Close and reopen this proposal to retry."); });
+    return () => { stopped = true; };
+  }, [projectId]);
   const [firm, setFirm] = useState<FirmFields>({ name: f?.name ?? "", abn: f?.abn ?? "", address: f?.address ?? "", contact: f?.contact ?? "", email: f?.email ?? "", phone: f?.phone ?? "" });
   useEffect(() => { const k = (e: globalThis.KeyboardEvent) => { if (e.key === "Escape" && !(e.target instanceof HTMLInputElement)) onClose(); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [onClose]);
   const field = (k: keyof FirmFields, label: string) => <label className="prices-field">{label}
@@ -287,6 +304,18 @@ function SubmissionPanel({ projectId, col, busy, onClose, onSave }: { projectId:
     <div className="prices-panel-body">
       {col.submission.document_id ? <iframe title={`Proposal ${col.submission.filename}`} src={submissionApi.fileURL(projectId, col.submission.id)} /> : <p className="prices-empty">No file: prices for this firm are typed in the table.</p>}
       <form onSubmit={e => { e.preventDefault(); onSave({ firm }); }}>
+        <h3>Proposal package</h3>
+        <p>{col.submission.filename}</p>
+        {error && <p role="alert">{error}</p>}
+        {packageError && <p role="alert">{packageError}</p>}
+        <label className="prices-field">Package<select aria-label="Package" value={destination} disabled={busy || !packages || col.submission.status === "awarded"} onChange={e => setDestination(e.target.value)}>
+          <option value="">Unassigned — detach from package</option>
+          {!packages && <option value={col.submission.package_id}>Loading packages…</option>}
+          {packages?.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+        </select></label>
+        <p className="prices-note">The document, firm details and quoted fees are kept. Detached proposals appear under “needs a package” in Procurement. Review fee alignment after moving.</p>
+        <button type="button" className="btn btn-small" disabled={busy || !packages || destination === col.submission.package_id || col.submission.status === "awarded"} onClick={() => onReassign(destination)}>{destination ? "Move proposal" : "Detach proposal"}</button>
+        {col.submission.status === "awarded" && <p className="prices-note">Undo the award before moving this proposal.</p>}
         <h3>Firm {f?.status === "draft" && <span className="prices-draft">new to your directory</span>}</h3>
         {field("name", "Name")}{field("abn", "ABN")}{field("contact", "Contact")}{field("email", "Email")}{field("phone", "Phone")}{field("address", "Address")}
         <button className="btn btn-small" disabled={busy || !firm.name.trim()}>{f?.status === "draft" ? "Confirm firm" : "Save firm"}</button>

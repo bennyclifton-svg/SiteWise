@@ -1,3 +1,4 @@
+import { RowHandle } from "../../table/RowHandle";
 // The Program grid (plan 9.1, 9.5): a treegrid of stages and activities.
 // Only the rows in the render window are in the DOM; the block is offset by
 // first × rowH so it lines up with the chart's rows. Names, durations and
@@ -6,13 +7,14 @@
 // message when it is not valid. A handle in the # cell drags rows to
 // reorder them. Every cell carries data-col for focus and editing.
 
-import { memo, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { memo, type PointerEvent as ReactPointerEvent } from "react";
 import type { Cal } from "../calendar";
 import type { Times } from "../types";
 import { shownDates, type Row } from "../layout";
 
 export type EditCol = "name" | "duration" | "predecessors";
-export type CommitKey = "enter" | "tab" | "shift-tab" | "blur";
+import { InlineCellEditor as CellEditor, type CommitKey } from "../../table/InlineCellEditor";
+export type { CommitKey } from "../../table/InlineCellEditor";
 
 export interface Editing {
   id: string;
@@ -100,6 +102,7 @@ export const Grid = memo(function Grid(p: GridProps) {
     const editor = (col: EditCol) =>
       ed && ed.col === col ? (
         <CellEditor
+          className="pg-edit"
           key={`${r.id}:${col}`}
           value={editText(r, col, preds)}
           label={`${col === "name" ? "Name" : col === "duration" ? "Duration" : "Predecessors"} of ${r.act.label}`}
@@ -123,7 +126,7 @@ export const Grid = memo(function Grid(p: GridProps) {
       >
         {!narrow && (
           <span role="gridcell" className="pg-cell pg-num" {...cell("number")}>
-            <span className="pg-handle" title="Drag to reorder" aria-hidden="true" onPointerDown={(e) => p.onHandleDown?.(e, r.id)} />
+            <RowHandle onPointerDown={(e) => p.onHandleDown?.(e, r.id)} />
             {r.number}
           </span>
         )}
@@ -231,60 +234,3 @@ export const Grid = memo(function Grid(p: GridProps) {
     </div>
   );
 });
-
-// One cell editor: Enter saves, Escape cancels, Tab saves and moves on.
-// Keys stay inside it so the grid's shortcuts never fire while typing.
-function CellEditor({ value, label, error, onCommit, onCancel }: { value: string; label: string; error: string; onCommit: (text: string, key: CommitKey) => void; onCancel: () => void }) {
-  const [text, setText] = useState(value);
-  const input = useRef<HTMLInputElement>(null);
-  const done = useRef(false);
-  useEffect(() => {
-    input.current?.focus({ preventScroll: true });
-    input.current?.select();
-  }, []);
-  useEffect(() => {
-    // A refused value reopens the editor for another try.
-    if (error) done.current = false;
-  }, [error]);
-  const finish = (key: CommitKey) => {
-    if (done.current) return;
-    done.current = true;
-    onCommit(text, key);
-  };
-  return (
-    <input
-      ref={input}
-      className="pg-edit"
-      aria-label={label}
-      aria-invalid={error ? true : undefined}
-      value={text}
-      onChange={(e) => {
-        done.current = false;
-        setText(e.target.value);
-      }}
-      onClick={(e) => e.stopPropagation()}
-      onDoubleClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => {
-        e.stopPropagation();
-        if (e.key === "Enter") {
-          e.preventDefault();
-          finish("enter");
-        } else if (e.key === "Escape") {
-          e.preventDefault();
-          done.current = true;
-          onCancel();
-        } else if (e.key === "Tab") {
-          e.preventDefault();
-          finish(e.shiftKey ? "shift-tab" : "tab");
-        }
-      }}
-      onBlur={() => {
-        if (done.current) return;
-        if (text === value) {
-          done.current = true;
-          onCancel();
-        } else finish("blur");
-      }}
-    />
-  );
-}

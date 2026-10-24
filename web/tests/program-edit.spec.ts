@@ -232,7 +232,7 @@ test("drag a stage row to reorder: activities follow, the toast, reload keeps th
   const stages = v0.activities.filter((a) => !a.parent_id);
   const moving = stages.find((s, i) => i > 0 && i < 4 && kidsOf(v0, s.id).length) ?? stages[1];
   const target = stages[5]; // drop below this stage's row
-  const handle = row(page, moving.id).locator(".pg-handle");
+  const handle = row(page, moving.id).locator(".table-row-handle");
   await row(page, moving.id).hover();
   const from = await centre(page, handle);
   const to = await centre(page, row(page, target.id));

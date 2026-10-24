@@ -351,6 +351,7 @@ func (d *Draft) corroboratedName() string {
 
 func (d *Draft) firmEmails() []string {
 	var out []string
+	var matching []string
 	for _, e := range d.ev.Emails {
 		_, domain, _ := strings.Cut(e, "@")
 		own := false
@@ -359,7 +360,13 @@ func (d *Draft) firmEmails() []string {
 		}
 		if !own {
 			out = append(out, e)
+			if hint := NameKey(domainName(e)); hint != "" && strings.Contains(NameKey(d.by[FieldFirmName].Value), hint) {
+				matching = append(matching, e)
+			}
 		}
+	}
+	if len(matching) > 0 {
+		return matching
 	}
 	return out
 }
@@ -381,6 +388,23 @@ func (d *Draft) isSite(a string) bool {
 }
 
 func (d *Draft) settleGST() {
+	// An inclusive duplicate alongside an ex-GST total does not make an
+	// explicitly ex-GST stage table ambiguous.
+	basis := ""
+	for _, a := range d.ev.Amounts {
+		if a.IncTwin || a.GSTPart || a.Unit || a.RepeatOf != "" {
+			continue
+		}
+		if a.GST == "" || basis != "" && basis != a.GST {
+			basis = ""
+			break
+		}
+		basis = a.GST
+	}
+	if basis != "" {
+		d.rule(FieldGSTBasis, basis)
+		return
+	}
 	switch {
 	case d.ev.GSTEx > 0 && d.ev.GSTInc == 0:
 		d.rule(FieldGSTBasis, "ex")
@@ -590,7 +614,7 @@ func (d *Draft) firmQuestion(field string, values []string, max int, add func(qu
 // A fee row never sees an hourly rate, and the other way round.
 func (d *Draft) candidates() (fees, rates, totals []Amount) {
 	for _, a := range d.ev.Amounts {
-		if a.Unit || a.GSTPart || a.IncTwin {
+		if a.Unit || a.GSTPart || a.IncTwin || a.RepeatOf != "" {
 			continue
 		}
 		switch {
@@ -725,7 +749,9 @@ func (d *Draft) Call() (jev.Call, bool) {
 		return qs
 	}
 	st := state{Filename: d.ev.Filename, QuotedFees: coverageAmounts(d.ev)}
-	call := jev.Call{QuestionVersion: QuestionVersion, Priority: jev.PriorityBackground, Deadline: 6 * time.Second}
+	// The calibrated field questions remain proposal-1. Coverage v2 is a
+	// separate, uncalibrated suggestion family and cannot authorise money.
+	call := jev.Call{QuestionVersion: QuestionVersion + "+coverage-2", Priority: jev.PriorityBackground, Deadline: 6 * time.Second}
 	// A long proposal keeps every candidate and question: the excerpt gives
 	// way first, then the words printed with each option.
 	for _, step := range []struct {
@@ -780,7 +806,7 @@ func (d *Draft) Apply(res jev.Result, err error, th Thresholds) (grey bool) {
 			continue
 		}
 		if a, ok := res.Answers[f]; ok && a.Type == jev.TypeChoice {
-			if q.Family == "coverage-1" {
+			if q.Family == "coverage-2" {
 				d.captureCoverage(f, q, a)
 				continue
 			}
@@ -967,7 +993,7 @@ func (d *Draft) Finish() Reading {
 	// are what the firm offered unasked: kept, out of totals until award.
 	if d.ev.Form == nil && len(d.items) > 0 {
 		for _, a := range d.ev.Amounts {
-			if claimed[a.ID] || a.PerHour || a.Total || a.Kind != "" || a.Unit || a.GSTPart || a.IncTwin || unitPrice(a.Context) {
+			if claimed[a.ID] || a.PerHour || a.Total || a.Kind != "" || a.Unit || a.GSTPart || a.IncTwin || a.RepeatOf != "" || unitPrice(a.Context) {
 				continue
 			}
 			c, basis, _ := d.amountExGST(a, r.GSTBasis)
@@ -1042,7 +1068,7 @@ func contains(list []int, n int) bool {
 	return false
 }
 
-var unitWords = regexp.MustCompile(`(?i)\bper\b|/\s?(?:meeting|visit|hour|hr|day|week|month|title|page|sheet|copy|unit|item|lot|m2|sqm)\b|\beach\b|\bea\b|\bprint\b`)
+var unitWords = regexp.MustCompile(`(?i)(?:\bper\s+|/\s?)(?:meeting|visit|hour|hr|day|week|month|title|page|sheet|copy|unit|item|lot|m2|sqm)\b|\beach\b|\bea\b|\bprint\b`)
 
 func unitPrice(context string) bool { return unitWords.MatchString(context) }
 

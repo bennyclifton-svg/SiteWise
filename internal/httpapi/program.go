@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	engine "sitewise/internal/program"
 	"sitewise/internal/store"
@@ -124,12 +125,46 @@ func getProgram(w http.ResponseWriter, r *http.Request, d Deps) {
 		programError(w, r, d, s.OrgID, store.ProgramResult{}, err)
 		return
 	}
+	before := st.Program.Version
+	st, err = assumeProgramStart(r, d, s, r.PathValue("id"), st)
+	if err != nil {
+		programError(w, r, d, s.OrgID, store.ProgramResult{}, err)
+		return
+	}
+	if st.Program.Version != before {
+		programChanged(r, d, s.OrgID, st.Program)
+	}
 	view, err := d.Store.ProgramView(r.Context(), s.OrgID, r.PathValue("id"), st, d.Knowledge)
 	if err != nil {
 		programError(w, r, d, s.OrgID, store.ProgramResult{}, err)
 		return
 	}
 	writeJSON(w, http.StatusOK, view)
+}
+
+// assumeProgramStart gives a program with no start date one, so the chart
+// shows calendar dates. The consent date is preferred; otherwise today.
+// A program that already has a start date is left alone. Clearing the date
+// leaves it empty until the next open, which fills it again.
+func assumeProgramStart(r *http.Request, d Deps, s store.Session, project string, st store.ProgramState) (store.ProgramState, error) {
+	if st.Program.StartDate != "" || st.Program.ID == "" {
+		return st, nil
+	}
+	view, err := d.Store.ProgramView(r.Context(), s.OrgID, project, st, d.Knowledge)
+	if err != nil {
+		return st, err
+	}
+	date := string(view.StartSuggestion)
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	}
+	res, err := d.Store.ApplyProgramOps(r.Context(), s.OrgID, project, s.UserID, st.Program.ID, st.Program.Version, []store.ProgramOp{{
+		Op: "set_start", StartDate: &date,
+	}})
+	if err != nil {
+		return st, err
+	}
+	return res.ProgramState, nil
 }
 
 // postProgramPrepare is POST /program/prepare {"surface"}: creates the
@@ -151,6 +186,11 @@ func postProgramPrepare(w http.ResponseWriter, r *http.Request, d Deps) {
 		return
 	}
 	st, created, err := d.Store.PrepareProgram(r.Context(), s.OrgID, r.PathValue("id"), body.Surface, d.Knowledge)
+	if err != nil {
+		programError(w, r, d, s.OrgID, store.ProgramResult{}, err)
+		return
+	}
+	st, err = assumeProgramStart(r, d, s, r.PathValue("id"), st)
 	if err != nil {
 		programError(w, r, d, s.OrgID, store.ProgramResult{}, err)
 		return

@@ -1,14 +1,15 @@
-import { Pending, Activity } from "./Activity";
+import { Pending } from "./Activity";
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
 //
-// The page reads top down: how far reading got; the Project card (who and
+// Reading feedback lives in the bottom ribbon. The page starts with the Project card (who and
 // where, class, work, then subclass, scale and complexity, approvals and
 // delivery); then scope and works, system by system in build order, each
 // with the risks and compliance inputs that belong to it.
 
-import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { ProfileSources } from "./ProfileSources";
 import { ProfileConfirm } from "./ProfileConfirm";
 import { ChoiceGroup, FieldRow, type Setter } from "./ProfileFields";
@@ -28,6 +29,7 @@ interface Props {
   onShowNotRead: () => void;
   /** Address line for the project banner. Empty when the site address is blank. */
   onIdentity?: (line: string) => void;
+  feedbackTarget?: HTMLDivElement | null;
 }
 
 const KIND_LABELS: Record<string, string> = {
@@ -61,7 +63,8 @@ const TIERS: Record<Tier, string[]> = {
   complexity: [
     "hdr.cond.planning", "hdr.cond.procurement_route", "hdr.cond.quality_level",
     "hdr.cond.access_constraints", "hdr.cond.operational_constraints",
-    "hdr.cond.stakeholder_complexity", "hdr.cond.environmental_sensitivity", "det.heritage_status",
+    "hdr.cond.stakeholder_complexity", "hdr.cond.environmental_sensitivity",
+    "det.flood_hazard", "det.bushfire_prone_land", "det.heritage_status",
   ],
   approvals: ["fact.consent_number", "fact.consent_date", "fact.consent_lapse_date", "det.ncc_edition"],
   delivery: [
@@ -117,7 +120,7 @@ function arrangeCard(fields: ProfileField[]): Arranged {
   return out;
 }
 
-export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, onIdentity }: Props) {
+export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, onIdentity, feedbackTarget }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
@@ -207,7 +210,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   }, [addressLine, onIdentity]);
 
   if (!data) {
-    return <p className="muted">{error || <Pending delayed>Loading the profile…</Pending>}</p>;
+    return <ProfileFeedback target={feedbackTarget}><p className="muted" role={error ? "alert" : "status"}>{error || <Pending delayed>Loading the profile…</Pending>}</p></ProfileFeedback>;
   }
 
   const openSources = (system: string) => {
@@ -268,6 +271,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
 
   return (
     <div className="profile">
+      <ProfileFeedback target={feedbackTarget}>
       <div className="pf-header">
         <p className="profile-reading">
           {data.read_documents + data.skipped_documents > 0 && (
@@ -307,8 +311,13 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         </p>
         {total > 0 && (
           <div className="profile-progress">
-            <p role="status" aria-atomic="true">{data.active_documents > 0 ? <Activity /> : data.pending_documents > 0 ? <Activity state="queued" /> : null}{" "}{completed === total ? "Reading complete" : data.failed_documents > 0 ? "Reading needs attention" : data.pending_documents > 0 ? data.active_documents > 0 ? "Reading documents" : "Reading queued" : "Ready to read"} · {data.active_documents > 0 && `${data.active_documents} processing · `}{Math.max(0, data.pending_documents - data.active_documents) > 0 && `${Math.max(0, data.pending_documents - data.active_documents)} queued · `}{completed} of {total} document{total === 1 ? "" : "s"} read</p>
-            <progress aria-label="Documents read for profile" max={total} value={completed} />
+            <svg className="profile-reading-meter" viewBox="0 0 24 24" role="progressbar" aria-label="Documents read for profile" aria-valuemin={0} aria-valuemax={total} aria-valuenow={completed}>
+              <circle className="profile-reading-track" cx="12" cy="12" r="9" />
+              {completed === total
+                ? <path className="profile-reading-check" d="m7.5 12 3 3 6-6" />
+                : <circle className="profile-reading-fill" cx="12" cy="12" r="9" pathLength="100" strokeDasharray={`${Math.min(100, Math.max(0, completed / total * 100))} 100`} />}
+            </svg>
+            <p role="status" aria-atomic="true">{completed === total ? "Reading complete" : data.failed_documents > 0 ? "Reading needs attention" : data.pending_documents > 0 ? data.active_documents > 0 ? "Reading documents" : "Reading queued" : "Ready to read"} · {data.active_documents > 0 && `${data.active_documents} processing · `}{Math.max(0, data.pending_documents - data.active_documents) > 0 && `${Math.max(0, data.pending_documents - data.active_documents)} queued · `}{completed} of {total} document{total === 1 ? "" : "s"} read</p>
           </div>
         )}
       </div>
@@ -324,19 +333,22 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
           {error}
         </p>
       )}
+      </ProfileFeedback>
 
       <ProfileConfirm data={data} siteFields={site.fields} onSet={set} onSetSite={site.set} />
 
       {sourcesOpen && <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} onClose={() => setSourcesOpen(false)} />}
 
+      <div className="profile-toolbar">
+        <button type="button" className="btn btn-primary" onClick={update} disabled={requesting}>
+          {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update project profile"}
+        </button>
+      </div>
       <section className="pf-section" aria-labelledby="pf-project">
         <div className="pf-head">
           <h2 id="pf-project">Project</h2>
           <div className="pf-head-actions">
             <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
-            <button type="button" className="btn btn-primary btn-small" onClick={update} disabled={requesting}>
-              {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update project profile"}
-            </button>
           </div>
         </div>
         <ProjectCard card={card} parts={data.parts} onSet={setField} onJump={onJump} />
@@ -355,6 +367,24 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         onSignedOut={onSignedOut}
       />
     </div>
+  );
+}
+
+function ProfileFeedback({ target, children }: { target?: HTMLDivElement | null; children: ReactNode }) {
+  const scroll = useRef<HTMLDivElement>(null);
+  const following = useRef(true);
+  useEffect(() => {
+    if (following.current && scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight;
+  }, [children, target]);
+  if (!target) return null;
+  return createPortal(
+    <div className="ask-bar profile-feedback" role="region" aria-label="Profile updates" tabIndex={0}
+      ref={scroll} onScroll={event => {
+        const element = event.currentTarget;
+        following.current = element.scrollHeight - element.clientHeight - element.scrollTop < 8;
+      }}>
+      {children}
+    </div>, target,
   );
 }
 

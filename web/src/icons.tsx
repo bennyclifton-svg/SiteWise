@@ -70,6 +70,14 @@ export const IconUpload = () => (
   </Icon>
 );
 
+/** Download: an arrow into the tray, the reverse of upload. */
+export const IconDownload = () => (
+  <Icon>
+    <path d="M8 2.5v9M4.8 8.2L8 11.5l3.2-3.3" />
+    <path d="M2.5 11.5v2.5h11V11.5" />
+  </Icon>
+);
+
 export const IconRetry = () => (
   <Icon>
     <path d="M13 8a5 5 0 1 1-1.6-3.7" />
@@ -93,8 +101,8 @@ export const IconStored = () => (
 
 /** Delete: a bin with its lid. */
 export const IconBin = () => (
-  <Icon>
+  <Icon className="icon-bin" width="20" height="20" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2.5 4.5h11M6 4.5V2.5h4v2" />
-    <path d="M4 4.5l.7 9h6.6l.7-9M6.8 7v4M9.2 7v4" />
+    <path d="M4 4.5l.7 9h6.6l.7-9" />
   </Icon>
 );

@@ -437,7 +437,7 @@ select {
 .file-drop[data-over="true"] {
   border-color: var(--ember);
   border-style: solid;
-  background: var(--ember-soft);
+  background: color-mix(in oklab, var(--ember) 10%, var(--paper));
 }
 
 .drop-mark {

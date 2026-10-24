@@ -316,13 +316,13 @@ func TestParseStated(t *testing.T) {
 	}
 }
 
-// proposalMapSHA256 is the hash of the committed proposal-1 question map
+// proposalMapSHA256 is the hash of the committed proposal question map
 // for proposalFixture. Reading B never changes that map (plan 13.3 Q3):
-// a change there is a new proposals.QuestionVersion and a new calibration
-// of every proposal question.
-// Re-pinned 21 October 2026 after main's quoted-fee work changed the
-// proposal-1 map; the R7 reading itself still adds nothing to it.
-const proposalMapSHA256 = "52bebe8e657c0134864332dff93ce6d3d0340f8b34c278dd528789f864556cd3"
+// calibrated field changes require a new proposals.QuestionVersion and
+// calibration. Coverage is separately versioned and never authorises prices.
+// Re-pinned 24 October 2026 for coverage-2's explicit partial-scope options;
+// the calibrated proposal-1 questions and R7 separation remain unchanged.
+const proposalMapSHA256 = "cab550cc0d2694944f27ebc0c30806ced50c6d8605ef7a90d83e75500da3d1b4"
 
 func TestProposalOneQuestionMapIsUnchanged(t *testing.T) {
 	if proposals.QuestionVersion != "proposal-1" {
@@ -334,6 +334,9 @@ func TestProposalOneQuestionMapIsUnchanged(t *testing.T) {
 	call, ok := proposals.NewDraft(ev, pc, nil).Call()
 	if !ok {
 		t.Fatal("no proposal call")
+	}
+	if call.QuestionVersion != "proposal-1+coverage-2" {
+		t.Fatalf("proposal request version %q", call.QuestionVersion)
 	}
 	for id := range call.Questions {
 		if strings.HasPrefix(id, "program") || strings.Contains(id, "weeks") {

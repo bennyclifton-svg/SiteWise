@@ -25,8 +25,9 @@ test("missing details recover in place, with progress and a missed-event fallbac
   });
   await page.reload();
   const row = page.locator("tbody.reg-doc");
-  await row.locator(".reg-line").click();
-  const panel = row.getByRole("status", { name: "Text recovery" });
+  await row.getByRole("button", { name: /^Open document:/ }).click();
+  await page.getByRole("button", { name: "Filing details", exact: true }).click();
+  const panel = page.locator(".document-workspace").getByRole("status", { name: "Text recovery" });
   await expect(panel.locator("p").filter({ hasText: "Still missing:" })).toContainText("drawing title, drawing number, discipline");
   await panel.getByRole("button", { name: "Reprocess missing details" }).click();
   await expect(panel.getByRole("alert")).toHaveText(/Recovery did not start/);

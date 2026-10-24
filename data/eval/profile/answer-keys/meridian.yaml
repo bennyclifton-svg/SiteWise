@@ -1,0 +1,150 @@
+# Draft answer key from a full reading of the five Meridian fitout documents
+# (tenant brief email, planning advice, engagement letter, fee proposal,
+# landlord schedule and builder ROM email). Unreviewed: only the owner sets
+# reviewed: true. Evidence names the document and section, not people.
+schema_version: 1
+reviewed: false
+label_source: agent-draft
+project: meridian
+documents:
+- 01-email-tenant-fitout-brief-to-landlord.md
+- 02-planning-advice-parramatta-ssd.md
+- 03-engagement-letter-form-function-studio.md
+- 04-fee-proposal-form-function-studio.md
+- 05-email-landlord-base-building-and-builder-rom.md
+header:
+  hdr.building_class:
+    accept: [commercial]
+    evidence: 02 Existing use, commercial office tower
+  hdr.subclass:
+    accept: [office]
+    evidence: 03 commercial office fit-out refurbishment
+  hdr.work_type:
+    accept: [refurb]
+    evidence: 02 internal fit-out refurbishment
+  hdr.cond.planning:
+    accept: [ssd]
+    evidence: 02 Recommendation, SSD as primary pathway
+  hdr.cond.procurement_route:
+    accept: [traditional]
+    evidence: 04 Procurement, two builders tender at design development
+  hdr.cond.access_constraints:
+    accept: [restricted_hours]
+    evidence: 05 After-hours works permitted 10 pm to 6 am weekdays, no Sunday works
+  hdr.cond.operational_constraints:
+    accept: [partial_occupation, live_environment]
+    evidence: 01 Building remains partially occupied on Levels 2 and 5
+  hdr.cond.stakeholder_complexity:
+    accept: [single_owner]
+    evidence: one landlord; no option for tenant plus landlord exists, so single_owner is the nearest
+    blank_ok: true
+  hdr.cond.hazardous_process:
+    accept: [none]
+    evidence: no hazardous process in an office fitout
+    blank_ok: true
+details:
+  site.address:
+    accept:
+    - 88 Westgate Street, Parramatta NSW 2150
+    - 88 Westgate Street, Parramatta
+    evidence: every document, the Premises
+  proj.client:
+    accept:
+    - Meridian Legal Group Pty Ltd
+    evidence: 03 addressee and acceptance; 02 Client line acts for Meridian Legal Group
+    blank_ok: true
+  proj.lga:
+    accept: [Parramatta]
+    evidence: 02 Local DA (Parramatta Council) fallback
+    blank_ok: true
+  proj.sustainability:
+    accept:
+    - NABERS Energy rating ≥ 4.5 stars
+    evidence: 02 Key planning issue 5; 05 NABERS row, no downgrade below 4.5 stars
+  proj.exclusions_stated:
+    accept:
+    - furniture, IT licensing, and landlord contributions
+    evidence: 01 Budget aspiration, excluding furniture, IT licensing and landlord contributions
+  proj.budget_stated:
+    accept: []
+    evidence: 01 budget aspiration is explicitly not confirmed; 05 ROM is not a tender
+    blank_ok: true
+  proj.flag.staged:
+    accept: []
+    evidence: fee stages only; construction is not staged
+    blank_ok: true
+  proj.flag.architect_lodges:
+    accept: ['yes']
+    evidence: 03 Scope of services 1, design through to SSD lodgement
+    blank_ok: true
+  proj.flag.sustainability_target:
+    accept: ['yes']
+    evidence: 02 NABERS commitment
+determinants:
+  det.ncc_class:
+    accept: ['5']
+    evidence: 02 BCA Class 5
+  det.state:
+    accept: [NSW]
+    evidence: address
+  det.heritage_status:
+    accept: [none]
+    evidence: 02 No heritage constraints, not heritage-listed
+  det.sprinklered:
+    accept: [stated_true]
+    evidence: 05 base building sprinklers to corridor and open office shell
+signals:
+  sig.occupied-works-stated:
+    accept: ['true']
+    evidence: 01 partially occupied on Levels 2 and 5; 05 tenancy separation to Levels 2 and 5
+    blank_ok: true
+  sig.acoustic-separation-stated:
+    accept: ['true']
+    evidence: 05 acoustic partitions to adjoining tenancy on eastern wing
+    blank_ok: true
+# scope: in means the works touch the system (the Scope of works checklist).
+systems:
+  interiors.walls-linings:
+    presence: included
+    scope: in
+    evidence: 01 Tenant works, partitions
+  interiors.ceilings:
+    presence: included
+    scope: in
+    evidence: 01 Tenant works, ceilings
+  interiors.joinery:
+    presence: included
+    scope: in
+    evidence: 01 Tenant works, joinery
+  electrical.lighting:
+    presence: included
+    scope: in
+    evidence: 01 Tenant works, lighting
+  electrical.switchboards:
+    presence: included
+    scope: in
+    evidence: 01 tenant switchboard extension; 05 landlord busbar to 500 kVA
+  comms-security.structured-cabling:
+    presence: included
+    scope: in
+    evidence: 01 Tenant works, data cabling
+  comms-security.audiovisual:
+    presence: included
+    scope: in
+    evidence: 01 Tenant works, AV
+  comms-security.access-control:
+    presence: included
+    scope: in
+    evidence: 01 Tenant works, security access control
+  mechanical.central-plant:
+    presence: included
+    scope: in
+    evidence: 05 landlord upgrades central plant capacity
+  fire-active.smoke-control:
+    presence: included
+    scope: in
+    evidence: 01 smoke control for our layout; 05 smoke control to mezzanine
+  access-egress.exits:
+    presence: included
+    scope: in
+    evidence: 02 minor egress adjustments

@@ -160,6 +160,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		foreignTarget bool
 	}
 	routes := []route{
+		{"PUT", base + "/cost-plan/order", []byte(`{"ids":[]}`), false},
 		{"POST", base + "/cost-plan/prepare", []byte(`{}`), false},
 		{"POST", base + "/cost-plan/suggestions/accept", []byte(`{"version":0}`), false},
 		{"POST", base + "/cost-plan/suggestions/pw:escalation/accept", []byte(`{"version":0}`), false},

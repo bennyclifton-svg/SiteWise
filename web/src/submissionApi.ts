@@ -16,7 +16,7 @@ export interface BuilderDetail { text: string; relationship: string; section_pag
 export interface BuilderSection { key: string; label: string; summary?: string; details: BuilderDetail[] }
 export interface BuilderReview { ex_gst: Money; inc_gst: Money; basis: string; sources: string[]; issues: string[]; sections: BuilderSection[] }
 export interface QuoteFee { id: string; label: string; printed: string; amount: Money; role: string; page: number; source: string; heading: string; suggestion?: string }
-export interface QuoteReview { fees: QuoteFee[]; coverage: Record<string, {fee_id: string; status: string}>; issues: string[] }
+export interface QuoteReview { fees: QuoteFee[]; coverage: Record<string, {fee_id: string; status: string}>; issues: string[]; terms?: {kind: string; heading: string; text: string; page: number}[] }
 export interface Column { quote?: QuoteReview; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
 export interface AwardLine { cost_item_id?: string; label: string; item_keys: string[]; price_ids: string[]; amount: Money; invoiced: boolean }
 export interface Award { id?: string; submission_id: string; firm_name: string; parent_label: string; parent_item_id?: string; budget: Money; total: Money; lines: AwardLine[]; created_at?: string; locked: boolean }
@@ -35,6 +35,7 @@ export interface AwardRequest { submission_id: string; lines: { label: string; i
 const p = (project: string) => `/projects/${project}`;
 
 export const submissionApi = {
+  linkDocument: (project: string, pkg: string, document_id: string) => request<{ submission_id: string }>("POST", `${p(project)}/procurement/packages/${pkg}/documents`, { document_id }),
   row: (project: string, pkg: string, key: string, label: string, section: string, unit = "") => request<PriceTable>("PUT", `${p(project)}/procurement/packages/${pkg}/comparison-row`, { key, label, section, unit }),
   align: (project: string, sub: string, version: number, target: string, price_ids: string[], undo = false, exclude = false) => request<PriceTable>("POST", `${p(project)}/submissions/${sub}/alignment`, { version, target, price_ids, undo, exclude }),
   board: (project: string) => request<Board>("GET", `${p(project)}/procurement/board`),

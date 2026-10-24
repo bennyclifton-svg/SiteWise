@@ -97,9 +97,13 @@ type FragmentAttach struct {
 }
 
 // Fragment is the set of activities a system's work items bring to a stage.
+// Scope is empty for those. ScopeProject ("project", the profile key scope)
+// marks a process fragment with no work item: design, consent, tender,
+// handover. Generation includes that fragment once.
 type Fragment struct {
 	ID          string              `yaml:"id" json:"id"`
 	Label       string              `yaml:"label" json:"label"`
+	Scope       string              `yaml:"scope,omitempty" json:"scope,omitempty"`
 	Stage       string              `yaml:"stage" json:"stage"`
 	Systems     []string            `yaml:"systems" json:"systems"`
 	AppliesWhen any                 `yaml:"applies_when" json:"applies_when,omitempty"`
@@ -700,10 +704,18 @@ func (c *Catalog) validateFragment(f Fragment, fragments map[string]bool) error 
 	if err := c.checkSystemIDs(f.Systems); err != nil {
 		return err
 	}
+	if f.Scope != "" && f.Scope != ScopeProject {
+		return fmt.Errorf("scope must be project")
+	}
 	if f.AppliesWhen != nil {
 		if err := c.validateProgramPredicate(f.AppliesWhen, 0); err != nil {
 			return err
 		}
+	}
+	// A project fragment is included once, with no work item, so its
+	// predicate cannot name an action or a system that only a work item has.
+	if f.Scope == ScopeProject && usesWorkItemFact(f.AppliesWhen) {
+		return fmt.Errorf("a project fragment's applies_when uses conditions and determinants only")
 	}
 	if len(f.Activities) == 0 {
 		return fmt.Errorf("needs activities")
@@ -1144,6 +1156,32 @@ func (c *Catalog) validateProgramPredicate(p any, depth int) error {
 		}
 	}
 	return nil
+}
+
+// usesWorkItemFact reports a predicate that only makes sense against a
+// work item. A project-scoped fragment has none.
+func usesWorkItemFact(p any) bool {
+	m, ok := asMap(p)
+	if !ok {
+		return false
+	}
+	for k, v := range m {
+		switch k {
+		case "work_action", "works", "system_present", "system_existing":
+			return true
+		case "all", "any":
+			for _, sub := range asList(v) {
+				if usesWorkItemFact(sub) {
+					return true
+				}
+			}
+		case "not":
+			if usesWorkItemFact(v) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Catalog) checkWorkAction(v any) error {

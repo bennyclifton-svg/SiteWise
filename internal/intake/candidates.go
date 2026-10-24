@@ -65,6 +65,9 @@ type Candidate struct {
 // Harvest over-finds number, revision, title, and date candidates.
 // It does not choose among them.
 func Harvest(filename string, text identity.Text) []Candidate {
+	if text.Format == "md" || text.Format == "markdown" {
+		return markdownIdentity(text)
+	}
 	out := harvestFilename(filename)
 	// A filename's job reference is not its document number when the source
 	// explicitly names that same value as the project/job reference.

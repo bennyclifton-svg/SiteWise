@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { inflateRawSync } from "node:zlib";
 import { readFileSync } from "node:fs";
 
@@ -21,7 +21,34 @@ function unzip(buf: Buffer, name: string): string {
   throw new Error(`${name} not in workbook`);
 }
 
-const money = (s: string) => s.replace(/[,\s]/g, "");
+// The cost grid groups thousands; the ledger API does not.
+const grouped = (m: string) => {
+  const negative = m.startsWith("-");
+  const [whole, cents = "00"] = m.replace("-", "").split(".");
+  return `${negative ? "−" : ""}${whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${cents.padEnd(2, "0")}`;
+};
+
+type HeldLine = { label: string; invoiced: string; invoices: number };
+
+async function ledgerSummary(page: Page, project: string) {
+  const body = await (await page.request.get(`/api/projects/${project}/invoices`)).json() as {
+    summary: { invoiced: string; unallocated: { invoiced: string }; lines: HeldLine[] };
+  };
+  return body.summary;
+}
+
+function lineInvoices(plan: Locator, line: HeldLine) {
+  const word = line.invoices === 1 ? "invoice" : "invoices";
+  return plan.getByTitle(`Show the ${line.invoices} ${word} on ${line.label}`, { exact: true });
+}
+
+async function expectNoInvoiceFooter(plan: Locator) {
+  await expect(plan.locator(".cost-ledger-foot")).toHaveCount(0);
+  await expect(plan.getByText("Invoices not on a current line")).toHaveCount(0);
+  await expect(plan.getByText("Invoices with no activity line")).toHaveCount(0);
+  await expect(plan.getByText("Invoiced to date (all lines)")).toHaveCount(0);
+  await expect(plan.getByTestId("unallocated-row")).toHaveCount(0);
+}
 
 async function dropInvoices(page: Page, numbers: number[]) {
   const files = await Promise.all(numbers.map(async n => ({ n, b64: (await (await page.request.get(`/__e2e/invoice.pdf?n=${n}`)).body()).toString("base64") })));
@@ -50,7 +77,11 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   }
   await page.getByRole("button", { name: "Costs", exact: true }).click();
   await expect(page.getByRole("tab", { name: /Cost plan/ })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByTestId("unallocated-row")).toBeVisible();
+  const plan = page.locator("#cost-panel-plan");
+  // The tab count arrives with the ledger. The invoice footer is not part of the plan.
+  await expect(page.getByRole("tab", { name: /Invoices/ })).toContainText("0");
+  await expect(plan.getByRole("row", { name: /Construction budget/ })).toBeVisible();
+  await expectNoInvoiceFooter(plan);
 
   // Drop ten invoices at once; every row appears as it is read.
   await page.getByRole("tab", { name: /Invoices/ }).click();
@@ -70,16 +101,17 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await expect(page.getByText("Already filed")).toBeVisible();
   await expect(table.getByRole("row")).toHaveCount(11);
 
-  // Cost plan tab: invoiced to date is the ledger total.
+  // Cost plan: invoices that landed on a line stay in that line's invoiced column.
   await page.getByRole("tab", { name: /Cost plan/ }).click();
-  const total = page.getByTestId("invoiced-to-date");
-  await expect(total).not.toHaveText("—");
-  const before = await total.textContent();
-  const unallocated = page.getByTestId("unallocated-row");
-  await expect(unallocated).toContainText("0.00");
-  await expect(unallocated).not.toContainText("1,493.80");
+  await expectNoInvoiceFooter(plan);
+  const before = await ledgerSummary(page, project);
+  expect(before.unallocated.invoiced).toBe("0.00");
+  const held = before.lines.filter(l => l.invoices > 0);
+  expect(held.length).toBeGreaterThan(0);
+  for (const line of held) await expect(lineInvoices(plan, line)).toHaveText(grouped(line.invoiced));
 
-  // Re-map one invoice to no line: the summary moves it to Unallocated at once.
+  // Re-map one invoice to no line. The Invoices tab shows Unallocated.
+  // The cost plan does not grow a row for it, and the lines that still hold invoices keep their amounts.
   await page.getByRole("tab", { name: /Invoices/ }).click();
   await table.getByRole("button", { name: "INV-00004", exact: true }).click();
   const panel = page.getByRole("complementary", { name: "Invoice INV-00004" });
@@ -87,14 +119,21 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await panel.getByLabel("Activity line").selectOption({ label: "Unallocated" });
   await expect(panel.getByText("Cleared by you").first()).toBeVisible();
   await panel.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(table.getByRole("row", { name: /INV-00004/ })).toContainText("Unallocated");
   await page.getByRole("tab", { name: /Cost plan/ }).click();
-  await expect(total).toHaveText(before!);
-  await expect(unallocated).toContainText("1,493.80");
-  await expect(unallocated.getByRole("button")).toBeVisible();
-  const shown = money((await total.textContent())!);
+  await expect(plan.getByRole("row", { name: /Construction budget/ })).toBeVisible();
+  await expectNoInvoiceFooter(plan);
+  const after = await ledgerSummary(page, project);
+  expect(after.invoiced).toBe(before.invoiced);
+  expect(after.unallocated.invoiced).toBe("1493.80");
+  const still = after.lines.filter(l => l.invoices > 0);
+  expect(still.length).toBeGreaterThan(0);
+  for (const line of still) await expect(lineInvoices(plan, line)).toHaveText(grouped(line.invoiced));
+  const shown = after.invoiced;
 
-  // Export: the workbook's Cost plan total is the screen's invoiced to date.
-  const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("link", { name: "Export to Excel" }).click()]);
+  // Export: the workbook's Cost plan total is the ledger total, including the invoice now off a line.
+  await page.getByRole("button", { name: "Download", exact: true }).click();
+  const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("menuitem", { name: "Export to Excel" }).click()]);
   const path = testInfo.outputPath("ledger.xlsx");
   await download.saveAs(path);
   const xlsx = readFileSync(path);
@@ -105,12 +144,12 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   const invoicesSheet = unzip(xlsx, "xl/worksheets/sheet2.xml");
   expect((invoicesSheet.match(/>INV-000\d\d</g) ?? []).length).toBe(10);
 
-  // The Unallocated figure opens the Invoices tab filtered to that line.
-  await page.locator(".cost-grid-scroll").evaluate(el => { el.scrollLeft = el.scrollWidth; });
-  await unallocated.getByRole("button").click();
+  // The Invoices tab still lists the invoice with no activity line.
+  await page.getByRole("tab", { name: /Invoices/ }).click();
+  await page.getByLabel("Activity line filter").selectOption("unallocated");
   await expect(page.getByRole("tab", { name: /Invoices/ })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByLabel("Activity line filter")).toHaveValue("unallocated");
   await expect(table.getByRole("row")).toHaveCount(2);
+  await expect(table.getByRole("button", { name: "INV-00004", exact: true })).toBeVisible();
 
   await page.getByRole("tab", { name: /Variations/ }).click();
   await expect(page.getByText("Variations are coming")).toBeVisible();

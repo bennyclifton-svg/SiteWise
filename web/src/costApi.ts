@@ -6,7 +6,7 @@ export interface CostValue { amount: string | null; low: string | null; high: st
 export interface ConstructionBudget { stated: { text: string; amount: string; gst: "ex" | "inc" | "not_stated"; converted: boolean }; known: boolean; origin: "document" | "user"; split: string; split_confidence: string; split_basis: string; no_split?: string }
 /** Budget against the construction lines: difference is budget less allocated. */
 export interface BudgetCheck { amount: string | null; allocated: string; unpriced: number; difference: string | null }
-export interface CostItem extends CostContent { source_key?: string; resolved_package_id?: string; resolved_category?: string; scope_work_items?: CostScope[]; cost_item_id: string; version: number; system_id: string; part_id: string; values: Record<string, CostValue> }
+export interface CostItem extends CostContent { display_order?: number; source_key?: string; resolved_package_id?: string; resolved_category?: string; scope_work_items?: CostScope[]; cost_item_id: string; version: number; system_id: string; part_id: string; values: Record<string, CostValue> }
 export interface CostScope { id: string; system_id: string; title: string; part_id: string }
 export interface CostSuggestion extends CostContent { source_key: string; parent_key: string; resolved_category: string; scope_work_items: CostScope[] }
 export interface CostPlan extends CostSettings { totals?: CostTotals; suggestions?: CostSuggestion[]; dismissed?: CostSuggestion[]; systems?: {id: string; label: string}[]; id: string; baseline_version_id?: string; revision: number; version: number; status: string; items: CostItem[]; links: { package_scope_item_id: string; cost_item_id: string }[]; construction_budget?: ConstructionBudget }
@@ -20,6 +20,7 @@ export interface CostTotals { sections: Record<string, Record<string, CostTotal>
 const path = (p: string) => `/projects/${p}/cost-plan`;
 const pin = (p: CostPlan) => ({ plan_version_id: p.id || "", version: p.version || 0 });
 export const costApi = {
+  reorder: (p: string, plan: CostPlan, ids: string[]) => request<CostPlan>("PUT", `${path(p)}/order`, { ...pin(plan), ids }),
   prepare: (p: string) => request<{plan: CostPlan; totals: CostTotals}>("POST", `${path(p)}/prepare`, {}),
   remove: (p: string, plan: CostPlan, id: string) => request<CostPlan>("DELETE", `${path(p)}/items/${id}`, pin(plan)),
   accept: (p: string, plan: CostPlan, key = "", budget?: string | null) => request<CostPlan>("POST", `${path(p)}/suggestions/${key ? `${encodeURIComponent(key)}/` : ""}accept`, {...pin(plan), budget}),

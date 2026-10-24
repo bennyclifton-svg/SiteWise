@@ -277,6 +277,11 @@ func Generate(cat *knowledge.Catalog, in GenInput) (Plan, error) {
 	if cat == nil {
 		return Plan{}, fmt.Errorf("no knowledge catalogue")
 	}
+	// An unanswered flood or bushfire site is treated as no, so those
+	// optional activities are left out until the Profile says yes. Other
+	// unknown facts stay unknown: they still select nothing and can still
+	// add a conditional activity.
+	in = assumeHazardsNo(in)
 	g := newGen(cat, in)
 	choice, ok := cat.MatchSkeleton(g.env(nil))
 	if !ok {
@@ -359,6 +364,28 @@ func newGen(cat *knowledge.Catalog, in GenInput) *gen {
 
 func (g *gen) note(code, activity, msg string) {
 	g.plan.Notes = append(g.plan.Notes, Check{Code: code, ActivityID: activity, Message: msg})
+}
+
+// assumeHazardsNo copies the input when flood or bushfire is blank and
+// records each blank one as false. A stated yes or no is left as written.
+func assumeHazardsNo(in GenInput) GenInput {
+	flood := strings.TrimSpace(in.Values["flood_hazard"])
+	bush := strings.TrimSpace(in.Values["bushfire_prone_land"])
+	if flood != "" && bush != "" {
+		return in
+	}
+	values := make(map[string]string, len(in.Values)+2)
+	for k, v := range in.Values {
+		values[k] = v
+	}
+	if flood == "" {
+		values["flood_hazard"] = "false"
+	}
+	if bush == "" {
+		values["bushfire_prone_land"] = "false"
+	}
+	in.Values = values
+	return in
 }
 
 // env is the predicate environment. items nil means every included item;
@@ -543,8 +570,29 @@ func (g *gen) investigationRows() {
 // adds the fragment; unknown adds it conditionally (low 0, label "If …");
 // false skips it. A fragment with no matching work item is not added, even
 // when its predicate holds: fragments follow work items (revision 2).
+//
+// A project-scoped fragment is the exception. It is a process activity
+// (design, consent, tender, handover) with no building-system work item, so
+// it is included once when its predicate holds. Matching it on `site` would
+// add a copy for every work item.
 func (g *gen) fragmentRows() {
 	for _, f := range g.cat.Fragments() {
+		if f.Scope == knowledge.ScopeProject {
+			env := g.env(nil)
+			truth := knowledge.True
+			if f.AppliesWhen != nil {
+				truth = g.cat.Holds(f.AppliesWhen, env)
+			}
+			if truth == knowledge.False {
+				continue
+			}
+			prefix := ""
+			if truth == knowledge.Unknown {
+				prefix = "If " + g.unknownLabel(f.AppliesWhen, env) + ": "
+			}
+			g.instantiate(f, nil, "project", prefix, truth == knowledge.Unknown)
+			continue
+		}
 		demolition := namesAction(f.AppliesWhen, actionRemove)
 		for i := range g.in.WorkItems {
 			it := g.in.WorkItems[i]
@@ -566,38 +614,49 @@ func (g *gen) fragmentRows() {
 			if truth == knowledge.Unknown {
 				prefix = "If " + g.unknownLabel(f.AppliesWhen, env) + ": "
 			}
-			stageKey, _ := g.resolveStage(f.Stage)
-			inst := fragInstance{frag: f, item: it, keys: map[string]string{}, stageKey: stageKey}
-			for _, a := range f.Activities {
-				label := a.Label
-				if len(f.Activities) == 1 && strings.TrimSpace(it.Title) != "" {
-					label = it.Title
-				}
-				key := "fragment:" + f.ID + ":" + it.ID + ":" + a.Key
-				r := Row{SourceKey: key, ParentKey: stageKey, Kind: KindActivity, Label: prefix + label,
-					WorkItemID: it.ID, FragmentID: f.ID, Systems: append([]string(nil), a.Systems...),
-					conditional: truth == knowledge.Unknown, item: &g.in.WorkItems[i]}
-				if a.Duration != nil {
-					r.durationID = *a.Duration
-				}
-				g.addRow(r)
-				inst.keys[a.Key] = key
-			}
-			internalPred, internalSucc := map[string]bool{}, map[string]bool{}
-			for _, l := range f.Links {
-				internalSucc[l.From], internalPred[l.To] = true, true
-			}
-			for _, a := range f.Activities {
-				if !internalPred[a.Key] {
-					inst.sources = append(inst.sources, inst.keys[a.Key])
-				}
-				if !internalSucc[a.Key] {
-					inst.sinks = append(inst.sinks, inst.keys[a.Key])
-				}
-			}
-			g.fragInstances = append(g.fragInstances, inst)
+			g.instantiate(f, &g.in.WorkItems[i], it.ID, prefix, truth == knowledge.Unknown)
 		}
 	}
+}
+
+// instantiate adds one copy of a fragment. item is nil for a project fragment,
+// which keeps the library label and the source-key slot "project".
+func (g *gen) instantiate(f knowledge.Fragment, item *WorkItem, slot, prefix string, conditional bool) {
+	stageKey, _ := g.resolveStage(f.Stage)
+	inst := fragInstance{frag: f, keys: map[string]string{}, stageKey: stageKey}
+	workID := ""
+	if item != nil {
+		inst.item = *item
+		workID = item.ID
+	}
+	for _, a := range f.Activities {
+		label := a.Label
+		if item != nil && len(f.Activities) == 1 && strings.TrimSpace(item.Title) != "" {
+			label = item.Title
+		}
+		key := "fragment:" + f.ID + ":" + slot + ":" + a.Key
+		r := Row{SourceKey: key, ParentKey: stageKey, Kind: KindActivity, Label: prefix + label,
+			WorkItemID: workID, FragmentID: f.ID, Systems: append([]string(nil), a.Systems...),
+			conditional: conditional, item: item}
+		if a.Duration != nil {
+			r.durationID = *a.Duration
+		}
+		g.addRow(r)
+		inst.keys[a.Key] = key
+	}
+	internalPred, internalSucc := map[string]bool{}, map[string]bool{}
+	for _, l := range f.Links {
+		internalSucc[l.From], internalPred[l.To] = true, true
+	}
+	for _, a := range f.Activities {
+		if !internalPred[a.Key] {
+			inst.sources = append(inst.sources, inst.keys[a.Key])
+		}
+		if !internalSucc[a.Key] {
+			inst.sinks = append(inst.sinks, inst.keys[a.Key])
+		}
+	}
+	g.fragInstances = append(g.fragInstances, inst)
 }
 
 func (g *gen) onSystems(system string, systems []string) bool {
@@ -1098,13 +1157,28 @@ func (g *gen) duration(i int) {
 	if r.item != nil {
 		env = g.env([]WorkItem{*r.item})
 	}
-	if !ok || !g.cat.DurationApplies(d, env) || d.UnitDays != "working" {
-		// A calendar-day activity duration needs dates to become working
-		// days; with no start date that conversion would be a guess.
+	if !ok || !g.cat.DurationApplies(d, env) {
 		return
 	}
 	dr, ok := g.compute(d)
-	if !ok || !validDays(int(dr.High)) {
+	if !ok {
+		return
+	}
+	// A library row in calendar days is an elapsed period (a cure, a
+	// statutory clock, a defects liability period). The schedule counts
+	// working days, so each bound becomes ceil(days × working days per
+	// week / 7). A lag is different: it keeps the calendar unit and the
+	// engine walks the calendar. This ratio does not take public holidays
+	// out of the count, so a period that crosses one runs slightly long.
+	if d.UnitDays == "calendar" {
+		per := daysPerWeek(g.in.WorkingWeek)
+		dr.Low = elapsedWorking(dr.Low, per)
+		dr.High = elapsedWorking(dr.High, per)
+		if dr.TypicalKnown {
+			dr.Typical = elapsedWorking(dr.Typical, per)
+		}
+	}
+	if !validDays(int(dr.High)) {
 		return
 	}
 	low, high := int(dr.Low), int(dr.High)
@@ -1123,7 +1197,34 @@ func (g *gen) duration(i int) {
 		// typical run stays unknown rather than take an invented middle.
 		r.Low, r.High = &low, &high
 	}
+	if d.UnitDays == "calendar" {
+		source["unit_days"] = "calendar"
+	}
 	r.DurationOrigin, r.DurationSource = DurationLibrary, source
+}
+
+// daysPerWeek counts the set bits of a working-week mask. An empty or
+// out-of-range mask is Monday to Friday.
+func daysPerWeek(mask int) int {
+	if mask <= 0 || mask > 127 {
+		mask = DefaultWorkingWeek
+	}
+	n := 0
+	for b := mask; b > 0; b >>= 1 {
+		n += b & 1
+	}
+	if n == 0 {
+		return 5
+	}
+	return n
+}
+
+// elapsedWorking turns an elapsed calendar span into working days, rounded up.
+func elapsedWorking(days int64, perWeek int) int64 {
+	if days <= 0 || perWeek <= 0 {
+		return 0
+	}
+	return (days*int64(perWeek) + 6) / 7
 }
 
 func validDays(d int) bool { return d >= 0 && d <= MaxDuration }
@@ -1145,14 +1246,7 @@ func (g *gen) constructionDays() (int, string, bool) {
 	if !ok || w.Sign() < 0 {
 		return 0, raw, false
 	}
-	week := g.in.WorkingWeek
-	if week <= 0 || week > 127 {
-		week = DefaultWorkingWeek
-	}
-	perWeek := 0
-	for b := week; b > 0; b >>= 1 {
-		perWeek += b & 1
-	}
+	perWeek := daysPerWeek(g.in.WorkingWeek)
 	days := new(big.Rat).Mul(w, big.NewRat(int64(perWeek), 1))
 	q, m := new(big.Int).QuoRem(days.Num(), days.Denom(), new(big.Int))
 	if m.Sign() > 0 {

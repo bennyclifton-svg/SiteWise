@@ -24,3 +24,13 @@ func TestProposalAndQuoteReferencesAreNumbers(t *testing.T) {
 		}
 	}
 }
+
+// Markdown files take their identity from the leading labels, a separate
+// path from labelAt.
+func TestMarkdownProposalReferenceIsTheNumber(t *testing.T) {
+	text := identity.Text{Format: "md", Runs: []identity.Run{{Text: "# Fee proposal — architectural services"}, {Text: "**Quoin Architecture Pty Ltd**"}, {Text: "**Proposal reference:** QUA-KAV-2601"}, {Text: "**Date:** 20 January 2026"}}}
+	got := intake.Harvest("01-fee-proposal-quoin-architecture.md", text)
+	if _, ok := findCandidate(got, intake.FieldNumber, "QUA-KAV-2601"); !ok {
+		t.Fatalf("proposal reference not a number candidate: %+v", got)
+	}
+}
