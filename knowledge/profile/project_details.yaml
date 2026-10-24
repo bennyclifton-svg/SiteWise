@@ -86,6 +86,49 @@ details:
       Using `excerpt` and `candidates`, which candidate does the passage state as the construction budget
       or target construction cost for this project? Select none when absent, or when the candidate is a fee,
       a contingency, an allowance for one item, a land or total development cost, or a cost of a different project.
+  # Brief figures the cost plan takes up beside the budget (2026-10-21,
+  # docs/plans/2026-10-21-source-to-cost-plan-design.md): each is kept as
+  # its verbatim span and read into money by Go.
+  - key: contingency_stated
+    label: Contingency (as stated)
+    value: text
+    scope: project
+    help: "As a document states it. The cost plan puts it on Construction contingency."
+    extraction: pre_parsed
+    triggers:
+      - '\bcontingenc'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as the contingency amount
+      the owner or the project holds for this project's construction? Select none when absent, or when the
+      candidate is the construction budget, a fee, an allowance for one item, a percentage only, or a figure
+      of a different project.
+  - key: owner_supply_stated
+    label: Owner-supplied items (as stated)
+    value: text
+    scope: project
+    help: "Items the owner supplies, with allowances, as a document states them. The cost plan lists each one outside the construction budget."
+    extraction: pre_parsed
+    triggers:
+      - '\b(?:owners?|client|principal)s?\b[^.\n]{0,30}\bsuppl'
+      - '\bsupplied\s+by\s+(?:the\s+)?(?:owners?|client|principal)\b'
+      - '\b(?:owner|client|principal)[- ]supplied\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate states the items the owner or client will supply
+      themselves for this project? Select none when absent, or when the candidate lists items the builder
+      supplies, prime cost items the builder prices, or items of a different project.
+  - key: exclusions_stated
+    label: Budget exclusions (as stated)
+    value: text
+    scope: project
+    help: "What a document says the construction budget excludes. The cost plan shows it on the Exclusions line."
+    extraction: pre_parsed
+    triggers:
+      - '\bexclud(?:ing|es)\b'
+      - '\bexclusions?\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate states what this project's construction budget or
+      construction cost excludes? Select none when absent, or when the candidate lists a consultant's or
+      contractor's excluded services, or exclusions of a different project.
 
 # Stored on the site record (internal/store/sites.go). A reading is shown
 # only until the user types a value there.

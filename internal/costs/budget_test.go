@@ -51,3 +51,14 @@ func TestSpreadAddsToTheTotal(t *testing.T) {
 		t.Fatalf("house spread %v", got)
 	}
 }
+
+func TestParseOwnerSupply(t *testing.T) {
+	got := ParseOwnerSupply("pendant lights (allowance $8,000), appliances package (allowance $22,000)")
+	if len(got) != 2 || got[0] != (SupplyItem{"pendant lights", "8000.00"}) || got[1] != (SupplyItem{"appliances package", "22000.00"}) {
+		t.Fatalf("%+v", got)
+	}
+	got = ParseOwnerSupply("loose furniture, window furnishings - $5k and artwork")
+	if len(got) != 3 || got[0].Amount != "" || got[1] != (SupplyItem{"window furnishings", "5000.00"}) || got[2].Label != "artwork" {
+		t.Fatalf("%+v", got)
+	}
+}

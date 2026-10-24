@@ -378,6 +378,11 @@ func (s *Store) PrepareCostPlan(ctx context.Context, org, project, actor string)
 		return PreparedCostPlan{}, e
 	}
 	count += spread
+	brief, e := s.applyBriefFigures(ctx, tx, org, project, actor, p)
+	if e != nil {
+		return PreparedCostPlan{}, e
+	}
+	count += brief
 	if count > 0 {
 		p, e = s.finishCost(ctx, tx, org, project, p.ID)
 	} else {

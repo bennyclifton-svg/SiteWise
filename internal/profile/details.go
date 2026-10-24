@@ -79,10 +79,37 @@ func detailCandidates(key, text string) []Candidate {
 		return zoneCandidates(text)
 	case "proj.sustainability":
 		return sustainabilityCandidates(text)
-	case "proj.budget_stated":
+	case "proj.budget_stated", "proj.contingency_stated":
 		return budgetCandidates(text)
+	case "proj.owner_supply_stated":
+		return clauseCandidates(text, ownerSupplyRe)
+	case "proj.exclusions_stated":
+		return clauseCandidates(text, exclusionRe)
 	}
 	return nil
+}
+
+var (
+	// ownerSupplyRe finds the clause after an owner-supply cue, up to the end
+	// of its sentence: "Owners will supply: pendant lights (allowance $8,000),
+	// appliances package (allowance $22,000)".
+	ownerSupplyRe = regexp.MustCompile(`(?i)\b(?:(?:owners?|client|principal)s?\b[^.\n:]{0,30}\bsuppl(?:y|ies|ied)|(?:owner|client|principal)[- ]supplied(?:\s+items)?|supplied\s+by\s+(?:the\s+)?(?:owners?|client|principal))\s*:?\s*([^\n]{3,300}?)(?:\.\s|\.$|\n|$)`)
+	// exclusionRe finds what a budget excludes, up to a closing bracket or
+	// the end of its sentence: "(excluding landscaping, loose furniture, and
+	// authority fees)".
+	exclusionRe = regexp.MustCompile(`(?i)\b(?:excluding|excludes|exclusions?\s*:)\s*([^)\n.]{3,200})`)
+)
+
+// clauseCandidates offers each clause the pattern captures, verbatim.
+func clauseCandidates(text string, re *regexp.Regexp) []Candidate {
+	var spans []span
+	for _, m := range re.FindAllStringSubmatchIndex(text, -1) {
+		clause := strings.Trim(strings.TrimSpace(text[m[2]:m[3]]), "*,;: ")
+		if clause != "" {
+			spans = append(spans, span{m[2], m[3], clause})
+		}
+	}
+	return collect(text, spans)
 }
 
 // span is a verbatim stretch of the passage with its stored form.

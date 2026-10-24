@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -16,7 +17,7 @@ import (
 
 // budgetKeys are the profile rows the construction budget and its split are
 // read from (docs/plans/2026-10-21-source-to-cost-plan-design.md, Part 2).
-var budgetKeys = []string{"proj.budget_stated", "hdr.building_class", "hdr.subclass", "hdr.work_type", "hdr.scale.storeys", "proj.flag.basement"}
+var budgetKeys = []string{"proj.budget_stated", "hdr.building_class", "hdr.subclass", "hdr.work_type", "hdr.scale.storeys", "proj.flag.basement", "proj.contingency_stated", "proj.owner_supply_stated", "proj.exclusions_stated"}
 
 // readBudgetProfile reads the applied value of each budget key, preferring
 // the whole-project part. A red or blank row is not applied.
@@ -181,4 +182,111 @@ func (s *Store) attachConstructionBudget(ctx context.Context, tx pgx.Tx, org, pr
 	}
 	p.Budget, _ = statedConstructionBudget(s.workCatalog(), values, origins)
 	return nil
+}
+
+// briefValue is what a brief figure writes into a line's provenance, so a
+// later prepare knows the value is still its own.
+type briefValue struct {
+	Key    string `json:"key"`
+	Stated string `json:"stated"`
+}
+
+func ownBrief(v costs.Value) (briefValue, bool) {
+	var p struct {
+		Brief *briefValue `json:"brief"`
+	}
+	if v.Origin != "assumption" || json.Unmarshal(v.Provenance, &p) != nil || p.Brief == nil {
+		return briefValue{}, false
+	}
+	return *p.Brief, true
+}
+
+// applyBriefFigures puts the brief's other figures in the plan: the stated
+// contingency on Construction contingency, one line per owner-supplied item
+// (outside the construction budget), and the budget's exclusions on the
+// Exclusions line. Like the spread, it writes only a budget that is unknown
+// or still its own, and relabels Exclusions only while the label is unedited.
+func (s *Store) applyBriefFigures(ctx context.Context, tx pgx.Tx, org, project, actor string, p costs.Plan) (int, error) {
+	if p.Status != "draft" {
+		return 0, nil
+	}
+	values, origins, err := readBudgetProfile(ctx, tx, org, project)
+	if err != nil {
+		return 0, err
+	}
+	bySource := map[string]costs.Item{}
+	for _, i := range p.Items {
+		if i.SourceKey != "" {
+			bySource[i.SourceKey] = i
+		}
+	}
+	n := 0
+	write := func(i costs.Item, key, stated string, amount costs.Money, rationale string) error {
+		v, has := i.Values["budget"]
+		prior, own := ownBrief(v)
+		if has && !(v.ValueState == "unknown" && v.Origin != "user") && !own {
+			return nil
+		}
+		if own && prior.Stated == stated && v.Amount != nil && *v.Amount == amount {
+			return nil
+		}
+		provenance, _ := json.Marshal(map[string]any{"actor": actor, "brief": briefValue{Key: key, Stated: stated}, "origin": origins[key]})
+		a := amount
+		n++
+		return writeCostValueWith(ctx, tx, org, project, p.ID, i.ID, "budget", costs.Value{Amount: &a, ValueState: "known", Origin: "assumption", Meaning: "allowance", Rationale: rationale}, provenance)
+	}
+	if text := values["proj.contingency_stated"]; text != "" {
+		if c, ok := costs.ParseStatedBudget(text); ok {
+			if i, ok := bySource["pw:construction-contingency"]; ok && i.Posting && !i.Excluded {
+				if err := write(i, "proj.contingency_stated", text, c.Amount, fmt.Sprintf("Contingency as a source document states it: %q.", text)); err != nil {
+					return n, err
+				}
+			}
+		}
+	}
+	if text := values["proj.owner_supply_stated"]; text != "" {
+		for _, item := range costs.ParseOwnerSupply(text) {
+			key := "brief:owner-supply:" + slug(item.Label)
+			i, ok := bySource[key]
+			if !ok {
+				c := costs.Content{Label: "Owner supply: " + item.Label, LineKind: "project_wide", Category: "other", Posting: true, Origin: "assumption", Meaning: "allowance",
+					Rationale: "The owner supplies this, outside the construction budget, as a source document states: " + clipText(text, 300)}
+				id := newID()
+				if err := s.insertCostItem(ctx, tx, org, project, p.ID, actor, id, c); err != nil {
+					return n, err
+				}
+				if _, err := tx.Exec(ctx, `UPDATE cost_item_revisions SET source_key=$4 WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, org, p.ID, id, key); err != nil {
+					return n, err
+				}
+				i = costs.Item{ID: id, Content: c, Values: map[string]costs.Value{}}
+				n++
+			}
+			if item.Amount != "" && i.Posting && !i.Excluded {
+				if err := write(i, "proj.owner_supply_stated", text, item.Amount, fmt.Sprintf("Owner allowance for %s as a source document states it; outside the construction budget.", item.Label)); err != nil {
+					return n, err
+				}
+			}
+		}
+	}
+	if text := values["proj.exclusions_stated"]; text != "" {
+		if i, ok := bySource["pw:exclusions"]; ok && (i.Label == "Exclusions" || strings.HasPrefix(i.Label, "Exclusions: ") && i.Origin == "assumption") {
+			label := "Exclusions: " + clipText(text, 400)
+			if i.Label != label {
+				c := i.Content
+				c.Label, c.Origin = label, "assumption"
+				c.Rationale = "The construction budget excludes these, as a source document states."
+				if err := writeCostContent(ctx, tx, org, project, p.ID, actor, i.ID, c, true); err != nil {
+					return n, err
+				}
+				n++
+			}
+		}
+	}
+	return n, nil
+}
+
+var slugRe = regexp.MustCompile(`[^a-z0-9]+`)
+
+func slug(s string) string {
+	return strings.Trim(slugRe.ReplaceAllString(strings.ToLower(s), "-"), "-")
 }

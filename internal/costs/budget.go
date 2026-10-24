@@ -147,3 +147,66 @@ func checkBudget(b *ConstructionBudget, lines Total) *BudgetCheck {
 	}
 	return out
 }
+
+// SupplyItem is one item the owner supplies, with its allowance when the
+// words state one (Amount empty otherwise: unknown stays unknown).
+type SupplyItem struct {
+	Label  string `json:"label"`
+	Amount Money  `json:"amount,omitempty"`
+}
+
+var supplyPart = regexp.MustCompile(`(?i)^\s*(?:and\s+)?(.*?)\s*(?:\(\s*(?:allowance\s*(?:of\s*)?)?(\$\s*[0-9][0-9,]*(?:\.[0-9]+)?\s*(?:k|m|million)?)[^)]*\)|[-–:]\s*(\$\s*[0-9][0-9,]*(?:\.[0-9]+)?\s*(?:k|m|million)?))?\s*$`)
+
+// ParseOwnerSupply splits a stated owner-supply clause into items:
+// "pendant lights (allowance $8,000), appliances package (allowance $22,000)".
+func ParseOwnerSupply(text string) []SupplyItem {
+	var out []SupplyItem
+	for _, part := range splitOutsideBrackets(text) {
+		m := supplyPart.FindStringSubmatch(part)
+		if m == nil || strings.TrimSpace(m[1]) == "" {
+			continue
+		}
+		item := SupplyItem{Label: strings.Trim(strings.TrimSpace(m[1]), "*.;: ")}
+		raw := m[2]
+		if raw == "" {
+			raw = m[3]
+		}
+		if raw != "" {
+			if b, ok := ParseStatedBudget(raw); ok {
+				item.Amount = b.Amount
+			}
+		}
+		if item.Label != "" {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
+// splitOutsideBrackets splits on commas and semicolons that are not inside
+// brackets, and on " and ", so "lights (allowance $8,000)" stays one part.
+func splitOutsideBrackets(s string) []string {
+	var parts []string
+	depth, start := 0, 0
+	for i, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		case ',', ';':
+			if depth == 0 {
+				parts = append(parts, s[start:i])
+				start = i + 1
+			}
+		case ' ':
+			if depth == 0 && strings.HasPrefix(strings.ToLower(s[i:]), " and ") && strings.TrimSpace(s[start:i]) != "" {
+				parts = append(parts, s[start:i])
+				start = i + 5
+			}
+		}
+	}
+	return append(parts, s[start:])
+}
