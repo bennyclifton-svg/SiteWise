@@ -211,6 +211,9 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 	factSets := make([][]store.StoredFact, len(passages))
 	err = eachPassage(ctx, len(passages), func(ctx context.Context, i int) error {
 		passage := passages[i]
+		if Boilerplate(passage.Passage) {
+			return nil
+		}
 		call, cands := labelCall(w.Catalog, passage.Passage)
 		if len(call.Questions) == 0 {
 			return nil
@@ -478,22 +481,61 @@ func jobPayload(kind, status string) string {
 func SplitPassages(text string) []string {
 	text = strings.ReplaceAll(text, "\r\n", "\n")
 	var out []string
-	for _, part := range strings.Split(text, "\n\n") {
-		part = strings.TrimSpace(part)
-		if part == "" {
-			continue
-		}
-		for part != "" {
-			if utf8.RuneCountInString(part) <= maxPassageRunes {
-				out = append(out, part)
-				break
-			}
-			cut := cutRunes(part, maxPassageRunes)
-			out = append(out, strings.TrimSpace(part[:cut]))
-			part = strings.TrimSpace(part[cut:])
+	for _, paragraph := range strings.Split(text, "\n\n") {
+		for _, part := range splitAddressee(strings.TrimSpace(paragraph)) {
+			out = appendCut(out, part)
 		}
 	}
 	return out
+}
+
+// addresseeLine opens a To / Client / Project / Site block, with or without
+// Markdown bold around the label.
+var addresseeLine = regexp.MustCompile(`(?i)^[*_\s]*(?:to|attn\.?|attention|client|principal|owner|project|site|prepared\s+for)[*_\s]*:`)
+
+// splitAddressee starts a new passage where an addressee block follows other
+// lines, so a letterhead's office address and the project's site address
+// are read apart. A paragraph that begins with labels stays whole.
+func splitAddressee(part string) []string {
+	lines := strings.Split(part, "\n")
+	for i := 1; i < len(lines); i++ {
+		if addresseeLine.MatchString(lines[i]) && !addresseeLine.MatchString(lines[i-1]) {
+			head := strings.TrimSpace(strings.Join(lines[:i], "\n"))
+			return append([]string{head}, splitAddressee(strings.TrimSpace(strings.Join(lines[i:], "\n")))...)
+		}
+	}
+	return []string{part}
+}
+
+// appendCut adds one passage. A very long paragraph is cut so one passage
+// cannot dominate the index.
+func appendCut(out []string, part string) []string {
+	for part != "" {
+		if utf8.RuneCountInString(part) <= maxPassageRunes {
+			return append(out, part)
+		}
+		cut := cutRunes(part, maxPassageRunes)
+		out = append(out, strings.TrimSpace(part[:cut]))
+		part = strings.TrimSpace(part[cut:])
+	}
+	return out
+}
+
+var (
+	signatureBlank = regexp.MustCompile(`_{6,}`)
+	signatureWords = regexp.MustCompile(`(?i)\b(?:accepted|signed|signature|sign|date|name)\b`)
+	billingHeading = regexp.MustCompile(`(?i)^[#*\s]*(?:billing|invoicing|payment terms|payment)\b`)
+)
+
+// Boilerplate reports a passage nothing in the building's profile can come
+// from: a signature or acceptance block, or a fee proposal's billing terms.
+// It is not sent to Jev. A contract's payment clause is read: it can state
+// provisional sums, notice periods and retention.
+func Boilerplate(p Passage) bool {
+	if signatureBlank.MatchString(p.Text) && signatureWords.MatchString(p.Text) && len(strings.Fields(p.Text)) <= 30 {
+		return true
+	}
+	return p.Kind == "commercial" && (billingHeading.MatchString(p.Text) || billingHeading.MatchString(p.Section))
 }
 
 func cutRunes(s string, n int) int {
