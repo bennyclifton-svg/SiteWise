@@ -123,7 +123,7 @@ body {
 .cockpit-shell {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(220px, 268px) minmax(0, 1fr) minmax(280px, 760px);
+  grid-template-columns: minmax(200px, 236px) minmax(0, 1fr) minmax(280px, 760px);
   grid-template-rows: auto minmax(0, 1fr);
   column-gap: var(--cockpit-shell-gutter);
   height: 100%;
@@ -149,6 +149,14 @@ body {
 
 .cockpit-title-block {
   min-width: 0;
+}
+
+.cockpit-header-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
 }
 
 .cockpit-title {
@@ -488,12 +496,12 @@ body {
 }
 
 .project-side-panel .reg-table col.reg-sel { width: 1.25rem; }
-.project-side-panel .reg-table col.reg-no { width: 5.5rem; }
-.project-side-panel .reg-table col.reg-rev { width: 2.5rem; }
-.project-side-panel .reg-table col.reg-date { width: 6.75rem; }
-.project-side-panel .reg-table col.reg-disc { width: 6.25rem; }
-.project-side-panel .reg-table col.reg-kind { width: 4.75rem; }
-.project-side-panel .reg-table col.reg-prof { width: 2.25rem; }
+.project-side-panel .reg-table col.reg-no { width: 4rem; }
+.project-side-panel .reg-table col.reg-rev { width: 1.75rem; }
+.project-side-panel .reg-table col.reg-date { width: 4.25rem; }
+.project-side-panel .reg-table col.reg-disc { width: 5.25rem; }
+.project-side-panel .reg-table col.reg-kind { width: 4.25rem; }
+.project-side-panel .reg-table col.reg-prof { width: 1.75rem; }
 .project-side-panel .reg-table col.reg-mark { width: 1.25rem; }
 .project-side-panel .reg-table col.reg-bin { width: 1.75rem; }
 
@@ -605,7 +613,7 @@ body {
 }
 
 .project-side-panel .reg-doc[data-selected] .reg-line td {
-  background: var(--sw-selection-bg);
+  background: var(--table-selection-bg);
   color: var(--sw-text-primary);
 }
 
@@ -660,6 +668,20 @@ body {
 .cockpit-scroll .pf-card {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0 16px;
+}
+
+.profile-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.cockpit-scroll .profile .pf-section {
+  padding: 12px;
+}
+
+.profile-toolbar + .pf-section {
+  margin-top: 0;
 }
 
 .cockpit-scroll .pf-head-actions {
@@ -768,7 +790,7 @@ body {
 
 .cockpit-scroll .cost-grid td,
 .cockpit-scroll .cost-grid th {
-  background: transparent;
+  background: var(--paper);
 }
 
 .cockpit-scroll .cost-grid td.cost-num,
@@ -784,7 +806,7 @@ body {
 
 .cockpit-scroll .cost-subtotal th,
 .cockpit-scroll .cost-subtotal td {
-  background: transparent;
+  background: var(--paper);
   border-top: 1px solid var(--sw-border-default);
   font-weight: 600;
 }
@@ -820,6 +842,80 @@ body {
   background: transparent;
   color: var(--sw-text-primary);
   font: inherit;
+}
+
+.profile-feedback-slot {
+  flex: none;
+  min-width: 0;
+}
+
+.profile-feedback {
+  display: block;
+  max-height: 9rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: 12px 16px;
+}
+
+.profile-feedback .pf-header {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.profile-feedback .profile-reading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+}
+
+.profile-feedback .profile-reading > * + span::before {
+  content: none;
+}
+
+.profile-feedback .pf-checks {
+  margin-left: 0;
+}
+
+.profile-feedback .profile-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-feedback .profile-progress p {
+  margin: 0;
+}
+
+.profile-reading-meter {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke-width: 2;
+}
+
+.profile-reading-track {
+  stroke: var(--sw-border-default);
+}
+
+.profile-reading-fill {
+  stroke: var(--sw-text-secondary);
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dasharray 180ms ease-out;
+}
+
+.profile-reading-check {
+  stroke: var(--sw-success-text);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-reading-fill { transition: none; }
 }
 
 .ask-bar input::placeholder {
@@ -1148,3 +1244,10 @@ body {
 .pf-place-grid,
 .pf-panel-wide .pf-panel-body,
 .pf-strips .pf-panel-flat:last-child .pf-panel-body { align-items: end; }
+
+.icon-bin, .project-side-panel .reg-del .icon-bin { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* Sticky identities must conceal the figures scrolling underneath. */
+.cockpit-scroll .cost-grid thead th { background: var(--canvas); }
+.cockpit-scroll .cost-grid .cost-group th { background: var(--ground); }
+.cockpit-scroll .cost-row[aria-selected="true"] td { background: color-mix(in oklab, var(--ember) 22%, var(--paper)); }

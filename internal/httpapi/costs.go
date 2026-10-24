@@ -265,3 +265,17 @@ func prepareCostPlan(w http.ResponseWriter, r *http.Request, d Deps) {
 	}
 	writeJSON(w, 200, result)
 }
+
+func putCostOrder(w http.ResponseWriter, r *http.Request, d Deps) {
+	s, ok := deliverySession(w, r, d, true)
+	if !ok {
+		return
+	}
+	var in store.CostOrderInput
+	if readProposalJSON(w, r, d.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", 400)
+		return
+	}
+	p, e := d.Store.ReorderCostItems(r.Context(), s.OrgID, r.PathValue("id"), s.UserID, in)
+	costResult(w, d, s.OrgID, p, e)
+}

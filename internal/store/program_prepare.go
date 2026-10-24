@@ -388,6 +388,16 @@ func (s *Store) PrepareProgram(ctx context.Context, org, project, surface string
 	if err != nil {
 		return ProgramState{}, false, err
 	}
+	// A start date makes the chart show calendar dates on first open. The
+	// consent date is used when the Profile has one; otherwise today, which
+	// the user can change. This is not a project-specific date.
+	if create.StartDate == "" {
+		create.StartDate = plan.StartSuggestion
+		if create.StartDate == "" {
+			create.StartDate = time.Now().Format("2006-01-02")
+		}
+		create.StartOrigin = "profile"
+	}
 	if _, err := CreateProgramTx(ctx, tx, org, project, create); errors.Is(err, ErrProgramExists) {
 		_ = tx.Rollback(ctx)
 		st, err := s.LoadProgram(ctx, org, project)

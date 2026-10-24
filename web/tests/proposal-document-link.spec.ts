@@ -1,0 +1,53 @@
+import { test, expect } from "@playwright/test";
+
+test("link a filed document by picker and drag without another upload", async ({ page }) => {
+  const headers = { Origin: "http://127.0.0.1:4173" };
+  const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
+  await page.goto(`/#token=${token}`);
+  await page.getByLabel("New project").fill("Repository proposal links");
+  await page.getByRole("button", { name: "Create project", exact: true }).click();
+  await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
+  const base = `/api/projects/${new URL(page.url()).pathname.split("/").pop()}`;
+  const add = async (discipline_id: string) => (await (await page.request.post(`${base}/procurement/rows`, { headers, data: { discipline_id } })).json());
+  const civil = await add("consultant.civil"), hydraulic = await add("consultant.hydraulic");
+  const chooser = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: "Add files", exact: true }).click();
+  await (await chooser).setFiles({ name: "filed-scope.md", mimeType: "text/markdown", buffer: Buffer.from("# Drainage scope\nDocument number: CF-101\nRevision: A\nDate: 2026-10-24\nStormwater concept design.\n") });
+  const source = page.locator('tbody.reg-doc[data-filename="filed-scope.md"] tr.reg-line');
+  await expect(source).toHaveAttribute("draggable", "true");
+  const id = (await (await page.request.get(`${base}/documents`)).json()).documents[0].id;
+  await page.getByRole("button", { name: "Procurement", exact: true }).click();
+  const row = (name: string) => page.locator('[data-proposal-drop="true"]').filter({ has: page.getByRole("button", { name: `Scope for ${name}`, exact: true }) });
+  await row("Civil").getByRole("button", { name: "Choose filed proposal", exact: true }).first().click();
+  const picker = page.getByRole("form", { name: "Link filed proposal" });
+  await picker.getByRole("combobox").selectOption(id);
+  await picker.getByRole("button", { name: "Link proposal", exact: true }).click();
+  await expect(row("Civil").getByRole("button", { name: "Review Civil", exact: true })).toBeVisible();
+  const show = page.getByRole("button", { name: "Show documents", exact: true });
+  if (await show.isVisible()) await show.click();
+  await source.dragTo(row("Hydraulic"));
+  await expect(row("Hydraulic").getByRole("button", { name: "Review Hydraulic", exact: true })).toBeVisible();
+  await expect(row("Civil").getByRole("button", { name: "Prices for Civil", exact: true })).toBeVisible();
+  const register = page.locator(".project-side-panel .register");
+  const dt = await page.evaluateHandle(() => { const dt = new DataTransfer(); dt.items.add(new File([""], "empty.md")); return dt; });
+  await page.dispatchEvent("main", "dragenter", { dataTransfer: dt });
+  await expect(register).toHaveAttribute("data-over", "true");
+  await row("Hydraulic").dispatchEvent("dragover", { dataTransfer: dt });
+  await expect(register).not.toHaveAttribute("data-over", "true");
+  await page.dispatchEvent("main", "dragenter", { dataTransfer: dt });
+  const empty = await page.evaluateHandle(() => new DataTransfer());
+  await row("Hydraulic").dispatchEvent("drop", { dataTransfer: empty });
+  await expect(register).not.toHaveAttribute("data-over", "true");
+  await page.screenshot({ path: "../.tools/repository-proposal-link.png", fullPage: true });
+  expect((await (await page.request.get(`${base}/documents`)).json()).documents).toHaveLength(1);
+  const timings: number[] = [];
+  for (let i = 0; i < 20; i++) {
+    const start = performance.now();
+    const r = await page.request.post(`${base}/procurement/packages/${hydraulic.id}/documents`, { headers, data: { document_id: id } });
+    expect(r.status()).toBe(200); timings.push(performance.now() - start);
+  }
+  timings.sort((a,b) => a-b);
+  console.log(`repository link n=20 p50=${timings[9].toFixed(1)}ms p90=${timings[17].toFixed(1)}ms`);
+  expect(timings[9]).toBeLessThanOrEqual(100); expect(timings[17]).toBeLessThanOrEqual(250);
+  expect((await page.request.post(`${base}/procurement/packages/${civil.id}/documents`, { headers, data: { document_id: "invalid" } })).status()).toBe(400);
+});

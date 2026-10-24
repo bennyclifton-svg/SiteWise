@@ -119,6 +119,10 @@ func (s *Store) CommitMissingDetails(ctx context.Context, orgID, documentID stri
 		return FilingOutcome{}, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	projectID, err := lockDocumentProject(ctx, tx, orgID, documentID)
+	if err != nil {
+		return FilingOutcome{}, err
+	}
 	q := s.q.WithTx(tx)
 	doc, err := q.LockFilingDocument(ctx, db.LockFilingDocumentParams{OrgID: orgID, ID: documentID})
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -178,6 +182,9 @@ func (s *Store) CommitMissingDetails(ctx context.Context, orgID, documentID stri
 	}
 	out, err := readOutcome(ctx, q, orgID, documentID)
 	if err != nil {
+		return FilingOutcome{}, err
+	}
+	if err := matchUnassignedSubmissions(ctx, tx, orgID, projectID, documentID); err != nil {
 		return FilingOutcome{}, err
 	}
 	if err := tx.Commit(ctx); err != nil {

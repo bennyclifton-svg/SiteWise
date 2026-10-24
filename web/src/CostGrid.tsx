@@ -1,4 +1,8 @@
-import { useRef, useState } from "react";
+import { IconBin } from "./icons";
+import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
+import { InlineCellEditor } from "./table/InlineCellEditor";
+import { RowHandle, startRowDrag } from "./table/RowHandle";
+import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import type { BudgetCheck, ConstructionBudget, CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue } from "./costApi";
 import type { PackageRecord } from "./packageApi";
 import type { Ledger, LedgerLine } from "./invoiceApi";
@@ -39,33 +43,68 @@ function LedgerCells({ line, onInvoices }: { line?: LedgerLine; onInvoices?: (id
     <td className={`cost-num cost-ledger${over}`}>{line.percent_spent ? `${line.percent_spent}%` : "—"}</td></>;
 }
 
-export function CostGrid({ plan, totals, packages, selected, editable, busy, onOpen, onValue, onDelete, onItem, quantities, ledger, onInvoices, onBudget }: {
-  plan: CostPlan; totals: CostTotals | null; packages: PackageRecord[]; selected: string; editable: boolean;
+export function CostGrid({ plan, totals, packages, editable, busy, onOpen, onSubdivide, onDetailedValue, onReorder, onValue, onDelete, onItem, quantities, ledger, onInvoices, onBudget }: {
+  plan: CostPlan; totals: CostTotals | null; packages: PackageRecord[]; editable: boolean;
   ledger?: Ledger | null; onInvoices?: (lineId: string) => void;
   /** Saves the construction budget to the profile; the plan re-spreads from it. */
   onBudget?: (amount: string | null) => Promise<boolean>;
   quantities: boolean; busy: boolean;
+  onSubdivide: (item: CostItem) => void;
+  onDetailedValue: (item: CostItem, metric: string, value: CostValue) => Promise<boolean>;
+  onReorder: (ids: string[]) => Promise<boolean>;
   onDelete: (item: CostItem) => Promise<boolean>;
   onItem: (content: CostContent, id?: string, calculate?: boolean) => Promise<boolean>;
   onOpen: (id: string) => void; onValue: (item: CostItem, metric: "budget" | "commitment", amount: string | null) => Promise<boolean>;
 }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 } | null>(null);
+  const [selection, setSelection] = useState(emptySelection);
+  const [drop, setDrop] = useState<{ id: string; after: boolean } | null>(null);
+  const dragging = useRef(false);
   const items = plan.items;
+  useEffect(() => setSelection(s => prune(s, items.map(i => i.cost_item_id))), [items]);
   const category = (i: CostItem) => i.resolved_category || (i.line_kind === "project_wide" ? words(i.category) : packages.find(p => p.id === i.package_id)?.title || "Unassigned");
   const sortValue = (i: CostItem) => sort?.key === "category" ? category(i) : i.label;
-  const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : [...list].sort((a,b) => (Number(["other", "exclusions"].includes(a.category)) - Number(["other", "exclusions"].includes(b.category))) || a.code.localeCompare(b.code, undefined, {numeric:true}) || a.label.localeCompare(b.label));
+  const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : [...list].sort((a,b) => (a.display_order ?? Number.MAX_SAFE_INTEGER) - (b.display_order ?? Number.MAX_SAFE_INTEGER) || (Number(["other", "exclusions"].includes(a.category)) - Number(["other", "exclusions"].includes(b.category))) || a.code.localeCompare(b.code, undefined, {numeric:true}) || a.label.localeCompare(b.label));
   const ids = new Set(items.map(i => i.cost_item_id));
   const ledgerLine = new Map((ledger?.summary.lines ?? []).map(l => [l.id, l]));
-  const archived = (ledger?.summary.lines ?? []).filter(l => l.archived);
   const width = 4 + COLUMNS.length + LEDGER.length + (quantities ? 3 : 0);
   // Display positions are not identities: links continue to use cost_item_id.
   let rowNumber = 0;
   // Children follow their group line, indented; sorting applies within a level.
   const tree = (list: CostItem[], depth: number): { item: CostItem; depth: number }[] =>
     ordered(list).flatMap(i => [{ item: i, depth }, ...tree(items.filter(c => c.parent_item_id === i.cost_item_id), depth + 1)]);
+  const visible = GROUPS.flatMap(g => tree(items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id))), 0)).map(r => r.item.cost_item_id);
+  function handleDown(e: ReactPointerEvent<HTMLElement>, item: CostItem) {
+    if (!editable || busy || sort) return;
+    const moving = selection.ids.includes(item.cost_item_id) ? visible.filter(id => selection.ids.includes(id)) : [item.cost_item_id];
+    const siblings = items.filter(i => i.parent_item_id === item.parent_item_id && totals?.section_items[i.cost_item_id] === totals?.section_items[item.cost_item_id]);
+    if (moving.some(id => !siblings.some(i => i.cost_item_id === id))) return;
+    if (!selection.ids.includes(item.cost_item_id)) setSelection(clickRow(emptySelection, item.cost_item_id, visible));
+    let target: { id: string; after: boolean } | null = null;
+    startRowDrag(e, {
+      onStart: () => { dragging.current = true; },
+      onMove: ev => {
+        const row = document.elementFromPoint(ev.clientX, ev.clientY)?.closest<HTMLElement>(".cost-row[data-id]");
+        const id = row?.dataset.id;
+        target = row && id && !moving.includes(id) && siblings.some(i => i.cost_item_id === id) ? { id, after: ev.clientY > row.getBoundingClientRect().top + row.offsetHeight / 2 } : null;
+        setDrop(target);
+      },
+      onDrop: () => {
+        if (!target) return;
+        const order = visible.filter(id => siblings.some(i => i.cost_item_id === id) && !moving.includes(id));
+        order.splice(order.indexOf(target.id) + Number(target.after), 0, ...moving);
+        void onReorder(order);
+      },
+      onStop: () => { setDrop(null); window.setTimeout(() => { dragging.current = false; }, 0); },
+    });
+  }
   const header = (key: SortKey, label: string) => <th scope="col" className="cost-sticky" data-col={key} aria-sort={sort?.key === key ? (sort.dir === 1 ? "ascending" : "descending") : undefined}>
     <button type="button" onClick={() => setSort(sort?.key === key ? (sort.dir === 1 ? { key, dir: -1 } : null) : { key, dir: 1 })}>{label}</button></th>;
-  return <div className="cost-grid-scroll"><table className="cost-grid">
+  return <div className="cost-grid-scroll"><table className="cost-grid" tabIndex={0} onKeyDown={e => {
+    if ((e.target as HTMLElement).closest("input,select,textarea,button,[popover]")) return;
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setSelection(selectAll(visible)); }
+    if (e.key === "Escape") setSelection(emptySelection);
+  }}>
     <thead><tr><th scope="col" className="cost-sticky" data-col="code">No.</th>{header("category", "Category")}{header("item", "Item")}
       {quantities && ["Qty", "Unit", "Rate"].map(c => <th key={c} scope="col">{c}</th>)}
       {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}
@@ -77,13 +116,13 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
         <tr className="cost-group"><th colSpan={width} scope="colgroup"><span>{g.title}</span></th></tr>
         {tree(top, 0).map(({ item: i, depth }) => {
           const f = totals?.items?.[i.cost_item_id];
-          return <tr key={i.cost_item_id} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} aria-selected={selected === i.cost_item_id} onClick={() => onOpen(i.cost_item_id)}>
-            <td className="cost-sticky" data-col="code">{String(++rowNumber).padStart(2, "0")}</td>
+          return <tr key={i.cost_item_id} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} onClickCapture={e => { if ((e.ctrlKey || e.metaKey || e.shiftKey) && !(e.target as HTMLElement).closest("input,select,textarea,[popover]")) { e.stopPropagation(); setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); } }} data-id={i.cost_item_id} data-drop={drop?.id === i.cost_item_id ? (drop.after ? "after" : "before") : undefined} aria-selected={selection.ids.includes(i.cost_item_id)} onClick={e => { if (!dragging.current) setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); }}>
+            <td className="cost-sticky" data-col="code">{editable && <RowHandle disabled={busy || !!sort} onPointerDown={e => handleDown(e, i)} />}{String(++rowNumber).padStart(2, "0")}</td>
             <td className="cost-sticky" data-col="category">{editable ? <CategoryCell item={i} plan={plan} packages={packages} label={category(i)} onSave={c => onItem(c, i.cost_item_id)} /> : category(i)}</td>
-            <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16}px` }}><button type="button" className="cost-open" title={i.label} onClick={e => { e.stopPropagation(); onOpen(i.cost_item_id); }}>{i.label}</button>{editable && <TextCell label={`Item for ${i.label}`} value={i.label} compact onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} />}{i.excluded && <span className="cost-tag">excluded</span>}</td>
+            <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16}px` }}>{editable ? <TextCell label={i.label} value={i.label} selected={selection.ids.length === 1 && selection.ids.includes(i.cost_item_id)} onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} /> : i.label}{i.excluded && <span className="cost-tag">excluded</span>}</td>
             {quantities && <QuantityCells key={i.cost_item_id} item={i} editable={editable && i.posting} onSave={c => onItem(c, i.cost_item_id, true)} />}
             {!i.posting && i.values.budget ? <>
-              <td className="cost-num"><MoneyCell metric="budget" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "budget", a)} /></td>
+              <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /></td>
               <td className="cost-num" title="The sum of the awarded lines below">{cell(f?.forecast)}</td>
               <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
               <td className="cost-num">{cell(f?.forecast)}</td>
@@ -93,16 +132,16 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
               <td className="cost-num cost-placeholder">—</td>
               <LedgerCells line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} /></>
             : !i.posting ? <td colSpan={COLUMNS.length + LEDGER.length} className="cost-note">Group · amounts are on the lines below</td> : <>
-              <td className="cost-num"><MoneyCell metric="budget" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "budget", a)} /></td>
-              <td className="cost-num"><MoneyCell metric="commitment" item={i} editable={editable} onOpen={() => onOpen(i.cost_item_id)} onSave={a => onValue(i, "commitment", a)} /></td>
+              <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /></td>
+              <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "commitment", v)} metric="commitment" item={i} editable={editable} onSave={a => onValue(i, "commitment", a)} /></td>
               <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
               <td className="cost-num">{cell(f?.forecast)}</td>
               <td className="cost-num">{fmt(f?.budget_variance)}</td>
-              <td className="cost-num">{cell(i.values.claimed_to_date)}</td>
+              <td className="cost-num"><DetailedValueCell item={i} metric="claimed_to_date" editable={editable} onSave={v => onDetailedValue(i, "claimed_to_date", v)} /></td>
               <td className="cost-num cost-placeholder">—</td>
               <td className="cost-num">{fmt(f?.remaining)}</td>
               <LedgerCells line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} /></>}
-            <td className="cost-actions">{editable && <button type="button" className="cost-delete" disabled={busy} aria-label={`Delete ${i.label}`} title={`Delete ${i.label}`} onClick={e => { e.stopPropagation(); void onDelete(i); }}><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" /></svg></button>}</td>
+            <td className="cost-actions" onClick={e => e.stopPropagation()}><RowActions item={i} editable={editable} busy={busy} onOpen={() => onOpen(i.cost_item_id)} onSubdivide={() => onSubdivide(i)} onToggle={() => void onItem(editContent(i, { excluded: !i.excluded }), i.cost_item_id)} />{editable && <button type="button" className="cost-delete" disabled={busy} aria-label={`Delete ${i.label}`} title={`Delete ${i.label}`} onClick={() => void onDelete(i)}><IconBin /></button>}</td>
           </tr>;
         })}
         {editable && <AddLineRow key={g.bucket} group={g} plan={plan} packages={packages} columns={width} onSave={onItem} />}
@@ -128,13 +167,6 @@ export function CostGrid({ plan, totals, packages, selected, editable, busy, onO
         <td className="cost-num"><BudgetCell budget={plan.construction_budget} editable={editable && !!onBudget} onSave={a => onBudget ? onBudget(a) : Promise.resolve(false)} /></td>
         <td colSpan={COLUMNS.length - 1 + LEDGER.length} className="cost-note cost-budget-note"><span>{budgetNote(plan.construction_budget, totals?.construction_budget)}</span></td><td /></tr>}
     </tbody>
-    {ledger && <tbody className="cost-ledger-foot">
-      <tr className="cost-ledger-group"><th colSpan={width} scope="colgroup"><span>Invoices not on a current line</span></th></tr>
-      {archived.map(l => <tr key={l.id} className="cost-row"><td className="cost-sticky" data-col="code" /><td className="cost-sticky" data-col="category">{l.category || "—"}</td><td className="cost-sticky" data-col="item">{l.label} <span className="cost-tag">removed from the plan</span></td>{quantities && <td colSpan={3} />}<td colSpan={COLUMNS.length} className="cost-note">Spend still counts</td><LedgerCells line={l} onInvoices={onInvoices} /><td /></tr>)}
-      <tr className="cost-row" data-testid="unallocated-row"><td className="cost-sticky" data-col="code" /><td className="cost-sticky" data-col="category">—</td><th scope="row" className="cost-sticky" data-col="item">Unallocated</th>{quantities && <td colSpan={3} />}<td colSpan={COLUMNS.length} className="cost-note">Invoices with no activity line</td><LedgerCells line={ledger.summary.unallocated} onInvoices={onInvoices} /><td /></tr>
-      <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Invoiced to date (all lines)</th>{quantities && <td colSpan={3} />}<td colSpan={COLUMNS.length} />
-        <td className="cost-num cost-ledger" data-testid="ledger-total">{fmt(ledger.summary.invoiced)}</td><td className="cost-num cost-ledger">{fmt(ledger.summary.remaining)}</td><td className="cost-num cost-ledger">{ledger.summary.percent_spent ? `${ledger.summary.percent_spent}%` : "—"}</td><td /></tr>
-    </tbody>}
   </table></div>;
 }
 
@@ -177,9 +209,8 @@ function BudgetCell({ budget, editable, onSave }: { budget?: ConstructionBudget;
   return <button type="button" className="cost-cell" aria-label="Construction budget" disabled={!editable} onClick={() => setDraft(current ?? "")}>{current ? fmt(current) : "—"}</button>;
 }
 
-// Typed budgets accept plain amounts only. A range or an as-of date is set in
-// the drawer so a single figure never overwrites it.
-function MoneyCell({ item, metric, editable, onOpen, onSave }: { metric: "budget" | "commitment"; item: CostItem; editable: boolean; onOpen: () => void; onSave: (amount: string | null) => Promise<boolean> }) {
+// Single amounts edit directly; ranges retain both bounds in the cell editor.
+function MoneyCell({ item, metric, editable, onSave, onDetailed }: { onDetailed: (v: CostValue) => Promise<boolean>; metric: "budget" | "commitment"; item: CostItem; editable: boolean; onSave: (amount: string | null) => Promise<boolean> }) {
   const v = item.values[metric], range = v?.value_state === "known" && v.amount == null;
   const [draft, setDraft] = useState<string | null>(null), [invalid, setInvalid] = useState(false);
   // One editing session ends once; Enter and the blur that follows must not both save.
@@ -197,23 +228,23 @@ function MoneyCell({ item, metric, editable, onOpen, onSave }: { metric: "budget
     saving.current = false;
     if (ok) { active.current = false; setDraft(null); setInvalid(false); }
   }
+  if (range) return <DetailedValueCell item={item} metric={metric} editable={editable} onSave={onDetailed} />;
   if (draft != null) return <input className="cost-input" aria-label={label} aria-invalid={invalid || undefined} autoFocus inputMode="decimal" value={draft}
     onClick={e => e.stopPropagation()} onChange={e => { setDraft(e.target.value); setInvalid(false); }} onBlur={() => void commit()}
     onKeyDown={e => { if (e.key === "Enter") void commit(); if (e.key === "Escape") { cancelled.current = true; void commit(); } }} />;
   // A share of the construction budget reads as a suggestion until edited.
   const spread = metric === "budget" && v?.origin === "assumption" && !!v.provenance?.spread;
-  return <button type="button" className={`cost-cell${spread ? " cost-spread" : ""}`} aria-label={label} disabled={!editable && !range} title={range ? "Range values are edited in the line drawer" : spread ? v!.rationale : undefined}
-    onClick={e => { e.stopPropagation(); if (range) onOpen(); else if (editable) { active.current = true; setDraft(v?.value_state === "known" ? v.amount ?? "" : ""); } }}>{cell(v)}</button>;
+  return <button type="button" className={`cost-cell${spread ? " cost-spread" : ""}`} aria-label={label} disabled={!editable} title={spread ? v!.rationale : undefined}
+    onClick={e => { e.stopPropagation(); if (editable) { active.current = true; setDraft(v?.value_state === "known" ? v.amount ?? "" : ""); } }}>{cell(v)}</button>;
 }
 
 export function editContent(i: CostItem, changes: Partial<CostContent> = {}): CostContent {
  const {parent_item_id, code, label, line_kind, category, work_item_id, package_id, package_stage_id, posting, quantity, unit, rate, rate_basis, excluded, origin, meaning, rationale} = i;
  return {parent_item_id, code, label, line_kind, category, work_item_id, package_id, package_stage_id, posting, quantity, unit, rate, rate_basis, excluded, origin: origin === "calculation" ? "assumption" : origin, meaning, rationale, system_id: work_item_id ? "" : i.system_id, ...changes};
 }
-function TextCell({label, value, compact, onSave}: {label: string; value: string; compact?: boolean; onSave: (v: string) => Promise<boolean>}) {
- const [draft, setDraft] = useState<string | null>(null); const saving = useRef(false);
- async function commit() { if (draft === null || saving.current) return; if (draft === value) {setDraft(null); return;} saving.current = true; const ok = await onSave(draft); saving.current = false; if (ok) setDraft(null); }
- return draft === null ? <button type="button" className="cost-open" aria-label={label} onClick={e => {e.stopPropagation(); setDraft(value);}}>{compact ? "Edit" : value || "—"}</button> : <input autoFocus className="cost-text-input" aria-label={label} value={draft} onClick={e => e.stopPropagation()} onChange={e => setDraft(e.target.value)} onBlur={() => void commit()} onKeyDown={e => {if (e.key === "Enter") void commit(); if (e.key === "Escape") {e.preventDefault(); setDraft(null);}}} />;
+function TextCell({label, value, selected, onSave}: {label: string; value: string; selected: boolean; onSave: (v: string) => Promise<boolean>}) {
+ const [editing, setEditing] = useState(false), [error, setError] = useState("");
+ return editing ? <InlineCellEditor value={value} label={label} error={error} onCancel={() => { setEditing(false); setError(""); }} onCommit={text => { void onSave(text).then(ok => { if (ok) { setEditing(false); setError(""); } else setError("Could not save item. Try again."); }); }} /> : <span tabIndex={0} title={value} onDoubleClick={() => setEditing(true)} onKeyDown={e => { if (e.key === "F2" || e.key === "Enter") { e.preventDefault(); setEditing(true); } }} onClick={e => { if (selected && !e.ctrlKey && !e.metaKey && !e.shiftKey) { e.stopPropagation(); setEditing(true); } }}>{value || "—"}</span>;
 }
 const categories = ["other", "contingency", "escalation", "authority_fees", "exclusions"];
 function CategoryCell({item, packages, label, onSave}: {item: CostItem; plan: CostPlan; packages: PackageRecord[]; label: string; onSave: (c: CostContent) => Promise<boolean>}) {
@@ -237,4 +268,45 @@ function AddLineRow({group:g,plan,packages,columns,onSave}:{group:typeof GROUPS[
  const group=g.title;
  async function commit(){if(!draft || saving.current || !draft.label.trim() || (kind==="fee"&&!draft.package_id) || (kind==="works"&&!draft.system_id))return;saving.current=true;const ok=await onSave(draft);saving.current=false;if(ok)setDraft(null);}
  return <tr className="cost-add">{!draft?<td colSpan={columns}><button type="button" className="cost-open" onClick={()=>setDraft({parent_item_id:"",code:"",label:"",line_kind:kind,category:g.category,work_item_id:"",system_id:"",package_id:"",package_stage_id:"",posting:true,quantity:null,unit:"",rate:null,rate_basis:"",excluded:false,origin:"user",meaning:"allowance",rationale:""})}>+ Add line to {group}</button></td>:<><td/><td data-col="category"><select autoFocus={kind==="fee"} aria-label={`New ${group} category`} value={kind!=="project_wide"?draft.package_id:draft.category} onChange={e=>setDraft({...draft,[kind!=="project_wide"?"package_id":"category"]:e.target.value})}><option value="">{kind==="works"?"Use automatic assignment":"Choose category"}</option>{options.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select></td><td>{kind==="works" && <select aria-label="New Construction physical scope" value={draft.system_id} onChange={e=>setDraft({...draft,system_id:e.target.value})}><option value="">Choose physical scope</option>{plan.systems?.map(sys=><option key={sys.id} value={sys.id}>{sys.label}</option>)}</select>}<input autoFocus={kind!=="fee"} aria-label={`New ${group} item`} value={draft.label} maxLength={500} onChange={e=>setDraft({...draft,label:e.target.value})} onBlur={()=>void commit()} onKeyDown={e=>{if(e.key==="Enter")void commit();if(e.key==="Escape")setDraft(null);}}/></td><td colSpan={columns-3}><button type="button" className="btn btn-small" onClick={()=>void commit()}>Save line</button><button type="button" className="btn btn-small" onClick={()=>setDraft(null)}>Cancel</button></td></>}</tr>;
+}
+
+function RowActions({ item, editable, busy, onOpen, onSubdivide, onToggle }: { item: CostItem; editable: boolean; busy: boolean; onOpen: () => void; onSubdivide: () => void; onToggle: () => void }) {
+  const id = useId(), menu = useRef<HTMLDivElement>(null), trigger = useRef<HTMLButtonElement>(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const close = () => menu.current?.hidePopover();
+    window.addEventListener("resize", close);
+    window.addEventListener("scroll", close, true);
+    return () => { window.removeEventListener("resize", close); window.removeEventListener("scroll", close, true); };
+  }, [open]);
+  const act = (action: () => void) => { menu.current?.hidePopover(); action(); };
+  return <><button ref={trigger} type="button" className="cost-more" aria-label={`Actions for ${item.label}`} title={`Actions for ${item.label}`} popoverTarget={id} onClick={() => {
+    const rect = trigger.current!.getBoundingClientRect();
+    setPosition({ top: Math.max(8, Math.min(rect.bottom + 4, window.innerHeight - 150)), left: Math.max(8, Math.min(rect.right - 210, window.innerWidth - 218)) });
+  }}><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.5" /><circle cx="10" cy="10" r="1.5" /><circle cx="16" cy="10" r="1.5" /></svg></button>
+    <div ref={menu} id={id} popover="auto" onToggle={e => setOpen(e.newState === "open")} className="cost-row-menu" style={position} aria-label={`Actions for ${item.label}`}>
+      <button type="button" onClick={() => act(onOpen)}>View line details</button>
+      {editable && <><button type="button" disabled={busy || !item.posting || item.excluded} onClick={() => act(onSubdivide)}>Subdivide allowance</button><button type="button" disabled={busy} onClick={() => act(onToggle)}>{item.excluded ? "Include in totals" : "Exclude from totals"}</button></>}
+    </div></>;
+}
+
+function DetailedValueCell({ item, metric, editable, onSave }: { item: CostItem; metric: string; editable: boolean; onSave: (value: CostValue) => Promise<boolean> }) {
+  const current = item.values[metric];
+  const [draft, setDraft] = useState<CostValue | null>(null), [busy, setBusy] = useState(false), [error, setError] = useState("");
+  const label = `${metric === "claimed_to_date" ? "Claimed to Date" : metric === "budget" ? "Budget" : "Approved Contract"} for ${item.label}`;
+  if (!draft) return <button type="button" className="cost-cell" disabled={!editable} aria-label={label} onClick={e => { e.stopPropagation(); setDraft(current ? { ...current } : { amount: null, low: null, high: null, value_state: "unknown", as_of: null, origin: "user", meaning: "allowance", rationale: "" }); }}>{cell(current)}</button>;
+  const range = current?.value_state === "known" && current.amount == null;
+  return <form className="cost-value-editor" onClick={e => e.stopPropagation()} onKeyDown={e => { e.stopPropagation(); if (e.key === "Escape" && !busy) { setDraft(null); setError(""); } }} onSubmit={e => {
+    e.preventDefault(); if (busy) return;
+    const fields = range ? ["low", "high"] as const : ["amount"] as const;
+    if (fields.some(k => draft[k] && !/^-?\d+(\.\d{1,2})?$/.test(draft[k]!)) || (range && !!draft.low !== !!draft.high)) { setError("Enter valid amounts."); return; }
+    setBusy(true);
+    void onSave({ ...draft, origin: "user", value_state: fields.some(k => draft[k] != null) ? "known" : "unknown" }).then(ok => { setBusy(false); if (ok) { setDraft(null); setError(""); } else setError("Could not save. Try again."); });
+  }}><fieldset disabled={busy}>
+    {(range ? ["low", "high"] as const : ["amount"] as const).map((k, index) => <input key={k} autoFocus={index === 0} aria-label={`${label} ${k}`} inputMode="decimal" value={draft[k] ?? ""} onChange={e => { setError(""); setDraft({ ...draft, [k]: e.target.value || null }); }} />)}
+    {metric === "claimed_to_date" && <input required type="date" aria-label={`Claims date for ${item.label}`} value={draft.as_of ?? ""} onChange={e => setDraft({ ...draft, as_of: e.target.value })} />}
+    <button type="submit" className="btn btn-small">Save</button><button type="button" className="btn btn-small" onClick={() => { setDraft(null); setError(""); }}>Cancel</button>
+  </fieldset>{error && <span role="alert">{error}</span>}</form>;
 }

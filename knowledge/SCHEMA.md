@@ -993,6 +993,10 @@ ids of the same row, and a row's links form no cycle.
 - Fragments follow work items: `applies_when` normally uses `work_action`
   over included work items. When a fragment yields a single activity, its
   label is the work item's title, as the user wrote it.
+- `scope: project` is a process activity (design, consent, tender, handover)
+  with no work item. Generation includes it once when its predicate holds.
+  `applies_when` then uses `cond` and `det` only, and `systems` is still
+  required (`site` for these rows). Omitting `scope` keeps the work-item rule.
 - `duration` is a `du.*` id or `null` (unknown).
 - `attach.after` and `attach.before` (either or both) are `stage_start`,
   `stage_finish` or another fragment id; each becomes an FS link with no lag.
@@ -1041,6 +1045,10 @@ stays unknown.
 - `statutory` rows carry `instrument`, `clause` and `verified`. `verified`
   stays `false` until checked against the instrument itself; a `true` needs
   `primary_source`.
+- `unit_days` is `working` or `calendar`. An activity row in calendar days is
+  an elapsed period. Generation turns each bound into working days with
+  `ceil(days × working days per week / 7)`. A lag keeps the calendar unit and
+  the engine counts those days on the calendar.
 - Rounding: always round **up** to whole days, in Go, after computing each
   bound. `per_unit` and `floor_cycle` use exact decimal arithmetic
   (`math/big`); only `time_cost` uses floating point, for the fractional

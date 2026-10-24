@@ -49,6 +49,7 @@ func downloadDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
 	disposition := "attachment"
 	if r.URL.Query().Get("view") == "1" && file.MediaType == "application/pdf" {
 		disposition = "inline"
+		w.Header().Set("Content-Security-Policy", "default-src 'none'; frame-ancestors 'self'")
 	}
 	w.Header().Set("Content-Disposition", mime.FormatMediaType(disposition, map[string]string{"filename": doc.Filename}))
 	_, _ = io.Copy(w, f)

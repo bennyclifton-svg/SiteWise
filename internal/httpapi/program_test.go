@@ -13,8 +13,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/jackc/pgx/v5"
-
 	"sitewise/internal/httpapi"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/procurement"
@@ -265,8 +263,8 @@ func (m *member) raw(t *testing.T, method, path string) []byte {
 	return raw
 }
 
-// Test fixture only: an invented fragment and duration, so the question
-// strip has a question (flood_hazard) whose answer changes the program.
+// Test fixture only: an invented fragment and duration. An unanswered
+// flood site omits the fragment, and the program asks no profile question.
 const programTestSrc = `[{design: test-fixture-only, anchor: "# Test"}]`
 
 var programQuestionFiles = map[string]string{
@@ -349,7 +347,6 @@ func programQuestionCatalog(t *testing.T) *knowledge.Catalog {
 }
 
 func TestProgramQuestionRoute(t *testing.T) {
-	ctx := context.Background()
 	cat := programQuestionCatalog(t)
 	a := newApp(t, withProfile(t), func(o *httpapi.Options) { o.Knowledge = cat })
 	m := a.member(t, newUUID(t))
@@ -361,62 +358,22 @@ func TestProgramQuestionRoute(t *testing.T) {
 	base := "/api/projects/" + project + "/program"
 	var v programView
 	m.call(t, "POST", base+"/prepare", []byte(`{"surface":"program"}`), 200, &v)
-	q := v.Question
-	if q == nil || q.Key != "flood_hazard" || q.Label != "Site in a flood hazard area" || strings.Join(q.Options, ",") != "Yes,No,Not sure" {
-		t.Fatalf("question %+v", q)
+	if v.Question != nil {
+		t.Fatalf("program asked a profile question: %+v", v.Question)
 	}
-	ask := func(version int64, key, value string) []byte {
-		body, _ := json.Marshal(map[string]any{"version": version, "key": key, "value": value})
-		return body
+	if v.Program.StartDate == "" {
+		t.Fatal("program opened with no start date")
 	}
-	if e := m.programError(t, "POST", base+"/question", ask(1, "state", "NSW"), 422); e.Field != "key" {
-		t.Fatalf("wrong key %+v", e)
+	for _, act := range v.Activities {
+		if strings.Contains(act.Label, "flood") || strings.Contains(act.Label, "Flood") {
+			t.Fatalf("unanswered flood hazard added %+v", act)
+		}
 	}
-	if e := m.programError(t, "POST", base+"/question", ask(1, "flood_hazard", "maybe"), 422); e.Field != "value" {
-		t.Fatalf("wrong value %+v", e)
-	}
-	if e := m.programError(t, "POST", base+"/question", ask(9, "flood_hazard", "true"), 409); len(e.Current) == 0 {
-		t.Fatalf("stale %+v", e)
-	}
-
-	// Not sure: gone until the Profile value changes.
-	m.call(t, "POST", base+"/question", ask(1, "flood_hazard", "not_sure"), 200, &v)
-	if v.Question != nil || v.Program.Version != 2 || len(v.Toasts) != 1 {
-		t.Fatalf("not sure %+v %+v", v.Question, v.ProgramFeedback)
-	}
-	m.call(t, "PUT", "/api/projects/"+project+"/profile/det.flood_hazard", []byte(`{"unknown":true,"note":"asked the planner"}`), 200, nil)
-	m.getJSON(t, base, &v)
-	if v.Question == nil || v.Question.Key != "flood_hazard" {
-		t.Fatal("question did not come back after the Profile changed")
-	}
-
-	// Yes: written to the Profile, and the program changes at once.
-	m.call(t, "POST", base+"/question", ask(2, "flood_hazard", "true"), 200, &v)
-	row := programRow(t, v, "Frame")
-	if row.DurationDays == nil || *row.DurationDays != 5 || v.Program.Version != 3 || v.Question != nil {
-		t.Fatalf("answered %+v %+v", row, v.Program)
-	}
-	if len(v.Toasts) != 1 || !strings.Contains(v.Toasts[0], "Site in a flood hazard area: Yes saved to the Profile") {
-		t.Fatalf("toast %v", v.Toasts)
-	}
-	conn, err := pgx.Connect(ctx, os.Getenv("SITEWISE_TEST_DATABASE_URL"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close(ctx)
-	var value, origin, meaning string
-	if err := conn.QueryRow(ctx, `SELECT value,origin,meaning FROM profile_user_values WHERE org_id=$1 AND key='det.flood_hazard'`, m.orgID).Scan(&value, &origin, &meaning); err != nil {
-		t.Fatal(err)
-	}
-	if value != "stated_true" || origin != "user" || meaning != "stated" {
-		t.Fatalf("profile value %s %s %s", value, origin, meaning)
-	}
-	// One undo reverses the program change; the Profile answer stays.
-	m.call(t, "POST", base+"/undo", []byte(`{"version":3}`), 200, &v)
-	if hasLabel(v, "Frame") || !hasLabel(v, "If Site in a flood hazard area: Frame") {
-		t.Fatalf("undo %v", v.Activities)
+	ask, _ := json.Marshal(map[string]any{"version": v.Program.Version, "key": "flood_hazard", "value": "true"})
+	if e := m.programError(t, "POST", base+"/question", ask, 422); e.Field != "key" {
+		t.Fatalf("question still accepted %+v", e)
 	}
 	if a.jevHits.Load() != 0 {
-		t.Fatal("the question called Jev")
+		t.Fatal("building the program called Jev")
 	}
 }

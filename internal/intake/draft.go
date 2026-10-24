@@ -79,7 +79,16 @@ func (d *Draft) Call() (jev.Call, bool) {
 	if len(d.questions) == 0 {
 		return jev.Call{}, false
 	}
-	return callFrom(filingStateOf(d.filename, d.text, d.harvested), d.questions), true
+	call := callFrom(filingStateOf(d.filename, d.text, d.harvested), d.questions)
+	call.QuestionVersion = d.questionVersion()
+	return call, true
+}
+
+func (d *Draft) questionVersion() string {
+	if d.text.Format == "md" || d.text.Format == "markdown" {
+		return QuestionVersion + "+markdown-1"
+	}
+	return QuestionVersion
 }
 
 // Apply records the answers. A non-nil err is the degraded path: every open
@@ -95,12 +104,15 @@ func (d *Draft) Apply(result jev.Result, err error, thresholds Thresholds) (grey
 				Field:           q.Field,
 				Band:            BandGrey,
 				DecidedBy:       DecidedByJev,
-				QuestionVersion: QuestionVersion,
+				QuestionVersion: d.questionVersion(),
 			}
 			continue
 		}
 		ans, ok := result.Answers[q.Field]
 		d.by[q.Field] = fromAnswer(q, ans, ok, thresholds)
+		decision := d.by[q.Field]
+		decision.QuestionVersion = d.questionVersion()
+		d.by[q.Field] = decision
 	}
 	// Owner filing policy: technical drawings stay in Design, including IFC.
 	// Apply only an admitted kind; an amber kind cannot produce a green
@@ -184,6 +196,14 @@ func (d *Draft) open() []builtQuestion {
 	}
 	if _, ok := d.by[FieldDiscipline]; !ok {
 		if q, ok := catalogQuestion(FieldDiscipline, "Which discipline issued this document? Read the filename's sheet description together with the page text and copyright holder. A title block can list an architect as a project contact on another consultant's drawing. Such a contact is not the issuer. A company name, email or address alone does not establish that it issued the document; when that is the only readable evidence, select none. If page text is incomplete, use the drawing's filename description as evidence: formwork (Fmwk), reinforcement (Reo), shoring, footing and structural member schedules describe structural engineering drawings. Prefer explicit issuing-discipline evidence when available. An architect's own concrete, waterproofing or fire-compartment sheet remains Architectural. A sheet number prefix alone does not establish discipline. Engineering design and installation detail drawings belong to the consultant; records of completed site installations belong to the trade. Select none if the issuing discipline is not established.", disciplineIDs(cat), disciplineLabels(cat)); ok {
+			if d.text.Format == "md" || d.text.Format == "markdown" {
+				// Literal issuer roles, not document topics. Keep this in the existing
+				// fan-out: https://docs.typesafe.ai/model-jaggedness/jev-1.13
+				q.Instructions = roleQuestion{
+					Question: "Which professional discipline is explicitly evidenced for the author or issuer of this primary document? A named author without a stated professional role is none. For an email use the sender's own professional role, if stated. Select none for an owner email or an author whose profession is unstated.",
+					NotFor:   "The subject of the document, a recommended future consultant, an email recipient, or the author of an attachment. Planning advice does not establish that its author is a town planner. An appointment email is not authored by the consultant it appoints. Do not infer a profession from a company name such as Studio alone.",
+				}
+			}
 			// Unrepresented issuers and contract parties must not force a
 			// consultant/trade guess. https://docs.typesafe.ai/model-jaggedness/jev-1.13
 			if len(q.Options) < jev.MaxChoiceOptions {

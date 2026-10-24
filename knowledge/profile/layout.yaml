@@ -40,6 +40,8 @@ homes:
     - det.ncc_edition
     - det.state
     - det.heritage_status
+    - det.flood_hazard
+    - det.bushfire_prone_land
     # Delivery choices that sit beside the contract and sustainability facts.
     - proj.flag.contract_admin
     - proj.flag.sustainability_target
@@ -76,7 +78,6 @@ homes:
     # Climate, bushfire and external noise set the envelope's performance.
     - det.climate_zone
     - det.bal
-    - det.bushfire_prone_land
     - det.noise_affected_site
     - det.facade_type
   hydraulic:

@@ -1,0 +1,27 @@
+.project-side-panel .reg-table col.reg-open { width: 2.5rem; }
+.project-side-panel .reg-table col.reg-life { width: 5.5rem; }
+.register .reg-line { user-select: none; }
+.reg-line td[data-editable]:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
+.project-side-panel .reg-line td[data-editing] { overflow: visible; white-space: normal; }
+.reg-edit {
+  user-select: text;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  height: 1rem;
+  line-height: 1.25;
+  color: var(--ink);
+  font: inherit;
+}
+
+.reg-edit-error { display: block; color: var(--alert); overflow-wrap: anywhere; }
+@container repo (max-width: 49rem) {
+  .project-side-panel :is(col, th, td).reg-life { display: none; }
+}
+
+.project-side-panel .reg-doc[data-selected] .reg-line:hover td { background: var(--table-selection-bg); }
+.project-side-panel .reg-doc .reg-line td[data-editing] { background: var(--table-edit-bg); }
+.project-side-panel .reg-bulk { background: var(--paper); }
+.reg-bulk-edit { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; width: 100%; }
+.reg-bulk-edit select { width: auto; min-width: 0; max-width: 12rem; padding: .35rem .5rem; font: inherit; }
+.reg-bulk-message { width: 100%; margin: 0; }

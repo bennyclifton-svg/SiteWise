@@ -102,6 +102,16 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 		t.Fatalf("source reading must not confirm appointment: %+v", col)
 	}
 	sub := col.Submission.ID
+	linkBody := []byte(`{"document_id":"` + up.DocumentID + `"}`)
+	var linked struct {
+		SubmissionID string `json:"submission_id"`
+	}
+	m.call(t, http.MethodPost, base+"/documents", linkBody, http.StatusOK, &linked)
+	if linked.SubmissionID != sub {
+		t.Fatal("link duplicated the existing proposal")
+	}
+	sibling := m.createProject(t, "Other proposal project")
+	m.call(t, http.MethodPost, "/api/projects/"+sibling+"/procurement/packages/"+pkg.ID+"/documents", linkBody, http.StatusNotFound, nil)
 	first := ""
 	for _, it := range table.Items {
 		if it.Base {
@@ -114,6 +124,7 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 	cell := "/api/projects/" + project + "/submissions/" + sub
 	for _, r := range []struct{ method, path, body string }{
 		{"GET", base + "/prices", ""},
+		{"POST", base + "/documents", string(linkBody)},
 		{"GET", base + "/prices/export", ""},
 		{"GET", "/api/projects/" + project + "/procurement/board", ""},
 		{"PUT", cell + "/cells/" + url.PathEscape(first), `{"state":"not_priced"}`},
@@ -186,6 +197,7 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 		t.Fatalf("award with a wrong total = %d", got)
 	}
 	m.call(t, http.MethodPost, base+"/award", []byte(award), http.StatusCreated, &table)
+	m.call(t, http.MethodPost, base+"/documents", linkBody, http.StatusConflict, nil)
 	if table.Award == nil || table.Award.Total != "2000.00" || table.Columns[0].Submission.Status != "awarded" {
 		t.Fatalf("award %+v", table.Award)
 	}

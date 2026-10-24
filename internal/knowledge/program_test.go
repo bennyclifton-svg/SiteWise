@@ -201,8 +201,8 @@ func TestProgramLibraryInRepoLoads(t *testing.T) {
 		t.Fatal("program library not hashed")
 	}
 	skeletons := c.Skeletons()
-	if len(skeletons) != 1 || skeletons[0].ID != GenericSkeletonID {
-		t.Fatalf("want only sk.generic, got %+v", skeletons)
+	if len(skeletons) == 0 || skeletons[0].ID != GenericSkeletonID {
+		t.Fatalf("want sk.generic first, got %+v", skeletons)
 	}
 	if got, want := strings.Join(skeletons[0].Stages, ","), strings.Join(c.GenericStages(), ","); got != want {
 		t.Fatalf("generic stages %s, catalogue %s", got, want)
@@ -212,10 +212,24 @@ func TestProgramLibraryInRepoLoads(t *testing.T) {
 	}
 	choice, ok := c.MatchSkeleton(WorksEnv{})
 	if !ok || choice.Skeleton.ID != GenericSkeletonID {
-		t.Fatal("empty library should fall back to sk.generic")
+		t.Fatal("unknown project should fall back to sk.generic")
 	}
 }
 
+func TestProgramFileNotes(t *testing.T) {
+	for name := range programFixture {
+		t.Run(name, func(t *testing.T) {
+			files := fixtureWith(t, name, "version: 1", "notes: Descriptive library metadata\nversion: 1")
+			if _, err := programCatalog(t, files); err != nil {
+				t.Fatal(err)
+			}
+			files = fixtureWith(t, name, "version: 1", "notse: Misspelt metadata\nversion: 1")
+			if _, err := programCatalog(t, files); err == nil {
+				t.Fatal("unknown field accepted")
+			}
+		})
+	}
+}
 func TestProgramFixtureLoads(t *testing.T) {
 	c, err := programCatalog(t, programFixture)
 	if err != nil {
@@ -475,5 +489,46 @@ func TestSamePredicateIgnoresListOrder(t *testing.T) {
 	}
 	if SamePredicate(a, map[string]any{"det": "work_type", "eq": "new"}) {
 		t.Fatal("different predicates identical")
+	}
+}
+
+func TestProjectFragmentScope(t *testing.T) {
+	project := `
+  - id: fr.project
+    label: Project activity
+    scope: project
+    stage: approvals
+    systems: [site]
+    applies_when: {cond: planning, eq: da}
+    activities:
+      - {key: lodge, label: Lodge, systems: [site], duration: du.fixed}
+    status: draft
+    sources: ` + fixtureSource + `
+`
+	files := fixtureWith(t, "fragments.yaml", "fragments:\n", "fragments:\n"+project)
+	c, err := programCatalog(t, files)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var found bool
+	for _, f := range c.Fragments() {
+		if f.ID == "fr.project" {
+			found = true
+			if f.Scope != ScopeProject {
+				t.Fatalf("scope %q", f.Scope)
+			}
+		}
+	}
+	if !found {
+		t.Fatal("project fragment not loaded")
+	}
+	bad := fixtureWith(t, "fragments.yaml", "fragments:\n", "fragments:\n"+strings.Replace(project, "scope: project", "scope: job", 1))
+	if _, err := programCatalog(t, bad); err == nil {
+		t.Fatal("scope job accepted")
+	}
+	acted := strings.Replace(project, "applies_when: {cond: planning, eq: da}",
+		"applies_when: {work_action: {system: site, any_of: [new]}}", 1)
+	if _, err := programCatalog(t, fixtureWith(t, "fragments.yaml", "fragments:\n", "fragments:\n"+acted)); err == nil {
+		t.Fatal("project fragment with a work action accepted")
 	}
 }

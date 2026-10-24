@@ -63,6 +63,7 @@ type Content struct {
 	Rationale      string `json:"rationale"`
 }
 type Item struct {
+	DisplayOrder      *int   `json:"display_order,omitempty"`
 	ResolvedPackageID string `json:"resolved_package_id"`
 	ID                string `json:"cost_item_id"`
 	Version           int64  `json:"version"`

@@ -45,8 +45,9 @@ func (h Harvested) Has(key string) bool {
 }
 
 var (
+	lotAreaRe  = regexp.MustCompile(`(?i)\blot area\b`)
 	numberRe   = `(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)`
-	areaRe     = regexp.MustCompile(`(?i)` + numberRe + `\s*(m2|m²|sqm|sq\.?\s?m|square met(?:re|er)s)\b`)
+	areaRe     = regexp.MustCompile(`(?i)` + numberRe + `\s*(m2\b|m²|sqm\b|sq\.?\s?m\b|square met(?:re|er)s\b)`)
 	metreRe    = regexp.MustCompile(`(?i)` + numberRe + `\s*m\b`)
 	monthsRe   = regexp.MustCompile(`(?i)(\d+)\s*\(?\w*\)?\s*months?`)
 	yearsRe    = regexp.MustCompile(`(?i)(\d+)\s*years?`)
@@ -111,7 +112,7 @@ func HarvestOwn(text, own string, cat *knowledge.Catalog) Harvested {
 		}
 	}
 	for _, f := range cat.ScaleFields() {
-		if !f.TriggeredIn(t) && !(f.Key == "units" && unitCountRe.MatchString(text)) {
+		if !f.TriggeredIn(t) && !(f.Key == "units" && unitCountRe.MatchString(text)) && !(f.Key == "site_sqm" && lotAreaRe.MatchString(text)) {
 			continue
 		}
 		h.add("hdr.scale."+f.Key, "pre_parsed", scaleCandidates(f, text))

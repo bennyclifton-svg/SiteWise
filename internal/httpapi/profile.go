@@ -755,7 +755,7 @@ func validProfileValue(cat *knowledge.Catalog, key string, value *string, note s
 		case "presence":
 			return oneOf("included", "not_included")
 		case "provider":
-			return oneOf("contractor", "owner", "others")
+			return oneOf("contractor", "owner", "landlord", "others")
 		case "note":
 			if len([]rune(v)) > maxProfileNote {
 				return "note is longer than 120 characters"

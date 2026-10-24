@@ -11,7 +11,7 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   await page.getByRole('button',{name:'+ Add line to Contingency',exact:true}).click();await page.getByLabel('New Contingency item',{exact:true}).fill('Unallocated allowance');await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
   const grid=page.getByRole('table');
   for (const h of ['Forecast Variations','Approved Variations','This Month']) await expect(grid.getByRole('columnheader',{name:h})).toHaveAttribute('aria-disabled','true');
-  const rowOf=(label:string)=>grid.getByRole('row').filter({has:page.getByRole('button',{name:label,exact:true})});
+  const rowOf=(label:string)=>grid.getByRole('row').filter({has:page.locator('[data-col="item"]').getByText(label,{exact:true})});
   const row=rowOf('Unallocated allowance');
   const budget=row.getByRole('button',{name:'Budget for Unallocated allowance'});
   await expect(budget).toHaveText('—');await expect(row.getByRole('cell').nth(FORECAST)).toHaveText('—');await expect(row.getByRole('cell').nth(VARIANCE)).toHaveText('—');
@@ -24,13 +24,13 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   await expect(row.getByRole('cell').nth(FORECAST)).toHaveText('1,000.00');await expect(row.getByRole('cell').nth(VARIANCE)).toHaveText('0.00');await expect(row.getByRole('cell').nth(REMAINING)).toHaveText('—');
   await budget.click();await input.fill('ten');await input.press('Enter');await expect(input).toHaveAttribute('aria-invalid','true');await input.press('Escape');await expect(budget).toHaveText('1,000.00');
 
-  // The drawer holds everything that is not a typed budget.
-  await row.getByRole('button',{name:'Unallocated allowance',exact:true}).click();
+  await row.getByRole('button',{name:'Actions for Unallocated allowance',exact:true}).click();
+  const menu=page.locator('.cost-row-menu:popover-open');
+  await expect(menu.getByText(/Edit|benchmark|scope reference/i)).toHaveCount(0);
+  await menu.getByRole('button',{name:'Subdivide allowance',exact:true}).click();
   const drawer=page.getByRole('complementary',{name:'Cost line'});
-  await drawer.getByLabel('Benchmark geography').fill('Sydney');await drawer.getByLabel('Benchmark quality').fill('Standard');await drawer.getByRole('button',{name:'Find reviewed benchmarks',exact:true}).click();await expect(drawer.getByText(/Only reviewed benchmarks matching/)).toBeVisible();await expect(drawer.getByRole('button',{name:'Apply benchmark allowance',exact:true})).toHaveCount(0);
-  await expect(drawer.getByRole('button',{name:'Edit estimate'})).toHaveCount(0);
-  await drawer.getByRole('button',{name:'Subdivide allowance',exact:true}).click();await drawer.getByLabel('Allocation 1 label').fill('First allocation');await drawer.getByLabel('Allocation 1 amount').fill('300');await drawer.getByLabel('Allocation 2 label').fill('Second allocation');await drawer.getByLabel('Allocation 2 amount').fill('400');await drawer.getByRole('button',{name:'Save subdivision',exact:true}).click();
-  await expect(grid.getByRole('button',{name:'First allocation',exact:true})).toBeVisible();await expect(grid.getByRole('button',{name:'Unallocated — Unallocated allowance',exact:true})).toBeVisible();
+  await drawer.getByLabel('Allocation 1 label').fill('First allocation');await drawer.getByLabel('Allocation 1 amount').fill('300');await drawer.getByLabel('Allocation 2 label').fill('Second allocation');await drawer.getByLabel('Allocation 2 amount').fill('400');await drawer.getByRole('button',{name:'Save subdivision',exact:true}).click();
+  await expect(grid.getByText('First allocation',{exact:true})).toBeVisible();await expect(grid.getByText('Unallocated — Unallocated allowance',{exact:true})).toBeVisible();
   await expect(row).toContainText('Group · amounts are on the lines below');
   const project=new URL(page.url()).pathname.split('/').pop();const totals=await(await page.request.get(`/api/projects/${project}/cost-plan/totals`)).json();expect(totals.overall.budget.known_subtotal).toBe('1000.00');expect(totals.overall.budget.amount).toBeNull();expect(totals.overall.estimate).toBeUndefined();
   await drawer.getByRole('button',{name:'Close',exact:true}).click();await expect(drawer).toBeHidden();

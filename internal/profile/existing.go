@@ -12,10 +12,13 @@ type workContext struct {
 	types      map[string]string
 	actions    map[[2]string]string
 	actionRows map[[2]string]Row
+	// contractor marks systems an applied provider reading says the
+	// contractor supplies "as part of their works or price".
+	contractor map[[2]string]bool
 }
 
 func workContextFor(rows []Row, whole string) workContext {
-	c := workContext{whole: whole, types: map[string]string{}, actions: map[[2]string]string{}, actionRows: map[[2]string]Row{}}
+	c := workContext{whole: whole, types: map[string]string{}, actions: map[[2]string]string{}, actionRows: map[[2]string]Row{}, contractor: map[[2]string]bool{}}
 	for _, r := range rows {
 		if !appliedWorkRow(r) {
 			continue
@@ -26,6 +29,9 @@ func workContextFor(rows []Row, whole string) workContext {
 		if strings.HasPrefix(r.Key, "sys.") && strings.HasSuffix(r.Key, ".action") && (works.ValidAction(r.Value) || r.Value == "several") {
 			c.actions[[2]string{r.PartID, strings.TrimSuffix(r.Key, ".action")}] = r.Value
 			c.actionRows[[2]string{r.PartID, strings.TrimSuffix(r.Key, ".action")}] = r
+		}
+		if strings.HasPrefix(r.Key, "sys.") && strings.HasSuffix(r.Key, ".provider") && r.Value == "contractor" {
+			c.contractor[[2]string{r.PartID, strings.TrimSuffix(r.Key, ".provider")}] = true
 		}
 	}
 	return c
@@ -57,6 +63,8 @@ func (c workContext) severalActions(r Row) bool {
 // existingPresence is D-27: the document describes what already exists, but
 // supplies no applied works action. Preserve the original presence answer;
 // only its scope consequence changes, so factual answer keys stay intact.
+// A system the contractor provides is works, not existing building: the
+// provider question defines contractor as part of the works or price.
 func (c workContext) existingPresence(r Row) bool {
 	if r.Band == bandUser || !appliedWorkRow(r) || r.Value != valIncluded ||
 		!strings.HasPrefix(r.Key, "sys.") || !strings.HasSuffix(r.Key, ".presence") {
@@ -64,7 +72,11 @@ func (c workContext) existingPresence(r Row) bool {
 	}
 	switch c.workType(r.PartID) {
 	case "refurb", "remediation", "advisory":
-		action := c.actions[[2]string{r.PartID, strings.TrimSuffix(r.Key, ".presence")}]
+		system := [2]string{r.PartID, strings.TrimSuffix(r.Key, ".presence")}
+		if c.contractor[system] {
+			return false
+		}
+		action := c.actions[system]
 		return action == "" || action == "not_stated"
 	}
 	return false

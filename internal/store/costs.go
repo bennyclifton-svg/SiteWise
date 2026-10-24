@@ -77,7 +77,7 @@ func readCostPlan(ctx context.Context, tx pgx.Tx, org, project, version string) 
 	if e = json.Unmarshal(raw, &p); e != nil {
 		return p, e
 	}
-	rows, e := tx.Query(ctx, `SELECT to_jsonb(r)||jsonb_build_object('resolved_package_id',CASE WHEN $4 THEN COALESCE(r.provenance->>'resolved_package_id',r.package_id::text,'') ELSE COALESCE(r.package_id::text,'') END,'system_id',CASE WHEN $4 THEN r.system_id ELSE COALESCE(w.system_id,r.system_id) END,'part_id',CASE WHEN $4 THEN r.part_id ELSE w.part_id END) FROM cost_item_revisions r LEFT JOIN work_items w ON w.org_id=r.org_id AND w.project_id=r.project_id AND w.id=r.work_item_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.plan_version_id=$3::uuid ORDER BY r.code,r.label,r.cost_item_id`, org, project, p.ID, p.Status != "draft")
+	rows, e := tx.Query(ctx, `SELECT to_jsonb(r)||jsonb_build_object('display_order',r.provenance->'display_order','resolved_package_id',CASE WHEN $4 THEN COALESCE(r.provenance->>'resolved_package_id',r.package_id::text,'') ELSE COALESCE(r.package_id::text,'') END,'system_id',CASE WHEN $4 THEN r.system_id ELSE COALESCE(w.system_id,r.system_id) END,'part_id',CASE WHEN $4 THEN r.part_id ELSE w.part_id END) FROM cost_item_revisions r LEFT JOIN work_items w ON w.org_id=r.org_id AND w.project_id=r.project_id AND w.id=r.work_item_id WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.plan_version_id=$3::uuid ORDER BY (r.provenance->>'display_order')::int NULLS LAST,r.code,r.label,r.cost_item_id`, org, project, p.ID, p.Status != "draft")
 	if e != nil {
 		return p, e
 	}

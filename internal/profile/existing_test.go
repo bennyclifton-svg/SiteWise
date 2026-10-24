@@ -101,3 +101,29 @@ func TestPartWorkTypeNeverReplacesProjectDefaultType(t *testing.T) {
 		t.Fatal("part override contaminated project defaults")
 	}
 }
+
+// A refurb brief that lists a system as the contractor's works is scope, not
+// existing building, even when it names no action (Meridian fitout, 2026-10-24).
+func TestContractorProvidedSystemIsWorksInRefurb(t *testing.T) {
+	cat := repoCatalog(t)
+	in := input(jevFact("sys.electrical.lighting.presence", "included", "brief", .85),
+		jevFact("sys.electrical.lighting.provider", "contractor", "brief", .77))
+	in.User = header("office", "refurb")
+	rows := profile.Build(in, cat)
+	noRow(t, rows, whole, "sys.electrical.lighting.existing")
+	if r := row(t, rows, whole, "scope.electrical.lighting"); r.Value != "in" {
+		t.Fatalf("contractor works left out of scope: %+v", r)
+	}
+	items := profile.ProposedWorks("project", rows, in.Parts, cat)
+	if len(items) != 1 || items[0].Action != "alter" {
+		t.Fatalf("want one alter work item: %+v", items)
+	}
+	// Another party supplying it says nothing about the works; D-27 still holds.
+	in = input(jevFact("sys.electrical.lighting.presence", "included", "brief", .85),
+		jevFact("sys.electrical.lighting.provider", "owner", "brief", .77))
+	in.User = header("office", "refurb")
+	rows = profile.Build(in, cat)
+	if r := row(t, rows, whole, "sys.electrical.lighting.existing"); r.Value != "present" {
+		t.Fatalf("owner-supplied presence should stay existing: %+v", r)
+	}
+}

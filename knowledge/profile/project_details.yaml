@@ -36,7 +36,7 @@ details:
     asks: >-
       Using `excerpt` and `candidates`, which candidate does the passage state as the local government area
       (council area) this project's site is in? Select none when absent, or when the candidate is a council
-      named only as an approval body, a neighbouring area or a different site.
+      named for a neighbouring area or a different site. The council identified for this project's DA or local planning controls establishes its council area.
   - key: zone
     label: Zone
     value: text
@@ -48,7 +48,18 @@ details:
       Using `excerpt` and `candidates`, which candidate does the passage state as the planning zone of this
       project's site? Select none when absent, or when the candidate is an adjoining zone, a noise or
       fire zone, or a zone of a different site.
-  - {key: program, label: Program milestones, value: text, scope: project, help: "Approval, start and completion dates as the client currently plans them."}
+  - key: program
+    label: Program milestones
+    value: text
+    scope: project
+    help: "Dated targets from a filed programme. Aspirations remain targets, not commitments."
+    extraction: pre_parsed
+    triggers: ['\btarget\b', '\baspiration\b', '\bplanned\b']
+    asks: >-
+      Using `text` and `candidates`, which paragraph states this project's dated approval,
+      construction or occupation targets? Keep the whole candidate, including qualifications
+      such as aspiration or subject to approval. Select none for consultant fee or service deadlines,
+      report issue dates, past completion records, or dates for another project.
   - key: sustainability
     label: Sustainability target
     value: text

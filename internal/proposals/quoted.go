@@ -14,7 +14,22 @@ type QuoteReview struct {
 	Fees     []QuotedFee              `json:"fees"`
 	Coverage map[string]QuoteCoverage `json:"coverage"`
 	Issues   []string                 `json:"issues"`
+	Terms    []QuoteTerm              `json:"terms,omitempty"`
 }
+
+// Terms are source excerpts under explicit headings, not generated summaries
+// or confirmation that the whole requested schedule is included.
+type QuoteTerm struct {
+	Kind    string `json:"kind"`
+	Heading string `json:"heading"`
+	Text    string `json:"text"`
+	Page    int    `json:"page"`
+}
+
+var scopeHeading = regexp.MustCompile(`(?i)^(?:scope\b|services\b|appointment\b)`)
+var conditionHeading = regexp.MustCompile(`(?i)^(?:assumptions?\b|conditions?\b|validity\b|conflict disclosure\b|programme\b)`)
+var scopeLimit = regexp.MustCompile(`(?i)\b(?:not appointed as|excluding|not included|outside (?:our|the) scope)\b`)
+var feeCondition = regexp.MustCompile(`(?i)\b(?:disbursements?|reimbursables?)\b`)
 
 type QuotedFee struct {
 	ID         string  `json:"id"`
@@ -41,8 +56,11 @@ func compactName(s string) string { return nonName.ReplaceAllString(strings.ToLo
 
 var firmSentenceNoise = regexp.MustCompile(`(?i)^(?:please return to|trading name)\s+|(?:\s+reviewed by)\s*$`)
 var firmProse = regexp.MustCompile(`(?i)\b(?:unless|shall|reimburse|capability|agrees|hereby|liable|engage|engaged)\b`)
+var signatureRole = regexp.MustCompile(`(?i)^(?:principal|director|managing director|partner),\s*`)
 
 func cleanFirmCandidate(s string) string {
+	s = strings.Trim(s, "* ")
+	s = signatureRole.ReplaceAllString(s, "")
 	s = strings.TrimSpace(firmSentenceNoise.ReplaceAllString(s, ""))
 	if firmProse.MatchString(s) {
 		return ""
@@ -77,6 +95,9 @@ func quoteAmounts(ev Evidence) []Amount {
 func coverageAmounts(ev Evidence) []Amount {
 	var fees []Amount
 	for _, a := range quoteAmounts(ev) {
+		if a.RepeatOf != "" {
+			continue
+		}
 		if !unitWord.MatchString(a.Context) || len(moneyIn(a.Context)) < 2 || quoteSummaryWords.MatchString(a.Label) {
 			fees = append(fees, a)
 		}
@@ -87,7 +108,7 @@ func coverageAmounts(ev Evidence) []Amount {
 func (d *Draft) askCoverage(add func(question)) {
 	fees := coverageAmounts(d.ev)
 	for _, fee := range fees {
-		add(question{Field: "offer-role:" + fee.ID, Family: "coverage-1",
+		add(question{Field: "offer-role:" + fee.ID, Family: "coverage-2",
 			Instructions: roleQuestion{Question: "What role does quoted_fees " + fee.ID + " play in this offer? Use explicit wording, including any email saying these are revised costs.", NotFor: "Do not compare dates or calculate. If the wording does not establish the role, choose unclear."},
 			Options: []choice{
 				{ID: "current", Value: "Current offer", Describe: "A current quoted fee or package."},
@@ -104,21 +125,69 @@ func (d *Draft) askCoverage(add func(question)) {
 		opts := []choice{}
 		for _, fee := range fees {
 			opts = append(opts, choice{ID: fee.ID, Value: fee.ID, Describe: fee.ID + " in quoted_fees"})
+			opts = append(opts, choice{ID: "partial_" + fee.ID, Value: "partial:" + fee.ID, Describe: "Only part of the requested scope is explicitly covered by " + fee.ID + "; its stage, extent or deliverables are limited."})
 		}
 		opts = append(opts,
 			choice{ID: "unstated", Value: "unstated", Describe: "Coverage is not stated clearly."},
 			choice{ID: "excluded", Value: "excluded", Describe: "The proposal explicitly excludes this service."})
-		add(question{Field: "coverage:" + it.Key, Family: "coverage-1", AmberAtMost: true,
+		add(question{Field: "coverage:" + it.Key, Family: "coverage-2", AmberAtMost: true,
 			Instructions: roleQuestion{
-				Question: "Which quoted fee or bundle covers the service " + it.Label + "? A bundled investigation, design or appointment fee may cover several services. Select the same bundle for each service it covers. This is coverage of the service, not confirmation of every detailed RFP requirement.",
-				NotFor:   "Do not divide or add amounts. Do not assume an unmentioned service is excluded. Prefer a package fee over its component breakdown. Choose unstated when the source does not establish coverage.",
+				Question: "Which quoted fee explicitly covers the service " + it.Label + "? Requested scope: " + clip(it.Detail, 300) + ". A bundle may cover several services only where the source establishes each service at the requested stage and extent.",
+				NotFor:   "Concept advice, desktop sizing or location options do not establish detailed design, construction documentation, certification or construction services. Coordination of another consultant does not include that consultant's services or fees. Do not divide or add amounts. Do not infer exclusion from silence. Prefer a package over its breakdown. Choose partial when only part of this service is evidenced, unstated when there is no evidence, and excluded only for an explicit exclusion.",
 			}, Options: opts})
 	}
 }
 
 func (d *Draft) quotedReview() *QuoteReview {
 	r := &QuoteReview{Fees: []QuotedFee{}, Coverage: map[string]QuoteCoverage{}, Issues: []string{}}
+	for _, s := range d.ev.Sections {
+		kind := ""
+		switch {
+		case departureHeading.MatchString(s.Heading):
+			kind = "exclusions and qualifications"
+		case scopeHeading.MatchString(s.Heading):
+			kind = "scope"
+		case conditionHeading.MatchString(s.Heading):
+			kind = "conditions"
+		}
+		if kind != "" {
+			r.Terms = append(r.Terms, QuoteTerm{Kind: kind, Heading: s.Heading, Text: strings.TrimSpace(s.Body), Page: s.Page})
+		}
+		if kind == "scope" {
+			for _, line := range strings.Split(s.Body, "\n") {
+				if scopeLimit.MatchString(line) && !exGSTRe.MatchString(line) {
+					r.Terms = append(r.Terms, QuoteTerm{Kind: "exclusions and qualifications", Heading: "Scope limits", Text: line, Page: s.Page})
+				}
+			}
+		}
+		if kind == "" {
+			for _, line := range strings.Split(s.Body, "\n") {
+				if feeCondition.MatchString(line) {
+					r.Terms = append(r.Terms, QuoteTerm{Kind: "conditions", Heading: "Fee conditions", Text: line, Page: s.Page})
+				}
+			}
+		}
+	}
 	seen := map[string]bool{}
+	components := map[string]bool{}
+	for _, total := range d.ev.Amounts {
+		if !total.Total || total.IncTwin || total.GSTPart {
+			continue
+		}
+		var sum int64
+		var ids []string
+		for _, a := range d.ev.Amounts {
+			if a.Section == total.Section && !a.Total && !a.IncTwin && !a.GSTPart && !a.Unit && !a.PerHour && a.RepeatOf == "" && a.GST == total.GST {
+				sum += a.Cents
+				ids = append(ids, a.ID)
+			}
+		}
+		if len(ids) > 1 && sum == total.Cents {
+			for _, id := range ids {
+				components[id] = true
+			}
+		}
+	}
 	for _, a := range quoteAmounts(d.ev) {
 		role := "Package / fee — scope awaiting alignment"
 		if unitWord.MatchString(a.Context) && len(moneyIn(a.Context)) > 1 {
@@ -126,6 +195,15 @@ func (d *Draft) quotedReview() *QuoteReview {
 		}
 		if quoteSummaryWords.MatchString(a.Label + " " + a.Context) {
 			role = "Package / total — do not add to its breakdown"
+		}
+		if a.Total {
+			role = "Package / total — do not add to its breakdown"
+		}
+		if components[a.ID] {
+			role = "Breakdown component — not additional to package"
+		}
+		if a.RepeatOf != "" {
+			role = "Repeated reference — already quoted"
 		}
 		if quoteConditionalWords.MatchString(a.Context) {
 			role = "Conditional / optional fee"
@@ -135,7 +213,10 @@ func (d *Draft) quotedReview() *QuoteReview {
 		}
 		label := a.Label
 		if label == "" {
-			label = "Quoted fee"
+			label = a.Under
+			if label == "" {
+				label = "Quoted fee"
+			}
 		}
 		var amount *string
 		gst := a.GST
@@ -164,6 +245,8 @@ func (d *Draft) quotedReview() *QuoteReview {
 		c := QuoteCoverage{Status: "Coverage unclear"}
 		if seen[answer] {
 			c.FeeID, c.Status = answer, "Suggested coverage — check source"
+		} else if id, partial := strings.CutPrefix(answer, "partial:"); partial && seen[id] {
+			c.FeeID, c.Status = id, "Partial scope only — check source"
 		} else if answer == "excluded" {
 			c.Status = "Suggested exclusion — check source"
 		}

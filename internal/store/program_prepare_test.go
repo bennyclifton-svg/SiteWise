@@ -63,8 +63,8 @@ var (
 )
 
 // questionCatalog is the repository knowledge with the test program
-// library above: one fragment whose predicate reads flood_hazard, so the
-// question strip has a question and answering it changes the program.
+// library above: one fragment whose predicate reads flood_hazard. An
+// unanswered flood site omits it, and the program asks no profile question.
 func questionCatalog(t *testing.T) *knowledge.Catalog {
 	t.Helper()
 	questionCatOnce.Do(func() {
@@ -323,63 +323,15 @@ func TestProgramQuestionAnswerAndNotSure(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	q := view.Question
-	if q == nil || q.Key != "flood_hazard" || q.Kind != engine.QuestionDeterminant || store.ProgramProfileKey(*q) != "det.flood_hazard" {
-		t.Fatalf("question %+v", q)
+	if view.Question != nil {
+		t.Fatalf("program asked a profile question: %+v", view.Question)
 	}
-	frame := rowOf(t, st, "If Site in a flood hazard area: Frame")
-	if frame.DurationDays == nil || *frame.DurationDays != 0 || frame.DurationHigh == nil || *frame.DurationHigh != 8 {
-		t.Fatalf("conditional row %+v", frame)
+	if st.Program.StartDate == "" || st.Program.StartOrigin != "profile" {
+		t.Fatalf("start %q origin %q", st.Program.StartDate, st.Program.StartOrigin)
 	}
-
-	// Not sure: the question goes until the Profile value changes.
-	st, err = s.DismissProgramQuestion(ctx, orgA, projectA, st.Program.Version, "det.flood_hazard")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := s.DismissProgramQuestion(ctx, orgA, projectA, st.Program.Version-1, "det.flood_hazard"); !errors.Is(err, store.ErrVersionConflict) {
-		t.Fatalf("stale dismissal %v", err)
-	}
-	if view, _ = s.ProgramView(ctx, orgA, projectA, st, cat); view.Question != nil {
-		t.Fatalf("dismissed question still asked %+v", view.Question)
-	}
-	setValue(t, s, part, "det.flood_hazard", store.UserWrite{State: "unknown", Note: "asked the planner", Scope: cat.KeyScope("det.flood_hazard")})
-	if view, _ = s.ProgramView(ctx, orgA, projectA, st, cat); view.Question == nil || view.Question.Key != "flood_hazard" {
-		t.Fatal("a changed Profile value did not bring the question back")
-	}
-
-	// Yes: the Profile value is written first (the HTTP layer uses the
-	// Profile edit path), then the program changes apply as one batch.
-	setValue(t, s, part, "det.flood_hazard", store.UserWrite{Value: strPtr("stated_true"), Scope: cat.KeyScope("det.flood_hazard")})
-	res, n, err := s.ApplyProgramAnswer(ctx, orgA, projectA, userA, st.Program.Version, cat, *q, "true")
-	if err != nil || n != 2 {
-		t.Fatalf("answer %d %v", n, err)
-	}
-	after := rowOf(t, res.ProgramState, "Frame")
-	if after.ID != frame.ID || after.DurationDays == nil || *after.DurationDays != 5 || after.Origin != "library" || after.ReviewStatus != "proposed" || string(after.DurationOrigin) != "library" {
-		t.Fatalf("answered row %+v", after)
-	}
-	if len(res.Toasts) != 1 || !strings.Contains(res.Toasts[0], "Yes saved to the Profile. 2 program changes applied") {
-		t.Fatalf("toasts %v", res.Toasts)
-	}
-	if res.Program.Version != st.Program.Version+1 {
-		t.Fatalf("version %d", res.Program.Version)
-	}
-	// Answering again changes nothing and writes nothing.
-	same, n, err := s.ApplyProgramAnswer(ctx, orgA, projectA, userA, res.Program.Version, cat, *q, "true")
-	if err != nil || n != 0 || same.Program.Version != res.Program.Version || !strings.Contains(same.Toasts[0], "did not change") {
-		t.Fatalf("no-op answer %d %v %+v", n, err, same.Toasts)
-	}
-	// One undo restores the conditional row.
-	undone, err := s.UndoProgram(ctx, orgA, projectA, userA, res.Program.Version)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if back := rowOf(t, undone.ProgramState, "If Site in a flood hazard area: Frame"); back.DurationDays == nil || *back.DurationDays != 0 {
-		t.Fatalf("undo %+v", back)
-	}
-	// A stale version is a conflict that carries the current state.
-	if r, _, err := s.ApplyProgramAnswer(ctx, orgA, projectA, userA, res.Program.Version, cat, *q, "true"); !errors.Is(err, store.ErrVersionConflict) || r.Program.Version != undone.Program.Version {
-		t.Fatalf("stale answer %v", err)
+	for _, a := range st.Activities {
+		if strings.Contains(a.Label, "flood") {
+			t.Fatalf("unanswered flood hazard added %+v", a)
+		}
 	}
 }

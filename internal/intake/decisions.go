@@ -182,6 +182,20 @@ func (t Thresholds) Band(field string, confidence *float64, options int) (band s
 // (BCA compliance, contract terms, a schedule reference) is not authorship or kind.
 func settleVocabulary(cat Catalog, filename string, text identity.Text) []Result {
 	var out []Result
+	if markdownEmail(text) {
+		out = append(out, Result{Field: FieldKind, Settled: true, Rule: "email_headers", Display: "correspondence", Normalized: "correspondence"})
+	}
+	if text.Format == "md" || text.Format == "markdown" {
+		if len(text.Runs) > 0 {
+			heading := strings.ToLower(strings.TrimSpace(text.Runs[0].Text))
+			for _, name := range []string{"# master programme", "# master program"} {
+				if heading == name || strings.HasPrefix(heading, name+" — ") || strings.HasPrefix(heading, name+" - ") || strings.HasPrefix(heading, name+" – ") {
+					out = append(out, Result{Field: FieldKind, Settled: true, Rule: "explicit_programme_heading", Display: "schedule", Normalized: "schedule"})
+					break
+				}
+			}
+		}
+	}
 	kind, kindKnown := onePhrase(vocabularyEvidence("", text, "Kind", kindPhrases(cat)), kindPhrases(cat))
 	if kindKnown {
 		id := kind

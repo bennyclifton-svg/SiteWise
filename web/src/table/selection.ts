@@ -1,8 +1,4 @@
-// One selection shared by the grid and the chart (plan 9.4): an ordered set
-// of row ids plus an anchor. Ranges follow the visible grid order, so in the
-// collapsed view a range covers stages only. Pure: WP-P8 builds bulk edits
-// on the same state.
-
+// Shared ordered row selection for Program and the document register.
 export interface Selection {
   /** Selected ids in the order they were added. */
   ids: readonly string[];

@@ -88,6 +88,9 @@ func (s *Store) OpenSubmission(ctx context.Context, org, project, documentID, pa
 		return "", err
 	}
 	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return "", err
+	}
 	var filename string
 	err = tx.QueryRow(ctx, `SELECT filename FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3`, org, project, documentID).Scan(&filename)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -113,6 +116,13 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,NULLIF($4,'')::uuid,$5::uuid,$6,'reading',$7:
 	case err != nil:
 		return "", err
 	case packageID != "":
+		current, err := readSubmission(ctx, tx, org, id)
+		if err != nil {
+			return "", err
+		}
+		if current.Status != SubmissionReading && current.Status != SubmissionReceived && current.Status != SubmissionNeedsReview {
+			return "", ErrConflict
+		}
 		if _, err := tx.Exec(ctx, `UPDATE submissions SET package_id=$3::uuid, updated_at=now(), version=version+1 WHERE org_id=$1::uuid AND id=$2::uuid`, org, id, packageID); err != nil {
 			return "", err
 		}
@@ -394,6 +404,15 @@ func (s *Store) CommitSubmissionRead(ctx context.Context, org, id string, out pr
 	}
 	defer tx.Rollback(ctx)
 	var project, status string
+	if err := tx.QueryRow(ctx, `SELECT project_id::text FROM submissions WHERE org_id=$1::uuid AND id::text=$2`, org, id).Scan(&project); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return false, err
+	}
 	err = tx.QueryRow(ctx, `SELECT project_id::text, status FROM submissions WHERE org_id=$1::uuid AND id::text=$2 FOR UPDATE`, org, id).Scan(&project, &status)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return false, nil
@@ -498,8 +517,16 @@ WHERE submission_responses.decided_by <> 'user'`, org, project, id, r.Key, passa
 WHERE org_id=$1::uuid AND id::text=$2`, org, id, next, kindColumn(kind), pkg, firm, stated, gstColumn(out.GSTBasis), string(flags), retry, recheck); err != nil {
 		return false, err
 	}
-	if err := supersedeEarlier(ctx, tx, org, project, id); err != nil {
+	// Packages or filing discipline may have changed while Jev was reading.
+	if err := matchUnassignedSubmissions(ctx, tx, org, project, ""); err != nil {
 		return false, err
+	}
+	if !recheck {
+		// A better reading of existing evidence is not a new offer. In
+		// particular, recognising its firm must not retire a related letter.
+		if err := supersedeEarlier(ctx, tx, org, project, id); err != nil {
+			return false, err
+		}
 	}
 	if err := procurementEvent(ctx, tx, s, org, project, id, next); err != nil {
 		return false, err

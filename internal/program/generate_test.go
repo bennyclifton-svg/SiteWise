@@ -436,28 +436,41 @@ func TestConditionalFragment(t *testing.T) {
 	cat := testCatalog(t, testLibrary, "")
 	items := []WorkItem{{ID: "wi-frame", System: "structure", Action: "new", Title: "Timber frame"},
 		{ID: "wi-slab", System: "substructure", Action: "new", Title: "Slab"}}
-	unknown := mustGenerate(t, cat, GenInput{WorkTypes: []string{"new"}, WorkItems: items})
-	r, ok := unknown.Row("fragment:fr.frame:wi-frame:frame")
-	if !ok {
-		t.Fatal("unknown predicate dropped the fragment")
-	}
-	if r.Label != "If Site in a flood hazard area: Timber frame" {
-		t.Fatalf("label %q", r.Label)
-	}
-	if *r.Duration != 0 || *r.Low != 0 || *r.High != 8 || r.DurationSource["conditional"] != true {
-		t.Fatalf("conditional durations %v %v %v", *r.Duration, *r.Low, *r.High)
-	}
-	// attach after fr.slab links each slab sink to the frame.
-	if _, ok := hasLink(unknown, "fragment:fr.slab:wi-slab:pour", r.SourceKey); !ok {
-		t.Fatal("attach link missing")
+	// An unanswered flood site is treated as no, so the flood fragment is omitted.
+	absent := mustGenerate(t, cat, GenInput{WorkTypes: []string{"new"}, WorkItems: items})
+	if _, ok := absent.Row("fragment:fr.frame:wi-frame:frame"); ok {
+		t.Fatal("unanswered flood hazard added the fragment")
 	}
 	no := mustGenerate(t, cat, GenInput{WorkTypes: []string{"new"}, WorkItems: items, Values: map[string]string{"flood_hazard": "false"}})
-	if _, ok := no.Row(r.SourceKey); ok {
+	if _, ok := no.Row("fragment:fr.frame:wi-frame:frame"); ok {
 		t.Fatal("false predicate kept the fragment")
 	}
 	yes := mustGenerate(t, cat, GenInput{WorkTypes: []string{"new"}, WorkItems: items, Values: map[string]string{"flood_hazard": "true"}})
-	if r, _ := yes.Row("fragment:fr.frame:wi-frame:frame"); r.Label != "Timber frame" || *r.Duration != 5 || *r.Low != 3 || *r.High != 8 {
+	r, ok := yes.Row("fragment:fr.frame:wi-frame:frame")
+	if !ok || r.Label != "Timber frame" || *r.Duration != 5 || *r.Low != 3 || *r.High != 8 {
 		t.Fatalf("true predicate row %+v", r)
+	}
+	if _, ok := hasLink(yes, "fragment:fr.slab:wi-slab:pour", r.SourceKey); !ok {
+		t.Fatal("attach link missing")
+	}
+}
+
+func TestUnknownStateStaysConditional(t *testing.T) {
+	files := map[string]string{}
+	for k, v := range testLibrary {
+		files[k] = v
+	}
+	files["fragments.yaml"] = strings.Replace(files["fragments.yaml"], "{det: flood_hazard, is: true}", "{det: state, eq: NSW}", 1)
+	cat := testCatalog(t, files, "")
+	items := []WorkItem{{ID: "wi-frame", System: "structure", Action: "new", Title: "Timber frame"}}
+	unknown := mustGenerate(t, cat, GenInput{WorkTypes: []string{"new"}, WorkItems: items, Values: map[string]string{"flood_hazard": "false"}})
+	r, ok := unknown.Row("fragment:fr.frame:wi-frame:frame")
+	if !ok || !strings.HasPrefix(r.Label, "If ") || r.Duration == nil || *r.Duration != 0 {
+		t.Fatalf("unknown state %+v", r)
+	}
+	known := mustGenerate(t, cat, GenInput{WorkTypes: []string{"new"}, WorkItems: items, Values: map[string]string{"flood_hazard": "false", "state": "NSW"}})
+	if r, _ := known.Row("fragment:fr.frame:wi-frame:frame"); r.Label != "Timber frame" {
+		t.Fatalf("known state %+v", r)
 	}
 }
 
@@ -588,11 +601,36 @@ func TestDurationPrecedence(t *testing.T) {
 	}
 }
 
+// emptyLibrary is sk.generic and nothing else. The repository library is
+// the real program library, so the empty-library case has to say so.
+var emptyLibrary = map[string]string{
+	"skeletons.yaml": `version: 1
+status: draft
+sources: ` + src + `
+skeletons:
+` + genericSkeleton,
+	"fragments.yaml": `version: 1
+status: draft
+sources: ` + src + `
+fragments: []
+`,
+	"durations.yaml": `version: 1
+status: draft
+sources: ` + src + `
+durations: []
+`,
+	"calendars.yaml": `version: 1
+status: draft
+sources: ` + src + `
+calendars: []
+`,
+}
+
 // WP-P5 done: with the empty library a project gets sk.generic stages, one
 // activity per package stage, every duration unknown, and status words that
 // say so; no question is offered because nothing in the library reads a fact.
 func TestEmptyLibrary(t *testing.T) {
-	cat := testCatalog(t, nil, "")
+	cat := testCatalog(t, emptyLibrary, "")
 	in := GenInput{Facts: Facts{ConsentDate: "2027-02-01"},
 		WorkItems: []WorkItem{{ID: "wi", System: "substructure", Action: "new", Title: "Slab"}},
 		Packages: []Package{
@@ -662,6 +700,119 @@ func TestGenerateIsDeterministic(t *testing.T) {
 	}
 	if err := Validate(p.Input(Calendar{})); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestProjectFragmentOnce(t *testing.T) {
+	files := map[string]string{}
+	for k, v := range testLibrary {
+		files[k] = v
+	}
+	files["fragments.yaml"] = strings.Replace(files["fragments.yaml"], "fragments:\n", `fragments:
+  - id: fr.consent
+    label: Consent
+    scope: project
+    stage: approvals
+    systems: [site]
+    applies_when: {cond: planning, eq: da}
+    activities:
+      - {key: assess, label: Assessment, systems: [site], duration: du.elapsed}
+    status: draft
+    sources: `+src+`
+`, 1)
+	files["durations.yaml"] = strings.Replace(files["durations.yaml"], "durations:\n", `durations:
+  - id: du.elapsed
+    version: 1
+    basis: fixed
+    unit_days: calendar
+    low: "7"
+    typical: "7"
+    high: "14"
+    geography: Test
+    limitations: []
+    status: reviewed
+    sources: `+src+`
+`, 1)
+	cat := testCatalog(t, files, "")
+	in := GenInput{WorkTypes: []string{"new"}, Conditions: map[string]string{"planning": "da"},
+		WorkItems: []WorkItem{
+			{ID: "a", System: "substructure", Action: "new", Title: "Slab"},
+			{ID: "b", System: "substructure", Action: "new", Title: "Footings"},
+		}}
+	p := mustGenerate(t, cat, in)
+	rows := 0
+	for _, r := range p.Rows {
+		if r.FragmentID != "fr.consent" {
+			continue
+		}
+		rows++
+		if r.SourceKey != "fragment:fr.consent:project:assess" || r.Label != "Assessment" || r.WorkItemID != "" {
+			t.Fatalf("project row %+v", r)
+		}
+		// 7 and 14 calendar days, Monday to Friday, round up: 5 and 10 working days.
+		if r.Duration == nil || *r.Duration != 5 || *r.Low != 5 || *r.High != 10 || r.DurationSource["unit_days"] != "calendar" {
+			t.Fatalf("calendar conversion %+v source %+v", r, r.DurationSource)
+		}
+	}
+	if rows != 1 {
+		t.Fatalf("project fragment count %d", rows)
+	}
+	in.Conditions = map[string]string{"planning": "cdc"}
+	if _, ok := mustGenerate(t, cat, in).Row("fragment:fr.consent:project:assess"); ok {
+		t.Fatal("project fragment matched the wrong planning path")
+	}
+	unknown := GenInput{WorkItems: in.WorkItems}
+	r, ok := mustGenerate(t, cat, unknown).Row("fragment:fr.consent:project:assess")
+	if !ok || r.Duration == nil || *r.Duration != 0 || r.High == nil || *r.High != 10 || !strings.HasPrefix(r.Label, "If ") {
+		t.Fatalf("unknown planning %+v", r)
+	}
+}
+
+// The accepted library: a new Class 1a house on a traditional DA route gets
+// that skeleton, a slab duration from gross floor area, the cure as working
+// days, and the consent activity once.
+func TestAcceptedLibraryBuildsHouse(t *testing.T) {
+	cat := testCatalog(t, nil, "")
+	in := GenInput{
+		WorkTypes:  []string{"new"},
+		Conditions: map[string]string{"planning": "da", "procurement_route": "traditional"},
+		Values:     map[string]string{"ncc_class": "1a", "rise_in_storeys": "1"},
+		Planning:   map[string]string{"gross_floor_area": "180"},
+		WorkItems:  []WorkItem{{ID: "slab", System: "substructure.slab-on-ground", Action: "new", Title: "Slab on ground"}},
+	}
+	p := mustGenerate(t, cat, in)
+	if p.SkeletonID != "sk.new-traditional-da" {
+		t.Fatalf("skeleton %s", p.SkeletonID)
+	}
+	pour, ok := p.Row("fragment:fr.slab-on-ground-1a:slab:pour")
+	if !ok || pour.Duration == nil || *pour.Duration != 6 {
+		t.Fatalf("pour %+v", pour)
+	}
+	cure, ok := p.Row("fragment:fr.slab-on-ground-1a:slab:cure")
+	if !ok || cure.Duration == nil || *cure.Duration != 5 {
+		t.Fatalf("cure %+v", cure)
+	}
+	concept, ok := p.Row("fragment:fr.concept-design-1a:project:concept")
+	if !ok || concept.Duration == nil || *concept.Duration != 20 {
+		t.Fatalf("concept %+v", concept)
+	}
+	copies := 0
+	for _, r := range p.Rows {
+		if r.FragmentID == "fr.da-lodgement" {
+			copies++
+			if r.SourceKey != "fragment:fr.da-lodgement:project:lodge" || r.Duration == nil || *r.Duration != 10 {
+				t.Fatalf("lodgement %+v", r)
+			}
+		}
+		if r.FragmentID == "fr.cdc-application" {
+			t.Fatalf("CDC activity on a DA project: %+v", r)
+		}
+	}
+	if copies != 1 {
+		t.Fatalf("lodgement copies %d", copies)
+	}
+	if out := Compute(p.Input(Calendar{})); out.Cycle != nil {
+		t.Fatalf("generated a loop: %v", out.Cycle)
 	}
 }
 

@@ -473,6 +473,9 @@ func (s *Store) EditSubmission(ctx context.Context, org, project, id string, e S
 		return err
 	}
 	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return err
+	}
 	sub, err := lockSubmission(ctx, tx, org, project, id)
 	if err != nil {
 		return err

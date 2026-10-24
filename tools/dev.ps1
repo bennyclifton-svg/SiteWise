@@ -129,15 +129,27 @@ New-Item -ItemType Directory -Force $env:SITEWISE_FILE_DIR | Out-Null
 $Login = "http://$Addr/dev/login"
 # Resume interrupted work across development restarts. Uploads only prepare
 # text; profile reading is still requested explicitly with the update button.
-$server = Start-Process -FilePath $Exe -ArgumentList @('serve', '-addr', $Addr, '-dev-login', '-profile-provisional') -WindowStyle Hidden -PassThru
+$StdoutLog = Join-Path $Tools 'dev-server.stdout.log'
+$StderrLog = Join-Path $Tools 'dev-server.stderr.log'
+$server = Start-Process -FilePath $Exe -ArgumentList @('serve', '-addr', $Addr, '-dev-login', '-profile-provisional') -WorkingDirectory $Root -WindowStyle Hidden -RedirectStandardOutput $StdoutLog -RedirectStandardError $StderrLog -PassThru -ErrorAction Stop
 try {
+    $ready = $false
     $deadline = (Get-Date).AddSeconds(60)
     while (-not $server.HasExited -and (Get-Date) -lt $deadline) {
-        if (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue) { break }
+        if (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Where-Object OwningProcess -eq $server.Id) { $ready = $true; break }
         Start-Sleep -Milliseconds 250
     }
     if ($server.HasExited) {
-        Write-Host 'SiteWise stopped during startup; see the messages above.'
+        $server.WaitForExit()
+        Write-Host "SiteWise stopped during startup (exit $($server.ExitCode))."
+        Get-Content $StderrLog -Tail 40
+        Get-Content $StdoutLog -Tail 40
+        Write-Host "Logs: $StderrLog and $StdoutLog"
+        exit 1
+    }
+    if (-not $ready) {
+        Write-Host "SiteWise did not listen on $Addr within 60 seconds. See $StderrLog"
+        Get-Content $StderrLog -Tail 40
         exit 1
     }
     Write-Host ''

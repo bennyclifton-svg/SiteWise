@@ -2,6 +2,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, test, type Browser, type Locator, type Page } from "@playwright/test";
 
+// Full Chromium includes the native PDF viewer; headless-shell does not.
+test.use({ channel: "chromium" });
+
 const fixtures = resolve(import.meta.dirname, "../../testdata/identity");
 const fixture = (name: string) => readFileSync(resolve(fixtures, name));
 
@@ -18,18 +21,19 @@ async function signIn(browser: Browser, org: "a" | "b"): Promise<Page> {
   return page;
 }
 
-// One register entry: its one-line row and, once opened, its title block.
+// One register entry; filing details now live in the centre workspace.
 function block(page: Page, filename: string): Locator {
   return page.locator(`tbody.reg-doc[data-filename="${filename}"]`);
 }
 
 async function open(b: Locator) {
-  if ((await b.getAttribute("data-open")) !== "true") await b.locator("tr.reg-line").click();
+  if ((await b.getAttribute("data-open")) !== "true") await b.getByRole("button", { name: /^Open document:/ }).click();
   await expect(b).toHaveAttribute("data-open", "true");
+  await b.page().getByRole("button", { name: "Filing details", exact: true }).click();
 }
 
 function cell(b: Locator, field: string): Locator {
-  return b.locator(`.cell[data-field="${field}"]`);
+  return b.page().locator(`.document-workspace .cell[data-field="${field}"]`);
 }
 
 async function dropFile(page: Page, name: string, bytes: Buffer, type: string) {
@@ -61,7 +65,7 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   await dropFile(page, "identity-page.pdf", fixture("identity-page.pdf"), "application/pdf");
   const pdf = block(page, "identity-page.pdf");
   await open(pdf);
-  await expect(pdf.locator(".tb-state")).toHaveText(/Filed in \d+\.\d\d s/);
+  await expect(page.locator(".document-workspace .tb-state")).toHaveText(/Filed in \d+\.\d\d s/);
 
   // The keyboard path: the Add files button opens the picker.
   const chooser = page.waitForEvent("filechooser");
@@ -81,14 +85,14 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
 
   for (const name of ["docx-table.docx", "merged-cells.xlsx", "fire-strategy.md", "site-notes.markdown"]) {
     await open(block(page, name));
-    await expect(block(page, name).locator(".tb-state")).toHaveText(/Filed/);
+    await expect(page.locator(".document-workspace .tb-state")).toHaveText(/Filed/);
     await expect(cell(block(page, name), "number")).toBeVisible();
   }
 
   const blank = block(page, "blank.md");
   await open(blank);
-  await expect(blank.locator(".tb-state")).toHaveText("Stored · not filed");
-  await expect(blank).toContainText("This file contains no readable text");
+  await expect(page.locator(".document-workspace .tb-state")).toHaveText("Stored · not filed");
+  await expect(page.locator(".document-workspace")).toContainText("This file contains no readable text");
   await expect(blank.getByRole("button", { name: "Retry OCR" })).toHaveCount(0);
 
   // Stored but not filed says so in words, not only colour.
@@ -97,29 +101,30 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   await expect(scan.locator(".reg-title")).toContainText("File: scanned-empty.pdf");
   await expect(scan.locator("tr.reg-line")).toContainText("Not filed · no readable text");
   await open(scan);
-  await expect(scan.locator(".tb-state")).toHaveText("Stored · not filed");
-  await expect(scan).toContainText("no selectable text and has not been read with OCR");
+  await expect(page.locator(".document-workspace .tb-state")).toHaveText("Stored · not filed");
+  await expect(page.locator(".document-workspace")).toContainText("no selectable text and has not been read with OCR");
 
   // Jev missed its deadline: the unanswered boxes read "Not checked" and
   // carry no value, so they cannot pass for a judgement.
   const slow = block(page, "slow-padded-document.docx");
   await open(slow);
-  await expect(slow.locator(".tb-state")).toHaveText(/Filed/, { timeout: 15_000 });
-  const grey = slow.locator('.cell[data-state="unchecked"]');
+  await expect(page.locator(".document-workspace .tb-state")).toHaveText(/Filed/, { timeout: 15_000 });
+  const grey = page.locator('.document-workspace .cell[data-state="unchecked"]');
   await expect(grey.first()).toContainText("Not checked");
   await expect(grey.first().locator(".cell-value")).toHaveText("—");
 
   // Every filed box states its band in text.
-  const whys = await pdf.locator(".cell-why").allInnerTexts();
+  await open(pdf);
+  const whys = await page.locator(".document-workspace .cell-why").allInnerTexts();
   expect(whys.length).toBe(8);
   for (const why of whys) {
     expect(why).toMatch(/From document|Confirmed · Jev|Check · Jev|Not set|Not checked|Set by you|No earlier filing/);
   }
 
   // Correct the title in place; focus returns to the box.
-  const title = pdf.locator('button.cell[data-field="title"]');
+  const title = page.locator('.document-workspace button.cell[data-field="title"]');
   await title.click();
-  const input = pdf.getByLabel("Title");
+  const input = page.locator(".document-workspace").getByLabel("Title");
   await expect(input).toBeFocused();
   await input.fill("Ground Floor Plan");
   await input.press("Enter");
@@ -157,7 +162,7 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   await dropFile(page, "identity-page.pdf", fixture("identity-page.pdf"), "application/pdf");
   // The upload row folds into the existing filing rather than adding one.
   await expect(block(page, "identity-page.pdf")).toHaveCount(1);
-  await expect(block(page, "identity-page.pdf").locator(".tb-state")).toHaveText("Already filed in this project");
+  await expect(page.locator(".document-workspace .tb-state")).toHaveText("Already filed in this project");
 
   // Another org cannot open the project or its documents.
   const other = await signIn(browser, "b");
@@ -173,4 +178,118 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
     headers: { Origin: new URL(projectUrl).origin },
   });
   expect(steal.status()).toBe(404);
+});
+
+test("document columns keep their width when details open and the repository resizes", async ({ browser }) => {
+  const page = await signIn(browser, "a");
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.getByLabel("New project").fill("Register column stability");
+  await page.getByRole("button", { name: "Create project", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Register column stability", exact: true })).toBeVisible();
+  await dropFile(page, "layout.md", Buffer.from("# Elevations\nDocument number: A-101\nRevision: A\n"), "text/markdown");
+  const row = block(page, "layout.md");
+  await expect(row.locator(".reg-line")).toBeVisible();
+  const dimensions = () => row.locator(".reg-line > td").evaluateAll(cells => cells.map(cell => ({
+    x: cell.getBoundingClientRect().x - cell.closest("table")!.getBoundingClientRect().x,
+    width: cell.getBoundingClientRect().width,
+  })));
+  // Exercise both responsive breakpoints and the full register, including
+  // resizing while details are already open.
+  for (const width of [480, 380, 900]) {
+    await page.locator(".project-side-panel").evaluate((panel, width) => {
+      (panel as HTMLElement).style.width = `${width}px`;
+      (panel as HTMLElement).style.maxWidth = "none";
+    }, width);
+    if (await row.getAttribute("data-open") === "true") {
+      await page.getByRole("button", { name: "Close document", exact: true }).click();
+    }
+    const closed = await dimensions();
+    await open(row);
+    await expect(page.locator(".reg-detail")).toHaveCount(0);
+    await expect(page.locator(".project-main-panel .document-workspace")).toBeVisible();
+    expect(await dimensions()).toEqual(closed);
+
+  }
+  await page.context().close();
+});
+
+
+
+
+test("centre viewer opens full PDFs and Markdown, with separate filing details and safe access", async ({ browser }) => {
+  const page = await signIn(browser, "a");
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.getByLabel("New project").fill("Document workspace");
+  await page.getByRole("button", { name: "Create project", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Document workspace", exact: true })).toBeVisible();
+  const projectId = new URL(page.url()).pathname.split("/").pop();
+  await dropFile(page, "identity-page.pdf", fixture("identity-page.pdf"), "application/pdf");
+  const row = block(page, "identity-page.pdf");
+  await expect(row.locator(".reg-sel input")).toBeVisible();
+  const docId = (await row.getAttribute("id"))!.slice(4);
+  const file = `/api/documents/${docId}/file`;
+  const response = await page.request.get(`${file}?view=1`);
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-disposition"]).toContain("inline");
+  expect(response.headers()["content-security-policy"]).toContain("frame-ancestors 'self'");
+  expect(await response.body()).toEqual(fixture("identity-page.pdf"));
+  expect((await page.request.get(file)).headers()["content-disposition"]).toContain("attachment");
+  const other = await signIn(browser, "b");
+  expect((await other.request.get(`${file}?view=1`)).status()).toBe(404);
+  expect((await page.request.get('/api/documents/not-a-uuid/file?view=1')).status()).toBe(404);
+  expect((await page.request.get('/api/documents/00000000-0000-4000-8000-000000000000/file?view=1')).status()).toBe(404);
+  await other.context().close();
+
+  await row.locator(".reg-line").click({ modifiers: ["Control"] });
+  await expect(row.locator(".reg-sel input")).toBeChecked();
+  await expect(page.getByRole("region", { name: "Document viewer" })).toHaveCount(0);
+  await row.getByRole("button", { name: /^Open document:/ }).click();
+  const viewer = page.getByRole("region", { name: "Document viewer" });
+  await expect(viewer.locator("iframe")).toHaveAttribute("src", `${file}?view=1#view=FitH`);
+  await expect(viewer.getByRole("region", { name: "Image-assisted filing review" })).toHaveCount(0);
+  await expect(page.locator(".profile-col")).toBeHidden();
+  await expect(row.locator(".reg-sel input")).toBeChecked();
+  await expect.poll(() => page.frames().some(frame => frame.url().startsWith("chrome-extension://"))).toBe(true);
+  const pdfFrame = page.frames().find(frame => frame.url().startsWith("chrome-extension://"))!;
+  await expect(pdfFrame.locator("viewer-toolbar")).toBeVisible();
+  await page.screenshot({ path: "test-results/document-workspace-desktop.png", fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const bounds = await viewer.boundingBox();
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(391);
+  await viewer.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "test-results/document-workspace-mobile.png", fullPage: true });
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await viewer.getByRole("button", { name: "Close document" }).click();
+  await expect(page.locator(".profile-col")).toBeVisible();
+  await expect(row.locator(".reg-line")).toBeFocused();
+
+  await dropFile(page, "notes.md", Buffer.from('# Site notes\n<script>alert("untrusted")</script>\n'), "text/markdown");
+  const notes = block(page, "notes.md");
+  await expect(notes.locator(".reg-sel input")).toBeVisible();
+  await notes.getByRole("button", { name: /^Open document:/ }).click();
+  await expect(viewer.locator(".document-text")).toContainText('<script>alert("untrusted")</script>');
+  await expect(viewer.locator("script")).toHaveCount(0);
+  await expect(viewer.locator("iframe")).toHaveCount(0);
+  await viewer.getByRole("button", { name: "Close document" }).click();
+  await page.route('**/api/documents/*/file', route => route.fulfill({ status: 404, body: 'File unavailable' }));
+  await notes.getByRole("button", { name: /^Open document:/ }).click();
+  await expect(viewer.getByRole("alert")).toContainText("Could not load this document");
+  await page.unroute('**/api/documents/*/file');
+
+  // Existing document-list budget, measured on this local recorded-Jev server.
+  const timings = await page.evaluate(async project => {
+    const times: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      const start = performance.now();
+      const response = await fetch(`/api/projects/${project}/documents`);
+      if (!response.ok) throw new Error('Document list failed');
+      await response.json();
+      times.push(performance.now() - start);
+    }
+    return times.sort((a,b) => a-b);
+  }, projectId);
+  console.log(`project_document_list p50=${timings[9].toFixed(1)}ms p90=${timings[17].toFixed(1)}ms (budget 50/150ms)`);
+  expect(timings[9]).toBeLessThanOrEqual(50);
+  expect(timings[17]).toBeLessThanOrEqual(150);
+  await page.context().close();
 });

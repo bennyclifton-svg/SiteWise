@@ -107,7 +107,7 @@ CALENDAR_STATES = {"NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"}
 WEEKDAYS = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"}
 PROGRAM_KEYS = {
     "skeletons": {"id", "label", "applies_when", "stages", "links", "status", "sources", "notes"},
-    "fragments": {"id", "label", "stage", "systems", "applies_when", "activities", "links", "attach",
+    "fragments": {"id", "label", "scope", "stage", "systems", "applies_when", "activities", "links", "attach",
                   "status", "sources", "notes"},
     "durations": {"id", "version", "basis", "driver", "unit_days", "low", "typical", "high", "k", "b",
                   "cost_base_date", "index_basis", "instrument", "clause", "verified", "primary_source",
@@ -312,6 +312,21 @@ def check_works_predicate(where: str, val, report: Report, refs: list) -> None:
         if action not in ACTIONS:
             report.error(where, f"unknown action in works predicate: {action}")
     refs.extend(("system", where, s) for s in val.get("system") or [])
+
+
+def uses_work_item_fact(pred) -> bool:
+    """True when a predicate names a work item (action, works, or presence)."""
+    if not isinstance(pred, dict):
+        return False
+    for key, val in pred.items():
+        if key in ("work_action", "works", "system_present", "system_existing"):
+            return True
+        if key in ("all", "any") and isinstance(val, list):
+            if any(uses_work_item_fact(sub) for sub in val):
+                return True
+        elif key == "not" and uses_work_item_fact(val):
+            return True
+    return False
 
 
 def check_predicate(where: str, pred, report: Report, refs: list, program: dict | None = None) -> None:
@@ -1691,8 +1706,14 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
             report.error(where, "fragment needs systems")
         else:
             refs.extend(("system", where, s) for s in f["systems"])
+        scope = f.get("scope")
+        if scope is not None and scope != "project":
+            report.error(where, "scope must be project")
         if f.get("applies_when") is not None:
             check_predicate(where, f["applies_when"], report, refs, context)
+        # A project fragment is included once, with no work item.
+        if scope == "project" and uses_work_item_fact(f.get("applies_when")):
+            report.error(where, "a project fragment's applies_when uses conditions and determinants only")
         keys = []
         activities = f.get("activities")
         if not isinstance(activities, list) or not activities:

@@ -6,9 +6,6 @@
 .costs-chip { padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--paper); color: var(--ink-muted); font-size: 12px; }
 .costs-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
 .costs .report-notice, .costs .banner { margin-bottom: 14px; }
-.costs-totals { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0 0 14px; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); }
-.costs-totals dt { color: var(--ink-muted); font-size: 12px; }
-.costs-totals dd { margin: 2px 0 0; font-variant-numeric: tabular-nums; font-weight: 500; }
 .costs-empty { padding: 24px; border: 1px dashed var(--line-strong); color: var(--ink-muted); }
 
 .cost-grid-scroll { max-width: 100%; max-height: calc(100vh - 250px); overflow: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
@@ -32,7 +29,7 @@
 .cost-group th { padding-top: 12px; background: var(--ground); color: var(--ink); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; text-align: left; }
 .cost-row { cursor: pointer; }
 .cost-row:hover td { background: var(--ground); }
-.cost-row[aria-selected="true"] td { background: var(--azure-soft); }
+.cost-row[aria-selected="true"] td { background: var(--table-selection-bg); }
 .cost-parent td { font-weight: 600; }
 .cost-excluded td { color: var(--ink-muted); }
 .cost-tag { margin-left: 6px; padding: 0 6px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 11px; font-weight: 400; }
@@ -76,7 +73,7 @@
 
 
 .cost-grid .cost-actions { min-width: 48px; text-align: center; }
-.cost-delete { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink-muted); background: transparent; cursor: pointer; }
+.cost-delete { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink-muted); background: transparent; cursor: pointer; }
 .cost-delete:hover { color: var(--alert); border-color: var(--line-strong); background: var(--alert-soft); }
 .cost-delete:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
 
@@ -86,7 +83,7 @@
 
 .cost-row { height: 30px; }
 .cost-grid input, .cost-grid select { max-width: 100%; }
-.cost-grid .cost-actions { min-width: 32px; }
+.cost-grid .cost-actions { min-width: 72px; }
 @media (pointer: coarse) { .cost-delete { width: 36px; height: 36px; } .cost-cell, .cost-open { min-height: 28px; } }
 
 .cost-add td > input, .cost-add td > select { display: block; width: 100%; }
@@ -97,3 +94,17 @@
 .cost-budget-note span { display: block; max-width: 88ch; }
 /* A share of the construction budget is a suggestion until the PM edits it. */
 .cost-cell.cost-spread { color: var(--ink-body); font-style: italic; text-decoration: underline dotted var(--azure); text-underline-offset: 3px; }
+
+.cost-grid [data-col="code"] { padding-left: 15px; }
+.cost-row[data-drop="before"] td { border-top: 2px solid var(--ember); }
+.cost-row[data-drop="after"] td { border-bottom: 2px solid var(--ember); }
+.cost-more { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink-muted); background: transparent; cursor: pointer; vertical-align: middle; }
+.cost-more:hover { color: var(--ink); background: var(--ground); border-color: var(--line-strong); }
+.cost-row-menu { position: fixed; margin: 0; padding: 4px; width: 210px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); box-shadow: var(--shadow-sm); }
+.cost-row-menu button { display: block; width: 100%; padding: 8px 10px; text-align: left; font: inherit; border: 0; border-radius: 4px; background: transparent; color: inherit; cursor: pointer; }
+.cost-row-menu button:hover { background: var(--ground); }
+.cost-row-menu button:disabled { opacity: .5; cursor: default; }
+.cost-value-editor { min-width: 170px; white-space: normal; }
+.cost-value-editor fieldset { display: grid; gap: 4px; padding: 0; border: 0; }
+.cost-value-editor input { width: 100%; min-width: 0; }
+@media (pointer: coarse) { .cost-more { width: 36px; height: 36px; } }

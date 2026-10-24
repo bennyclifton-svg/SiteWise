@@ -37,6 +37,11 @@ func TestHarvestProjectDetailCandidates(t *testing.T) {
 		{"Lot 7 Section 3 DP1234 Smith Street", "site.lot", []string{"Lot 7 Section 3 DP1234"}, nil},
 		{"The site is zoned B4 Mixed Use under the Inner West LEP 2022.", "proj.zone", []string{"B4 Mixed Use"}, nil},
 		{"The building must achieve a 5 Star Green Star Design & As Built rating.", "proj.sustainability", []string{"5 Star Green Star Design & As Built rating"}, nil},
+		// Markdown uploads (Meridian fitout, 2026-10-24): a decimal is not a
+		// sentence end, and bold labels still cue the client.
+		{"tenant to maintain base building NABERS Energy rating ≥ 4.5 stars; tenant fit-out", "proj.sustainability", []string{"NABERS Energy rating ≥ 4.5 stars"}, []string{"NABERS Energy rating ≥ 4"}},
+		{"| NABERS | Tenant fit-out must use landlord-approved efficiency measures |", "proj.sustainability", []string{"NABERS"}, []string{"NABERS | Tenant fit-out must use landlord-approved efficiency"}},
+		{"**Client:** Form & Function Studio Pty Ltd for Meridian Legal Group Pty Ltd\n**Date:** 18 February 2026", "proj.client", []string{"Form & Function Studio Pty Ltd", "Meridian Legal Group Pty Ltd"}, nil},
 	}
 	for _, tc := range cases {
 		h := profile.Harvest(tc.text, cat)

@@ -39,9 +39,16 @@ func TestSignalsProbabilityConflictAndProvenance(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// A signal says what one passage shows: a passage that does not state it
+	// never cancels one that does (knowledge/SCHEMA.md, Signals).
 	got := inputs.Parts[whole].Signals[key]
-	if got.State != "unknown" || len(row(t, rows, whole, key).Sources) != 2 {
-		t.Fatalf("conflict %+v", got)
+	if got.State != "true" || len(row(t, rows, whole, key).Sources) != 2 {
+		t.Fatalf("stated in one passage %+v", got)
+	}
+	// Stated below the floor elsewhere: unknown, never false.
+	in = input(jevFact(key, "true", "one", .62), jevFact(key, "false", "two", .97))
+	if r := row(t, profile.Build(in, cat), whole, key); r.Value != "" {
+		t.Fatalf("unresolved statement became %q", r.Value)
 	}
 	missing, err := profile.ProposalInputs(nil, in.Parts, nil, cat)
 	if err != nil {

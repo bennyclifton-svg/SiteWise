@@ -334,6 +334,9 @@ func (s *Store) finishPackagesWrite(ctx context.Context, tx pgx.Tx, org, project
 // packagesChanged bumps the packages revision and tells Packages listeners,
 // without committing, so a write that also touches reports can share it.
 func (s *Store) packagesChanged(ctx context.Context, tx pgx.Tx, org, project string) error {
+	if err := matchUnassignedSubmissions(ctx, tx, org, project, ""); err != nil {
+		return err
+	}
 	if err := BumpRevision(ctx, tx, org, project, "packages"); err != nil {
 		return err
 	}

@@ -374,17 +374,26 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 	shape := shapeOf(key)
 	byValue := map[string][]Fact{}
 	var order []string
+	// A signal says what one passage shows. "false" is that passage's silence,
+	// so any passage reading "true", even below its floor, leaves no "false".
+	stated := false
+	for _, f := range facts {
+		stated = stated || (shape == "signal" && f.Value == "true")
+	}
 	for _, f := range facts {
 		if len(r.Sources) < maxSources {
 			r.Sources = append(r.Sources, source(f))
 		}
-		if !applied(f, shape, th) {
+		if !applied(f, shape, th) || (stated && f.Value == "false") {
 			continue
 		}
 		if _, seen := byValue[f.Value]; !seen {
 			order = append(order, f.Value)
 		}
 		byValue[f.Value] = append(byValue[f.Value], f)
+	}
+	if shape == "detail" {
+		order = mergeExtendedText(order, byValue)
 	}
 	if len(order) == 0 {
 		if shape == "action" && len(r.Sources) > 0 {
@@ -446,6 +455,50 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 		}
 	}
 	return r
+}
+
+// mergeExtendedText treats free-text values as one answer when, ignoring case
+// and punctuation, one is the other with words added at the end ("88 Westgate
+// Street, Parramatta" and the same with "NSW 2150"). The longest wording is
+// kept. Anything else stays a separate value, so real disagreement is red.
+func mergeExtendedText(order []string, byValue map[string][]Fact) []string {
+	sort.SliceStable(order, func(i, j int) bool { return len(order[i]) > len(order[j]) })
+	var kept []string
+	for _, v := range order {
+		into := ""
+		for _, k := range kept {
+			if wordPrefix(textWords(k), textWords(v)) {
+				into = k
+				break
+			}
+		}
+		if into == "" {
+			kept = append(kept, v)
+			continue
+		}
+		byValue[into] = append(byValue[into], byValue[v]...)
+		delete(byValue, v)
+	}
+	return kept
+}
+
+func textWords(s string) []string {
+	return strings.FieldsFunc(strings.ToLower(s), func(r rune) bool {
+		return !(r >= 'a' && r <= 'z' || r >= '0' && r <= '9' || r > 127)
+	})
+}
+
+// wordPrefix reports whether short is long's first words.
+func wordPrefix(long, short []string) bool {
+	if len(short) == 0 || len(short) > len(long) {
+		return false
+	}
+	for i := range short {
+		if long[i] != short[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func isGreen(facts []Fact, shape string, th Thresholds) bool {

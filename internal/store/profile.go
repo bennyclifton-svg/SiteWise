@@ -916,6 +916,17 @@ func (s *Store) RequestProfileRead(ctx context.Context, orgID, projectID string,
 	}
 	// A finished reading made before a family of profile questions existed is
 	// read again; passages whose questions did not change come from the cache.
+	// Requeue completed evidence before changing the label status. EnqueueStage
+	// intentionally leaves finished jobs alone, so otherwise the new header
+	// would be combined with scope readings from the old question version.
+	if _, err := tx.Exec(ctx, `UPDATE jobs e SET status='queued',attempts=0,last_error='',run_after=now(),created_at=now()
+FROM documents d, jobs l
+WHERE e.org_id=$1::uuid AND d.org_id=e.org_id AND d.id=e.document_id AND d.project_id=$2::uuid
+ AND l.org_id=e.org_id AND l.document_id=e.document_id AND l.kind='label'
+ AND l.status='done' AND l.read_revision<>$4 AND e.kind='evidence' AND e.status IN ('done','failed')
+ AND `+readableSQL("$3"), orgID, projectID, kinds, profile.ReadRevision); err != nil {
+		return 0, err
+	}
 	behind, err := tx.Exec(ctx, `UPDATE jobs j SET status='queued',attempts=0,last_error='',run_after=now(),created_at=now()
 FROM documents d WHERE j.org_id=$1::uuid AND d.org_id=j.org_id AND d.id=j.document_id AND d.project_id=$2::uuid
  AND j.kind='label' AND j.status='done' AND j.read_revision<>$4 AND `+readableSQL("$3"), orgID, projectID, kinds, profile.ReadRevision)

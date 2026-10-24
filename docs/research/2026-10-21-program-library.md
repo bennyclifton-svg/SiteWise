@@ -2,7 +2,7 @@
 
 ### Overview
 
-This note is the basis for every draft row in `knowledge/program/`. Code builds a program from the project's facts and these rows. Nothing here is applied until the owner marks it reviewed. The figures are planning estimates for NSW metropolitan work, from ordinary Australian practice, except the four statutory clocks, which stay `verified: false`.
+This note is the basis for every row in `knowledge/program/`. Code builds a program from the project's facts and these rows. The owner accepted the duration rows on 24 October 2026, so generation uses them. Fragments and skeletons remain draft and are still included. The figures are planning estimates for NSW metropolitan work, from ordinary Australian practice, except the four statutory clocks, which stay `verified: false`.
 
 Nine skeletons sit after the unchanged `sk.generic`. A project takes the matching skeleton with the most conditions. An unknown fact never matches. The generic skeleton remains the fallback, and its stage order still puts construction documentation before approvals. The new skeletons put the consent or certifier gate in the place the procurement route actually uses.
 
@@ -1386,13 +1386,15 @@ Each duration it names is a draft planning estimate. The fragment stays draft un
 
 ## Durations
 
+The owner accepted these duration rows on 24 October 2026. Each row in `durations.yaml` is `status: reviewed`. The four statutory clocks stay `verified: false`.
+
 
 ### du.concrete-cure
 
 Cure a concrete slab or footing before the next trade loads it.
 Low 7, typical 7, high 14. A fixed range in calendar days, so weekends count.
 Seven calendar days is the ordinary minimum before a following trade loads a house or podium slab. The high end allows cool weather or a slower mix. It is not a cylinder-test result.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.closein-1a
@@ -1400,7 +1402,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag between rough-in and fit-off on a Class 1a house.
 Low 8, typical 12, high 20. A fixed range in working days. It does not grow with floor area.
 Stands in for linings and wet-area waterproofing, which are their own fragments. It is an allowance, not a link to those activities.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.closein-2
@@ -1408,7 +1410,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag between rough-in and fit-off on a Class 2 apartment building.
 Low 15, typical 30, high 50. A fixed range in working days. It does not grow with floor area.
 Allows the floors to be lined and wet areas waterproofed before fit-off. A tall building should use the high end. It is not a link to the lining fragment.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.closein-fitout
@@ -1416,7 +1418,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag between rough-in and fit-off on a commercial fit-out.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 Sized for one floor or a modest tenancy. A multi-floor fit-out in occupation should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.closein-9b
@@ -1424,7 +1426,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag between rough-in and fit-off on a low-rise school.
 Low 10, typical 20, high 35. A fixed range in working days. It does not grow with floor area.
 Allows partitions and ceilings to close in before fixtures are fitted. Sized for one building, not a campus of separate blocks.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.closein-7b
@@ -1432,7 +1434,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag between rough-in and fit-off in a warehouse.
 Low 5, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 Warehouse services are a small amenities and lighting package, so the close-in gap is short.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.closein-reno
@@ -1440,7 +1442,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag between rough-in and fit-off on a house renovation.
 Low 5, typical 8, high 12. A fixed range in working days. It does not grow with floor area.
 Sized for a substantial house renovation, not a single-room repair.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.dc-site-overlap
@@ -1448,7 +1450,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag from the start of design-and-construct documentation to the start of construction.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 Used as a start-to-start lag so early site work can begin while the builder finishes documents. Ten to twenty-five working days is an ordinary early-works overlap, not a measured study.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.eci-overlap
@@ -1456,7 +1458,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lag from early-contractor appointment to the continuation of approval documentation.
 Low 10, typical 15, high 20. A fixed range in working days. It does not grow with floor area.
 Used as a start-to-start lag. The documentation stage starts a short time after the contractor is engaged, rather than after procurement finishes.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.da-assessment-period
@@ -1496,7 +1498,7 @@ Marked verified false. This is the legislated clock as read from a public consol
 Program allowance for development-application assessment in metropolitan NSW.
 Low 40, typical 90, high 180. A fixed range in calendar days, so weekends count.
 The low end is the ordinary 40-day deemed-refusal clock. Typical and high are planning allowances for requests for information and a metropolitan council or planning panel. They are not legislated.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ssd-program-allowance
@@ -1504,7 +1506,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Program allowance for State significant assessment after exhibition.
 Low 90, typical 180, high 365. A fixed range in calendar days, so weekends count.
 The low end matches the 90-day deemed-refusal period for SSD. Typical and high allow agency comments, a response to submissions and a long determination. They are estimates.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.defects-liability
@@ -1512,7 +1514,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Defects liability period after practical completion.
 Low 90, typical 365, high 730. A fixed range in calendar days, so weekends count.
 Ninety calendar days is about a 13-week residential defects period. One year is the ordinary commercial defects liability period. Two years is used on some larger contracts. This is not the Home Building Act statutory warranty, which is a separate obligation.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.temporary-power
@@ -1520,7 +1522,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Connect a temporary builders supply.
 Low 1, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 A site board on an urban lot. A new substation is the utility-supply fragment, not this one.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.erosion-control
@@ -1528,7 +1530,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install erosion and sediment controls.
 Low 1, typical 2, high 5. A fixed range in working days. It does not grow with floor area.
 A house lot is the low end. A large disturbed site is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tree-protection
@@ -1536,7 +1538,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install tree protection.
 Low 1, typical 2, high 5. A fixed range in working days. It does not grow with floor area.
 A few trees on a house lot is the low end. A row of street trees or a large site is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.occupied-protection
@@ -1544,7 +1546,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hoardings and protection in an occupied building.
 Low 2, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A single-tenancy fit-out is the typical end. A building that stays partly occupied across several floors is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.demolition-1a
@@ -1552,7 +1554,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Demolish a house or outbuilding.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single dwelling and garage. A heavily built or asbestos-affected house is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.strip-out-1a
@@ -1560,7 +1562,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Strip out a house renovation.
 Low 3, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 A bathroom and kitchen renewal is the low end. A whole-house strip is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.earthworks-1a
@@ -1568,7 +1570,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House site cut and fill.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A near-level suburban lot. A steep site or substantial retaining is the high end and may still be short.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.underpinning-1a
@@ -1576,7 +1578,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Underpin an existing house.
 Low 5, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A short length of wall is the low end. A whole party wall or poor ground is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.footings-excavate-1a
@@ -1584,7 +1586,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Excavate and inspect house footings.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 Includes a short allowance for the certifier's inspection.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.footings-pour-1a
@@ -1592,7 +1594,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Pour house footings.
 Low 1, typical 2, high 4. A fixed range in working days. It does not grow with floor area.
 A single house. Piers on reactive clay can use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.termite-1a
@@ -1600,7 +1602,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a house termite barrier.
 Low 1, typical 1, high 2. A fixed range in working days. It does not grow with floor area.
 One system to the perimeter and penetrations. A complex plan is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.damp-1a
@@ -1608,7 +1610,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a house damp-proof membrane.
 Low 1, typical 1, high 2. A fixed range in working days. It does not grow with floor area.
 A single slab. A stepped slab is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.stormwater-1a
@@ -1616,7 +1618,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House stormwater and on-site detention.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 A charged or gravity connection without a large tank is typical. A detention tank is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.flood-1a
@@ -1624,7 +1626,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Flood protection to a house.
 Low 3, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 Raised levels already in the earthworks are not counted again. A barrier or a flood gate is the typical case.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.slab-setout-1a
@@ -1632,7 +1634,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Set out and prepare a house slab.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 Includes boxing and a thin bedding layer. A stepped slab is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.under-slab-services-1a
@@ -1640,7 +1642,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Under-slab sanitary drainage for a house.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 A single dwelling. A secondary dwelling on the same slab is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.slab-pour-1a
@@ -1648,7 +1650,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Reinforce and pour a Class 1a slab on ground.
 Low 0.02, typical 0.03, high 0.05. Working days per square metre of gross floor area. At 250 m² the typical rate is about 8 days before rounding up.
 At about 200 to 300 m² this is several working days for the pour itself. It excludes curing and wet weather.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.frame-walls-1a
@@ -1656,7 +1658,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Stand timber wall frames to a house.
 Low 0.02, typical 0.03, high 0.05. Working days per square metre of gross floor area. At 250 m² the typical rate is about 8 days before rounding up.
 Prefabricated frames. Site-cut framing should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.frame-roof-1a
@@ -1664,7 +1666,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install roof trusses and bracing to a house.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 A simple hip or gable. A complex roof is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.masonry-1a
@@ -1672,7 +1674,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lay brick veneer to a Class 1a house.
 Low 0.03, typical 0.05, high 0.08. Working days per square metre of gross floor area. At 250 m² the typical rate is about 12 days before rounding up.
 Face brick to a single dwelling. Feature courses and a two-storey skin use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.roof-sark-1a
@@ -1680,7 +1682,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sark a house roof.
 Low 1, typical 2, high 3. A fixed range in working days. It does not grow with floor area.
 A single roof. A very cut-up roof is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.roof-cover-1a
@@ -1688,7 +1690,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a house roof cover.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 Concrete tile or metal sheet to a single dwelling. Slate or a complex roof is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.external-walls-1a
@@ -1696,7 +1698,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Wrap and clad a house.
 Low 0.02, typical 0.03, high 0.05. Working days per square metre of gross floor area. At 250 m² the typical rate is about 8 days before rounding up.
 Lightweight cladding. A brick skin is fr.masonry-1a and is not in this rate.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.insulation-1a
@@ -1704,7 +1706,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Insulate a Class 1a house.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Batts to walls and ceilings. A high-performance build is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.windows-lead-1a
@@ -1712,7 +1714,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Remaining delivery of house windows after the frame.
 Low 10, typical 15, high 25. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 Standard residential aluminium. Imported or custom timber joinery is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.windows-install-1a
@@ -1720,7 +1722,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install house windows and external doors.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 A single dwelling. A highly glazed house is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.bushfire-1a
@@ -1728,7 +1730,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Bushfire construction measures to a house.
 Low 3, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 Screens, a rated door and sarking upgrades for a lower BAL. Flame-zone construction is the high end and may still be short.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.roof-drainage-1a
@@ -1736,7 +1738,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House gutters and downpipes.
 Low 1, typical 2, high 4. A fixed range in working days. It does not grow with floor area.
 A simple hip roof. Box gutters are the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.partitions-1a
@@ -1744,7 +1746,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Frame internal partitions in a house.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Prefabricated or simple site framing.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sheet-1a
@@ -1752,7 +1754,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sheet and set plasterboard in a house.
 Low 0.03, typical 0.04, high 0.06. Working days per square metre of gross floor area. At 250 m² the typical rate is about 10 days before rounding up.
 Walls and the set. Ceilings are the ceilings fragment.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ceilings-1a
@@ -1760,7 +1762,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install house ceilings.
 Low 0.02, typical 0.03, high 0.04. Working days per square metre of gross floor area. At 250 m² the typical rate is about 8 days before rounding up.
 Plasterboard ceilings. A raked ceiling is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.wet-area-1a
@@ -1768,7 +1770,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Waterproof house wet areas.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 Two bathrooms and a laundry. Extra bathrooms are the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.internal-doors-1a
@@ -1776,7 +1778,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hang internal doors in a house.
 Low 1, typical 2, high 4. A fixed range in working days. It does not grow with floor area.
 A typical three or four bedroom house.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-rough-1a
@@ -1784,7 +1786,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Above-slab sanitary rough-in for a house.
 Low 3, typical 5, high 8. A fixed range in working days. It does not grow with floor area.
 One kitchen, two bathrooms and a laundry.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-fit-1a
@@ -1792,7 +1794,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary fit-off for a house.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 Fixtures after the rooms are lined and waterproofed.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.cold-rough-1a
@@ -1800,7 +1802,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Cold-water rough-in for a house.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 A single dwelling on mains pressure.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.cold-fit-1a
@@ -1808,7 +1810,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Cold-water fit-off for a house.
 Low 1, typical 2, high 3. A fixed range in working days. It does not grow with floor area.
 Taps and the connection to fixtures.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hot-rough-1a
@@ -1816,7 +1818,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hot-water rough-in for a house.
 Low 1, typical 2, high 4. A fixed range in working days. It does not grow with floor area.
 Pipework to one plant position.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hot-fit-1a
@@ -1824,7 +1826,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install the house hot-water unit.
 Low 1, typical 1, high 2. A fixed range in working days. It does not grow with floor area.
 A storage or instantaneous unit. A heat pump is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.gas-1a
@@ -1832,7 +1834,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House consumer gas piping.
 Low 1, typical 2, high 4. A fixed range in working days. It does not grow with floor area.
 A cooktop and a heater. No gas on the project means this work item is absent and the fragment does not appear.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-rough-1a
@@ -1840,7 +1842,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical rough-in for a house.
 Low 0.02, typical 0.03, high 0.05. Working days per square metre of gross floor area. At 250 m² the typical rate is about 8 days before rounding up.
 A single dwelling. A home with extensive extra circuits is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-fit-1a
@@ -1848,7 +1850,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical fit-off for a house.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Power points and the switchboard dead-test are included. Luminaires are the lighting fragment.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lighting-1a
@@ -1856,7 +1858,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install house luminaires.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A builder's standard fitting package. A decorative package is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.switchboard-1a
@@ -1864,7 +1866,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a house switchboard.
 Low 1, typical 2, high 4. A fixed range in working days. It does not grow with floor area.
 A single residential board. A large home with extra distribution is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.smoke-alarms-1a
@@ -1872,7 +1874,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install house smoke alarms.
 Low 1, typical 1, high 2. A fixed range in working days. It does not grow with floor area.
 A complying interconnected set to a single dwelling.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ac-1a
@@ -1880,7 +1882,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install house air-conditioning.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 A few split systems is typical. A ducted whole-house system is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tiling-1a
@@ -1888,7 +1890,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tile house wet areas.
 Low 3, typical 6, high 12. A fixed range in working days. It does not grow with floor area.
 Two bathrooms, a laundry and a splashback. Large-format or extra bathrooms are the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-lead-1a
@@ -1896,7 +1898,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House joinery manufacture after linings.
 Low 10, typical 15, high 25. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A standard kitchen and vanities. A highly custom kitchen is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-install-1a
@@ -1904,7 +1906,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install house joinery.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One kitchen, vanities and robes.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.painting-1a
@@ -1912,7 +1914,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Paint a Class 1a house.
 Low 0.03, typical 0.05, high 0.08. Working days per square metre of gross floor area. At 250 m² the typical rate is about 12 days before rounding up.
 Three coats to a new house. A repaint of sound surfaces is shorter and is the renovation row.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.floors-1a
@@ -1920,7 +1922,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lay floor finishes in a house.
 Low 0.01, typical 0.02, high 0.04. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 A mix of hard flooring and carpet. Parquetry or a full sand and finish is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.landscape-1a
@@ -1928,7 +1930,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House landscaping.
 Low 3, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 A suburban front and rear yard. A pool surround is site.pools and is not in this row.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.linings-1a-reno
@@ -1936,7 +1938,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Reline a house renovation.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A few rooms is typical. A whole-house reline is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.wet-area-1a-reno
@@ -1944,7 +1946,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Waterproof renovated house bathrooms.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 One or two bathrooms.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hydraulic-rough-reno
@@ -1952,7 +1954,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary alterations rough-in for a house renovation.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One kitchen and one or two bathrooms.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hydraulic-fit-reno
@@ -1960,7 +1962,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary fit-off for a house renovation.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 New fixtures to the altered rooms.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.water-1a-reno
@@ -1968,7 +1970,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Alter cold water in a house renovation.
 Low 2, typical 3, high 6. A fixed range in working days. It does not grow with floor area.
 Re-pipe the altered rooms, not a whole-house replumb, unless the high end is used.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-rough-reno
@@ -1976,7 +1978,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical rough-in for a house renovation.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 The altered rooms, plus a short allowance for making safe.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-fit-reno
@@ -1984,7 +1986,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical fit-off for a house renovation.
 Low 2, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 New outlets in the altered rooms.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-1a-reno
@@ -1992,7 +1994,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Replacement kitchen or vanity in a house renovation.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 Includes a short shop lead. A full custom kitchen is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.painting-1a-reno
@@ -2000,7 +2002,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Paint a house renovation.
 Low 4, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 The altered rooms. A whole-house repaint is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.floors-1a-reno
@@ -2008,7 +2010,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Floor finishes in a house renovation.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 The altered rooms. A whole-house sand and finish is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.demolition-2
@@ -2016,7 +2018,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Demolition before a Class 2 building.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 A low-rise existing building on an urban site. A multi-storey knockdown is the high end and may still be short.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.earthworks-2
@@ -2024,7 +2026,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Bulk earthworks for an apartment site.
 Low 5, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A typical urban pad. Basement dig is not included.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.underpinning-2
@@ -2032,7 +2034,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Underpin adjoining structures for an apartment site.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 One adjoining wall is typical. Several boundaries are the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.piles-platform-2
@@ -2040,7 +2042,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Establish a piling platform.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 An urban site with access already in place is the low end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.piles-install-2
@@ -2048,7 +2050,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install piles for a Class 2 building.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 A mid-rise footprint. A deep basement or a large footprint is the high end. Not scaled, because pile count is not a profile fact.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.basement-shoring-2
@@ -2056,7 +2058,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install basement retention.
 Low 15, typical 25, high 45. A fixed range in working days. It does not grow with floor area.
 Bored piers or sheet piles to one or two levels.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.basement-excavate-2
@@ -2064,7 +2066,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Excavate an apartment basement.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 One to two levels on an urban site.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.basement-anchors-2
@@ -2072,7 +2074,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install basement anchors or props.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 Temporary anchors. A propped system that stays longer is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.basement-slab-2
@@ -2080,7 +2082,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Pour an apartment basement slab.
 Low 8, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 The lowest slab, including a short allowance for the waterproofing under it.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.footings-2
@@ -2088,7 +2090,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment footings outside the basement slab.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A low-rise walk-up without a basement is the typical case.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.slab-2
@@ -2096,7 +2098,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment ground or podium slab on ground.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A walk-up or a podium. The tower floors are the concrete floor cycle.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lift-pits-2
@@ -2104,7 +2106,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Form apartment lift pits.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 One or two pits.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lift-shafts-2
@@ -2112,7 +2114,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Build apartment lift shafts as the floors rise.
 Low 1, typical 2, high 3. Working days per storey, multiplied by rise in storeys. At 8 storeys the typical cycle is about 16 days before rounding up.
 A day or two per storey beside the floor cycle, not a second full structure.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.floor-cycle-2
@@ -2120,7 +2122,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment floor cycle.
 Low 6, typical 9, high 12. Working days per storey, multiplied by rise in storeys. At 8 storeys the typical cycle is about 72 days before rounding up.
 An ordinary post-tensioned or conventional floor. A transfer slab or a slow jump-form should use the high end. Basement levels are not in this cycle.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.structure-roof-2
@@ -2128,7 +2130,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment roof slab and plant plinths.
 Low 8, typical 12, high 20. A fixed range in working days. It does not grow with floor area.
 The last level and the plant bases, once, not per storey.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.precast-lead-2
@@ -2136,7 +2138,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Precast manufacture for an apartment building.
 Low 20, typical 40, high 70. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A mid-rise panel package. A fully panelised facade is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.precast-install-2
@@ -2144,7 +2146,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Erect precast as the floors are ready.
 Low 1, typical 2, high 3. Working days per storey, multiplied by rise in storeys. At 8 storeys the typical cycle is about 16 days before rounding up.
 About one to three days per storey of erection, not the shop time.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.stairs-2
@@ -2152,7 +2154,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Form apartment stairs per storey.
 Low 1, typical 2, high 4. Working days per storey, multiplied by rise in storeys. At 8 storeys the typical cycle is about 16 days before rounding up.
 Concrete fire stairs beside the floor cycle. A feature stair is extra and should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.roof-2
@@ -2160,7 +2162,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment roof membrane.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One roof. A landscaped roof or a complex plant deck is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.facade-2
@@ -2168,7 +2170,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a Class 2 facade.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Precast, masonry or a window wall. A full curtain wall is the curtain-wall fragment and is not this rate.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.windows-lead-2
@@ -2176,7 +2178,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment window delivery after the structure.
 Low 15, typical 25, high 40. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A mid-rise residential window package.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.windows-install-2
@@ -2184,7 +2186,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install apartment windows.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Installation only, after delivery.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.balcony-waterproof-2
@@ -2192,7 +2194,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Waterproof apartment balconies and the podium.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Uses floor area as a proxy. A building with deep planters is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.insulation-2
@@ -2200,7 +2202,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Insulate a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Typical apartment insulation. A high-performance facade is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.roof-drainage-2
@@ -2208,7 +2210,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment roof drainage.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One roof and the podium outlets.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.linings-2
@@ -2216,7 +2218,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Line a Class 2 building.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Party walls and partitions to a mid-rise building. The rate is days per square metre of floor, not of wall.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ceilings-2
@@ -2224,7 +2226,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install apartment ceilings.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Plasterboard ceilings. A heavy feature-ceiling package is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.wet-area-2
@@ -2232,7 +2234,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Waterproof apartment wet areas.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Uses whole-building floor area as a proxy for the wet rooms. A building with large ensuites should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.internal-doors-2
@@ -2240,7 +2242,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hang doors in a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A typical unit mix. Solid-core fire doors throughout are the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-rough-2
@@ -2248,7 +2250,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary rough-in for a Class 2 building.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Stacks and in-apartment pipework.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-fit-2
@@ -2256,7 +2258,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary fit-off for a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Fixtures after wet areas are waterproofed.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-commission-2
@@ -2264,7 +2266,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Commission apartment sanitary systems.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 Stack testing and a fixture sample. Not the occupation certificate.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.cold-rough-2
@@ -2272,7 +2274,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Cold-water rough-in for a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Risers and branch pipework.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.cold-fit-2
@@ -2280,7 +2282,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Cold-water fit-off for a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Meters and fixture connections.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hot-plant-lead-2
@@ -2288,7 +2290,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hot-water plant delivery for an apartment building.
 Low 15, typical 25, high 40. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A central plant or a set of heat pumps. Individual units are the low end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hot-fit-2
@@ -2296,7 +2298,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hot-water reticulation and fit-off in apartments.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Risers and connections after the plant arrives.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-rough-2
@@ -2304,7 +2306,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical rough-in for a Class 2 building.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Risers, apartments and common areas.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-fit-2
@@ -2312,7 +2314,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical fit-off for a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Accessories after linings. Luminaires are the lighting fragment.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lighting-2
@@ -2320,7 +2322,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install apartment and common luminaires.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard residential package.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sprinklers-rough-2
@@ -2328,7 +2330,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sprinkler rough-in for a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Mains and range pipes.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sprinklers-fit-2
@@ -2336,7 +2338,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sprinkler heads and commissioning for a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Heads after ceilings, plus a short commission. The second rate includes that commission rather than a third activity.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hydrants-2
@@ -2344,7 +2346,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment hydrant system.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One riser and a booster. A large site with several risers is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.detection-2
@@ -2352,7 +2354,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Detection and warning in a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard addressable system.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.smoke-alarms-2
@@ -2360,7 +2362,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install smoke alarms in apartments.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 A walk-up is the low end. A large unit count is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ac-plant-lead-2
@@ -2368,7 +2370,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment air-conditioning plant delivery from construction start.
 Low 40, typical 80, high 140. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 Measured from stage start. A few condensers are the low end. Central plant for a taller building is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ac-install-2
@@ -2376,7 +2378,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install apartment air-conditioning.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Fan coil or split units and ductwork.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ac-commission-2
@@ -2384,7 +2386,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Commission apartment air-conditioning.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 A sample of apartments plus the plant. Not the occupation certificate.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.carpark-vent-2
@@ -2392,7 +2394,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment carpark ventilation.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One basement. A multi-level carpark is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.comms-2
@@ -2400,7 +2402,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Communications cabling in a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard residential backbone and outlets.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tiling-2
@@ -2408,7 +2410,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tile apartment wet areas.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 Uses floor area as a proxy for the wet rooms.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-lead-2
@@ -2416,7 +2418,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment joinery manufacture.
 Low 15, typical 25, high 40. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A repeated unit package. A high level of variation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-install-2
@@ -2424,7 +2426,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install apartment joinery.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Kitchens and vanities after delivery.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.painting-2
@@ -2432,7 +2434,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Paint a Class 2 building.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 A standard scheme. A high-specification finish is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.floors-2
@@ -2440,7 +2442,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lay floor finishes in a Class 2 building.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Carpet and hard flooring to a typical unit mix.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.landscape-2
@@ -2448,7 +2450,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment landscaping.
 Low 5, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A ground plane and a modest podium. A large deep-soil garden is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.stormwater-2
@@ -2456,7 +2458,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apartment stormwater detention.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single tank or basin. A water-sensitive system across the site is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.flood-2
@@ -2464,7 +2466,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Flood protection for an apartment site.
 Low 5, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 Local barriers and a pump-out. A site-wide flood strategy is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.demolition-7b
@@ -2472,7 +2474,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Clear a warehouse site.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 Hardstand and a small existing shed. A large existing warehouse is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.earthworks-7b
@@ -2480,7 +2482,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Prepare a warehouse pad.
 Low 5, typical 10, high 25. A fixed range in working days. It does not grow with floor area.
 A level industrial lot. Poor ground or a large cut is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.footings-7b
@@ -2488,7 +2490,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse pad footings.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single portal building. A multi-bay building is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.steel-lead-7b
@@ -2496,7 +2498,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fabricate a warehouse portal frame.
 Low 20, typical 40, high 70. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 Shop time after the pads, which is conservative if the mill order was placed at tender.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.steel-erect-7b
@@ -2504,7 +2506,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Erect a warehouse portal frame.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 Sized for about 2,000 to 8,000 square metres. A larger building should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.roof-7b
@@ -2512,7 +2514,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a warehouse metal roof.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single span building of a few thousand square metres.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.cladding-7b
@@ -2520,7 +2522,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install warehouse wall cladding.
 Low 8, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A single building. A high-bay or a heavily perforated office annex is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.slab-prepare-7b
@@ -2528,7 +2530,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Prepare a warehouse slab subgrade.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 Under cover, after the frame and roof.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.slab-pour-7b
@@ -2536,7 +2538,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Pour a warehouse slab.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A few thousand square metres. A high-tolerance floor is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.vehicle-doors-lead-7b
@@ -2544,7 +2546,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Manufacture warehouse vehicle doors.
 Low 10, typical 20, high 40. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A few roller doors. A large dock package is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.vehicle-doors-install-7b
@@ -2552,7 +2554,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install warehouse vehicle doors.
 Low 2, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 Installation after the openings are framed.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-7b
@@ -2560,7 +2562,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse amenities plumbing.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One amenities block. A large office annex is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-7b
@@ -2568,7 +2570,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse power cabling.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single warehouse and a small office. A process fit-out is the high end and is often a separate scope.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lighting-7b
@@ -2576,7 +2578,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install warehouse lighting.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A single building. A high-lux picking warehouse is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sprinklers-7b
@@ -2584,7 +2586,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse sprinkler installation.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 A standard hazard roof system is the low end. ESFR or in-rack is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hydrants-7b
@@ -2592,7 +2594,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse hydrants.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A single building. A large yard main is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.stormwater-7b
@@ -2600,7 +2602,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse stormwater detention.
 Low 3, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 A single basin or tank.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.landscape-7b
@@ -2608,7 +2610,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse landscaping.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A front setback. It is not a civic landscape.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.painting-7b
@@ -2616,7 +2618,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Warehouse office paint and line marking.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A small annexed office and the aisle marks.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.demolition-9b
@@ -2624,7 +2626,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Demolition before a new school building.
 Low 5, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 One existing building. A campus of several buildings is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.earthworks-9b
@@ -2632,7 +2634,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Earthworks for a low-rise school.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One building pad. A campus regrade is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.piles-9b
@@ -2640,7 +2642,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Piles for a school building.
 Low 5, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A low-rise footprint. A large hall on poor ground is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.footings-9b
@@ -2648,7 +2650,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School footings.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One building of one to four storeys.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.slab-9b
@@ -2656,7 +2658,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School ground slab.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One building. A large hall slab is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.structure-9b
@@ -2664,7 +2666,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Low-rise school concrete frame per storey.
 Low 8, typical 12, high 18. Working days per storey, multiplied by rise in storeys. At 8 storeys the typical cycle is about 96 days before rounding up.
 One to four storeys. A long-span hall is not well described by a floor cycle and should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.steel-lead-9b
@@ -2672,7 +2674,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fabricate a school steel frame.
 Low 20, typical 40, high 60. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A low-rise teaching block or a hall.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.steel-erect-9b
@@ -2680,7 +2682,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Erect a school steel frame.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 One building. A long-span hall is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.roof-9b
@@ -2688,7 +2690,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a low-rise school roof.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One building. A set of separate roofs is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.external-walls-9b
@@ -2696,7 +2698,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School external walls.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 One building of a few thousand square metres. Not scaled, so a large campus building should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.windows-lead-9b
@@ -2704,7 +2706,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School window delivery.
 Low 15, typical 30, high 50. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A teaching-block package. A fully glazed hall is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.windows-install-9b
@@ -2712,7 +2714,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install school windows.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 One building.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.bushfire-9b
@@ -2720,7 +2722,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Bushfire construction to a school.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A lower BAL. Flame zone is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.stairs-9b
@@ -2728,7 +2730,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School stairs and ramps per storey.
 Low 2, typical 3, high 5. Working days per storey, multiplied by rise in storeys. At 8 storeys the typical cycle is about 24 days before rounding up.
 A low-rise teaching block. A large assembly stair is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.linings-9b
@@ -2736,7 +2738,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Line a school.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 A teaching block of a few thousand square metres. At 3,000 m² the typical rate is about 60 days.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ceilings-9b
@@ -2744,7 +2746,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install school ceilings.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard teaching block.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.wet-area-9b
@@ -2752,7 +2754,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Waterproof school amenities.
 Low 3, typical 6, high 12. A fixed range in working days. It does not grow with floor area.
 A typical amenities set. A large senior school is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-9b
@@ -2760,7 +2762,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School joinery.
 Low 10, typical 20, high 35. A fixed range in working days. It does not grow with floor area.
 A teaching block. A performing-arts fit-out is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.painting-9b
@@ -2768,7 +2770,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Paint a school.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 A standard scheme to one building.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.floors-9b
@@ -2776,7 +2778,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lay school floor finishes.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Vinyl and carpet to a teaching block. A sports floor is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-rough-9b
@@ -2784,7 +2786,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary rough-in for a school.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A teaching block amenities set.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-fit-9b
@@ -2792,7 +2794,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary fit-off for a school.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 Fixtures after amenities are waterproofed.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-rough-9b
@@ -2800,7 +2802,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical rough-in for a school.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 A teaching block.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-fit-9b
@@ -2808,7 +2810,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical fit-off for a school.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Accessories after linings.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lighting-9b
@@ -2816,7 +2818,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install school lighting.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard teaching-block package.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ac-lead-9b
@@ -2824,7 +2826,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School air-conditioning plant delivery.
 Low 20, typical 40, high 60. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 Packaged plant for one building.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ac-install-9b
@@ -2832,7 +2834,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install school air-conditioning.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Ductwork and room units.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ac-commission-9b
@@ -2840,7 +2842,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Commission school air-conditioning.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One building. Not the occupation certificate.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sprinklers-9b
@@ -2848,7 +2850,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sprinklers in a school.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard system to one building.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.detection-9b
@@ -2856,7 +2858,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School detection and warning.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One building. A campus network is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.comms-9b
@@ -2864,7 +2866,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School structured cabling.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A teaching block. A high-density computer room is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.landscape-9b
@@ -2872,7 +2874,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School landscaping.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 Paths, turf and modest play equipment. A full sports field is the high end and may be a separate package.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.stormwater-9b
@@ -2880,7 +2882,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 School stormwater detention.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One building's catchment.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.strip-isolate-fitout
@@ -2888,7 +2890,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Isolate services for a fit-out strip.
 Low 1, typical 2, high 5. A fixed range in working days. It does not grow with floor area.
 One tenancy. An occupied building is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.strip-fitout
@@ -2896,7 +2898,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Soft-strip a fit-out.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 At 1,000 m² the typical rate is about 10 days. A heavier base-building strip should use the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.makegood-fitout
@@ -2904,7 +2906,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Make good after a fit-out strip.
 Low 2, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 Patching the slab and capping services. Structural alterations are the alterations fragment.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.structure-alterations
@@ -2912,7 +2914,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Structural alterations in an existing building.
 Low 5, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A few openings is typical. A significant strengthening package is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.partitions-fitout
@@ -2920,7 +2922,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Partitions for a commercial fit-out.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 At 1,000 m² the typical rate is about 20 days.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ceilings-fitout
@@ -2928,7 +2930,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Ceilings for a commercial fit-out.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 At 1,000 m² the typical rate is about 10 days.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.wet-area-fitout
@@ -2936,7 +2938,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Waterproof fit-out amenities.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 One amenities set. A large end-of-trip facility is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.internal-doors-fitout
@@ -2944,7 +2946,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hang fit-out doors.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 A single tenancy.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-rough-fitout
@@ -2952,7 +2954,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary alterations rough-in for a fit-out.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Relocation within one tenancy.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sanitary-fit-fitout
@@ -2960,7 +2962,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Sanitary fit-off for a fit-out.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 New fixtures to the amenities.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.cold-fitout
@@ -2968,7 +2970,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Cold-water alterations in a fit-out.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 One tenancy.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hot-fitout
@@ -2976,7 +2978,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fit-out hot water.
 Low 1, typical 2, high 4. A fixed range in working days. It does not grow with floor area.
 One local unit.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-rough-fitout
@@ -2984,7 +2986,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical rough-in for a fit-out.
 Low 0.01, typical 0.02, high 0.03. Working days per square metre of gross floor area. At 250 m² the typical rate is about 5 days before rounding up.
 At 1,000 m² the typical rate is about 20 days.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.electrical-fit-fitout
@@ -2992,7 +2994,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Electrical fit-off for a fit-out.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Accessories after ceilings.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lighting-fitout
@@ -3000,7 +3002,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install fit-out lighting.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard office or retail package.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.mechanical-rough-fitout
@@ -3008,7 +3010,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Air-conditioning alterations rough-in for a fit-out.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Duct and pipe changes to one tenancy.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.mechanical-commission-fitout
@@ -3016,7 +3018,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Commission fit-out air-conditioning.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 Balance the altered zones.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ventilation-fitout
@@ -3024,7 +3026,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fit-out exhaust ventilation.
 Low 2, typical 4, high 8. A fixed range in working days. It does not grow with floor area.
 Amenities exhaust. A commercial kitchen exhaust is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.sprinklers-fitout
@@ -3032,7 +3034,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Alter sprinklers in a fit-out.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Head relocations to one tenancy.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.detection-fitout
@@ -3040,7 +3042,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Alter detection in a fit-out.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One tenancy. A full panel replacement is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.comms-fitout
@@ -3048,7 +3050,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fit-out structured cabling.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A standard office density.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tiling-fitout
@@ -3056,7 +3058,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tile fit-out amenities.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One amenities set.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-lead-fitout
@@ -3064,7 +3066,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fit-out joinery manufacture.
 Low 10, typical 20, high 30. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A reception and a tea point. A large trading floor is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.joinery-install-fitout
@@ -3072,7 +3074,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install fit-out joinery.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Installation after delivery.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.painting-fitout
@@ -3080,7 +3082,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Paint a commercial fit-out.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 At 1,000 m² the typical rate is about 10 days.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.floors-fitout
@@ -3088,7 +3090,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lay fit-out floor finishes.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 Carpet tile to one tenancy.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.fire-stopping
@@ -3096,7 +3098,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fire-stop service penetrations.
 Low 0.01, typical 0.01, high 0.02. Working days per square metre of gross floor area. At 1000 m² the typical rate is about 10 days before rounding up.
 A mid-rise or a large fit-out. A house is not in this fragment.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.gas-commercial
@@ -3104,7 +3106,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Commercial consumer gas.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One kitchen or one plant connection. An industrial process is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lift-lead
@@ -3112,7 +3114,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Passenger-lift manufacture from the start of construction.
 Low 60, typical 100, high 160. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A few stops is the low end. A taller rise or a special car is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lift-install
@@ -3120,7 +3122,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install passenger lifts.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 Rails, car and doors after the shaft is available. If the shaft finishes later than this lead, the dates need a manual link.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.lift-commission
@@ -3128,7 +3130,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Commission passenger lifts.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 Includes testing with the certifier's witness as a duration, not as a statutory clock.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.switchboard-lead-2
@@ -3136,7 +3138,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Manufacture an apartment main switchboard.
 Low 20, typical 40, high 70. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A mid-rise residential board.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.switchboard-install-2
@@ -3144,7 +3146,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install an apartment main switchboard.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 Set, connect and test.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.switchboard-lead-major
@@ -3152,7 +3154,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Manufacture a commercial or school main switchboard.
 Low 15, typical 30, high 60. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A single building. A main board with a long factory queue is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.switchboard-install-major
@@ -3160,7 +3162,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Install a commercial or school main switchboard.
 Low 3, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 Set and connect.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.utility-apply-1a
@@ -3168,7 +3170,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apply for a house permanent supply.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 An urban connection with capacity available.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.utility-lead-1a
@@ -3176,7 +3178,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House permanent supply connection.
 Low 10, typical 20, high 40. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A standard suburban connection. A new pole or pillar is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.utility-apply-major
@@ -3184,7 +3186,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apply for a permanent supply to a larger building.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 Includes the initial authority application, not the civil works.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.utility-lead-major
@@ -3192,7 +3194,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Permanent supply connection for a larger building.
 Low 20, typical 40, high 80. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 A standard urban connection is typical. A chamber substation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.services-apply-1a
@@ -3200,7 +3202,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apply for house water, sewer and communications.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 Urban authorities. A rural or constrained connection is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.services-lead-1a
@@ -3208,7 +3210,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 House services lead-in.
 Low 10, typical 20, high 40. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 Standard suburban mains.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.services-apply-major
@@ -3216,7 +3218,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Apply for services to a larger building.
 Low 10, typical 20, high 30. A fixed range in working days. It does not grow with floor area.
 Section 73 or equivalent authority work can sit at the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.services-lead-major
@@ -3224,7 +3226,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Services lead-in for a larger building.
 Low 20, typical 40, high 80. A procurement wait for manufacture and delivery, counted in working days. Installation is separate where the fragment has an install activity.
 Urban mains with capacity. A main upgrade is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.concept-design-1a
@@ -3232,7 +3234,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Concept design for a house.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 A new house or a substantial alteration. A small renovation is the low end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.concept-design-2
@@ -3240,7 +3242,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Concept design for an apartment building.
 Low 20, typical 40, high 80. A fixed range in working days. It does not grow with floor area.
 A mid-rise building. A tall or constrained urban site is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.concept-design-fitout
@@ -3248,7 +3250,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Concept design for a fit-out.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 One tenancy or a school refurbishment of one building.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.concept-design-7b
@@ -3256,7 +3258,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Concept design for a warehouse.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single industrial building. A business park is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.concept-design-9b
@@ -3264,7 +3266,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Concept design for a school.
 Low 15, typical 30, high 50. A fixed range in working days. It does not grow with floor area.
 One new teaching building. A whole campus master plan is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.design-development-1a
@@ -3272,7 +3274,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Design development for 1a.
 Low 10, typical 20, high 30. A fixed range in working days. It does not grow with floor area.
 Consultant coordination is included. Specialist reports are investigation work items, not this duration.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.design-development-2
@@ -3280,7 +3282,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Design development for 2.
 Low 20, typical 45, high 80. A fixed range in working days. It does not grow with floor area.
 Consultant coordination is included. Specialist reports are investigation work items, not this duration.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.design-development-fitout
@@ -3288,7 +3290,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Design development for fitout.
 Low 5, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 Consultant coordination is included. Specialist reports are investigation work items, not this duration.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.design-development-7b
@@ -3296,7 +3298,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Design development for 7b.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 Consultant coordination is included. Specialist reports are investigation work items, not this duration.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.design-development-9b
@@ -3304,7 +3306,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Design development for 9b.
 Low 15, typical 30, high 45. A fixed range in working days. It does not grow with floor area.
 Consultant coordination is included. Specialist reports are investigation work items, not this duration.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.approval-docs-1a
@@ -3312,7 +3314,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Approval documentation for 1a.
 Low 15, typical 25, high 40. A fixed range in working days. It does not grow with floor area.
 Approval drawings for a house, including the set a certifier or a council will see.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.approval-docs-2
@@ -3320,7 +3322,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Approval documentation for 2.
 Low 30, typical 50, high 80. A fixed range in working days. It does not grow with floor area.
 Approval drawings for an apartment building. Planning reports are extra and sit in the lodgement activity.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.approval-docs-7b
@@ -3328,7 +3330,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Approval documentation for 7b.
 Low 10, typical 20, high 30. A fixed range in working days. It does not grow with floor area.
 Approval drawings for a warehouse.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.approval-docs-9b
@@ -3336,7 +3338,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Approval documentation for 9b.
 Low 20, typical 40, high 60. A fixed range in working days. It does not grow with floor area.
 Approval drawings for a school building.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.fitout-documentation
@@ -3344,7 +3346,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Fit-out documentation.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 One tenancy or one school building. A staged occupation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.construction-docs-1a
@@ -3352,7 +3354,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Construction documentation for 1a.
 Low 15, typical 30, high 50. A fixed range in working days. It does not grow with floor area.
 Coordinated architectural and services documents. Shop drawings are inside the trade fragments.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.construction-docs-2
@@ -3360,7 +3362,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Construction documentation for 2.
 Low 40, typical 70, high 110. A fixed range in working days. It does not grow with floor area.
 Coordinated architectural and services documents. Shop drawings are inside the trade fragments.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.construction-docs-7b
@@ -3368,7 +3370,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Construction documentation for 7b.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 Coordinated architectural and services documents. Shop drawings are inside the trade fragments.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.construction-docs-9b
@@ -3376,7 +3378,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Construction documentation for 9b.
 Low 25, typical 40, high 70. A fixed range in working days. It does not grow with floor area.
 Coordinated architectural and services documents. Shop drawings are inside the trade fragments.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.measure-existing
@@ -3384,7 +3386,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Measure an existing building.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 One house or one floor. A whole commercial building is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.hazmat-survey
@@ -3392,7 +3394,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Hazardous-materials survey.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A desk and site survey. Laboratory testing that follows is inside the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.trace-services
@@ -3400,7 +3402,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Trace existing services.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A house or a single tenancy. A campus is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.da-lodgement
@@ -3408,7 +3410,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Lodge a development application or planning permit.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A complete package. Incomplete-application delay is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.cdc-prepare
@@ -3416,7 +3418,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Prepare a complying development certificate application.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 A house or a small commercial complying development. Drawing time already spent in approval documentation is not fully excluded, so the low end avoids double counting a finished set.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.exempt-confirmation
@@ -3424,7 +3426,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Confirm exempt development.
 Low 1, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A clear exemption is the low end. Written advice is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ssd-sears
@@ -3432,7 +3434,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 SEARs and study scope for State significant development.
 Low 15, typical 30, high 45. A fixed range in working days. It does not grow with floor area.
 A straightforward declaration. A contested scope is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.ssd-eis
@@ -3440,7 +3442,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Prepare an environmental impact statement.
 Low 40, typical 80, high 140. A fixed range in working days. It does not grow with floor area.
 A building SSD. A complex industrial or extractive project is outside this high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.construction-certificate
@@ -3448,7 +3450,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Construction certificate review.
 Low 10, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A complete house set is the low end. A large building with several information requests is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.heritage-referral
@@ -3456,7 +3458,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Heritage referral.
 Low 10, typical 20, high 40. A fixed range in working days. It does not grow with floor area.
 A local item or a conservation area is typical. A State Heritage Register approval is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-docs-1a
@@ -3464,7 +3466,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender documentation for 1a.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 A single trade or a single head contract. A staged set of packages is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-docs-2
@@ -3472,7 +3474,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender documentation for 2.
 Low 15, typical 25, high 40. A fixed range in working days. It does not grow with floor area.
 A single trade or a single head contract. A staged set of packages is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-docs-fitout
@@ -3480,7 +3482,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender documentation for fitout.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single trade or a single head contract. A staged set of packages is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-docs-7b
@@ -3488,7 +3490,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender documentation for 7b.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A single trade or a single head contract. A staged set of packages is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-docs-9b
@@ -3496,7 +3498,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender documentation for 9b.
 Low 10, typical 20, high 30. A fixed range in working days. It does not grow with floor area.
 A single trade or a single head contract. A staged set of packages is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-period-1a
@@ -3504,7 +3506,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender period for 1a.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 A house tender, often a closed list of builders.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-period-2
@@ -3512,7 +3514,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender period for 2.
 Low 15, typical 20, high 30. A fixed range in working days. It does not grow with floor area.
 An apartment tender. A two-stage tender is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-period-fitout
@@ -3520,7 +3522,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender period for fitout.
 Low 10, typical 15, high 20. A fixed range in working days. It does not grow with floor area.
 A fit-out tender. A short closed tender is the low end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-period-7b
@@ -3528,7 +3530,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender period for 7b.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 A warehouse tender.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-period-9b
@@ -3536,7 +3538,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender period for 9b.
 Low 15, typical 20, high 30. A fixed range in working days. It does not grow with floor area.
 A school tender, allowing a longer question period.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-evaluation-1a
@@ -3544,7 +3546,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender evaluation for 1a.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 A short list. A contested or multi-package evaluation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-evaluation-2
@@ -3552,7 +3554,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender evaluation for 2.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 A short list. A contested or multi-package evaluation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-evaluation-fitout
@@ -3560,7 +3562,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender evaluation for fitout.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 A short list. A contested or multi-package evaluation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-evaluation-7b
@@ -3568,7 +3570,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender evaluation for 7b.
 Low 5, typical 10, high 15. A fixed range in working days. It does not grow with floor area.
 A short list. A contested or multi-package evaluation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.tender-evaluation-9b
@@ -3576,7 +3578,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Tender evaluation for 9b.
 Low 10, typical 15, high 20. A fixed range in working days. It does not grow with floor area.
 A short list. A contested or multi-package evaluation is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.contract-award
@@ -3584,7 +3586,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Award a building contract.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A straightforward lump sum is the low end. A negotiated or financed close is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.novation
@@ -3592,7 +3594,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Novate consultants to the contractor.
 Low 10, typical 15, high 30. A fixed range in working days. It does not grow with floor area.
 A small consultant team is the low end. A large novation with deeds still in draft is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.site-establishment-1a
@@ -3600,7 +3602,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Site establishment for 1a.
 Low 2, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A house site: fencing, shed and amenities.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.site-establishment-2
@@ -3608,7 +3610,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Site establishment for 2.
 Low 10, typical 15, high 25. A fixed range in working days. It does not grow with floor area.
 An apartment site: hoarding, crane base and amenities.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.site-establishment-fitout
@@ -3616,7 +3618,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Site establishment for fitout.
 Low 3, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A fit-out: protection, a site office and deliveries.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.site-establishment-7b
@@ -3624,7 +3626,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Site establishment for 7b.
 Low 3, typical 8, high 15. A fixed range in working days. It does not grow with floor area.
 A warehouse site: fencing and a compound.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.site-establishment-9b
@@ -3632,7 +3634,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Site establishment for 9b.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A school site, including separation from students where the campus is live.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.practical-completion
@@ -3640,7 +3642,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Practical completion inspection.
 Low 1, typical 3, high 5. A fixed range in working days. It does not grow with floor area.
 One building. A campus or a staged completion is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.occupation-certificate
@@ -3648,7 +3650,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Occupation certificate.
 Low 5, typical 10, high 20. A fixed range in working days. It does not grow with floor area.
 A house is the low end. A large building with outstanding fire items is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.handover
@@ -3656,7 +3658,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Handover.
 Low 2, typical 5, high 10. A fixed range in working days. It does not grow with floor area.
 A house is the low end. A building with several user groups is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.defects-inspection
@@ -3664,7 +3666,7 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Defects inspection.
 Low 1, typical 2, high 5. A fixed range in working days. It does not grow with floor area.
 One inspection. A large building with several visits is the high end.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ### du.final-defects
@@ -3672,14 +3674,12 @@ Planning estimate for the stated geography from ordinary Australian practice, no
 Final defects inspection.
 Low 1, typical 2, high 5. A fixed range in working days. It does not grow with floor area.
 One visit at the end of the period.
-Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Draft until the owner reviews it.
+Planning estimate for the stated geography from ordinary Australian practice, not a published benchmark. Accepted by the owner on 24 October 2026.
 
 
 ## Project-level fragments (pending scope: project)
 
-These fragments are process activities. They do not belong to a building-system work item, so they are not in `fragments.yaml`. The checker rejects `scope` today, and a rejected field stops the app starting. When that field is accepted, this block can move into `fragments.yaml` unchanged. Their durations are already in `durations.yaml`.
-
-Each one uses `systems: [site]` and an `applies_when` of conditions and determinants only. There is no `work_action`. They are written to be included once for the project, not once per work item.
+These process activities are in `knowledge/program/fragments.yaml` with `scope: project`. Each one uses `systems: [site]` and an `applies_when` of conditions and determinants only. There is no `work_action`. Generation includes each one once for the project.
 
 
 ### fr.concept-design-1a
@@ -4130,784 +4130,4 @@ Activities, in order: wait, final.
 Each duration it names is a draft planning estimate. The fragment stays draft until the owner reviews it.
 
 
-```yaml
-
-- id: fr.concept-design-1a
-  label: "Concept design (1a)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-1a}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-1a"}
-- id: fr.concept-design-2
-  label: "Concept design (2)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-2}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-2"}
-- id: fr.concept-design-fitout
-  label: "Concept design (fitout)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["5", "6", "9b"]}
-      - {det: work_type, eq: refurb}
-  activities:
-    - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-fitout}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-fitout"}
-- id: fr.concept-design-7b
-  label: "Concept design (7b)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-7b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-7b"}
-- id: fr.concept-design-9b
-  label: "Concept design (9b)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-9b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-9b"}
-- id: fr.design-development-1a
-  label: "Design development (1a)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-1a}
-  attach: {after: fr.concept-design-1a}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-1a"}
-- id: fr.design-development-2
-  label: "Design development (2)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-2}
-  attach: {after: fr.concept-design-2}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-2"}
-- id: fr.design-development-fitout
-  label: "Design development (fitout)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["5", "6", "9b"]}
-      - {det: work_type, eq: refurb}
-  activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-fitout}
-  attach: {after: fr.concept-design-fitout}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-fitout"}
-- id: fr.design-development-7b
-  label: "Design development (7b)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-7b}
-  attach: {after: fr.concept-design-7b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-7b"}
-- id: fr.design-development-9b
-  label: "Design development (9b)"
-  scope: project
-  stage: concept_design
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-9b}
-  attach: {after: fr.concept-design-9b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-9b"}
-- id: fr.approval-docs-1a
-  label: "Approval documentation (1a)"
-  scope: project
-  stage: approval_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-1a}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-1a"}
-- id: fr.approval-docs-2
-  label: "Approval documentation (2)"
-  scope: project
-  stage: approval_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-2}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-2"}
-- id: fr.approval-docs-7b
-  label: "Approval documentation (7b)"
-  scope: project
-  stage: approval_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-7b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-7b"}
-- id: fr.approval-docs-9b
-  label: "Approval documentation (9b)"
-  scope: project
-  stage: approval_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-9b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-9b"}
-- id: fr.fitout-documentation
-  label: "Fit-out documentation"
-  scope: project
-  stage: construction_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["5", "6", "9b"]}
-      - {det: work_type, eq: refurb}
-  activities:
-    - {key: draw, label: "Prepare fit-out documentation", systems: [site], duration: du.fitout-documentation}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.fitout-documentation"}
-- id: fr.construction-docs-1a
-  label: "Construction documentation (1a)"
-  scope: project
-  stage: construction_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-1a}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-1a"}
-- id: fr.construction-docs-2
-  label: "Construction documentation (2)"
-  scope: project
-  stage: construction_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-2}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-2"}
-- id: fr.construction-docs-7b
-  label: "Construction documentation (7b)"
-  scope: project
-  stage: construction_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-7b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-7b"}
-- id: fr.construction-docs-9b
-  label: "Construction documentation (9b)"
-  scope: project
-  stage: construction_documentation
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-9b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-9b"}
-- id: fr.existing-conditions
-  label: "Existing-conditions investigation"
-  scope: project
-  stage: investigation
-  systems: [site]
-  applies_when: {det: work_type, any_of: [refurb, extend]}
-  activities:
-    - {key: measure, label: "Measure the existing building", systems: [site], duration: du.measure-existing}
-    - {key: hazmat, label: "Hazardous-materials survey", systems: [site], duration: du.hazmat-survey}
-    - {key: services, label: "Trace existing services", systems: [site], duration: du.trace-services}
-  links:
-    - {from: measure, to: hazmat, type: FS, lag: null}
-    - {from: hazmat, to: services, type: FS, lag: null}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.existing-conditions"}
-- id: fr.da-lodgement
-  label: "Development-application lodgement"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {cond: planning, any_of: [da, planning_permit]}
-  activities:
-    - {key: lodge, label: "Lodge the application", systems: [site], duration: du.da-lodgement}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.da-lodgement"}
-- id: fr.da-exhibition
-  label: "Development-application exhibition"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {cond: planning, any_of: [da, planning_permit]}
-  activities:
-    - {key: exhibit, label: "Public exhibition", systems: [site], duration: du.da-exhibition-period}
-  attach: {after: fr.da-lodgement}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.da-exhibition"}
-- id: fr.da-assessment
-  label: "Development-application assessment"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {cond: planning, any_of: [da, planning_permit]}
-  activities:
-    - {key: assess, label: "Assessment", systems: [site], duration: du.da-program-allowance}
-  attach: {after: fr.da-exhibition}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.da-assessment"}
-- id: fr.cdc-application
-  label: "Complying development certificate"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {cond: planning, eq: cdc}
-  activities:
-    - {key: prepare, label: "Prepare and lodge the complying development certificate", systems: [site], duration: du.cdc-prepare}
-    - {key: determine, label: "Certifier determination", systems: [site], duration: du.cdc-determination-period}
-  links:
-    - {from: prepare, to: determine, type: FS, lag: null}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.cdc-application"}
-- id: fr.exempt-confirmation
-  label: "Exempt-development confirmation"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {cond: planning, eq: exempt}
-  activities:
-    - {key: confirm, label: "Confirm the exempt path", systems: [site], duration: du.exempt-confirmation}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.exempt-confirmation"}
-- id: fr.ssd-eis
-  label: "State significant environmental impact statement"
-  scope: project
-  stage: approval_documentation
-  systems: [site]
-  applies_when: {cond: planning, eq: ssd}
-  activities:
-    - {key: sears, label: "Obtain SEARs and scope the studies", systems: [site], duration: du.ssd-sears}
-    - {key: eis, label: "Prepare the environmental impact statement", systems: [site], duration: du.ssd-eis}
-  links:
-    - {from: sears, to: eis, type: FS, lag: null}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ssd-eis"}
-- id: fr.ssd-assessment
-  label: "State significant exhibition and assessment"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {cond: planning, eq: ssd}
-  activities:
-    - {key: exhibit, label: "Public exhibition", systems: [site], duration: du.ssd-exhibition-period}
-    - {key: assess, label: "Department assessment", systems: [site], duration: du.ssd-program-allowance}
-  links:
-    - {from: exhibit, to: assess, type: FS, lag: null}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ssd-assessment"}
-- id: fr.construction-certificate
-  label: "Construction certificate"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {cond: planning, any_of: [da, planning_permit, ssd]}
-  activities:
-    - {key: certify, label: "Construction certificate", systems: [site], duration: du.construction-certificate}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-certificate"}
-- id: fr.heritage-referral
-  label: "Heritage referral"
-  scope: project
-  stage: approvals
-  systems: [site]
-  applies_when: {det: heritage_status, any_of: [conservation_area, local_item, state_register]}
-  activities:
-    - {key: refer, label: "Heritage referral", systems: [site], duration: du.heritage-referral}
-  attach: {after: stage_start}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.heritage-referral"}
-- id: fr.tender-docs-1a
-  label: "Tender documentation (1a)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: pack, label: "Assemble the tender package", systems: [site], duration: du.tender-docs-1a}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-docs-1a"}
-- id: fr.tender-docs-2
-  label: "Tender documentation (2)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: pack, label: "Assemble the tender package", systems: [site], duration: du.tender-docs-2}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-docs-2"}
-- id: fr.tender-docs-fitout
-  label: "Tender documentation (fitout)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["5", "6", "9b"]}
-      - {det: work_type, eq: refurb}
-  activities:
-    - {key: pack, label: "Assemble the tender package", systems: [site], duration: du.tender-docs-fitout}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-docs-fitout"}
-- id: fr.tender-docs-7b
-  label: "Tender documentation (7b)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: pack, label: "Assemble the tender package", systems: [site], duration: du.tender-docs-7b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-docs-7b"}
-- id: fr.tender-docs-9b
-  label: "Tender documentation (9b)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: pack, label: "Assemble the tender package", systems: [site], duration: du.tender-docs-9b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-docs-9b"}
-- id: fr.tender-period-1a
-  label: "Tender period (1a)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: price, label: "Tender period", systems: [site], duration: du.tender-period-1a}
-  attach: {after: fr.tender-docs-1a}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-period-1a"}
-- id: fr.tender-period-2
-  label: "Tender period (2)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: price, label: "Tender period", systems: [site], duration: du.tender-period-2}
-  attach: {after: fr.tender-docs-2}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-period-2"}
-- id: fr.tender-period-fitout
-  label: "Tender period (fitout)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["5", "6", "9b"]}
-      - {det: work_type, eq: refurb}
-  activities:
-    - {key: price, label: "Tender period", systems: [site], duration: du.tender-period-fitout}
-  attach: {after: fr.tender-docs-fitout}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-period-fitout"}
-- id: fr.tender-period-7b
-  label: "Tender period (7b)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: price, label: "Tender period", systems: [site], duration: du.tender-period-7b}
-  attach: {after: fr.tender-docs-7b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-period-7b"}
-- id: fr.tender-period-9b
-  label: "Tender period (9b)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: price, label: "Tender period", systems: [site], duration: du.tender-period-9b}
-  attach: {after: fr.tender-docs-9b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-period-9b"}
-- id: fr.tender-evaluation-1a
-  label: "Tender evaluation (1a)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: evaluate, label: "Evaluate tenders", systems: [site], duration: du.tender-evaluation-1a}
-  attach: {after: fr.tender-period-1a}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-evaluation-1a"}
-- id: fr.tender-evaluation-2
-  label: "Tender evaluation (2)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: evaluate, label: "Evaluate tenders", systems: [site], duration: du.tender-evaluation-2}
-  attach: {after: fr.tender-period-2}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-evaluation-2"}
-- id: fr.tender-evaluation-fitout
-  label: "Tender evaluation (fitout)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["5", "6", "9b"]}
-      - {det: work_type, eq: refurb}
-  activities:
-    - {key: evaluate, label: "Evaluate tenders", systems: [site], duration: du.tender-evaluation-fitout}
-  attach: {after: fr.tender-period-fitout}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-evaluation-fitout"}
-- id: fr.tender-evaluation-7b
-  label: "Tender evaluation (7b)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: evaluate, label: "Evaluate tenders", systems: [site], duration: du.tender-evaluation-7b}
-  attach: {after: fr.tender-period-7b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-evaluation-7b"}
-- id: fr.tender-evaluation-9b
-  label: "Tender evaluation (9b)"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: evaluate, label: "Evaluate tenders", systems: [site], duration: du.tender-evaluation-9b}
-  attach: {after: fr.tender-period-9b}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tender-evaluation-9b"}
-- id: fr.contract-award
-  label: "Contract award"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when: {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: award, label: "Award the contract", systems: [site], duration: du.contract-award}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.contract-award"}
-- id: fr.novation
-  label: "Novation"
-  scope: project
-  stage: procurement
-  systems: [site]
-  applies_when: {cond: procurement_route, any_of: [design_construct, eci]}
-  activities:
-    - {key: novate, label: "Novate the design consultants", systems: [site], duration: du.novation}
-  attach: {after: fr.contract-award}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.novation"}
-- id: fr.site-establishment-1a
-  label: "Site establishment (1a)"
-  scope: project
-  stage: construction
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["1a"]}
-      - {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: establish, label: "Establish the site", systems: [site], duration: du.site-establishment-1a}
-  attach: {after: stage_start}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.site-establishment-1a"}
-- id: fr.site-establishment-2
-  label: "Site establishment (2)"
-  scope: project
-  stage: construction
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["2"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: establish, label: "Establish the site", systems: [site], duration: du.site-establishment-2}
-  attach: {after: stage_start}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.site-establishment-2"}
-- id: fr.site-establishment-fitout
-  label: "Site establishment (fitout)"
-  scope: project
-  stage: construction
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["5", "6"]}
-      - {det: work_type, eq: refurb}
-  activities:
-    - {key: establish, label: "Establish the site", systems: [site], duration: du.site-establishment-fitout}
-  attach: {after: stage_start}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.site-establishment-fitout"}
-- id: fr.site-establishment-7b
-  label: "Site establishment (7b)"
-  scope: project
-  stage: construction
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["7b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: establish, label: "Establish the site", systems: [site], duration: du.site-establishment-7b}
-  attach: {after: stage_start}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.site-establishment-7b"}
-- id: fr.site-establishment-9b
-  label: "Site establishment (9b)"
-  scope: project
-  stage: construction
-  systems: [site]
-  applies_when:
-    all:
-      - {det: ncc_class, any_of: ["9b"]}
-      - {det: work_type, any_of: [new, extend]}
-  activities:
-    - {key: establish, label: "Establish the site", systems: [site], duration: du.site-establishment-9b}
-  attach: {after: stage_start}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.site-establishment-9b"}
-- id: fr.practical-completion
-  label: "Practical completion inspection"
-  scope: project
-  stage: completion
-  systems: [site]
-  applies_when: {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: inspect, label: "Practical completion inspection", systems: [site], duration: du.practical-completion}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.practical-completion"}
-- id: fr.occupation-certificate
-  label: "Occupation certificate"
-  scope: project
-  stage: completion
-  systems: [site]
-  applies_when: {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: certificate, label: "Occupation certificate", systems: [site], duration: du.occupation-certificate}
-  attach: {after: fr.practical-completion}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.occupation-certificate"}
-- id: fr.handover
-  label: "Handover"
-  scope: project
-  stage: completion
-  systems: [site]
-  applies_when: {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: hand, label: "Handover", systems: [site], duration: du.handover}
-  attach: {after: fr.occupation-certificate}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.handover"}
-- id: fr.defects-inspection
-  label: "Defects inspection"
-  scope: project
-  stage: defects
-  systems: [site]
-  applies_when: {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: inspect, label: "Defects inspection", systems: [site], duration: du.defects-inspection}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.defects-inspection"}
-- id: fr.defects-liability-end
-  label: "End of defects liability"
-  scope: project
-  stage: defects
-  systems: [site]
-  applies_when: {det: work_type, any_of: [new, extend, refurb]}
-  activities:
-    - {key: wait, label: "Defects liability period", systems: [site], duration: du.defects-liability}
-    - {key: final, label: "Final defects inspection", systems: [site], duration: du.final-defects}
-  links:
-    - {from: wait, to: final, type: FS, lag: null}
-  attach: {after: fr.defects-inspection}
-  status: draft
-  sources:
-    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.defects-liability-end"}
-
-```
+These rows are in `knowledge/program/fragments.yaml` with `scope: project`. Generation includes each one once when its conditions hold. The activity lists stay draft. Their durations are the reviewed rows in `durations.yaml`.
