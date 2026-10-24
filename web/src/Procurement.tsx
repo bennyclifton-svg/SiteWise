@@ -11,7 +11,8 @@ import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
 import { PackageScope } from "./PackageScope";
 import { PackageStages } from "./PackageStages";
-import { packageApi, type EngagedBy, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
+import { IconBin } from "./icons";
+import { packageApi, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
 import { procurementApi } from "./procurementApi";
 import { Prices } from "./Prices";
 import { STATUS_WORDS, submissionApi, uploadProposal, type Board, type FirmCard } from "./submissionApi";
@@ -54,7 +55,17 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   useEffect(() => {
     let stopped = false;
     Promise.all([packageApi.list(projectId), reportApi.list(projectId), packageApi.works(projectId), submissionApi.board(projectId)])
-      .then(([overview, reports, works, board]) => { if (!stopped) setData({ overview, reports, works: works.items, board }); })
+      .then(([overview, reports, works, board]) => {
+        if (stopped) return;
+        setData({ overview, reports, works: works.items, board });
+        // Proposed consultants are saved as rows (owner decision 3,
+        // docs/plans/2026-10-21-source-to-cost-plan-design.md); the reads
+        // above stay one round trip, and only a project with new proposals
+        // pays a second.
+        if (overview.suggestions.some(s => s.kind === "services")) {
+          procurementApi.adopt(projectId).then(r => { if (!stopped && r.added > 0) setReload(n => n + 1); }).catch(() => { /* Rows stay as proposed. */ });
+        }
+      })
       .catch(e => {
         if (stopped) return;
         if (e instanceof ApiError && e.status === 401) onSignedOut();
@@ -122,13 +133,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
     try { await procurementApi.dismiss(projectId, row.proposalKey!); setReload(n => n + 1); }
     catch (e) { fail(e, "create"); } finally { setBusyRow(""); }
   }
-  // Who engages a consultant decides whether its fee sits in the lead
-  // consultant's price; the architect RFP asks until every row answers.
-  async function engage(pkg: PackageRecord, value: EngagedBy | "") {
-    setBusyRow(pkg.id); setError("");
-    try { await packageApi.engagedBy(projectId, pkg.id, pkg.version, value); setReload(n => n + 1); }
-    catch (e) { if (e instanceof ApiError && e.status === 409) { setError("This package changed. The table has been refreshed."); setReload(n => n + 1); return; } fail(e); } finally { setBusyRow(""); }
-  }
   async function createPmp() {
     setBusyRow("pmp"); setError("");
     try { const report = await reportApi.create(projectId, "", "pmp"); setView({ at: "report", id: report.id }); }
@@ -190,16 +194,12 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
       onDragLeave={row.pkg ? (() => setDropRow("")) : undefined}
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
       <th scope="row" className="discipline-cell">
-        {row.label}{!row.pkg && <span className="suggested-tag">suggested</span>}
+        {row.label}
+        {row.pkg && <button type="button" className="table-action scope-link" aria-label={`Scope for ${row.label}`} onClick={() => setView({ at: "scope", pkg: row.pkg! })}>Scope</button>}
         {row.pkg && <PackageStages projectId={projectId} pkgId={row.pkg.id} label={row.label} tick={tick} onSignedOut={onSignedOut} />}
       </th>
-      <td className="engaged-cell">{row.kind !== "services" || !row.pkg || row.pkg.discipline_id === "consultant.architect" ? "—"
-        : <select aria-label={`Who engages ${row.label}`} value={row.pkg.engaged_by ?? ""} disabled={busy} onChange={e => void engage(row.pkg!, e.target.value as EngagedBy | "")}>
-          <option value="">Not decided</option>
-          <option value="client">Client</option>
-          <option value="lead_consultant">Lead consultant</option>
-        </select>}</td>
-      <td className="firms-cell">{row.pkg && uploadingRow === row.pkg.id && <Pending>Uploading proposals…</Pending>}{row.pkg ? <FirmChips cards={data?.board.packages[row.pkg.id] ?? []} onOpen={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })} /> : <span className="firms-none">—</span>}</td>
+      <FirmSlots cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
+        onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })} />
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</td>
@@ -207,22 +207,13 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
         const n = data?.board.packages[row.pkg.id]?.length ?? 0;
         return <button type="button" className="table-action" aria-label={`${n > 1 ? "Compare" : n === 1 ? "Review" : "Prices for"} ${row.label}`} onClick={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })}>{n > 1 ? `Compare ${n}` : n === 1 ? "Review" : "Prices"}</button>;
       })() : "—"}</td>
-      <td className="row-menu-cell">{!row.pkg && row.proposalKey?.startsWith("default:services:") && <details className="row-menu">
-        <summary aria-label={`More for ${row.label}`}>⋯</summary>
-        <div className="row-menu-items">
-          <button type="button" disabled={busy} onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); void dismiss(row); }}>Remove</button>
-        </div>
-      </details>}{row.pkg && <details className="row-menu">
-        <summary aria-label={`More for ${row.label}`}>⋯</summary>
-        <div className="row-menu-items">
-          <button type="button" onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); setView({ at: "scope", pkg: row.pkg! }); }}>Scope</button>
-          <button type="button" disabled={busy} onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); void reviewRemoval(row.pkg!, row.label); }}>Remove</button>
-        </div>
-      </details>}</td>
+      <td className="row-bin-cell">{(row.pkg || row.proposalKey?.startsWith("default:services:")) &&
+        <button type="button" className="reg-del" aria-label={`Remove ${row.label}`} title={`Remove ${row.label}`} disabled={busy}
+          onClick={() => void (row.pkg ? reviewRemoval(row.pkg, row.label) : dismiss(row))}><IconBin /></button>}</td>
     </tr>;
   }
   const group = (title: string, list: Row[]) => list.length > 0 && <tbody>
-    <tr className="group-row"><th colSpan={6} scope="rowgroup">{title}</th></tr>
+    <tr className="group-row"><th colSpan={COLUMNS} scope="rowgroup">{title}</th></tr>
     {list.map(rowView)}
   </tbody>;
 
@@ -250,10 +241,10 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
     </div>}
     {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll">
       <table className="procurement-table">
-        <thead><tr><th scope="col">Discipline</th><th scope="col" title="The client engages the consultant directly, or the lead design consultant engages it as a subconsultant and includes its fee">Engaged by</th><th scope="col" title="Drop a proposal on a row to add it to that package">Firms</th><th scope="col">RFP / RFT</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
+        <thead><tr><th scope="col">Discipline</th>{[1, 2, 3].map(n => <th key={n} scope="col" title="Drop a proposal on a row to add it to that package">Firm {n}</th>)}<th scope="col">RFP / RFT</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>
         {group("Consultants", consultants)}
         {group("Trades", trades)}
-        {draft !== null && <tbody><tr className="draft-row"><td colSpan={6}>
+        {draft !== null && <tbody><tr className="draft-row"><td colSpan={COLUMNS}>
           <form className="draft-form" onSubmit={e => { e.preventDefault(); void addRow(); }}>
             <select aria-label="Discipline" value={draft} disabled={busyRow === "draft"} onChange={e => setDraft(e.target.value)} autoFocus>
               <option value="">Choose a discipline</option>
@@ -264,7 +255,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
             <button type="button" className="table-action" disabled={busyRow === "draft"} onClick={() => setDraft(null)}>Cancel</button>
           </form>
         </td></tr></tbody>}
-        {!rows.length && draft === null && <tbody><tr><td colSpan={6} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
+        {!rows.length && draft === null && <tbody><tr><td colSpan={COLUMNS} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
       </table>
     </div>}
     {data && <p className="procurement-line procurement-pmp">Project management plan:{" "}
@@ -274,17 +265,31 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   </section>;
 }
 
-/** FirmChips shows each firm under a package: its name, the base total the
- * server computed, and its status in words. */
-function FirmChips({ cards, onOpen }: { cards: FirmCard[]; onOpen: () => void }) {
-  if (!cards.length) return <span className="firms-none">Drop a proposal here</span>;
-  return <ul className="firm-chips">{cards.slice(0, 5).map(c => <li key={c.submission_id}>
-    <button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
-      title={`${c.filename} · received ${c.received_on}${c.not_priced ? ` · ${c.not_priced} not priced` : ""}`}>
-      <span className="firm-chip-name">{c.firm_name || c.filename}</span>
-      <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : "—"}</span>
-      {c.status !== "received" && c.status !== "reading" && <span className="firm-chip-status">{STATUS_WORDS[c.status]}</span>}
-      {c.status === "received" && c.needs_review && <span className="firm-chip-status warn">Check</span>}
-    </button>
-  </li>)}{cards.length > 5 && <li><button type="button" className="table-action" onClick={onOpen}>+{cards.length - 5} more</button></li>}</ul>;
+/** Discipline, three firm slots, RFP / RFT, Prices and the bin. */
+const COLUMNS = 7;
+
+/** FirmSlots fills Firm 1-3 with the package's firms in the board's order,
+ * so every row reads as the place firms are compared (owner decision 5,
+ * docs/plans/2026-10-21-source-to-cost-plan-design.md). A fourth firm and
+ * later show as "+n more" in Firm 3. */
+function FirmSlots({ cards, droppable, uploading, onOpen }: { cards: FirmCard[]; droppable: boolean; uploading: boolean; onOpen: () => void }) {
+  const extra = cards.length - 3;
+  return <>{[0, 1, 2].map(i => {
+    const c = cards[i];
+    const empty = droppable ? <span className="firms-none">{uploading && i === cards.length ? <Pending>Uploading…</Pending> : "Drop a proposal"}</span> : <span className="firms-none">—</span>;
+    return <td key={i} className="firm-slot">{c ? <FirmChip card={c} onOpen={onOpen} /> : empty}
+      {i === 2 && extra > 0 && <button type="button" className="table-action" onClick={onOpen}>+{extra} more</button>}</td>;
+  })}</>;
+}
+
+/** FirmChip shows one firm: its name, the base total the server computed,
+ * and its status in words. */
+function FirmChip({ card: c, onOpen }: { card: FirmCard; onOpen: () => void }) {
+  return <button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
+    title={`${c.filename} · received ${c.received_on}${c.not_priced ? ` · ${c.not_priced} not priced` : ""}`}>
+    <span className="firm-chip-name">{c.firm_name || c.filename}</span>
+    <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : "—"}</span>
+    {c.status !== "received" && c.status !== "reading" && <span className="firm-chip-status">{STATUS_WORDS[c.status]}</span>}
+    {c.status === "received" && c.needs_review && <span className="firm-chip-status warn">Check</span>}
+  </button>;
 }

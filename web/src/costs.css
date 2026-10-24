@@ -90,3 +90,10 @@
 @media (pointer: coarse) { .cost-delete { width: 36px; height: 36px; } .cost-cell, .cost-open { min-height: 28px; } }
 
 .cost-add td > input, .cost-add td > select { display: block; width: 100%; }
+/* Totals area: the whole plan, then the construction budget against it. */
+.cost-total th, .cost-total td { border-top: 2px solid var(--line-strong); }
+.cost-grid .cost-budget-row th { font-weight: 600; text-align: left; }
+.cost-grid td.cost-budget-note { white-space: normal; color: var(--ink-body); }
+.cost-budget-note span { display: block; max-width: 88ch; }
+/* A share of the construction budget is a suggestion until the PM edits it. */
+.cost-cell.cost-spread { color: var(--ink-body); font-style: italic; text-decoration: underline dotted var(--azure); text-underline-offset: 3px; }

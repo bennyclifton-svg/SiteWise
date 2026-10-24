@@ -1516,25 +1516,20 @@ func (r *resolver) checkRequiredFacts() {
 }
 
 // engagement says who engages each other consultant: the client directly,
-// or this consultant as a subconsultant whose fee is in this price. A live
-// package with no answer is one decision naming every such package.
+// or this consultant as a subconsultant whose fee is in this price. A
+// package with no answer is engaged by the client: Procurement no longer
+// asks (owner decision 4, docs/plans/2026-10-21-source-to-cost-plan-design.md).
 func (r *resolver) engagement() string {
-	client, subs, open := []string{}, []string{}, []string{}
+	client, subs := []string{}, []string{}
 	for _, c := range r.drivers.Consultants {
-		switch c.EngagedBy {
-		case EngagedByClient:
-			client = append(client, c.Title+" ("+c.Status+")")
-		case EngagedByLead:
+		if c.EngagedBy == EngagedByLead {
 			subs = append(subs, c.Title)
-		default:
-			open = append(open, c.Title)
+		} else {
+			client = append(client, c.Title+" ("+c.Status+")")
 		}
 	}
-	if len(open) > 0 {
-		r.check(Check{ID: "engagement", Label: "Who engages " + strings.Join(open, ", ") + ": not decided", Text: "Decide in Procurement whether the client engages each directly or this consultant engages them as subconsultants. Their fees are in this price only if they are subconsultants.", Blocking: true, Changes: open})
-	}
 	lines := []string{}
-	if len(client) > 0 || len(subs) == 0 && len(open) == 0 {
+	if len(client) > 0 || len(subs) == 0 {
 		names := strings.Join(client, ", ")
 		if names == "" {
 			names = "none recorded yet"
@@ -1543,9 +1538,6 @@ func (r *resolver) engagement() string {
 	}
 	if len(subs) > 0 {
 		lines = append(lines, "You engage these consultants as your subconsultants and include their fees in your price; name them in R4: "+strings.Join(subs, ", ")+".")
-	}
-	if len(open) > 0 {
-		lines = append(lines, "Who engages these consultants is still to be decided: "+strings.Join(open, ", ")+".")
 	}
 	return strings.Join(lines, " ")
 }

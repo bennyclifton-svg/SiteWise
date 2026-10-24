@@ -27,6 +27,9 @@ type Totals struct {
 	Variance       *Money                      `json:"variance"`
 	Items          map[string]Figures          `json:"items"`
 	Buckets        map[string]Derived          `json:"buckets"`
+	// Budget compares the stated construction budget with the construction
+	// lines' budgets; nil when the profile states none.
+	Budget *BudgetCheck `json:"construction_budget,omitempty"`
 }
 
 // Derived figures are worked out here so the grid never sums money in the
@@ -227,6 +230,7 @@ func Summarize(plan Plan, by string) (Totals, error) {
 		v := Sub(*f, *b)
 		out.Variance = &v
 	}
+	out.Budget = checkBudget(plan.Budget, out.Sections["construction"]["budget"])
 	return out, nil
 }
 

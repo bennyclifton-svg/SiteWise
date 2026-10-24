@@ -40,9 +40,10 @@ expect:
     stages_include: [concept, schematic, planning_approval, design_development, house_documents]
     stages_absent: [tender_traditional, for_construction, interiors]
     positions: {lodgement: ask, house_interiors: I, specification: I, signage: absent, tenant_fitout: absent}
-    blocking: ["fact:flag.architect_lodges", "fact:budget", "engagement"]
+    # An undecided engagement is the client's (owner decision 4, 2026-10-21).
+    blocking: ["fact:flag.architect_lodges", "fact:budget"]
+    no_checks: ["unallocated:signage", "unallocated:facade_certification", "engagement"]
     blocking_only: true
-    no_checks: ["unallocated:signage", "unallocated:facade_certification"]
 sources:
   - "Owner decision 1 (13 October 2026): the architect RFP prints the construction budget, so a missing budget blocks issue."
   - "Owner decision 3: who engages each consultant is a question; an undecided live package blocks issue, once, naming every undecided package."

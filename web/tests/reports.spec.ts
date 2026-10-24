@@ -12,8 +12,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   const seeded = await page.request.post(`/api/projects/${project}/packages`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { kind: "services", title: "Fire engineering", novation: "option" } });
   expect(seeded.ok()).toBeTruthy();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await page.getByLabel("More for Fire engineering", { exact: true }).click();
-  await page.getByRole("button", { name: "Scope", exact: true }).click();
+  await page.getByRole("button", { name: "Scope for Fire engineering", exact: true }).click();
   await page.getByLabel("Scope wording", { exact: true }).fill("Review fire strategy and identify required investigations.");
   await page.getByLabel("Deliverable", { exact: true }).fill("Fire strategy report");
   await page.getByRole("button", { name: "Add scope item", exact: true }).click();

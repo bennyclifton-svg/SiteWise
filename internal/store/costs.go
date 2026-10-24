@@ -403,10 +403,16 @@ func (s *Store) PatchCostItem(ctx context.Context, org, project, id, actor strin
 	return s.finishCost(ctx, tx, org, project, p.ID)
 }
 func writeCostValue(ctx context.Context, tx pgx.Tx, org, project, version, item, actor, metric string, v costs.Value) error {
+	provenance, _ := json.Marshal(map[string]string{"actor": actor})
+	return writeCostValueWith(ctx, tx, org, project, version, item, metric, v, provenance)
+}
+
+// writeCostValueWith records the given provenance, stamped with the time.
+func writeCostValueWith(ctx context.Context, tx pgx.Tx, org, project, version, item, metric string, v costs.Value, provenance []byte) error {
 	if e := costs.ValidateValue(metric, &v); e != nil {
 		return e
 	}
-	_, e := tx.Exec(ctx, `INSERT INTO cost_values(org_id,project_id,plan_version_id,cost_item_id,metric,value_state,amount,low,high,as_of,origin,meaning,rationale,provenance) VALUES($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7::text::numeric,$8::text::numeric,$9::text::numeric,$10::text::date,$11,$12,$13,jsonb_build_object('actor',$14::text,'at',now())) ON CONFLICT(org_id,plan_version_id,cost_item_id,metric) DO UPDATE SET value_state=excluded.value_state,amount=excluded.amount,low=excluded.low,high=excluded.high,as_of=excluded.as_of,origin=excluded.origin,meaning=excluded.meaning,rationale=excluded.rationale,provenance=excluded.provenance,version=cost_values.version+1`, org, project, version, item, metric, v.ValueState, v.Amount, v.Low, v.High, v.AsOf, v.Origin, v.Meaning, v.Rationale, actor)
+	_, e := tx.Exec(ctx, `INSERT INTO cost_values(org_id,project_id,plan_version_id,cost_item_id,metric,value_state,amount,low,high,as_of,origin,meaning,rationale,provenance) VALUES($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7::text::numeric,$8::text::numeric,$9::text::numeric,$10::text::date,$11,$12,$13,$14::jsonb||jsonb_build_object('at',now())) ON CONFLICT(org_id,plan_version_id,cost_item_id,metric) DO UPDATE SET value_state=excluded.value_state,amount=excluded.amount,low=excluded.low,high=excluded.high,as_of=excluded.as_of,origin=excluded.origin,meaning=excluded.meaning,rationale=excluded.rationale,provenance=excluded.provenance,version=cost_values.version+1`, org, project, version, item, metric, v.ValueState, v.Amount, v.Low, v.High, v.AsOf, v.Origin, v.Meaning, v.Rationale, provenance)
 	return e
 }
 func (s *Store) PutCostValue(ctx context.Context, org, project, item, actor, metric string, in CostValueInput) (costs.Plan, error) {

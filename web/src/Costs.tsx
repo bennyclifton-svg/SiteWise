@@ -6,6 +6,7 @@ import { packageApi, type PackageRecord, type ScopeWork, type ScopeRecord } from
 import { CostGrid, editContent, fmt, subtotal } from "./CostGrid";
 import { InvoicesTab, VariationsTab } from "./Invoices";
 import { invoiceApi, type InvoiceFilter, type Ledger } from "./invoiceApi";
+import { profileApi } from "./profileApi";
 import "./invoices.css";
 import "./reports.css";
 import "./costs.css";
@@ -118,6 +119,19 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
     const current = i.values[metric];
     return save(() => costApi.value(projectId, plan!, i.cost_item_id, metric, { ...valueBlank(), ...current, amount, low: null, high: null, value_state: amount == null ? "unknown" : "known", origin: "user", meaning: current?.meaning || "allowance" }), false);
   }
+  // The construction budget lives on the profile row; saving it there and
+  // preparing again re-spreads the construction lines from the new figure.
+  async function saveBudget(amount: string | null) {
+    if (saving.current) return false;
+    saving.current = true; ++loadSequence.current; setBusy(true); setError("");
+    try {
+      await profileApi.set(projectId, "proj.budget_stated", { value: amount == null ? null : `$${amount}` });
+      const r = await costApi.prepare(projectId);
+      setPlan(r.plan); setTotals(r.totals);
+      return true;
+    } catch (e) { fail(e); return false; }
+    finally { saving.current = false; setBusy(false); }
+  }
   const overall = totals?.overall, derived = totals?.buckets?.overall;
   const status = plan?.status === "unavailable" ? "not started" : plan?.status;
   const ls = ledger?.summary;
@@ -162,7 +176,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
       </dl>
       <CostGrid plan={plan} totals={totals} packages={packages} selected={selected} editable={!frozen && !editing} busy={busy} quantities={quantities} onOpen={choose} onValue={saveAmount}
         onDelete={remove} ledger={history ? null : ledger} onInvoices={showInvoices}
-        onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} />
+        onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} onBudget={history ? undefined : saveBudget} />
     </>}
     </div>
     {open && tab === "plan" && <aside className="cost-drawer" aria-label="Cost line">

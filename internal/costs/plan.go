@@ -33,6 +33,9 @@ type Plan struct {
 	Systems     []CostSystem `json:"systems"`
 	Items       []Item       `json:"items"`
 	Links       []Link       `json:"links"`
+	// Budget is the construction budget the profile states, read on every
+	// plan read; nil when the profile has none.
+	Budget *ConstructionBudget `json:"construction_budget,omitempty"`
 }
 type CostSystem struct {
 	ID    string `json:"id"`

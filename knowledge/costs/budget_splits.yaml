@@ -1,0 +1,227 @@
+# Budget splits: how a stated construction budget is spread across the
+# construction lines when the cost plan opens (owner decision 1,
+# docs/plans/2026-10-21-source-to-cost-plan-design.md). Each split is the
+# share of construction cost per building system, in percent, from the
+# research in docs/evidence/2026-10-21-cost-split-research.md.
+#
+# A split is a planning default for an editable suggestion, never an
+# estimate: verified stays false until the owner or a QS checks it against
+# Rawlinsons, Cordell, AIQS or BCIS. Code renormalises over the lines the
+# project has. `preliminaries` (preliminaries and margin) has no line of
+# its own, so its share is spread over the trade lines pro rata.
+#
+# The first split whose `when` matches the profile wins: class, subclass and
+# work type are profile values; storeys bounds use hdr.scale.storeys and are
+# ignored when it is unknown. `basement` scales a share when the profile
+# says the project has a basement (proj.flag.basement), for splits whose
+# sources had none.
+version: 1
+status: draft
+verified: false
+sources:
+  - {evidence: docs/evidence/2026-10-21-cost-split-research.md}
+splits:
+  # Residential: NSW Planning Portal QS estimates (medium confidence).
+  - id: residential_house_new
+    label: New house
+    confidence: medium
+    when: {class: [residential], subclass: [house, townhouses, social_affordable_housing, retirement_living], work_type: [new]}
+    basement: {substructure: 2}
+    shares: {preliminaries: 18, site: 5, substructure: 11, structure: 6, envelope: 24, interiors: 24, fire-active: 0.2, mechanical: 2.5, hydraulic: 4.5, electrical: 3.8, comms-security: 0.5, access-egress: 0.5}
+    basis: "Earlwood and Panania dwelling estimates (H1, H2); basement from East Hills (A)."
+  - id: residential_apartments_high_rise
+    label: Apartments, high-rise
+    confidence: medium
+    when: {class: [residential], subclass: [apartments, btr, social_affordable_housing], work_type: [new], storeys_min: 5}
+    shares: {preliminaries: 19, site: 2, substructure: 9, structure: 18, envelope: 11, interiors: 22.3, fire-active: 2.8, mechanical: 2.7, hydraulic: 5.5, electrical: 4.5, comms-security: 0.2, vertical-transport: 2.2, access-egress: 0.8}
+    basis: "Belmore (R1) and St Leonards (R2) apartment estimates, both over basements."
+  - id: residential_apartments_low_rise
+    label: Apartments, low-rise
+    confidence: low
+    when: {class: [residential], subclass: [apartments, btr], work_type: [new]}
+    basement: {substructure: 2}
+    shares: {preliminaries: 18.5, site: 3.5, substructure: 10, structure: 12, envelope: 17.5, interiors: 23.2, fire-active: 1.5, mechanical: 2.6, hydraulic: 5, electrical: 4.2, comms-security: 0.3, vertical-transport: 1.1, access-egress: 0.6}
+    basis: "No source; midway between the house and high-rise splits."
+  - id: residential_student
+    label: Student housing and co-living
+    confidence: medium
+    when: {class: [residential], subclass: [student_housing], work_type: [new]}
+    shares: {preliminaries: 18.4, site: 1.5, substructure: 3.4, structure: 10.4, envelope: 18, interiors: 26.2, fire-active: 2.3, mechanical: 3.2, hydraulic: 7.8, electrical: 5.2, comms-security: 0.2, vertical-transport: 3.2, access-egress: 0.4}
+    basis: "Todman (S1) and Rockdale (S2) estimates, averaged."
+  - id: residential_aged_care
+    label: Residential aged care
+    confidence: medium
+    when: {class: [residential], subclass: [residential_aged_care], work_type: [new]}
+    shares: {preliminaries: 16.8, site: 3.9, substructure: 5.3, structure: 7.2, envelope: 17.6, interiors: 28.1, fire-active: 3.2, mechanical: 5.9, hydraulic: 5.5, electrical: 4.5, comms-security: 0.8, vertical-transport: 0.9, access-egress: 0.2}
+    basis: "Denham Court residential care facility (AC)."
+  - id: residential_extension
+    label: House extension or alteration
+    confidence: medium
+    when: {class: [residential], work_type: [extend, refurb]}
+    shares: {preliminaries: 10, site: 7.2, substructure: 20.8, envelope: 29.4, interiors: 23.7, fire-active: 0.4, mechanical: 1.6, hydraulic: 3.9, electrical: 2.4, access-egress: 0.7}
+    basis: "Ashbury alterations and additions (X1); refurbishment borrows it (no source)."
+  - id: residential_other
+    label: Residential, other
+    confidence: low
+    when: {class: [residential], work_type: [new]}
+    basement: {substructure: 2}
+    shares: {preliminaries: 18, site: 5, substructure: 11, structure: 6, envelope: 24, interiors: 24, fire-active: 0.2, mechanical: 2.5, hydraulic: 4.5, electrical: 3.8, comms-security: 0.5, access-egress: 0.5}
+    basis: "Borrows the new house split."
+
+  # Commercial and mixed use: UK cost models mapped, AIQS 2020 excerpts,
+  # Australian fit-out guides (low to medium confidence).
+  - id: commercial_fitout
+    label: Commercial fit-out or refurbishment
+    confidence: low
+    when: {class: [commercial, mixed], work_type: [refurb]}
+    shares: {preliminaries: 14, interiors: 50, fire-passive: 1, fire-active: 4, mechanical: 12, hydraulic: 2, electrical: 11, comms-security: 5, access-egress: 1}
+    basis: "Building office fit-out model (F) and Australian fit-out guides (G); sources disagree on services."
+  - id: commercial_office_high_rise
+    label: Office, high-rise
+    confidence: low
+    when: {class: [commercial], subclass: [office], work_type: [new, extend], storeys_min: 8}
+    shares: {preliminaries: 18, site: 1, substructure: 5, structure: 19, envelope: 14, interiors: 14, fire-passive: 1, fire-active: 2, mechanical: 8, hydraulic: 3, electrical: 7, comms-security: 2, vertical-transport: 5, access-egress: 1}
+    basis: "AIQS high-rise (E) blended with the AECOM office tower model (A)."
+  - id: commercial_office
+    label: Office
+    confidence: low
+    when: {class: [commercial], subclass: [office, serviced_office_coworking], work_type: [new, extend]}
+    basement: {substructure: 2}
+    shares: {preliminaries: 16, site: 8, substructure: 5, structure: 14, envelope: 15, interiors: 14, fire-passive: 1, fire-active: 3, mechanical: 11, hydraulic: 2, electrical: 7, comms-security: 2, vertical-transport: 1, access-egress: 1}
+    basis: "Retail showroom model (C) and AIQS low-rise (E)."
+  - id: commercial_shopping_centre
+    label: Shopping centre
+    confidence: low
+    when: {class: [commercial], subclass: [retail_shopping_centre], work_type: [new, extend]}
+    shares: {preliminaries: 20, site: 3, substructure: 11, structure: 16, envelope: 27, interiors: 6, fire-passive: 1, fire-active: 2, mechanical: 6, hydraulic: 1, electrical: 4, comms-security: 1, vertical-transport: 1, access-egress: 1}
+    basis: "AECOM retail shell model (D)."
+  - id: commercial_hotel
+    label: Hotel or residential over retail
+    confidence: low
+    when: {class: [commercial, mixed], subclass: [hotel, hotel_residential, residential_retail, btr_retail, residential_commercial, vertical_village], work_type: [new, extend]}
+    shares: {preliminaries: 25, site: 1, substructure: 5, structure: 6, envelope: 13, interiors: 26, fire-active: 1, mechanical: 8, hydraulic: 2, electrical: 7, comms-security: 3, vertical-transport: 2, access-egress: 1}
+    basis: "AECOM hotel, residential and retail model (B); hydraulic likely understated."
+  - id: commercial_retail
+    label: Standalone retail, food and beverage
+    confidence: low
+    when: {class: [commercial, mixed], work_type: [new, extend]}
+    shares: {preliminaries: 16, site: 10, substructure: 6, structure: 6, envelope: 20, interiors: 14, fire-active: 3, mechanical: 12, hydraulic: 1, electrical: 8, comms-security: 3, access-egress: 1}
+    basis: "Retail showroom model (C); other commercial and mixed use borrow it."
+
+  # Industrial: judgement anchored on sparse sources (low confidence).
+  # Refurbishment has no source and no split.
+  - id: industrial_high_bay
+    label: Logistics, high-bay
+    confidence: low
+    when: {class: [industrial], subclass: [logistics_ecommerce], work_type: [new, extend]}
+    shares: {preliminaries: 12, site: 17, substructure: 14, structure: 16, envelope: 15, interiors: 4, fire-passive: 1, fire-active: 8, mechanical: 3, hydraulic: 2, electrical: 6, comms-security: 1, access-egress: 1}
+    basis: "Warehouse split with higher frame and sprinklers (S1, S12)."
+  - id: industrial_cold_storage
+    label: Cold storage
+    confidence: low
+    when: {class: [industrial], subclass: [cold_storage], work_type: [new, extend]}
+    shares: {preliminaries: 11, site: 10, substructure: 12, structure: 10, envelope: 20, interiors: 2, fire-passive: 1, fire-active: 5, mechanical: 22, hydraulic: 1, electrical: 5, comms-security: 1}
+    basis: "US cold-store vendor ranges (S4) and NSW rates (S1)."
+  - id: industrial_data_centre
+    label: Data centre
+    confidence: low
+    when: {class: [industrial], subclass: [data_centre], work_type: [new, extend]}
+    shares: {preliminaries: 10, site: 3, substructure: 2, structure: 3, envelope: 3, interiors: 1, fire-passive: 1, fire-active: 2, mechanical: 22, hydraulic: 1, electrical: 50, comms-security: 2}
+    basis: "Turner & Townsend cost structure, second-hand (S9)."
+  - id: industrial_heavy
+    label: Heavy manufacturing
+    confidence: low
+    when: {class: [industrial], subclass: [heavy_manufacturing, waste_to_energy, battery_manufacturing], work_type: [new, extend]}
+    shares: {preliminaries: 13, site: 13, substructure: 16, structure: 17, envelope: 11, interiors: 5, fire-passive: 1, fire-active: 4, mechanical: 6, hydraulic: 3, electrical: 9, comms-security: 1, access-egress: 1}
+    basis: "Judgement."
+  - id: industrial_light_manufacturing
+    label: Light manufacturing
+    confidence: low
+    when: {class: [industrial], subclass: [manufacturing], work_type: [new, extend]}
+    shares: {preliminaries: 12, site: 15, substructure: 13, structure: 13, envelope: 13, interiors: 8, fire-passive: 1, fire-active: 5, mechanical: 6, hydraulic: 4, electrical: 8, comms-security: 1, access-egress: 1}
+    basis: "Judgement."
+  - id: industrial_dangerous_goods
+    label: Dangerous goods store
+    confidence: low
+    when: {class: [industrial], subclass: [dangerous_goods], work_type: [new, extend]}
+    shares: {preliminaries: 12, site: 20, substructure: 15, structure: 12, envelope: 12, interiors: 3, fire-passive: 3, fire-active: 9, mechanical: 4, hydraulic: 3, electrical: 5, comms-security: 1, access-egress: 1}
+    basis: "Warehouse split with bunding, separation and spill drainage (judgement)."
+  - id: industrial_food_processing
+    label: Food processing
+    confidence: low
+    when: {class: [industrial], subclass: [food_processing], work_type: [new, extend]}
+    shares: {preliminaries: 12, site: 10, substructure: 11, structure: 10, envelope: 13, interiors: 12, fire-passive: 1, fire-active: 4, mechanical: 14, hydraulic: 6, electrical: 6, comms-security: 1}
+    basis: "Judgement guided by rate premiums (S1, S13)."
+  - id: industrial_gmp
+    label: Pharmaceutical GMP or cleanroom
+    confidence: low
+    when: {class: [industrial], subclass: [pharmaceutical_gmp, cleanroom], work_type: [new, extend]}
+    shares: {preliminaries: 12, site: 6, substructure: 6, structure: 7, envelope: 7, interiors: 16, fire-passive: 2, fire-active: 3, mechanical: 23, hydraulic: 7, electrical: 9, comms-security: 2}
+    basis: "Cleanroom and validation 35-55 % (S13, second-hand); judgement."
+  - id: industrial_warehouse
+    label: Warehouse or distribution
+    confidence: low
+    when: {class: [industrial], work_type: [new, extend]}
+    shares: {preliminaries: 12, site: 20, substructure: 14, structure: 14, envelope: 14, interiors: 6, fire-passive: 1, fire-active: 6, mechanical: 3, hydraulic: 2, electrical: 6, comms-security: 1, access-egress: 1}
+    basis: "External works share (S1), frame and cladding rates (S3); other industrial borrows it."
+
+  # Institutional: UK NHS models, one NSW school, UK school benchmark;
+  # the rest judgement (low confidence). Refurbishment has no split.
+  - id: institution_early_childhood
+    label: Early childhood centre
+    confidence: low
+    when: {class: [institution], subclass: [education_early_childhood], work_type: [new, extend]}
+    shares: {preliminaries: 13, site: 14, substructure: 7, structure: 5, envelope: 17, interiors: 16, fire-passive: 1, fire-active: 1.5, mechanical: 9, hydraulic: 7, electrical: 6, comms-security: 2.5, access-egress: 1}
+    basis: "Judgement."
+  - id: institution_school
+    label: School
+    confidence: low
+    when: {class: [institution], subclass: [education_primary_secondary], work_type: [new, extend]}
+    shares: {preliminaries: 12, site: 10, substructure: 6, structure: 12, envelope: 18, interiors: 15, fire-passive: 1, fire-active: 1.5, mechanical: 8, hydraulic: 4, electrical: 7, comms-security: 3.5, vertical-transport: 1, access-egress: 1}
+    basis: "Good Samaritan College estimate (2018) and UK school benchmark (2025)."
+  - id: institution_tertiary
+    label: Tertiary teaching or laboratory
+    confidence: low
+    when: {class: [institution], subclass: [education_tertiary], work_type: [new, extend]}
+    shares: {preliminaries: 13, site: 4, substructure: 4, structure: 9, envelope: 11, interiors: 12, fire-passive: 1.5, fire-active: 2.5, mechanical: 18, hydraulic: 7, electrical: 10, comms-security: 4, vertical-transport: 2, access-egress: 2}
+    basis: "Lab MEP 40-55 % (BHDP, CSE); judgement."
+  - id: institution_hospital
+    label: Hospital
+    confidence: low
+    when: {class: [institution], subclass: [healthcare_hospital], work_type: [new, extend]}
+    shares: {preliminaries: 15, site: 4, substructure: 4, structure: 8, envelope: 12, interiors: 15, fire-passive: 1.5, fire-active: 2.5, mechanical: 12, hydraulic: 10, electrical: 9, comms-security: 4, vertical-transport: 2, access-egress: 1}
+    basis: "NHS inpatient elemental model (2010), mechanical raised for Australia."
+  - id: institution_medical_centre
+    label: Medical centre
+    confidence: low
+    when: {class: [institution], subclass: [healthcare_medical_centre], work_type: [new, extend]}
+    shares: {preliminaries: 15, site: 5, substructure: 5, structure: 8, envelope: 15, interiors: 16, fire-passive: 1, fire-active: 2, mechanical: 11, hydraulic: 7, electrical: 9, comms-security: 3, vertical-transport: 2, access-egress: 1}
+    basis: "NHS primary care elemental model (2010)."
+  - id: institution_allied_health
+    label: Allied health clinic
+    confidence: low
+    when: {class: [institution], subclass: [healthcare_clinic_allied], work_type: [new, extend]}
+    shares: {preliminaries: 15, site: 6, substructure: 6, structure: 6, envelope: 15, interiors: 20, fire-passive: 1, fire-active: 1.5, mechanical: 10, hydraulic: 6, electrical: 8, comms-security: 3, vertical-transport: 1, access-egress: 1.5}
+    basis: "Scaled down from the medical centre (judgement)."
+  - id: institution_religious
+    label: Religious building
+    confidence: low
+    when: {class: [institution], subclass: [religious], work_type: [new, extend]}
+    shares: {preliminaries: 13, site: 8, substructure: 6, structure: 12, envelope: 24, interiors: 17, fire-passive: 1, fire-active: 1.5, mechanical: 7, hydraulic: 2, electrical: 6, comms-security: 1.5, access-egress: 1}
+    basis: "Judgement."
+  - id: institution_civic
+    label: Civic or community building
+    confidence: low
+    when: {class: [institution], work_type: [new, extend]}
+    shares: {preliminaries: 13, site: 7, substructure: 5, structure: 10, envelope: 18, interiors: 18, fire-passive: 1, fire-active: 2, mechanical: 10, hydraulic: 4, electrical: 7, comms-security: 3, vertical-transport: 1, access-egress: 1}
+    basis: "Judgement; other institutional buildings borrow it."
+
+  # Infrastructure: TfNSW road categories mapped onto building systems
+  # (prelims + traffic management; earthworks, drainage, pavements and
+  # environment as site works; bridges and walls as structure).
+  - id: infrastructure_roads
+    label: Infrastructure (road categories)
+    confidence: low
+    when: {class: [infrastructure], work_type: [new, extend, refurb]}
+    shares: {preliminaries: 19, site: 49, structure: 32}
+    basis: "TfNSW IP-0033-GD03 v3.0 urban road shares; other infrastructure borrows it."

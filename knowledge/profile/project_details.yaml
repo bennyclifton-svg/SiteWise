@@ -66,14 +66,16 @@ details:
       rating this project must achieve? Select none when absent, when it only names a tool or standard
       without a target, or when it describes a different project.
   - {key: regulated_design, label: Regulated design applies, value: yes_no, scope: project, help: "Record the professional advice or verified rule you relied on. The class alone does not decide it."}
-  # The budget a brief or report states, kept as its verbatim span. Money
-  # totals belong to the cost plan; this stands in for the RFP until the cost
-  # plan holds a budget (owner decision 1, 2026-10-13).
+  # The budget a brief or report states, kept as its verbatim span. It is
+  # the one construction budget: the cost plan reads its amount in Go,
+  # shows it in its totals, writes edits back here and spreads it over the
+  # construction lines (owner decisions 1 and 2, 2026-10-21,
+  # docs/plans/2026-10-21-source-to-cost-plan-design.md).
   - key: budget_stated
     label: Construction budget (as stated)
     value: text
     scope: project
-    help: "As a document states it. Set the budget in Costs; the cost plan's figure wins."
+    help: "As a document states it, or typed here or in the Cost Plan totals. The cost plan spreads it over the construction lines."
     extraction: pre_parsed
     triggers:
       - '\bbudget\b'
