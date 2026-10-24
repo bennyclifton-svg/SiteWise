@@ -11,6 +11,7 @@ function headlineFees(fees: QuoteFee[]) {
   // prominent; every occurrence remains available in the source fee lines.
   return offers.filter(f => f.label !== "Quoted fee" || !offers.some(other => other.id !== f.id && (f.amount !== null ? other.amount === f.amount : other.printed === f.printed) && other.label !== "Quoted fee"));
 }
+const statedNote = (c: Column) => `Firm's stated total, ex GST, as printed in ${c.submission.filename}.`.slice(0, 500);
 
 export function ConsultantComparison({ table, projectId, busy, onConfirm, onCoverage, onOpen, onAward }: {
   table: PriceTable; projectId: string; busy: boolean;
@@ -24,10 +25,16 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
   const [later, setLater] = useState(false);
   const locked = busy || !!table.award;
   const rows = table.items.filter(i => i.kind !== "criterion" && i.kind !== "rate" && i.key !== "comparison:appointment" && (i.base || later));
-  function edit(col: Column, fee?: QuoteFee) {
+  function edit(col: Column, fee?: QuoteFee, stated?: string | null) {
     setEditing(col.submission.id);
-    setAmount(fee?.amount ?? col.cells["comparison:appointment"]?.amount ?? "");
-    setNote(fee ? `${fee.label}. Source page ${fee.page}: ${fee.source}`.slice(0, 500) : col.cells["comparison:appointment"]?.basis ?? "");
+    setAmount(fee?.amount ?? col.cells["comparison:appointment"]?.amount ?? stated ?? "");
+    setNote(fee ? `${fee.label}. Source page ${fee.page}: ${fee.source}`.slice(0, 500) : col.cells["comparison:appointment"]?.basis ?? (stated ? statedNote(col) : ""));
+  }
+  // Award in one click: an unconfirmed stated total is recorded as the PM's
+  // comparison fee (the click is the confirmation), then the award opens.
+  async function awardAt(col: Column, stated: string | null) {
+    if (stated && !(await onConfirm(col.submission.id, stated, statedNote(col)))) return;
+    onAward(col.submission.id);
   }
   return <div className="consultant-comparison">
     <p className="prices-legend">Quoted fees retain each firm’s bundles and alternatives. Scope coverage is shown separately. Confirm the same appointment scope before comparing prices.</p>
@@ -64,12 +71,17 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
             </li>)}
           </ul></details>
         </td>)}</tr>
-        <tr className="prices-total"><th scope="row">Confirmed comparison fee<span>For the scope you record</span></th>{table.columns.map(c => {
+        <tr className="prices-total"><th scope="row">Comparison fee<span>The firm's stated total unless you record another</span></th>{table.columns.map(c => {
           const confirmed = c.cells["comparison:appointment"];
-          return <td key={c.submission.id}><strong>{confirmed?.amount ? money(confirmed.amount) : "Not confirmed"}</strong>
-            {confirmed?.basis && <p>{confirmed.basis}</p>}
-            <button className="table-action" disabled={locked} onClick={() => edit(c)}>{confirmed?.amount ? "Edit amount and scope" : "Confirm amount and scope"}</button>
-            {!table.award && confirmed?.amount && <button className="btn btn-small" disabled={busy} onClick={() => onAward(c.submission.id)}>Award</button>}
+          // The firm's own printed total, read from its proposal. Offered only
+          // when it is known to be ex GST: the server stores it as printed.
+          const stated = !confirmed?.amount && c.submission.gst_basis === "ex" ? c.totals.stated_total : null;
+          const firm = c.firm?.name || "this consultant";
+          return <td key={c.submission.id}>
+            <strong>{confirmed?.amount ? money(confirmed.amount) : stated ? money(stated) : "Not confirmed"}</strong>
+            {confirmed?.basis ? <p>{confirmed.basis}</p> : stated && <p>Stated total in the proposal, ex GST</p>}
+            {!table.award && (confirmed?.amount || stated) && <button className="btn btn-primary btn-small" disabled={busy} onClick={() => void awardAt(c, stated)}>Award to {firm}</button>}
+            <button className="table-action" disabled={locked} onClick={() => edit(c, undefined, stated)}>{confirmed?.amount || stated ? "Use a different amount" : "Confirm amount and scope"}</button>
           </td>;
         })}</tr>
         <tr className="prices-group"><th scope="rowgroup" colSpan={table.columns.length + 1}>Scope coverage — a bundle may cover several services</th></tr>
