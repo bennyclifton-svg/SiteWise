@@ -190,6 +190,10 @@ func proposalFormat(name string) string {
 		return "docx"
 	case "xlsx":
 		return "xlsx"
+	// Filing accepts Markdown, so a Markdown proposal is read too, not
+	// left as "needs a package" with nothing read.
+	case "md", "markdown":
+		return "md"
 	}
 	return ""
 }
