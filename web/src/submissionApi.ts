@@ -17,8 +17,8 @@ export interface BuilderSection { key: string; label: string; summary?: string; 
 export interface BuilderReview { ex_gst: Money; inc_gst: Money; basis: string; sources: string[]; issues: string[]; sections: BuilderSection[] }
 export interface QuoteFee { id: string; label: string; printed: string; amount: Money; role: string; page: number; source: string; heading: string; suggestion?: string }
 export interface QuoteReview { fees: QuoteFee[]; coverage: Record<string, {fee_id: string; status: string}>; issues: string[]; terms?: {kind: string; heading: string; text: string; page: number}[] }
-export interface Column { quote?: QuoteReview; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
-export interface AwardLine { cost_item_id?: string; label: string; item_keys: string[]; price_ids: string[]; amount: Money; invoiced: boolean }
+export interface Column { quote?: QuoteReview; award_stages?: QuoteFee[]; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
+export interface AwardLine { cost_item_id?: string; label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[]; amount: Money; invoiced: boolean }
 export interface Award { id?: string; submission_id: string; firm_name: string; parent_label: string; parent_item_id?: string; budget: Money; total: Money; lines: AwardLine[]; created_at?: string; locked: boolean }
 export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null }
 export interface FirmCard { submission_id: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[] }
@@ -30,7 +30,7 @@ export interface ReportData {
   table: PriceTable;
   report: { criteria: ScheduleItem[]; columns: { submission_id: string; responses: Record<string, CriterionResponse> }[]; recommendation: string; draft: string; edited_by: string; signed_off_by: string; signed_off_at: string | null; version: number };
 }
-export interface AwardRequest { submission_id: string; lines: { label: string; item_keys: string[]; price_ids: string[] }[]; total: string }
+export interface AwardRequest { submission_id: string; lines: { label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[] }[]; total: string }
 
 const p = (project: string) => `/projects/${project}`;
 

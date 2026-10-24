@@ -20,11 +20,13 @@ import (
 var ErrAwardLocked = errors.New("an invoice is allocated to this award's lines")
 
 // AwardLine is one cost plan line the PM chose: the schedule items (or
-// offered extras, by price id) it holds and the name it carries.
+// offered extras, by price id, or the source's stages, by quoted fee id) it
+// holds and the name it carries.
 type AwardLine struct {
 	Label    string   `json:"label"`
 	Keys     []string `json:"item_keys"`
 	PriceIDs []string `json:"price_ids"`
+	QuoteIDs []string `json:"quote_ids"`
 }
 
 // AwardInput is the award as confirmed. Total is the running total the PM
@@ -41,6 +43,7 @@ type AwardLineView struct {
 	Label      string   `json:"label"`
 	Keys       []string `json:"item_keys"`
 	PriceIDs   []string `json:"price_ids"`
+	QuoteIDs   []string `json:"quote_ids"`
 	Cents      int64    `json:"-"`
 	Invoiced   bool     `json:"invoiced"`
 }
@@ -126,7 +129,27 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 	if err != nil {
 		return v, sub, nil, "", err
 	}
-	if _, confirmed := byKey["comparison:appointment"]; !isBuilder && (quote != nil || confirmed) {
+	// Award by stage: every line holds only source stages, and together
+	// they are exactly the stages that add to the confirmed fee.
+	stages := map[string]proposals.QuotedFee{}
+	byStage := false
+	for _, line := range in.Lines {
+		byStage = byStage || len(line.QuoteIDs) > 0
+	}
+	if byStage {
+		appt, confirmed := byKey["comparison:appointment"]
+		if isBuilder || !confirmed || appt.by != proposals.ByUser || appt.state != proposals.StatePriced || appt.cents == nil {
+			return v, sub, nil, "", ErrInvalidInput
+		}
+		for _, f := range awardStages(quote, *appt.cents) {
+			stages[f.ID] = f
+		}
+		for _, line := range in.Lines {
+			if len(stages) == 0 || len(line.QuoteIDs) == 0 || len(line.Keys)+len(line.PriceIDs) != 0 {
+				return v, sub, nil, "", ErrInvalidInput
+			}
+		}
+	} else if _, confirmed := byKey["comparison:appointment"]; !isBuilder && (quote != nil || confirmed) {
 		for _, line := range in.Lines {
 			if len(line.PriceIDs) != 0 || len(line.Keys) != 1 || line.Keys[0] != "comparison:appointment" || byKey["comparison:appointment"].by != proposals.ByUser {
 				return v, sub, nil, "", ErrInvalidInput
@@ -149,10 +172,10 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 			return v, sub, nil, "", ErrInvalidInput
 		}
 		label := strings.TrimSpace(l.Label)
-		if label == "" || len(label) > 200 || len(l.Keys)+len(l.PriceIDs) == 0 {
+		if label == "" || len(label) > 200 || len(l.Keys)+len(l.PriceIDs)+len(l.QuoteIDs) == 0 {
 			return v, sub, nil, "", ErrInvalidInput
 		}
-		line := AwardLineView{Label: label, Keys: []string{}, PriceIDs: []string{}}
+		line := AwardLineView{Label: label, Keys: []string{}, PriceIDs: []string{}, QuoteIDs: []string{}}
 		take := func(id string, p priced, ok bool) error {
 			if isBuilder && p.by != proposals.ByUser {
 				return ErrInvalidInput
@@ -181,8 +204,23 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 			}
 			line.PriceIDs = append(line.PriceIDs, id)
 		}
+		for _, id := range l.QuoteIDs {
+			f, ok := stages[id]
+			if !ok || used["q:"+id] {
+				return v, sub, nil, "", ErrInvalidInput
+			}
+			c, _, _ := invoices.ParseCents(*f.Amount) // checked by awardStages
+			used["q:"+id] = true
+			line.Cents += c
+			line.QuoteIDs = append(line.QuoteIDs, id)
+		}
 		v.Lines = append(v.Lines, line)
 		v.Total += line.Cents
+	}
+	for id := range stages {
+		if !used["q:"+id] {
+			return v, sub, nil, "", ErrInvalidInput
+		}
 	}
 	if in.Total != "" {
 		c, ok, err := invoices.ParseCents(in.Total)
@@ -336,10 +374,29 @@ WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, o
 VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6::uuid,$7,$8::jsonb,$9::uuid)`, org, awardID, project, pkg, sub.ID, parentID, created, string(raw), actor); err != nil {
 		return v, err
 	}
-	rationale := "Awarded to " + firm.Name + " (" + sub.Filename + ")"
+	quote, err := quotedReview(ctx, tx, org, sub.ID)
+	if err != nil {
+		return v, err
+	}
+	sources := map[string]proposals.QuotedFee{}
+	if quote != nil {
+		for _, f := range quote.Fees {
+			sources[f.ID] = f
+		}
+	}
 	for i := range v.Lines {
 		l := &v.Lines[i]
 		id := newID()
+		rationale := "Awarded to " + firm.Name + " (" + sub.Filename + ")"
+		// A stage line names the source rows it came from.
+		for _, q := range l.QuoteIDs {
+			f := sources[q]
+			rationale += "; " + f.Label + " " + f.Printed
+			if f.Page > 0 {
+				rationale += " p." + strconv.Itoa(f.Page)
+			}
+		}
+		rationale = clipText(rationale, 1000)
 		// Codes keep the PM's order under the group: F01.1, F01.2, ...
 		c := costs.Content{ParentItemID: parentID, Code: clipText(code+"."+strconv.Itoa(i+1), 100), Label: l.Label, LineKind: "fee", PackageID: pkg, Posting: true, Origin: "user", Meaning: "stated", Rationale: rationale}
 		if err := s.insertCostItem(ctx, tx, org, project, p.ID, actor, id, c); err != nil {
@@ -352,6 +409,12 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6::uuid,$7,$8::jsonb,$9::u
 		for _, k := range l.Keys {
 			if _, err := tx.Exec(ctx, `INSERT INTO cost_line_sources (org_id,id,project_id,award_id,cost_item_id,item_key,label,ordinal)
 SELECT $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6,COALESCE((SELECT label FROM schedule_items WHERE org_id=$1::uuid AND package_id=$7::uuid AND key=$6),''),$8`, org, newID(), project, awardID, id, k, pkg, i); err != nil {
+				return v, err
+			}
+		}
+		for _, q := range l.QuoteIDs {
+			if _, err := tx.Exec(ctx, `INSERT INTO cost_line_sources (org_id,id,project_id,award_id,cost_item_id,item_key,label,ordinal) VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6,$7,$8)`,
+				org, newID(), project, awardID, id, "quote:"+q, clipText(sources[q].Label, 500), i); err != nil {
 				return v, err
 			}
 		}
@@ -559,7 +622,7 @@ FROM cost_line_sources s WHERE s.org_id=$1::uuid AND s.award_id=$2::uuid ORDER B
 		i, ok := index[item]
 		if !ok {
 			it := items[item]
-			line := AwardLineView{CostItemID: item, Label: it.Label, Keys: []string{}, PriceIDs: []string{}}
+			line := AwardLineView{CostItemID: item, Label: it.Label, Keys: []string{}, PriceIDs: []string{}, QuoteIDs: []string{}}
 			if c := it.Values["commitment"]; c.Amount != nil {
 				if n, ok, _ := invoices.ParseCents(string(*c.Amount)); ok {
 					line.Cents = n
@@ -570,7 +633,9 @@ FROM cost_line_sources s WHERE s.org_id=$1::uuid AND s.award_id=$2::uuid ORDER B
 			v.Lines = append(v.Lines, line)
 			v.Total += line.Cents
 		}
-		if key != "" {
+		if q, ok := strings.CutPrefix(key, "quote:"); ok {
+			v.Lines[i].QuoteIDs = append(v.Lines[i].QuoteIDs, q)
+		} else if key != "" {
 			v.Lines[i].Keys = append(v.Lines[i].Keys, key)
 		}
 		if price != "" {

@@ -16,7 +16,10 @@ import (
 // FirmColumn is one firm in a package's price table. Totals are computed in
 // Go from the stored cells.
 type FirmColumn struct {
-	Quote         *proposals.QuoteReview        `json:"quote,omitempty"`
+	Quote *proposals.QuoteReview `json:"quote,omitempty"`
+	// AwardStages are the source stages that add to the confirmed fee, so
+	// the award can write them as separate lines. Empty otherwise.
+	AwardStages   []proposals.QuotedFee         `json:"award_stages,omitempty"`
 	Builder       *proposals.BuilderReview      `json:"builder,omitempty"`
 	Submission    Submission                    `json:"submission"`
 	Firm          *Firm                         `json:"firm"`
@@ -182,6 +185,9 @@ FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2 ORDER BY
 			}
 			if _, confirmed := col.Cells["comparison:appointment"]; col.Quote != nil || confirmed {
 				col.Totals = proposals.Totals([]rfp.ScheduleItem{{Key: "comparison:appointment", Kind: rfp.ItemStage, Base: true}}, col.Cells, nil, nil)
+			}
+			if a, ok := col.Cells["comparison:appointment"]; ok && a.DecidedBy == proposals.ByUser && a.State == proposals.StatePriced && a.Cents != nil {
+				col.AwardStages = awardStages(col.Quote, *a.Cents)
 			}
 		}
 		if isBuilder {

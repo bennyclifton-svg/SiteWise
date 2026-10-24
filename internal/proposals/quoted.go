@@ -31,6 +31,13 @@ var conditionHeading = regexp.MustCompile(`(?i)^(?:assumptions?\b|conditions?\b|
 var scopeLimit = regexp.MustCompile(`(?i)\b(?:not appointed as|excluding|not included|outside (?:our|the) scope)\b`)
 var feeCondition = regexp.MustCompile(`(?i)\b(?:disbursements?|reimbursables?)\b`)
 
+// Roles the reader gives a quoted fee by rule. Award by stage takes only
+// breakdown components, never the package total they make up.
+const (
+	RoleTotal     = "Package / total — do not add to its breakdown"
+	RoleComponent = "Breakdown component — not additional to package"
+)
+
 type QuotedFee struct {
 	ID         string  `json:"id"`
 	Label      string  `json:"label"`
@@ -191,16 +198,16 @@ func (d *Draft) quotedReview() *QuoteReview {
 	for _, a := range quoteAmounts(d.ev) {
 		role := "Package / fee — scope awaiting alignment"
 		if unitWord.MatchString(a.Context) && len(moneyIn(a.Context)) > 1 {
-			role = "Breakdown component — not additional to package"
+			role = RoleComponent
 		}
 		if quoteSummaryWords.MatchString(a.Label + " " + a.Context) {
-			role = "Package / total — do not add to its breakdown"
+			role = RoleTotal
 		}
 		if a.Total {
-			role = "Package / total — do not add to its breakdown"
+			role = RoleTotal
 		}
 		if components[a.ID] {
-			role = "Breakdown component — not additional to package"
+			role = RoleComponent
 		}
 		if a.RepeatOf != "" {
 			role = "Repeated reference — already quoted"

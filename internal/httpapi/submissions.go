@@ -281,6 +281,7 @@ type totalsJSON struct {
 
 type columnJSON struct {
 	Quote         *proposals.QuoteReview        `json:"quote,omitempty"`
+	AwardStages   []proposals.QuotedFee         `json:"award_stages,omitempty"`
 	Builder       *proposals.BuilderReview      `json:"builder,omitempty"`
 	UndoAlignment bool                          `json:"undo_alignment"`
 	Submission    store.Submission              `json:"submission"`
@@ -307,6 +308,7 @@ func tableBody(t store.PriceTable, award *store.AwardView) tableJSON {
 		col.UndoAlignment = c.UndoAlignment
 		col.Builder = c.Builder
 		col.Quote = c.Quote
+		col.AwardStages = c.AwardStages
 		for k, v := range c.Cells {
 			col.Cells[k] = cellOf(v)
 		}
