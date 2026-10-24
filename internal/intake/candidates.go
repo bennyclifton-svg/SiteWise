@@ -929,6 +929,10 @@ func labelAt(text string, tokens []word, i int) (field string, n int, ok bool) {
 		return FieldNumber, 2, true
 	case eq(a, "doc") && eq(b, "ref"):
 		return FieldNumber, 2, true
+	// A proposal or quote names itself by its own reference. "Job No" and
+	// "Our ref" name the job, not the document, and stay unlabelled.
+	case (eq(a, "proposal") || eq(a, "quote") || eq(a, "quotation")) && (eq(b, "ref") || eq(b, "reference") || eq(b, "no") || eq(b, "number")):
+		return FieldNumber, 2, true
 	case eq(a, "sheet") && eq(b, "title"):
 		return FieldTitle, 2, true
 	case eq(a, "sheet") && (eq(b, "no") || eq(b, "number")):

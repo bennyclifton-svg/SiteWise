@@ -197,7 +197,8 @@ func settleVocabulary(cat Catalog, filename string, text identity.Text) []Result
 	} else if id, ok := explicitLifecycle(cat, text); ok {
 		out = append(out, Result{Field: FieldLifecycle, Settled: true, Rule: RuleUnique, Display: id, Normalized: id})
 	}
-	return out
+	// Last, so an explicit "Kind:" or lifecycle caption above still wins.
+	return append(out, feeProposalVocabulary(filename, text)...)
 }
 
 func vocabularyEvidence(filename string, text identity.Text, caption string, phrases map[string][]string) string {
