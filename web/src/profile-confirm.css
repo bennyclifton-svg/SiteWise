@@ -1,0 +1,28 @@
+/* The profile's "To confirm" list: values documents stated, waiting for the PM. */
+.pf-confirm {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--warn);
+  border-radius: 6px;
+  background: var(--paper);
+  padding: 10px 14px;
+}
+.pf-confirm summary { cursor: pointer; color: var(--ink); }
+.pf-confirm ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.pf-confirm li {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(140px, 2fr) minmax(120px, 1.2fr) auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+.pf-confirm-label { color: var(--ink-body); }
+.pf-confirm-value { color: var(--ink); overflow-wrap: anywhere; }
+.pf-confirm-basis { color: var(--ink-muted); font-size: 0.9em; }
+.pf-confirm-basis[data-differ] { color: var(--warn); }
+.pf-confirm-all { margin: 8px 0 0; }
+@media (max-width: 640px) {
+  .pf-confirm li { grid-template-columns: 1fr auto; }
+  .pf-confirm-basis { grid-column: 1 / -1; }
+}
