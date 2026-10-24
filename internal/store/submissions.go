@@ -487,6 +487,13 @@ WHERE submission_responses.decided_by <> 'user'`, org, project, id, r.Key, passa
 		v := *out.StatedTotal
 		stated = &v
 	}
+	// The proposal's own date is when the firm offered it. Only the first
+	// read sets it: a later re-check never moves a date the user may have set.
+	if !recheck && validProposalDate(out.Dated, now) {
+		if _, err := tx.Exec(ctx, `UPDATE submissions SET received_on=$3::date WHERE org_id=$1::uuid AND id::text=$2`, org, id, out.Dated); err != nil {
+			return false, err
+		}
+	}
 	var retry *time.Time
 	if out.Grey {
 		t := now.Add(30 * time.Second)
@@ -505,6 +512,17 @@ WHERE org_id=$1::uuid AND id::text=$2`, org, id, next, kindColumn(kind), pkg, fi
 		return false, err
 	}
 	return true, tx.Commit(ctx)
+}
+
+// validProposalDate accepts a printed date that is not in the future and
+// not more than two years old; anything else is likely a misread.
+func validProposalDate(day string, now time.Time) bool {
+	t, err := time.Parse("2006-01-02", day)
+	if err != nil {
+		return false
+	}
+	today, _ := time.Parse("2006-01-02", SydneyDate(now))
+	return !t.After(today) && t.After(today.AddDate(-2, 0, 0))
 }
 
 func stringsOrEmpty(s []string) []string {

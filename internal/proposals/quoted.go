@@ -43,7 +43,7 @@ var firmSentenceNoise = regexp.MustCompile(`(?i)^(?:please return to|trading nam
 var firmProse = regexp.MustCompile(`(?i)\b(?:unless|shall|reimburse|capability|agrees|hereby|liable|engage|engaged)\b`)
 
 func cleanFirmCandidate(s string) string {
-	s = strings.TrimSpace(firmSentenceNoise.ReplaceAllString(s, ""))
+	s = strings.TrimSpace(firmSentenceNoise.ReplaceAllString(stripEmphasis(s), ""))
 	if firmProse.MatchString(s) {
 		return ""
 	}

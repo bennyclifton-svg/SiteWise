@@ -269,6 +269,13 @@ func (d *Draft) settleFirm() {
 	if len(d.ev.ABNs) == 1 {
 		d.rule(FieldFirmABN, d.ev.ABNs[0])
 	}
+	// A response form names its firm in labelled cells; that rule follows.
+	if l := d.ev.Letterhead; l != nil && d.ev.FormFirm == nil {
+		d.rule(FieldFirmName, l.Name)
+		if l.Address != "" && !d.isSite(l.Address) {
+			d.rule(FieldFirmAddress, l.Address)
+		}
+	}
 	d.rule(FieldFirmName, d.corroboratedName())
 	if f := d.ev.FormFirm; f != nil {
 		for field, label := range map[string]string{FieldFirmName: "Firm", FieldFirmContact: "Contact", FieldFirmEmail: "Email", FieldFirmPhone: "Phone", FieldFirmAddress: "Address"} {
@@ -358,15 +365,19 @@ func (d *Draft) firmEmails() []string {
 }
 
 func (d *Draft) firmAddresses() []string {
-	site := NameKey(d.ctx.SiteAddress)
 	var out []string
 	for _, a := range d.ev.Addresses {
-		if site != "" && strings.Contains(NameKey(a), site[:min(len(site), 12)]) {
-			continue
+		if !d.isSite(a) {
+			out = append(out, a)
 		}
-		out = append(out, a)
 	}
 	return out
+}
+
+// isSite reports the project's own address, which is never the firm's.
+func (d *Draft) isSite(a string) bool {
+	site := NameKey(d.ctx.SiteAddress)
+	return site != "" && strings.Contains(NameKey(a), site[:min(len(site), 12)])
 }
 
 func (d *Draft) settleGST() {
@@ -855,6 +866,8 @@ type Reading struct {
 	Responses   []Response
 	Flags       []string
 	Decisions   []Decision
+	// Dated is the proposal's printed date (YYYY-MM-DD), or "".
+	Dated string
 }
 
 var departureHeading = regexp.MustCompile(`(?i)exclusion|assumption|departure|qualification|not included|limitation|clarification`)
@@ -862,7 +875,7 @@ var departureHeading = regexp.MustCompile(`(?i)exclusion|assumption|departure|qu
 // Finish computes every figure from the decisions: ex GST, percentage fees,
 // other items, the sum check and the flags.
 func (d *Draft) Finish() Reading {
-	r := Reading{Kind: d.by[FieldKind].Value, PackageID: d.by[FieldPackage].Value, Firm: d.firm, GSTBasis: d.by[FieldGSTBasis].Value, FirmFields: map[string]string{}}
+	r := Reading{Kind: d.by[FieldKind].Value, PackageID: d.by[FieldPackage].Value, Firm: d.firm, GSTBasis: d.by[FieldGSTBasis].Value, FirmFields: map[string]string{}, Dated: d.ev.Dated}
 	for _, f := range FirmFields {
 		if v := d.by[f].Value; v != "" {
 			r.FirmFields[f] = v

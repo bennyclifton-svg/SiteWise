@@ -65,8 +65,12 @@ func Lines(text identity.Text) []Line {
 	var keyed []rowKey
 	byKey := map[rowKey][]string{}
 	colsOf := map[rowKey][]int{}
+	markdown := text.Format == "md" || text.Format == "markdown"
 	for _, r := range text.Runs {
 		t := strings.TrimSpace(strings.Join(strings.Fields(r.Text), " "))
+		if markdown {
+			t = stripEmphasis(t)
+		}
 		if t == "" {
 			continue
 		}
@@ -182,8 +186,13 @@ type Evidence struct {
 	Printed   int
 	Hints     []string
 	Addresses []string
-	Contacts  []string
-	Sections  []Section
+	// Letterhead is the firm name and office address printed beside the
+	// proposal's one ABN, outside any addressee block; nil when unclear.
+	Letterhead *Letterhead
+	// Dated is the proposal's own header date, YYYY-MM-DD, or "".
+	Dated    string
+	Contacts []string
+	Sections []Section
 	// Form holds a SiteWise response form's cells by schedule key, read
 	// verbatim; FormFirm its labelled firm fields.
 	Form     map[string]string
@@ -243,6 +252,8 @@ func Harvest(filename string, text identity.Text) Evidence {
 		*list = append(*list, v)
 	}
 	ratesBlock := 0
+	incAt := map[int]int{}
+	inAddressee := 0
 	for i, l := range lines {
 		t := l.Text
 		lower := strings.ToLower(t)
@@ -260,15 +271,27 @@ func Harvest(filename string, text identity.Text) Evidence {
 			ratesBlock--
 		}
 		ev.GSTEx += len(exGSTRe.FindAllString(t, -1))
-		ev.GSTInc += len(incGSTRe.FindAllString(t, -1))
+		if n := len(incGSTRe.FindAllString(t, -1)); n > 0 {
+			ev.GSTInc += n
+			incAt[i] = n
+		}
 		for _, m := range emailRe.FindAllString(t, -1) {
 			addUnique(&ev.Emails, strings.ToLower(m))
 		}
 		for _, m := range phoneRe.FindAllString(t, -1) {
 			addUnique(&ev.Phones, strings.Join(strings.Fields(m), " "))
 		}
-		for _, m := range addressRe.FindAllString(t, -1) {
-			addUnique(&ev.Addresses, strings.Trim(m, " ,."))
+		// An address in a To / Client / Site block is the addressee's or the
+		// project's, never the submitting firm's office.
+		if addressee(t) {
+			inAddressee = 3
+		}
+		if inAddressee == 0 {
+			for _, m := range addressRe.FindAllString(t, -1) {
+				addUnique(&ev.Addresses, strings.Trim(m, " ,."))
+			}
+		} else {
+			inAddressee--
 		}
 		for _, m := range abnRe.FindAllString(abnGlued.ReplaceAllString(t, "ABN $1"), -1) {
 			if d := invoices.NormalizeABN(m); d != "" && invoices.ValidABN(d) {
@@ -330,7 +353,17 @@ func Harvest(filename string, text identity.Text) Evidence {
 		before = t
 	}
 	dropGSTPairs(ev.Amounts, lines)
+	// "Total fee including GST" printed as the inclusive copy of an ex-GST
+	// total is arithmetic, not the basis the fees are quoted on.
+	for _, a := range ev.Amounts {
+		if a.IncTwin && incAt[a.Line] > 0 {
+			ev.GSTInc -= incAt[a.Line]
+			incAt[a.Line] = 0
+		}
+	}
 	markUnitRates(ev.Amounts, lines)
+	ev.Letterhead = letterhead(lines, ev.ABNs)
+	ev.Dated = headerDate(lines)
 	// Keep table structure with a subtotal: the headings above its component
 	// rows explain the scope a single bundled figure covers.
 	for i := range ev.Amounts {
