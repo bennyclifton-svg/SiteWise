@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"sitewise/internal/costs"
 	"sitewise/internal/store"
@@ -243,10 +244,16 @@ func prepareCostPlan(w http.ResponseWriter, r *http.Request, d Deps) {
 	}
 	// Proposed consultants become packages first, so their fee lines are
 	// prepared in the same request (owner decision 3, 2026-10-21).
+	// A failed adoption leaves the consultants as proposals; it must never
+	// stop the cost plan opening.
 	adopted, e := d.Store.AdoptServiceSuggestions(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, disciplines(d))
 	if e != nil {
-		costError(w, e)
-		return
+		if errors.Is(e, store.ErrNotFound) {
+			costError(w, e)
+			return
+		}
+		log.Printf("cost plan prepare: adopting proposed consultants: %v", e)
+		adopted = 0
 	}
 	result, e := d.Store.PrepareCostPlan(r.Context(), session.OrgID, r.PathValue("id"), session.UserID)
 	if e != nil {

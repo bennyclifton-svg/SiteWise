@@ -186,11 +186,15 @@ func ProgramDefaultStages(p Package, cat *knowledge.Catalog, plan []ProgramStage
 	if cat == nil || p.Kind != "services" {
 		return out
 	}
+	// A package holds one stage per label; a program that repeats a label
+	// (two skeletons both applied) gives the package the first one only.
+	seen := map[string]bool{}
 	for _, ps := range plan {
 		s, ok := cat.DeliveryStage(ps.CatalogueStageID)
-		if !ok || s.ParentID == "" {
+		if !ok || s.ParentID == "" || seen[ps.Label] {
 			continue
 		}
+		seen[ps.Label] = true
 		out = append(out, Stage{StageID: s.ID, Label: ps.Label, Ordinal: len(out), NovationPhase: ProgramNovationPhase(p, cat, s.ID),
 			Origin: "calculation", Version: 1, ProgramStageID: ps.ID, StageRevision: revision})
 	}
