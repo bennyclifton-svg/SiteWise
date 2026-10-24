@@ -761,6 +761,8 @@ var explicitEvidenceRoutes = []struct {
 	{"hydraulic", regexp.MustCompile(`(?i)\brain\s?water\b|\bnon[ -]?potable\b|\bhot water\b|\bnatural gas\b`)},
 	{"site", regexp.MustCompile(`(?i)\b(?:recessed|loading|on-grade) docks?\b|\bloading bay\b`)},
 	{"mechanical", regexp.MustCompile(`(?i)\b(?:battery|MHE) charging\b`)},
+	// "Pool backwash interfaces" in a hydraulic scope (Kavanagh, 2026-10-24).
+	{"site", regexp.MustCompile(`(?i)\b(?:swimming )?pools?\b`)},
 }
 
 const knowledgeNoul = "noul"

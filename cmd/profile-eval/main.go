@@ -25,7 +25,10 @@ type sample struct {
 	ID, Text, Section string
 	Context           string
 	// SourcePDF exercises the same extraction and routing as an uploaded brief.
-	SourcePDF, Match    string
+	SourcePDF, Match string
+	// Kind is the filed document kind the passage is read under; empty is
+	// specification, as before.
+	Kind                string
 	Expected, Forbidden map[string]string
 }
 type recorded struct {
@@ -92,7 +95,11 @@ func run() error {
 	inputTokens, outputTokens := 0, 0
 	oversized := 0
 	for _, c := range cases {
-		p := jobs.Passage{Text: c.Text, Section: c.Section, Kind: "specification", Ordinal: 30}
+		kind := c.Kind
+		if kind == "" {
+			kind = "specification"
+		}
+		p := jobs.Passage{Text: c.Text, Section: c.Section, Kind: kind, Ordinal: 30}
 		p.Context = c.Context
 		if c.SourcePDF != "" {
 			p, err = sourcePassage(c)

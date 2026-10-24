@@ -1,5 +1,5 @@
 {
-  "question_version": "profile-5",
+  "question_version": "profile-10",
   "status": "provisional",
   "approved_by_owner": false,
   "note": "The detail shape (client, LGA, zone, site address and lot, sustainability, RFP flags) starts at the same provisional 0.6 as the other shapes; it has no keyed evaluation yet. Existing provisional floors are retained. Action and location questions have no calibrated floor and remain unresolved until their own keyed evaluations; location floors are specific to the option count, and an absent count applies nothing. No other question's threshold is transferred. Green remains withheld until representative keyed evaluations and owner approval. Only -profile-provisional applies provisional floors before approval.",
