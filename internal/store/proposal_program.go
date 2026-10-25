@@ -143,9 +143,16 @@ type packageStageRef struct{ ID, Label, ProgramStage, Catalogue string }
 // activity for it and the catalogue stage of the program stage it sits in,
 // so the evidence survives a rename or reorder (plan 7.7). A user-made
 // stage ("other") receives evidence only when the user assigns it.
+//
+// Packages no longer add rows (owner direction 25 October 2026), so most
+// package stages have no activity of their own. A stage that has
+// activities takes its length from them and cannot take a reading, so its
+// package stage is left out rather than proposed as a reading no one can
+// accept; a stage with no activities still takes one.
 func programStagesFor(acts []ProgramActivity, stages []packageStageRef) []programread.Stage {
 	byPackageStage := map[string]string{}
 	catalogueOf := map[string]string{}
+	hasKids := map[string]bool{}
 	for _, a := range acts {
 		if a.PackageStageID != "" && a.Kind != engine.KindStage {
 			byPackageStage[string(a.PackageStageID)] = a.ID
@@ -153,9 +160,15 @@ func programStagesFor(acts []ProgramActivity, stages []packageStageRef) []progra
 		if a.Kind == engine.KindStage {
 			catalogueOf[a.ID] = string(a.CatalogueStageID)
 		}
+		if a.ParentID != "" && !a.Retired {
+			hasKids[string(a.ParentID)] = true
+		}
 	}
 	out := make([]programread.Stage, 0, len(stages))
 	for _, p := range stages {
+		if byPackageStage[p.ID] == "" && hasKids[p.ProgramStage] {
+			continue
+		}
 		catalogue := p.Catalogue
 		if c, ok := catalogueOf[p.ProgramStage]; ok {
 			catalogue = c

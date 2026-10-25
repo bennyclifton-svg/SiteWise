@@ -249,14 +249,14 @@ func TestPrepareProgramIsIdempotentAndLinksPackageStages(t *testing.T) {
 	if err != nil || created || again.Program.ID != st.Program.ID || again.Program.Version != st.Program.Version {
 		t.Fatalf("second prepare %v %v", created, err)
 	}
-	// The empty library: sk.generic's stages, one activity per package
-	// stage, every duration unknown.
+	// No Profile: sk.generic's stages, all proposed library rows, and no
+	// row per package (owner direction 25 October 2026).
 	var stages []string
 	for _, a := range st.Activities {
 		if a.Kind == engine.KindStage {
 			stages = append(stages, string(a.CatalogueStageID))
 		}
-		if a.DurationDays != nil || a.ReviewStatus != "proposed" || a.Origin != "library" {
+		if a.PackageID != "" || a.ReviewStatus != "proposed" || a.Origin != "library" {
 			t.Fatalf("row %+v", a)
 		}
 	}
@@ -266,7 +266,7 @@ func TestPrepareProgramIsIdempotentAndLinksPackageStages(t *testing.T) {
 	if st.Program.LibraryVersion != b.Catalog.LibraryVersion() || (st.Program.CreatedBySurface != "procurement" && st.Program.CreatedBySurface != "cost_plan") {
 		t.Fatalf("program %+v", st.Program)
 	}
-	if !strings.HasPrefix(st.Computed.Status.Words, "Indicative: 0 of ") || st.Computed.Status.Known != 0 {
+	if st.Computed.Status.Total == 0 || st.Computed.Status.Known > st.Computed.Status.Total {
 		t.Fatalf("status %+v", st.Computed.Status)
 	}
 	conn, err := pgx.Connect(ctx, testDSN(t))
@@ -279,19 +279,16 @@ func TestPrepareProgramIsIdempotentAndLinksPackageStages(t *testing.T) {
 		if err := conn.QueryRow(ctx, `SELECT program_stage_id::text FROM package_stages WHERE org_id=$1 AND id=$2`, orgA, ps.ID).Scan(&stageID); err != nil {
 			t.Fatal(err)
 		}
-		var row, parent store.ProgramActivity
+		// The package stage is placed in the program stage of the same
+		// catalogue id; no row is made for it.
+		var stage store.ProgramActivity
 		for _, a := range st.Activities {
-			if string(a.PackageStageID) == ps.ID {
-				row = a
+			if a.ID == stageID {
+				stage = a
 			}
 		}
-		for _, a := range st.Activities {
-			if a.ID == string(row.ParentID) {
-				parent = a
-			}
-		}
-		if row.Label != "Architect: "+ps.Label || parent.ID != stageID || string(parent.CatalogueStageID) != ps.StageID {
-			t.Fatalf("package stage %s: row %+v parent %+v stage %s", ps.Label, row, parent, stageID)
+		if stage.Kind != engine.KindStage || string(stage.CatalogueStageID) != ps.StageID {
+			t.Fatalf("package stage %s: stage %+v (%s)", ps.Label, stage, stageID)
 		}
 	}
 	// Another org never sees or creates this program.

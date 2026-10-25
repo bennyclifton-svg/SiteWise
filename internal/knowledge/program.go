@@ -44,9 +44,10 @@ var (
 var ProgramLinkTypes = []string{"FS", "SS", "FF", "SF"}
 
 // FragmentActions are the work-item actions a `work_action` predicate may
-// name. retain brings no activities and investigate brings one Investigation
-// activity from generation, so neither selects a fragment.
-var FragmentActions = []string{"new", "replace", "upgrade", "alter", "repair", "remove"}
+// name. retain brings no activities. An investigate item selects only a
+// fragment that names investigate (its default duration); with none it gets
+// one Investigation activity from generation.
+var FragmentActions = []string{"new", "replace", "upgrade", "alter", "repair", "remove", "investigate"}
 
 // DurationBases are the ways a duration row turns inputs into days.
 var DurationBases = []string{"fixed", "per_unit", "floor_cycle", "time_cost", "statutory", "lead_time"}
@@ -151,6 +152,22 @@ type Duration struct {
 	Status        string              `yaml:"status" json:"status"`
 	Sources       []map[string]string `yaml:"sources" json:"sources"`
 	Notes         string              `yaml:"notes" json:"-"`
+	// Assumption marks a default the user is expected to adjust (an
+	// investigation's usual length). Generation copies it to the row so the
+	// grid can show the duration is assumed.
+	Assumption string `yaml:"assumption" json:"assumption,omitempty"`
+}
+
+// ProgramAssumption is a driver value generation uses while the Profile has
+// none, so a scaled duration still has a length (owner direction 25 October
+// 2026: a house with no floor area is taken as 250 m²). The Profile's own
+// value always wins, and every row computed from an assumption says so.
+type ProgramAssumption struct {
+	PlanningKey string              `yaml:"planning_key" json:"planning_key"`
+	Value       string              `yaml:"value" json:"value"`
+	Unit        string              `yaml:"unit" json:"unit"`
+	Label       string              `yaml:"label" json:"label"`
+	Sources     []map[string]string `yaml:"sources" json:"sources"`
 }
 
 // CalendarDay is one non-working day (Date) or span (From to To).
@@ -179,6 +196,8 @@ type programData struct {
 	skeletons []Skeleton
 	fragments []Fragment
 	durations map[string]Duration
+	// assumed are driver values by planning key (ProgramAssumption).
+	assumed   map[string]ProgramAssumption
 	calendars []Calendar
 	version   string
 }
@@ -205,6 +224,13 @@ func (c *Catalog) ReviewedDuration(id string) (Duration, bool) {
 		return Duration{}, false
 	}
 	return d, true
+}
+
+// AssumedPlanning returns the value generation uses for a planning key the
+// Profile leaves blank, if the library names one.
+func (c *Catalog) AssumedPlanning(key string) (ProgramAssumption, bool) {
+	a, ok := c.program.assumed[key]
+	return a, ok
 }
 
 // DurationApplies is true only for a reviewed row whose applies_when holds.
@@ -444,7 +470,7 @@ func canonicalValue(p any) any {
 // without a library still load; a file that is present must be valid.
 func (c *Catalog) loadProgram(root string) error {
 	dir := filepath.Join(root, "program")
-	c.program = programData{durations: map[string]Duration{}}
+	c.program = programData{durations: map[string]Duration{}, assumed: map[string]ProgramAssumption{}}
 	if err := c.loadDurations(filepath.Join(dir, "durations.yaml")); err != nil {
 		return err
 	}
@@ -557,9 +583,10 @@ func checkProgramSources(sources []map[string]string) error {
 func (c *Catalog) loadDurations(path string) error {
 	var file struct {
 		programFile `yaml:",inline"`
-		Durations   []Duration `yaml:"durations"`
+		Assumptions []ProgramAssumption `yaml:"assumptions"`
+		Durations   []Duration          `yaml:"durations"`
 	}
-	ok, err := c.decodeProgram(path, &file, "low", "typical", "high", "k", "b", "cost_base_date")
+	ok, err := c.decodeProgram(path, &file, "low", "typical", "high", "k", "b", "cost_base_date", "value")
 	if !ok || err != nil {
 		return err
 	}
@@ -575,7 +602,28 @@ func (c *Catalog) loadDurations(path string) error {
 		}
 		c.program.durations[d.ID] = d
 	}
+	for _, a := range file.Assumptions {
+		if err := c.validateAssumption(a); err != nil {
+			return fmt.Errorf("%s: assumption %s: %w", path, a.PlanningKey, err)
+		}
+		if _, dup := c.program.assumed[a.PlanningKey]; dup {
+			return fmt.Errorf("%s: duplicate assumption %s", path, a.PlanningKey)
+		}
+		c.program.assumed[a.PlanningKey] = a
+	}
 	return nil
+}
+
+// validateAssumption: a known planning key, a non-negative decimal string,
+// a unit, a label the grid can show, and sources.
+func (c *Catalog) validateAssumption(a ProgramAssumption) error {
+	if _, ok := c.PlanningKey(a.PlanningKey); !ok {
+		return fmt.Errorf("unknown planning key")
+	}
+	if !paramDecimal.MatchString(a.Value) || strings.TrimSpace(a.Unit) == "" || strings.TrimSpace(a.Label) == "" {
+		return fmt.Errorf("needs a decimal-string value, a unit and a label")
+	}
+	return checkProgramSources(a.Sources)
 }
 
 func (c *Catalog) validateDuration(d Duration) error {

@@ -16,10 +16,13 @@ import (
 // so the store can insert it, the question strip can regenerate it in memory
 // and the review can diff it against the live program by source_key.
 //
-// Every label comes from the library, the stage catalogue, a package, a work
-// item or a code template stating what was matched; every duration comes
-// from the user, an accepted reading, a Profile planning value or a reviewed
-// library row. Anything else stays unknown.
+// Every label comes from the library, the stage catalogue, a work item or a
+// code template stating what was matched; every duration comes from the
+// user, an accepted reading, a Profile planning value or a reviewed library
+// row. Owner direction 25 October 2026: a program opens complete, so a
+// driver the Profile leaves blank takes the library's assumed value, and an
+// activity no row covers takes the library's default activity duration.
+// Both are marked assumed (duration_source.assumed) for the grid to show.
 
 // Row origins, review statuses and duration origins written by generation.
 const (
@@ -61,6 +64,12 @@ const (
 	actionInvestigate        = "investigate"
 	actionRemove             = "remove"
 	maxLabel                 = 200
+
+	// Library rows generation names directly: the length of an
+	// investigation no fragment covers, and of any activity left without a
+	// duration. Both carry an assumption note in durations.yaml.
+	durationInvestigateDefault = "du.investigate-default"
+	durationActivityDefault    = "du.activity-default"
 )
 
 // GenInput is everything plan 7.1 lists, as plain values the store reads
@@ -299,7 +308,7 @@ func Generate(cat *knowledge.Catalog, in GenInput) (Plan, error) {
 	// Rows first, then links: the loop guard needs to know which stages
 	// have activities before any link is placed.
 	g.stageRows(choice.Skeleton)
-	g.packageRows()
+	g.packageStages()
 	g.investigationRows()
 	g.fragmentRows()
 	g.holdPointRows()
@@ -516,31 +525,16 @@ func (g *gen) resolveStage(catID string) (string, string) {
 	return g.stageOrder[0], PlaceFirst
 }
 
-// Step 3: one activity per package stage; a package with no stages gets one
-// activity under Construction when the program has it, else Procurement,
-// else wherever Construction resolves to.
-func (g *gen) packageRows() {
+// Step 3, amended by owner direction 25 October 2026: packages add no rows.
+// Every consultant follows the stage's own activities (Confirm the brief,
+// Prepare the concept design, and so on), whether there is one consultant
+// or five, and a works package is the Construction stage itself. Each
+// package stage is still placed in a program stage so Procurement and the
+// Cost Plan share one stage plan (7.6).
+func (g *gen) packageStages() {
 	for _, p := range g.in.Packages {
-		if len(p.Stages) == 0 {
-			key := g.stageByCat[stageConstruction]
-			if key == "" {
-				key = g.stageByCat[stageProcurement]
-			}
-			if key == "" {
-				key, _ = g.resolveStage(stageConstruction)
-			}
-			g.addRow(Row{SourceKey: "package:" + p.ID + ":", ParentKey: key, Kind: KindActivity, Label: p.Title, PackageID: p.ID})
-			continue
-		}
 		for _, s := range p.Stages {
 			key, rule := g.resolveStage(s.CatalogueStageID)
-			label := s.Label
-			if strings.TrimSpace(label) == "" {
-				st, _ := g.cat.DeliveryStage(s.CatalogueStageID)
-				label = st.Label
-			}
-			g.addRow(Row{SourceKey: "package:" + p.ID + ":" + s.ID, ParentKey: key, Kind: KindActivity,
-				Label: p.Title + ": " + label, PackageID: p.ID, PackageStageID: s.ID})
 			g.plan.StageMap = append(g.plan.StageMap, StageMapping{PackageID: p.ID, PackageStageID: s.ID, StageKey: key, Rule: rule})
 		}
 	}
@@ -548,25 +542,44 @@ func (g *gen) packageRows() {
 
 // Revision 2 of 4.2: an investigate work item brings one activity under the
 // Investigation stage, labelled with the item's title as the user wrote it.
-// Its source key is investigate:<work item id> (no fragment is involved).
+// An investigation fragment on the item's system (geotechnical, survey and
+// so on) adds it instead, with that investigation's usual length
+// (fragmentRows). Otherwise its source key is investigate:<work item id>
+// and it takes the library's default investigation length.
 func (g *gen) investigationRows() {
 	for i := range g.in.WorkItems {
 		it := g.in.WorkItems[i]
-		if it.Action != actionInvestigate || strings.TrimSpace(it.Title) == "" {
+		if it.Action != actionInvestigate || strings.TrimSpace(it.Title) == "" || g.investigationFragment(it) {
 			continue
 		}
 		key, _ := g.resolveStage(stageInvestigation)
 		g.addRow(Row{SourceKey: "investigate:" + it.ID, ParentKey: key, Kind: KindActivity, Label: it.Title,
-			WorkItemID: it.ID, Systems: []string{it.System}, item: &g.in.WorkItems[i]})
+			WorkItemID: it.ID, Systems: []string{it.System}, item: &g.in.WorkItems[i], durationID: durationInvestigateDefault})
 	}
+}
+
+// investigationFragment reports whether a fragment that names investigate
+// holds outright for this investigate item, so fragmentRows adds the item.
+func (g *gen) investigationFragment(it WorkItem) bool {
+	for _, f := range g.cat.Fragments() {
+		if f.Scope == knowledge.ScopeProject || !namesAction(f.AppliesWhen, actionInvestigate) || !g.onSystems(it.System, f.Systems) {
+			continue
+		}
+		if f.AppliesWhen == nil || g.cat.Holds(f.AppliesWhen, g.env([]WorkItem{it})) == knowledge.True {
+			return true
+		}
+	}
+	return false
 }
 
 // Steps 4–5: fragments follow included work items. A fragment is considered
 // once per work item on one of its systems (or below one), and its
 // applies_when is evaluated with that one item as the works in scope, so a
-// work_action term reads that item's action. retain items bring nothing;
-// investigate items are handled above; a remove item selects only demolition
-// fragments (those whose predicate names `remove` in a work_action). True
+// work_action term reads that item's action. retain items bring nothing; an
+// investigate item selects only investigation fragments that hold outright
+// (any other is handled by investigationRows); a remove item selects only
+// demolition fragments (those whose predicate names `remove` in a
+// work_action). True
 // adds the fragment; unknown adds it conditionally (low 0, label "If …");
 // false skips it. A fragment with no matching work item is not added, even
 // when its predicate holds: fragments follow work items (revision 2).
@@ -594,12 +607,13 @@ func (g *gen) fragmentRows() {
 			continue
 		}
 		demolition := namesAction(f.AppliesWhen, actionRemove)
+		investigation := namesAction(f.AppliesWhen, actionInvestigate)
 		for i := range g.in.WorkItems {
 			it := g.in.WorkItems[i]
-			if it.Action == actionRetain || it.Action == actionInvestigate || !g.onSystems(it.System, f.Systems) {
+			if it.Action == actionRetain || !g.onSystems(it.System, f.Systems) {
 				continue
 			}
-			if it.Action == actionRemove && !demolition {
+			if it.Action == actionRemove && !demolition || it.Action == actionInvestigate && !investigation {
 				continue
 			}
 			env := g.env([]WorkItem{it})
@@ -607,7 +621,7 @@ func (g *gen) fragmentRows() {
 			if f.AppliesWhen != nil {
 				truth = g.cat.Holds(f.AppliesWhen, env)
 			}
-			if truth == knowledge.False {
+			if truth == knowledge.False || it.Action == actionInvestigate && truth != knowledge.True {
 				continue
 			}
 			prefix := ""
@@ -1051,7 +1065,7 @@ func (g *gen) lagDays(id string) (int, string, bool) {
 	if !ok || !g.cat.DurationApplies(d, g.env(nil)) {
 		return 0, "", false
 	}
-	r, ok := g.compute(d)
+	r, _, ok := g.compute(d)
 	if !ok || !r.TypicalKnown || r.Typical > 365 {
 		return 0, "", false
 	}
@@ -1063,46 +1077,55 @@ func (g *gen) lagDays(id string) (int, string, bool) {
 }
 
 // compute feeds a reviewed row its driver: a planning value or determinant
-// for per_unit and floor_cycle, the indexed budget for time_cost.
-func (g *gen) compute(d knowledge.Duration) (knowledge.DayRange, bool) {
+// for per_unit and floor_cycle, the indexed budget for time_cost. A blank
+// planning value takes the library's assumed value when it names one; the
+// returned text then says what was assumed ("" when nothing was).
+func (g *gen) compute(d knowledge.Duration) (knowledge.DayRange, string, bool) {
 	var in knowledge.DurationInput
+	assumed := ""
 	switch d.Basis {
 	case "per_unit", "floor_cycle":
 		if d.Driver == nil {
-			return knowledge.DayRange{}, false
+			return knowledge.DayRange{}, "", false
 		}
-		raw := g.in.Planning[d.Driver.PlanningKey]
+		raw := strings.TrimSpace(g.in.Planning[d.Driver.PlanningKey])
 		if d.Driver.Determinant != "" {
-			raw = g.in.Values[d.Driver.Determinant]
+			raw = strings.TrimSpace(g.in.Values[d.Driver.Determinant])
+		} else if raw == "" {
+			if a, ok := g.cat.AssumedPlanning(d.Driver.PlanningKey); ok {
+				raw, assumed = a.Value, a.Label
+			}
 		}
-		v, ok := new(big.Rat).SetString(strings.TrimSpace(raw))
+		v, ok := new(big.Rat).SetString(raw)
 		if !ok || v.Sign() < 0 {
-			return knowledge.DayRange{}, false
+			return knowledge.DayRange{}, "", false
 		}
 		in = knowledge.ExactInput(v)
 	case "time_cost":
 		b := g.in.Budget
 		if b == nil || b.Low == nil || b.High == nil || g.in.IndexCost == nil {
-			return knowledge.DayRange{}, false
+			return knowledge.DayRange{}, "", false
 		}
 		lo, ok1 := g.in.IndexCost(b.Low, b.PriceDate, d.CostBaseDate)
 		hi, ok2 := g.in.IndexCost(b.High, b.PriceDate, d.CostBaseDate)
 		if !ok1 || !ok2 {
-			return knowledge.DayRange{}, false
+			return knowledge.DayRange{}, "", false
 		}
 		in = knowledge.DurationInput{Low: lo, High: hi}
 		if lo.Cmp(hi) == 0 {
 			in.Typical = lo
 		}
 	}
-	return knowledge.ComputeDuration(d, in)
+	r, ok := knowledge.ComputeDuration(d, in)
+	return r, assumed, ok
 }
 
 // Step 8: durations, first match wins: the user's value; an accepted
 // document reading (by source key, or for a stage by catalogue id); a
 // Profile planning value (construction_duration on the Construction stage
 // only while none of its activities has a duration); a reviewed library row
-// whose predicate holds and whose driver is known; otherwise unknown.
+// whose predicate holds and whose driver is known or assumed; otherwise the
+// library's default activity duration, marked assumed.
 // Activities are settled before stages so the Construction rule can see
 // its children.
 func (g *gen) durations() {
@@ -1149,20 +1172,30 @@ func (g *gen) duration(i int) {
 		}
 		return
 	}
-	if r.durationID == "" {
-		return
+	if !g.libraryDuration(r, r.durationID) && r.Duration == nil && r.Low == nil {
+		// Nothing in the library fits this activity. A row with no length
+		// blanks every row after it, so it takes the default and says so.
+		g.libraryDuration(r, durationActivityDefault)
 	}
-	d, ok := g.cat.ReviewedDuration(r.durationID)
+}
+
+// libraryDuration applies a reviewed library row whose predicate holds and
+// reports whether it applied.
+func (g *gen) libraryDuration(r *Row, id string) bool {
+	if id == "" {
+		return false
+	}
+	d, ok := g.cat.ReviewedDuration(id)
 	env := g.env(nil)
 	if r.item != nil {
 		env = g.env([]WorkItem{*r.item})
 	}
 	if !ok || !g.cat.DurationApplies(d, env) {
-		return
+		return false
 	}
-	dr, ok := g.compute(d)
+	dr, assumed, ok := g.compute(d)
 	if !ok {
-		return
+		return false
 	}
 	// A library row in calendar days is an elapsed period (a cure, a
 	// statutory clock, a defects liability period). The schedule counts
@@ -1179,10 +1212,16 @@ func (g *gen) duration(i int) {
 		}
 	}
 	if !validDays(int(dr.High)) {
-		return
+		return false
 	}
 	low, high := int(dr.Low), int(dr.High)
 	source := map[string]any{"library": d.ID, "version": d.Version}
+	switch {
+	case assumed != "":
+		source["assumed"] = assumed
+	case d.Assumption != "":
+		source["assumed"] = d.Assumption
+	}
 	switch {
 	case r.conditional:
 		// Step 5: an unknown predicate lengthens only the high run.
@@ -1201,6 +1240,7 @@ func (g *gen) duration(i int) {
 		source["unit_days"] = "calendar"
 	}
 	r.DurationOrigin, r.DurationSource = DurationLibrary, source
+	return true
 }
 
 // daysPerWeek counts the set bits of a working-week mask. An empty or

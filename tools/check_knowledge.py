@@ -96,7 +96,9 @@ GENERIC_SKELETON = "sk.generic"
 ACTIVITY_KEY = re.compile(r"^[a-z0-9-]+$")
 LINK_TYPES = {"FS", "SS", "FF", "SF"}
 ATTACH_ENDS = {"stage_start", "stage_finish"}
-FRAGMENT_ACTIONS = {"new", "replace", "upgrade", "alter", "repair", "remove"}
+# investigate selects only a fragment that names it (an investigation's
+# default length); retain never selects one.
+FRAGMENT_ACTIONS = {"new", "replace", "upgrade", "alter", "repair", "remove", "investigate"}
 DURATION_BASES = {"fixed", "per_unit", "floor_cycle", "time_cost", "statutory", "lead_time"}
 DAY_DECIMAL = re.compile(r"^[0-9]+(\.[0-9]{1,2})?$")
 # Time-cost K and B keep up to four places so a published set is not re-rounded.
@@ -111,7 +113,7 @@ PROGRAM_KEYS = {
                   "status", "sources", "notes"},
     "durations": {"id", "version", "basis", "driver", "unit_days", "low", "typical", "high", "k", "b",
                   "cost_base_date", "index_basis", "instrument", "clause", "verified", "primary_source",
-                  "applies_when", "geography", "limitations", "status", "sources", "notes"},
+                  "applies_when", "geography", "limitations", "status", "sources", "notes", "assumption"},
     "calendars": {"id", "state", "year", "working_week", "days", "verified", "status", "sources", "notes"},
 }
 
@@ -392,7 +394,7 @@ def check_literals(where: str, pred: dict, operand: str, allowed: set, what: str
 
 def check_work_action(where: str, val, report: Report, refs: list) -> None:
     """`work_action`: an included work item on the system (or below it) with one
-    of the actions. retain and investigate never select a fragment."""
+    of the actions. retain never selects a fragment."""
     if not isinstance(val, dict) or set(val) != {"system", "any_of"} or not isinstance(val.get("system"), str):
         report.error(where, f"`work_action` needs exactly system (one id) and any_of: {val}")
         return
@@ -1630,6 +1632,30 @@ def check_program_duration(where: str, d: dict, planning: set, context: dict, re
         check_predicate(where, d["applies_when"], report, refs, context)
 
 
+def check_program_assumptions(path: Path, planning: set, seed_dir: Path, report: Report, cache: dict) -> None:
+    """Driver values used while the Profile is blank (owner direction 25 October 2026)."""
+    if not path.is_file():
+        return
+    rel = path.relative_to(ROOT).as_posix()
+    doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    seen = set()
+    for a in doc.get("assumptions") or []:
+        where = f"{rel} [assumption {a.get('planning_key', '?') if isinstance(a, dict) else '?'}]"
+        if not isinstance(a, dict) or set(a) - {"planning_key", "value", "unit", "label", "sources"}:
+            report.error(where, "assumption needs only planning_key, value, unit, label and sources")
+            continue
+        if a.get("planning_key") not in planning:
+            report.error(where, "unknown planning key")
+        if a.get("planning_key") in seen:
+            report.error(where, "duplicate assumption")
+        seen.add(a.get("planning_key"))
+        if not isinstance(a.get("value"), str) or not PARAM_DECIMAL.match(a["value"]):
+            report.error(where, "value must be a quoted non-negative decimal string")
+        if not str(a.get("unit") or "").strip() or not str(a.get("label") or "").strip():
+            report.error(where, "needs a unit and a label")
+        check_sources(where, a.get("sources"), seed_dir, report, cache)
+
+
 def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> None:
     """The program library: plan section 4 and checker rules 4.7."""
     directory = KNOWLEDGE / PROGRAM_DIR
@@ -1695,6 +1721,9 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
 
     for where, d in rows["durations"][1]:
         check_program_duration(where, d, planning, context, report, refs)
+        if "assumption" in d and not (isinstance(d["assumption"], str) and d["assumption"].strip()):
+            report.error(where, "assumption must be non-empty text")
+    check_program_assumptions(directory / "durations.yaml", planning, seed_dir, report, cache)
 
     attach_links = []
     for where, f in rows["fragments"][1]:

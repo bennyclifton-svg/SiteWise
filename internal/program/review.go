@@ -225,9 +225,10 @@ func Diff(live []LiveRow, liveLinks []LiveLink, plan Plan, gone UserRetired) []C
 		if edited {
 			c.DefaultChoice, c.Edited = ChoiceKeep, true
 		}
-		if strings.HasPrefix(lr.SourceKey, "package:") {
-			c.PackageID = lr.PackageID
-		}
+		// Packages no longer generate rows (owner direction 25 October 2026),
+		// so an old package row going is a fold into the stage's own lines,
+		// not a package removed in Procurement: PackageID stays empty and the
+		// package_removed check does not name it.
 		changes = append(changes, c)
 	}
 
@@ -332,7 +333,7 @@ func removeSummary(lr LiveRow, edited string) string {
 	var why string
 	switch {
 	case strings.HasPrefix(lr.SourceKey, "package:"):
-		why = "removed in Procurement"
+		why = "consultants now follow the stage's own activities"
 	case strings.HasPrefix(lr.SourceKey, "fragment:"), strings.HasPrefix(lr.SourceKey, "investigate:"):
 		why = "its work item is no longer in scope"
 	case strings.HasPrefix(lr.SourceKey, "hold:"):

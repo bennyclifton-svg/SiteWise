@@ -261,10 +261,11 @@ Operators: `any_of`, `eq`, `is` (boolean), `gt`, `gte`, `lt`, `lte`,
   one of the actions. It is evaluated by code exactly like `works` (an item
   on an ancestor, or with no action yet, is unknown; no items is false).
   `any_of` is a non-empty subset of `new`, `replace`, `upgrade`, `alter`,
-  `repair`, `remove`, each an id in `works/actions.yaml`. `retain` brings no
-  activities and `investigate` brings one Investigation activity from
-  generation, so neither may select a fragment; `remove` selects demolition
-  fragments.
+  `repair`, `remove`, `investigate`, each an id in `works/actions.yaml`.
+  `retain` brings no activities and may not select a fragment. `remove`
+  selects demolition fragments. `investigate` selects an investigation
+  fragment (its usual length); an investigate item no fragment covers brings
+  one Investigation activity from generation with `du.investigate-default`.
 
 ## Questions (Jev)
 
@@ -1035,8 +1036,22 @@ stays unknown.
 
 - `driver` names exactly one of `planning_key` (`profile/planning_keys.yaml`)
   or `determinant`, plus a `unit`. It is required for `per_unit` and
-  `floor_cycle` and omitted otherwise. A driver that is unknown leaves the
-  duration unknown; a range uses its ends.
+  `floor_cycle` and omitted otherwise. A planning-key driver the Profile
+  leaves blank takes the file's `assumptions` value for that key, if any
+  (below); otherwise an unknown driver leaves the duration unknown. A range
+  uses its ends.
+- `assumption` (optional text) marks a default the user is expected to adjust,
+  such as an investigation's usual length. Generation copies it to the row's
+  `duration_source.assumed` and the grid shows a marker.
+- Top-level `assumptions` (owner direction 25 October 2026) lists driver
+  values used while the Profile is blank: `{planning_key, value, unit, label,
+  sources}`, `value` a quoted decimal string, one per planning key. Rows
+  computed from one carry its `label` in `duration_source.assumed`; the
+  Profile's own value always wins.
+- Generation names two rows directly: `du.investigate-default` and
+  `du.activity-default`, the length any activity takes when no row covers it,
+  so every activity has a duration and the chart draws. Both carry an
+  `assumption`.
 - `low ≤ typical ≤ high`, all non-negative quoted decimal strings with at most
   2 decimal places. `k` and `b` are non-negative quoted decimal strings with
   at most 4 places; `cost_base_date` is a quoted `YYYY-MM-DD`; `index_basis`

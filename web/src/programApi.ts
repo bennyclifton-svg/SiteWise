@@ -29,6 +29,8 @@ export interface ProgramActivity {
   duration_low: number | null;
   duration_high: number | null;
   duration_origin: string | null;
+  /** Where the duration came from; `assumed` says it rests on a default to adjust. */
+  duration_source?: { assumed?: string } & Record<string, unknown>;
   constraint_kind: string;
   constraint_date: string | null;
   review_status: "proposed" | "accepted" | string;

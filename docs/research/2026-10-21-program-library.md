@@ -4131,3 +4131,116 @@ Each duration it names is a draft planning estimate. The fragment stays draft un
 
 
 These rows are in `knowledge/program/fragments.yaml` with `scope: project`. Generation includes each one once when its conditions hold. The activity lists stay draft. Their durations are the reviewed rows in `durations.yaml`.
+
+## Owner defaults (25 October 2026)
+
+The owner directed on 25 October 2026 that opening Program shows a complete program at once: every activity has a duration, so the Gantt chart draws and the user drags a bar that looks wrong instead of typing durations and links from nothing. These rows are defaults for a quick first program. They come from ordinary Australian residential and small-commercial practice, not a published benchmark. Rows marked with an assumption show a marker in the grid.
+
+The same direction folds consultant packages into the stage's own lines. A design stage shows three or four lines (confirm the brief, prepare the design, coordinate consultants, client review or sign-off), and every consultant, one or five, is taken to follow them. Packages still map to program stages for Procurement and the Cost Plan.
+
+### Assumed gross floor area
+
+250 m² while the Profile has no gross floor area. The owner's figure: about the average size of a new Australian house (published analyses of ABS building approvals put new houses at roughly 235 to 250 m² in recent years). Every duration that scales with floor area uses it until the Profile states a value; then the review offers the recomputed durations. Rows computed from it show "Assumes 250 m² gross floor area until the Profile states it."
+
+### du.brief-confirm-1a
+
+Confirm the brief for a house: meet the client, agree rooms, budget and priorities, and record them.
+Low 3, typical 5, high 10 working days. A fixed range.
+
+### du.brief-confirm
+
+Confirm the brief for an apartment, commercial or public building, where more stakeholders sign it off.
+Low 5, typical 10, high 20 working days. A fixed range.
+
+### du.client-review-1a
+
+Client review of a house concept: present, take comments, agree the direction before design development.
+Low 5, typical 10, high 15 working days. A fixed range.
+
+### du.client-review
+
+Client review of a larger building's concept, often with a board, tenant or funder.
+Low 10, typical 15, high 25 working days. A fixed range.
+
+### du.client-signoff-1a
+
+Client sign-off of a house's approval set before lodgement, or its construction set before tender.
+Low 3, typical 5, high 10 working days. A fixed range.
+
+### du.client-signoff
+
+Client sign-off of a larger building's approval or construction set.
+Low 5, typical 10, high 15 working days. A fixed range.
+
+### du.investigate-geotech
+
+Geotechnical investigation: book the rig, drill boreholes, test and report. The owner's figure is four weeks.
+Low 10, typical 20, high 30 working days. Rock, a congested site or laboratory testing is the high end.
+
+### du.investigate-survey
+
+Detail and boundary survey by a registered surveyor, from booking to drawing.
+Low 5, typical 10, high 15 working days.
+
+### du.investigate-contamination
+
+Preliminary (stage 1) contamination investigation: desktop history, site walkover and report. A detailed (stage 2) investigation with sampling takes longer and is entered by the user.
+Low 10, typical 15, high 30 working days.
+
+### du.investigate-acid-sulfate
+
+Acid sulfate soils assessment, sampling and report, where the planning map shows a class.
+Low 10, typical 15, high 25 working days.
+
+### du.investigate-trees
+
+Arborist's assessment (arboricultural impact assessment) of trees on or near the site.
+Low 5, typical 10, high 15 working days.
+
+### du.investigate-flooding
+
+Flood advice from council or a flood engineer; a full flood study is the high end.
+Low 10, typical 20, high 40 working days.
+
+### du.investigate-services
+
+Services search and locating: Before You Dig enquiry, authority plans and on-site locating.
+Low 5, typical 10, high 15 working days.
+
+### du.investigate-default
+
+Any other investigation the Profile asks for, such as checking an existing roof or structure.
+Low 5, typical 10, high 20 working days. Two weeks typical.
+
+### du.activity-default
+
+An activity no library row covers yet. Five working days, so the bar is visible and easy to drag.
+Low 3, typical 5, high 10 working days.
+
+### fr.investigate-geotech
+
+An investigate work item on ground conditions becomes a geotechnical investigation under Investigation, with du.investigate-geotech. It starts at the stage start, alongside other investigations.
+
+### fr.investigate-survey
+
+An investigate work item on survey and boundaries, with du.investigate-survey.
+
+### fr.investigate-contamination
+
+An investigate work item on contamination, with du.investigate-contamination.
+
+### fr.investigate-acid-sulfate
+
+An investigate work item on acid sulfate soils, with du.investigate-acid-sulfate.
+
+### fr.investigate-trees
+
+An investigate work item on trees, with du.investigate-trees.
+
+### fr.investigate-flooding
+
+An investigate work item on flooding, with du.investigate-flooding.
+
+### fr.investigate-services
+
+An investigate work item on services connections, with du.investigate-services.

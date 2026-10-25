@@ -3,7 +3,14 @@ version: 1
 status: reviewed
 sources:
   - {design: docs/research/2026-10-21-program-library.md, anchor: "### Overview"}
-notes: Owner accepted these duration rows on 24 October 2026. Statutory rows stay verified false.
+notes: Owner accepted these duration rows on 24 October 2026. Statutory rows stay verified false. Brief, client review, investigation and default rows and the floor-area assumption added on the owner's direction of 25 October 2026 so every activity has a duration.
+assumptions:
+  - planning_key: gross_floor_area
+    value: "250"
+    unit: m2
+    label: "Assumes 250 m² gross floor area until the Profile states it."
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### Assumed gross floor area"}
 durations:
 - id: du.concrete-cure
   version: 1
@@ -3811,3 +3818,207 @@ durations:
   status: reviewed
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.final-defects"}
+- id: du.brief-confirm-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.brief-confirm-1a"}
+- id: du.brief-confirm
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.brief-confirm"}
+- id: du.client-review-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.client-review-1a"}
+- id: du.client-review
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.client-review"}
+- id: du.client-signoff-1a
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.client-signoff-1a"}
+- id: du.client-signoff
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.client-signoff"}
+- id: du.investigate-geotech
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Usual length of a geotechnical investigation; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-geotech"}
+- id: du.investigate-survey
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Usual length of a detail and boundary survey; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-survey"}
+- id: du.investigate-contamination
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "30"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Usual length of a preliminary contamination investigation; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-contamination"}
+- id: du.investigate-acid-sulfate
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "15"
+  high: "25"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Usual length of an acid sulfate soils assessment; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-acid-sulfate"}
+- id: du.investigate-trees
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Usual length of an arborist's assessment; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-trees"}
+- id: du.investigate-flooding
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "10"
+  typical: "20"
+  high: "40"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Usual length of flood advice or a flood study; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-flooding"}
+- id: du.investigate-services
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "15"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Usual length of a services search and locating; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-services"}
+- id: du.investigate-default
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "5"
+  typical: "10"
+  high: "20"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "Default length for an investigation; drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.investigate-default"}
+- id: du.activity-default
+  version: 1
+  basis: fixed
+  unit_days: working
+  low: "3"
+  typical: "5"
+  high: "10"
+  geography: "NSW metropolitan"
+  limitations:
+    - "A default for a quick first program, not a published benchmark."
+  assumption: "No library duration fits this activity yet; 5 days assumed. Drag to adjust."
+  status: reviewed
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### du.activity-default"}

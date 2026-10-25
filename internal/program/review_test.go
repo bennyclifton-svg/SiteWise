@@ -58,23 +58,25 @@ func TestDiffDefaultsAndSummaries(t *testing.T) {
 	cat := testCatalog(t, testLibrary, "")
 	before := mustGenerate(t, cat, reviewInput())
 	rows, links := liveFrom(before)
-	// The user edited the frame row and accepted the engineer's row.
+	// The user edited the frame row. Two package rows survive from a program
+	// generated before packages were folded into the stages' own lines: one
+	// untouched, one the user accepted.
 	for i := range rows {
-		switch rows[i].SourceKey {
-		case "fragment:fr.frame:frame:frame":
+		if rows[i].SourceKey == "fragment:fr.frame:frame:frame" {
 			rows[i].Label, rows[i].Origin, rows[i].ReviewStatus = "Frame (steel)", OriginUser, ReviewAccepted
-		case "package:eng:e1":
-			rows[i].ReviewStatus = ReviewAccepted
 		}
 	}
+	rows = append(rows,
+		LiveRow{ID: "id:package:arch:a1", ParentID: "id:skeleton:sk.new:construction", Kind: KindActivity, Label: "Architect: Construction",
+			SourceKey: "package:arch:a1", PackageID: "arch", Origin: OriginLibrary, ReviewStatus: ReviewProposed},
+		LiveRow{ID: "id:package:eng:e1", ParentID: "id:skeleton:sk.new:construction", Kind: KindActivity, Label: "Engineer: Construction",
+			SourceKey: "package:eng:e1", PackageID: "eng", Origin: OriginLibrary, ReviewStatus: ReviewAccepted})
 	// A user-made row with no source key is never proposed for removal.
 	rows = append(rows, LiveRow{ID: "mine", ParentID: "id:skeleton:sk.new:construction", Kind: KindActivity,
 		Label: "My row", Origin: OriginUser, ReviewStatus: ReviewAccepted})
 
 	in := reviewInput()
-	in.WorkItems = in.WorkItems[:1]           // frame removed from scope
-	in.Packages = []Package{in.Packages[0]}   // engineer removed in Procurement
-	in.Packages[0].Title = "Architect (lead)" // renamed
+	in.WorkItems = in.WorkItems[:1] // frame removed from scope
 	in.Packages = append(in.Packages, Package{ID: "qs", Title: "Quantity surveyor", Kind: "services"})
 	after := mustGenerate(t, cat, in)
 	cs := Diff(rows, links, after, UserRetired{})
@@ -84,31 +86,22 @@ func TestDiffDefaultsAndSummaries(t *testing.T) {
 		!strings.Contains(frame.Summary, "its work item is no longer in scope; you edited “Frame (steel)”") {
 		t.Fatalf("edited removal %+v", frame)
 	}
+	arch, ok := findChange(cs, ChangeRemove, "package:arch:a1")
+	if !ok || arch.DefaultChoice != ChoiceAdopt || arch.PackageID != "" || arch.Source != SourceProcurement ||
+		!strings.Contains(arch.Summary, "consultants now follow the stage's own activities") {
+		t.Fatalf("folded package row %+v", arch)
+	}
 	eng, ok := findChange(cs, ChangeRemove, "package:eng:e1")
-	if !ok || eng.DefaultChoice != ChoiceKeep || eng.PackageID != "eng" || eng.Source != SourceProcurement {
-		t.Fatalf("package removal %+v", eng)
+	if !ok || eng.DefaultChoice != ChoiceKeep {
+		t.Fatalf("accepted package row %+v", eng)
 	}
-	if got := RemovedPackageRows(cs); len(got) != 1 || got[0] != "id:package:eng:e1" {
-		t.Fatalf("removed package rows %v", got)
+	if got := RemovedPackageRows(cs); len(got) != 0 {
+		t.Fatalf("a folded row named as removed in Procurement: %v", got)
 	}
-	ren, ok := findChange(cs, ChangeRename, "package:arch:a1")
-	if !ok || ren.DefaultChoice != ChoiceAdopt || ren.Ops[0]["op"] != "update" || ren.Ops[0]["label"] != "Architect (lead): Construction" {
-		t.Fatalf("rename %+v", ren)
-	}
-	add, ok := findChange(cs, ChangeAdd, "package:qs:")
-	if !ok || add.DefaultChoice != ChoiceAdopt || add.Ops[0]["op"] != "add" || add.Ops[0]["parent_id"] != "id:skeleton:sk.new:construction" ||
-		add.Ops[0]["source_key"] != "package:qs:" || add.Ops[0]["origin"] != OriginLibrary {
-		t.Fatalf("add %+v", add)
-	}
-	// The new row's chain link travels with its add.
-	linked := false
-	for _, op := range add.Ops[1:] {
-		if op["op"] == "link_add" && op["succ_id"] == "package:qs:" {
-			linked = true
+	for _, c := range cs {
+		if c.Kind == ChangeAdd && strings.HasPrefix(c.SourceKey, "package:") {
+			t.Fatalf("a package added a row: %+v", c)
 		}
-	}
-	if !linked {
-		t.Fatalf("add has no link op: %+v", add.Ops)
 	}
 	for _, c := range cs {
 		if c.TargetActivityID == "mine" {
@@ -130,15 +123,15 @@ func TestDiffMatchesBySourceKeyOnly(t *testing.T) {
 	rows, links := liveFrom(p)
 	// Same label, different key: a removal and an addition, never a rename.
 	for i := range rows {
-		if rows[i].SourceKey == "package:arch:a1" {
-			rows[i].SourceKey = "package:arch:old"
+		if rows[i].SourceKey == "fragment:fr.frame:frame:frame" {
+			rows[i].SourceKey = "fragment:fr.frame:frame:old"
 		}
 	}
 	cs := Diff(rows, links, p, UserRetired{})
-	if _, ok := findChange(cs, ChangeRemove, "package:arch:old"); !ok {
+	if _, ok := findChange(cs, ChangeRemove, "fragment:fr.frame:frame:old"); !ok {
 		t.Fatalf("no removal: %+v", cs)
 	}
-	if _, ok := findChange(cs, ChangeAdd, "package:arch:a1"); !ok {
+	if _, ok := findChange(cs, ChangeAdd, "fragment:fr.frame:frame:frame"); !ok {
 		t.Fatalf("no addition: %+v", cs)
 	}
 	for _, c := range cs {

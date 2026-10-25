@@ -3,6 +3,7 @@ package store_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -117,6 +118,14 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 	if refs, err := s.PendingProposalPrograms(ctx); err != nil || len(refs) != 1 || refs[0].SubmissionID != id {
 		t.Fatalf("pending %v %v", refs, err)
 	}
+	// A stage that has activities takes its length from them, so it takes
+	// no reading: with the library's activities in both stages nothing is
+	// read (owner direction 25 October 2026: packages add no rows).
+	if in, err := s.ProposalProgramForReading(ctx, orgA, id); err != nil || in.NotRead == "" || len(in.Stages) != 0 {
+		t.Fatalf("stages with activities read %+v %v", in, err)
+	}
+	// Emptied stages take the consultant's weeks themselves.
+	emptyArchitectStages(t, s)
 	in, err := s.ProposalProgramForReading(ctx, orgA, id)
 	if err != nil {
 		t.Fatal(err)
@@ -125,7 +134,9 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 	for _, ps := range in.Stages {
 		stage[ps.Label] = ps
 	}
-	if in.NotRead != "" || in.PerWeek != 5 || len(in.Stages) != 2 || stage["Concept"].TargetActivityID == "" || stage["Concept"].CatalogueStageID != "concept_design" {
+	// Packages add no rows (owner direction 25 October 2026), so a
+	// reading targets the program stage by catalogue id.
+	if in.NotRead != "" || in.PerWeek != 5 || len(in.Stages) != 2 || stage["Concept"].TargetActivityID != "" || stage["Concept"].CatalogueStageID != "concept_design" {
 		t.Fatalf("input %+v", in)
 	}
 	// A well-completed R7 sheet: settled by rule, zero Jev questions.
@@ -150,13 +161,16 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 	if len(v.Readings) != 2 || v.ReadingsPending != 2 {
 		t.Fatalf("readings after award %+v", v.Readings)
 	}
-	var concept store.ProgramReadingView
+	var concept, visitsReading store.ProgramReadingView
 	for _, r := range v.Readings {
-		if string(r.TargetActivityID) == stage["Concept"].TargetActivityID {
+		switch {
+		case strings.Contains(r.Text, "Concept"):
 			concept = r
+		case strings.Contains(r.Text, "Site visits"):
+			visitsReading = r
 		}
 	}
-	if concept.Source != "proposal_r7" || concept.Text != "From the awarded proposal: Concept 3 weeks" || concept.TargetActivityID != store.NullText(stage["Concept"].TargetActivityID) ||
+	if concept.Source != "proposal_r7" || concept.Text != "From the awarded proposal: Concept 3 weeks" || concept.CatalogueStageID != "concept_design" ||
 		concept.Field != programread.FieldDuration || concept.Value != "3" || !concept.Applies || concept.DecidedBy != "rule" {
 		t.Fatalf("concept %+v", concept)
 	}
@@ -180,7 +194,7 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 	if _, err := s.Award(ctx, orgA, projectA, pkg.ID, userA, store.AwardInput{SubmissionID: id, Lines: lines, Total: "5500.00"}); err != nil {
 		t.Fatal(err)
 	}
-	visits := stage["Site visits"].TargetActivityID
+	visits := string(visitsReading.TargetActivityID)
 	user := 7
 	res, err := s.ApplyProgramOps(ctx, orgA, projectA, userA, st.Program.ID, st.Program.Version, []store.ProgramOp{{Op: "update", ID: visits, DurationDays: store.OptInt{Set: true, Value: &user}}})
 	if err != nil {
@@ -192,7 +206,7 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 	}
 	for _, a := range res.Activities {
 		switch a.ID {
-		case stage["Concept"].TargetActivityID:
+		case string(concept.TargetActivityID):
 			if a.DurationDays == nil || *a.DurationDays != 15 || a.DurationOrigin != "document" {
 				t.Fatalf("concept %+v", a)
 			}
@@ -217,9 +231,35 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 	}
 }
 
+// emptyArchitectStages deletes the activities of the two program stages the
+// architect's package stages sit in, so each stage takes a reading itself.
+func emptyArchitectStages(t *testing.T, s *store.Store) {
+	t.Helper()
+	prog, err := s.LoadProgram(context.Background(), orgA, projectA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	emptied := map[string]bool{}
+	for _, a := range prog.Activities {
+		if a.Kind == "stage" && (a.CatalogueStageID == "concept_design" || a.CatalogueStageID == "construction") {
+			emptied[a.ID] = true
+		}
+	}
+	var kids []string
+	for _, a := range prog.Activities {
+		if emptied[string(a.ParentID)] {
+			kids = append(kids, a.ID)
+		}
+	}
+	if len(kids) > 0 {
+		apply(t, s, prog, store.ProgramOp{Op: "delete", IDs: kids})
+	}
+}
+
 func TestProposalProgramGreyIsRetried(t *testing.T) {
 	ctx := context.Background()
 	s, _, id, _ := awardable(t)
+	emptyArchitectStages(t, s)
 	if ok, err := s.QueueProposalProgram(ctx, orgA, id); err != nil || !ok {
 		t.Fatal(err)
 	}

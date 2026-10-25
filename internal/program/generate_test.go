@@ -474,7 +474,10 @@ func TestUnknownStateStaysConditional(t *testing.T) {
 	}
 }
 
-func TestPackageActivitiesAndStageMap(t *testing.T) {
+// Packages add no rows (owner direction 25 October 2026): consultants follow
+// the stage's own activities. Each package stage is still placed in a
+// program stage for the shared stage plan.
+func TestPackageStagesMapWithoutRows(t *testing.T) {
 	cat := testCatalog(t, testLibrary, "")
 	in := GenInput{WorkTypes: []string{"new"}, Packages: []Package{
 		{ID: "arch", Title: "Architect", Kind: "services", Stages: []PackageStage{
@@ -500,17 +503,11 @@ func TestPackageActivitiesAndStageMap(t *testing.T) {
 		if m.StageKey != w.stage || m.Rule != w.rule || m.PackageID != "arch" {
 			t.Fatalf("mapping %+v, want %+v", m, w)
 		}
-		r, ok := p.Row("package:arch:" + m.PackageStageID)
-		if !ok || r.ParentKey != m.StageKey || r.PackageStageID != m.PackageStageID || r.PackageID != "arch" {
-			t.Fatalf("row %+v", r)
+	}
+	for _, r := range p.Rows {
+		if r.PackageID != "" || strings.HasPrefix(r.SourceKey, "package:") {
+			t.Fatalf("package row %+v", r)
 		}
-	}
-	if r, _ := p.Row("package:arch:ps4"); r.Label != "Architect: Tender support" {
-		t.Fatal(r.Label)
-	}
-	r, ok := p.Row("package:build:")
-	if !ok || r.Label != "Head contract" || r.ParentKey != "skeleton:sk.new:construction" {
-		t.Fatalf("works package row %+v", r)
 	}
 	// Two sub-stages split a top-level stage: Design goes to the first one.
 	gp := mustGenerate(t, cat, GenInput{Packages: []Package{{ID: "x", Title: "X", Kind: "services",
@@ -626,9 +623,9 @@ calendars: []
 `,
 }
 
-// WP-P5 done: with the empty library a project gets sk.generic stages, one
-// activity per package stage, every duration unknown, and status words that
-// say so; no question is offered because nothing in the library reads a fact.
+// WP-P5 done: with the empty library a project gets sk.generic stages, no
+// package rows, every duration unknown (no default row to fall back on), and
+// status words that say so; no question is offered.
 func TestEmptyLibrary(t *testing.T) {
 	cat := testCatalog(t, emptyLibrary, "")
 	in := GenInput{Facts: Facts{ConsentDate: "2027-02-01"},
@@ -651,20 +648,17 @@ func TestEmptyLibrary(t *testing.T) {
 	for _, r := range p.Rows {
 		if r.Kind != KindStage {
 			activities++
-			if r.PackageID == "" {
-				t.Fatalf("non-package activity %s", r.SourceKey)
-			}
 		}
 		if r.Duration != nil || r.ReviewStatus != ReviewProposed || r.Origin != OriginLibrary {
 			t.Fatalf("row %+v", r)
 		}
 	}
-	if activities != 4 || len(p.StageMap) != 3 {
+	if activities != 0 || len(p.StageMap) != 3 {
 		t.Fatalf("%d activities, %d mappings", activities, len(p.StageMap))
 	}
 	out := Compute(p.Input(Calendar{}))
-	// 9 stages, 3 of them with activities; 6 leaf stages + 4 activities.
-	if out.Status.Known != 0 || out.Status.Total != 10 || out.Status.Words != "Indicative: 0 of 10 durations known" {
+	// 9 leaf stages and nothing else.
+	if out.Status.Known != 0 || out.Status.Total != 9 || out.Status.Words != "Indicative: 0 of 9 durations known" {
 		t.Fatalf("status %+v", out.Status)
 	}
 	if out.Cycle != nil {

@@ -143,6 +143,7 @@
 .pg-name { display: flex; align-items: center; gap: 4px; min-width: 0; }
 .pg-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pg-dur, .pg-date { font-family: var(--mono); font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--ink-body); }
+.pg-assumed { margin-right: 4px; color: var(--ink-muted); font-family: var(--sans); cursor: help; }
 .pg-dur.is-unknown { color: var(--warn); font-style: italic; font-family: var(--sans); }
 .pg-chevron { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--ink-muted); cursor: pointer; flex: none; }
 .pg-chevron:hover { background: var(--line); color: var(--ink); }

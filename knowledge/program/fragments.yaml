@@ -2556,7 +2556,12 @@ fragments:
       - {det: ncc_class, any_of: ["1a"]}
       - {det: work_type, any_of: [new, extend, refurb]}
   activities:
+    - {key: brief, label: "Confirm the brief", systems: [site], duration: du.brief-confirm-1a}
     - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-1a}
+    - {key: review, label: "Client review of the concept", systems: [site], duration: du.client-review-1a}
+  links:
+    - {from: brief, to: concept, type: FS, lag: null}
+    - {from: concept, to: review, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-1a"}
@@ -2570,7 +2575,12 @@ fragments:
       - {det: ncc_class, any_of: ["2"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
+    - {key: brief, label: "Confirm the brief", systems: [site], duration: du.brief-confirm}
     - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-2}
+    - {key: review, label: "Client review of the concept", systems: [site], duration: du.client-review}
+  links:
+    - {from: brief, to: concept, type: FS, lag: null}
+    - {from: concept, to: review, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-2"}
@@ -2584,7 +2594,12 @@ fragments:
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
   activities:
+    - {key: brief, label: "Confirm the brief", systems: [site], duration: du.brief-confirm}
     - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-fitout}
+    - {key: review, label: "Client review of the concept", systems: [site], duration: du.client-review}
+  links:
+    - {from: brief, to: concept, type: FS, lag: null}
+    - {from: concept, to: review, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-fitout"}
@@ -2598,7 +2613,12 @@ fragments:
       - {det: ncc_class, any_of: ["7b"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
+    - {key: brief, label: "Confirm the brief", systems: [site], duration: du.brief-confirm}
     - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-7b}
+    - {key: review, label: "Client review of the concept", systems: [site], duration: du.client-review}
+  links:
+    - {from: brief, to: concept, type: FS, lag: null}
+    - {from: concept, to: review, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-7b"}
@@ -2612,7 +2632,12 @@ fragments:
       - {det: ncc_class, any_of: ["9b"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
+    - {key: brief, label: "Confirm the brief", systems: [site], duration: du.brief-confirm}
     - {key: concept, label: "Prepare the concept design", systems: [site], duration: du.concept-design-9b}
+    - {key: review, label: "Client review of the concept", systems: [site], duration: du.client-review}
+  links:
+    - {from: brief, to: concept, type: FS, lag: null}
+    - {from: concept, to: review, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-9b"}
@@ -2702,6 +2727,12 @@ fragments:
       - {det: work_type, any_of: [new, extend, refurb]}
   activities:
     - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-1a}
+    - {key: consultants, label: "Coordinate consultant reports", systems: [site], duration: du.approval-docs-1a}
+    - {key: signoff, label: "Client sign-off for lodgement", systems: [site], duration: du.client-signoff-1a}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-1a"}
@@ -2716,6 +2747,12 @@ fragments:
       - {det: work_type, any_of: [new, extend, refurb]}
   activities:
     - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-2}
+    - {key: consultants, label: "Coordinate consultant reports", systems: [site], duration: du.approval-docs-2}
+    - {key: signoff, label: "Client sign-off for lodgement", systems: [site], duration: du.client-signoff}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-2"}
@@ -2730,6 +2767,12 @@ fragments:
       - {det: work_type, any_of: [new, extend, refurb]}
   activities:
     - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-7b}
+    - {key: consultants, label: "Coordinate consultant reports", systems: [site], duration: du.approval-docs-7b}
+    - {key: signoff, label: "Client sign-off for lodgement", systems: [site], duration: du.client-signoff}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-7b"}
@@ -2744,6 +2787,12 @@ fragments:
       - {det: work_type, any_of: [new, extend, refurb]}
   activities:
     - {key: draw, label: "Prepare approval documentation", systems: [site], duration: du.approval-docs-9b}
+    - {key: consultants, label: "Coordinate consultant reports", systems: [site], duration: du.approval-docs-9b}
+    - {key: signoff, label: "Client sign-off for lodgement", systems: [site], duration: du.client-signoff}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-9b"}
@@ -2758,6 +2807,12 @@ fragments:
       - {det: work_type, eq: refurb}
   activities:
     - {key: draw, label: "Prepare fit-out documentation", systems: [site], duration: du.fitout-documentation}
+    - {key: consultants, label: "Coordinate consultant documentation", systems: [site], duration: du.fitout-documentation}
+    - {key: signoff, label: "Client sign-off for tender", systems: [site], duration: du.client-signoff}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.fitout-documentation"}
@@ -2772,6 +2827,12 @@ fragments:
       - {det: work_type, any_of: [new, extend]}
   activities:
     - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-1a}
+    - {key: consultants, label: "Coordinate consultant documentation", systems: [site], duration: du.construction-docs-1a}
+    - {key: signoff, label: "Client sign-off for tender", systems: [site], duration: du.client-signoff-1a}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-1a"}
@@ -2786,6 +2847,12 @@ fragments:
       - {det: work_type, any_of: [new, extend]}
   activities:
     - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-2}
+    - {key: consultants, label: "Coordinate consultant documentation", systems: [site], duration: du.construction-docs-2}
+    - {key: signoff, label: "Client sign-off for tender", systems: [site], duration: du.client-signoff}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-2"}
@@ -2800,6 +2867,12 @@ fragments:
       - {det: work_type, any_of: [new, extend]}
   activities:
     - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-7b}
+    - {key: consultants, label: "Coordinate consultant documentation", systems: [site], duration: du.construction-docs-7b}
+    - {key: signoff, label: "Client sign-off for tender", systems: [site], duration: du.client-signoff}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-7b"}
@@ -2814,6 +2887,12 @@ fragments:
       - {det: work_type, any_of: [new, extend]}
   activities:
     - {key: draw, label: "Prepare construction documentation", systems: [site], duration: du.construction-docs-9b}
+    - {key: consultants, label: "Coordinate consultant documentation", systems: [site], duration: du.construction-docs-9b}
+    - {key: signoff, label: "Client sign-off for tender", systems: [site], duration: du.client-signoff}
+  links:
+    - {from: draw, to: consultants, type: SS, lag: null}
+    - {from: draw, to: signoff, type: FS, lag: null}
+    - {from: consultants, to: signoff, type: FS, lag: null}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.construction-docs-9b"}
@@ -3323,3 +3402,80 @@ fragments:
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.defects-liability-end"}
+- id: fr.investigate-geotech
+  label: "Geotechnical investigation"
+  stage: investigation
+  systems: [site.ground-conditions]
+  applies_when: {work_action: {system: site.ground-conditions, any_of: [investigate]}}
+  activities:
+    - {key: investigate, label: "Geotechnical investigation", systems: [site.ground-conditions], duration: du.investigate-geotech}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-geotech"}
+- id: fr.investigate-survey
+  label: "Detail and boundary survey"
+  stage: investigation
+  systems: [site.survey-boundaries]
+  applies_when: {work_action: {system: site.survey-boundaries, any_of: [investigate]}}
+  activities:
+    - {key: investigate, label: "Detail and boundary survey", systems: [site.survey-boundaries], duration: du.investigate-survey}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-survey"}
+- id: fr.investigate-contamination
+  label: "Contamination investigation"
+  stage: investigation
+  systems: [site.contamination]
+  applies_when: {work_action: {system: site.contamination, any_of: [investigate]}}
+  activities:
+    - {key: investigate, label: "Contamination investigation", systems: [site.contamination], duration: du.investigate-contamination}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-contamination"}
+- id: fr.investigate-acid-sulfate
+  label: "Acid sulfate soils assessment"
+  stage: investigation
+  systems: [site.acid-sulfate-soils]
+  applies_when: {work_action: {system: site.acid-sulfate-soils, any_of: [investigate]}}
+  activities:
+    - {key: investigate, label: "Acid sulfate soils assessment", systems: [site.acid-sulfate-soils], duration: du.investigate-acid-sulfate}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-acid-sulfate"}
+- id: fr.investigate-trees
+  label: "Arborist assessment"
+  stage: investigation
+  systems: [site.trees]
+  applies_when: {work_action: {system: site.trees, any_of: [investigate]}}
+  activities:
+    - {key: investigate, label: "Arborist assessment", systems: [site.trees], duration: du.investigate-trees}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-trees"}
+- id: fr.investigate-flooding
+  label: "Flood advice"
+  stage: investigation
+  systems: [site.flooding]
+  applies_when: {work_action: {system: site.flooding, any_of: [investigate]}}
+  activities:
+    - {key: investigate, label: "Flood advice", systems: [site.flooding], duration: du.investigate-flooding}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-flooding"}
+- id: fr.investigate-services
+  label: "Services search and locating"
+  stage: investigation
+  systems: [site.services-connections]
+  applies_when: {work_action: {system: site.services-connections, any_of: [investigate]}}
+  activities:
+    - {key: investigate, label: "Services search and locating", systems: [site.services-connections], duration: du.investigate-services}
+  attach: {after: stage_start}
+  status: draft
+  sources:
+    - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-services"}

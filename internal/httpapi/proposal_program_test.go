@@ -3,6 +3,7 @@ package httpapi_test
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strings"
@@ -40,15 +41,34 @@ func TestR7ReturnableReadAfterProposalShowsOnlyOnceAwarded(t *testing.T) {
 	m.call(t, http.MethodPost, "/api/projects/"+project+"/procurement/rows", []byte(`{"discipline_id":"consultant.town_planner"}`), http.StatusCreated, &pkg)
 	var v programView
 	m.call(t, http.MethodPost, "/api/projects/"+project+"/program/prepare", []byte(`{"surface":"program"}`), http.StatusOK, &v)
-	// The package's stages, as the program's package activities name them.
-	labels := map[string]string{} // package activity id → package stage label
+	// Packages add no program rows (owner direction 25 October 2026), and a
+	// stage with activities takes its length from them, so a reading lands
+	// only on a stage with none. Empty every stage, then name the package's
+	// stages in the R7 sheet.
+	var acts []string
 	for _, act := range v.Activities {
-		if string(act.PackageID) == pkg.ID && act.PackageStageID != "" {
-			labels[act.ID] = strings.TrimPrefix(act.Label, pkg.Title+": ")
+		if act.ParentID != "" {
+			acts = append(acts, act.ID)
+		}
+	}
+	if len(acts) > 0 {
+		ops, _ := json.Marshal(map[string]any{"program_id": v.Program.ID, "version": v.Program.Version, "ops": []map[string]any{{"op": "delete", "ids": acts}}})
+		m.call(t, http.MethodPost, "/api/projects/"+project+"/program/ops", ops, http.StatusOK, &v)
+	}
+	pkgs, err := a.store.ReadPackages(context.Background(), m.orgID, project)
+	if err != nil {
+		t.Fatal(err)
+	}
+	labels := map[string]string{} // package stage id → label
+	for _, p := range pkgs {
+		if p.ID == pkg.ID {
+			for _, s := range p.Stages {
+				labels[s.ID] = s.Label
+			}
 		}
 	}
 	if len(labels) == 0 {
-		t.Fatal("no package activities")
+		t.Fatal("no package stages")
 	}
 	// The firm's returned response form: an exact R7 sheet, every stage a
 	// plain number of weeks.

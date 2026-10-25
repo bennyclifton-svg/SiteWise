@@ -274,7 +274,6 @@ func TestProgramLoaderRejectsEachBadCase(t *testing.T) {
 		// Rule 2: only documented operators.
 		{"unknown operator", "skeletons.yaml", "applies_when: {det: work_type, eq: new}", "applies_when: {work_type: new}"},
 		{"work_action retain", "fragments.yaml", "any_of: [new, replace]", "any_of: [new, retain]"},
-		{"work_action investigate", "fragments.yaml", "any_of: [new, replace]", "any_of: [investigate]"},
 		{"work_action unknown system", "fragments.yaml", "{work_action: {system: structure,", "{work_action: {system: structure.invented,"},
 		{"work_action without actions", "fragments.yaml", "{work_action: {system: structure, any_of: [new, replace]}}", "{work_action: {system: structure}}"},
 		{"misspelt key", "fragments.yaml", "applies_when: {work_action", "applies_whne: {work_action"},

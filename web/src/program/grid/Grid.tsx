@@ -76,6 +76,13 @@ export function durationText(row: Row, t: Times | undefined): string {
   return a.duration_days === 0 ? "Milestone" : `${a.duration_days}d`;
 }
 
+/** Why a duration is a default the user should adjust, or "" when it is not. */
+export function assumedNote(row: Row): string {
+  if (row.hasChildren) return "";
+  const a = row.act.duration_source?.assumed;
+  return typeof a === "string" ? a : "";
+}
+
 /** The text an editor opens with: what the cell would accept back. */
 export function editText(row: Row, col: EditCol, preds: ReadonlyMap<string, string> | undefined): string {
   if (col === "name") return row.act.label;
@@ -91,6 +98,7 @@ export const Grid = memo(function Grid(p: GridProps) {
     const t = times[r.id];
     const d = shownDates(cal, t);
     const unknown = durationText(r, t) === "Unknown";
+    const assumed = assumedNote(r);
     const proposed = r.act.review_status === "proposed";
     const ed = editing && editing.id === r.id ? editing : null;
     const cell = (col: string) => ({
@@ -207,7 +215,16 @@ export const Grid = memo(function Grid(p: GridProps) {
               {...cell("duration")}
               onDoubleClick={() => p.onEdit?.(r.id, "duration")}
             >
-              {editor("duration") ?? durationText(r, t)}
+              {editor("duration") ?? (
+                <>
+                  {assumed && (
+                    <span className="pg-assumed" title={assumed} aria-label={`Assumed: ${assumed}`}>
+                      ≈
+                    </span>
+                  )}
+                  {durationText(r, t)}
+                </>
+              )}
             </span>
             <span role="gridcell" className="pg-cell pg-date" {...cell("start")}>
               {d.start}

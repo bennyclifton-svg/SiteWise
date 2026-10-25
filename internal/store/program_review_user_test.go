@@ -7,9 +7,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"sitewise/internal/procurement"
 	engine "sitewise/internal/program"
 	"sitewise/internal/store"
+	"sitewise/internal/works"
 )
 
 // Plan section 2 rule 2, 7.4 and 13.1: the review raises what a change made
@@ -75,57 +75,54 @@ func TestProgramReviewLeavesTheUsersOwnEdits(t *testing.T) {
 
 func TestProgramReviewRaisesAReviewRemovalWhoseInputComesBack(t *testing.T) {
 	ctx := context.Background()
-	s, b, _ := workStore(t)
+	s, b, part := workStore(t)
 	cat := b.Catalog
-	stage := procurement.Stage{StageID: "concept_design", Label: "Concept", NovationPhase: "none", Origin: "user"}
-	arch, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned", Stages: []procurement.Stage{stage}})
+	erosion, err := s.CreateWorkItem(ctx, orgA, projectA, userA, works.Item{PartID: part, SystemID: "site.erosion-sediment-control", Action: "new", Title: "Erosion controls"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	eng, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Engineer", LifecycleStatus: "planned", Stages: []procurement.Stage{stage}})
-	if err != nil {
+	if _, err := s.CreateWorkItem(ctx, orgA, projectA, userA, works.Item{PartID: part, SystemID: "electrical.temporary-power", Action: "new", Title: "Builders power"}); err != nil {
 		t.Fatal(err)
 	}
 	st, _, err := s.PrepareProgram(ctx, orgA, projectA, "program", cat)
 	if err != nil {
 		t.Fatal(err)
 	}
-	archRow, engRow := rowOf(t, st, "Architect: Concept"), rowOf(t, st, "Engineer: Concept")
+	erosionRow, powerRow := rowOf(t, st, "Erosion controls"), rowOf(t, st, "Builders power")
 
-	// The user deletes the engineer's row; the architect's package is
-	// removed in Procurement and the review's removal is adopted.
-	res := apply(t, s, st, store.ProgramOp{Op: "delete", IDs: []string{engRow.ID}})
-	retire := true
-	if _, err := s.PatchPackage(ctx, orgA, projectA, arch.ID, userA, procurement.PackagePatch{Version: arch.Version, Retired: &retire}); err != nil {
+	// The user deletes the power row; the erosion item leaves scope and the
+	// review's removal is adopted.
+	res := apply(t, s, st, store.ProgramOp{Op: "delete", IDs: []string{powerRow.ID}})
+	if err := s.RetireWorkItem(ctx, orgA, projectA, erosion.ID, userA, erosion.Version); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.ReviewProgram(ctx, orgA, projectA, cat); err != nil {
 		t.Fatal(err)
 	}
-	rm := changeFor(t, pendingChanges(t, s), engine.ChangeRemove, string(archRow.SourceKey))
+	rm := changeFor(t, pendingChanges(t, s), engine.ChangeRemove, string(erosionRow.SourceKey))
 	done, err := s.DecideProgramChanges(ctx, orgA, projectA, userA, res.Program.Version, []store.ProgramDecision{{ID: rm.ID, Choice: "adopt"}}, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if hasRow(done.ProgramState, "Architect: Concept") {
+	if hasRow(done.ProgramState, "Erosion controls") {
 		t.Fatal("adopted removal kept the row")
 	}
 
-	// The package comes back (its input returns): the review offers the row
-	// again with Adopt. The engineer's row, which the user deleted, is not
+	// The item comes back (its input returns): the review offers the row
+	// again with Adopt. The power row, which the user deleted, is not
 	// offered.
-	execSQL(t, `UPDATE packages SET retired_at=NULL WHERE org_id=$1 AND id=$2`, orgA, arch.ID)
+	execSQL(t, `UPDATE work_items SET retired_at=NULL WHERE org_id=$1 AND id=$2`, orgA, erosion.ID)
 	if _, err := s.ReviewProgram(ctx, orgA, projectA, cat); err != nil {
 		t.Fatal(err)
 	}
 	list := pendingChanges(t, s)
-	add := changeFor(t, list, engine.ChangeAdd, string(archRow.SourceKey))
+	add := changeFor(t, list, engine.ChangeAdd, string(erosionRow.SourceKey))
 	if add.DefaultChoice != engine.ChoiceAdopt {
 		t.Fatalf("re-raised add %+v", add)
 	}
 	for _, c := range list.Changes {
-		if c.SourceKey == string(engRow.SourceKey) {
-			t.Fatalf("the user's delete was offered back: %+v (engineer %s)", c, eng.ID)
+		if c.SourceKey == string(powerRow.SourceKey) {
+			t.Fatalf("the user's delete was offered back: %+v", c)
 		}
 	}
 }

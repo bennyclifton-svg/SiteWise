@@ -11,6 +11,7 @@ import (
 	"sitewise/internal/procurement"
 	engine "sitewise/internal/program"
 	"sitewise/internal/store"
+	"sitewise/internal/works"
 )
 
 // Plan 11.3 "Review": differences matched by source key, nothing written
@@ -55,7 +56,7 @@ func changeStatus(t *testing.T, id string) string {
 
 func TestProgramReview(t *testing.T) {
 	ctx := context.Background()
-	s, b, _ := workStore(t)
+	s, b, part := workStore(t)
 	cat := b.Catalog
 	review := func() store.ProgramReviewOutcome {
 		t.Helper()
@@ -69,11 +70,10 @@ func TestProgramReview(t *testing.T) {
 	if out := review(); out.ProgramID != "" || out.Changed {
 		t.Fatalf("review without a program %+v", out)
 	}
-	stage := func(id, label string) procurement.Stage {
-		return procurement.Stage{StageID: id, Label: label, NovationPhase: "none", Origin: "user"}
-	}
-	arch, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned",
-		Stages: []procurement.Stage{stage("concept_design", "Concept"), stage("construction", "Site visits")}})
+	// Work items drive the review: a single-activity fragment takes the
+	// item's title, so a renamed item is a renamed row. Packages add no rows
+	// (owner direction 25 October 2026).
+	erosion, err := s.CreateWorkItem(ctx, orgA, projectA, userA, works.Item{PartID: part, SystemID: "site.erosion-sediment-control", Action: "new", Title: "Erosion controls"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,16 +84,24 @@ func TestProgramReview(t *testing.T) {
 	if out := review(); out.Changed || out.Pending != 0 || out.ProgramID != st.Program.ID {
 		t.Fatalf("unchanged program reviewed %+v", out)
 	}
+	erosionRow := rowOf(t, st, "Erosion controls")
 
-	// Changes made in Procurement: a new package, a renamed one. No path
-	// outside Program writes a program row.
-	eng, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Engineer", LifecycleStatus: "planned",
-		Stages: []procurement.Stage{stage("concept_design", "Concept")}})
+	// Changes elsewhere: a new work item, a renamed one, and a new package.
+	// No path outside Program writes a program row, and the package raises
+	// nothing.
+	power, err := s.CreateWorkItem(ctx, orgA, projectA, userA, works.Item{PartID: part, SystemID: "electrical.temporary-power", Action: "new", Title: "Builders power"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	title := "Architect (lead)"
-	if arch, err = s.PatchPackage(ctx, orgA, projectA, arch.ID, userA, procurement.PackagePatch{Version: arch.Version, Title: &title}); err != nil {
+	rename := func(title string) {
+		t.Helper()
+		if erosion, err = s.PatchWorkItem(ctx, orgA, projectA, erosion.ID, userA, works.Patch{Version: erosion.Version, Title: &title}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	rename("Erosion and sediment controls")
+	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Engineer", LifecycleStatus: "planned",
+		Stages: []procurement.Stage{{StageID: "concept_design", Label: "Concept", NovationPhase: "none", Origin: "user"}}}); err != nil {
 		t.Fatal(err)
 	}
 	unchanged := func(when string) {
@@ -106,42 +114,39 @@ func TestProgramReview(t *testing.T) {
 			t.Fatalf("%s wrote the program: v%d→v%d %s", when, st.Program.Version, now.Program.Version, labels(now))
 		}
 	}
-	unchanged("a package change")
+	unchanged("a scope change")
 
 	out := review()
-	if !out.Changed || out.Pending != 3 {
-		t.Fatalf("review %+v", out)
+	if !out.Changed || out.Pending != 2 {
+		t.Fatalf("review %+v %+v", out, pendingChanges(t, s).Changes)
 	}
 	unchanged("the review")
 	list := pendingChanges(t, s)
-	engKey := "package:" + eng.ID + ":" + eng.Stages[0].ID
-	add := changeFor(t, list, engine.ChangeAdd, engKey)
-	concept := rowOf(t, st, "Architect: Concept")
-	visits := rowOf(t, st, "Architect: Site visits")
-	renConcept := changeFor(t, list, engine.ChangeRename, string(concept.SourceKey))
-	renVisits := changeFor(t, list, engine.ChangeRename, string(visits.SourceKey))
-	if add.Source != engine.SourceProcurement || add.DefaultChoice != engine.ChoiceAdopt || add.TargetActivityID != "" || !strings.Contains(add.Summary, "Engineer: Concept") {
+	powerKey := "fragment:fr.temporary-power:" + power.ID + ":connect"
+	add := changeFor(t, list, engine.ChangeAdd, powerKey)
+	ren := changeFor(t, list, engine.ChangeRename, string(erosionRow.SourceKey))
+	if add.Source != engine.SourceWorkItems || add.DefaultChoice != engine.ChoiceAdopt || add.TargetActivityID != "" || !strings.Contains(add.Summary, "Builders power") {
 		t.Fatalf("add %+v", add)
 	}
-	if string(renVisits.TargetActivityID) != visits.ID || renVisits.DefaultChoice != engine.ChoiceAdopt || renVisits.EditedSince {
-		t.Fatalf("rename %+v", renVisits)
+	if string(ren.TargetActivityID) != erosionRow.ID || ren.DefaultChoice != engine.ChoiceAdopt || ren.EditedSince {
+		t.Fatalf("rename %+v", ren)
 	}
-	if list.Version != st.Program.Version || list.Counts["add"] != 1 || list.Counts["rename"] != 2 || len(list.Changes) != 3 {
+	if list.Version != st.Program.Version || list.Counts["add"] != 1 || list.Counts["rename"] != 1 || len(list.Changes) != 2 {
 		t.Fatalf("list %+v", list)
 	}
 	// Running again raises nothing new.
-	if out := review(); out.Changed || out.Pending != 3 {
+	if out := review(); out.Changed || out.Pending != 2 {
 		t.Fatalf("second review %+v", out)
 	}
 
-	// The user edits Site visits after the item was raised: it now defaults
+	// The user edits the erosion row after it was raised: it now defaults
 	// to Keep and says so.
-	label := "Site visits (fortnightly)"
-	res := apply(t, s, st, store.ProgramOp{Op: "update", ID: visits.ID, Label: &label})
+	label := "Silt fences"
+	res := apply(t, s, st, store.ProgramOp{Op: "update", ID: erosionRow.ID, Label: &label})
 	list = pendingChanges(t, s)
-	renVisits = changeFor(t, list, engine.ChangeRename, string(visits.SourceKey))
-	if renVisits.DefaultChoice != engine.ChoiceKeep || !renVisits.EditedSince || !renVisits.Edited || !strings.HasSuffix(renVisits.Summary, engine.EditedSince) {
-		t.Fatalf("edited since %+v", renVisits)
+	ren = changeFor(t, list, engine.ChangeRename, string(erosionRow.SourceKey))
+	if ren.DefaultChoice != engine.ChoiceKeep || !ren.EditedSince || !ren.Edited || !strings.HasSuffix(ren.Summary, engine.EditedSince) {
+		t.Fatalf("edited since %+v", ren)
 	}
 	if out := review(); out.Changed {
 		t.Fatalf("an edit re-raised the same differences %+v", out)
@@ -157,18 +162,18 @@ func TestProgramReview(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if adopted.Program.Version != v+1 || !hasRow(adopted.ProgramState, "Engineer: Concept") || !hasRow(adopted.ProgramState, "Architect (lead): Concept") ||
-		!hasRow(adopted.ProgramState, label) || hasRow(adopted.ProgramState, "Architect (lead): Site visits") {
+	if adopted.Program.Version != v+1 || !hasRow(adopted.ProgramState, "Builders power") || !hasRow(adopted.ProgramState, label) ||
+		hasRow(adopted.ProgramState, "Erosion and sediment controls") {
 		t.Fatalf("adopt all v%d %s", adopted.Program.Version, labels(adopted.ProgramState))
 	}
-	added := rowOf(t, adopted.ProgramState, "Engineer: Concept")
-	if string(added.SourceKey) != engKey || added.Origin != "library" || added.ReviewStatus != "proposed" || string(added.PackageID) != eng.ID {
+	added := rowOf(t, adopted.ProgramState, "Builders power")
+	if string(added.SourceKey) != powerKey || added.Origin != "library" || added.ReviewStatus != "proposed" || string(added.WorkItemID) != power.ID {
 		t.Fatalf("adopted row %+v", added)
 	}
-	if changeStatus(t, add.ID) != "adopted" || changeStatus(t, renConcept.ID) != "adopted" || changeStatus(t, renVisits.ID) != "pending" {
+	if changeStatus(t, add.ID) != "adopted" || changeStatus(t, ren.ID) != "pending" {
 		t.Fatal("statuses after adopt all")
 	}
-	if list = pendingChanges(t, s); len(list.Changes) != 1 || list.Changes[0].ID != renVisits.ID {
+	if list = pendingChanges(t, s); len(list.Changes) != 1 || list.Changes[0].ID != ren.ID {
 		t.Fatalf("pending after adopt all %+v", list.Changes)
 	}
 	view, err := s.ProgramView(ctx, orgA, projectA, adopted.ProgramState, cat)
@@ -185,94 +190,70 @@ func TestProgramReview(t *testing.T) {
 	if labels(undone.ProgramState) != labels(res.ProgramState) {
 		t.Fatalf("undo %s, want %s", labels(undone.ProgramState), labels(res.ProgramState))
 	}
-	if out := review(); !out.Changed || out.Pending != 3 {
+	if out := review(); !out.Changed || out.Pending != 2 {
 		t.Fatalf("review after undo %+v", out)
 	}
 
 	// Keep: marked kept, and not raised again while its inputs stand.
 	list = pendingChanges(t, s)
-	renVisits = changeFor(t, list, engine.ChangeRename, string(visits.SourceKey))
-	kept, err := s.DecideProgramChanges(ctx, orgA, projectA, userA, undone.Program.Version, []store.ProgramDecision{{ID: renVisits.ID, Choice: "keep"}}, false)
+	ren = changeFor(t, list, engine.ChangeRename, string(erosionRow.SourceKey))
+	kept, err := s.DecideProgramChanges(ctx, orgA, projectA, userA, undone.Program.Version, []store.ProgramDecision{{ID: ren.ID, Choice: "keep"}}, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if kept.Program.Version != undone.Program.Version || changeStatus(t, renVisits.ID) != "kept" {
+	if kept.Program.Version != undone.Program.Version || changeStatus(t, ren.ID) != "kept" {
 		t.Fatalf("keep moved the version or did not mark: v%d", kept.Program.Version)
 	}
-	if _, err := s.DecideProgramChanges(ctx, orgA, projectA, userA, kept.Program.Version, []store.ProgramDecision{{ID: renVisits.ID, Choice: "keep"}}, false); err == nil {
+	if _, err := s.DecideProgramChanges(ctx, orgA, projectA, userA, kept.Program.Version, []store.ProgramDecision{{ID: ren.ID, Choice: "keep"}}, false); err == nil {
 		t.Fatal("a decided change was decided again")
 	}
-	if out := review(); out.Changed || out.Pending != 2 {
+	if out := review(); out.Changed || out.Pending != 1 {
 		t.Fatalf("kept change raised again %+v", out)
 	}
-	// Its inputs change: the package is renamed again, so it is raised.
-	title = "Architect (design)"
-	if arch, err = s.PatchPackage(ctx, orgA, projectA, arch.ID, userA, procurement.PackagePatch{Version: arch.Version, Title: &title}); err != nil {
-		t.Fatal(err)
-	}
-	// The older pending rename of Concept and the add are superseded only
-	// when their difference changes: the add is the same, the rename is new.
-	oldConcept := changeFor(t, pendingChanges(t, s), engine.ChangeRename, string(concept.SourceKey))
-	oldAdd := changeFor(t, pendingChanges(t, s), engine.ChangeAdd, engKey)
-	if out := review(); !out.Changed || out.Pending != 3 {
+	// Its input changes: the item is renamed again, so it is raised. The
+	// pending add is the same difference and is not replaced.
+	oldAdd := changeFor(t, pendingChanges(t, s), engine.ChangeAdd, powerKey)
+	rename("Sediment fencing")
+	if out := review(); !out.Changed || out.Pending != 2 {
 		t.Fatalf("review after a new rename %+v", out)
 	}
 	list = pendingChanges(t, s)
-	newVisits := changeFor(t, list, engine.ChangeRename, string(visits.SourceKey))
-	newConcept := changeFor(t, list, engine.ChangeRename, string(concept.SourceKey))
-	if newVisits.ID == renVisits.ID || !strings.Contains(newVisits.Summary, "Architect (design): Site visits") || newVisits.DefaultChoice != engine.ChoiceKeep {
-		t.Fatalf("re-raised keep %+v", newVisits)
+	newRen := changeFor(t, list, engine.ChangeRename, string(erosionRow.SourceKey))
+	if newRen.ID == ren.ID || !strings.Contains(newRen.Summary, "Sediment fencing") || newRen.DefaultChoice != engine.ChoiceKeep {
+		t.Fatalf("re-raised keep %+v", newRen)
 	}
-	if newConcept.ID == oldConcept.ID || changeStatus(t, oldConcept.ID) != "superseded" {
-		t.Fatal("a newer difference did not supersede the older pending one")
-	}
-	if changeFor(t, list, engine.ChangeAdd, engKey).ID != oldAdd.ID {
+	if changeFor(t, list, engine.ChangeAdd, powerKey).ID != oldAdd.ID {
 		t.Fatal("an unchanged pending difference was replaced")
 	}
+	// A second rename while the first is pending supersedes it.
+	rename("Sediment fences")
+	review()
+	if changeStatus(t, newRen.ID) != "superseded" {
+		t.Fatal("a newer difference did not supersede the older pending one")
+	}
 
-	// Package removed in Procurement: the removal of its edited row defaults
-	// to Keep, and the package_removed check names the row meanwhile.
-	retired := true
-	if _, err := s.PatchPackage(ctx, orgA, projectA, arch.ID, userA, procurement.PackagePatch{Version: arch.Version, Retired: &retired}); err != nil {
+	// The item leaves scope: the removal of its edited row defaults to Keep;
+	// the pending rename of a removed row is superseded.
+	if err := s.RetireWorkItem(ctx, orgA, projectA, erosion.ID, userA, erosion.Version); err != nil {
 		t.Fatal(err)
-	}
-	unchanged2, err := s.LoadProgram(ctx, orgA, projectA)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if unchanged2.Program.Version != kept.Program.Version {
-		t.Fatal("removing a package wrote the program")
 	}
 	review()
 	list = pendingChanges(t, s)
-	rmVisits := changeFor(t, list, engine.ChangeRemove, string(visits.SourceKey))
-	rmConcept := changeFor(t, list, engine.ChangeRemove, string(concept.SourceKey))
-	if rmVisits.DefaultChoice != engine.ChoiceKeep || !rmVisits.Edited || rmConcept.DefaultChoice != engine.ChoiceAdopt {
-		t.Fatalf("removals %+v %+v", rmVisits, rmConcept)
+	rm := changeFor(t, list, engine.ChangeRemove, string(erosionRow.SourceKey))
+	if rm.DefaultChoice != engine.ChoiceKeep || !rm.Edited {
+		t.Fatalf("removal %+v", rm)
 	}
-	if changeStatus(t, newConcept.ID) != "superseded" {
-		t.Fatal("a rename of a removed package stayed pending")
-	}
-	view, err = s.ProgramView(ctx, orgA, projectA, unchanged2, cat)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var removedCheck bool
-	for _, c := range view.Checks {
-		if c.Code == engine.CheckPackageRemoved && c.ActivityID == visits.ID {
-			removedCheck = true
+	for _, c := range list.Changes {
+		if c.Kind == engine.ChangeRename {
+			t.Fatalf("a rename of a removed row stayed pending: %+v", c)
 		}
 	}
-	if !removedCheck || view.ChangesPending != len(list.Changes) {
-		t.Fatalf("checks %+v pending %d/%d", view.Checks, view.ChangesPending, len(list.Changes))
-	}
-	// Adopting the removal explicitly applies it, kept rows stay.
-	done, err := s.DecideProgramChanges(ctx, orgA, projectA, userA, unchanged2.Program.Version,
-		[]store.ProgramDecision{{ID: rmConcept.ID, Choice: "adopt"}, {ID: rmVisits.ID, Choice: "keep"}}, false)
+	done, err := s.DecideProgramChanges(ctx, orgA, projectA, userA, kept.Program.Version,
+		[]store.ProgramDecision{{ID: rm.ID, Choice: "keep"}}, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if hasRow(done.ProgramState, "Architect: Concept") || !hasRow(done.ProgramState, label) || done.Program.Version != unchanged2.Program.Version+1 {
+	if !hasRow(done.ProgramState, label) {
 		t.Fatalf("decide %s", labels(done.ProgramState))
 	}
 
