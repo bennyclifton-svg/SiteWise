@@ -16,7 +16,8 @@ import (
 // FirmColumn is one firm in a package's price table. Totals are computed in
 // Go from the stored cells.
 type FirmColumn struct {
-	Quote *proposals.QuoteReview `json:"quote,omitempty"`
+	AppointmentTotal *int64                 `json:"-"`
+	Quote            *proposals.QuoteReview `json:"quote,omitempty"`
 	// AwardStages are the source stages that add to the confirmed fee, so
 	// the award can write them as separate lines. Empty otherwise.
 	AwardStages   []proposals.QuotedFee         `json:"award_stages,omitempty"`
@@ -184,10 +185,31 @@ FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2 ORDER BY
 				return nil, nil, err
 			}
 			if _, confirmed := col.Cells["comparison:appointment"]; col.Quote != nil || confirmed {
-				col.Totals = proposals.Totals([]rfp.ScheduleItem{{Key: "comparison:appointment", Kind: rfp.ItemStage, Base: true}}, col.Cells, nil, nil)
+				appointmentItems := []rfp.ScheduleItem{{Key: "comparison:appointment", Kind: rfp.ItemStage, Base: true}}
+				for _, it := range items {
+					if strings.HasPrefix(it.Key, "comparison:") && it.Key != "comparison:appointment" {
+						appointmentItems = append(appointmentItems, it)
+					}
+				}
+				col.Totals = proposals.Totals(appointmentItems, col.Cells, nil, nil)
+				// Use the printed ex-GST total once, never its source breakdown.
+				displayCells := make(map[string]proposals.Cell, len(col.Cells)+1)
+				for key, cell := range col.Cells {
+					displayCells[key] = cell
+				}
+				if _, ok := displayCells["comparison:appointment"]; !ok && sub.GSTBasis == "ex" && sub.StatedTotal != nil {
+					displayCells["comparison:appointment"] = proposals.Cell{State: proposals.StatePriced, Cents: sub.StatedTotal}
+				}
+				col.AppointmentTotal = proposals.Totals(appointmentItems, displayCells, nil, nil).BaseTotal
 			}
 			if a, ok := col.Cells["comparison:appointment"]; ok && a.DecidedBy == proposals.ByUser && a.State == proposals.StatePriced && a.Cents != nil {
 				col.AwardStages = awardStages(col.Quote, *a.Cents)
+				for _, it := range items {
+					if strings.HasPrefix(it.Key, "comparison:") && it.Key != "comparison:appointment" && it.Base {
+						col.AwardStages = nil
+						break
+					}
+				}
 			}
 		}
 		if isBuilder {

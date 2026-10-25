@@ -136,7 +136,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <button className="table-action" disabled={busy} onClick={() => setMoving(null)}>Cancel</button>
     </div>}
     {table?.award && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
-    {table && quoted && <ConsultantComparison table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onCoverage={(sub, key, state, note) => run(() => submissionApi.setCell(projectId, sub, key, state, "", note))} onConfirm={(sub, amount, note) => run(() => submissionApi.setCell(projectId, sub, "comparison:appointment", "priced", amount, note))} />}
+    {table && quoted && <ConsultantComparison onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onCoverage={(sub, key, state, note) => run(() => submissionApi.setCell(projectId, sub, key, state, "", note))} onConfirm={(sub, amount, note) => run(() => submissionApi.setCell(projectId, sub, "comparison:appointment", "priced", amount, note))} />}
     <details open={!quoted}><summary>{quoted ? "Schedule details and scope corrections" : "Fee schedule"}</summary>
     {!table ? !error && <p role="status"><Pending delayed>Loading prices…</Pending></p> : cols.length === 0 ? <div className="prices-empty">
       <p><strong>No proposals yet.</strong> Drop a fee proposal on this package's row in Procurement, or drop it anywhere in the document register: proposals are recognised when they are filed.</p>

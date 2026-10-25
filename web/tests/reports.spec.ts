@@ -12,33 +12,19 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   const seeded = await page.request.post(`/api/projects/${project}/packages`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { kind: "services", title: "Fire engineering", novation: "option" } });
   expect(seeded.ok()).toBeTruthy();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await page.getByRole("button", { name: "Scope for Fire engineering", exact: true }).click();
-  await page.getByLabel("Scope wording", { exact: true }).fill("Review fire strategy and identify required investigations.");
-  await page.getByLabel("Deliverable", { exact: true }).fill("Fire strategy report");
-  await page.getByRole("button", { name: "Add scope item", exact: true }).click();
-  await expect(page.locator(".report-block .report-wording")).toHaveText("Review fire strategy and identify required investigations.");
   const packages = await (await page.request.get(`/api/projects/${project}/packages`)).json();
   const pkg = packages.items[0];
   expect(pkg.novation).toBe("option");
   const profile = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   const work = await page.request.post(`/api/projects/${project}/works`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { part_id: profile.parts[0].id, system_id: "hydraulic.gas", action: "new", title: "Gas service" } });
   expect(work.ok()).toBeTruthy();
-  await page.getByLabel("Scope type", { exact: true }).selectOption("responsibility");
-  await page.getByLabel("Work item", { exact: true }).selectOption({ label: "Gas service · new · included" });
-  await page.getByLabel("Responsibility", { exact: true }).selectOption("design");
-  await page.getByLabel("Stage", { exact: true }).selectOption(pkg.stages[0].id);
-  await page.getByLabel("Scope wording", { exact: true }).fill("Design the gas service.");
-  await page.getByRole("button", { name: "Add scope item", exact: true }).click();
-  await expect(page.getByText("Work: Gas service · design", { exact: true })).toBeVisible();
-  await expect(page.getByText(`Stage: ${pkg.stages[0].label} · before novation`, { exact: true })).toBeVisible();
-  const packageRegion = page.getByRole("region", { name: "Package scope", exact: true });
-  await packageRegion.locator(".." ).evaluate(el => { el.scrollTop = 0; });
-  await page.screenshot({ path: "../.tools/wp45-packages-desktop.png", fullPage: true });
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.screenshot({ path: "../.tools/wp45-packages-mobile.png", fullPage: true });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
-  await page.setViewportSize({ width: 1280, height: 720 });
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  for (const scope of [
+    { item_kind: "obligation", user_text: "Review fire strategy and identify required investigations.", deliverable: "Fire strategy report" },
+    { item_kind: "responsibility", user_text: "Design the gas service.", work_item_id: (await work.json()).id, role: "design", stage_id: pkg.stages[0].id },
+  ]) {
+    const added = await page.request.post(`/api/projects/${project}/packages/${pkg.id}/scope`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { inclusion: "included", interface_ids: [], ...scope } });
+    expect(added.ok(), await added.text()).toBeTruthy();
+  }
   await page.getByRole("button", { name: "Create RFP for Fire engineering", exact: true }).click();
   await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Assemble draft", exact: true })).toHaveCount(0);

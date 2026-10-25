@@ -16,7 +16,7 @@ test("a commercial fit-out saves each service as a row; a removed row stays remo
   }
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   for (const name of ["Electrical", "Hydraulic", "Mechanical", "Fire Services", "BCA", "Access", "Certifier"]) {
-    await expect(page.getByRole("button", { name: `Scope for ${name}`, exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: `Remove ${name}`, exact: true })).toBeVisible();
   }
   // Proposed consultants are saved as packages, not shown as suggestions.
   const saved = await (await page.request.get(`/api/projects/${project}/packages`)).json();

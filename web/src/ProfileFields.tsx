@@ -2,7 +2,7 @@
 // (mark, sources, conflict picks, reset). The Project card and every system
 // pane use the same row so a value reads the same wherever it sits.
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { IconCheck, IconConfirmed, IconNotChecked, IconYou } from "./icons";
 import type { Cell, Profile, ProfileField } from "./profileApi";
 
@@ -41,12 +41,9 @@ export function Mark({ cell }: { cell: Cell }) {
         </span>
       );
     case "amber":
-      return (
-        <span className="pf-mark" data-band="amber" title={cell.tenders === "consistent" ? "Check: the tenders agree" : "Check: read by Jev"}>
-          <IconCheck />
-          <span className="sr-only">Check</span>
-        </span>
-      );
+      // A Jev reading shows only its source count: the owner found the
+      // check mark added friction without an action to take.
+      return null;
     case "red":
       return (
         <span className="pf-mark" data-band="red" title={cell.tenders === "differ" ? "Tenderers differ" : "Sources differ"}>
@@ -79,9 +76,30 @@ export function Mark({ cell }: { cell: Cell }) {
 }
 
 export function Sources({ cell, onJump }: { cell: Cell; onJump: (id: string) => void }) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  const [open, setOpen] = useState(false);
+  // Clicking anywhere outside the popup, or Escape, closes it.
+  useEffect(() => {
+    if (!open) return;
+    const close = () => {
+      if (ref.current) ref.current.open = false;
+    };
+    const onDown = (e: PointerEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
   if (cell.sources.length === 0) return null;
   return (
-    <details className="pf-sources">
+    <details className="pf-sources" ref={ref} onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary aria-label={`${cell.sources.length} source${cell.sources.length === 1 ? "" : "s"}`}>
         {cell.sources.length}
       </summary>

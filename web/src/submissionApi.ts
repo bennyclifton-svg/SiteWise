@@ -6,7 +6,7 @@ export type Money = string | null;
 export type CellState = "" | "priced" | "not_priced" | "included" | "excluded";
 export type SubmissionStatus = "reading" | "received" | "needs_review" | "awarded" | "unsuccessful" | "superseded" | "withdrawn" | "not_proposal";
 
-export interface ScheduleItem { unit?: string; key: string; kind: "stage" | "element" | "option" | "reimbursable" | "rate" | "criterion"; label: string; detail?: string; base: boolean; ordinal: number; source: string; retired: boolean }
+export interface ScheduleItem { custom?: boolean; unit?: string; key: string; kind: "stage" | "element" | "option" | "reimbursable" | "rate" | "criterion"; label: string; detail?: string; base: boolean; ordinal: number; source: string; retired: boolean }
 export interface Cell { id: string; item_key: string; label: string; state: CellState; basis?: string; page?: number; passage?: string; band: "green" | "amber" | "blank" | "grey"; decided_by: "rule" | "jev" | "user"; amount: Money }
 export interface Firm { id: string; name: string; abn: string; address: string; contact: string; email: string; phone: string; status: "draft" | "confirmed"; version: number }
 export interface Submission { id: string; project_id: string; package_id: string; firm_id: string; document_id: string; filename: string; kind: string; status: SubmissionStatus; received_on: string; superseded_by: string; gst_basis: string; flags: string[]; created_at: string; version: number }
@@ -17,7 +17,7 @@ export interface BuilderSection { key: string; label: string; summary?: string; 
 export interface BuilderReview { ex_gst: Money; inc_gst: Money; basis: string; sources: string[]; issues: string[]; sections: BuilderSection[] }
 export interface QuoteFee { id: string; label: string; printed: string; amount: Money; role: string; page: number; source: string; heading: string; suggestion?: string }
 export interface QuoteReview { fees: QuoteFee[]; coverage: Record<string, {fee_id: string; status: string}>; issues: string[]; terms?: {kind: string; heading: string; text: string; page: number}[] }
-export interface Column { quote?: QuoteReview; award_stages?: QuoteFee[]; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
+export interface Column { appointment_total?: Money; quote?: QuoteReview; award_stages?: QuoteFee[]; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
 export interface AwardLine { cost_item_id?: string; label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[]; amount: Money; invoiced: boolean }
 export interface Award { id?: string; submission_id: string; firm_name: string; parent_label: string; parent_item_id?: string; budget: Money; total: Money; lines: AwardLine[]; created_at?: string; locked: boolean }
 export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null }

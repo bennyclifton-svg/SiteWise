@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("link a filed document by picker and drag without another upload", async ({ page }) => {
+test("link a filed document by drag without another upload", async ({ page }) => {
   const headers = { Origin: "http://127.0.0.1:4173" };
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
   await page.goto(`/#token=${token}`);
@@ -17,17 +17,24 @@ test("link a filed document by picker and drag without another upload", async ({
   await expect(source).toHaveAttribute("draggable", "true");
   const id = (await (await page.request.get(`${base}/documents`)).json()).documents[0].id;
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  const row = (name: string) => page.locator('[data-proposal-drop="true"]').filter({ has: page.getByRole("button", { name: `Scope for ${name}`, exact: true }) });
-  await row("Civil").getByRole("button", { name: "Choose filed proposal", exact: true }).first().click();
-  const picker = page.getByRole("form", { name: "Link filed proposal" });
-  await picker.getByRole("combobox").selectOption(id);
-  await picker.getByRole("button", { name: "Link proposal", exact: true }).click();
-  await expect(row("Civil").getByRole("button", { name: "Review Civil", exact: true })).toBeVisible();
+  const row = (name: string) => page.locator('[data-proposal-drop="true"]').filter({ has: page.getByRole("button", { name: `Remove ${name}`, exact: true }) });
   const show = page.getByRole("button", { name: "Show documents", exact: true });
   if (await show.isVisible()) await show.click();
+  await source.dragTo(row("Civil"));
+  await expect(row("Civil").getByRole("button", { name: "Review Civil", exact: true })).toBeVisible();
   await source.dragTo(row("Hydraulic"));
   await expect(row("Hydraulic").getByRole("button", { name: "Review Hydraulic", exact: true })).toBeVisible();
   await expect(row("Civil").getByRole("button", { name: "Prices for Civil", exact: true })).toBeVisible();
+  const card = row("Hydraulic").locator(".firm-card");
+  await card.hover();
+  await expect(card.getByRole("button", { name: /^Detach proposal for / })).toHaveCSS("opacity", "1");
+  await page.screenshot({ path: "../.tools/procurement-detach.png", fullPage: true });
+  await card.getByRole("button", { name: /^Detach proposal for / }).click();
+  await expect(row("Hydraulic").locator(".firm-card")).toHaveCount(0);
+  await expect(page.getByText("1 proposal needs a package.", { exact: true })).toBeVisible();
+  expect((await (await page.request.get(`${base}/documents`)).json()).documents).toHaveLength(1);
+  await source.dragTo(row("Hydraulic"));
+  await expect(row("Hydraulic").locator(".firm-card")).toHaveCount(1);
   const register = page.locator(".project-side-panel .register");
   const dt = await page.evaluateHandle(() => { const dt = new DataTransfer(); dt.items.add(new File([""], "empty.md")); return dt; });
   await page.dispatchEvent("main", "dragenter", { dataTransfer: dt });
@@ -49,5 +56,18 @@ test("link a filed document by picker and drag without another upload", async ({
   timings.sort((a,b) => a-b);
   console.log(`repository link n=20 p50=${timings[9].toFixed(1)}ms p90=${timings[17].toFixed(1)}ms`);
   expect(timings[9]).toBeLessThanOrEqual(100); expect(timings[17]).toBeLessThanOrEqual(250);
+  const detachTimings: number[] = [];
+  const board = await (await page.request.get(`${base}/procurement/board`)).json();
+  const submission = board.packages[hydraulic.id][0].submission_id;
+  for (let i = 0; i < 20; i++) {
+    const start = performance.now();
+    const detached = await page.request.patch(`${base}/submissions/${submission}`, { headers, data: { package_id: "" } });
+    expect(detached.ok()).toBeTruthy();
+    detachTimings.push(performance.now() - start);
+    expect((await page.request.post(`${base}/procurement/packages/${hydraulic.id}/documents`, { headers, data: { document_id: id } })).ok()).toBeTruthy();
+  }
+  detachTimings.sort((a, b) => a - b);
+  console.log(`detach n=20 p50=${detachTimings[9].toFixed(1)}ms p90=${detachTimings[17].toFixed(1)}ms`);
+  expect(detachTimings[9]).toBeLessThanOrEqual(100); expect(detachTimings[17]).toBeLessThanOrEqual(250);
   expect((await page.request.post(`${base}/procurement/packages/${civil.id}/documents`, { headers, data: { document_id: "invalid" } })).status()).toBe(400);
 });

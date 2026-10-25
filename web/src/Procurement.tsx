@@ -6,14 +6,12 @@ import { Pending } from "./Activity";
 // (docs/plans/2026-10-16-procurement-to-award-implementation.md): a proposal
 // filed anywhere lands here, and one dropped on a row lands in that package.
 import { useCallback, useEffect, useState, type DragEvent } from "react";
-import { api, ApiError, type Option, type Doc } from "./api";
+import { api, ApiError, type Option } from "./api";
 import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
-import { PackageScope } from "./PackageScope";
-import { PackageStages } from "./PackageStages";
-import { IconBin } from "./icons";
-import { packageApi, type PackageOverview, type PackageRecord, type ScopeWork } from "./packageApi";
+import { IconBin, IconUpload } from "./icons";
+import { packageApi, type PackageOverview, type PackageRecord } from "./packageApi";
 import { procurementApi } from "./procurementApi";
 import { Prices } from "./Prices";
 import { STATUS_WORDS, submissionApi, uploadProposal, type Board, type FirmCard } from "./submissionApi";
@@ -22,11 +20,7 @@ import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
 import "./reports.css";
 
-const words = (value: string) => value.replaceAll("_", " ");
-const routeLabels: Record<string, string> = { traditional: "Traditional (Lump Sum)", design_construct: "Design & Construct", eci: "Early Contractor Involvement", managing_contractor: "Managing Contractor", alliance: "Alliance", ppp: "PPP" };
-const gapWords: Record<string, string> = { install: "nobody carries out the works", design: "nobody designs it", maintain_operation_or_protect: "nobody protects it", inspect_or_test: "nobody inspects or tests it" };
-
-type View = { at: "table" } | { at: "report"; id: string } | { at: "scope"; pkg: PackageRecord } | { at: "prices"; pkg: string; report?: string };
+type View = { at: "table" } | { at: "report"; id: string } | { at: "prices"; pkg: string; report?: string };
 
 /** One table row: a saved package, or a profile suggestion not yet accepted. */
 interface Row {
@@ -38,9 +32,9 @@ interface Row {
   report?: SavedReport;
 }
 
-interface Loaded { overview: PackageOverview; reports: SavedReport[]; works: ScopeWork[]; board: Board }
+interface Loaded { overview: PackageOverview; reports: SavedReport[]; board: Board }
 
-export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpenCostPlan }: { projectId: string; tick: number; onSignedOut: () => void; onOpenProfile: () => void; onOpenCostPlan?: () => void }) {
+export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan }: { projectId: string; tick: number; onSignedOut: () => void; onOpenCostPlan?: () => void }) {
   const [view, setView] = useState<View>({ at: "table" });
   const [data, setData] = useState<Loaded | null>(null);
   const [disciplines, setDisciplines] = useState<Option[]>([]);
@@ -51,18 +45,14 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   const [draft, setDraft] = useState<string | null>(null);
   const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
   const [dropRow, setDropRow] = useState("");
-  const [picker, setPicker] = useState<PackageRecord | null>(null);
-  const [filed, setFiled] = useState<Doc[]>([]);
-  const [chosen, setChosen] = useState("");
-  const [loadingFiles, setLoadingFiles] = useState(false);
 
   // The three reads go out together, so the table waits for one round trip.
   useEffect(() => {
     let stopped = false;
-    Promise.all([packageApi.list(projectId), reportApi.list(projectId), packageApi.works(projectId), submissionApi.board(projectId)])
-      .then(([overview, reports, works, board]) => {
+    Promise.all([packageApi.list(projectId), reportApi.list(projectId), submissionApi.board(projectId)])
+      .then(([overview, reports, board]) => {
         if (stopped) return;
-        setData({ overview, reports, works: works.items, board });
+        setData({ overview, reports, board });
         // Proposed consultants are saved as rows (owner decision 3,
         // docs/plans/2026-10-21-source-to-cost-plan-design.md); the reads
         // above stay one round trip, and only a project with new proposals
@@ -158,13 +148,21 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   }
   async function linkDocument(pkg: PackageRecord, document: string) {
     setBusyRow(pkg.id); setError("");
-    try { await submissionApi.linkDocument(projectId, pkg.id, document); setPicker(null); setReload(n => n + 1); }
+    try { await submissionApi.linkDocument(projectId, pkg.id, document); setReload(n => n + 1); }
     catch (err) { fail(err); } finally { setBusyRow(""); }
   }
-  async function chooseFiled(pkg: PackageRecord) {
-    setPicker(pkg); setChosen(""); setFiled([]); setLoadingFiles(true); setError("");
-    try { const list = await api.documents(projectId); setFiled(list.documents.filter(d => d.status === "filed")); }
-    catch (err) { fail(err); } finally { setLoadingFiles(false); }
+  async function detach(card: FirmCard) {
+    setBusyRow(card.submission_id); setError("");
+    try {
+      await submissionApi.edit(projectId, card.submission_id, { package_id: "" });
+      setReload(n => n + 1);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 409) {
+        setError("Undo the award before detaching this proposal.");
+        setReload(n => n + 1);
+      } else if (e instanceof ApiError && e.status === 401) onSignedOut();
+      else setError("Could not detach the proposal. Try again.");
+    } finally { setBusyRow(""); }
   }
   async function assign(card: FirmCard, pkg: string) {
     if (!pkg) return;
@@ -175,11 +173,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
 
   if (view.at === "report") return <Reports key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
   if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} />;
-  if (view.at === "scope") return <section className="reports report-view" aria-label="Package scope">
-    <div className="scope-back"><button type="button" className="btn btn-small report-back" onClick={back}>← Procurement</button></div>
-    <PackageScope projectId={projectId} pkg={view.pkg} tick={tick} onSignedOut={onSignedOut} />
-  </section>;
-
   const label = (pkg: PackageRecord) => disciplines.find(d => d.id === pkg.discipline_id)?.label ?? pkg.title;
   const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
   const rows: Row[] = data ? [
@@ -196,12 +189,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
   const options = (prefix: string) => disciplines.filter(d => d.id.startsWith(prefix) && !used.has(d.id));
   const pmp = data?.reports.find(r => r.kind === "pmp");
 
-  const route = data?.overview.route;
-  const workTitle = (id: string) => data?.works.find(w => w.id === id)?.title ?? "Work item";
-  const gaps = data?.overview.gaps.filter(g => g.state === "gap" || g.state === "overlap") ?? [];
-  const waiting = data?.overview.gaps.filter(g => g.state === "not_yet_accepted").length ?? 0;
-  const gapItems = new Set(gaps.map(g => g.work_item_id)).size;
-
   function rowView(row: Row) {
     const busy = busyRow === row.key;
     const doc = row.kind === "services" ? "RFP" : "RFT";
@@ -213,11 +200,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
       <th scope="row" className="discipline-cell">
         {row.label}
-        {row.pkg && <button type="button" className="table-action scope-link" aria-label={`Scope for ${row.label}`} onClick={() => setView({ at: "scope", pkg: row.pkg! })}>Scope</button>}
-        {row.pkg && <PackageStages projectId={projectId} pkgId={row.pkg.id} label={row.label} tick={tick} onSignedOut={onSignedOut} />}
       </th>
-      <FirmSlots cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
-        onChoose={() => row.pkg && void chooseFiled(row.pkg)}
+      <FirmSlots busy={!!busyRow} onDetach={card => void detach(card)} cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
         onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })} />
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
@@ -242,23 +226,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenProfile, onOpe
       <button type="button" className="btn btn-small" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>Add discipline</button>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => { setError(""); setReload(n => n + 1); }}>Reload</button></div>}
-    {route && <div className="procurement-line" role="note">{route.value === ""
-      ? <p><strong>Procurement route not answered.</strong> Packages assume Design &amp; Construct: the head contract designs, consultants are novated.</p>
-      : route.confirm ? <p><strong>{routeLabels[route.value] ?? words(route.value)}</strong> is proposed as Design &amp; Construct. Confirm who designs.</p>
-      : <p><strong>{routeLabels[route.value] ?? words(route.value)}.</strong> {route.builder_designs ? "The head contract designs; consultants are novated." : "Consultants design; the head contract constructs."}</p>}
-      <button type="button" className="btn btn-small" onClick={onOpenProfile}>{route.value === "" ? "Answer on the profile" : "Change on the profile"}</button></div>}
-    {data && <p className="procurement-line">{!gaps.length
-      ? <>Every accepted work item is covered.{waiting ? ` ${waiting} work item${waiting === 1 ? " is" : "s are"} not yet accepted in Profile under Scope and works.` : ""}</>
-      : <>{gapItems} work item{gapItems === 1 ? " has" : "s have"} a gap: {gaps.map(g => `${workTitle(g.work_item_id)} (${g.state === "overlap" ? `two packages hold ${words(g.role ?? "")}` : gapWords[g.role ?? ""] ?? words(g.role ?? "")})`).join(", ")}</>}</p>}
-    {picker && <form className="procurement-line procurement-unassigned" aria-label="Link filed proposal" onSubmit={e => { e.preventDefault(); if (chosen) void linkDocument(picker, chosen); }}>
-      <label>Filed document for {label(picker)}<select autoFocus value={chosen} onChange={e => setChosen(e.target.value)} disabled={loadingFiles || !!busyRow}>
-        <option value="">{loadingFiles ? "Loading documents…" : "Choose a filed document"}</option>
-        {filed.map(d => <option key={d.id} value={d.id}>{d.fields.find(f => f.field === "title")?.value || d.filename} · {d.filename}</option>)}
-      </select></label>
-      <p>Links the existing document. If it is already a proposal, moves it to this package with its saved firm and fees.</p>
-      <button className="btn btn-small" disabled={!chosen || !!busyRow}>Link proposal</button>
-      <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => setPicker(null)}>Cancel</button>
-    </form>}
     {data && data.board.unassigned.length > 0 && <div className="procurement-line procurement-unassigned" role="note">
       <p><strong>{data.board.unassigned.length} proposal{data.board.unassigned.length === 1 ? " needs" : "s need"} a package.</strong></p>
       {data.board.unassigned.map(c => <label key={c.submission_id}>{c.firm_name || c.filename}
@@ -300,24 +267,34 @@ const COLUMNS = 7;
  * so every row reads as the place firms are compared (owner decision 5,
  * docs/plans/2026-10-21-source-to-cost-plan-design.md). A fourth firm and
  * later show as "+n more" in Firm 3. */
-function FirmSlots({ cards, droppable, uploading, onOpen, onChoose }: { cards: FirmCard[]; droppable: boolean; uploading: boolean; onOpen: () => void; onChoose: () => void }) {
+function FirmSlots({ cards, droppable, uploading, onOpen, onDetach, busy }: { onDetach: (card: FirmCard) => void; busy: boolean; cards: FirmCard[]; droppable: boolean; uploading: boolean; onOpen: () => void }) {
   const extra = cards.length - 3;
   return <>{[0, 1, 2].map(i => {
     const c = cards[i];
-    const empty = droppable ? <span className="firms-none">{uploading && i === cards.length ? <Pending>Uploading…</Pending> : <>Drop a proposal<br /><button type="button" className="table-action" onClick={onChoose}>Choose filed proposal</button></>}</span> : <span className="firms-none">—</span>;
-    return <td key={i} className="firm-slot">{c ? <FirmChip card={c} onOpen={onOpen} /> : empty}
+    const empty = droppable ? <span className="firms-none">{uploading && i === cards.length ? <Pending>Uploading…</Pending> : <span className="proposal-drop-icon" role="img" aria-label="Drop a proposal" title="Drop a proposal from your computer or document repository"><IconUpload /></span>}</span> : <span className="firms-none">—</span>;
+    return <td key={i} className="firm-slot">{c ? <FirmChip card={c} onOpen={onOpen} onDetach={() => onDetach(c)} busy={busy} /> : empty}
       {i === 2 && extra > 0 && <button type="button" className="table-action" onClick={onOpen}>+{extra} more</button>}</td>;
   })}</>;
 }
 
 /** FirmChip shows one firm: its name, the base total the server computed,
- * and its status in words. */
-function FirmChip({ card: c, onOpen }: { card: FirmCard; onOpen: () => void }) {
-  return <button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
-    title={`${c.filename} · received ${c.received_on}${c.not_priced ? ` · ${c.not_priced} not priced` : ""}`}>
+ * with provenance and review status in its accessible description. */
+function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen: () => void; onDetach: () => void; busy: boolean }) {
+  const description = [c.filename, `received ${c.received_on}`, STATUS_WORDS[c.status],
+    c.needs_review ? "Check proposal" : "",
+    c.not_priced ? `${c.not_priced} not priced` : "",
+    c.base_total == null && (!c.known_base || c.known_base === "0.00") && c.stated_total != null
+      ? "Firm's stated total, ex GST; the fee schedule is not priced yet" : "",
+  ].filter(Boolean).join(" · ");
+  return <div className="firm-card"><button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
+    title={description} aria-description={description}>
     <span className="firm-chip-name">{c.firm_name || c.filename}</span>
-    <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? <>{`$${fmt(c.stated_total).replace(/\.00$/, "")}`} <small title="The firm's own total, ex GST; the fee schedule is not priced yet">stated</small></> : "—"}</span>
-    {c.status !== "received" && c.status !== "reading" && <span className="firm-chip-status">{STATUS_WORDS[c.status]}</span>}
-    {c.status === "received" && c.needs_review && <span className="firm-chip-status warn">Check</span>}
-  </button>;
+    <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? `$${fmt(c.stated_total).replace(/\.00$/, "")}` : "—"}</span>
+  </button>
+    <button type="button" className="firm-detach" aria-label={`Detach proposal for ${c.firm_name || c.filename}`}
+      title={c.status === "awarded" ? "Undo the award before detaching this proposal" : "Detach proposal from this row; keep the filed document"}
+      disabled={busy || c.status === "awarded"} onClick={onDetach}>
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="m4 4 8 8m0-8-8 8" /></svg>
+    </button>
+  </div>;
 }

@@ -28,12 +28,12 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
     if (m === "stages") return stages.map(f => ({ id: `q:${f.id}`, key: "", priceId: "", quoteId: f.id, label: f.label, amount: f.amount, extra: false }));
     const out: Row[] = [];
     for (const it of table.items) {
-      if ((col.quote || col.cells["comparison:appointment"]) && !table.builder && it.key !== "comparison:appointment") continue;
+      if ((col.quote || col.cells["comparison:appointment"]) && !table.builder && !it.key.startsWith("comparison:")) continue;
       const c = col.cells[it.key];
       // The comparison fee lands in the cost plan as the firm's professional
       // fee; "Confirmed comparison fee" is a procurement word, not a cost line.
       const label = it.key === "comparison:appointment" ? "Professional fee" : it.label;
-      if (it.kind !== "rate" && it.kind !== "criterion" && c?.state === "priced" && c.amount != null) out.push({ id: `k:${it.key}`, key: it.key, priceId: "", quoteId: "", label, amount: c.amount, extra: false });
+      if (it.kind !== "rate" && it.kind !== "criterion" && c?.state === "priced" && c.amount != null) out.push({ id: `k:${it.key}`, key: it.key, priceId: "", quoteId: "", label, amount: c.amount, extra: !it.base });
     }
     if (!table.builder && !col.quote && !col.cells["comparison:appointment"]) for (const o of col.others) if (o.amount != null) out.push({ id: `p:${o.id}`, key: "", priceId: o.id, quoteId: "", label: o.label || "Offered item", amount: o.amount, extra: true });
     return out;

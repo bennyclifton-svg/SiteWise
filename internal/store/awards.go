@@ -151,7 +151,7 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 		}
 	} else if _, confirmed := byKey["comparison:appointment"]; !isBuilder && (quote != nil || confirmed) {
 		for _, line := range in.Lines {
-			if len(line.PriceIDs) != 0 || len(line.Keys) != 1 || line.Keys[0] != "comparison:appointment" || byKey["comparison:appointment"].by != proposals.ByUser {
+			if len(line.PriceIDs) != 0 || len(line.Keys) != 1 || !strings.HasPrefix(line.Keys[0], "comparison:") || byKey[line.Keys[0]].by != proposals.ByUser {
 				return v, sub, nil, "", ErrInvalidInput
 			}
 		}

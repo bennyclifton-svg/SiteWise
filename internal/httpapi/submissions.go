@@ -280,17 +280,18 @@ type totalsJSON struct {
 }
 
 type columnJSON struct {
-	Quote         *proposals.QuoteReview        `json:"quote,omitempty"`
-	AwardStages   []proposals.QuotedFee         `json:"award_stages,omitempty"`
-	Builder       *proposals.BuilderReview      `json:"builder,omitempty"`
-	UndoAlignment bool                          `json:"undo_alignment"`
-	Submission    store.Submission              `json:"submission"`
-	Firm          *store.Firm                   `json:"firm"`
-	Cells         map[string]priceCellJSON      `json:"cells"`
-	Others        []priceCellJSON               `json:"others"`
-	Totals        totalsJSON                    `json:"totals"`
-	NeedsReview   bool                          `json:"needs_review"`
-	Fields        map[string]proposals.Decision `json:"fields"`
+	AppointmentTotal *string                       `json:"appointment_total"`
+	Quote            *proposals.QuoteReview        `json:"quote,omitempty"`
+	AwardStages      []proposals.QuotedFee         `json:"award_stages,omitempty"`
+	Builder          *proposals.BuilderReview      `json:"builder,omitempty"`
+	UndoAlignment    bool                          `json:"undo_alignment"`
+	Submission       store.Submission              `json:"submission"`
+	Firm             *store.Firm                   `json:"firm"`
+	Cells            map[string]priceCellJSON      `json:"cells"`
+	Others           []priceCellJSON               `json:"others"`
+	Totals           totalsJSON                    `json:"totals"`
+	NeedsReview      bool                          `json:"needs_review"`
+	Fields           map[string]proposals.Decision `json:"fields"`
 }
 
 type tableJSON struct {
@@ -309,6 +310,7 @@ func tableBody(t store.PriceTable, award *store.AwardView) tableJSON {
 		col.Builder = c.Builder
 		col.Quote = c.Quote
 		col.AwardStages = c.AwardStages
+		col.AppointmentTotal = cents(c.AppointmentTotal)
 		for k, v := range c.Cells {
 			col.Cells[k] = cellOf(v)
 		}

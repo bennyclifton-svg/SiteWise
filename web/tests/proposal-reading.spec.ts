@@ -29,7 +29,7 @@ test("Markdown proposal shows its package, stage breakdown and source qualificat
   const packages = comparison.getByRole("row").filter({ hasText: "Quoted packages and totals" });
   await expect(packages.getByText("$30,000.00", { exact: true })).toBeVisible();
   await expect(packages.getByText("$10,000.00", { exact: true })).toHaveCount(0);
-  await comparison.getByText("3 source fee lines", { exact: true }).click();
+  await expect(comparison.locator(".quote-source-row")).toHaveCount(3);
   await expect(comparison.getByText("$10,000.00", { exact: true })).toBeVisible();
   await page.screenshot({ path: "../.tools/proposal-reading-desktop.png", fullPage: true });
 });

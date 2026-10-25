@@ -11,7 +11,6 @@ import { Pending } from "./Activity";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ProfileSources } from "./ProfileSources";
-import { ProfileConfirm } from "./ProfileConfirm";
 import { ChoiceGroup, FieldRow, type Setter } from "./ProfileFields";
 import { PLANNING, ScopeWorks, entryInputs } from "./ScopeWorks";
 import { ApiError } from "./api";
@@ -334,8 +333,6 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         </p>
       )}
       </ProfileFeedback>
-
-      <ProfileConfirm data={data} siteFields={site.fields} onSet={set} onSetSite={site.set} />
 
       {sourcesOpen && <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} onClose={() => setSourcesOpen(false)} />}
 

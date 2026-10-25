@@ -62,7 +62,7 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
     `/__e2e/proposal.pdf?firm=${encodeURIComponent(firm)}&abn=${abn}&lines=${encodeURIComponent(stages.map((s, i) => `${s}~${fee(i)}`).join(","))}&rates=${encodeURIComponent("Director~45000")}${extra}`;
 
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await expect(page.getByRole("row", { name: /^Town Planner/ }).getByText("Drop a proposal here")).toBeVisible();
+  await expect(page.getByRole("row", { name: /^Town Planner/ }).getByRole("img", { name: "Drop a proposal", exact: true })).toHaveCount(3);
   await dropOnRow(page, "Town Planner", [
     { name: "Fee proposal (Alpha Planning).pdf", url: proposal("Alpha Planning Pty Ltd", 1, () => 100000) },
     { name: "Fee proposal (Beta Planning).pdf", url: proposal("Beta Planning Pty Ltd", 2, i => i === 1 ? -1 : 90000) },
@@ -70,6 +70,7 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
   ]);
   const row = page.getByRole("row", { name: /^Town Planner/ });
   await expect(row.locator(".firm-chip")).toHaveCount(3, { timeout: 20_000 });
+  await page.screenshot({ path: "../.tools/procurement-firms.png", fullPage: true });
   await expect(row.getByRole("button", { name: "Compare Town Planner" })).toBeEnabled({ timeout: 20_000 });
   await row.getByRole("button", { name: "Compare Town Planner" }).click();
 

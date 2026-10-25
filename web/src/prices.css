@@ -195,3 +195,7 @@ dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
 .quote-confirm button { margin-right: 8px; }
 
 .consultant-comparison th > span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; font-weight: 400; }
+
+.quote-source-row td strong { display: block; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+.consultant-comparison .prices-total td > .btn { display: block; margin-top: 8px; }
