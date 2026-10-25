@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -82,7 +83,8 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 	}
 	var firm *Firm
 	if sub.FirmID == "" {
-		return v, sub, nil, "", ErrInvalidInput
+		// The award appoints a firm and invoices find it by ABN.
+		return v, sub, nil, "", fmt.Errorf("%w: name the appointed firm on this proposal before awarding", ErrInvalidInput)
 	}
 	f, err := readFirm(ctx, tx, org, sub.FirmID)
 	if err != nil {

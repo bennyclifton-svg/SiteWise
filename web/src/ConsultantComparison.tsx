@@ -1,16 +1,11 @@
 import { useState } from "react";
 import { fmt } from "./CostGrid";
+import { feeNote, headlineFees, soleQuotedFee } from "./quoteAward";
 import { submissionApi, type Column, type PriceTable, type QuoteFee } from "./submissionApi";
 
 const money = (value: string | null) => value === null ? "Tax basis unclear" : `$${fmt(value)}`;
 const feeRole = (f: QuoteFee) => f.role.startsWith("Repeated") ? "Repeated reference · do not add again" : f.role.startsWith("Alternative") ? "Alternative · includes other work" : f.role.startsWith("Breakdown") ? "Breakdown · included in package" : f.role.startsWith("Conditional") ? "Conditional / optional" : f.role.includes("total") ? "Package total" : "Quoted fee";
 const roleNote = (f: QuoteFee) => `${feeRole(f)}${f.suggestion && f.suggestion !== "Current offer" ? ` · Suggested: ${f.suggestion}` : ""}`;
-function headlineFees(fees: QuoteFee[]) {
-  const offers = fees.filter(f => (f.role.includes("Package") || f.role.includes("Alternative")) && !f.suggestion?.startsWith("Earlier"));
-  // A bare repeated figure adds no scope information. Keep the named offer
-  // prominent; every occurrence remains available in the source fee lines.
-  return offers.filter(f => f.label !== "Quoted fee" || !offers.some(other => other.id !== f.id && (f.amount !== null ? other.amount === f.amount : other.printed === f.printed) && other.label !== "Quoted fee"));
-}
 const statedNote = (c: Column) => `Firm's stated total, ex GST, as printed in ${c.submission.filename}.`.slice(0, 500);
 
 export function ConsultantComparison({ table, projectId, busy, onConfirm, onCoverage, onOpen, onAward }: {
@@ -28,12 +23,13 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
   function edit(col: Column, fee?: QuoteFee, stated?: string | null) {
     setEditing(col.submission.id);
     setAmount(fee?.amount ?? col.cells["comparison:appointment"]?.amount ?? stated ?? "");
-    setNote(fee ? `${fee.label}. Source page ${fee.page}: ${fee.source}`.slice(0, 500) : col.cells["comparison:appointment"]?.basis ?? (stated ? statedNote(col) : ""));
+    setNote(fee ? feeNote(fee) : col.cells["comparison:appointment"]?.basis ?? (stated ? statedNote(col) : ""));
   }
-  // Award in one click: an unconfirmed stated total is recorded as the PM's
-  // comparison fee (the click is the confirmation), then the award opens.
-  async function awardAt(col: Column, stated: string | null) {
-    if (stated && !(await onConfirm(col.submission.id, stated, statedNote(col)))) return;
+  // Award in one click: an unconfirmed stated total, or the proposal's only
+  // quoted fee, is recorded as the PM's comparison fee (the click is the
+  // confirmation), then the award opens.
+  async function awardAt(col: Column, amount: string | null, note: string) {
+    if (amount && !(await onConfirm(col.submission.id, amount, note))) return;
     onAward(col.submission.id);
   }
   return <div className="consultant-comparison">
@@ -81,11 +77,14 @@ export function ConsultantComparison({ table, projectId, busy, onConfirm, onCove
           // The firm's own printed total, read from its proposal. Offered only
           // when it is known to be ex GST: the server stores it as printed.
           const stated = !confirmed?.amount && c.submission.gst_basis === "ex" ? c.totals.stated_total : null;
+          // With no total, a letter that quotes one fee offers that fee.
+          const sole = !confirmed?.amount && !stated ? soleQuotedFee(c) : null;
           const firm = c.firm?.name || "this consultant";
           return <td key={c.submission.id}>
             <strong>{confirmed?.amount ? money(confirmed.amount) : stated ? money(stated) : "Not confirmed"}</strong>
-            {confirmed?.basis ? <p>{confirmed.basis}</p> : stated && <p>Stated total in the proposal, ex GST</p>}
-            {!table.award && (confirmed?.amount || stated) && <button className="btn btn-primary btn-small" disabled={busy} onClick={() => void awardAt(c, stated)}>Award to {firm}</button>}
+            {confirmed?.basis ? <p>{confirmed.basis}</p> : stated ? <p>Stated total in the proposal, ex GST</p> : sole && <p>The only fee quoted: {money(sole.amount)} · {sole.label}</p>}
+            {!table.award && (confirmed?.amount || stated) && <button className="btn btn-primary btn-small" disabled={busy} onClick={() => void awardAt(c, stated, statedNote(c))}>Award to {firm}</button>}
+            {!table.award && sole && <button className="btn btn-primary btn-small" disabled={busy} onClick={() => void awardAt(c, sole.amount, feeNote(sole))}>Award to {firm} at {money(sole.amount)}</button>}
             <button className="table-action" disabled={locked} onClick={() => edit(c, undefined, stated)}>{confirmed?.amount || stated ? "Use a different amount" : "Confirm amount and scope"}</button>
           </td>;
         })}</tr>

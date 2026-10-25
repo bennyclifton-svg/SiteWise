@@ -198,6 +198,10 @@ type Evidence struct {
 	FormFirm map[string]string
 	// KindWords are the proposal cues printed in the filename or a heading.
 	KindWords []string
+	// AppointmentFee is true for an appointment that states its fee;
+	// Appointed are the companies it names as appointed.
+	AppointmentFee bool
+	Appointed      []string
 	// OptionsAB is true when the proposal prices "Option A" and "Option B".
 	OptionsAB bool
 	Excerpt   string
@@ -412,6 +416,11 @@ func Harvest(filename string, text identity.Text) Evidence {
 		ev.Amounts[i].ID = "a" + strconv.Itoa(i+1)
 	}
 	markRepeatedReferences(ev.Amounts)
+	ev.AppointmentFee = appointmentFee(filename, lines)
+	ev.Appointed = appointees(lines)
+	for _, n := range ev.Appointed {
+		addUnique(&ev.Names, n)
+	}
 	ev.Printed = len(ev.Names)
 	for _, n := range filenameNames(filename) {
 		ev.Hints = append(ev.Hints, n)
@@ -942,6 +951,9 @@ func Cue(filename string, text identity.Text, kind string) bool {
 		if words[strong] {
 			return true
 		}
+	}
+	if appointmentFee(filename, Lines(text)) {
+		return true
 	}
 	return kind == "commercial" && (words["fee"] || words["proposal"] || words["quote"] || words["tender"])
 }
