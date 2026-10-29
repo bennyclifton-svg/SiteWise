@@ -1,0 +1,127 @@
+# Procurement suggestions
+Generated on 28 October 2026 from the knowledge files on `main` (8a6a6c8 plus the working tree) by a read-only script. Regenerate rather than hand-edit. Back to [the index](../KNOWLEDGE_INDEX.md).
+
+## Rules as written (`knowledge/works/package_defaults.yaml`)
+
+Consultant names are discipline **labels** in `data/intake/disciplines.json`; the loader refuses any other name (`internal/knowledge/package_defaults.go loadPackageDefaults`). The id column maps each label with `procurement.ProposalDiscipline` (`internal/procurement/discipline.go`).
+
+### Baselines (by building category and work type)
+
+| anchor | when | then these consultants |
+|---|---|---|
+| `baselines[0]` | no known class is infrastructure; work type in new/extend | Architect (`consultant.architect`), Structural (`consultant.structural`), Civil (`consultant.civil`), Town Planner (`consultant.town_planner`), Geotechnical (`consultant.geotechnical`), Surveyor (`consultant.surveyor`), Certifier (`consultant.certifier`), Electrical (`consultant.electrical`), Hydraulic (`consultant.hydraulic`) |
+| `baselines[1]` | class in industrial/commercial/institution/mixed; work type in new/extend | Traffic (`consultant.traffic`), BCA (`consultant.bca`), Access (`consultant.access`), Mechanical (`consultant.mechanical`), Fire Services (`consultant.fire_services`) |
+| `baselines[2]` | any class (or no class known); work type in refurb | Architect (`consultant.architect`), Certifier (`consultant.certifier`), Electrical (`consultant.electrical`), Hydraulic (`consultant.hydraulic`) |
+| `baselines[3]` | class in industrial/commercial/institution/mixed; work type in refurb | BCA (`consultant.bca`), Access (`consultant.access`), Mechanical (`consultant.mechanical`), Fire Services (`consultant.fire_services`) |
+| `baselines[4]` | class in commercial/institution/mixed; work type in refurb | Interior Design (`consultant.interior_design`) |
+| `baselines[5]` | class in infrastructure; work type in new/extend | Civil (`consultant.civil`), Structural (`consultant.structural`), Geotechnical (`consultant.geotechnical`), Surveyor (`consultant.surveyor`), Environmental (`consultant.environmental`), Town Planner (`consultant.town_planner`) |
+
+### Scope additions (a listed system, or one below it, has a `scope.<leaf>` row valued `in`)
+
+| anchor | when scope includes | then |
+|---|---|---|
+| `scope_additions[0]` | `vertical-transport` | Vertical Transport (`consultant.vertical_transport`) |
+| `scope_additions[1]` | `fire-active.sprinklers`, `fire-active.hydrants`, `fire-active.fire-water`, `fire-active.detection`, `fire-active.occupant-warning` | Fire Services (`consultant.fire_services`) |
+| `scope_additions[2]` | `mechanical` | Mechanical (`consultant.mechanical`) |
+| `scope_additions[3]` | `hydraulic` | Hydraulic (`consultant.hydraulic`) |
+| `scope_additions[4]` | `electrical`, `fire-active.emergency-lighting` | Electrical (`consultant.electrical`) |
+| `scope_additions[5]` | `access-egress.accessible-access`, `access-egress.accessible-facilities`, `access-egress.livable-housing` | Access (`consultant.access`) |
+
+### Complexity additions (an applied `det.<field>` or `hdr.cond.<field>` value)
+
+| anchor | field | values | then | can it fire today? |
+|---|---|---|---|---|
+| `complexity_additions[0]` | planning | da, ssd | Town Planner (`consultant.town_planner`) | yes, `hdr.cond.planning` |
+| `complexity_additions[1]` | heritage_status | conservation_area, local_item, state_register | Heritage (`consultant.heritage`) | yes, `det.heritage_status` |
+| `complexity_additions[2]` | contamination_level | minor, significant, heavily_contaminated | Environmental (`consultant.environmental`) | **no**: no such determinant or condition; `packageFieldValue` rejects every value |
+| `complexity_additions[3]` | environmental_sensitivity | sensitive, protected_habitat | Ecology (`consultant.ecology`) | yes, `hdr.cond.environmental_sensitivity` |
+| `complexity_additions[4]` | environmental_sensitivity | aboriginal_heritage | Archaeology (`consultant.archaeology`) | yes, `hdr.cond.environmental_sensitivity` |
+| `complexity_additions[5]` | bal | BAL-LOW, BAL-12.5, BAL-19, BAL-29, BAL-40, BAL-FZ | Bushfire (`consultant.bushfire`) | yes, `det.bal` |
+| `complexity_additions[6]` | flood_exposure | flood_planning_area, below_1pc_aep, floodway | Civil (`consultant.civil`) | **no**: no such determinant or condition; `packageFieldValue` rejects every value |
+| `complexity_additions[7]` | facade_type | complex | Facade (`consultant.facade`) | yes, `det.facade_type` |
+
+## NCC class adds building categories
+
+`profile.PackageBaselineFacts` (`internal/profile/package_defaults.go`) adds a category for each applied `det.ncc_class` value, through the subclasses whose taxonomy `ncc_class` is exactly that single value. Compound taxonomy values (`2/6`, `5/9a`, `1a/2/3`) match nothing, and NCC classes no subclass carries alone (`1b`, `4`, `9c` only via aged care, `10a`–`10c`) add nothing.
+
+| det.ncc_class value | categories added |
+|---|---|
+| 1a | residential |
+| 1b | — |
+| 2 | residential |
+| 3 | commercial, residential |
+| 4 | — |
+| 5 | commercial |
+| 6 | commercial |
+| 7a | industrial |
+| 7b | industrial |
+| 8 | industrial |
+| 9a | institution |
+| 9b | institution |
+| 9c | residential |
+| 10a | — |
+| 10b | — |
+| 10c | — |
+
+Consequence: an apartment building with `det.ncc_class: 2,7a` is also `industrial` (7a is the dangerous-goods subclass's class), so `baselines[1]` adds Traffic, BCA, Access, Mechanical and Fire Services. A hotel (`3`) is residential **and** commercial.
+
+## Resolved: what the default scope alone suggests
+
+Computed with `classes = {hdr.building_class}`, one work type, `scope` = that subclass's default list, no `det.ncc_class`, and no complexity facts. Add Town Planner when `hdr.cond.planning` is `da` or `ssd` (already present for new/extend outside infrastructure). Refurb, remediation and advisory have no default scope, so only baselines fire for them.
+
+| class | subclass | work type | consultants (why) |
+|---|---|---|---|
+| residential | house | new | Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]) |
+| residential | house | refurb | Architect (baselines[2]); Certifier (baselines[2]); Electrical (baselines[2]); Hydraulic (baselines[2]) |
+| residential | house | extend | Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.cabling-wiring); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.roof-drainage); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]) |
+| residential | house | remediation | **none** |
+| residential | house | advisory | **none** |
+| residential | apartments | new | Access (scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| residential | apartments | refurb | Architect (baselines[2]); Certifier (baselines[2]); Electrical (baselines[2]); Hydraulic (baselines[2]) |
+| residential | apartments | extend | Access (scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| residential | apartments | remediation | **none** |
+| residential | apartments | advisory | **none** |
+| residential | townhouses | new | Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]) |
+| residential | townhouses | refurb | Architect (baselines[2]); Certifier (baselines[2]); Electrical (baselines[2]); Hydraulic (baselines[2]) |
+| residential | townhouses | extend | Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]) |
+| residential | townhouses | remediation | **none** |
+| residential | townhouses | advisory | **none** |
+| residential | btr (and any subclass on the same list) | new | Access (scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| residential | btr (and any subclass on the same list) | extend | Access (scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| residential | other | new | Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]) |
+| residential | other | extend | Architect (baselines[0]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]) |
+| commercial | office (and any subclass on the same list) | new | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| commercial | office (and any subclass on the same list) | refurb | Access (baselines[3]); Architect (baselines[2]); BCA (baselines[3]); Certifier (baselines[2]); Electrical (baselines[2]); Fire Services (baselines[3]); Hydraulic (baselines[2]); Interior Design (baselines[4]); Mechanical (baselines[3]) |
+| commercial | office (and any subclass on the same list) | extend | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| commercial | office (and any subclass on the same list) | remediation | **none** |
+| commercial | office (and any subclass on the same list) | advisory | **none** |
+| commercial | other | new | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| commercial | other | extend | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| industrial | warehouse | new | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.hydrants); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| industrial | warehouse | refurb | Access (baselines[3]); Architect (baselines[2]); BCA (baselines[3]); Certifier (baselines[2]); Electrical (baselines[2]); Fire Services (baselines[3]); Hydraulic (baselines[2]); Mechanical (baselines[3]) |
+| industrial | warehouse | extend | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.hydrants); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| industrial | warehouse | remediation | **none** |
+| industrial | warehouse | advisory | **none** |
+| industrial | logistics_ecommerce (and any subclass on the same list) | new | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.hydrants); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| industrial | logistics_ecommerce (and any subclass on the same list) | extend | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.hydrants); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| industrial | other | new | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| industrial | other | extend | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| institution | education_early_childhood (and any subclass on the same list) | new | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| institution | education_early_childhood (and any subclass on the same list) | refurb | Access (baselines[3]); Architect (baselines[2]); BCA (baselines[3]); Certifier (baselines[2]); Electrical (baselines[2]); Fire Services (baselines[3]); Hydraulic (baselines[2]); Interior Design (baselines[4]); Mechanical (baselines[3]) |
+| institution | education_early_childhood (and any subclass on the same list) | extend | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| institution | education_early_childhood (and any subclass on the same list) | remediation | **none** |
+| institution | education_early_childhood (and any subclass on the same list) | advisory | **none** |
+| institution | other | new | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| institution | other | extend | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| mixed | residential_retail (and any subclass on the same list) | new | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| mixed | residential_retail (and any subclass on the same list) | refurb | Access (baselines[3]); Architect (baselines[2]); BCA (baselines[3]); Certifier (baselines[2]); Electrical (baselines[2]); Fire Services (baselines[3]); Hydraulic (baselines[2]); Interior Design (baselines[4]); Mechanical (baselines[3]) |
+| mixed | residential_retail (and any subclass on the same list) | extend | Access (baselines[1], scope_additions[5] via access-egress.accessible-access); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via fire-active.emergency-lighting); Fire Services (baselines[1], scope_additions[1] via fire-active.detection); Geotechnical (baselines[0]); Hydraulic (baselines[0], scope_additions[3] via hydraulic.cold-water); Mechanical (baselines[1], scope_additions[2] via mechanical.air-conditioning); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]); Vertical Transport (scope_additions[0] via vertical-transport.passenger-lifts) |
+| mixed | residential_retail (and any subclass on the same list) | remediation | **none** |
+| mixed | residential_retail (and any subclass on the same list) | advisory | **none** |
+| mixed | other | new | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| mixed | other | extend | Access (baselines[1]); Architect (baselines[0]); BCA (baselines[1]); Certifier (baselines[0]); Civil (baselines[0]); Electrical (baselines[0], scope_additions[4] via electrical.utility-supply); Fire Services (baselines[1]); Geotechnical (baselines[0]); Hydraulic (baselines[0]); Mechanical (baselines[1]); Structural (baselines[0]); Surveyor (baselines[0]); Town Planner (baselines[0]); Traffic (baselines[1]) |
+| infrastructure | roads_highways (and any subclass on the same list) | new | Civil (baselines[5]); Electrical (scope_additions[4] via electrical.utility-supply); Environmental (baselines[5]); Geotechnical (baselines[5]); Structural (baselines[5]); Surveyor (baselines[5]); Town Planner (baselines[5]) |
+| infrastructure | roads_highways (and any subclass on the same list) | refurb | Architect (baselines[2]); Certifier (baselines[2]); Electrical (baselines[2]); Hydraulic (baselines[2]) |
+| infrastructure | roads_highways (and any subclass on the same list) | extend | Civil (baselines[5]); Electrical (scope_additions[4] via electrical.utility-supply); Environmental (baselines[5]); Geotechnical (baselines[5]); Structural (baselines[5]); Surveyor (baselines[5]); Town Planner (baselines[5]) |
+| infrastructure | roads_highways (and any subclass on the same list) | remediation | **none** |
+| infrastructure | roads_highways (and any subclass on the same list) | advisory | **none** |

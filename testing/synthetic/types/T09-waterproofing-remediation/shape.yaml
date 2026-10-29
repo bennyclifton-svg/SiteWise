@@ -1,0 +1,508 @@
+schema: sitewise-synthetic-shape/1
+type_id: T09
+slug: waterproofing-remediation
+name: Waterproofing remediation (balconies, podium)
+reviewed: false
+state: NSW
+
+# Base scenario: an occupied 6-storey, 42-lot NSW strata Class 2 building
+# completed in 2008, out of statutory warranty. All 42 tiled balconies leak
+# (into units below and through slab edges). The owners corporation renews the
+# balcony waterproofing like for like, with no change to the external
+# appearance. A remedial building consultant investigates, specifies, tenders
+# and administers one lump-sum contract with a remedial builder. Prose: DOMAIN.md.
+profile:
+  hdr.building_class: residential
+  hdr.subclass: apartments
+  hdr.work_type: remediation
+  hdr.cond.planning: exempt
+  hdr.cond.procurement_route: traditional
+  hdr.cond.stakeholder_complexity: strata
+  hdr.cond.operational_constraints: 24_7_occupied
+  hdr.scale.storeys: 6
+  hdr.scale.units: 42
+  det.ncc_class: ["2"]
+  det.state: NSW
+  det.existing_building: true
+  det.existing_building_year: 2008
+  det.rise_in_storeys: 6
+  det.heritage_status: none
+  fact.contract_form: as4000
+  fact.contract_basis: lump_sum
+  proj.regulated_design: "yes"      # DBP Act applies to Class 2 waterproofing work; verified: false (DOMAIN.md §5)
+  proj.client: "The Owners - Strata Plan 912345 (fictional)"
+  # RFP flags set explicitly so unknowns do not turn excluded rows into priced options
+  # (structural retention, dilapidation, authority asset, scale rules).
+  flag.basement: "no"              # the works include no basement or excavation (see the basement trap)
+  flag.excavation_adjoining: "no"
+  flag.authority_asset: "no"
+  flag.rail: "no"
+  flag.transfer_structures: "no"
+  flag.osd_existing: "no"
+  flag.staged: "no"
+  det.flood_hazard: false          # 'flood test' passages must not set it (see gaps)
+  det.potentially_contaminated_land: false
+
+# Values the app should derive rather than read from a document.
+expected_derived:
+  - {key: det.ncc_class, value: ["2"], source: "knowledge/profile/taxonomy.yaml apartments ncc_class", note: "The subclass apartments implies Class 2, but det.ncc_class is never derived from the subclass today (KNOWLEDGE_INDEX §0 rule 3)."}
+  - {key: det.existing_building, value: true, source: "internal/rfp/drivers.go deriveFlags", note: "The RFP drivers derive flag.existing_building from work type remediation; the profile row itself is not derived."}
+
+# Facts the scenario documents must state; the scenario author picks the values.
+scenario_inputs:
+  - {key: det.existing_building_year, note: "Stated in the strata or defect report. It gates the hazmat and defects-claim triggers.", phrasing: "The building was completed in <year>."}
+  - {key: hdr.scale.storeys, note: "Also gives det.rise_in_storeys, which decides the HBCF exemption (low-rise-hbcf).", phrasing: "a <n>-storey residential flat building"}
+  - {key: hdr.scale.units, note: "The units trigger matches 'units', 'apartments' or 'dwellings', not 'lots'.", phrasing: "<n> residential units"}
+  - {key: proj.client, note: "The owners corporation is the client; the strata manager is its agent, not the client.", phrasing: "Client: The Owners - Strata Plan No. <number>"}
+  - {key: proj.regulated_design, note: "Needs an explicit statement in a read document; the class alone does not decide it (project_details.yaml help).", phrasing: "The works are building work under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required."}
+  - {key: hdr.cond.planning, note: "Exempt or no-consent wording, in the defect report or specification.", phrasing: "The works are like-for-like repair and maintenance and do not require development consent."}
+  - {key: det.heritage_status, note: "Enumerated none is evidence; silence is not.", phrasing: "The property is not a heritage item and is not within a heritage conservation area."}
+  - {key: fact.contract_form, note: "Stated in the tender documents.", phrasing: "AS 4000-1997 General conditions of contract, with special conditions"}
+  - {key: hdr.cond.operational_constraints, note: "Any of 24_7_occupied, live_environment or partial_occupation is acceptable (DOMAIN.md §12).", phrasing: "The building will remain fully occupied throughout the works."}
+  - {key: proj.budget_stated, note: "The order-of-cost estimate in the defect report; amount chosen by the scenario author.", phrasing: "Order of cost for the recommended option: $<amount> excluding GST"}
+
+work_items:
+  - {system: envelope.external-waterproofing, action: replace, why: "Strip and renew the balcony membranes in full, with upturns, terminations and outlet clamping. This is renewal, not a patch repair, so the action is replace, not the work-type default repair."}
+  - {system: interiors.tiling, action: replace, why: "Balcony tiles and bedding are removed to reach the membrane and are relaid on a new screed or drainage layer."}
+  - {system: envelope.flashings-seals, action: repair, why: "Door sill and threshold flashings, sealant and movement joints, and the slab-edge and wall junctions are where most balcony leaks start."}
+  - {system: hydraulic.roof-drainage, action: upgrade, why: "Balcony outlets get puddle flanges or clamping rings, and overflows are added where none exist. Adding overflows raises performance, so the action is upgrade."}
+  - {system: access-egress.barriers, action: alter, why: "Balustrade posts core-drilled through the membrane are removed and re-fixed outside it (side-fixed). The barrier height is re-checked against the raised finished level."}
+  - {system: structure.concrete, action: investigate, why: "The remedial engineer assesses the balcony slabs and slab edges (cracking, cover, corrosion) during investigation. Repairs are carried as provisional quantities."}
+  - {system: envelope.windows-doors, action: retain, why: "Sliding doors stay and are protected. The membrane must turn up behind or under the sill, which is the critical interface."}
+
+procurement:
+  - {discipline: consultant.building, kind: services, built_in: "no", accept: [consultant.building, consultant.waterproofing], why: "The lead consultant: a remedial building or waterproofing consultant. It reviews the records, investigates, writes the defect report and options, the remedial specification and the regulated design, runs the tender, administers the contract as superintendent and holds the membrane hold points. No package rule names it, and remediation has no baseline (package_defaults.yaml baselines)."}
+  - {discipline: consultant.structural, kind: services, built_in: "no", why: "Remedial structural engineer. Assesses the balcony slabs and edges, designs and certifies the balustrade re-fixing, checks any added screed load, and confirms whether any structural work is a regulated building element. A balustrade fixing probably is not; structural regulated design for slab repairs belongs to the concrete-spalling trigger (DBP Act, verified: false). baselines[0] covers new and extend only."}
+  - {discipline: trade.main_works, kind: works, built_in: partial, source: "internal/procurement/proposed.go ProposeHeadContract", why: "Remedial builder under a lump-sum head contract. It must hold a NSW contractor licence and be a registered building practitioner under the DBP Act (verified: false). The app proposes a head contract only from gaps on accepted work items, and remediation starts with none."}
+
+not_expected_procurement:
+  - {discipline: consultant.hydraulic, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[3]", why: "Fires on the base hydraulic.roof-drainage upgrade item (balcony outlets and overflows). The remedial consultant details this and the builder installs it; no hydraulic engineer is needed unless a podium or roof drainage capacity is in question (podium trigger)."}
+  - {discipline: consultant.mechanical, app_suggests: "conditional", source: "knowledge/works/package_defaults.yaml scope_additions[2]", why: "Fires when AC condensers on balconies are in scope (balcony-services-relocation), or when 'bathroom' or 'kitchen' wording implies mechanical.local-exhaust. Condensers are lot-owner equipment moved by a licensed refrigeration tradesperson."}
+  - {discipline: consultant.electrical, app_suggests: "conditional", source: "knowledge/works/package_defaults.yaml scope_additions[4]", why: "Fires when balcony lights or GPOs are in scope (balcony-services-relocation). The builder's electrician disconnects and reinstates them."}
+
+cost_plan:
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "The NSW Long Service Corporation levy applies to building work above the threshold, including repair work (rate and threshold verified: false). No starter line exists for it."}
+  - {line: "Remedial building consultant", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "A fee line is made for every live services package, but this package is never suggested, so the line appears only after the user adds it."}
+  - {line: "Structural engineer (remedial)", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package. The package is not suggested for remediation."}
+  - {line: "Remedial building consultant: investigation stage incl. opening-up and make-good disbursements", section: consultants, built_in: "no", why: "Test openings at representative balconies, flood or spray tests, and reinstatement. In common NSW practice the consultant engages the opening-up contractor and passes the cost through as a disbursement of its investigation fee. The app's consultants section holds only one fee line per services package, and this package is never suggested."}
+  - {line: "Pre-construction condition surveys of lots", section: construction, built_in: "no", why: "Record the condition of every lot below and beside the works (ceilings, finishes, existing water damage) before strip-out. This protects the OC and the builder against damage claims."}
+  - {line: "Preliminaries, site establishment and occupied-building controls", section: construction, built_in: "no", why: "This is a large share of remediation cost: amenities, resident liaison, daily make-safe, protection of lots and common areas, and waste removal through an occupied building. No preliminaries line exists; the budget split spreads it pro rata, and remediation has no split."}
+  - {line: "Access equipment: scaffold, swing stage or EWP and edge protection", section: construction, built_in: "no", why: "Edge protection while balustrades are off, and external access to slab edges. Scaffolding has no system id (structure.temporary-works excludes scaffolding as access)."}
+  - {line: "Remove balcony tiles, bedding, screed and failed membrane; dispose", section: construction, built_in: "no", why: "Strip-out priced per balcony or per m2. The app has only a generic envelope line."}
+  - {line: "Substrate preparation and falls correction screed", section: construction, built_in: "no", why: "Correcting falls to the outlets is often the real fix, and it raises the finished level."}
+  - {line: "Balcony waterproofing membrane system incl. upturns, terminations and outlets", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Appears only as the generic '04 Building envelope' once an envelope work item exists."}
+  - {line: "Door threshold flashings, sealants and movement joints", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Folded into '04 Building envelope'."}
+  - {line: "Balcony tiling reinstatement", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 05", why: "Shows as '05 Interiors and finishes', a misleading label for external tiles."}
+  - {line: "Balcony outlets, puddle flanges and overflows", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 09", why: "Shows as '09 Hydraulic services', costed under trade.hydraulic_plumbing. In practice the remedial builder carries it."}
+  - {line: "Balustrades: remove, re-fix outside the membrane and certify", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements access-egress items", why: "'13.x Compliant balustrades and barriers' child line once an access-egress.barriers item exists."}
+  - {line: "Provisional sums: concrete, substrate and door-sill defects found on opening up", section: construction, built_in: "no", why: "Concealed conditions are certain in remediation, so they get provisional quantities with tendered rates. No provisional-sum line exists (unforeseen records name the clause but no cost line)."}
+  - {line: "Design contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[0]", why: "Always suggested."}
+  - {line: "Construction contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[1]", why: "Always suggested. Should be higher than for new work because of latent conditions."}
+  - {line: "Escalation", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[2]", why: "Always suggested. Matters because special-levy timing often delays the start."}
+  - {line: "Exclusions", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[6]", why: "Lot-owner items (lot-owner AC units, planters, decking, unauthorised alterations) are usually excluded or recharged."}
+  - {line: "Owners corporation costs: strata manager meetings and levy administration, legal review of the building contract", section: contingency, built_in: "no", why: "Real OC costs that sit outside the contract. No line exists for them."}
+
+# Lines the app produces that this job should not carry; a scorer reports them.
+not_expected_cost_plan:
+  - {line: "Construction certificate and certifier fees", app_label: "P05 Construction certificate and certifier fees", section: fees_and_charges, source: "knowledge/costs/starter_lines.yaml lines[4]", why: "Always suggested; an exempt remediation needs no construction certificate."}
+  - {line: "Service authority connection fees", app_label: "P06 Service authority connection fees", section: fees_and_charges, source: "knowledge/costs/starter_lines.yaml lines[5]", why: "Always suggested; no authority connection is made."}
+  - {line: "Hydraulic (consultant fee)", app_label: "F0n Hydraulic", section: consultants, source: "knowledge/works/package_defaults.yaml scope_additions[3]", why: "Adopted suggestion on cost-plan prepare (not_expected_procurement)."}
+  - {line: "Mechanical (consultant fee)", app_label: "F0n Mechanical", section: consultants, source: "knowledge/works/package_defaults.yaml scope_additions[2]", why: "Conditional: only when condenser or implied exhaust scope exists."}
+  - {line: "Electrical (consultant fee)", app_label: "F0n Electrical", section: consultants, source: "knowledge/works/package_defaults.yaml scope_additions[4]", why: "Conditional: only when balcony electrical scope exists."}
+
+program:
+  skeleton: missing          # no remediation skeleton; the app falls back to sk.generic
+  app_produces: sk.generic
+  activities:
+    - {label: "Strata committee approves investigation brief and fee", stage: investigation, fragment: null, after: [], built_in: "no", why: "A client governance gate before any spend (SSMA 2015 committee and general meeting powers, verified: false)."}
+    - {label: "Collect strata records and leak history", stage: investigation, fragment: null, after: ["Strata committee approves investigation brief and fee"], built_in: "no", why: "Strata plan (sets the common-property boundary), by-laws, approved drawings, the 2008 specification, previous defect reports, leak logs and insurance claims."}
+    - {label: "Visual inspection, leak mapping and water testing", stage: investigation, fragment: null, after: ["Collect strata records and leak history"], built_in: "no", why: "Find the cause before choosing the fix. Includes moisture mapping and flood or spray tests."}
+    - {label: "Intrusive investigation at representative balconies", stage: investigation, fragment: null, after: ["Visual inspection, leak mapping and water testing"], built_in: "no", why: "Lift tiles, expose upturns, outlets and balustrade fixings, and record the falls. Without this, the extent and the design cannot be fixed."}
+    - {label: "Structural assessment of balcony slabs and balustrade fixings", stage: investigation, fragment: null, after: ["Intrusive investigation at representative balconies"], built_in: partial, source: "internal/program/generate.go investigationRows", why: "The structure.concrete investigate item gets one generic Investigation row titled with the item, not a slab and balustrade-fixing assessment."}
+    - {label: "Defect report with options and order-of-cost estimate", stage: investigation, fragment: null, after: ["Intrusive investigation at representative balconies", "Structural assessment of balcony slabs and balustrade fixings"], built_in: "no", why: "The basis for the OC decision and the levy."}
+    - {label: "Owners corporation selects the option and approves the design fee", stage: concept_design, fragment: null, after: ["Defect report with options and order-of-cost estimate"], built_in: "no", why: "General meeting or committee resolution, per the by-laws and spend limits."}
+    - {label: "Confirm exempt pathway (no development consent)", stage: approvals, fragment: fr.exempt-confirmation, after: ["Owners corporation selects the option and approves the design fee"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.exempt-confirmation", why: "Like-for-like repair with no change to the external appearance. Confirm in writing with a certifier or planner."}
+    - {label: "Remedial specification, details and balcony schedule", stage: construction_documentation, fragment: null, after: ["Owners corporation selects the option and approves the design fee"], built_in: "no", why: "Membrane system to AS 4654 (verified: false), upturns, outlets and overflows, falls, sequence, hold points, warranties, and a schedule of rates for provisional work."}
+    - {label: "Balustrade re-fixing design", stage: construction_documentation, fragment: null, after: ["Structural assessment of balcony slabs and balustrade fixings"], built_in: "no", why: "Side-fixed brackets outside the membrane. Check the barrier height against the new finished level."}
+    - {label: "Regulated designs and design compliance declarations", stage: construction_documentation, fragment: null, after: ["Remedial specification, details and balcony schedule", "Balustrade re-fixing design"], built_in: "no", why: "DBP Act: waterproofing is a building element of a Class 2 building, so registered design practitioners declare the designs (verified: false)."}
+    - {label: "Tender documents", stage: procurement, fragment: null, after: ["Regulated designs and design compliance declarations", "Confirm exempt pathway (no development consent)"], built_in: "no", why: "Specification, drawings, preliminaries, AS 4000 with special conditions, and a schedule of rates. fr.tender-docs-2 is gated to new and extend."}
+    - {label: "Tender period with site inspection", stage: procurement, fragment: null, after: ["Tender documents"], built_in: "no", why: "Remedial builders inspect the representative opened balconies."}
+    - {label: "Tender evaluation and recommendation", stage: procurement, fragment: null, after: ["Tender period with site inspection"], built_in: "no", why: "Checks the HBA contractor licence, DBP registration, insurances, the NSW waterproofing licence of the applicator (manufacturer accreditation is not enough; verified: false), and the manufacturer warranty conditions."}
+    - {label: "General meeting resolves contract award and special levy", stage: procurement, fragment: null, after: ["Tender evaluation and recommendation"], built_in: "no", why: "The OC usually needs a general meeting to raise the special levy and approve the contract. This is the job's critical client gate."}
+    - {label: "Contract award", stage: procurement, fragment: fr.contract-award, after: ["General meeting resolves contract award and special levy"], built_in: partial, source: "knowledge/program/fragments.yaml fr.contract-award", why: "The fragment exists but is gated to work_type new, extend or refurb, so it is false for remediation."}
+    - {label: "Lodge regulated designs and declarations before work starts", stage: construction, fragment: null, after: ["Contract award", "Regulated designs and design compliance declarations"], built_in: "no", why: "DBP lodgement on the NSW Planning Portal before building work starts (timing and form verified: false)."}
+    - {label: "Resident notices and balcony access schedule", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "Lots must clear their balconies, and access through occupied units is booked. The OC's power to enter lots needs notice (SSMA, verified: false)."}
+    - {label: "Site establishment, access equipment and protection", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "fr.site-establishment-2 is gated to new and extend; fr.occupied-protection to refurb and site.impact-protection."}
+    - {label: "Pre-commencement condition survey of affected lots", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "Condition record of the lots below and beside the works before strip-out (DOMAIN.md §3)."}
+    - {label: "Pay long service levy before work starts", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "With no construction certificate, the levy is paid directly to the Long Service Corporation before building work starts (threshold, rate and timing verified: false)."}
+    - {label: "Strip tiles, bedding and failed membrane", stage: construction, fragment: null, after: ["Resident notices and balcony access schedule", "Site establishment, access equipment and protection", "Lodge regulated designs and declarations before work starts", "Pre-commencement condition survey of affected lots", "Pay long service levy before work starts"], built_in: "no", why: "Balcony by balcony, or stack by stack, with temporary weatherproofing each night."}
+    - {label: "Substrate repair, falls screed and outlet upgrade", stage: construction, fragment: null, after: ["Strip tiles, bedding and failed membrane"], built_in: "no", why: "Provisional concrete repairs are measured here."}
+    - {label: "Hold point: substrate and outlet inspection before membrane", stage: construction, fragment: null, after: ["Substrate repair, falls screed and outlet upgrade"], built_in: "no", why: "Consultant inspection of the primer, falls and outlet set-down. No external-membrane hold point exists in the interfaces."}
+    - {label: "Install membrane, upturns and terminations", stage: construction, fragment: fr.balcony-waterproof-2, after: ["Hold point: substrate and outlet inspection before membrane"], built_in: partial, source: "knowledge/program/fragments.yaml fr.balcony-waterproof-2", why: "The fragment exists but needs work_type new or extend and action new or replace. Its duration is scaled by building GFA (du.balcony-waterproof-2)."}
+    - {label: "Hold point: membrane inspection and flood test before cover", stage: construction, fragment: null, after: ["Install membrane, upturns and terminations"], built_in: "no", why: "Acceptance before the screed and tiles conceal the membrane. This is the evidence for the warranty."}
+    - {label: "Re-fix balustrades, relay tiles and seal joints", stage: construction, fragment: null, after: ["Hold point: membrane inspection and flood test before cover"], built_in: "no", why: "Reinstatement."}
+    - {label: "Balustrade fixing certification", stage: construction, fragment: null, after: ["Re-fix balustrades, relay tiles and seal joints"], built_in: "no", why: "Engineer's certificate before the balcony is returned to the lot."}
+    - {label: "Lodge building compliance declaration (DBP Act, verified: false)", stage: completion, fragment: null, after: ["Balustrade fixing certification"], built_in: "no", why: "The registered building practitioner declares that the work complies, and that the regulated designs were varied where needed. On the exempt path there is no occupation certificate, so the lodgement timing is verified: false."}
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lodge building compliance declaration (DBP Act, verified: false)"], built_in: partial, source: "knowledge/program/fragments.yaml fr.practical-completion", why: "Gated to new, extend or refurb."}
+    - {label: "Handover: warranties, as-built details and maintenance schedule", stage: completion, fragment: fr.handover, after: ["Practical completion inspection"], built_in: partial, source: "knowledge/program/fragments.yaml fr.handover", why: "Membrane manufacturer and installer warranties, inspection and flood-test records, and an update to the OC's capital works fund plan and building manual. Gated; it also follows fr.occupation-certificate, which does not apply here."}
+    - {label: "Defects liability period and final inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Handover: warranties, as-built details and maintenance schedule"], built_in: partial, source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Gated to new, extend or refurb."}
+
+rfps:
+  - discipline: consultant.building
+    template: null
+    built_in: "no"
+    must_include:
+      - "Review of strata records, approved drawings, previous reports and leak history"
+      - "Visual inspection, leak mapping, water testing and intrusive opening-up at representative balconies, with make-good"
+      - "Defect report: cause, extent, options and an order-of-cost estimate for the levy"
+      - "Remedial specification, details and balcony schedule (membrane system, upturns, outlets, overflows, falls)"
+      - "Regulated design and design compliance declaration for waterproofing (NSW DBP Act, verified: false)"
+      - "Tender documents, tender management, evaluation and recommendation report"
+      - "Attendance at strata committee and general meetings"
+      - "Superintendent / contract administration, including payment claims under the NSW Security of Payment Act"
+      - "Hold-point inspections: substrate, membrane before cover, flood test"
+      - "AS 4000 special conditions compliant with the Home Building Act 1989: written contract, deposit cap, statutory warranties (verified: false)"
+      - "Review of the builder's building compliance declaration and the varied regulated designs (DBP Act, verified: false)"
+      - "Practical completion, defects inspections and collation of warranties"
+      - "Returnables: professional indemnity insurance, design practitioner registration, remedial experience on occupied strata buildings"
+    must_not_include:
+      - "Development application or town planning services"
+      - "Architectural concept and schematic design stages"
+      - "BASIX, NatHERS or Section J"
+      - "Building services design (mechanical, electrical, fire)"
+      - "Contaminated land assessment or remediation action plan"
+    # No template exists, so there are no template keys to expect; the app issues the generic RFP.
+    app_differs:
+      - {key: text.template, app: "generic tpl.rfp-capex", expect: "a remedial building consultant RFP carrying the must_include scope", why: "No knowledge/rfp file lists consultant.building or consultant.waterproofing in discipline_ids"}
+  - discipline: consultant.structural
+    template: structural
+    built_in: partial
+    source: "knowledge/rfp/structural.yaml stages existing_assessment"
+    must_include:
+      - "Existing structure assessment: balcony slabs, slab edges, cover and reinforcement condition"
+      - "Balustrade fixing design and certification (re-fix outside the membrane)"
+      - "Check of added screed or finish load on the balcony slabs"
+      - "Concrete repair specification for defects found on opening up (provisional)"
+      - "Confirm whether any structural work is a regulated building element (DBP Act, verified: false)"
+      - "Construction-phase inspection of fixings and repairs"
+    must_not_include:
+      - "Geotechnical brief"
+      - "Shoring, retention or basement excavation design"
+      - "Dilapidation surveys of adjoining structures"
+      - "Planning approval stage"
+      - "Revit model shared with the design team"
+      - "Footing, framing or residential framing design"
+      - "Super-flat floor design"
+      - "Construction certificate certification"
+    # The CORRECT answer for this job, in structural.yaml's own keys. App output = expect overridden by app_differs.
+    expect:
+      stages_include: [existing_assessment, design_development, tender_traditional, construction_documents, construction_phase]
+      stages_option: [regulated_design]
+      stages_absent: [concept_schematic, planning_approval, authority_asset, dnc_tender, post_novation]
+      positions: {design_basis: I, safety_in_design: I, value_management: I, delegated_design: I, strengthening: O, metalwork: I, inspection_schedule: I, temporary_works_design: X, dilapidation: X, geotech_brief: absent, residential_framing: absent, shared_model: absent, specialist_element_design: absent, retention_design: absent, temporary_works_interfaces: absent, services_fixings: absent, super_flat_floor: absent, compaction: absent, demolition_drawings: absent, services_footings: absent}
+      blocking: []
+      sources:
+        - "existing_assessment: when work_type remediation (structural.yaml stages existing_assessment)"
+        - "construction_phase: the engineer inspects and certifies the balustrade fixings and repairs, so it is needed"
+        - "regulated_design option: confirm whether any structural work is a regulated building element (DBP Act, verified: false)"
+        - "delegated_design I: a glass balustrade system is often supplier-designed and certified"
+    app_differs:
+      - {key: stage.concept_schematic, app: include, expect: absent, why: "always included and inside the boundary; a remediation appointment starts with the existing assessment"}
+      - {key: stage.construction_phase, app: option, expect: include, why: "it falls after the boundary end (construction_documents); resolveStages applies the boundary before include_when scale complex"}
+      - {key: stage.regulated_design, app: include, expect: option, why: "proj.regulated_design yes is project-wide (waterproofing); the stage text also assumes a construction certificate"}
+      - {key: position.geotech_brief, app: I, expect: absent, why: "always I; no ground works"}
+      - {key: position.shared_model, app: I, expect: absent, why: "service_level complex I because of the Class 2 part"}
+      - {key: position.specialist_element_design, app: O, expect: absent, why: "O whenever procurement is not design_construct"}
+      - {key: position.metalwork, app: O, expect: I, why: "always O; the balustrade fixing design is core scope here"}
+      - {key: position.inspection_schedule, app: O, expect: I, why: "follows construction_phase, which the app prices as an option"}
+      - {key: position.services_fixings, app: O, expect: absent, why: "always O"}
+      - {key: position.super_flat_floor, app: O, expect: absent, why: "client flag cannot be set; if_unknown option"}
+      - {key: position.compaction, app: X, expect: absent, why: "always X; no ground works"}
+      - {key: position.demolition_drawings, app: X, expect: absent, why: "always X"}
+      - {key: position.services_footings, app: I, expect: absent, why: "always I; no footings"}
+      - {key: text.regulated_design, app: "Regulated designs and design compliance declarations for one construction certificate", expect: "no construction certificate on the exempt path", why: "deliverable wording assumes a CC (see gaps)"}
+
+triggers:
+  - id: podium-over-basement
+    label: Podium or courtyard deck with planters over the basement car park
+    evidence:
+      - "Water is entering the basement car park beneath the ground-floor communal courtyard."
+      - "Calcite stalactites and efflorescence on the B1 soffit under the planter boxes."
+      - "The podium pavers sit on pedestals over a membrane installed in 2008."
+    negation:
+      - "The building has no podium; the car park is a separate at-grade slab."
+      - "Podium waterproofing was renewed in 2021 and is excluded from this scope."
+    profile: []
+    adds:
+      procurement: [consultant.landscape, consultant.hydraulic]
+      work_items:
+        - {system: envelope.external-waterproofing, action: replace}
+        - {system: site.landscape, action: replace}
+        - {system: hydraulic.roof-drainage, action: upgrade}
+      cost_plan: ["Podium membrane, protection board and drainage cell", "Planters: remove soil and planting, reinstate", "Podium pavers on pedestals: lift, store, relay", "Car park protection and temporary drainage"]
+      program: ["Remove podium finishes, soil and planting", "Podium membrane and drainage layer", "Hold point: podium flood test", "Reinstate landscape"]
+      rfps:
+        - {discipline: consultant.landscape, must_include: ["Planter and soil build-up reinstatement over the new membrane", "Planting replacement schedule", "Root barrier and drainage layer coordination"]}
+        - {discipline: consultant.hydraulic, must_include: ["Podium outlet and overflow capacity check", "Charged or gravity drainage through the car park"]}
+    built_in: {procurement: partial, work_items: "no", cost_plan: partial, program: "no", rfps: partial}
+    source: "knowledge/works/package_defaults.yaml scope_additions[3]"
+  - id: hazardous-materials
+    label: Building old enough to contain asbestos in the balcony build-up or soffits
+    evidence:
+      - "The building was completed in 1986."
+      - "The common property asbestos register lists bonded fibre cement in the balcony soffits."
+      - "The original bituminous membrane and mastic sealants are of unknown composition."
+    negation:
+      - "The 2019 hazardous materials survey found no asbestos in balcony build-ups."
+      - "Construction completed in 2012."
+    profile: [det.existing_building_year]
+    adds:
+      procurement: [consultant.hazmat]
+      work_items:
+        - {system: site.demolition, action: remove}
+      cost_plan: ["Hazardous materials survey of balcony build-ups", "Licensed asbestos removal and clearance certificate"]
+      program: ["Hazardous materials survey", "Asbestos removal and clearance before membrane works"]
+      authority: ["SafeWork NSW notice before licensed asbestos removal (verified: false)"]
+    why: "The partial program link is fr.existing-conditions (it includes a hazardous-materials survey), gated to refurb and extend. cq.pre-2004-fabric-hazardous-materials-survey raises an Implication only."
+    built_in: {procurement: "no", program: partial, cost_plan: "no"}
+    source: "knowledge/program/fragments.yaml fr.existing-conditions"
+  - id: concrete-spalling
+    label: Concrete cancer at slab edges and soffits
+    evidence:
+      - "Spalling with exposed corroded reinforcement on the level 3 balcony slab edges."
+      - "Rust staining and drummy render to balcony soffits."
+      - "The coastal exposure has driven chloride into the slab edges."
+    negation:
+      - "No spalling, cracking or exposed reinforcement was observed on any balcony."
+    profile: [det.concrete_exposure_class]
+    adds:
+      work_items:
+        - {system: structure.concrete, action: repair}
+      cost_plan: ["Concrete testing: cover, carbonation and chloride", "Concrete repairs: break out, treat reinforcement, patch (provisional quantities)"]
+      program: ["Concrete testing", "Concrete repairs before membrane"]
+      rfps:
+        - {discipline: consultant.structural, must_include: ["Concrete repair specification and testing regime", "Inspection of repairs before cover", "Structural regulated design and declaration for the slab repairs (DBP Act, verified: false)"]}
+    built_in: {rfps: partial, program: "no", cost_plan: partial}
+    source: "knowledge/rfp/structural.yaml positions strengthening"
+  - id: balustrade-replacement
+    label: Balustrades non-compliant or corroded and replaced
+    evidence:
+      - "Barrier height measured at 960 mm above the tiled surface; the new screed will reduce it further."
+      - "Glass balustrade panels carry no safety-glass marking."
+      - "The steel balustrade posts are corroded at the base plates."
+    negation:
+      - "Balustrades are side-fixed to the slab edge and stay in place, protected."
+      - "Existing balustrades comply and are retained."
+    profile: []
+    adds:
+      work_items:
+        - {system: access-egress.barriers, action: replace}
+      cost_plan: ["New balustrades: supply, install and certify", "Temporary edge protection"]
+      program: ["Special resolution if common property is altered rather than repaired (SSMA s 108, verified: false)", "Balustrade shop drawings and fabrication", "Temporary edge protection while balustrades are off", "Install and certify balustrades"]
+      rfps:
+        - {discipline: consultant.structural, must_include: ["Balustrade design and certification to AS 1170.1 loads (verified: false)"]}
+      authority: ["Consent check if the new balustrade changes the external appearance", "Special resolution if common property is altered rather than repaired (SSMA s 108, verified: false)"]
+    removes:
+      work_items: [{system: access-egress.barriers, action: alter}]
+      cost_plan: ["Balustrades: remove, re-fix outside the membrane and certify"]
+      program: ["Balustrade re-fixing design"]
+    built_in: {cost_plan: partial, program: "no", rfps: partial}
+    source: "knowledge/costs/elements.yaml elements access-egress items"
+  - id: door-threshold-replacement
+    label: Balcony doors replaced or sills raised to get a compliant upturn
+    evidence:
+      - "The sliding door sill sits flush with the balcony tiles; there is no set-down."
+      - "The membrane stops short of the door frame and cannot be turned up behind it."
+      - "Door frames will be replaced with high-sill units to achieve the upstand."
+    negation:
+      - "Adequate set-down exists at all thresholds; door frames are retained."
+    profile: []
+    why: "Doors are supplied and installed within the remedial builder's head contract (trade.main_works); no separate package."
+    adds:
+      work_items:
+        - {system: envelope.windows-doors, action: replace}
+      cost_plan: ["Replace balcony sliding doors or fit sill adaptors"]
+      program: ["Special resolution if common property is altered rather than repaired (SSMA s 108, verified: false)", "Door shop drawings, manufacture and delivery", "Replace doors before membrane upturn"]
+      rfps:
+        - {discipline: consultant.building, must_include: ["Door and sill specification and threshold detail"]}
+      authority: ["Special resolution if common property is altered rather than repaired (SSMA s 108, verified: false)"]
+    removes:
+      work_items: [{system: envelope.windows-doors, action: retain}]
+    built_in: {program: partial, cost_plan: partial}
+    source: "knowledge/program/fragments.yaml fr.windows-2"
+  - id: statutory-warranty-defects-claim
+    label: Defects claim against the builder or developer (warranty, DBP duty of care, building bond)
+    evidence:
+      - "The owners corporation has commenced proceedings against the developer for balcony waterproofing defects."
+      - "The strata building bond inspector's final report lists failed balcony membranes."
+      - "The six-year statutory warranty period for major defects expires in March."
+    negation:
+      - "The building is out of warranty and no claim is being pursued."
+    why: "This variant needs a later det.existing_building_year than the 2008 base: within six years for the major-defect warranty, and a building contract from 2018 or later for the strata building bond (verified: false)."
+    profile: [det.existing_building_year]
+    adds:
+      procurement: [consultant.expert_witness]
+      cost_plan: ["Expert report and evidence preservation", "Owners corporation legal costs"]
+      program: ["Joint inspection and evidence preservation before strip-out", "Expert report", "Litigation or settlement decision before tender"]
+      authority: ["Possible Building Commission NSW involvement under the RAB Act (verified: false)"]
+    built_in: {procurement: "no", cost_plan: "no", program: "no"}
+  - id: development-consent-required
+    label: Work changes the external appearance or is otherwise not exempt
+    evidence:
+      - "The new balustrade design changes the appearance of the facade."
+      - "Council has advised that a development application is required."
+      - "Enclosure of the balconies is proposed with the waterproofing works."
+    negation:
+      - "The certifier confirmed in writing that the work is like-for-like maintenance needing no consent."
+    profile: [hdr.cond.planning]
+    adds:
+      procurement: [consultant.town_planner, consultant.certifier]
+      cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees"]
+      program: ["Special resolution if common property is altered rather than repaired (SSMA s 108, verified: false)", "Lodge DA", "DA assessment", "Construction certificate", "Occupation certificate"]
+      rfps:
+        - {discipline: consultant.town_planner, must_include: ["Statement of environmental effects for the facade change"]}
+      authority: ["Development consent", "Construction certificate", "Occupation certificate", "Special resolution if common property is altered rather than repaired (SSMA s 108, verified: false)"]
+    removes:
+      program: ["Confirm exempt pathway (no development consent)"]
+    why: "The DA and CC fragments fire on hdr.cond.planning alone. fr.occupation-certificate is gated to new, extend or refurb, and the skeleton stays sk.generic, so the program is partial."
+    built_in: {procurement: partial, cost_plan: "yes", program: partial, rfps: "yes"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[0]"
+  - id: heritage-listed
+    label: Heritage item or conservation area
+    evidence:
+      - "The building is within a Heritage Conservation Area under the LEP."
+      - "Schedule 5 of the LEP lists the building as a local heritage item."
+    negation:
+      - "The site is not a heritage item and not in a conservation area."
+    profile: [det.heritage_status, hdr.cond.planning]
+    adds:
+      procurement: [consultant.heritage]
+      cost_plan: ["Heritage consultant"]
+      program: ["Heritage referral"]
+      authority: ["Heritage advice on whether like-for-like work stays exempt", "Minor-works notice to council under LEP cl 5.10(3) to avoid consent for a local item (verified: false)", "Codes SEPP exempt development generally cannot be used on a heritage item (verified: false)"]
+    built_in: {procurement: "yes", program: "yes", cost_plan: "yes", rfps: "no"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
+  - id: facade-access-scaffold
+    label: External scaffold or swing stage needed, encroaching on the footpath
+    evidence:
+      - "Scaffold to the street elevation encroaches on the council footpath; a Class A hoarding is required."
+      - "Slab-edge repairs will be carried out from a swing stage rigged from the roof anchors."
+      - "A road occupancy licence is needed for the scaffold delivery."
+    negation:
+      - "All work is carried out from within the balconies; no external access equipment."
+    profile: [flag.public_road]
+    adds:
+      procurement: [consultant.roof_access]
+      cost_plan: ["Scaffold or swing stage", "Council hoarding and footpath occupation fees"]
+      program: ["Council hoarding and footpath approval", "Erect and certify scaffold", "Roof anchor inspection and certification"]
+      authority: ["Council approval under Roads Act 1993 s 138 (verified: false)"]
+    built_in: {cost_plan: "no", program: "no", procurement: "no"}
+  - id: internal-water-damage
+    label: Water damage and mould in the lots below
+    evidence:
+      - "The plasterboard ceiling in the Unit 304 bedroom has collapsed below balcony 404."
+      - "Mould growth on the living room ceiling below balcony 502."
+      - "The building insurer has accepted the resultant damage claim."
+    negation:
+      - "No internal damage has been reported in any lot."
+    profile: []
+    adds:
+      work_items:
+        - {system: interiors.ceilings, action: repair}
+        - {system: interiors.painting, action: repair}
+      cost_plan: ["Make-good to ceilings and paint in lots below", "Mould assessment and remediation"]
+      program: ["Make good internal damage after the flood test passes"]
+    built_in: {cost_plan: partial, program: partial}
+    source: "knowledge/program/fragments.yaml fr.ceilings-2"
+  - id: balcony-services-relocation
+    label: Air-conditioning condensers and other services on the balconies
+    evidence:
+      - "Air-conditioning condenser units on 30 balconies must be disconnected and stored."
+      - "Condensate drains discharge onto the balcony tiles."
+      - "Wall lights and GPOs on the balconies are within the upturn zone."
+    negation:
+      - "No plant or services are located on the balconies."
+    profile: []
+    adds:
+      work_items:
+        - {system: mechanical.refrigerant-condensate, action: alter}
+        - {system: electrical.lighting, action: alter}
+      cost_plan: ["Pump down, disconnect, store and recommission AC condensers", "Disconnect and reinstate balcony electrical fittings"]
+      program: ["Pump down and disconnect condensers", "Reinstate and recommission condensers"]
+    why: "No consultant is needed. The app will wrongly suggest Mechanical and Electrical consultants (scope_additions[2], [4]); see gaps."
+    built_in: {cost_plan: partial, program: "no"}
+    source: "knowledge/costs/elements.yaml elements code 08"
+  - id: low-rise-hbcf
+    label: Three storeys or fewer, so home building compensation cover applies
+    evidence:
+      - "A three-storey walk-up of 12 lots."
+      - "The contractor must provide a Home Building Compensation Fund certificate before any deposit is paid."
+    negation:
+      - "HBCF cover is not required because the building is a multi-storey building with a rise of more than three storeys."
+    profile: [det.rise_in_storeys]
+    adds:
+      cost_plan: ["Home building compensation insurance (contractor's, passed through)"]
+      program: ["HBCF certificate before deposit and commencement (required above a contract price of about $20,000, verified: false)"]
+      rfps:
+        - {discipline: consultant.building, must_include: ["HBCF certificate as a tender returnable and a condition of the contract"]}
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+  - id: staged-delivery-funding
+    label: Works staged by elevation or stack to match special levies
+    evidence:
+      - "Stage 1 (north elevation) in 2027; Stage 2 subject to the next special levy."
+      - "The works will be delivered in three stages with separable portions."
+    negation:
+      - "All balconies will be done in one continuous stage."
+    profile: [flag.staged]
+    adds:
+      cost_plan: ["Escalation between stages", "Re-establishment preliminaries per stage"]
+      program: ["General meeting resolution and levy for each later stage", "Separable portion completion per stage"]
+      rfps:
+        - {discipline: consultant.building, must_include: ["Contract administration and inspections per stage", "Separable portions in the contract"]}
+    why: "consultant.building has no template and gets the generic tpl.rfp-capex. The staged module only switches rows in the architecture, access and arborist templates."
+    built_in: {rfps: "no", program: "no", cost_plan: "no"}
+  - id: roof-terrace-in-scope
+    label: Communal roof terrace or flat roof membrane also leaking
+    evidence:
+      - "The communal roof terrace membrane is leaking into the level 6 units."
+      - "The roof terrace pavers on pedestals and the roof plant sit on the failed membrane."
+    negation:
+      - "The roof is a pitched metal roof and is outside the scope."
+    profile: []
+    adds:
+      procurement: [consultant.roof_access]
+      work_items:
+        - {system: envelope.external-waterproofing, action: replace}
+        - {system: access-egress.maintenance-access, action: upgrade}
+      cost_plan: ["Roof terrace membrane replacement", "Temporary relocation of roof plant", "Roof anchors and access system recertification"]
+      program: ["Relocate roof plant temporarily", "Roof membrane replacement", "Recertify roof anchors"]
+    built_in: {procurement: "no", cost_plan: partial, program: "no"}
+    source: "knowledge/costs/elements.yaml elements code 04"
+
+gaps:
+  - {area: scope, what: "Remediation is an empty work type, so no work items exist until a document or the user adds them. The membrane itself, the core of the job, is never proposed.", evidence: "knowledge/profile/scope_defaults.yaml empty_work_types"}
+  - {area: scope, what: "The work-type default action is repair. A full membrane renewal is replace, and fr.balcony-waterproof-2 needs new or replace.", evidence: "knowledge/works/actions.yaml work_type_defaults remediation"}
+  - {area: procurement, what: "No consultant baseline for remediation: zero suggestions. The lead remedial building or waterproofing consultant and the remedial engineer are never suggested.", evidence: "knowledge/works/package_defaults.yaml baselines (none names remediation)"}
+  - {area: procurement, what: "Lead-consultant aliases are thin: 'Remedial building consultant', 'remedial engineer', 'building defects consultant' and 'waterproofing engineer' are missing, so filing discipline may miss.", evidence: "data/intake/disciplines.json consultant.building, consultant.waterproofing"}
+  - {area: procurement, what: "Scope additions over-suggest Hydraulic, Mechanical and Electrical consultants for minor outlet work or condenser disconnection that the builder does.", evidence: "knowledge/works/package_defaults.yaml scope_additions[2], [3], [4]"}
+  - {area: procurement, what: "Default package stages (concept, approval and construction documentation, inspections) do not fit a remedial consultant (investigation, report, specification, tender, contract administration).", evidence: "knowledge/works/stages.yaml stages design.substages"}
+  - {area: procurement, what: "No id for the strata manager, OC solicitor, occupational hygienist (mould), leak-detection specialist, scaffold contractor or membrane manufacturer. supplier.* rows are refused.", evidence: "data/intake/disciplines.json; internal/procurement/discipline.go DisciplinePackage"}
+  - {area: program, what: "No remediation skeleton; the app falls back to sk.generic, which has empty approval-documentation and approvals stages and no OC general meeting or levy gate.", evidence: "knowledge/program/skeletons.yaml (no skeleton names remediation)"}
+  - {area: program, what: "fr.balcony-waterproof-2 is gated to new and extend, and its duration scales with building GFA rather than balcony count or membrane area in an occupied building.", evidence: "knowledge/program/fragments.yaml fr.balcony-waterproof-2; knowledge/program/durations.yaml du.balcony-waterproof-2"}
+  - {area: program, what: "Contract award, practical completion, handover and defects fragments are all gated to new, extend or refurb, so a remediation program has no completion or defects rows.", evidence: "knowledge/program/fragments.yaml fr.contract-award, fr.practical-completion, fr.handover, fr.defects-liability-end"}
+  - {area: program, what: "No hold point for external membranes (inspection before cover, flood test). The waterproofing hold points are internal wet-area only and use free text, so none fire.", evidence: "knowledge/clusters/envelope/interfaces.yaml if.envelope-waterproofing-before-tiles"}
+  - {area: program, what: "Occupied-building protection needs refurb and the vehicle-impact system site.impact-protection. Nothing models resident access or staged lot handback.", evidence: "knowledge/program/fragments.yaml fr.occupied-protection"}
+  - {area: cost_plan, what: "No preliminaries or access-equipment line and no provisional-sum line. Construction-certificate and service-authority starter lines are always suggested though an exempt remediation needs neither. No long service levy line.", evidence: "knowledge/costs/starter_lines.yaml lines[4], lines[5]"}
+  - {area: cost_plan, what: "No budget split for remediation, so a stated budget is not spread.", evidence: "knowledge/costs/budget_splits.yaml (no remediation entry)"}
+  - {area: rfp, what: "No RFP template for consultant.building, consultant.waterproofing, consultant.hazmat or consultant.expert_witness; all fall to the generic tpl.rfp-capex.", evidence: "knowledge/rfp (no file with these discipline_ids)"}
+  - {area: rfp, what: "The structural template treats any Class 2 part as complex, so a balcony remediation RFP wrongly includes a shared Revit model. Concept and schematic stage and geotechnical brief are always included. The construction phase is needed, but the app prices it only as an option: it falls after the boundary end (construction_documents), and resolveStages applies the boundary before include_when scale complex.", evidence: "knowledge/rfp/structural.yaml scale.complex, boundary, stages construction_phase; internal/rfp/resolve.go resolveStages"}
+  - {area: profile, what: "hdr.cond.stakeholder_complexity strata is read by no generator. The strata-consent unforeseen record is gated to refurb.", evidence: "knowledge/clusters/delivery/unforeseen.yaml uc.strata-consent-for-common-property-works-withheld"}
+  - {area: profile, what: "The basement trigger routes 'podium over the basement car park' to the basement question. A yes reading is likely, because the basement exists, and it switches on structural retention design, temporary works and dilapidation, and civil shoring. Scorer expectation: proj.flag.basement is not yes.", evidence: "knowledge/profile/flag_readings.yaml basement"}
+  - {area: profile, what: "Routes 'flood test' passages to the flood_hazard question. The expected reading is not stated; low consequence. Scorer expectation: det.flood_hazard is not true.", evidence: "knowledge/determinants.yaml flood_hazard triggers"}
+  - {area: profile, what: "The wet-room implied_by pattern fires in code on 'the bathroom below'. It suggests wet-area waterproofing, tiling, sanitary, cold and hot water and local exhaust scope, which then suggests Hydraulic and Mechanical consultants and 08/09 cost lines.", evidence: "knowledge/profile/scope_defaults.yaml implied_by wet-room; internal/profile/implied.go"}
+  - {area: profile, what: "Other implied_by terms fire on ordinary remediation wording: 'bedroom' (internal doors); 'kitchen' (joinery, hydraulic, exhaust, so Hydraulic and Mechanical again); 'common wall' (adjoining structures, compartments, acoustic separation); 'stairs' (stairs and ramps); 'brickwork', 'masonry', 'repointing' (structure.masonry).", evidence: "knowledge/profile/scope_defaults.yaml implied_by bedroom, kitchen, party-wall, stair, masonry"}
+  - {area: procurement, what: "Condenser and balcony-light items suggest Mechanical and Electrical consultants the job does not need.", evidence: "knowledge/works/package_defaults.yaml scope_additions[2], [4]"}
+  - {area: rfp, what: "The structural RFP's DBP wording assumes a construction certificate ('Regulated designs and design compliance declarations for one construction certificate'; 'design certification for the construction certificate'). On the exempt path there is no CC, yet proj.regulated_design yes switches the stage on.", evidence: "knowledge/rfp/structural.yaml stages regulated_design, construction_documents deliverable"}
+  - {area: knowledge, what: "NSW strata remediation law is not encoded: DBP Act regulated design (only an unverified RFP threshold), HBA statutory warranties and licensing, HBCF exemption, SSMA maintenance duty and levies, building bond, RAB Act.", evidence: "knowledge/rfp/structural.yaml thresholds dbp_regime (verified: false)"}
+
+variants: [podium-over-basement, hazardous-materials, concrete-spalling, door-threshold-replacement, statutory-warranty-defects-claim, balustrade-replacement, balcony-services-relocation]

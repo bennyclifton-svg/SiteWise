@@ -23,6 +23,9 @@ SCHEMA = "sitewise-synthetic-shape/1"
 BUILT_IN = {"yes", "no", "partial"}
 REQUIRED = ["schema", "type_id", "slug", "name", "reviewed", "state", "profile", "work_items",
             "procurement", "cost_plan", "program", "rfps", "triggers", "gaps", "variants"]
+# Adopted after the T01 pilot reviews (29 October 2026). Optional, but checked when present.
+OPTIONAL = ["not_expected_procurement", "not_expected_cost_plan", "expected_derived", "scenario_inputs"]
+STAGE_LISTS = ["stages_include", "stages_option", "stages_absent"]
 STATES = {"NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"}
 # Lower bounds that make a domain map worth reviewing. Thin maps are warned, not failed.
 MIN = {"triggers": 8, "procurement": 2, "cost_plan": 5, "activities": 8, "rfps": 1}
@@ -84,6 +87,15 @@ def load_ids(root):
     }
 
 
+def _claim(value):
+    """PyYAML reads a bare yes/no as a boolean; treat it as the word."""
+    if value is True:
+        return "yes"
+    if value is False:
+        return "no"
+    return value
+
+
 def _source_ok(source, root):
     """A source is a repo path, optionally followed by a space or # and an anchor, or 'domain'."""
     if source == "domain":
@@ -119,7 +131,10 @@ def validate(path, ids):
     for key in REQUIRED:
         if key not in shape:
             err(f"missing top-level key: {key}")
-    if errors:
+    for key in shape:
+        if key not in REQUIRED and key not in OPTIONAL:
+            err(f"unknown top-level key: {key} (add it to the schema, or remove it)")
+    if any(e.startswith("missing") for e in errors):
         return errors, warnings
     if shape["schema"] != SCHEMA:
         err(f"schema must be {SCHEMA}")
@@ -131,7 +146,7 @@ def validate(path, ids):
         err(f"state {shape['state']} is not an Australian state or territory")
 
     def built_in(where, item, source_key="source"):
-        claim = item.get("built_in")
+        claim = _claim(item.get("built_in"))
         if claim not in BUILT_IN:
             err(f"{where}: built_in must be one of yes, no, partial")
         elif claim in ("yes", "partial"):
@@ -209,6 +224,22 @@ def validate(path, ids):
         if not r.get("must_include"):
             err(f"{where}: must_include is required")
         built_in(where, r)
+        expect = r.get("expect")
+        if expect is not None:
+            if not isinstance(expect, dict):
+                err(f"{where}: expect must be a mapping")
+            else:
+                seen = {}
+                for lst in STAGE_LISTS:
+                    for stage in expect.get(lst) or []:
+                        if stage in seen:
+                            err(f"{where}: expect stage {stage} is in both {seen[stage]} and {lst} (both include/option/absent)")
+                        seen[stage] = lst
+        for j, d in enumerate(r.get("app_differs") or []):
+            if not re.match(r"^(stage|position|element|text)\.", str(d.get("key", ""))):
+                err(f"{where} app_differs[{j}]: key {d.get('key')} must start with stage., position., element. or text.")
+            if not d.get("why"):
+                err(f"{where} app_differs[{j}]: why is required")
 
     trigger_ids = set()
     for i, t in enumerate(shape["triggers"]):
@@ -231,7 +262,12 @@ def validate(path, ids):
                 err(f"{where}: adds discipline {d} is not in disciplines.json")
         for j, w in enumerate(adds.get("work_items") or []):
             work_item(f"{where} adds.work_items[{j}]", w)
-        claims = t.get("built_in") or {}
+        removes = t.get("removes") or {}
+        for area in ("procurement", "rfps"):
+            for d in removes.get(area) or []:
+                if d not in ids["disciplines"]:
+                    err(f"{where}: removes.{area} discipline {d} is not in disciplines.json")
+        claims = {area: _claim(c) for area, c in (t.get("built_in") or {}).items()}
         for area, claim in claims.items():
             if claim not in BUILT_IN:
                 err(f"{where}: built_in.{area} must be yes, no or partial")
@@ -240,6 +276,25 @@ def validate(path, ids):
     for name in shape["variants"]:
         if name not in trigger_ids:
             err(f"variants: {name} is not a trigger id")
+    for i, item in enumerate(shape.get("not_expected_procurement") or []):
+        if item.get("discipline") not in ids["disciplines"]:
+            err(f"not_expected_procurement[{i}]: discipline {item.get('discipline')} is not in disciplines.json")
+        if not item.get("why"):
+            err(f"not_expected_procurement[{i}]: why is required")
+    for i, item in enumerate(shape.get("not_expected_cost_plan") or []):
+        if not item.get("line") or not item.get("why"):
+            err(f"not_expected_cost_plan[{i}]: line and why are required")
+        if item.get("section") not in ("fees_and_charges", "consultants", "construction", "contingency"):
+            err(f"not_expected_cost_plan[{i}]: section must be fees_and_charges, consultants, construction or contingency")
+    for name in ("expected_derived", "scenario_inputs"):
+        for i, item in enumerate(shape.get(name) or []):
+            if not _profile_key_ok(str(item.get("key", "")), ids):
+                err(f"{name}[{i}]: key {item.get('key')} is not an app row key")
+            if not item.get("note"):
+                err(f"{name}[{i}]: note is required")
+    for i, item in enumerate(shape.get("scenario_inputs") or []):
+        if not item.get("phrasing"):
+            err(f"scenario_inputs[{i}]: phrasing is required")
     for i, g in enumerate(shape["gaps"]):
         if not g.get("area") or not g.get("what") or not g.get("evidence"):
             err(f"gaps[{i}]: area, what and evidence are required")

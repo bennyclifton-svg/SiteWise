@@ -105,6 +105,38 @@ class ValidateShapeTests(unittest.TestCase):
         for word in ["evidence", "negation", "adds", "not-a-trigger"]:
             self.assertIn(word, joined)
 
+    def test_unquoted_yaml_yes_no_are_accepted(self):
+        # PyYAML reads bare yes/no as booleans; authors should not have to quote them.
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["procurement"][0]["built_in"] = True
+        ok["triggers"][0]["built_in"] = {"procurement": True, "rfps": False}
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+
+    def test_optional_keys_are_checked(self):
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["not_expected_procurement"] = [{"discipline": "consultant.mechanical", "why": "trades design services"}]
+        ok["not_expected_cost_plan"] = [{"line": "Mechanical (consultant fee)", "section": "consultants", "why": "x"}]
+        ok["expected_derived"] = [{"key": "det.basix_required", "value": True, "note": "x"}]
+        ok["scenario_inputs"] = [{"key": "proj.budget_stated", "note": "x", "phrasing": "Budget: $<amount>"}]
+        ok["rfps"][0]["expect"] = {"stages_include": ["a"], "stages_option": ["b"], "stages_absent": ["c"]}
+        ok["rfps"][0]["app_differs"] = [{"key": "stage.b", "app": "option", "expect": "include", "why": "x"}]
+        ok["triggers"][0]["removes"] = {"procurement": ["consultant.town_planner"], "program": ["Lodge DA"]}
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+
+        bad = yaml.safe_load(yaml.safe_dump(ok))
+        bad["not_expected_procurement"][0]["discipline"] = "consultant.wizard"
+        bad["expected_derived"][0]["key"] = "det.dragon_risk"
+        bad["rfps"][0]["expect"]["stages_absent"] = ["a"]
+        bad["rfps"][0]["app_differs"][0]["key"] = "colour.blue"
+        bad["triggers"][0]["removes"]["procurement"] = ["consultant.wizard"]
+        bad["surprise_section"] = []
+        errors, _ = check(bad)
+        joined = "\n".join(errors)
+        for word in ["not_expected_procurement", "det.dragon_risk", "both include", "colour.blue", "removes", "surprise_section"]:
+            self.assertIn(word, joined)
+
     def test_folder_must_match_type_id(self):
         bad = dict(GOOD, type_id="T02")
         errors, _ = check(bad)

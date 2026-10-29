@@ -134,6 +134,43 @@ gaps:
 variants: [tree-near-works]  # trigger ids worth a one-change test variant; the 5 to 8 most common
 ```
 
+#### Required as well (added after the T01 pilot reviews, 29 October 2026)
+
+These keys came out of the T01 pilot reviews. Copy their form from
+`testing/synthetic/types/T01-new-house/shape.yaml`, which is the reference
+example. The validator checks them and rejects any other top-level key.
+
+```yaml
+not_expected_procurement:    # packages the app suggests that this job does NOT need
+  - {discipline: consultant.mechanical, app_label: "Mechanical", source: "knowledge/... anchor", why: "..."}
+not_expected_cost_plan:      # cost lines the app produces that this job should not carry
+  - {line: "Electrical (consultant fee)", app_label: "F04 Electrical", section: consultants, source: "...", why: "..."}
+expected_derived:            # values the app should calculate, not read from a document
+  - {key: det.basix_required, value: true, source: "...", note: "derivation pending in the rule; returns unknown today"}
+scenario_inputs:             # facts a scenario's documents must state; the scenario author picks the value
+  - {key: proj.budget_stated, note: "stated in the owner's brief", phrasing: "Construction budget: $<amount> excluding GST"}
+rfps:
+  - discipline: ...
+    expect:                  # the RFP's expected state, using the RFP template's own keys exactly
+      stages_include: [concept, schematic]
+      stages_option: [contract_admin]
+      stages_absent: [tender_traditional]   # a stage may be in only one of the three lists
+      positions: {coordination: I}          # plus elements_*, blocking, sources where the template has them
+    app_differs:             # where you expect the app's output to differ from `expect`, and why
+      - {key: stage.bidding, app: option, expect: include, why: "..."}   # key starts with stage., position., element. or text.
+triggers:
+  - id: cdc-pathway
+    removes:                 # what this trigger takes out of the base, if anything
+      procurement: [consultant.town_planner]
+      cost_plan: ["DA fees and contributions"]
+      program: ["Lodge the DA"]
+      rfps: [consultant.town_planner]
+```
+
+Set every base flag and determinant that an RFP's `expect` depends on
+explicitly in `profile`. An unset value gives different RFP rows than
+`false`. The variant count (5 to 8) is guidance, not a cap.
+
 `built_in` means the app *produces* this item for this profile and scope
 today:
 
