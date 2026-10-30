@@ -29,6 +29,7 @@ profile:
   det.bushfire_prone_land: false
   det.flood_hazard: false
   det.climate_zone: "5"
+  det.site_class: M          # owner, 31 Oct: class M is the normal base case for a new house
   det.sewer_connection: reticulated
   det.water_supply_source: reticulated
   det.gas_supply: none
@@ -39,6 +40,7 @@ profile:
   flag.excavation_adjoining: "no"
   flag.authority_asset: "no"
   flag.arborist_tree_impacts: "no"
+  flag.arborist_offsite_trees: "no"   # owner, 31 Oct: no neighbouring trees affected is the normal base case
   flag.osd_required: "no"
   flag.cl46: "no"
   flag.public_road: "no"
@@ -535,7 +537,7 @@ triggers:
       work_items: [{system: site.trees, action: retain}]
       cost_plan: ["Arborist", "Tree protection"]
       program: ["Arborist impact assessment", "Install tree protection"]
-      rfps: [{discipline: consultant.arborist, must_include: ["AS 4970 impact assessment", "Tree protection plan", "Construction supervision hold points"]}]
+      rfps: [{discipline: consultant.arborist, must_include: ["AS 4970 impact assessment", "Tree protection plan", "Construction supervision hold points"]}, {discipline: consultant.structural, must_include: ["Footing design and location that avoid the structural root zone"]}]   # R9
       authority: ["Council tree permit or DA approval for removal or pruning"]
     built_in: {procurement: "no", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
     source: "knowledge/rfp/arborist.yaml s2_impact"

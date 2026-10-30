@@ -10,32 +10,32 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 
 | Task | State | Output | Note |
 |---|---|---|---|
-| 0 Scaffolding and shape validator | ok | `tools/validate_shape.py`, briefs, this file | 35 tests pass (validator + scorer) |
+| 0 Scaffolding and shape validator | ok | `tools/validate_shape.py`, briefs, this file | 75 tests pass (validator + scorer) |
 | 1 Knowledge index | ok | `reference/KNOWLEDGE_INDEX.md` | brief `briefs/00-knowledge-index.md` |
 | 4 Shape scoring rules | ok | `SCORING.md`, `tools/score_shapes.py` | TDD from the T01 shape |
 | 5 Scenario brief and expected JSON schema | ok | `briefs/03-scenarios.md`, `03r`, `tools/validate_expected.py` | 23 tests; T01 done, T05 and T09 not started |
 | 6 Rendering brief and leak lint | ok | `briefs/04-render.md`, `04r`, `tools/lint_corpus.py` | 10 tests; T01 rendered |
-| 7 Harness | — | `harness/` | Python, local API |
-| 8 Pilot run | — | `REPORT.md`, `FINDINGS.md` | live Jev approved 28 Oct |
+| 7 Harness | ok | `harness/` | serve.sh (own DB on :8091), run.py, score.py; 10 tests |
+| 8 Pilot run | run | `runs/20261031-pilot/REPORT.md`, `FINDINGS.md` | T01 run 31 Oct; T05, T09 not started; owner gate 3 pending |
 
 ## Project types
 
 | ID | Type | Map | Validate | Review | Owner | Scenarios | Docs | Run |
 |---|---|---|---|---|---|---|---|---|
-| T01 | New detached house (pilot) | ok | ok | ok | ok | ok | ok | — |
+| T01 | New detached house (pilot) | ok | ok | ok | ok | ok | ok | ok |
 | T02 | Apartments | ok | ok | ok | gate | — | — | — |
-| T03 | Office fit-out | ok | ok | run | — | — | — | — |
-| T04 | Warehouse | ok | ok | run | — | — | — | — |
+| T03 | Office fit-out | ok | ok | fix | — | — | — | — |
+| T04 | Warehouse | ok | ok | fix | — | — | — | — |
 | T05 | House alterations and additions (pilot) | ok | ok | ok | ok | — | — | — |
-| T06 | Sprinkler pump and tank upgrade | ok | ok | run | — | — | — | — |
-| T07 | Mechanical plant upgrade | ok | ok | run | — | — | — | — |
-| T08 | Roof remediation | ok | ok | fix | — | — | — | — |
+| T06 | Sprinkler pump and tank upgrade | ok | ok | fix | — | — | — | — |
+| T07 | Mechanical plant upgrade | ok | ok | fix | — | — | — | — |
+| T08 | Roof remediation | ok | ok | ok | gate | — | — | — |
 | T09 | Waterproofing remediation (pilot) | ok | ok | ok | ok | — | — | — |
 | T10 | Knock-down rebuild | ok | ok | ok | gate | — | — | — |
 | T11 | Dual occupancy or townhouses | ok | ok | ok | gate | — | — | — |
 | T12 | Granny flat | ok | ok | ok | gate | — | — | — |
 | T13 | Mixed-use shop-top | ok | ok | ok | gate | — | — | — |
-| T14 | Retail or café fit-out | ok | ok | fix | — | — | — | — |
+| T14 | Retail or café fit-out | ok | ok | ok | gate | — | — | — |
 | T15 | Childcare centre | — | — | — | — | — | — | — |
 | T16 | Office base-building refurbishment | — | — | — | — | — | — | — |
 | T17 | Cladding remediation | ok | ok | ok | gate | — | — | — |
@@ -297,3 +297,57 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 - 2026-10-30: T08 round 1 fixes are in: 16 applied, 0 disputed, 2 new
   triggers. Counts are now 16 triggers, 5 packages, 25 cost lines, 35
   activities, 4 RFPs. Round 2 review launched.
+- 2026-10-30: T08 round 2 review: FIX (minor), 3 items. The overlay-over-ac
+  variant is incoherent, and two labels need fixing. The author is applying
+  them.
+- 2026-10-30: T08 round 2 items applied, validator ok. T08 is ready for
+  owner review. Follow-up: removes.rfps can only drop a whole RFP. The
+  scorer is learning partial removes, after which T08's overlay-over-ac
+  should use one.
+- 2026-10-30: T14 round 1 fixes are in: 17 applied, 0 disputed, 4 new
+  triggers. Counts are now 17 triggers, 6 packages, 35 cost lines, 82
+  activities, 3 RFPs. Round 2 review launched.
+- 2026-10-30: T03 review: FIX, 15 findings. A Go run confirms app program
+  order bugs on a refurb fit-out:
+  - services rough-in lands after ceilings, because fragments anchored to
+    the missing strip-out get chained;
+  - fire stopping starts on day 0 and holds every interiors row;
+  - the sprinkler-to-ceilings link is dropped as a loop (as in T13).
+  Also, the CDC must follow landlord approval. The author is applying the
+  fixes. To do before the next commit: compile the Go-confirmed app
+  defects from the REVIEW files into FINDINGS.md.
+- 2026-10-30: T14 round 2 review: PASS. A duplicate gap is being merged.
+  Scorer limit: blocking differences were only text. A `blocking.` key for
+  app_differs is being added. The owner still has to confirm R3 on the
+  riser variant.
+- 2026-10-30: Partial RFP removes are supported (73 tests pass). T08 is
+  switching to them.
+- 2026-10-30: T14 duplicate gap merged, validator ok. T14 is ready for
+  owner review. Follow-up: its blocking differences stay as text.blocking
+  until the `blocking.` key lands.
+- 2026-10-30: T06 review: FIX, 18 findings.
+  - The Fire Safety Code (Part 8) covers only the pump, tank and fire-main
+    works; the sprinkler changes go in the fit-out CDC.
+  - Pump room ventilation belongs under mechanical.local-exhaust.
+  - AS 2941 is the 2013 edition.
+  The author is applying the fixes.
+- 2026-10-30: T07 review: FIX, 16 findings, the exempt base confirmed.
+  - Three app_differs are corrected by an rfp.Resolve run.
+  - Variant false positives need `removes`.
+  - The 25 m threshold comes from NCC E2.
+  The author is applying the fixes.
+- 2026-10-30: T08 overlay-over-ac now uses partial RFP removes, validator ok.
+- 2026-10-30: `blocking.<id>` app_differs key added (75 tests pass). T14 and T03 are converting to it.
+- 2026-10-30: T14 blocking differences are now 15 blocking.<id> entries, validator ok.
+- 2026-10-30: T04 review: FIX, 14 findings. A Go run confirms no 7b hold
+  point fires, and that 7b plus 5 on one part sets flag.mixed_use. About 45
+  RFP app_differs are missing. C3D4 is verified. The author is applying the
+  fixes.
+- 2026-10-30: Fire control centre threshold checked in NCC 2022 E1D15:
+  above 25 m (S19C7's 50 m is the separate room). The T13 round 1 change to
+  50 m was wrong and is being reverted. CONVENTIONS C4 and C5 (staged CCs)
+  were added, and T02 and T13 are aligning with them.
+- 2026-10-30: T03 round 1 fixes are in: 15 applied, 0 disputed. Counts are
+  now 14 triggers, 13 packages, 38 cost lines, 71 activities, 11 RFPs.
+  Round 2 review launched.
+- 2026-10-31: Owner rulings R9 (root zones and foundations; root cutting is not pruning) and R10 (T01 base: site class M, no neighbouring trees affected) recorded. The T01 shape gains both base values and a structural RFP item under trees-affected. Harness built: `serve.sh` runs a separate SiteWise on its own database, so test projects stay out of the owner's dev organisation. First live pilot run of all three T01 scenarios: see `runs/20261031-pilot/REPORT.md` and `FINDINGS.md` (F1 to F7). Raw Jev exchanges are not recorded, because the server has no switch for it; stored decisions are saved instead. Next: owner gate 3, triage of the RFP differences, and the invoice-flag key fix.

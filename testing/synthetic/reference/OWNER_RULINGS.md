@@ -94,3 +94,19 @@ CDC lists the inspections that apply.
 
 HIA and MBA residential contracts carry a defects liability period. Keep
 the length `verified: false`.
+
+## After the T01 scenarios, 31 October 2026
+
+### R9. Trees: root zones and foundations
+
+Root work near a tree is framed by its tree protection zone (TPZ) and its
+structural root zone (SRZ). The SRZ is smaller than the canopy. For an
+important tree, the SRZ must be avoided, and that can change how the
+foundations are designed and where they go, so the structural engineer
+is involved. Cutting roots is a root-zone matter, not tree pruning: the
+T01 trees variant leaves `flag.arborist_pruning` unset.
+
+### R10. T01 base: soil class and neighbouring trees
+
+For a new house the normal base case is site class **M**, and **no
+neighbouring trees affected**. Both are in the T01 base profile.
