@@ -146,7 +146,7 @@ cost_plan:
   - {line: "Service authority connection fees (Sydney Water, DNSP, NBN)", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml service-authority", why: "One generic line; no split by authority"}
   - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "Paid before the CC above the threshold"}
   - {line: "Council road-reserve fees and damage security deposit (s138 crossing, footpath occupancy)", section: fees_and_charges, built_in: "no", why: "Standard DA conditions for a new house; s138 (verified: false)"}
-  - {line: "Home Building Compensation Fund insurance", section: fees_and_charges, built_in: "no", why: "Builder's premium inside the contract sum; listed so a builder's exclusion is caught"}
+  - {line: "Home Building Compensation Fund insurance", section: fees_and_charges, built_in: "no", why: "Required where the contract price is over $20,000 including GST (owner ruling R4; SIRA). Builder's premium inside the contract sum; listed so a builder's exclusion is caught"}
   - {line: "Architect", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line from the adopted package"}
   - {line: "Structural engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line from the adopted package"}
   - {line: "Civil (stormwater) engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line from the adopted package"}
@@ -214,9 +214,10 @@ program:
     - {label: "Tender period", stage: procurement, fragment: fr.tender-period-1a, after: ["Assemble the tender package"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-period-1a", why: "Three or four builders"}
     - {label: "Evaluate tenders", stage: procurement, fragment: fr.tender-evaluation-1a, after: ["Tender period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-evaluation-1a", why: "Price and non-price"}
     - {label: "Award the contract", stage: procurement, fragment: fr.contract-award, after: ["Evaluate tenders"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.contract-award", why: "Domestic lump-sum contract"}
-    - {label: "Builder provides HBCF insurance certificate", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "Before deposit and work"}
+    - {label: "Builder provides HBCF insurance certificate", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "The principal contractor takes out the cover before starting work or taking a deposit; required where the contract price is over $20,000 including GST (owner ruling R4)"}
     - {label: "Appoint principal certifier and give notice of commencement", stage: procurement, fragment: null, after: ["Construction certificate", "Builder provides HBCF insurance certificate"], built_in: "no", why: "Before any work"}
-    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-1a, after: ["Appoint principal certifier and give notice of commencement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-1a", why: "Site start"}
+    - {label: "Pre-commencement inspection by the principal certifier", stage: procurement, fragment: null, after: ["Appoint principal certifier and give notice of commencement"], built_in: "no", why: "Owner ruling R7 item 1: pre-start inspection of the site before the start of works; no fragment or interface"}
+    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-1a, after: ["Pre-commencement inspection by the principal certifier"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-1a", why: "Site start"}
     - {label: "Install erosion and sediment controls", stage: construction, fragment: fr.erosion-control, after: ["Establish the site"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.erosion-control", why: "Before disturbance"}
     - {label: "Connect temporary builders power", stage: construction, fragment: fr.temporary-power, after: ["Establish the site"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.temporary-power", why: "electrical.temporary-power not in default scope"}
     - {label: "Building set-out survey", stage: construction, fragment: null, after: ["Establish the site"], built_in: "no", why: "site.survey-boundaries with action new has no fragment"}
@@ -226,7 +227,7 @@ program:
     - {label: "Excavate and inspect footings", stage: construction, fragment: fr.footings-1a, after: ["Cut, fill and trim levels"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.footings-1a", why: "Critical-stage inspection before pouring footings"}
     - {label: "Under-slab sanitary drainage", stage: construction, fragment: fr.slab-on-ground-1a, after: ["Excavate and inspect footings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-on-ground-1a", why: "Before the pour"}
     - {label: "Install termite management system", stage: construction, fragment: fr.termite-1a, after: ["Excavate and inspect footings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.termite-1a", why: "AS 3660.1"}
-    - {label: "Reinforcement inspection before slab pour", stage: construction, fragment: null, after: ["Under-slab sanitary drainage", "Install termite management system"], built_in: "partial", source: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour", why: "Hold point exists but needs a structure.concrete item, so it does not fire"}
+    - {label: "Reinforcement inspection before slab pour", stage: construction, fragment: null, after: ["Under-slab sanitary drainage", "Install termite management system"], built_in: "yes", source: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour", why: "The hold point fires from the structure.concrete tag on the fr.slab-on-ground-1a pour activity (confirmed by a read-only Go run, 30 October 2026); app label 'Hold point: Reinforcement inspection release identifying the pour.'"}
     - {label: "Reinforce and pour slab", stage: construction, fragment: fr.slab-on-ground-1a, after: ["Reinforcement inspection before slab pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-on-ground-1a", why: "Slab"}
     - {label: "Identification survey at slab", stage: construction, fragment: null, after: ["Reinforce and pour slab"], built_in: "no", why: "Setbacks confirmed before framing; common DA or certifier condition"}
     - {label: "Stand wall frames", stage: construction, fragment: fr.frame-timber-1a, after: ["Identification survey at slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.frame-timber-1a", why: "Frames; long lead from the supplier"}
@@ -263,10 +264,11 @@ program:
     - {label: "Pave, turf and plant", stage: construction, fragment: fr.landscape-1a, after: ["Driveway, vehicle crossing and paths"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.landscape-1a", why: "Landscape"}
     - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lay floor finishes", "Pave, turf and plant", "Authority connection", "Fit off services, luminaires, switchboard and smoke alarms", "Install rainwater tank and pump"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.practical-completion", why: "PC"}
     - {label: "Stormwater works-as-executed and engineers' certificates", stage: completion, fragment: null, after: ["Install stormwater drainage"], built_in: "no", why: "Needed for the OC"}
-    - {label: "Occupation certificate", stage: completion, fragment: fr.occupation-certificate, after: ["Practical completion inspection", "Stormwater works-as-executed and engineers' certificates"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.occupation-certificate", why: "Final critical-stage inspection, BASIX completion"}
+    - {label: "Final inspection by the principal certifier", stage: completion, fragment: null, after: ["Practical completion inspection"], built_in: "no", why: "Owner ruling R7 item 8: after the work is finished and before the occupation certificate; no fragment"}
+    - {label: "Occupation certificate", stage: completion, fragment: fr.occupation-certificate, after: ["Final inspection by the principal certifier", "Stormwater works-as-executed and engineers' certificates"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.occupation-certificate", why: "Issued after the final inspection, with BASIX completion"}
     - {label: "Handover", stage: completion, fragment: fr.handover, after: ["Occupation certificate"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.handover", why: "Keys, warranties, manuals"}
     - {label: "Defects inspection", stage: defects, fragment: fr.defects-inspection, after: ["Handover"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-inspection", why: "Defects"}
-    - {label: "Defects liability period", stage: defects, fragment: fr.defects-liability-end, after: ["Defects inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "The app produces it; the domestic contract may carry no DLP beyond the HBA s18E warranties (verified: false); the key does not require a contract DLP"}
+    - {label: "Defects liability period", stage: defects, fragment: fr.defects-liability-end, after: ["Defects inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "The app produces it; HIA and MBA residential contracts carry a defects liability period (owner ruling R8; length verified: false); the HBA s18E statutory warranties run longer (verified: false)"}
 
 # RFP expectations use the data/eval/rfp/answer-keys keys exactly (stages_include / stages_option /
 # stages_absent / stages_ask; elements_include / elements_option / elements_absent; positions: key -> I / O /
@@ -286,9 +288,9 @@ rfps:
       stages_option: [construction_support, contract_admin]
       stages_absent: [brief_masterplan, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent}
-      blocking: ["fact:budget"]
+      blocking: []
       sources:
-        - "blocking: fact:budget holds while proj.budget_stated is unread (architecture.yaml required_facts); the scenario states the budget, so the block clears once it is read"
+        - "blocking: none. The base scenario states the budget (scenario_inputs proj.budget_stated), so the fact:budget block in architecture.yaml required_facts must clear once it is read. If it does not clear, that is a failure"
         - "bidding: an architect-led select tender needs tender support"
     app_differs:
       - {key: stage.bidding, app: option, expect: include, why: "bidding comes after the house boundary end (house_documents), so resolveStages prices it as an option"}
@@ -331,6 +333,7 @@ rfps:
       - {key: position.water_quality, app: O, expect: absent, why: "I when flags, else O"}
       - {key: position.civil_model, app: O, expect: absent, why: "service_level simple O"}
       - {key: position.pavement_design, app: O, expect: absent, why: "always O"}
+      - {key: stage.for_construction, app: option, expect: include, why: "the traditional boundary ends at detailed_tender, so resolveStages prices the later for_construction stage as an option; the stormwater construction set is needed for the CC"}
       - {key: stage.as_built, app: option, expect: include, why: "follows construction_phase, which is an option; WAE certification is needed for the OC"}
   - discipline: consultant.geotechnical
     template: geotechnical
@@ -382,7 +385,7 @@ rfps:
     template: bca-certification
     built_in: "partial"
     source: "knowledge/rfp/bca-certification.yaml boundary"
-    must_include: ["Package B: CC assessment", "Principal certifier services", "Every NSW critical-stage inspection for Class 1 and 10", "Occupation certificate with BASIX completion check"]
+    must_include: ["Package B: CC assessment", "Principal certifier services", "Every NSW critical-stage inspection the CC lists for Class 1 and 10: pre-commencement, footings, slab, frame, wet-area waterproofing, stormwater connections, final before the OC (owner ruling R7)", "Occupation certificate with BASIX completion check"]
     must_not_include: ["Package A BCA advisory", "Performance solution authorship", "Design", "Building supervision", "Classification map", "Staged occupation", "Fire referrals"]
     expect:
       stages_include: [b2_construction_approval, b3_construction, b4_occupation]
@@ -603,9 +606,10 @@ triggers:
     adds:
       work_items: [{system: site.pools, action: new}, {system: access-egress.pool-barriers, action: new}]
       cost_plan: ["Swimming pool and pool barrier"]
-      program: ["Construct pool", "Critical-stage inspection after barrier erected, before filling", "Pool registration and barrier compliance certificate"]
+      program: ["Construct pool", "Critical-stage inspection before pouring the pool's in-situ concrete", "Critical-stage inspection once the pool barrier is erected", "Pool registration and barrier compliance certificate"]
+      rfps: [{discipline: consultant.certifier, must_include: ["Pool critical-stage inspections: before the in-situ concrete is poured and once the barrier is erected (owner ruling R7)"]}]
       authority: ["Pool registration and barrier compliance certificate", "BASIX pool commitments"]
-    built_in: {work_items: "no", cost_plan: "no", program: "no"}
+    built_in: {work_items: "no", cost_plan: "no", program: "no", rfps: "no"}
   - id: gas-connection
     label: Natural gas connection
     evidence: ["Natural gas to the cooktop and instantaneous hot water", "Jemena meter on the side boundary"]
@@ -690,7 +694,7 @@ gaps:
   - {area: program, what: "Construction certificate sits in approvals, which runs before construction documentation", evidence: "knowledge/program/fragments.yaml fr.construction-certificate stage approvals; knowledge/program/skeletons.yaml sk.new-traditional-da"}
   - {area: program, what: "sk.new-traditional-cdc has no construction_documentation stage, so construction documents are placed in an earlier stage, yet a CDC needs CC-level documents before lodgement", evidence: "knowledge/program/skeletons.yaml sk.new-traditional-cdc; internal/program/generate.go resolveStage"}
   - {area: program, what: "fr.ac-1a follows linings; ducted rough-in must precede ceilings", evidence: "knowledge/program/fragments.yaml fr.ac-1a attach after fr.linings-1a"}
-  - {area: program, what: "No rows for BASIX, Sydney Water Tap in, long service levy, HBCF, notice of commencement, s138 crossing, NBN, set-out and identification surveys, critical-stage inspections other than the frame hold point, rainwater tank, driveway, stair", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
+  - {area: program, what: "No rows for BASIX, Sydney Water Tap in, long service levy, HBCF, notice of commencement, s138 crossing, NBN, set-out and identification surveys, critical-stage inspections other than the footing inspection and the frame hold point (no pre-commencement, wet-area, stormwater, pool or final inspection row; owner ruling R7), rainwater tank, driveway, stair", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
   - {area: program, what: "Survey and geotechnical investigation rows need investigate actions that default scope never gives", evidence: "knowledge/program/fragments.yaml fr.investigate-survey, fr.investigate-geotech"}
   - {area: program, what: "No class 1a fragments for piers, basement retention, retaining walls, pools or pool barriers", evidence: "knowledge/program/fragments.yaml fr.piles-2, fr.basement-2 are class 2 only"}
   - {area: program, what: "Tree protection does not fire for a retained tree", evidence: "knowledge/program/fragments.yaml fr.tree-protection work_action new, alter, repair"}

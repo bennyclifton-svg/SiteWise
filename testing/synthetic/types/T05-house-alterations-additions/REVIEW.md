@@ -497,3 +497,52 @@ No new rule number, price, rate or duration was introduced. The new triggers' nu
 
 The map is usable as an answer key once R2-1 is corrected. R2-2 and R2-3 are small and can be fixed in
 the same pass. Nothing is wrong at the root.
+
+## Owner rulings applied (30 October 2026)
+
+From `testing/synthetic/reference/OWNER_RULINGS.md`:
+
+- **R1 reverses the round 1 civil finding.** The civil (stormwater) engineer is now in the base.
+  - It is a procurement package (`built_in: yes`, `baselines[0]` fires for `extend`), with a Civil fee
+    line.
+  - It has a civil RFP with an `expect` block and `app_differs`. `retained_services` is I through the
+    `existing_building` module. `for_construction` and `as_built` are options after the boundary in the
+    app, and the `roads` element is always shown.
+  - New program activities: "Stormwater concept plan", "Stormwater design for the CC" and "Stormwater
+    works-as-executed and engineer's certificate".
+  - Civil is taken out of `not_expected_procurement` and `not_expected_cost_plan`.
+- **Triggers.** `stormwater-engineering-required` is replaced by two variants:
+  - `internal-only-alteration` (roof footprint and hard surfaces unchanged). Its `removes` takes out
+    civil, its fee line and RFP, the stormwater item and its five activities. The app has no rule for
+    this, so it keeps Civil.
+  - `osd-or-drainage-easement` (OSD, easement, charged line or council pipe). It adds civil `osd_new`
+    scope only.
+  - `flood-affected` no longer adds the civil package.
+  - DOMAIN.md §1, §2, §4, §5, §6, §7, §8, §9 and §11 now say the same.
+- **R3.** "Class 1 is not regulated" is now cited as the ruling.
+- **R4.** HBCF: over $20,000 including GST, as stated in §5, the HBCF line and the award activity.
+  Section numbers stay `verified: false`.
+- **R5.** BASIX for alterations: $50,000 or more, or a pool or spa over 40,000 litres. Confirmed in §4,
+  the BASIX package and RFP, and `expected_derived`. The "believed to be $50,000" wording is gone.
+- **R6.** Livable housing is optional. The "NSW did not adopt" claim is removed.
+- **R7.** The §5 inspection list now has eight items.
+  - Two activities added: "Pre-commencement inspection by the principal certifier" and "Final
+    inspection by the principal certifier".
+  - A reinforcement hold point is split out of the slab pour (`partial`; it needs `structure.concrete`).
+  - The footings, frame, wet-area and stormwater hold points cite R7.
+  - Clause 61 stays `verified: false`.
+- **R8.** A DLP is carried. Its length stays `verified: false`.
+- DOMAIN.md §12 has a new "Confirmed by the owner's rulings" list, with the source URLs.
+
+Counts:
+
+| | before | after |
+|---|---|---|
+| triggers | 19 | 20 |
+| packages | 8 | 9 |
+| cost lines | 34 | 35 |
+| activities | 73 | 79 |
+| RFPs | 7 | 8 |
+| variants | 9 | 10 |
+
+The validator passes.

@@ -450,3 +450,31 @@ The round 1 problems are fixed. What remains is mechanical:
 
 None changes the domain content. After these the map is usable as an answer key, pending the owner's review
 (`reviewed: false`).
+
+## Owner rulings applied (30 October 2026)
+
+From `testing/synthetic/reference/OWNER_RULINGS.md`:
+
+- **R3.** The DBP Act applies to Class 2 and 9c, not to a Class 1a house. The architect RFP note now says
+  so as a ruling, not `verified: false`.
+- **R4.** HBCF is required where the contract price is over $20,000 including GST (SIRA). The principal
+  contractor takes it out before starting work or taking a deposit. This is stated in DOMAIN.md §1 and
+  §5, and in the HBCF cost line and program activity. Home Building Act section numbers stay
+  `verified: false`.
+- **R6.** Livable housing is optional for NSW houses, not part of the base scope. The claim that NSW
+  "did not adopt" the provisions is gone. NCC clause references stay `verified: false`.
+- **R7.** The DOMAIN.md §5 inspection list now has eight items: the pre-commencement inspection is added,
+  and the pool inspection is now before the pool's in-situ concrete is poured and once the barrier is
+  erected. The list cites Hornsby Council; clause 61 of the 2021 Regulation stays `verified: false`.
+  In `shape.yaml`:
+  - two activities added: "Pre-commencement inspection by the principal certifier" and "Final
+    inspection by the principal certifier", with the site-start and OC links re-pointed;
+  - the certifier RFP names the inspections;
+  - `swimming-pool` gets two pool inspections and a certifier RFP item.
+- **R8.** HIA and MBA contracts carry a defects liability period, so the line "may carry no DLP" is
+  removed. The length stays `verified: false`.
+- DOMAIN.md §12 has a new "Confirmed by the owner's rulings" list, and the resolved items are taken out
+  of "least sure".
+
+Counts: activities 81 → 83. Triggers 17, packages 11, cost lines 34 and RFPs 10 are unchanged. The
+validator passes.

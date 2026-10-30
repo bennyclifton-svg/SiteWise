@@ -1,0 +1,820 @@
+schema: sitewise-synthetic-shape/1
+type_id: T17
+slug: cladding-remediation
+name: Façade or combustible cladding remediation
+reviewed: false
+state: NSW
+
+# Base scenario: an occupied 8-storey, 56-unit NSW strata Class 2 residential flat
+# building completed in 2011, Type A, not sprinklered. An audit found PE-core ACP on
+# the balcony spandrels and blades and an EPS render system on the setback levels.
+# Council has issued a fire safety order. The owners corporation funds the works by
+# special levies, appoints a project manager and a consultant team, lodges a DA for
+# the change of appearance, and lets one AS 4000 lump-sum contract to a remedial
+# builder working elevation by elevation from a perimeter scaffold. Prose: DOMAIN.md.
+profile:
+  hdr.building_class: residential
+  hdr.subclass: apartments
+  hdr.work_type: remediation
+  hdr.cond.planning: da
+  hdr.cond.procurement_route: traditional
+  hdr.cond.stakeholder_complexity: strata
+  hdr.cond.operational_constraints: 24_7_occupied   # accept live_environment or partial_occupation too (DOMAIN.md §12)
+  hdr.cond.access_constraints: urban_constrained
+  hdr.scale.storeys: 8
+  hdr.scale.units: 56
+  det.ncc_class: ["2"]
+  det.state: NSW
+  det.existing_building: true
+  det.existing_building_year: 2011
+  det.rise_in_storeys: 8
+  det.type_of_construction: A
+  det.sprinklered: false
+  det.heritage_status: none
+  det.facade_type: complex          # the replacement is a ventilated rainscreen with a facade engineer
+  det.flood_hazard: false
+  det.potentially_contaminated_land: false
+  fact.contract_form: as4000
+  fact.contract_basis: lump_sum
+  proj.regulated_design: "yes"      # DBP Act applies to Class 2 remedial work (owner ruling R3)
+  proj.client: "The Owners - Strata Plan 87654 (fictional)"
+  # RFP flags set explicitly so unknowns do not turn rows into options or decisions.
+  flag.basement: "no"               # the basement exists but nothing is excavated (basement trap)
+  flag.excavation_adjoining: "no"
+  flag.authority_asset: "no"
+  flag.rail: "no"
+  flag.transfer_structures: "no"
+  flag.osd_existing: "no"
+  flag.staged: "no"
+  flag.multi_building: "no"
+  flag.cl46: "no"
+  flag.panel: "no"
+  flag.community: "no"
+  flag.country: "no"
+  flag.sustainability_target: "no"
+  flag.fire_vulnerable_occupants: "no"
+  flag.fire_special_hazards: "no"
+  flag.fire_specialist_systems: "yes"   # the audit and order name a facade fire-assessment issue
+
+expected_derived:
+  - {key: det.ncc_class, value: ["2"], source: "knowledge/profile/taxonomy.yaml apartments ncc_class", note: "The subclass apartments implies Class 2, but det.ncc_class is never derived from the subclass (KNOWLEDGE_INDEX §0 rule 3)."}
+  - {key: det.existing_building, value: true, source: "internal/rfp/drivers.go deriveFlags", note: "The RFP drivers derive flag.existing_building from work type remediation; the profile row itself is not derived."}
+  - {key: det.type_of_construction, value: A, source: "knowledge/determinants.yaml type_of_construction", note: "A Class 2 building with a rise of 4 or more storeys needs Type A construction (NCC 2022 Vol One Table C2D2, verified: false). No derivation exists; it is read or typed only."}
+
+scenario_inputs:
+  - {key: det.existing_building_year, note: "Stated in the audit or strata records. Gates the hazardous-materials trigger.", phrasing: "The building was completed in <year>."}
+  - {key: hdr.scale.storeys, note: "Also gives det.rise_in_storeys, which decides the HBCF exemption (low-rise-hbcf).", phrasing: "an <n>-storey residential flat building"}
+  - {key: hdr.scale.units, note: "Use 'units' or 'apartments', not 'lots', so the units trigger matches.", phrasing: "<n> residential units"}
+  - {key: proj.client, note: "The owners corporation is the client; the strata manager is its agent.", phrasing: "Client: The Owners - Strata Plan No. <number>"}
+  - {key: proj.regulated_design, note: "Needs an explicit statement in a read document; the class alone does not decide it.", phrasing: "The remediation is building work under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required."}
+  - {key: hdr.cond.planning, note: "Stated in the planner's or PM's report.", phrasing: "A development application is required for the change to the external materials and appearance."}
+  - {key: det.heritage_status, note: "Enumerated none is evidence; silence is not.", phrasing: "The site is not a heritage item and is not within a heritage conservation area."}
+  - {key: det.facade_type, note: "Needs a named system to read complex.", phrasing: "The replacement is a ventilated rainscreen cladding system of solid aluminium panels designed by the facade engineer."}
+  - {key: det.sprinklered, note: "Stated in the fire engineer's report.", phrasing: "The building is not sprinkler protected."}
+  - {key: det.type_of_construction, note: "Stated in the BCA report.", phrasing: "The building is required to be of Type A construction."}
+  - {key: fact.contract_form, note: "Stated in the tender documents.", phrasing: "AS 4000-1997 General conditions of contract, with special conditions"}
+  - {key: hdr.cond.operational_constraints, note: "Any of 24_7_occupied, live_environment or partial_occupation is acceptable.", phrasing: "The building will remain fully occupied throughout the works."}
+  - {key: proj.budget_stated, note: "The QS order of cost for the recommended option. The architecture RFP blocks without a budget (required_facts).", phrasing: "Estimated construction cost for the recommended option: $<amount> excluding GST"}
+  - {key: flag.fire_specialist_systems, note: "Stated by the audit or the fire engineer.", phrasing: "The fire engineer's assessment identifies the external wall cladding as a facade fire performance issue requiring rectification."}
+
+work_items:
+  - {system: envelope.external-walls, action: replace, why: "Remove the PE-core ACP and the EPS render system and install a non-combustible ventilated rainscreen on a new subframe. Removal and a different product is replace, not the work-type default repair."}
+  - {system: fire-passive.external-walls, action: upgrade, why: "The point of the job: the external wall becomes non-combustible, with cavity barriers and spandrel or slab-edge protection against vertical fire spread."}
+  - {system: envelope.thermal-insulation, action: replace, why: "The EPS is the insulation; it is replaced with non-combustible insulation."}
+  - {system: envelope.pliable-membranes, action: replace, why: "Combustible sarking and wall wrap behind the cladding are replaced with a compliant product (NCC sarking concession, verified: false)."}
+  - {system: envelope.flashings-seals, action: replace, why: "Window head and sill flashings, sealants and the new cladding-to-window interface."}
+  - {system: envelope.windows-doors, action: retain, why: "Windows stay and are protected; the new cladding seals to them."}
+  - {system: structure.concrete, action: investigate, why: "Slab edges and fixing zones for the new brackets: condition, edge distance and pull-out tests. Repairs are provisional."}
+
+procurement:
+  - {discipline: consultant.project_manager, kind: services, built_in: "no", why: "Runs the job for the owners corporation: consultant procurement, committee and general meeting reporting, council liaison on the fire safety order, superintendent under AS 4000. Remediation has no baseline (package_defaults.yaml baselines)."}
+  - {discipline: consultant.architect, kind: services, built_in: "no", why: "Facade redesign and appearance, DA drawings and photomontages, documentation, regulated design (architectural), design support during construction. baselines[0] covers new and extend, baselines[2] refurb; none covers remediation."}
+  - {discipline: consultant.fire_engineer, kind: services, built_in: "no", why: "Reviews the audit and laboratory results, sets interim fire safety measures, advises the removal extent, confirms DTS compliance or prepares a performance solution, inspects cavity barriers and slab-edge protection. No package rule names Fire Engineer."}
+  - {discipline: consultant.facade, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[7]", why: "System selection, wind loads, subframe and fixing design or review, weatherproofing, product test evidence and facade testing. Suggested only when det.facade_type reads complex."}
+  - {discipline: consultant.structural, kind: services, built_in: "no", why: "Primary-structure capacity for the new brackets, pull-out test regime, slab-edge repair specification and certification of fixings."}
+  - {discipline: consultant.bca, kind: services, built_in: "no", why: "NCC compliance report for the remediation design, existing-building assessment, fire safety schedule changes. baselines[3] gives BCA for refurb of non-residential classes only."}
+  - {discipline: consultant.certifier, kind: services, built_in: "no", why: "Principal certifier: CC, inspections, final fire safety certificate and occupation certificate for the altered part (verified: false)."}
+  - {discipline: consultant.town_planner, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[0]", why: "Statement of environmental effects for the change of external materials and appearance."}
+  - {discipline: consultant.quantity_surveyor, kind: services, built_in: "no", why: "Option estimates for the levy, the DA cost estimate report, tender estimate and progress-claim assessment."}
+  - {discipline: trade.main_works, kind: works, built_in: partial, source: "internal/procurement/proposed.go ProposeHeadContract", why: "Remedial builder under a lump-sum head contract; licensed and a registered building practitioner (DBP Act, owner ruling R3). Proposed only from gaps on accepted work items."}
+
+not_expected_procurement:
+  - {discipline: consultant.hydraulic, app_suggests: conditional, source: "knowledge/works/package_defaults.yaml scope_additions[3]", why: "Fires on external downpipe items (facade-services-reinstatement) or on 'kitchen'/'bathroom' exhaust wording that implies hydraulic scope in code. The builder relocates downpipes; no hydraulic engineer."}
+  - {discipline: consultant.mechanical, app_suggests: conditional, source: "knowledge/works/package_defaults.yaml scope_additions[2]", why: "Fires on AC condensers or exhaust outlets on the facade, or on implied local-exhaust scope. A licensed refrigeration tradesperson relocates lot-owner units."}
+  - {discipline: consultant.electrical, app_suggests: conditional, source: "knowledge/works/package_defaults.yaml scope_additions[4]", why: "Fires on facade lighting or external GPO items. The builder's electrician disconnects and reinstates them."}
+
+cost_plan:
+  - {line: "DA fees and contributions", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[3]", why: "Suggested when hdr.cond.planning is da."}
+  - {line: "Construction certificate and certifier fees", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[4]", why: "Always suggested; needed here on the DA path. Overlaps the certifier fee line if the certifier is also a package."}
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "Paid before the CC is issued (rate and threshold verified: false). No starter line."}
+  - {line: "Council hoarding, footpath occupation and road occupancy fees", section: fees_and_charges, built_in: "no", why: "Scaffold and hoarding over the footpath (Roads Act s 138, verified: false). No starter line."}
+  - {line: "Project manager", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "A fee line per live services package; this package is never suggested."}
+  - {line: "Architect", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package; not suggested for remediation."}
+  - {line: "Fire safety engineer", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package; not suggested."}
+  - {line: "Facade engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[7]", why: "The Facade package is suggested when det.facade_type is complex and adopted on cost-plan prepare."}
+  - {line: "Structural engineer", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package; not suggested for remediation."}
+  - {line: "BCA consultant", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package; not suggested."}
+  - {line: "Principal certifier", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package; not suggested. May instead sit in P05."}
+  - {line: "Town planner", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[0]", why: "Suggested on the DA path and adopted on prepare."}
+  - {line: "Quantity surveyor", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package; not suggested."}
+  - {line: "Investigation disbursements: sampling, laboratory combustibility testing, opening-up and pull-out testing", section: consultants, built_in: "no", why: "Usually passed through by the fire or facade engineer. No early-works line exists."}
+  - {line: "Preliminaries and occupied-building controls", section: construction, built_in: "no", why: "Resident liaison, protection, waste removal through an occupied site. No preliminaries line; no remediation budget split."}
+  - {line: "Perimeter scaffold, shade cloth and edge protection, incl. engineering and certification", section: construction, built_in: "no", why: "A large share of facade remediation cost. Scaffolding has no system id (structure.temporary-works excludes it)."}
+  - {line: "Footpath hoarding or overhead protection", section: construction, built_in: "no", why: "Needed over the council footpath whatever the access method. No system id."}
+  - {line: "Pre-commencement condition surveys of units, footpath and neighbours", section: construction, built_in: "no", why: "Records condition before the scaffold goes up; protects the OC and the builder against damage claims."}
+  - {line: "Equipotential bonding and earthing of the aluminium cladding and subframe (verified: false)", section: construction, built_in: "no", why: "By the builder's electrician; an electrical.* item would wrongly add the Electrical consultant (scope_additions[4])."}
+  - {line: "Remove and dispose of combustible cladding and EPS render system", section: construction, built_in: "no", why: "Elevation by elevation, with waste classification. The app has only the generic envelope line."}
+  - {line: "Subframe and bracket fixings", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Folded into '04 Building envelope'."}
+  - {line: "Non-combustible cladding system supply and install", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Appears only as the generic '04 Building envelope' once an envelope work item exists."}
+  - {line: "Non-combustible insulation and sarking", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Folded into '04 Building envelope'."}
+  - {line: "Cavity barriers and slab-edge fire protection", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 06", why: "'06 Passive fire protection' once the fire-passive.external-walls item exists."}
+  - {line: "Flashings, sealants and window interfaces", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Folded into '04 Building envelope'."}
+  - {line: "Interim fire safety measures during the works", section: construction, built_in: "no", why: "Temporary measures the order or fire engineer requires while combustible cladding remains."}
+  - {line: "Facade water testing and hold-point inspections", section: construction, built_in: "no", why: "Sample-area spray or hose testing (AS 4284, verified: false)."}
+  - {line: "Provisional sums: slab-edge repairs and concealed conditions behind the cladding", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 03", why: "The structure.concrete investigate item makes a generic '03 Structure' line; no provisional-sum line exists."}
+  - {line: "Design contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[0]", why: "Always suggested."}
+  - {line: "Construction contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[1]", why: "Always suggested; should be high for concealed conditions."}
+  - {line: "Escalation", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[2]", why: "Always suggested; levy timing often delays the start."}
+  - {line: "Exclusions", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[6]", why: "Lot-owner items on the facade are usually excluded or recharged."}
+  - {line: "Owners corporation costs: strata manager, legal review of contract and levy or loan, finance costs", section: contingency, built_in: "no", why: "Real OC costs outside the contract. No line exists."}
+
+not_expected_cost_plan:
+  - {line: "Service authority connection fees", app_label: "P06 Service authority connection fees", section: fees_and_charges, source: "knowledge/costs/starter_lines.yaml lines[5]", why: "Always suggested; no authority connection is made."}
+  - {line: "Hydraulic (consultant fee)", app_label: "F0n Hydraulic", section: consultants, source: "knowledge/works/package_defaults.yaml scope_additions[3]", why: "Conditional: only when downpipe or implied wet-area scope exists."}
+  - {line: "Mechanical (consultant fee)", app_label: "F0n Mechanical", section: consultants, source: "knowledge/works/package_defaults.yaml scope_additions[2]", why: "Conditional: condenser, exhaust or implied exhaust scope."}
+  - {line: "Electrical (consultant fee)", app_label: "F0n Electrical", section: consultants, source: "knowledge/works/package_defaults.yaml scope_additions[4]", why: "Conditional: facade lighting scope."}
+
+program:
+  skeleton: missing          # no remediation skeleton; the app falls back to sk.generic
+  app_produces: sk.generic
+  activities:
+    - {label: "Receive fire safety order and confirm the compliance date", stage: investigation, fragment: null, after: [], built_in: "no", why: "Notice of intention, representations, then the order (EP&A Act Div 9.3, Sch 5, verified: false). Sets the job's deadline."}
+    - {label: "Strata committee appoints project manager and approves investigation budget", stage: investigation, fragment: null, after: ["Receive fire safety order and confirm the compliance date"], built_in: "no", why: "Client governance gate before spend (SSMA, verified: false)."}
+    - {label: "Collect records: approvals, facade drawings, product data, cladding registration, audit, fire safety schedule", stage: investigation, fragment: null, after: ["Strata committee appoints project manager and approves investigation budget"], built_in: "no", why: "Original DA, CC and OC, approved facade drawings, product certificates, the audit report and the AFSS."}
+    - {label: "Facade survey, sampling and laboratory combustibility testing", stage: investigation, fragment: null, after: ["Collect records: approvals, facade drawings, product data, cladding registration, audit, fire safety schedule"], built_in: "no", why: "Identify every material and its core; the removal extent depends on it (uc.combustible-cladding-on-existing-facade is an Implication only)."}
+    - {label: "Put interim fire safety measures in place", stage: investigation, fragment: null, after: ["Receive fire safety order and confirm the compliance date"], built_in: "no", why: "Councils usually require interim measures as soon as the order is received: no balcony storage or BBQs, hot-works ban, more frequent fire safety checks, resident information."}
+    - {label: "Fire engineering risk assessment and removal-extent advice", stage: investigation, fragment: null, after: ["Facade survey, sampling and laboratory combustibility testing"], built_in: "no", why: "Risk assessment from the test results and advice on what must be removed."}
+    - {label: "Intrusive opening-up and pull-out testing of fixing substrates", stage: investigation, fragment: null, after: ["Facade survey, sampling and laboratory combustibility testing"], built_in: partial, source: "internal/program/generate.go investigationRows", why: "The structure.concrete investigate item gets one generic Investigation row, not opening-up and pull-out testing."}
+    - {label: "Remediation options report with order of cost", stage: investigation, fragment: null, after: ["Fire engineering risk assessment and removal-extent advice", "Intrusive opening-up and pull-out testing of fixing substrates"], built_in: "no", why: "Options for system, extent and access, priced by the QS, for the general meeting."}
+    - {label: "General meeting resolves option, design fees and first levy, and owners' consent to lodge the DA (verified: false)", stage: concept_design, fragment: null, after: ["Remediation options report with order of cost"], built_in: "no", why: "Owners corporation consent: the OC owns the common property, so its consent is needed to lodge the DA. Special resolution if common property is altered rather than repaired (SSMA s 108, verified: false)."}
+    - {label: "Concept and schematic facade design", stage: concept_design, fragment: null, after: ["General meeting resolves option, design fees and first levy, and owners' consent to lodge the DA (verified: false)"], built_in: "no", why: "No concept fragment for remediation (concept-design fragments are gated to new and extend)."}
+    - {label: "DA documentation: drawings, photomontages, SEE, BCA and fire letters, QS cost report", stage: approval_documentation, fragment: null, after: ["Concept and schematic facade design"], built_in: "no", why: "The app's approval-documentation fragments need new or extend."}
+    - {label: "Lodge DA", stage: approvals, fragment: fr.da-lodgement, after: ["DA documentation: drawings, photomontages, SEE, BCA and fire letters, QS cost report"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-lodgement", why: "Fires on planning da."}
+    - {label: "DA notification", stage: approvals, fragment: fr.da-exhibition, after: ["Lodge DA"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-exhibition", why: "Fires on planning da."}
+    - {label: "DA assessment and determination", stage: approvals, fragment: fr.da-assessment, after: ["DA notification"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-assessment", why: "Fires on planning da."}
+    - {label: "Satisfy pre-CC conditions of consent (colours and materials, dilapidation, LSL)", stage: approvals, fragment: null, after: ["DA assessment and determination"], built_in: "no", why: "Conditions to be met before the CC issues, typically a colours and materials schedule, a dilapidation report and the long service levy (verified: false)."}
+    - {label: "Report progress to council and seek extension of the order's compliance date", stage: approvals, fragment: null, after: ["Lodge DA"], built_in: "no", why: "Councils usually require progress reports; an extension is common when the DA and levy take time."}
+    - {label: "Design development: system, subframe, cavity barriers and fixings", stage: construction_documentation, fragment: null, after: ["Concept and schematic facade design"], built_in: "no", why: "Architect, facade, structural and fire engineers."}
+    - {label: "Product compliance evidence and BCA compliance report", stage: construction_documentation, fragment: null, after: ["Design development: system, subframe, cavity barriers and fixings"], built_in: "no", why: "Non-combustibility test reports or certification for every product (AS 1530.1, CodeMark, verified: false) (uc.cladding-product-fails-compliance-test)."}
+    - {label: "Regulated designs and design compliance declarations", stage: construction_documentation, fragment: null, after: ["Product compliance evidence and BCA compliance report"], built_in: "no", why: "DBP Act, Class 2 (owner ruling R3). The Act requires lodgement before building work starts; the certifier assesses the same designs for the CC, so they precede it here (timing verified: false)."}
+    - {label: "Tender documents", stage: construction_documentation, fragment: null, after: ["Regulated designs and design compliance declarations"], built_in: "no", why: "Specification, drawings, staging and occupancy plan, AS 4000 with special conditions, provisional sums. fr.tender-docs-2 is gated to new and extend."}
+    - {label: "Pay long service levy", stage: approvals, fragment: null, after: ["DA assessment and determination"], built_in: "no", why: "Before the CC is issued (verified: false)."}
+    - {label: "Construction certificate", stage: approvals, fragment: fr.construction-certificate, after: ["DA assessment and determination", "Regulated designs and design compliance declarations", "Pay long service levy", "Satisfy pre-CC conditions of consent (colours and materials, dilapidation, LSL)"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.construction-certificate", why: "Fires on planning da."}
+    - {label: "Tender period with site inspection", stage: procurement, fragment: null, after: ["Tender documents"], built_in: "no", why: "Tenderers inspect the sample openings."}
+    - {label: "Tender evaluation and recommendation", stage: procurement, fragment: null, after: ["Tender period with site inspection"], built_in: "no", why: "Licence, DBP registration, scaffold and removal methodology, product evidence, program against the order date."}
+    - {label: "General meeting resolves contract award and construction levy", stage: procurement, fragment: null, after: ["Tender evaluation and recommendation"], built_in: "no", why: "The OC's critical gate; levy or loan collection can hold the start."}
+    - {label: "Contract award", stage: procurement, fragment: fr.contract-award, after: ["General meeting resolves contract award and construction levy", "Construction certificate"], built_in: partial, source: "knowledge/program/fragments.yaml fr.contract-award", why: "Gated to work_type new, extend or refurb, so false for remediation."}
+    - {label: "Hold point: panel samples, colour and visual mock-up approved", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "Panel samples, colours and a visual mock-up approved by the architect and the OC, and against the DA colours condition, before fabrication."}
+    - {label: "Council hoarding and footpath approval", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "Roads Act s 138 and road occupancy (verified: false)."}
+    - {label: "Resident notices and pre-commencement condition surveys", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "Units beside the works, footpath, podium and neighbours."}
+    - {label: "Site establishment and scaffold erection and certification", stage: construction, fragment: null, after: ["Council hoarding and footpath approval", "Resident notices and pre-commencement condition surveys"], built_in: "no", why: "fr.site-establishment-2 is gated to new and extend; scaffolding has no system."}
+    - {label: "Remove combustible cladding and EPS, elevation by elevation", stage: construction, fragment: null, after: ["Site establishment and scaffold erection and certification"], built_in: "no", why: "Hot-works controls; temporary weather protection (if.envelope-repair-temporary-enclosure)."}
+    - {label: "Hold point: substrate, subframe and fixings inspection", stage: construction, fragment: null, after: ["Remove combustible cladding and EPS, elevation by elevation"], built_in: "no", why: "Structural and facade engineers, with pull-out results. No external-wall hold point in the interfaces."}
+    - {label: "Install insulation, sarking and cavity barriers", stage: construction, fragment: fr.insulation-2, after: ["Hold point: substrate, subframe and fixings inspection"], built_in: partial, source: "knowledge/program/fragments.yaml fr.insulation-2", why: "The insulation fragment exists for Class 2 but needs work type new or extend."}
+    - {label: "Hold point: cavity barriers and slab-edge fire protection before close-up", stage: construction, fragment: null, after: ["Install insulation, sarking and cavity barriers"], built_in: "no", why: "Fire engineer and certifier. if.fire-facade-slab-edge has no hold_point; if.fire-stopping-before-concealment needs a fire-passive.penetrations item."}
+    - {label: "Flashings and window interfaces", stage: construction, fragment: null, after: ["Hold point: cavity barriers and slab-edge fire protection before close-up"], built_in: "no", why: "Before the cladding conceals them (if.envelope-flashing-before-cladding)."}
+    - {label: "Install non-combustible cladding", stage: construction, fragment: fr.facade-2, after: ["Flashings and window interfaces", "Hold point: panel samples, colour and visual mock-up approved"], built_in: partial, source: "knowledge/program/fragments.yaml fr.facade-2", why: "fr.facade-2 needs work type new or extend and action new or replace."}
+    - {label: "Facade water test on sample areas", stage: construction, fragment: null, after: ["Install non-combustible cladding"], built_in: "no", why: "AS 4284 or hose test (verified: false)."}
+    - {label: "Strike scaffold and make good", stage: construction, fragment: null, after: ["Facade water test on sample areas"], built_in: "no", why: "Per elevation; reinstate footpath and podium."}
+    - {label: "Building compliance declaration (DBP Act)", stage: completion, fragment: null, after: ["Strike scaffold and make good"], built_in: "no", why: "Registered building practitioner declares compliance with the varied regulated designs (DBP Act, owner ruling R3; section number and timing verified: false). Comes before the OC application."}
+    - {label: "Final inspection, fire safety certificate and occupation certificate", stage: completion, fragment: fr.occupation-certificate, after: ["Building compliance declaration (DBP Act)"], built_in: partial, source: "knowledge/program/fragments.yaml fr.occupation-certificate", why: "Gated to new, extend or refurb."}
+    - {label: "Council confirms compliance with or revokes the fire safety order; cladding registration and fire safety schedule updated", stage: completion, fragment: null, after: ["Final inspection, fire safety certificate and occupation certificate"], built_in: "no", why: "Closes the order; the AFSS changes from the next cycle (verified: false)."}
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Final inspection, fire safety certificate and occupation certificate"], built_in: partial, source: "knowledge/program/fragments.yaml fr.practical-completion", why: "Gated to new, extend or refurb."}
+    - {label: "Handover: product register, test evidence, warranties and as-built records", stage: completion, fragment: fr.handover, after: ["Practical completion inspection"], built_in: partial, source: "knowledge/program/fragments.yaml fr.handover", why: "Gated to new, extend or refurb."}
+    - {label: "Defects liability period and final inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Handover: product register, test evidence, warranties and as-built records"], built_in: partial, source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Gated to new, extend or refurb."}
+
+rfps:
+  - discipline: consultant.project_manager
+    template: null
+    built_in: "no"
+    must_include:
+      - "Liaison with council on the fire safety order: representations, progress reports, extensions and closure"
+      - "Consultant procurement and management of the design team"
+      - "Attendance and reports at strata committee and general meetings; levy or loan cash-flow input"
+      - "Program management against the order's compliance date"
+      - "Superintendent under AS 4000, including payment schedules under the NSW Security of Payment Act (verified: false)"
+      - "Resident communication plan for an occupied building"
+    must_not_include:
+      - "Design or certification services"
+      - "Cost estimating beyond reporting the QS's figures"
+    app_differs:
+      - {key: text.template, app: "generic tpl.rfp-capex", expect: "a project-management RFP carrying the must_include scope", why: "No knowledge/rfp file lists consultant.project_manager"}
+  - discipline: consultant.architect
+    template: architecture
+    built_in: partial
+    source: "knowledge/rfp/architecture.yaml stages"
+    must_include:
+      - "Existing facade survey and record drawings"
+      - "Replacement cladding options and schematic design"
+      - "DA drawings and photomontages for the change of appearance"
+      - "Design development and documentation of the replacement facade"
+      - "Regulated designs and design compliance declarations (DBP Act, owner ruling R3; practitioner classes verified: false)"
+      - "Tender documents, bidding and for-construction documents"
+      - "Design support during construction, including shop drawing review"
+      - "Staging and occupancy inputs for the occupied building"
+    must_not_include:
+      - "Interiors or typical apartment interiors"
+      - "BIM model for the design team"
+      - "Door and hardware schedules"
+      - "FF&E and tenant fit-out"
+      - "Fire engineering performance solutions (fire engineer)"
+    expect:
+      stages_include: [concept, schematic, planning_approval, planning_response, design_development, tender_traditional, bidding, regulated_design, for_construction, construction_support]
+      stages_option: [contract_admin]
+      stages_absent: [brief_masterplan, interiors, house_documents, dnc_tender, post_novation]
+      positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, finishes_schedules: I, certifier_liaison: I, existing_interfaces: I, live_staging: I, facade_certification: X, performance_solutions: X, extra_declarations: O, apartment_design: O, marketing_renders: O, tender_evaluation: O, bim_model: absent, bim_coordination: absent, door_schedule: absent, typical_interiors: absent, tenant_fitout: absent, ffe: absent}
+      blocking: []
+      sources:
+        - "blocking empty only when proj.budget_stated is given (architecture.yaml required_facts budget)"
+        - "existing_interfaces and live_staging: modules existing_building (work type) and live_site (operational_constraints)"
+    app_differs:
+      - {key: stage.tender_traditional, app: option, expect: include, why: "after the boundary end (interiors); resolveStages prices it as an option"}
+      - {key: stage.bidding, app: option, expect: include, why: "after the boundary end"}
+      - {key: stage.regulated_design, app: option, expect: include, why: "after the boundary end, though proj.regulated_design is yes"}
+      - {key: stage.for_construction, app: option, expect: include, why: "after the boundary end"}
+      - {key: stage.construction_support, app: option, expect: include, why: "default option and after the boundary end"}
+      - {key: position.bim_model, app: I, expect: absent, why: "service_level complex I because of the Class 2 part"}
+      - {key: position.bim_coordination, app: O, expect: absent, why: "service_level complex O"}
+      - {key: position.door_schedule, app: I, expect: absent, why: "always I; no doors in a cladding job"}
+      - {key: position.typical_interiors, app: I, expect: absent, why: "service_level complex I"}
+      - {key: position.tenant_fitout, app: O, expect: absent, why: "O whenever work type is not refurb"}
+      - {key: position.ffe, app: O, expect: absent, why: "always O"}
+  - discipline: consultant.fire_engineer
+    template: fire-engineering
+    built_in: partial
+    source: "knowledge/rfp/fire-engineering.yaml stages"
+    must_include:
+      - "Review of the audit, laboratory results and existing fire safety records"
+      - "Interim fire safety measures and staged strategy while combustible cladding remains in an occupied building"
+      - "Advice on removal extent and confirmation of DTS compliance of the replacement external wall"
+      - "Early approval support letter for the DA"
+      - "Tender integration and construction-stage inspection of cavity barriers and slab-edge protection"
+      - "Verification for the occupation certificate and closure evidence for the fire safety order"
+    must_not_include:
+      - "Sprinkler, hydrant or detection design"
+      - "Statutory BCA certification"
+      - "Expert witness services"
+    expect:
+      stages_include: [s1_strategy, s2_early, s5_integration, s6_construction, s7_verification, s8_staging]
+      stages_option: [s3_brief, s4_report, s8_specialist, s9_peer]
+      stages_absent: [s9_advisory]
+      positions: {brief: O, fer: O, existing: I, interim: I, occupants: absent, wet_design: X, dry_design: X, strategy_review: O, witnessing: I, matrix_design: X, specialist: O, hazards: absent, remediation: I, peer: O, other_roles: X}
+      blocking: []
+      sources:
+        - "occupants and hazards rows are off: flag.fire_vulnerable_occupants and fire_special_hazards no, mixed_use derived no"
+        - "specialist row on: flag.fire_specialist_systems yes; O while s8_specialist is an option"
+        - "s3 and s4 are options in the base (full removal to DTS); performance-solution-retained-cladding makes them include"
+    app_differs:
+      - {key: stage.s2_early, app: option, expect: include, why: "default option; the DA needs the fire engineer's letter"}
+      - {key: stage.s3_brief, app: ask, expect: option, why: "row needs client flag fe_solutions, which no document can set"}
+      - {key: stage.s4_report, app: ask, expect: option, why: "row needs client flag fe_solutions"}
+      - {key: stage.s5_integration, app: option, expect: include, why: "after the boundary end (s4_report)"}
+      - {key: stage.s6_construction, app: option, expect: include, why: "after the boundary end; cavity barrier inspection is core"}
+      - {key: stage.s7_verification, app: option, expect: include, why: "after the boundary end; OC and order closure need it"}
+      - {key: stage.s8_staging, app: option, expect: include, why: "after the boundary end; interim strategy is core in an occupied building"}
+      - {key: stage.s9_advisory, app: option, expect: absent, why: "after the boundary end; not an advisory appointment"}
+      - {key: position.brief, app: ask, expect: O, why: "row condition flag fe_solutions unknown"}
+      - {key: position.fer, app: ask, expect: O, why: "row condition flag fe_solutions unknown"}
+      - {key: position.existing, app: ask, expect: I, why: "row condition flag fe_existing_reconciliation is a client flag"}
+      - {key: position.interim, app: O, expect: I, why: "follows s8_staging, priced as an option"}
+      - {key: position.witnessing, app: O, expect: I, why: "follows s7_verification, priced as an option"}
+      - {key: position.remediation, app: O, expect: I, why: "always O, though a fire safety order is the reason for the job"}
+  - discipline: consultant.facade
+    template: null
+    built_in: "no"
+    must_include:
+      - "Review of existing facade records and samples"
+      - "System options and performance specification: wind, water, movement, fire"
+      - "Subframe and fixing design, or review of the supplier's design"
+      - "Product test evidence for non-combustibility (AS 1530.1, CodeMark or equivalent, verified: false)"
+      - "Regulated design and design compliance declaration for the facade (DBP Act, owner ruling R3; practitioner class verified: false)"
+      - "Shop drawing review, installation inspections and facade water testing"
+    must_not_include:
+      - "Architectural design"
+      - "Fire engineering conclusions or performance solutions"
+      - "Curtain wall design"
+    app_differs:
+      - {key: text.template, app: "generic tpl.rfp-capex", expect: "a facade engineering RFP carrying the must_include scope", why: "No knowledge/rfp file lists consultant.facade"}
+  - discipline: consultant.structural
+    template: structural
+    built_in: partial
+    source: "knowledge/rfp/structural.yaml stages existing_assessment"
+    must_include:
+      - "Existing structure assessment of slab edges and fixing zones"
+      - "Pull-out test regime and review of results"
+      - "Design and certification of fixings into the primary structure"
+      - "Provisional slab-edge repair specification"
+      - "Structural regulated design and declaration (DBP Act, owner ruling R3; practitioner class verified: false)"
+      - "Construction-phase inspection of brackets and fixings"
+    must_not_include:
+      - "Geotechnical brief"
+      - "Shoring, retention or basement excavation design"
+      - "Planning approval stage"
+      - "Revit model shared with the design team"
+      - "Footing or framing design"
+      - "Super-flat floor design"
+    expect:
+      stages_include: [existing_assessment, design_development, tender_traditional, regulated_design, construction_documents, construction_phase]
+      stages_option: []
+      stages_absent: [concept_schematic, planning_approval, authority_asset, dnc_tender, post_novation]
+      positions: {design_basis: I, safety_in_design: I, value_management: I, delegated_design: I, strengthening: O, metalwork: O, inspection_schedule: I, temporary_works_design: X, dilapidation: X, geotech_brief: absent, residential_framing: absent, shared_model: absent, specialist_element_design: absent, retention_design: absent, temporary_works_interfaces: absent, services_fixings: absent, super_flat_floor: absent, compaction: absent, demolition_drawings: absent, services_footings: absent}
+      blocking: []
+      sources:
+        - "existing_assessment: work_type remediation"
+        - "regulated_design: proj.regulated_design yes (owner ruling R3); fixings into the primary structure are part of the building enclosure (element definition verified: false)"
+        - "delegated_design I: the cladding supplier designs the subframe"
+    app_differs:
+      - {key: stage.concept_schematic, app: include, expect: absent, why: "always included; a remediation appointment starts with the existing assessment"}
+      - {key: stage.planning_approval, app: include, expect: absent, why: "pathway da; the DA for a facade change needs no structural input"}
+      - {key: stage.construction_phase, app: option, expect: include, why: "after the boundary end (construction_documents); resolveStages applies the boundary before include_when scale complex"}
+      - {key: position.geotech_brief, app: I, expect: absent, why: "always I; no ground works"}
+      - {key: position.shared_model, app: I, expect: absent, why: "service_level complex I because of the Class 2 part"}
+      - {key: position.specialist_element_design, app: O, expect: absent, why: "O whenever procurement is not design_construct"}
+      - {key: position.services_fixings, app: O, expect: absent, why: "always O"}
+      - {key: position.super_flat_floor, app: O, expect: absent, why: "client flag cannot be set; if_unknown option"}
+      - {key: position.compaction, app: X, expect: absent, why: "always X; no ground works"}
+      - {key: position.demolition_drawings, app: X, expect: absent, why: "always X"}
+      - {key: position.services_footings, app: I, expect: absent, why: "always I; no footings"}
+  - discipline: consultant.bca
+    template: bca-certification
+    built_in: partial
+    source: "knowledge/rfp/bca-certification.yaml stages"
+    must_include:
+      - "NCC compliance assessment of the remediation design (external wall non-combustibility, cavity barriers, spandrels; verified: false)"
+      - "Existing-building assessment and fire safety schedule changes"
+      - "Advice on staged works in an occupied building"
+      - "Planning-stage and tender-stage compliance reports"
+    must_not_include:
+      - "Statutory certification functions (principal certifier)"
+      - "Fire engineering performance solutions"
+      - "BASIX or residential energy evidence"
+    expect:
+      stages_include: [a1_inception, a2_planning, a3_tender]
+      stages_option: [a4_construction]
+      stages_absent: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      positions: {evidence_registers: I, existing_assessment: I, staged_occupation: I, performance_assessment: O, specialist_design: X, other_approvals: X, supervision: X, extra_visits: O, statutory_functions: absent, classification_map: absent, fire_referrals: absent, residential_evidence: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.a1_inception, app: ask, expect: include, why: "needs client flag bca_advisory, which no document can set"}
+      - {key: stage.a2_planning, app: ask, expect: include, why: "needs client flag bca_advisory"}
+      - {key: stage.a3_tender, app: ask, expect: include, why: "needs client flag bca_advisory"}
+      - {key: stage.b1_preliminary, app: option, expect: absent, why: "flag bca_certification unknown and after the default boundary end; the template cannot tell BCA from certifier"}
+      - {key: stage.b2_construction_approval, app: option, expect: absent, why: "as b1"}
+      - {key: stage.b3_construction, app: option, expect: absent, why: "as b1"}
+      - {key: stage.b4_occupation, app: option, expect: absent, why: "as b1"}
+      - {key: position.existing_assessment, app: ask, expect: I, why: "client flag bca_existing_assessment"}
+      - {key: position.staged_occupation, app: ask, expect: I, why: "client flag bca_staged_occupation"}
+      - {key: position.statutory_functions, app: ask, expect: absent, why: "row on client flag bca_certification"}
+      - {key: position.classification_map, app: ask, expect: absent, why: "client flag bca_classification_map"}
+      - {key: position.fire_referrals, app: ask, expect: absent, why: "client flag bca_fire_referrals"}
+      - {key: position.residential_evidence, app: ask, expect: absent, why: "client flag bca_residential_evidence"}
+  - discipline: consultant.certifier
+    template: bca-certification
+    built_in: partial
+    source: "knowledge/rfp/bca-certification.yaml stages"
+    must_include:
+      - "Construction certificate assessment, including regulated designs lodged (DBP Act, owner ruling R3; lodgement timing verified: false)"
+      - "Principal certifier inspections during the works"
+      - "Final fire safety certificate and occupation certificate for the altered part (verified: false)"
+      - "Updated fire safety schedule"
+    must_not_include:
+      - "Design or BCA advisory services to the design team"
+      - "Building supervision or contract administration"
+    expect:
+      stages_include: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      stages_option: []
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction]
+      positions: {evidence_registers: I, statutory_functions: I, existing_assessment: I, staged_occupation: I, performance_assessment: O, extra_visits: O, specialist_design: X, other_approvals: X, supervision: X, classification_map: absent, fire_referrals: absent, residential_evidence: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.b1_preliminary, app: option, expect: include, why: "client flag bca_certification unknown; after the default boundary end (a3_tender)"}
+      - {key: stage.b2_construction_approval, app: option, expect: include, why: "as b1"}
+      - {key: stage.b3_construction, app: option, expect: include, why: "as b1"}
+      - {key: stage.b4_occupation, app: option, expect: include, why: "as b1"}
+      - {key: stage.a1_inception, app: ask, expect: absent, why: "client flag bca_advisory unknown inside the default boundary"}
+      - {key: stage.a2_planning, app: ask, expect: absent, why: "as a1"}
+      - {key: stage.a3_tender, app: ask, expect: absent, why: "as a1"}
+      - {key: stage.a4_construction, app: option, expect: absent, why: "after the boundary end"}
+      - {key: position.statutory_functions, app: ask, expect: I, why: "client flag bca_certification"}
+      - {key: position.existing_assessment, app: ask, expect: I, why: "client flag bca_existing_assessment"}
+      - {key: position.staged_occupation, app: ask, expect: I, why: "client flag bca_staged_occupation"}
+      - {key: position.fire_referrals, app: ask, expect: absent, why: "client flag; no FRNSW referral on the DTS base"}
+  - discipline: consultant.town_planner
+    template: town-planning
+    built_in: "yes"
+    source: "knowledge/rfp/town-planning.yaml stages"
+    must_include:
+      - "Statement of environmental effects for the change of external materials and appearance"
+      - "Pre-lodgement, lodgement, assessment and determination review"
+      - "Compliance matrix against the LEP and DCP facade controls"
+    must_not_include:
+      - "Clause 4.6 variation request"
+      - "Specialist reports (fire, BCA) prepared by others"
+    expect:
+      stages_include: [prelim_advice, pre_lodgement, planning_report, lodgement, assessment, determination_review]
+      stages_option: [post_approval]
+      stages_absent: [variation_request]
+      positions: {specialist_review: I, certificates: I, historic_consents: O, compliance_matrix: I, submissions_response: O, panel_attendance: O, ad_hoc_advice: I, lodgement_format: I, modification: O, court: X, authority_fees: X, specialist_reports: X}
+      blocking: []
+      sources:
+        - "scale assumed simple with a check: client flag objections unknown"
+    app_differs: []
+  - discipline: consultant.quantity_surveyor
+    template: cost-planning
+    built_in: partial
+    source: "knowledge/rfp/cost-planning.yaml stages"
+    must_include:
+      - "Option estimates for the general meeting and levy"
+      - "DA cost estimate report (registered QS above the value threshold, verified: false)"
+      - "Design cost plans and pre-tender estimate"
+      - "Tender normalisation, including provisional sums"
+      - "Progress-claim assessment reports"
+    must_not_include:
+      - "Contaminated-land costing"
+      - "Valuation or tax depreciation"
+    expect:
+      stages_include: [s1_basis, s2_concept, s3_authority, s4_design, s5_tender, s6_construction]
+      stages_option: [s7_completion]
+      stages_absent: [s8_advice]
+      positions: {construction_plan: I, total_budget: I, contract_allowances: I, existing_costs: I, remediation: I, risk: I, tender: I, claims: I, lender: O, valuation: X, lifecycle: O, operator: absent, allocation: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s2_concept, app: ask, expect: include, why: "client flag cost_concept"}
+      - {key: stage.s3_authority, app: ask, expect: include, why: "client flag cost_authority"}
+      - {key: stage.s4_design, app: ask, expect: include, why: "client flag cost_design"}
+      - {key: stage.s5_tender, app: option, expect: include, why: "after the boundary end (s4_design)"}
+      - {key: stage.s6_construction, app: option, expect: include, why: "after the boundary end"}
+      - {key: position.remediation, app: ask, expect: I, why: "client flag cost_remediation"}
+      - {key: text.remediation, app: "Defect/remediation/contamination costing", expect: "defect remediation costing only", why: "the row label also names contamination; a wording scorer must not read it as contaminated-land scope"}
+      - {key: position.total_budget, app: ask, expect: I, why: "client flag cost_total_budget"}
+      - {key: position.contract_allowances, app: ask, expect: I, why: "client flag cost_contract_allowances"}
+      - {key: position.tender, app: O, expect: I, why: "follows s5_tender, priced as an option"}
+      - {key: position.claims, app: O, expect: I, why: "follows s6_construction, priced as an option"}
+      - {key: position.operator, app: ask, expect: absent, why: "client flag cost_operator"}
+      - {key: position.allocation, app: ask, expect: absent, why: "client flag cost_allocation"}
+
+triggers:
+  - id: project-remediate
+    label: Funded through NSW Project Remediate
+    evidence:
+      - "The building is eligible for Project Remediate and the owners corporation has accepted an interest-free loan."
+      - "Project Remediate's appointed project manager will coordinate the design team and builder from the program panels."
+    negation:
+      - "The owners corporation is funding the works through special levies without government assistance."
+    profile: [proj.client]
+    adds:
+      program: ["Project Remediate eligibility and registration", "General meeting resolves to enter the remediation and loan agreements", "Program-appointed project manager mobilised (verified: false)", "Design team and builder selected from Project Remediate panels"]
+      cost_plan: ["Loan establishment and repayment levies (no amount)"]
+      authority: ["Project Remediate agreement with the administering agency (Building Commission NSW, verified: false)"]
+    removes:
+      procurement: [consultant.project_manager]
+      cost_plan: ["Project manager"]
+      rfps: [consultant.project_manager]
+    why: "The program engaged and paid the project manager from its panel, so the OC runs no PM RFP and has no PM fee line. Registration for the program closed to new buildings years ago, so a 2026 scenario needs an already-enrolled OC. Eligibility, loan terms and panels: all verified: false."
+    built_in: {program: "no", cost_plan: "no"}
+  - id: performance-solution-retained-cladding
+    label: Some combustible material retained under a fire-engineered performance solution
+    evidence:
+      - "The EPS render at ground level is to be retained subject to a performance solution by the fire engineer."
+      - "A fire engineering report will justify partial retention of the low-risk cladding."
+      - "The fire engineered solution for the balcony soffits departs from the deemed-to-satisfy provisions."
+    negation:
+      - "All combustible cladding and insulation will be removed and replaced to the deemed-to-satisfy provisions."
+    profile: [flag.fire_specialist_systems]
+    adds:
+      cost_plan: ["Fire engineering report and peer review", "FRNSW referral (no fee assumed)"]
+      program: ["Performance-based design brief", "Fire engineering report", "Initial fire safety report to FRNSW (verified: false)", "Final fire safety report to FRNSW (verified: false)"]
+      rfps:
+        - {discipline: consultant.fire_engineer, must_include: ["Performance-based design brief and FER for scheduled solutions", "Independent peer review where the certifier requires it"]}
+        - {discipline: consultant.certifier, must_include: ["Assessment of the performance solution and FRNSW referral"]}
+      authority: ["FRNSW referral of fire safety reports (EP&A DCFS Regulation 2021, verified: false)"]
+    why: "Stages s3_brief and s4_report become include; the app leaves them as decisions because fe_solutions is a client flag."
+    built_in: {rfps: partial, program: "no", cost_plan: "no"}
+    source: "knowledge/rfp/fire-engineering.yaml stages s3_brief"
+  - id: hazardous-materials
+    label: Building old enough to contain asbestos in the facade build-up
+    evidence:
+      - "The building was completed in 1998."
+      - "The asbestos register lists fibre cement soffit linings behind the balcony ACP."
+      - "Mastic sealants to the original panel joints are of unknown composition."
+    negation:
+      - "The 2020 hazardous materials survey found no asbestos in the facade."
+      - "Construction completed in 2011."
+    profile: [det.existing_building_year]
+    adds:
+      procurement: [consultant.hazmat]
+      work_items: [{system: site.demolition, action: remove}]
+      cost_plan: ["Hazardous materials survey of the facade build-up", "Licensed asbestos removal and clearance certificate"]
+      program: ["Hazardous materials survey", "Asbestos removal and clearance before cladding removal"]
+      authority: ["SafeWork NSW notice before licensed asbestos removal (verified: false)"]
+    why: "uc.asbestos-cladding-disturbed raises an Implication only (needs existing_building_year < 2004 and an alter, upgrade, repair or remove item, not replace)."
+    built_in: {procurement: "no", program: "no", cost_plan: "no"}
+  - id: concealed-substrate-damage
+    label: Water damage or corrosion found behind the cladding
+    evidence:
+      - "Sample openings found corroded steel studs and wet plasterboard behind the ACP on the south elevation."
+      - "Rust staining and spalling at slab edges where the brackets are to be fixed."
+      - "The render is drummy and the substrate behind it is soft."
+    negation:
+      - "The substrate and fixings were sound in all sample openings."
+    profile: []
+    adds:
+      work_items:
+        - {system: structure.concrete, action: repair}
+        - {system: structure.steel, action: repair}
+        - {system: interiors.walls-linings, action: repair}
+      cost_plan: ["Slab-edge concrete repairs (provisional quantities)", "Replace corroded wall framing", "Internal make-good of linings at affected units"]
+      program: ["Structural repair design", "Repair substrate and framing before insulation"]
+      rfps: [{discipline: consultant.structural, must_include: ["Repair design for slab edges and wall framing found on removal", "Inspection of repairs before cover"]}]
+    built_in: {rfps: partial, cost_plan: partial, program: "no"}
+    source: "knowledge/rfp/structural.yaml positions strengthening"
+  - id: balcony-balustrade-acp
+    label: ACP or combustible balustrade infill panels on the balconies
+    evidence:
+      - "The balcony balustrades are framed with ACP infill panels."
+      - "The ACP blade walls form part of the balcony barrier."
+    negation:
+      - "Balconies have glass balustrades, which are retained."
+    profile: []
+    adds:
+      work_items: [{system: access-egress.barriers, action: replace}]
+      cost_plan: ["New compliant balustrades: supply, install and certify", "Temporary edge protection while balustrades are off"]
+      program: ["Balustrade shop drawings and fabrication", "Temporary edge protection", "Install and certify balustrades"]
+      rfps: [{discipline: consultant.structural, must_include: ["Balustrade and barrier design and certification (verified: false for load standard clauses)"]}]
+    built_in: {cost_plan: partial, rfps: partial, program: "no"}
+    source: "knowledge/costs/elements.yaml elements access-egress items"
+  - id: facade-services-reinstatement
+    label: Services fixed to or through the cladding
+    evidence:
+      - "Air-conditioning condensers on 40 facade brackets must be disconnected and reinstated."
+      - "Kitchen and bathroom exhaust outlets penetrate the cladding."
+      - "External downpipes and facade lights are fixed to the panels."
+    negation:
+      - "No services are fixed to or through the cladding."
+    profile: []
+    adds:
+      work_items:
+        - {system: mechanical.refrigerant-condensate, action: alter}
+        - {system: electrical.lighting, action: alter}
+        - {system: hydraulic.roof-drainage, action: alter}
+      cost_plan: ["Disconnect, store and reinstate AC condensers", "Relocate exhaust outlets and seal penetrations", "Remove and reinstate downpipes and facade lights"]
+      program: ["Disconnect facade services", "Reinstate and recommission facade services"]
+    why: "No consultant is needed. The app will wrongly suggest Mechanical, Electrical and Hydraulic consultants (scope_additions[2]-[4]); the exhaust wording also fires the kitchen and wet-room implied scope."
+    built_in: {cost_plan: partial, program: "no"}
+    source: "knowledge/costs/elements.yaml elements code 08"
+  - id: window-replacement
+    label: Windows or glazed spandrels replaced with the cladding
+    evidence:
+      - "The aluminium windows will be replaced to suit the new rainscreen depth."
+      - "The ACP spandrel infill panels within the window framing are replaced with the windows."
+    negation:
+      - "Windows are retained and protected throughout."
+    profile: []
+    adds:
+      work_items: [{system: envelope.windows-doors, action: replace}]
+      cost_plan: ["Replace windows and glazed spandrels"]
+      program: ["Window shop drawings, manufacture and delivery", "Replace windows before cladding"]
+      rfps: [{discipline: consultant.facade, must_include: ["Window performance specification and testing"]}]
+    removes:
+      work_items: [{system: envelope.windows-doors, action: retain}]
+    why: "Windows are supplied and installed under the head contract; supplier.* rows are refused. fr.windows-2 needs new or extend."
+    built_in: {cost_plan: partial, program: partial}
+    source: "knowledge/program/fragments.yaml fr.windows-2"
+  - id: fire-safety-upgrades-required
+    label: The order also requires active fire safety upgrades
+    evidence:
+      - "The fire safety order also requires sprinkler protection to the balconies."
+      - "The fire detection and occupant warning system is to be upgraded under the order."
+    negation:
+      - "The order relates to the external wall cladding only."
+    profile: [det.sprinklered]
+    adds:
+      procurement: [consultant.fire_services, trade.fire_services]
+      work_items:
+        - {system: fire-active.sprinklers, action: new}
+        - {system: fire-active.detection, action: upgrade}
+      cost_plan: ["Fire services consultant", "Sprinkler and detection upgrade works"]
+      program: ["Fire services design", "Install and commission sprinklers and detection"]
+      rfps: [{discipline: consultant.fire_services, must_include: ["Design of sprinkler and detection upgrades in an occupied building"]}]
+    why: "fr.sprinklers-2 and fr.detection-2 exist but need work type new or extend."
+    built_in: {procurement: partial, cost_plan: partial, program: partial, rfps: "yes"}
+    source: "knowledge/works/package_defaults.yaml scope_additions[1]"
+  - id: boundary-wall-neighbour-access
+    label: Cladding on a nil-setback boundary wall
+    evidence:
+      - "The eastern elevation is a nil-setback wall on the boundary."
+      - "Scaffold access is needed over the neighbouring property."
+    negation:
+      - "All elevations face the street or common property."
+    profile: []
+    adds:
+      procurement: [consultant.surveyor]
+      work_items: [{system: site.adjoining-structures, action: retain}]
+      cost_plan: ["Boundary survey", "Neighbour access licence and dilapidation of the adjoining building"]
+      program: ["Boundary survey", "Neighbour access agreement or order (Access to Neighbouring Land Act 2000, verified: false)"]
+      rfps: [{discipline: consultant.surveyor, must_include: ["Confirm the new cladding stays within the boundary"]}]
+    built_in: {rfps: partial, procurement: "no"}
+    source: "knowledge/rfp/land-surveying.yaml"
+  - id: swing-stage-access
+    label: Swing stage or BMU access instead of a scaffold
+    evidence:
+      - "The facade will be accessed by swing stages rigged from the roof anchors."
+      - "There is no room for a scaffold on the laneway."
+    negation:
+      - "A full perimeter scaffold is used."
+    profile: []
+    adds:
+      procurement: [consultant.roof_access]
+      work_items: [{system: access-egress.maintenance-access, action: upgrade}]
+      cost_plan: ["Swing stages and rigging", "Roof anchor inspection and certification"]
+      program: ["Roof anchor inspection and certification"]
+    removes:
+      cost_plan: ["Perimeter scaffold, shade cloth and edge protection, incl. engineering and certification"]
+    built_in: {procurement: "no", cost_plan: "no", program: "no"}
+  - id: heritage-listed
+    label: Heritage item or conservation area
+    evidence:
+      - "The building is within a heritage conservation area under the LEP."
+      - "The building is listed as a local heritage item in Schedule 5 of the LEP."
+    negation:
+      - "The site is not a heritage item and not in a conservation area."
+    profile: [det.heritage_status]
+    adds:
+      procurement: [consultant.heritage]
+      cost_plan: ["Heritage consultant"]
+      program: ["Heritage referral"]
+    built_in: {procurement: "yes", program: "yes", cost_plan: "yes", rfps: "no"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
+  - id: cdc-pathway
+    label: Complying development certificate instead of a DA
+    evidence:
+      - "The works will be approved by a complying development certificate."
+      - "The certifier will determine the CDC for the cladding replacement."
+    negation:
+      - "Council has advised that a development application is required."
+    profile: [hdr.cond.planning]
+    adds:
+      program: ["Prepare and lodge the CDC", "Certifier determination"]
+      rfps: [{discipline: consultant.certifier, must_include: ["CDC assessment and determination"]}]
+    removes:
+      procurement: [consultant.town_planner]
+      cost_plan: ["DA fees and contributions"]
+      program: ["Lodge DA", "DA notification", "DA assessment and determination", "Construction certificate"]
+      rfps: [consultant.town_planner]
+    why: "Whether cladding replacement on a Class 2 building can be complying development (Codes SEPP Fire Safety Code) is verified: false. Both consultant.bca and consultant.certifier RFPs block (bca-certification unsupported_pathways cdc); the town-planning RFP is removed."
+    built_in: {program: "yes", rfps: "no"}
+    source: "knowledge/program/fragments.yaml fr.cdc-application"
+  - id: design-and-construct
+    label: Design and construct with novation of the design team
+    evidence:
+      - "The works will be tendered as design and construct, with novation of the architect and facade engineer."
+      - "The builder will complete the design and provide the regulated designs."
+    negation:
+      - "The consultant team will fully document the works for a lump-sum tender."
+    profile: [hdr.cond.procurement_route]
+    adds:
+      program: ["D&C tender documents", "Novation of the design consultants"]
+      rfps: [{discipline: consultant.architect, must_include: ["D&C tender documents and post-novation services"]}]
+    removes:
+      program: ["Tender documents"]
+    why: "fr.novation fires on design_construct; the skeleton stays sk.generic; every consultant defaults to novation option."
+    built_in: {program: partial, rfps: "yes"}
+    source: "knowledge/program/fragments.yaml fr.novation"
+  - id: defects-claim
+    label: Claim against the builder, developer or product supplier
+    evidence:
+      - "The owners corporation has commenced proceedings against the builder and the panel supplier."
+      - "The building is within the period for a building work rectification order under the RAB Act."
+    negation:
+      - "No claim is being pursued."
+      - "The building was completed in 2011, outside the statutory warranty and rectification order periods."
+    profile: [det.existing_building_year]
+    why: "Needs det.existing_building_year of 2017 or later for this variant (RAB Act rectification order about 10 years, HBA major-defect warranty 6 years; verified: false). On the 2011 base only a contract or product-liability claim against the panel supplier survives."
+    adds:
+      procurement: [consultant.expert_witness]
+      cost_plan: ["Expert report and evidence preservation", "Owners corporation legal costs"]
+      program: ["Joint inspection and evidence preservation before removal", "Expert report"]
+      authority: ["Building Commission NSW rectification order (RAB Act 2020, verified: false)"]
+    built_in: {procurement: "no", cost_plan: "no", program: "no"}
+  - id: low-rise-hbcf
+    label: Three storeys or fewer, so HBCF cover applies
+    evidence:
+      - "A three-storey walk-up of 12 units."
+      - "The contractor must provide a Home Building Compensation Fund certificate before any deposit is paid."
+    negation:
+      - "HBCF cover is not required because the building has a rise of more than three storeys."
+    profile: [det.rise_in_storeys]
+    adds:
+      cost_plan: ["Home building compensation insurance (contractor's, passed through)"]
+      program: ["HBCF certificate before deposit and commencement (contract price over $20,000 incl. GST, R4)"]
+      rfps: [{discipline: consultant.project_manager, must_include: ["HBCF certificate as a tender returnable"]}]
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+
+  - id: mixed-use-podium
+    label: Shops or commercial tenancies in a ground-floor podium
+    evidence:
+      - "The ground floor contains three retail shops beneath the residential levels."
+      - "The podium is Class 6, with Class 2 above."
+    negation:
+      - "The building is wholly residential above the basement car park."
+    profile: [det.ncc_class]
+    adds:
+      cost_plan: ["Protection and after-hours work at shopfronts"]
+      program: ["Notify commercial tenants and agree shopfront access"]
+      rfps:
+        - {discipline: consultant.bca, must_include: ["Assessment of the Class 6 podium facade and the class interface"]}
+        - {discipline: consultant.fire_engineer, must_include: ["Mixed-use occupant basis at the podium"]}
+      authority: ["Lease or access notices to commercial tenants (verified: false)"]
+    why: "det.ncc_class becomes [2, 6]. No package is added, because remediation has no baseline. mixed_use is derived from two classes, so the fire-engineering occupants row and the architecture mixed_use module turn on. The architecture interiors stage and base_interiors become included (class 6); the expected state is absent."
+    built_in: {rfps: partial, cost_plan: "no", program: "no"}
+    source: "knowledge/rfp/fire-engineering.yaml positions occupants"
+  - id: staged-funding
+    label: Works staged to match levy instalments or a strata loan
+    evidence:
+      - "The levy will be raised in two instalments, with the north and east elevations first."
+      - "The owners corporation will take a strata loan for Stage 2."
+    negation:
+      - "All elevations will be completed in one continuous stage."
+    profile: [flag.staged]
+    adds:
+      cost_plan: ["Escalation between stages", "Re-establishment preliminaries per stage"]
+      program: ["General meeting and levy before each stage", "Separable portion completion per stage"]
+      rfps: [{discipline: consultant.project_manager, must_include: ["Contract administration and reporting per stage", "Separable portions in the contract"]}]
+    why: "flag.staged yes also switches on architecture brief_masterplan and the staged module rows, which a funding stage does not need: a wrong addition, not a partial match. The must_include items are for consultant.project_manager, which has no template."
+    built_in: {rfps: "no", program: "no", cost_plan: "no"}
+  - id: balcony-waterproofing-interface
+    label: Failed balcony membrane upturns found behind the spandrel cladding
+    evidence:
+      - "Failed membrane upturns were found behind the spandrel ACP on removal."
+      - "Water staining at the balcony slab edges shows the waterproofing is not continuous with the facade."
+    negation:
+      - "Balcony waterproofing upturns were found intact in all sample openings."
+    profile: []
+    adds:
+      work_items: [{system: envelope.external-waterproofing, action: repair}]
+      cost_plan: ["Balcony membrane upturn and edge repairs (provisional)"]
+      program: ["Repair balcony membrane upturns", "Hold point: membrane upturn inspection before cladding"]
+      rfps: [{discipline: consultant.facade, must_include: ["Balcony waterproofing to facade continuity detail"]}]
+      authority: ["Applicator holds a NSW waterproofing licence (verified: false)"]
+    built_in: {cost_plan: partial, program: "no"}
+    source: "knowledge/costs/elements.yaml elements code 04"
+  - id: order-compliance-no-consent
+    label: No development consent needed for work the order requires
+    evidence:
+      - "Council advised that no development consent is required for the works required by the fire safety order."
+      - "The certifier confirmed the remediation can proceed without a development application."
+    negation:
+      - "Council has advised that a development application is required."
+    profile: [hdr.cond.planning]
+    adds:
+      program: ["Confirm in writing that no consent is required", "Final fire safety certificate for the affected measures and council compliance inspection"]
+      authority: ["No development consent, so no CC, principal certifier or OC; the owner still gives a final fire safety certificate for affected fire safety measures and council confirms compliance with the order (decided by the author; verified: false)"]
+    removes:
+      procurement: [consultant.town_planner, consultant.certifier]
+      cost_plan: ["DA fees and contributions", "Principal certifier"]
+      program: ["Lodge DA", "DA notification", "DA assessment and determination", "Construction certificate", "Final inspection, fire safety certificate and occupation certificate"]
+      rfps: [consultant.town_planner, consultant.certifier]
+    why: "Set as hdr.cond.planning exempt, which adds fr.exempt-confirmation and drops the DA and CC fragments and the DA fees line. Decision: without consent there is no CC, principal certifier or OC; the BCA consultant still advises and a fire safety certificate is still given (verified: false). P05 CC and certifier fees stays suggested in the app either way (always on). The bca-certification B stages need pathway da or ssd, so they drop out."
+    built_in: {program: "yes", cost_plan: "yes"}
+    source: "knowledge/program/fragments.yaml fr.exempt-confirmation"
+
+gaps:
+  - {area: scope, what: "Remediation is an empty work type, so the cladding replacement is never proposed until a document or the user adds it.", evidence: "knowledge/profile/scope_defaults.yaml empty_work_types"}
+  - {area: scope, what: "The work-type default action is repair; removing a cladding and installing a different one is replace, which fr.facade-2 needs.", evidence: "knowledge/works/actions.yaml work_type_defaults"}
+  - {area: procurement, what: "No consultant baseline for remediation. PM, architect, fire engineer, structural, BCA, certifier and QS are never suggested; only Town Planner (DA) and Facade (complex facade).", evidence: "knowledge/works/package_defaults.yaml baselines"}
+  - {area: procurement, what: "The Facade package depends on det.facade_type reading complex. A plain sheet replacement may read standard and lose the facade engineer.", evidence: "knowledge/determinants.yaml facade_type"}
+  - {area: procurement, what: "Scope additions suggest Hydraulic, Mechanical and Electrical consultants for facade services the builder relocates.", evidence: "knowledge/works/package_defaults.yaml scope_additions[2], [3], [4]"}
+  - {area: procurement, what: "No id for the strata manager, OC solicitor, scaffold contractor, testing laboratory or cladding supplier; supplier rows are refused.", evidence: "data/intake/disciplines.json; internal/procurement/discipline.go DisciplinePackage"}
+  - {area: profile, what: "No profile key for a fire safety order, its compliance date or interim measures; nothing downstream can follow it.", evidence: "knowledge/profile/project_details.yaml (no order key)"}
+  - {area: profile, what: "hdr.cond.stakeholder_complexity strata is read by no generator.", evidence: "knowledge/clusters/delivery/unforeseen.yaml uc.strata-consent-for-common-property-works-withheld"}
+  - {area: profile, what: "Exhaust wording ('kitchen and bathroom exhaust outlets through the cladding') fires the kitchen and wet-room implied scope in code, adding wet areas, joinery, sanitary, water and exhaust, then Hydraulic and Mechanical consultants and 08/09 cost lines.", evidence: "knowledge/profile/scope_defaults.yaml implied_by wet-room, kitchen; internal/profile/implied.go"}
+  - {area: profile, what: "Other implied_by terms fire on cladding wording: brickwork or masonry substrate, fire stairs, common wall, strip-out or demolish, bedroom; 'BASIX does not apply' still fires energy-rating.", evidence: "knowledge/profile/scope_defaults.yaml implied_by masonry, stair, party-wall, strip-out, bedroom, energy-rating"}
+  - {area: profile, what: "The basement trigger routes 'scaffold on the podium over the basement' to the basement question; a yes switches on structural retention, dilapidation and complex scale. Scorer expectation: proj.flag.basement is not yes.", evidence: "knowledge/profile/flag_readings.yaml basement"}
+  - {area: program, what: "No remediation skeleton; sk.generic with no general meeting, levy or order gates.", evidence: "knowledge/program/skeletons.yaml (no skeleton names remediation)"}
+  - {area: program, what: "fire-passive.external-walls has no work-item fragment; fr.facade-2 and fr.insulation-2 are gated to new and extend.", evidence: "knowledge/program/fragments.yaml fr.facade-2, fr.insulation-2"}
+  - {area: program, what: "Contract award, practical completion, occupation certificate, handover and defects fragments are gated to new, extend or refurb.", evidence: "knowledge/program/fragments.yaml fr.contract-award, fr.occupation-certificate, fr.handover, fr.defects-liability-end"}
+  - {area: program, what: "No external-wall hold points (fixings, cavity barriers and slab-edge protection before close-up, facade water test). if.fire-facade-slab-edge has no hold_point and names curtain wall only.", evidence: "knowledge/clusters/fire/interfaces.yaml if.fire-facade-slab-edge"}
+  - {area: program, what: "No fragment for scaffold and hoarding approval, interim fire measures or council sign-off of the order.", evidence: "knowledge/program/fragments.yaml"}
+  - {area: cost_plan, what: "No preliminaries, scaffold, hoarding, removal, provisional-sum, long service levy, council footpath fees or OC cost lines; P06 service authority fees always suggested.", evidence: "knowledge/costs/starter_lines.yaml lines"}
+  - {area: cost_plan, what: "No budget split for remediation, so a stated budget is not spread.", evidence: "knowledge/costs/budget_splits.yaml (no remediation entry)"}
+  - {area: rfp, what: "No RFP template for consultant.facade, consultant.project_manager, consultant.hazmat, consultant.roof_access or consultant.expert_witness; all get the generic tpl.rfp-capex.", evidence: "knowledge/rfp (no file with these discipline_ids)"}
+  - {area: rfp, what: "Architecture boundary ends at interiors, so tender, bidding, regulated design, for-construction and construction support are only options; Class 2 makes BIM and typical interiors included.", evidence: "knowledge/rfp/architecture.yaml boundary; internal/rfp/resolve.go resolveStages"}
+  - {area: rfp, what: "Fire-engineering boundary ends at s4_report; s3 and s4 hang on client flag fe_solutions; the 'remediation' (orders) row is always an option.", evidence: "knowledge/rfp/fire-engineering.yaml boundary, positions remediation"}
+  - {area: rfp, what: "BCA consultant and certifier share one template whose stages hang on client flags bca_advisory and bca_certification; the app cannot tell the two appointments apart.", evidence: "knowledge/rfp/bca-certification.yaml stages"}
+  - {area: rfp, what: "Structural template treats any Class 2 part as complex (shared Revit model); concept stage, geotechnical brief and services footings always included; construction phase only an option.", evidence: "knowledge/rfp/structural.yaml scale.complex, stages construction_phase"}
+  - {area: knowledge, what: "NSW cladding law is not encoded: fire safety orders, cladding registration, Building Products (Safety) Act ban, Project Remediate, RAB Act, DBP Act (beyond one unverified threshold), SSMA levies and resolutions.", evidence: "knowledge/rfp/structural.yaml thresholds dbp_regime (verified: false)"}
+  - {area: rfp, what: "On a CDC the BCA and certifier RFPs block; no template drafts a CDC certifier appointment.", evidence: "knowledge/rfp/bca-certification.yaml unsupported_pathways"}
+  - {area: knowledge, what: "uc.asbestos-cladding-disturbed needs an alter, upgrade, repair or remove item on the external walls and a year before 2004; with the correct replace action it does not fire, so even an old building gets no hazmat prompt from the cladding item.", evidence: "knowledge/clusters/envelope/unforeseen.yaml uc.asbestos-cladding-disturbed"}
+  - {area: knowledge, what: "rule.ncc.external-wall-fire cites NCC 2019 numbering (C1.9, C2.6, C2.7) with clause_verified false; no NCC 2022 C2D10 rule.", evidence: "knowledge/clusters/fire/rules.yaml rule.ncc.external-wall-fire"}
+
+variants: [project-remediate, performance-solution-retained-cladding, hazardous-materials, concealed-substrate-damage, balcony-balustrade-acp, facade-services-reinstatement, cdc-pathway, design-and-construct]

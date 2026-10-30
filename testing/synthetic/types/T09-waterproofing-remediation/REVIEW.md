@@ -310,3 +310,28 @@ false and correctly separates it from the 2008 base. I found no unmarked numbers
 Nineteen of the 20 findings are fully applied. Finding 6 is applied in DOMAIN but left one stale line in
 shape.yaml. Neither of the two nits changes a scored expectation. Fix them when convenient; the map is usable
 as an answer key.
+
+## Owner rulings applied (30 October 2026)
+
+From `testing/synthetic/reference/OWNER_RULINGS.md`:
+
+- **R2.** The three base packages are confirmed. DOMAIN.md §4 says so, the three procurement entries
+  cite the ruling, and "the structural engineer as a base package" is no longer listed among the
+  judgement calls.
+- **R3.** The DBP Act obligations apply to Class 2 (and 9c) work, including remedial work. These are now
+  cited as the ruling, no longer `verified: false`:
+  - `proj.regulated_design: "yes"`;
+  - the regulated-design and declaration activities;
+  - the builder's registration;
+  - the building consultant's RFP items.
+
+  The label "Lodge building compliance declaration (DBP Act, verified: false)" is now "…(DBP Act)".
+  Still `verified: false`: s 4, s 6, s 17, the exemptions, the lodgement timing, whether a slab repair is
+  a regulated building element, and the Class 3 extension.
+- **R4.** HBCF: over $20,000 including GST, confirmed (SIRA). "About $20,000" is gone from §5, §9, §12
+  and the `low-rise-hbcf` trigger. The three-storey exemption stays `verified: false`.
+- **R8.** The defects liability period length stays `verified: false`.
+- DOMAIN.md §12 has a new "Confirmed by the owner's rulings" list.
+
+Counts are unchanged: 14 triggers, 3 packages, 20 cost lines, 32 activities, 2 RFPs. The validator
+passes.

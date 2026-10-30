@@ -25,6 +25,13 @@ Repository: `D:\AI Projects\sitewise`. Your folder is
    `reference/index/*.md` files apply to your type.
 4. The knowledge files the index points to for your class and work type.
    Open each one you cite.
+5. `testing/synthetic/reference/OWNER_RULINGS.md`. The owner's rulings
+   override anything else, including this brief. Then
+   `testing/synthetic/reference/CONVENTIONS.md`, which keeps the maps
+   consistent with each other.
+6. The reviewed pilot maps for the closest type (T01 new house, T05
+   alterations and additions, T09 remediation), for depth and form. Do not
+   copy their content where your job differs.
 
 ## Rules
 
@@ -166,6 +173,35 @@ triggers:
       program: ["Lodge the DA"]
       rfps: [consultant.town_planner]
 ```
+
+Two optional forms, adopted 30 October 2026 (provisional until the owner
+confirms). The validator checks both, and `tools/score_shapes.py` uses them
+(see `testing/synthetic/SCORING.md`):
+
+```yaml
+procurement:                 # also not_expected_procurement and rfps entries
+  - {discipline: consultant.esd, aliases: [consultant.basix], ...}   # other discipline ids that also count (reference/CONVENTIONS.md C2)
+cost_plan:
+  - {line: "Owner supply items", section: contingency, aliases: ["Owner supply: loose furniture"], ...}  # other labels the app may print
+program:
+  activities:
+    - {label: "Neighbour notification", aliases: ["Public exhibition"], ...}
+rfps:
+  - discipline: consultant.structural
+    must_include:            # each item is a plain string or {text, key}
+      - "AS 2870 footing and slab design"
+      - {text: "Construction-phase inspections", key: stage.construction_phase}
+    must_not_include:
+      - {text: "Dilapidation surveys", key: position.dilapidation}   # key starts with stage., position. or element.
+```
+
+A `key` names the template row that carries the phrase. The scorer then
+decides by that row's state, which beats word matching. Use a key wherever
+the template has a row for the item. `aliases` is a list of strings. On
+cost lines and activities, the strings are other labels the app may print.
+On procurement, `not_expected_procurement` and rfps entries, they are
+discipline ids from `data/intake/disciplines.json`. The scorer tries the
+exact discipline first, then an alias, then (for RFPs) the template.
 
 Set every base flag and determinant that an RFP's `expect` depends on
 explicitly in `profile`. An unset value gives different RFP rows than

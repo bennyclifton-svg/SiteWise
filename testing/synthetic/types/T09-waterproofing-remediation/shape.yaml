@@ -29,7 +29,7 @@ profile:
   det.heritage_status: none
   fact.contract_form: as4000
   fact.contract_basis: lump_sum
-  proj.regulated_design: "yes"      # DBP Act applies to Class 2 waterproofing work; verified: false (DOMAIN.md §5)
+  proj.regulated_design: "yes"      # DBP Act applies to Class 2 (and 9c) work, including remedial work: owner ruling R3; section numbers verified: false (DOMAIN.md §5)
   proj.client: "The Owners - Strata Plan 912345 (fictional)"
   # RFP flags set explicitly so unknowns do not turn excluded rows into priced options
   # (structural retention, dilapidation, authority asset, scale rules).
@@ -71,9 +71,9 @@ work_items:
   - {system: envelope.windows-doors, action: retain, why: "Sliding doors stay and are protected. The membrane must turn up behind or under the sill, which is the critical interface."}
 
 procurement:
-  - {discipline: consultant.building, kind: services, built_in: "no", accept: [consultant.building, consultant.waterproofing], why: "The lead consultant: a remedial building or waterproofing consultant. It reviews the records, investigates, writes the defect report and options, the remedial specification and the regulated design, runs the tender, administers the contract as superintendent and holds the membrane hold points. No package rule names it, and remediation has no baseline (package_defaults.yaml baselines)."}
-  - {discipline: consultant.structural, kind: services, built_in: "no", why: "Remedial structural engineer. Assesses the balcony slabs and edges, designs and certifies the balustrade re-fixing, checks any added screed load, and confirms whether any structural work is a regulated building element. A balustrade fixing probably is not; structural regulated design for slab repairs belongs to the concrete-spalling trigger (DBP Act, verified: false). baselines[0] covers new and extend only."}
-  - {discipline: trade.main_works, kind: works, built_in: partial, source: "internal/procurement/proposed.go ProposeHeadContract", why: "Remedial builder under a lump-sum head contract. It must hold a NSW contractor licence and be a registered building practitioner under the DBP Act (verified: false). The app proposes a head contract only from gaps on accepted work items, and remediation starts with none."}
+  - {discipline: consultant.building, kind: services, built_in: "no", accept: [consultant.building, consultant.waterproofing], why: "The lead consultant: a remedial building or waterproofing consultant. It reviews the records, investigates, writes the defect report and options, the remedial specification and the regulated design, runs the tender, administers the contract as superintendent and holds the membrane hold points. No package rule names it, and remediation has no baseline (package_defaults.yaml baselines). A base package, confirmed by owner ruling R2."}
+  - {discipline: consultant.structural, kind: services, built_in: "no", why: "Remedial structural engineer. Assesses the balcony slabs and edges, designs and certifies the balustrade re-fixing, checks any added screed load, and confirms whether any structural work is a regulated building element. A balustrade fixing probably is not; structural regulated design for slab repairs belongs to the concrete-spalling trigger (DBP Act, verified: false). baselines[0] covers new and extend only. A base package, confirmed by owner ruling R2."}
+  - {discipline: trade.main_works, kind: works, built_in: partial, source: "internal/procurement/proposed.go ProposeHeadContract", why: "Remedial builder under a lump-sum head contract. It must hold a NSW contractor licence and be a registered building practitioner under the DBP Act, which applies to Class 2 work (owner ruling R3). One of the three base packages (owner ruling R2). The app proposes a head contract only from gaps on accepted work items, and remediation starts with none."}
 
 not_expected_procurement:
   - {discipline: consultant.hydraulic, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[3]", why: "Fires on the base hydraulic.roof-drainage upgrade item (balcony outlets and overflows). The remedial consultant details this and the builder installs it; no hydraulic engineer is needed unless a podium or roof drainage capacity is in question (podium trigger)."}
@@ -124,7 +124,7 @@ program:
     - {label: "Confirm exempt pathway (no development consent)", stage: approvals, fragment: fr.exempt-confirmation, after: ["Owners corporation selects the option and approves the design fee"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.exempt-confirmation", why: "Like-for-like repair with no change to the external appearance. Confirm in writing with a certifier or planner."}
     - {label: "Remedial specification, details and balcony schedule", stage: construction_documentation, fragment: null, after: ["Owners corporation selects the option and approves the design fee"], built_in: "no", why: "Membrane system to AS 4654 (verified: false), upturns, outlets and overflows, falls, sequence, hold points, warranties, and a schedule of rates for provisional work."}
     - {label: "Balustrade re-fixing design", stage: construction_documentation, fragment: null, after: ["Structural assessment of balcony slabs and balustrade fixings"], built_in: "no", why: "Side-fixed brackets outside the membrane. Check the barrier height against the new finished level."}
-    - {label: "Regulated designs and design compliance declarations", stage: construction_documentation, fragment: null, after: ["Remedial specification, details and balcony schedule", "Balustrade re-fixing design"], built_in: "no", why: "DBP Act: waterproofing is a building element of a Class 2 building, so registered design practitioners declare the designs (verified: false)."}
+    - {label: "Regulated designs and design compliance declarations", stage: construction_documentation, fragment: null, after: ["Remedial specification, details and balcony schedule", "Balustrade re-fixing design"], built_in: "no", why: "DBP Act: the obligations apply to Class 2 remedial work (owner ruling R3); waterproofing is a building element, so registered design practitioners declare the designs (definitions and section numbers verified: false)."}
     - {label: "Tender documents", stage: procurement, fragment: null, after: ["Regulated designs and design compliance declarations", "Confirm exempt pathway (no development consent)"], built_in: "no", why: "Specification, drawings, preliminaries, AS 4000 with special conditions, and a schedule of rates. fr.tender-docs-2 is gated to new and extend."}
     - {label: "Tender period with site inspection", stage: procurement, fragment: null, after: ["Tender documents"], built_in: "no", why: "Remedial builders inspect the representative opened balconies."}
     - {label: "Tender evaluation and recommendation", stage: procurement, fragment: null, after: ["Tender period with site inspection"], built_in: "no", why: "Checks the HBA contractor licence, DBP registration, insurances, the NSW waterproofing licence of the applicator (manufacturer accreditation is not enough; verified: false), and the manufacturer warranty conditions."}
@@ -142,10 +142,10 @@ program:
     - {label: "Hold point: membrane inspection and flood test before cover", stage: construction, fragment: null, after: ["Install membrane, upturns and terminations"], built_in: "no", why: "Acceptance before the screed and tiles conceal the membrane. This is the evidence for the warranty."}
     - {label: "Re-fix balustrades, relay tiles and seal joints", stage: construction, fragment: null, after: ["Hold point: membrane inspection and flood test before cover"], built_in: "no", why: "Reinstatement."}
     - {label: "Balustrade fixing certification", stage: construction, fragment: null, after: ["Re-fix balustrades, relay tiles and seal joints"], built_in: "no", why: "Engineer's certificate before the balcony is returned to the lot."}
-    - {label: "Lodge building compliance declaration (DBP Act, verified: false)", stage: completion, fragment: null, after: ["Balustrade fixing certification"], built_in: "no", why: "The registered building practitioner declares that the work complies, and that the regulated designs were varied where needed. On the exempt path there is no occupation certificate, so the lodgement timing is verified: false."}
-    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lodge building compliance declaration (DBP Act, verified: false)"], built_in: partial, source: "knowledge/program/fragments.yaml fr.practical-completion", why: "Gated to new, extend or refurb."}
+    - {label: "Lodge building compliance declaration (DBP Act)", stage: completion, fragment: null, after: ["Balustrade fixing certification"], built_in: "no", why: "The registered building practitioner declares that the work complies, and that the regulated designs were varied where needed (the duty applies to Class 2 remedial work: owner ruling R3). s 17 and, on the exempt path with no occupation certificate, the lodgement timing are verified: false."}
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lodge building compliance declaration (DBP Act)"], built_in: partial, source: "knowledge/program/fragments.yaml fr.practical-completion", why: "Gated to new, extend or refurb."}
     - {label: "Handover: warranties, as-built details and maintenance schedule", stage: completion, fragment: fr.handover, after: ["Practical completion inspection"], built_in: partial, source: "knowledge/program/fragments.yaml fr.handover", why: "Membrane manufacturer and installer warranties, inspection and flood-test records, and an update to the OC's capital works fund plan and building manual. Gated; it also follows fr.occupation-certificate, which does not apply here."}
-    - {label: "Defects liability period and final inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Handover: warranties, as-built details and maintenance schedule"], built_in: partial, source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Gated to new, extend or refurb."}
+    - {label: "Defects liability period and final inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Handover: warranties, as-built details and maintenance schedule"], built_in: partial, source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Gated to new, extend or refurb. The contract carries a defects liability period; its length stays verified: false (owner ruling R8)."}
 
 rfps:
   - discipline: consultant.building
@@ -156,13 +156,13 @@ rfps:
       - "Visual inspection, leak mapping, water testing and intrusive opening-up at representative balconies, with make-good"
       - "Defect report: cause, extent, options and an order-of-cost estimate for the levy"
       - "Remedial specification, details and balcony schedule (membrane system, upturns, outlets, overflows, falls)"
-      - "Regulated design and design compliance declaration for waterproofing (NSW DBP Act, verified: false)"
+      - "Regulated design and design compliance declaration for waterproofing (NSW DBP Act applies to Class 2: owner ruling R3)"
       - "Tender documents, tender management, evaluation and recommendation report"
       - "Attendance at strata committee and general meetings"
       - "Superintendent / contract administration, including payment claims under the NSW Security of Payment Act"
       - "Hold-point inspections: substrate, membrane before cover, flood test"
       - "AS 4000 special conditions compliant with the Home Building Act 1989: written contract, deposit cap, statutory warranties (verified: false)"
-      - "Review of the builder's building compliance declaration and the varied regulated designs (DBP Act, verified: false)"
+      - "Review of the builder's building compliance declaration and the varied regulated designs (DBP Act, owner ruling R3; section numbers verified: false)"
       - "Practical completion, defects inspections and collation of warranties"
       - "Returnables: professional indemnity insurance, design practitioner registration, remedial experience on occupied strata buildings"
     must_not_include:
@@ -442,7 +442,7 @@ triggers:
     profile: [det.rise_in_storeys]
     adds:
       cost_plan: ["Home building compensation insurance (contractor's, passed through)"]
-      program: ["HBCF certificate before deposit and commencement (required above a contract price of about $20,000, verified: false)"]
+      program: ["HBCF certificate before deposit and commencement (required where the contract price is over $20,000 including GST: owner ruling R4)"]
       rfps:
         - {discipline: consultant.building, must_include: ["HBCF certificate as a tender returnable and a condition of the contract"]}
     built_in: {cost_plan: "no", program: "no", rfps: "no"}

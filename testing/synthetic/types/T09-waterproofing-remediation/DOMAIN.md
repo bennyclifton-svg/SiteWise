@@ -144,6 +144,12 @@ The whole job is an existing-building interface [D].
 | Remedial building consultant (`consultant.building`; a doc may say "waterproofing consultant" → `consultant.waterproofing`, accepted as the same package) | Investigation, then through to defects | **Always** | Leads the job: diagnosis, defect report, options and order-of-cost estimate, specification, regulated design for waterproofing, tender, superintendent, hold points. |
 | Remedial structural engineer (`consultant.structural`) | Investigation (slab assessment), then documentation and construction | **Always in base** | Balustrade re-fixing design and certification, slab and slab-edge condition, added load, concrete repair specification. |
 | Remedial builder (`trade.main_works`) | Procurement | **Always** | Head contract. |
+
+These three are the whole base team: a remedial building consultant, a structural engineer and the
+builder (owner ruling R2, confirmed as mapped). Everything below is conditional.
+
+| discipline (app id) | stage engaged | need | why |
+|---|---|---|---|
 | Hazmat (`consultant.hazmat`) | Investigation | Conditional: built before about 2004, or asbestos register entries | Survey of affected areas; clearance after licensed removal. |
 | Landscape (`consultant.landscape`) | Documentation | Conditional: podium planters | Reinstatement of soil build-up and planting over the new membrane. |
 | Hydraulic (`consultant.hydraulic`) | Documentation | Conditional: podium or roof drainage capacity | Outlet and overflow sizing, drainage through the car park. **Not** needed for re-flanging balcony outlets. |
@@ -184,8 +190,12 @@ are keyed in `shape.yaml not_expected_procurement`.
     the consultant reviews together with the varied regulated designs;
   - exemptions exist in the Regulation.
 
-  All of this is verified: false: the s 4 and s 6 definitions, s 17, the Regulation exemptions, and the
-  lodgement timing for work that needs no CC or OC. A balustrade fixing is probably **not** a regulated
+  The owner confirms that these obligations (registered designs and compliance declarations, including
+  for remedial work) apply to **Class 2** buildings and to aged care (Class 9c), and not to a Class 1
+  house (owner ruling R3). So `proj.regulated_design: yes` in the base is confirmed. The extension to
+  Class 3 is not the owner's ruling and stays verified: false. Still verified: false: the s 4 and s 6
+  definitions, s 17, the Regulation exemptions, and the lodgement timing for work that needs no CC or
+  OC. A balustrade fixing is probably **not** a regulated
   building element ("load-bearing component essential to stability"); a slab repair is. So structural
   regulated design is a trigger item (`concrete-spalling`), not a base certainty. The app knows this only as an unverified RFP threshold
   [K: knowledge/rfp/structural.yaml thresholds dbp_regime] and the `proj.regulated_design` key
@@ -202,7 +212,11 @@ are keyed in `shape.yaml not_expected_procurement`.
     and the major-work contract requirements.
   - The remedial builder's own s 18B warranties then run to the OC.
   - The membrane applicator needs a NSW waterproofing licence. Manufacturer accreditation is not enough.
-  - HBCF cover, where it applies, starts above a contract price of about $20,000.
+- **HBCF threshold (owner ruling R4, confirmed against SIRA).** Where HBCF cover applies, it is required
+  for residential building work where the contract price is **over $20,000 including GST**. The
+  principal contractor takes it out before starting work or taking a deposit, and a variation that takes
+  the price over $20,000 needs a certificate before any further payment. The Home Building Act section
+  numbers and the exemption for buildings over three storeys stay verified: false.
 - **Strata Schemes Management Act 2015.** All verified: false:
   - the OC's duty to maintain and repair common property (s 106);
   - general meeting resolutions for special levies;
@@ -298,9 +312,11 @@ The base has 32 activities; see `shape.yaml program`. Stages and the activities 
    - Then repeat **per balcony or stack**: strip → substrate and outlets → hold point → membrane → hold
      point and flood test → re-fix balustrades, tile, seal → certification.
    - The work is weather-sensitive, because membranes need dry substrates and cure time [D].
-7. **Completion.** DBP building compliance declaration (verified: false) → PC inspection → handover of
-   warranties, records and the maintenance-plan update.
-8. **Defects.** Defects liability period and final inspection.
+7. **Completion.** DBP building compliance declaration (the duty is confirmed by owner ruling R3; s 17
+   and its timing verified: false) → PC inspection → handover of warranties, records and the
+   maintenance-plan update.
+8. **Defects.** Defects liability period (the contract's; length verified: false, as owner ruling R8
+   keeps it for residential contracts) and final inspection.
 
 **Logic.** Opening-up comes before the specification. The specification and regulated design come before
 tender. The levy resolution comes before award. Each balcony's membrane hold point comes before its tiling.
@@ -330,7 +346,7 @@ du.balcony-waterproof-2; testing/synthetic/reference/index/type-predictions.md T
   - inspection, leak mapping, water testing and representative opening-up with make-good;
   - defect report with cause, extent, options and order of cost;
   - specification, details and balcony schedule;
-  - waterproofing regulated design and declaration (verified: false);
+  - waterproofing regulated design and declaration (DBP Act, Class 2: owner ruling R3);
   - tender management and recommendation;
   - committee and general meeting attendance (allowance count);
   - AS 4000 special conditions compliant with the Home Building Act (verified: false);
@@ -407,7 +423,7 @@ There are 14 triggers; full keys are in `shape.yaml`. Each changes procurement, 
 | `facade-access-scaffold` | "scaffold encroaches on the footpath, Class A hoarding", "swing stage from the roof anchors" | "all work from within the balconies" | Scaffold or swing stage; council s 138 approval; roof anchor certification |
 | `internal-water-damage` | "collapsed ceiling in Unit 304", "mould below balcony 502", "insurer accepted the resultant damage claim" | "no internal damage reported" | Make-good in the lots below; mould assessment |
 | `balcony-services-relocation` | "condensers on 30 balconies", "condensate onto the tiles", "lights in the upturn zone" | "no services on the balconies" | Pump down, store and recommission condensers; electrical reinstatement |
-| `low-rise-hbcf` | "three-storey walk-up", "HBCF certificate before deposit" | "rise of more than three storeys, so not required" | HBCF premium (above about $20,000, verified: false); a returnable; a pre-start check |
+| `low-rise-hbcf` | "three-storey walk-up", "HBCF certificate before deposit" | "rise of more than three storeys, so not required" | HBCF premium (contract price over $20,000 including GST, owner ruling R4; the three-storey exemption verified: false); a returnable; a pre-start check |
 | `staged-delivery-funding` | "Stage 2 subject to the next special levy", "separable portions" | "one continuous stage" | A levy gate per stage; escalation; per-stage contract administration |
 | `roof-terrace-in-scope` | "roof terrace membrane leaking into level 6" | "pitched metal roof, out of scope" | Roof membrane; temporary plant relocation; anchor recertification |
 
@@ -498,16 +514,32 @@ The full machine list is in `shape.yaml gaps` (24 entries).
 - the seed `data/reference/clerk/data/seed/building-remediation-rectification-guide.md` (a seed, not
   loaded by the generators)
 
+**Confirmed by the owner's rulings (30 October 2026, `testing/synthetic/reference/OWNER_RULINGS.md`):**
+
+- R2: the base needs only three packages: a remedial building consultant, a structural engineer and the
+  builder. Confirmed as mapped.
+- R3: the DBP Act obligations (registered designs, compliance declarations, including for remedial
+  work) apply to Class 2 and 9c buildings, so they apply to this Class 2 strata job. The 2023 extension
+  to Class 3 stays verified: false.
+- R4: HBCF cover, where it applies, is required for residential building work where the contract price
+  is over $20,000 including GST; the principal contractor takes it out before starting work or taking a
+  deposit; a variation that takes the price over $20,000 needs a certificate before any further
+  payment. Source: SIRA, "Insurance obligations for residential building work",
+  https://www.sira.nsw.gov.au/resources-library/home-building-compensation-resources/publications/insurance-obligations-for-residential-building-works
+- R8: the defects liability period length stays verified: false.
+
 **Unverified (verified: false), to confirm from the instruments:**
 
 - AS 4654.1 and .2 (2012) membrane, falls, upstand and overflow requirements; the app's own numbers are
   unverified and its seeds disagree [K: knowledge/clusters/envelope/rules.yaml rule.as4654.*].
 - NCC 2022 Vol One Part F1 external waterproofing (I believe F1D5 cites AS 4654) and Part D3 barrier
   height and climbability.
-- DBP Act 2020 and DBP Regulation 2021: the building work and building element definitions, exemptions,
-  and lodgement timing without a CC.
-- Home Building Act 1989: s 18B and s 18E warranty periods, waterproofing as a major element, the
-  licensing threshold, and the HBCF multi-storey exemption.
+- DBP Act 2020 and DBP Regulation 2021: the building work and building element definitions (s 4, s 6),
+  s 17, exemptions, and lodgement timing without a CC (that the Act applies to Class 2 is confirmed, R3).
+- Home Building Act 1989: section numbers, s 18B and s 18E warranty periods, waterproofing as a major
+  element, the licensing threshold, and the HBCF multi-storey exemption (the $20,000 HBCF threshold is
+  confirmed, R4).
+- The defects liability period length.
 - SSMA 2015: s 106, special levies, Part 11 building bond, and entry to lots.
 - The RAB Act 2020 powers; the SOP Act 1999 application to OC contracts.
 - Exempt or maintenance status under the EP&A Act and Codes SEPP 2008.
@@ -516,7 +548,6 @@ The full machine list is in `shape.yaml gaps` (24 entries).
 
 **Judgement calls the owner may want to change:**
 
-- the structural engineer as a base package rather than a trigger;
 - AS 4000 as the base contract (AS 4902 D&C, or minor-works forms, are also seen);
 - `consultant.building` as the lead id, with `consultant.waterproofing` accepted;
 - `hdr.cond.operational_constraints: 24_7_occupied`. Jev's criterion for that option is "explicitly
@@ -527,7 +558,7 @@ The full machine list is in `shape.yaml gaps` (24 entries).
 
 Unverified claims added after review: the DBP Act s 17 building compliance declaration and its timing
 without an OC; SSMA s 108 special resolution for altering common property; HBA contract requirements;
-the NSW waterproofing licence for applicators; the HBCF threshold of about $20,000; LEP cl 5.10(3)
+the NSW waterproofing licence for applicators; LEP cl 5.10(3)
 minor works; Codes SEPP limits on heritage items; the building bond applying to contracts from 2018;
 direct payment of the long service levy when there is no CC. All verified: false.
 

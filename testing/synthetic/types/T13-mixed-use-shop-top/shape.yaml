@@ -1,0 +1,1019 @@
+schema: sitewise-synthetic-shape/1
+type_id: T13
+slug: mixed-use-shop-top
+name: Mixed-use shop-top housing
+reviewed: false
+state: NSW
+# Every yes/no/partial value is quoted: bare yes/no are YAML 1.1 booleans.
+# Base: six storeys (retail Class 6 under five levels of Class 2 apartments) over two basement levels of
+# Class 7a parking, existing shops demolished, D&C with novation, DA to the local planning panel.
+profile:
+  hdr.building_class: mixed
+  hdr.subclass: residential_retail
+  hdr.work_type: new
+  hdr.cond.planning: da
+  hdr.cond.procurement_route: design_construct
+  hdr.cond.operational_constraints: vacant
+  hdr.cond.stakeholder_complexity: single_owner
+  hdr.cond.access_constraints: urban_constrained
+  hdr.cond.environmental_sensitivity: standard
+  hdr.scale.site_sqm: 1800
+  hdr.scale.total_storeys: 6
+  hdr.scale.total_gfa_sqm: 5500
+  hdr.scale.podium_levels: 1
+  hdr.scale.tower_levels: 5
+  hdr.scale.residential_units: 42
+  hdr.scale.retail_gla_sqm: 600
+  hdr.scale.car_parks: 55
+  det.ncc_class: ["2", "6", 7a]
+  det.rise_in_storeys: 6
+  det.sprinklered: true
+  det.state: NSW
+  det.existing_building: true
+  det.existing_building_year: 1965
+  det.effective_height: 18.9
+  det.heritage_status: none
+  det.bushfire_prone_land: false
+  det.flood_hazard: false
+  det.potentially_contaminated_land: false
+  det.acid_sulfate_soils_mapped: false
+  det.climate_zone: "5"
+  det.facade_type: standard
+  det.noise_affected_site: true
+  det.sewer_connection: reticulated
+  det.water_supply_source: reticulated
+  det.gas_supply: natural_gas_main
+  fact.contract_form: as4902
+  fact.contract_basis: lump_sum
+  proj.regulated_design: "yes"
+  # RFP flags set explicitly so unknowns do not turn excluded rows into priced options.
+  flag.basement: "yes"
+  flag.excavation_adjoining: "yes"
+  flag.transfer_structures: "yes"
+  flag.osd_required: "yes"
+  flag.stormwater_quality: "yes"
+  flag.panel: "yes"
+  flag.osd_existing: "no"
+  flag.authority_asset: "no"
+  flag.rail: "no"
+  flag.groundwater: "no"
+  flag.norbe: "no"
+  flag.public_road: "no"
+  flag.state_road: "no"
+  flag.heavy_vehicles: "no"
+  flag.tfnsw_referral: "no"
+  flag.intersection_modelling: "no"
+  flag.gtp_required: "no"
+  flag.cl46: "no"
+  flag.community: "no"
+  flag.architect_lodges: "no"
+  flag.sustainability_target: "no"
+  flag.coastal: "no"
+  flag.country: "no"
+  flag.staged: "no"
+  flag.multi_building: "no"
+  flag.arborist_tree_impacts: "no"
+  flag.fire_vulnerable_occupants: "no"
+  flag.fire_special_hazards: "no"
+  flag.fire_specialist_systems: "no"
+
+# Values the app derives or cannot set through PUT /profile; checked, never PUT.
+expected_derived:
+  - {key: det.type_of_construction, value: A, source: "knowledge/clusters/fire/rules.yaml rule.ncc.type-of-construction", note: "Class 2, 6 and 7a at a rise of 4 or more all give Type A; the rule says mixed classifications need C2D4 assessment first (verified: false)"}
+  - {key: det.basix_required, value: true, source: "knowledge/clusters/envelope/rules.yaml rule.basix.certificate-required", note: "derivation pending in the rule; returns unknown today; applies to the Class 2 part only"}
+  - {key: det.energy_compliance_pathway, value: basix, note: "BASIX for the apartments; the retail needs Section J (section_j_dts or section_j_jv3). One value cannot hold both; no profile_group"}
+  - {key: det.ev_readiness_required, value: true, source: "knowledge/clusters/electrical-comms/rules.yaml rule.ncc.ev-charging-readiness", note: "applies to 7a with car parking; derivation pending"}
+
+scenario_inputs:
+  - {key: proj.budget_stated, note: "stated in the developer's brief or feasibility; amount chosen by the scenario author", phrasing: "Construction budget: $<amount> excluding GST"}
+  - {key: proj.regulated_design, note: "yes/no row; the documents must state the professional basis", phrasing: "The building contains a Class 2 part, so the Design and Building Practitioners Act 2020 applies: regulated designs and design compliance declarations are required"}
+  - {key: det.ncc_class, note: "never derived from the subclass; must be read from the BCA report", phrasing: "Building classification: Class 6 (ground-floor retail), Class 2 (levels 1-5 residential), Class 7a (basement car park)"}
+  - {key: flag.panel, note: "the regex needs 'planning panel'", phrasing: "The application will be determined by the Local Planning Panel"}
+  - {key: flag.transfer_structures, note: "needs an explicit structural statement", phrasing: "A transfer slab at level 1 picks up the residential columns over the retail and car-park grid"}
+  - {key: flag.excavation_adjoining, note: "needs excavation near a boundary or neighbour", phrasing: "Bulk excavation to the eastern boundary adjoining the two-storey shop at No. 38"}
+  - {key: flag.osd_required, note: "civil or council statement", phrasing: "On-site detention is required under council's stormwater policy"}
+  - {key: det.existing_building, note: "the trigger is \\bexisting building\\b: the plural 'existing buildings' and 'existing shops' do not match", phrasing: "The site contains an existing building on each lot (two single-storey shops and a dwelling); each existing building is to be demolished"}
+  - {key: det.existing_building_year, note: "the year trigger needs 'built in <year>'", phrasing: "The existing shops were built in 1965"}
+  - {key: det.effective_height, note: "number from the BCA report; the 25 m variant changes this one key", phrasing: "Effective height: 18.9 m (BCA report)"}
+  - {key: flag.public_road, note: "base documents must deny public road works; 'road reserve' and 'works in the road' match the flag", phrasing: "No works in the public road other than the vehicle crossing and making good the footpath"}
+  - {key: flag.groundwater, note: "'dewater' and 'groundwater' match the flag; base documents must deny it plainly", phrasing: "No groundwater was encountered above the base of the basement; seepage only"}
+  - {key: flag.heavy_vehicles, note: "'MRV' and 'HRV' match the flag; base documents describe waste collection without implying heavy vehicle generation", phrasing: "The development does not generate heavy vehicle movements; waste is collected on site by council's standard collection vehicle"}
+
+work_items:
+  - {system: site.survey-boundaries, action: new, why: "Set-out, level control, identification surveys"}
+  - {system: site.ground-conditions, action: investigate, why: "Basement, rock and groundwater investigation; not in the default list"}
+  - {system: site.contamination, action: investigate, why: "PSI for commercial land going to residential use; not in the default list"}
+  - {system: site.demolition, action: remove, why: "Demolish existing shops and dwelling after hazmat removal; not in the default list"}
+  - {system: site.adjoining-structures, action: retain, why: "Protect nil-setback neighbours; default gives new"}
+  - {system: site.earthworks, action: new, why: "Bulk excavation, spoil classification and disposal"}
+  - {system: site.erosion-sediment-control, action: new, why: "Standard DA condition"}
+  - {system: site.stormwater-detention, action: new, why: "OSD tank, WSUD treatment, basement pump-out"}
+  - {system: site.services-connections, action: new, why: "Water, sewer, gas, electricity, NBN lead-ins; Section 73"}
+  - {system: site.vehicle-access, action: new, why: "Driveway ramp from the lane and basement parking layout"}
+  - {system: site.loading-docks, action: new, why: "Retail loading and waste collection bay; not in the default list"}
+  - {system: site.waste-storage, action: new, why: "Separate residential and retail bin rooms, bulky waste, collection point"}
+  - {system: site.public-domain, action: new, why: "Vehicle crossing, footpath making good, street trees; awning over the footpath (s138 consent; verified: false); no public road works in the base"}
+  - {system: site.landscape, action: new, why: "Deep soil, podium and roof communal open space"}
+  - {system: site.signage, action: new, why: "Building identification and retail signage zones; not in the default list"}
+  - {system: substructure.basement-retention, action: new, why: "Piled retention, shotcrete, anchors, seepage control"}
+  - {system: substructure.footings, action: new, why: "Pad footings to rock"}
+  - {system: substructure.slab-on-ground, action: new, why: "Basement slab; not in the default list"}
+  - {system: substructure.damp-waterproofing, action: new, why: "Drained or tanked basement"}
+  - {system: structure.concrete, action: new, why: "PT slabs, columns, cores, transfer slab, roof slab"}
+  - {system: structure.steel, action: new, why: "Footpath awning and roof plant screens; not in the default list"}
+  - {system: structure.temporary-works, action: new, why: "Crane base, back-propping, hoarding and gantry; not in the default list"}
+  - {system: envelope.external-walls, action: new, why: "Masonry, precast or FC cladding"}
+  - {system: envelope.windows-doors, action: new, why: "Apartment windows, balcony doors, retail shopfronts; long lead"}
+  - {system: envelope.external-waterproofing, action: new, why: "Balconies, podium, planters, roof membrane (AS 4654.2)"}
+  - {system: envelope.thermal-insulation, action: new, why: "BASIX and Section J"}
+  - {system: envelope.thermal-performance, action: new, why: "BASIX commitments for apartments; Section J for retail"}
+  - {system: envelope.facade-acoustics, action: new, why: "Street, retail and plant noise to the acoustic report"}
+  - {system: envelope.flashings-seals, action: new, why: "Window and balcony threshold flashings; not in the default list"}
+  - {system: envelope.vehicle-doors, action: new, why: "Car-park entry door and loading-bay roller door; not in the default list"}
+  - {system: interiors.walls-linings, action: new, why: "Apartments and common areas"}
+  - {system: interiors.ceilings, action: new, why: "Apartments and common areas"}
+  - {system: interiors.wet-area-waterproofing, action: new, why: "Apartment bathrooms and laundries (AS 3740)"}
+  - {system: interiors.tiling, action: new, why: "Wet areas and lobbies"}
+  - {system: interiors.floor-finishes, action: new, why: "Apartments and corridors"}
+  - {system: interiors.joinery, action: new, why: "Kitchens, vanities, robes; long lead"}
+  - {system: interiors.internal-doors, action: new, why: "Unit entry fire doors and internal doors"}
+  - {system: interiors.internal-glazing, action: new, why: "Shower screens, mirrors"}
+  - {system: interiors.painting, action: new, why: "Internal painting"}
+  - {system: interiors.acoustic-separation, action: new, why: "Between units, and between units and the retail below (Part F7; verified: false)"}
+  - {system: interiors.ffe, action: new, why: "Apartment appliances; not in the default list"}
+  - {system: fire-passive.rated-elements, action: new, why: "Type A construction"}
+  - {system: fire-passive.compartments, action: new, why: "Separation of the Class 6, 7a and 2 parts"}
+  - {system: fire-passive.penetrations, action: new, why: "Fire stopping"}
+  - {system: fire-passive.openings, action: new, why: "Fire doors and shutters between classifications; not in the default list"}
+  - {system: fire-passive.external-walls, action: new, why: "Non-combustible external walls for Type A; not in the default list"}
+  - {system: fire-active.sprinklers, action: new, why: "Class 2 at a rise of 4 or more (verified: false); not in the default list"}
+  - {system: fire-active.hydrants, action: new, why: "Hydrants and booster"}
+  - {system: fire-active.detection, action: new, why: "Detection in common areas, retail and car park"}
+  - {system: fire-active.occupant-warning, action: new, why: "Building occupant warning; not in the default list"}
+  - {system: fire-active.smoke-alarms, action: new, why: "Smoke alarms in units"}
+  - {system: fire-active.emergency-lighting, action: new, why: "Emergency and exit lighting"}
+  - {system: fire-active.portable-extinguishers, action: new, why: "Extinguishers and retail hose reels"}
+  - {system: access-egress.exits, action: new, why: "Two fire-isolated stairs; separate retail egress"}
+  - {system: access-egress.stairs-and-ramps, action: new, why: "Stairs and pedestrian ramps"}
+  - {system: access-egress.barriers, action: new, why: "Balcony and stair balustrades"}
+  - {system: access-egress.egress-doors, action: new, why: "Exit doors and hardware"}
+  - {system: access-egress.accessible-access, action: new, why: "Accessible path from street and car park to every unit entry floor"}
+  - {system: access-egress.accessible-facilities, action: new, why: "Accessible WC for retail and common areas, accessible parking; not in the default list"}
+  - {system: access-egress.livable-housing, action: new, why: "ADG livable-housing share (verified: false)"}
+  - {system: access-egress.maintenance-access, action: new, why: "Roof plant access and fall protection; not in the default list"}
+  - {system: mechanical.air-conditioning, action: new, why: "Split AC to apartments"}
+  - {system: mechanical.ventilation, action: new, why: "Corridor and garbage-room ventilation"}
+  - {system: mechanical.local-exhaust, action: new, why: "Apartment exhaust and the retail kitchen-exhaust riser provision"}
+  - {system: mechanical.carpark-ventilation, action: new, why: "Mechanical car-park ventilation with CO control"}
+  - {system: hydraulic.cold-water, action: new, why: "Water service and booster pumps"}
+  - {system: hydraulic.hot-water, action: new, why: "Hot water"}
+  - {system: hydraulic.sanitary, action: new, why: "Sanitary drainage and retail stubs"}
+  - {system: hydraulic.roof-drainage, action: new, why: "Roof and balcony drainage"}
+  - {system: hydraulic.trade-waste, action: new, why: "Grease-arrestor provision for food tenancies; not in the default list"}
+  - {system: hydraulic.gas, action: new, why: "Gas service to retail tenancies; not in the default list"}
+  - {system: hydraulic.backflow-prevention, action: new, why: "Boundary and zone backflow; not in the default list"}
+  - {system: hydraulic.non-potable-water, action: new, why: "BASIX rainwater reuse; not in the default list"}
+  - {system: electrical.utility-supply, action: new, why: "Substation and consumer mains; long lead"}
+  - {system: electrical.switchboards, action: new, why: "Main switchboard and distribution boards"}
+  - {system: electrical.cabling-wiring, action: new, why: "Submains and final subcircuits"}
+  - {system: electrical.lighting, action: new, why: "Apartment and common-area lighting"}
+  - {system: electrical.metering, action: new, why: "Apartment and retail tenancy metering"}
+  - {system: electrical.ev-charging, action: new, why: "EV-ready car park; not in the default list"}
+  - {system: electrical.temporary-power, action: new, why: "Builder's supply; not in the default list"}
+  - {system: comms-security.carrier-lead-in, action: new, why: "NBN pit and pipe and lead-in"}
+  - {system: comms-security.structured-cabling, action: new, why: "Data and MATV"}
+  - {system: comms-security.access-control, action: new, why: "Intercom and access control"}
+  - {system: comms-security.cctv, action: new, why: "Car-park and entry CCTV; not in the default list"}
+  - {system: vertical-transport.passenger-lifts, action: new, why: "Two passenger lifts; long lead"}
+  - {system: vertical-transport.lift-shafts-pits, action: new, why: "Lift shafts and pits"}
+
+procurement:
+  - {discipline: consultant.architect, kind: services, need: always, novation: "yes", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Design lead to DA and D&C tender; novated; ADG design verification; regulated designs"}
+  - {discipline: consultant.town_planner, kind: services, need: always, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[0]", why: "SEE, ADG compliance, panel"}
+  - {discipline: consultant.surveyor, kind: services, need: always, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Detail, boundary, neighbours, strata plan"}
+  - {discipline: consultant.geotechnical, kind: services, need: always, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Basement, rock, groundwater, retention parameters"}
+  - {discipline: consultant.structural, kind: services, need: always, novation: "yes", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Retention, transfer slab, PT; novated"}
+  - {discipline: consultant.civil, kind: services, need: always, novation: "yes", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Stormwater, OSD, WSUD, driveway; novated"}
+  - {discipline: consultant.hydraulic, kind: services, need: always, novation: "option", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Water, sewer, gas, trade-waste provision; novated, or replaced by the D&C hydraulic subcontractor's designer (owner to confirm)"}
+  - {discipline: consultant.fire_services, kind: services, need: always, novation: "option", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Sprinklers, hydrants, detection; novated, or replaced by the D&C fire subcontractor's designer (owner to confirm)"}
+  - {discipline: consultant.mechanical, kind: services, need: always, novation: "option", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Car-park ventilation, exhaust risers, AC; novated, or replaced by the D&C mechanical subcontractor's designer (owner to confirm)"}
+  - {discipline: consultant.electrical, kind: services, need: always, novation: "option", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Substation, metering, EV; novated, or replaced by the D&C electrical subcontractor's designer (owner to confirm)"}
+  - {discipline: consultant.bca, kind: services, need: always, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "NCC advice for DA and CC, mixed-class strategy"}
+  - {discipline: consultant.certifier, kind: services, need: always, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Principal certifier, CCs, OC, fire safety certificate; never novated"}
+  - {discipline: consultant.access, kind: services, need: always, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "DA and CC access reports, livable housing"}
+  - {discipline: consultant.traffic, kind: services, need: always, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Parking, access, loading and waste vehicles"}
+  - {discipline: consultant.acoustic, kind: services, need: always, novation: "no", built_in: "no", why: "DA acoustic report, retail-to-residential separation, plant, pre-OC testing; no package rule"}
+  - {discipline: consultant.esd, aliases: ["consultant.basix"], kind: services, need: always, novation: "no", built_in: "no", why: "BASIX and NatHERS for apartments, Section J for retail; no package rule; consultant.basix is an accepted alias (T02 uses it)"}
+  - {discipline: consultant.landscape, kind: services, need: always, novation: "yes", built_in: "no", why: "ADG deep soil and communal open space, podium planters; no package rule"}
+  - {discipline: consultant.waste, kind: services, need: usually, novation: "no", built_in: "no", why: "Operational and C&D waste management plans; no package rule"}
+  - {discipline: consultant.quantity_surveyor, kind: services, need: always, novation: "no", built_in: "no", why: "Feasibility, CIV report for the DA, tender evaluation, financier reports; no package rule"}
+  - {discipline: consultant.environmental, kind: services, need: usually, novation: "no", built_in: "no", why: "PSI for the change to residential use; complexity_additions[2] can never fire"}
+  - {discipline: consultant.hazmat, kind: services, need: always, novation: "no", built_in: "no", why: "Hazardous-materials survey of the buildings to be demolished; no package rule"}
+  - {discipline: consultant.fire_engineer, kind: services, need: usually, novation: "no", built_in: "no", why: "Performance solutions are common at this scale; no package rule"}
+  - {discipline: consultant.vertical_transport, kind: services, need: optional, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[0]", why: "Often design-and-supply by the lift contractor at six storeys"}
+  - {discipline: consultant.waterproofing, kind: services, need: optional, novation: "no", built_in: "no", why: "Independent podium and balcony detail review; no package rule"}
+  - {discipline: trade.main_works, kind: works, need: always, built_in: "partial", source: "internal/procurement/proposed.go ProposeHeadContract", why: "D&C head contract (AS 4902); proposed only from gaps on accepted work items"}
+
+not_expected_procurement: []
+
+cost_plan:
+  - {line: "DA fees and contributions", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml da-fees", why: "DA fee on the CIV and s7.11/s7.12 contributions (verified: false)"}
+  - {line: "Housing and Productivity Contribution", section: fees_and_charges, built_in: "no", why: "State contribution for new dwellings (verified: false)"}
+  - {line: "Construction certificate and certifier fees", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml cc-fees", why: "Statutory CC and OC fees; the certifier's professional fee is F-line only"}
+  - {line: "Service authority connection fees (Sydney Water, DNSP, NBN, gas)", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml service-authority", why: "One generic line; Sydney Water developer charges and DNSP substation costs not split"}
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "Paid before the CC"}
+  - {line: "Council road-reserve fees: s138, hoarding, work zone, crane swing, damage deposit", section: fees_and_charges, built_in: "no", why: "Standard DA conditions on a main street (verified: false)"}
+  - {line: "Strata building bond", section: fees_and_charges, built_in: "no", why: "Developer lodges before OC (amount verified: false)"}
+  - {line: "Strata plan registration and strata certificate fees", section: fees_and_charges, built_in: "no", why: "Needed to sell the apartments"}
+  - {line: "Architect", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line from the adopted package"}
+  - {line: "Town planner", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[0]", why: "Fee line"}
+  - {line: "Surveyor", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line"}
+  - {line: "Geotechnical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line"}
+  - {line: "Structural engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line"}
+  - {line: "Civil engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line"}
+  - {line: "Hydraulic engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line"}
+  - {line: "Fire services engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Fee line"}
+  - {line: "Mechanical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Fee line"}
+  - {line: "Electrical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line"}
+  - {line: "BCA consultant", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Fee line"}
+  - {line: "Principal certifier", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Professional fee; P05 also exists, a double-count risk"}
+  - {line: "Access consultant", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Fee line"}
+  - {line: "Traffic engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[1]", why: "Fee line"}
+  - {line: "Vertical transport consultant (optional)", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[0]", why: "Fee line; optional"}
+  - {line: "Acoustic consultant", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "ESD and BASIX consultant", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Landscape architect", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Waste consultant", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Quantity surveyor", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Environmental consultant (PSI)", section: consultants, built_in: "no", why: "Dead rule complexity_additions[2]"}
+  - {line: "Hazardous materials consultant", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Fire engineer", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Preliminaries, D&C design fee and builder's margin", section: construction, built_in: "no", why: "No line; a stated budget spreads preliminaries pro rata"}
+  - {line: "Demolition and hazardous materials removal", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 01", why: "Inside Site works only when site.demolition is scoped, which the default list does not do"}
+  - {line: "Site works and external works", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 01", why: "Earthworks, stormwater, OSD, services, public domain, landscape, waste rooms"}
+  - {line: "Substructure", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 02", why: "Excavation, retention, footings, basement slab, waterproofing"}
+  - {line: "Structure", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 03", why: "PT slabs, transfer slab, columns, cores"}
+  - {line: "Building envelope", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 04", why: "Facade, windows, shopfronts, roof and balcony waterproofing"}
+  - {line: "Interiors and finishes", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 05", why: "Apartments and common areas"}
+  - {line: "Passive fire protection", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 06", why: "Separation, fire doors, fire stopping; the commercial_hotel split gives it no share"}
+  - {line: "Active fire protection", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 07", why: "Sprinklers, hydrants, detection, occupant warning"}
+  - {line: "Mechanical services", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 08", why: "Car-park ventilation, exhaust risers, AC"}
+  - {line: "Hydraulic services", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 09", why: "Incl. trade-waste provision and gas"}
+  - {line: "Electrical services", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 10", why: "Incl. substation and metering"}
+  - {line: "Communications and security", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 11", why: "NBN, intercom, access control, CCTV"}
+  - {line: "Vertical transport", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 12", why: "Two lifts"}
+  - {line: "Accessible paths, TGSIs and braille/tactile signage", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 13", why: "Access child line"}
+  - {line: "Accessible sanitary facilities and hearing augmentation", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 13", why: "Fires once the item is scoped; not in the mixed default list"}
+  - {line: "Compliant balustrades and barriers", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 13", why: "Access child line"}
+  - {line: "Egress doors and hardware", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 13", why: "Access child line"}
+  - {line: "Stairs, ramps, handrails and nosings", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 13", why: "Access child line"}
+  - {line: "Retail shell provisions and landlord's works", section: construction, built_in: "no", why: "Shopfronts, services stubs, grease-arrestor and exhaust provisions defined as the shell boundary"}
+  - {line: "Design contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml design-contingency", why: "Always"}
+  - {line: "Construction contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml construction-contingency", why: "Always"}
+  - {line: "Escalation", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml escalation", why: "Always"}
+  - {line: "Exclusions", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml exclusions", why: "Always; tenant fit-outs excluded"}
+
+not_expected_cost_plan: []
+
+program:
+  skeleton: sk.new-dc-da
+  activities:
+    - {label: "Planning certificate, title and DP search", stage: investigation, fragment: null, after: [], built_in: "no", why: "s10.7 certificate (verified: false)"}
+    - {label: "Detail and boundary survey", stage: investigation, fragment: fr.investigate-survey, after: [], built_in: "partial", source: "knowledge/program/fragments.yaml fr.investigate-survey", why: "Needs an investigate action; default is new"}
+    - {label: "Geotechnical investigation", stage: investigation, fragment: fr.investigate-geotech, after: [], built_in: "partial", source: "knowledge/program/fragments.yaml fr.investigate-geotech", why: "site.ground-conditions not in default scope"}
+    - {label: "Contamination investigation (PSI)", stage: investigation, fragment: fr.investigate-contamination, after: [], built_in: "partial", source: "knowledge/program/fragments.yaml fr.investigate-contamination", why: "site.contamination not in default scope"}
+    - {label: "Services search and locating", stage: investigation, fragment: fr.investigate-services, after: [], built_in: "partial", source: "knowledge/program/fragments.yaml fr.investigate-services", why: "Needs an investigate action"}
+    - {label: "Hazardous materials survey of existing buildings", stage: investigation, fragment: null, after: [], built_in: "no", why: "fr.existing-conditions needs refurb or extend"}
+    - {label: "Confirm the brief", stage: concept_design, fragment: fr.concept-design-2, after: ["Planning certificate, title and DP search"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-2", why: "Class 2 gate"}
+    - {label: "Prepare the concept design", stage: concept_design, fragment: fr.concept-design-2, after: ["Confirm the brief", "Detail and boundary survey"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-2", why: "Concept"}
+    - {label: "Client review of the concept", stage: concept_design, fragment: fr.concept-design-2, after: ["Prepare the concept design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-2", why: "Developer approval"}
+    - {label: "Pre-DA meeting and design review panel", stage: concept_design, fragment: null, after: ["Client review of the concept"], built_in: "no", why: "ADG design review (verified: false)"}
+    - {label: "Develop the design", stage: concept_design, fragment: fr.design-development-2, after: ["Pre-DA meeting and design review panel", "Geotechnical investigation"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.design-development-2", why: "DA design"}
+    - {label: "DA specialist reports (acoustic, traffic, BCA, access, waste, stormwater, BASIX, PSI, QS CIV)", stage: approval_documentation, fragment: null, after: ["Develop the design", "Contamination investigation (PSI)"], built_in: "no", why: "Coordinate consultant reports exists but names none"}
+    - {label: "ADG design verification statement", stage: approval_documentation, fragment: null, after: ["Develop the design"], built_in: "no", why: "Registered architect's statement (verified: false)"}
+    - {label: "Statement of environmental effects", stage: approval_documentation, fragment: null, after: ["Develop the design"], built_in: "no", why: "Planner's report"}
+    - {label: "Prepare approval documentation", stage: approval_documentation, fragment: fr.approval-docs-2, after: ["Develop the design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.approval-docs-2", why: "DA drawings"}
+    - {label: "Coordinate consultant reports", stage: approval_documentation, fragment: fr.approval-docs-2, after: ["DA specialist reports (acoustic, traffic, BCA, access, waste, stormwater, BASIX, PSI, QS CIV)"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.approval-docs-2", why: "Coordination"}
+    - {label: "Client sign-off for lodgement", stage: approval_documentation, fragment: fr.approval-docs-2, after: ["Prepare approval documentation", "Coordinate consultant reports", "ADG design verification statement", "Statement of environmental effects"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.approval-docs-2", why: "Sign-off"}
+    - {label: "Lodge the DA", stage: approvals, fragment: fr.da-lodgement, after: ["Client sign-off for lodgement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-lodgement", why: "NSW Planning Portal"}
+    - {label: "Public exhibition", stage: approvals, fragment: fr.da-exhibition, after: ["Lodge the DA"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-exhibition", why: "Notification"}
+    - {label: "DA assessment", stage: approvals, fragment: fr.da-assessment, after: ["Public exhibition"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-assessment", why: "Includes RFIs and amended plans"}
+    - {label: "Local planning panel determination", stage: approvals, fragment: null, after: ["DA assessment"], built_in: "no", why: "Panel meeting is a separate gate"}
+    - {label: "Assemble the tender package", stage: procurement, fragment: fr.tender-docs-2, after: ["Local planning panel determination"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-docs-2", why: "D&C tender documents"}
+    - {label: "Tender period", stage: procurement, fragment: fr.tender-period-2, after: ["Assemble the tender package"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-period-2", why: "Three or four builders"}
+    - {label: "Evaluate tenders", stage: procurement, fragment: fr.tender-evaluation-2, after: ["Tender period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-evaluation-2", why: "Price, qualifications, design compliance"}
+    - {label: "Award the contract", stage: procurement, fragment: fr.contract-award, after: ["Evaluate tenders"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.contract-award", why: "AS 4902"}
+    - {label: "Novate the design consultants", stage: procurement, fragment: fr.novation, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.novation", why: "Architect and core engineers"}
+    - {label: "Prepare construction documentation", stage: construction_documentation, fragment: fr.construction-docs-2, after: ["Novate the design consultants"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.construction-docs-2", why: "Contractor's design"}
+    - {label: "Coordinate consultant documentation", stage: construction_documentation, fragment: fr.construction-docs-2, after: ["Novate the design consultants"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.construction-docs-2", why: "Services and structure"}
+    - {label: "Regulated designs and design compliance declarations", stage: construction_documentation, fragment: null, after: ["Prepare construction documentation", "Coordinate consultant documentation"], built_in: "no", why: "DBP Act, before the related work (R3)"}
+    - {label: "Construction certificate: early works (retention, excavation, basement)", stage: construction_documentation, fragment: null, after: ["Award the contract", "Pay long service levy"], built_in: "no", why: "First of the staged CCs; the app has one CC row only"}
+    - {label: "Construction certificate", stage: construction_documentation, fragment: fr.construction-certificate, after: ["Regulated designs and design compliance declarations", "Construction certificate: early works (retention, excavation, basement)"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.construction-certificate", why: "Main (structure and full works) CC, after the regulated designs; the app puts one CC in approvals before procurement"}
+    - {label: "Pay long service levy", stage: construction_documentation, fragment: null, after: ["Award the contract"], built_in: "no", why: "Before the CC"}
+    - {label: "Appoint principal certifier and give notice of commencement", stage: construction, fragment: null, after: ["Construction certificate: early works (retention, excavation, basement)"], built_in: "no", why: "Before building work under the first CC; demolition alone needs no CC or principal certifier (verified: false)"}
+    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-2, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-2", why: "Hoarding, site sheds"}
+    - {label: "Council s138 consents: hoarding, work zone, crane", stage: construction, fragment: null, after: ["Award the contract"], built_in: "no", why: "Roads Act consents (verified: false)"}
+    - {label: "Dilapidation surveys of neighbours and council assets", stage: construction, fragment: null, after: ["Award the contract"], built_in: "no", why: "DA condition"}
+    - {label: "Install erosion and sediment controls", stage: construction, fragment: fr.erosion-control, after: ["Establish the site"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.erosion-control", why: "Before disturbance"}
+    - {label: "Connect temporary builders power", stage: construction, fragment: fr.temporary-power, after: ["Establish the site"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.temporary-power", why: "electrical.temporary-power not in default scope"}
+    - {label: "Remove hazardous materials and obtain clearance", stage: construction, fragment: null, after: ["Establish the site", "Hazardous materials survey of existing buildings"], built_in: "no", why: "SafeWork NSW licensed removal (verified: false)"}
+    - {label: "Demolish existing structures and clear", stage: construction, fragment: fr.demolition-2, after: ["Remove hazardous materials and obtain clearance", "Dilapidation surveys of neighbours and council assets"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.demolition-2", why: "Authorised by the DA consent, no CC needed (verified: false); site.demolition with action remove is not in default scope"}
+    - {label: "Bulk earthworks", stage: construction, fragment: fr.earthworks-2, after: ["Install retention shoring", "Appoint principal certifier and give notice of commencement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.earthworks-2", why: "Spoil classification and disposal"}
+    - {label: "Install retention shoring", stage: construction, fragment: fr.basement-2, after: ["Demolish existing structures and clear", "Council s138 consents: hoarding, work zone, crane", "Appoint principal certifier and give notice of commencement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.basement-2", why: "Piled retention"}
+    - {label: "Excavate the basement", stage: construction, fragment: fr.basement-2, after: ["Install retention shoring"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.basement-2", why: "With geotechnical inspections"}
+    - {label: "Install anchors or props", stage: construction, fragment: fr.basement-2, after: ["Excavate the basement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.basement-2", why: "Neighbours' or council consent for anchors (verified: false)"}
+    - {label: "Excavate and pour footings", stage: construction, fragment: fr.footings-2, after: ["Excavate the basement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.footings-2", why: "Geotechnical sign-off of founding rock"}
+    - {label: "Form lift pits", stage: construction, fragment: fr.lift-shafts-2, after: ["Excavate the basement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lift-shafts-2", why: "Lift pits"}
+    - {label: "Reinforcement inspection before slab pour", stage: construction, fragment: null, after: ["Excavate and pour footings", "Form lift pits"], built_in: "yes", source: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour", why: "Fires once slab-on-ground is scoped, but the app links every structure.concrete row (floor cycle, roof slab) before it, so the ground slab lands after top-out; the key expects this correct order"}
+    - {label: "Pour the basement slab", stage: construction, fragment: fr.basement-2, after: ["Reinforcement inspection before slab pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.basement-2", why: "Slab with drainage and waterproofing"}
+    - {label: "Reinforce and pour the ground slab", stage: construction, fragment: fr.slab-2, after: ["Reinforcement inspection before slab pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-2", why: "Duplicates 'Pour the basement slab' (fr.basement-2); the same slab, so the scorer may match either"}
+    - {label: "Floor cycle: columns, form, reinforce and pour", stage: construction, fragment: fr.structure-concrete-2, after: ["Pour the basement slab", "Construction certificate"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.structure-concrete-2", why: "Basement, transfer and residential levels; durations read det.rise_in_storeys; each suspended pour has its own reinforcement inspection (domain)"}
+    - {label: "Build lift shafts", stage: construction, fragment: fr.lift-shafts-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lift-shafts-2", why: "Cores"}
+    - {label: "Form stairs and ramps", stage: construction, fragment: fr.stairs-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.stairs-2", why: "Fire-isolated stairs"}
+    - {label: "Roof slab and plant plinths", stage: construction, fragment: fr.structure-concrete-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.structure-concrete-2", why: "Top out"}
+    - {label: "Install the facade", stage: construction, fragment: fr.facade-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.facade-2", why: "Follows the frame"}
+    - {label: "Procure and deliver windows and shopfronts", stage: construction, fragment: fr.windows-2, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.windows-2", why: "Long lead"}
+    - {label: "Install windows and shopfronts", stage: construction, fragment: fr.windows-2, after: ["Procure and deliver windows and shopfronts", "Install the facade"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.windows-2", why: "Shopfronts have no specific fragment"}
+    - {label: "Waterproof balconies, podium and roof", stage: construction, fragment: fr.balcony-waterproof-2, after: ["Install the facade", "Roof slab and plant plinths"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.balcony-waterproof-2", why: "The roof membrane comes from external-waterproofing; fr.roof-2 needs roof-coverings"}
+    - {label: "Install footpath awning", stage: construction, fragment: null, after: ["Install the facade"], built_in: "no", why: "No fragment for structure.steel in class 2"}
+    - {label: "Sanitary plumbing rough-in", stage: construction, fragment: fr.hydraulic-sanitary-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-2", why: "Rough-in"}
+    - {label: "Cold water rough-in", stage: construction, fragment: fr.hydraulic-cold-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-cold-2", why: "Rough-in"}
+    - {label: "Deliver hot-water plant", stage: construction, fragment: fr.hydraulic-hot-2, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-hot-2", why: "Lead time"}
+    - {label: "Electrical rough-in", stage: construction, fragment: fr.electrical-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.electrical-2", why: "Rough-in"}
+    - {label: "Install hydrants and boosters", stage: construction, fragment: fr.hydrants-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydrants-2", why: "Hydrants"}
+    - {label: "Install detection and warning", stage: construction, fragment: fr.detection-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.detection-2", why: "Detection; occupant warning has no fragment"}
+    - {label: "Install consumer gas", stage: construction, fragment: fr.gas-commercial, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.gas-commercial", why: "Gas to retail tenancies; classes 2 and 6"}
+    - {label: "Sprinkler rough-in", stage: construction, fragment: fr.sprinklers-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.sprinklers-2", why: "fire-active.sprinklers not in default scope"}
+    - {label: "Seal service penetrations", stage: construction, fragment: fr.fire-stopping, after: ["Sanitary plumbing rough-in", "Cold water rough-in", "Electrical rough-in", "Install hydrants and boosters", "Sprinkler rough-in"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fire-stopping", why: "Class 2 gate"}
+    - {label: "Fire stopping inspection before concealment", stage: construction, fragment: null, after: ["Seal service penetrations"], built_in: "yes", source: "knowledge/clusters/fire/interfaces.yaml if.fire-stopping-before-concealment", why: "App hold point"}
+    - {label: "Sprinkler pressure test before ceilings", stage: construction, fragment: null, after: ["Sprinkler rough-in"], built_in: "partial", source: "knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings", why: "Needs the sprinkler item; the app also links sprinkler fit-off before it, forcing ceilings after fit-off (wrong; see gaps)"}
+    - {label: "Install air-conditioning", stage: construction, fragment: fr.ac-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.ac-2", why: "Apartments"}
+    - {label: "Install carpark ventilation", stage: construction, fragment: fr.carpark-vent-2, after: ["Pour the basement slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.carpark-vent-2", why: "Car park"}
+    - {label: "Frame and line internal walls", stage: construction, fragment: fr.linings-2, after: ["Install the facade", "Fire stopping inspection before concealment"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.linings-2", why: "Apartments"}
+    - {label: "Install ceilings", stage: construction, fragment: fr.ceilings-2, after: ["Frame and line internal walls", "Sprinkler pressure test before ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.ceilings-2", why: "Ceilings"}
+    - {label: "Fit off and commission sprinklers", stage: construction, fragment: fr.sprinklers-2, after: ["Install ceilings"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.sprinklers-2", why: "Heads fitted off after ceilings; the app's hold point puts fit-off before ceilings"}
+    - {label: "Install facade and roof insulation", stage: construction, fragment: fr.insulation-2, after: ["Install the facade"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.insulation-2", why: "Insulation"}
+    - {label: "Install roof drainage", stage: construction, fragment: fr.roof-drainage-2, after: ["Waterproof balconies, podium and roof"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.roof-drainage-2", why: "Roof drainage; the app attaches it after fr.roof-2, which does not fire"}
+    - {label: "Install luminaires", stage: construction, fragment: fr.lighting-2, after: ["Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lighting-2", why: "Lighting"}
+    - {label: "Install communications cabling", stage: construction, fragment: fr.comms-2, after: ["Frame and line internal walls"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.comms-2", why: "Data and MATV"}
+    - {label: "Install apartment smoke alarms", stage: construction, fragment: fr.smoke-alarms-2, after: ["Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.smoke-alarms-2", why: "Smoke alarms"}
+    - {label: "Services fit-off (sanitary, cold and hot water, electrical)", stage: construction, fragment: fr.hydraulic-sanitary-2, after: ["Install joinery", "Tile apartment wet areas"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-2", why: "Fit-off rows of fr.hydraulic-sanitary-2, fr.hydraulic-cold-2, fr.hydraulic-hot-2, fr.electrical-2"}
+    - {label: "Waterproof apartment wet areas", stage: construction, fragment: fr.wet-area-2, after: ["Frame and line internal walls"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.wet-area-2", why: "AS 3740"}
+    - {label: "Waterproofing inspection before tiling", stage: construction, fragment: null, after: ["Waterproof apartment wet areas"], built_in: "no", why: "Rule exists, no program row"}
+    - {label: "Tile apartment wet areas", stage: construction, fragment: fr.tiling-2, after: ["Waterproofing inspection before tiling"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tiling-2", why: "Tiling"}
+    - {label: "Install joinery", stage: construction, fragment: fr.joinery-2, after: ["Frame and line internal walls"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.joinery-2", why: "Long lead"}
+    - {label: "Hang apartment doors", stage: construction, fragment: fr.internal-doors-2, after: ["Frame and line internal walls"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.internal-doors-2", why: "Doors"}
+    - {label: "Paint apartments and common areas", stage: construction, fragment: fr.painting-2, after: ["Install joinery", "Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.painting-2", why: "Painting"}
+    - {label: "Lay apartment floor finishes", stage: construction, fragment: fr.floors-2, after: ["Paint apartments and common areas"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.floors-2", why: "Floors"}
+    - {label: "Retail shell and services provisions (grease arrestor, exhaust riser, meters, stubs)", stage: construction, fragment: null, after: ["Install windows and shopfronts", "Sanitary plumbing rough-in", "Electrical rough-in", "Install consumer gas"], built_in: "no", why: "No class 6 new-build fragment; hydraulic.trade-waste has none"}
+    - {label: "Loading bay and waste rooms", stage: construction, fragment: null, after: ["Pour the basement slab"], built_in: "no", why: "site.loading-docks and site.waste-storage have no fragment"}
+    - {label: "Manufacture lifts", stage: construction, fragment: fr.lifts, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lifts", why: "Long lead"}
+    - {label: "Install and commission lifts", stage: construction, fragment: fr.lifts, after: ["Manufacture lifts", "Build lift shafts"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lifts", why: "Lifts"}
+    - {label: "Lodge the supply application and substation design", stage: construction, fragment: fr.utility-major, after: ["Local planning panel determination"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.utility-major", why: "DNSP; longest authority lead, lodged by the developer's electrical engineer after consent and before award; the app places it at construction stage start"}
+    - {label: "Substation energisation and authority connection", stage: construction, fragment: fr.utility-major, after: ["Lodge the supply application and substation design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.utility-major", why: "Needed for commissioning"}
+    - {label: "Install main switchboard", stage: construction, fragment: fr.switchboard-2, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.switchboard-2", why: "Procure, deliver and install"}
+    - {label: "Install main switchboard (duplicate from the major fragment)", stage: construction, fragment: fr.switchboard-major, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.switchboard-major", why: "Same switchboard; the app adds it a second time because 6 matches major. Expected to match twice, not to be hidden"}
+    - {label: "Lodge services applications and lead-in connections", stage: construction, fragment: fr.services-connections-major, after: ["Local planning panel determination"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.services-connections-major", why: "Section 73 application follows consent; the app anchors it at construction stage start"}
+    - {label: "Install on-site detention and stormwater", stage: construction, fragment: fr.stormwater-2, after: ["Bulk earthworks"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.stormwater-2", why: "OSD"}
+    - {label: "Landscape the ground and podium", stage: construction, fragment: fr.landscape-2, after: ["Waterproof balconies, podium and roof"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.landscape-2", why: "Podium planters"}
+    - {label: "Public domain works: footpath, crossing, street trees", stage: construction, fragment: null, after: ["Install footpath awning"], built_in: "no", why: "site.public-domain has no fragment"}
+    - {label: "Commission fire safety systems and essential services", stage: construction, fragment: null, after: ["Fit off and commission sprinklers", "Install detection and warning", "Substation energisation and authority connection"], built_in: "no", why: "No integrated commissioning row"}
+    - {label: "Pre-completion acoustic testing", stage: construction, fragment: null, after: ["Lay apartment floor finishes"], built_in: "no", why: "Typical DA condition"}
+    - {label: "Notify the expected completion date (RAB Act)", stage: construction, fragment: null, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "no", why: "Before the OC application (timing verified: false)"}
+    - {label: "Lodge the strata building bond", stage: construction, fragment: null, after: ["Notify the expected completion date (RAB Act)"], built_in: "no", why: "Before OC (verified: false)"}
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lay apartment floor finishes", "Services fit-off (sanitary, cold and hot water, electrical)", "Install and commission lifts", "Commission fire safety systems and essential services", "Landscape the ground and podium", "Public domain works: footpath, crossing, street trees", "Retail shell and services provisions (grease arrestor, exhaust riser, meters, stubs)"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.practical-completion", why: "PC"}
+    - {label: "Building compliance declaration and fire safety certificate", stage: completion, fragment: null, after: ["Practical completion inspection"], built_in: "no", why: "DBP Act and EP&A fire safety (verified: false)"}
+    - {label: "Section 73 compliance certificate", stage: completion, fragment: null, after: ["Lodge services applications and lead-in connections"], built_in: "no", why: "Rule exists, no program row"}
+    - {label: "Occupation certificate", stage: completion, fragment: fr.occupation-certificate, after: ["Building compliance declaration and fire safety certificate", "Section 73 compliance certificate", "Lodge the strata building bond", "Pre-completion acoustic testing"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.occupation-certificate", why: "Residential and retail shells"}
+    - {label: "Strata plan, strata certificate and registration", stage: completion, fragment: null, after: ["Occupation certificate"], built_in: "no", why: "Needed for settlement"}
+    - {label: "Handover", stage: completion, fragment: fr.handover, after: ["Occupation certificate"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.handover", why: "Keys, manuals, warranties"}
+    - {label: "Hand retail shells to tenants for fit-out", stage: completion, fragment: null, after: ["Occupation certificate"], built_in: "no", why: "No fragment"}
+    - {label: "Defects inspection", stage: defects, fragment: fr.defects-inspection, after: ["Handover"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-inspection", why: "Defects"}
+    - {label: "Strata bond interim and final inspections", stage: defects, fragment: null, after: ["Handover"], built_in: "no", why: "Strata Schemes Management Act 2015 Part 11 (verified: false)"}
+    - {label: "Defects liability period", stage: defects, fragment: fr.defects-liability-end, after: ["Defects inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "AS 4902 DLP (length verified: false)"}
+
+# RFP expectations use the data/eval/rfp/answer-keys keys. They state the CORRECT answer for this job.
+# Novation is keyed per package in procurement: architect, structural, civil, landscape yes; the four services
+# engineers option (owner to confirm); the rest no. App default under D&C is option for all.
+rfps:
+  - discipline: consultant.architect
+    template: architecture
+    built_in: "partial"
+    source: "knowledge/rfp/architecture.yaml mixed_use_map"
+    why: "D&C boundary ends at dnc_tender; blocks on fact:budget until the budget is read"
+    must_include: ["Concept and schematic design", "DA planning approval documentation", "Planning response", "Design development", "Apartment and common-area interiors", "D&C tender documents with performance brief", "Regulated design and compliance declarations", "Post-novation documentation", "ADG design verification statement", "Class and use map by part; shell versus fit-out deliverables", "BIM model", "Demolition plans"]
+    must_not_include: ["House-module rows", "Traditional tender documents or bidding", "Tenant fit-out design", "Green Star or NABERS", "Connecting with Country input", "Brief and masterplan"]
+    expect:
+      stages_include: [concept, schematic, planning_approval, planning_response, design_development, interiors, dnc_tender, regulated_design, post_novation]
+      stages_option: [contract_admin]
+      stages_absent: [brief_masterplan, house_documents, tender_traditional, bidding, for_construction, construction_support]
+      positions: {coordination: I, input_schedule: I, specialist_coordination: I, bim_model: I, bim_coordination: O, specification: I, door_schedule: I, finishes_schedules: I, typical_interiors: I, base_interiors: I, tenant_fitout: X, dnc_performance_brief: I, tender_evaluation: I, certifier_liaison: I, modifications: O, apartment_design: I, extra_declarations: O, mixed_use_map: I, existing_interfaces: I, facade_certification: X, performance_solutions: X, community: X, house_interiors: absent, house_selections: absent, lodgement: absent, water_asset: absent, country: absent, sustainability_docs: absent, live_staging: absent}
+      blocking: ["fact:budget"]
+      sources: ["blocking clears once proj.budget_stated is read", "existing_interfaces: demolition plans for the existing shops"]
+    app_differs:
+      - {key: stage.regulated_design, app: option, expect: include, why: "after the dnc_tender boundary end"}
+      - {key: stage.post_novation, app: option, expect: include, why: "after the boundary end"}
+      - {key: position.apartment_design, app: O, expect: I, why: "ADG design verification is mandatory for shop-top of 3+ storeys and 4+ dwellings (verified: false)"}
+      - {key: position.tenant_fitout, app: O, expect: X, why: "retail is a shell; the tenant's designer fits out"}
+      - {key: position.tender_evaluation, app: O, expect: I, why: "complex O; the architect reviews D&C tender design qualifications"}
+  - discipline: consultant.structural
+    template: structural
+    built_in: "partial"
+    source: "knowledge/rfp/structural.yaml retention_design"
+    must_include: ["Design basis", "Retention and temporary-works interfaces", "Transfer slab", "Delegated design schedule for PT slabs", "D&C tender documents", "Regulated design", "Post-novation documentation", "Construction-phase inspections with inspection schedule"]
+    must_not_include: ["Residential framing", "Existing structure assessment", "Authority asset stage", "Super-flat floor", "Traditional tender documents"]
+    expect:
+      stages_include: [concept_schematic, planning_approval, design_development, dnc_tender, regulated_design, post_novation, construction_phase]
+      stages_option: []
+      stages_absent: [existing_assessment, authority_asset, tender_traditional, construction_documents]
+      positions: {design_basis: I, geotech_brief: I, shared_model: I, safety_in_design: I, value_management: I, delegated_design: I, specialist_element_design: X, retention_design: I, temporary_works_interfaces: I, temporary_works_design: X, dilapidation: O, services_fixings: O, metalwork: O, compaction: X, demolition_drawings: X, services_footings: I, inspection_schedule: I, residential_framing: absent, strengthening: absent, super_flat_floor: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.regulated_design, app: option, expect: include, why: "after the dnc_tender boundary"}
+      - {key: stage.post_novation, app: option, expect: include, why: "after the boundary"}
+      - {key: stage.construction_phase, app: option, expect: include, why: "include_when complex, but the after-boundary rule wins"}
+      - {key: position.super_flat_floor, app: O, expect: absent, why: "client flag; if_unknown option"}
+      - {key: stage.existing_assessment, app: include, expect: absent, why: "det.existing_building true turns it on, but the existing buildings are demolished, not kept"}
+      - {key: position.strengthening, app: O, expect: absent, why: "follows existing_assessment"}
+  - discipline: consultant.civil
+    template: civil
+    built_in: "partial"
+    source: "knowledge/rfp/civil.yaml osd_new"
+    must_include: ["Stormwater concept for the DA with discharge confirmed", "OSD design", "MUSIC water quality", "D&C tender design", "Post-novation design", "Civil design declarations", "As-built and OSD certification"]
+    must_not_include: ["Public road works", "Flood report", "NorBE", "Trunk drainage", "Road safety audit"]
+    expect:
+      stages_include: [schematic, dnc_tender, post_novation, construction_phase, as_built]
+      stages_option: []
+      stages_absent: [detailed_tender, for_construction]
+      elements_include: [earthworks, roads, stormwater]
+      elements_absent: [public_road]
+      positions: {utility_plan: I, discharge: I, drainage_model: I, hydraulic_connection: I, water_quality: I, osd_new: I, civil_declarations: I, safety_in_design: I, pavement_design: O, retaining_structural: X, shoring: X, clash_check: X, civil_model: O, design_criteria: X, norbe: absent, osd_existing: absent, osd_replacement: absent, retained_services: absent, earthworks_suitability: absent, flood_report: absent, public_road_approvals: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.post_novation, app: option, expect: include, why: "after the dnc_tender boundary"}
+      - {key: stage.construction_phase, app: option, expect: include, why: "default option; OSD certification needs inspections"}
+      - {key: stage.as_built, app: option, expect: include, why: "follows construction_phase"}
+      - {key: position.shoring, app: O, expect: X, why: "basement shoring is the structural engineer's"}
+      - {key: position.retained_services, app: I, expect: absent, why: "existing_building module on, but every existing service is abolished before demolition and new connections are designed"}
+  - discipline: consultant.town_planner
+    template: town-planning
+    built_in: "yes"
+    source: "knowledge/rfp/town-planning.yaml panel_attendance"
+    must_include: ["Preliminary advice", "Pre-lodgement", "Statement of environmental effects with ADG compliance", "Lodgement", "Assessment", "Panel attendance"]
+    must_not_include: ["Clause 4.6 variation request", "Court"]
+    expect:
+      stages_include: [prelim_advice, pre_lodgement, planning_report, lodgement, assessment, determination_review]
+      stages_option: [post_approval]
+      stages_absent: [variation_request]
+      positions: {specialist_review: I, certificates: I, compliance_matrix: I, panel_attendance: I, ad_hoc_advice: I, lodgement_format: I, historic_consents: O, submissions_response: O, modification: O, court: X, authority_fees: X, specialist_reports: X}
+      blocking: []
+    app_differs: []
+  - discipline: consultant.bca
+    template: bca-certification
+    built_in: "partial"
+    source: "knowledge/rfp/bca-certification.yaml classification_map"
+    must_include: ["A1-A3 advisory", "Mixed-use classification and approval map", "Compliance evidence registers"]
+    must_not_include: ["Package B statutory functions", "Building supervision"]
+    expect:
+      stages_include: [a1_inception, a2_planning, a3_tender]
+      stages_option: [a4_construction]
+      stages_absent: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      positions: {evidence_registers: I, classification_map: I, performance_assessment: O, extra_visits: O, specialist_design: X, other_approvals: X, supervision: X, statutory_functions: absent, existing_assessment: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.a1_inception, app: ask, expect: include, why: "client flag bca_advisory"}
+      - {key: stage.a2_planning, app: ask, expect: include, why: "client flag bca_advisory"}
+      - {key: stage.a3_tender, app: ask, expect: include, why: "client flag bca_advisory"}
+      - {key: stage.b1_preliminary, app: option, expect: absent, why: "after the a1..a3 boundary"}
+      - {key: position.classification_map, app: ask, expect: I, why: "client flag bca_classification_map, not driven by the derived mixed_use flag"}
+      - {key: position.statutory_functions, app: ask, expect: absent, why: "client flag bca_certification"}
+  - discipline: consultant.certifier
+    template: bca-certification
+    built_in: "partial"
+    source: "knowledge/rfp/bca-certification.yaml boundary"
+    must_include: ["B2 CC assessment (staged CCs)", "Principal certifier services", "Occupation certificate and fire safety certificate", "Staged occupation: residential and retail shells", "Fire referrals", "BASIX completion check"]
+    must_not_include: ["Package A advisory", "Design", "Building supervision"]
+    expect:
+      stages_include: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      stages_option: []
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction]
+      positions: {statutory_functions: I, evidence_registers: I, classification_map: I, staged_occupation: I, fire_referrals: I, residential_evidence: I, performance_assessment: O, extra_visits: O, specialist_design: X, other_approvals: X, supervision: X, existing_assessment: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.a1_inception, app: ask, expect: absent, why: "boundary falls back to a1..a3"}
+      - {key: stage.b2_construction_approval, app: option, expect: include, why: "after the boundary"}
+      - {key: stage.b3_construction, app: option, expect: include, why: "after the boundary"}
+      - {key: stage.b4_occupation, app: option, expect: include, why: "after the boundary"}
+      - {key: position.statutory_functions, app: ask, expect: I, why: "client flag bca_certification"}
+      - {key: position.staged_occupation, app: ask, expect: I, why: "client flag"}
+      - {key: position.fire_referrals, app: ask, expect: I, why: "client flag"}
+  - discipline: consultant.hydraulic
+    template: hydraulic-services
+    built_in: "partial"
+    source: "knowledge/rfp/hydraulic-services.yaml trade"
+    must_include: ["Authority stage: Sydney Water and Section 73", "Water Servicing Coordinator role or appointment for the Section 73 application", "Potable and hot water design", "Booster pumps", "Sanitary and sewer", "Trade-waste drainage and grease-arrestor provision", "Gas to retail tenancies", "Rainwater reuse", "D&C tender documents", "Design declarations", "Option: continued design after award, construction support and witnessing"]
+    must_not_include: ["Onsite sewage treatment", "Process waste treatment", "Site stormwater and detention"]
+    expect:
+      stages_include: [inception, concept, planning, design, tender]
+      stages_option: [continuation, construction, handover, defects]
+      stages_absent: [investigation, advisory]
+      positions: {concept: I, domestic: I, pumps: I, rainwater: I, sanitary: I, trade: I, roof: I, gas: I, interfaces: I, utility: I, declarations: I, continuation: O, construction: O, witness: O, defects: O, fixtures: X, fire: X, civil: X, existing: absent, advice: absent, treatment: absent, process: absent, alternative_sources: absent, staging: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: absent, why: "client flag hyd_investigation"}
+      - {key: stage.planning, app: ask, expect: include, why: "client flag hyd_planning"}
+      - {key: stage.tender, app: option, expect: include, why: "after the inception..design boundary"}
+      - {key: position.trade, app: O, expect: I, why: "client flag hyd_trade, if_unknown option"}
+      - {key: position.gas, app: O, expect: I, why: "client flag hyd_gas"}
+      - {key: position.utility, app: O, expect: I, why: "client flag hyd_utility"}
+      - {key: position.declarations, app: ask, expect: I, why: "client flag hyd_declarations; not driven by regulated_design"}
+      - {key: position.alternative_sources, app: O, expect: absent, why: "if_unknown option"}
+      - {key: position.civil, app: ask, expect: X, why: "client flag hyd_external"}
+  - discipline: consultant.fire_services
+    template: fire-services
+    built_in: "partial"
+    source: "knowledge/rfp/fire-services.yaml"
+    must_include: ["Sprinklers, hydrants, booster by area", "Pressure and flow enquiry", "Detection and occupant warning", "D&C documentation", "Declarations for regulated fire safety systems", "Option: continued design after award, construction and commissioning witness"]
+    must_not_include: ["Fire strategy and performance solutions", "Special hazards suppression", "Existing system investigation"]
+    expect:
+      stages_include: [inception, concept, design, tender]
+      stages_option: [continuation, construction, handover]
+      stages_absent: [investigation, advisory]
+      positions: {wet: I, supply: I, authority: I, dry: I, controls: I, declarations: I, continuation: O, construction: O, witness: O, staging: O, execution: O, hazards: X, strategy: X, plant: absent, existing: absent, upgrade: absent, remediation: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: absent, why: "client flag fs_investigation"}
+      - {key: stage.tender, app: option, expect: include, why: "after the boundary"}
+      - {key: stage.advisory, app: option, expect: absent, why: "default option"}
+      - {key: position.wet, app: ask, expect: I, why: "client flag fs_wet"}
+      - {key: position.declarations, app: ask, expect: I, why: "client flag fs_declarations"}
+  - discipline: consultant.mechanical
+    template: mechanical-services
+    built_in: "partial"
+    source: "knowledge/rfp/mechanical-services.yaml kitchen"
+    must_include: ["Car-park ventilation and local exhaust", "Retail kitchen-exhaust riser provision", "Apartment AC", "DA planning input", "D&C documentation", "Declarations", "Option: continued design after award, construction and commissioning"]
+    must_not_include: ["Stair pressurisation (base under 25 m)", "Specialist process systems", "Whole-building energy rating"]
+    expect:
+      stages_include: [inception, concept, planning, design, tender]
+      stages_option: [continuation, construction, handover, seasonal]
+      stages_absent: [investigation, advisory]
+      positions: {hvac: I, local: I, kitchen: I, interfaces: I, declarations: I, continuation: O, construction: O, witness: O, seasonal: O, execution: O, energy: X, acoustic: X, specialist: X, smoke: absent, existing: absent, staging: absent, remediation: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.planning, app: ask, expect: include, why: "client flag mech_planning"}
+      - {key: stage.tender, app: option, expect: include, why: "after the boundary"}
+      - {key: stage.advisory, app: option, expect: absent, why: "default option"}
+      - {key: position.kitchen, app: ask, expect: I, why: "client flag mech_kitchen"}
+      - {key: position.local, app: ask, expect: I, why: "client flag mech_local"}
+      - {key: position.smoke, app: ask, expect: absent, why: "client flag mech_smoke"}
+  - discipline: consultant.electrical
+    template: electrical-services
+    built_in: "partial"
+    source: "knowledge/rfp/electrical-services.yaml staging"
+    must_include: ["DNSP application and substation", "Distribution and metering incl. retail shell energisation", "EV-ready car park", "Lighting", "ICT pathways", "D&C documentation", "Declarations", "Option: continued design after award and construction support"]
+    must_not_include: ["Contestable ASP3 design", "Fire detection design (fire services')", "HV or process studies"]
+    expect:
+      stages_include: [inception, concept, planning, design, tender]
+      stages_option: [continuation, construction, handover, defects]
+      stages_absent: [investigation, advisory]
+      positions: {distribution: I, utility: I, lighting: I, controls: I, generation: I, ict: I, plant: I, staging: I, declarations: I, continuation: O, construction: O, handover: O, asp3: X, specialist: X, feature: O, studies: O, defects: O, dry_fire: absent, existing: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.planning, app: option, expect: include, why: "client flag elec_planning, if_unknown option"}
+      - {key: stage.tender, app: option, expect: include, why: "after the boundary"}
+      - {key: position.generation, app: O, expect: I, why: "client flag elec_generation; EV readiness"}
+      - {key: position.ict, app: O, expect: I, why: "client flag elec_ict"}
+      - {key: position.staging, app: ask, expect: I, why: "client flag elec_staging"}
+      - {key: position.declarations, app: ask, expect: I, why: "client flag elec_declarations"}
+  - discipline: consultant.traffic
+    template: traffic
+    built_in: "partial"
+    source: "knowledge/rfp/traffic.yaml car_park_certification"
+    must_include: ["Parking and access advice", "Traffic and parking report", "Swept paths for loading and waste vehicles", "Assessment response", "Car park certification"]
+    must_not_include: ["Intersection modelling", "Green travel plan", "Public road design"]
+    expect:
+      stages_include: [design_advice, report, assessment_response, conditions_review, car_park_certification]
+      stages_option: [design_review, ctmp]
+      stages_absent: [surveys, modelling, travel_plan]
+      positions: {vehicle_schedule: I, consultation: I, end_of_trip: I, swept_paths: I, demand_reduction: O, alternative_schemes: O, microsimulation: X, road_safety_audit: X, public_road_design: X, court: X, survey_costs: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.car_park_certification, app: option, expect: include, why: "default option; the certifier needs the AS 2890 certificate (verified: false)"}
+  - discipline: consultant.waste
+    template: waste-management
+    built_in: "partial"
+    source: "knowledge/rfp/waste-management.yaml shared"
+    must_include: ["Operational waste management plan with separate retail and residential streams", "C&D waste management plan", "Bin rooms and collection", "Consent review"]
+    must_not_include: ["Hazardous waste classification", "Equipment design and supply"]
+    expect:
+      stages_include: [s1_inception, s2_concept, s3_operational, s3_cd, s4_review]
+      stages_option: [s5_tender, s6_contractor, s7_completion, s8_operational]
+      stages_absent: [s8_advisory]
+      positions: {operational: I, cd: I, collection: I, rooms: I, shared: I, hazardous: X, swept_paths: X, equipment: X}
+      blocking: []
+    app_differs:
+      - {key: stage.s2_concept, app: ask, expect: include, why: "client flag waste_operational"}
+      - {key: stage.s3_operational, app: ask, expect: include, why: "client flag waste_operational"}
+      - {key: stage.s3_cd, app: ask, expect: include, why: "client flag waste_cd"}
+      - {key: stage.s4_review, app: option, expect: include, why: "after the s3_cd boundary"}
+      - {key: stage.s8_advisory, app: option, expect: absent, why: "default option"}
+      - {key: position.shared, app: O, expect: I, why: "row on through the derived mixed_use flag, but no listed stage is included"}
+  - discipline: consultant.access
+    template: access
+    built_in: "partial"
+    source: "knowledge/rfp/access.yaml shared_routes"
+    must_include: ["Concept advice", "DA access report", "CC access report", "Shared routes for the mixed uses", "Livable and adaptable housing", "Facilities review"]
+    must_not_include: ["Existing building assessment", "Occupied-site staging"]
+    expect:
+      stages_include: [s1_inception, s2_concept, s3_planning, s4_approval]
+      stages_option: [s5_tender, s6_postcontract, s7_completion]
+      stages_absent: [s8_advisory]
+      positions: {review: I, shared_routes: I, housing: I, facilities: I, inclusive: O, solutions: O, testing: O, existing: absent, occupied: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s3_planning, app: ask, expect: include, why: "client flag access_planning"}
+      - {key: stage.s4_approval, app: ask, expect: include, why: "client flag access_approval"}
+      - {key: stage.s8_advisory, app: option, expect: absent, why: "default option"}
+      - {key: position.housing, app: ask, expect: I, why: "client flag access_housing"}
+      - {key: position.facilities, app: ask, expect: I, why: "client flag access_facilities"}
+      - {key: position.existing, app: I, expect: absent, why: "flag existing_building yes from det.existing_building; nothing is retained"}
+  - discipline: consultant.geotechnical
+    template: geotechnical
+    built_in: "partial"
+    source: "knowledge/rfp/geotechnical.yaml"
+    must_include: ["Investigation plan", "Boreholes with rock coring and groundwater observation", "Report with retention and founding parameters", "Preliminary advice for the DA", "Construction-phase inspections of founding rock and excavation"]
+    must_not_include: ["Contamination and waste classification", "Acid sulfate soils", "Asset exposure"]
+    expect:
+      stages_include: [g1_plan, g2_field, g3_report, g4_planning, g6_construction]
+      stages_option: [g5_design, g7_transfer]
+      stages_absent: []
+      positions: {plan: I, foundation: I, civil_parameters: I, clearance: I, construction: I, monitoring: O, transfer: O, access: X, environment: X, asset_exposure: absent, ass: absent, defects: absent, handback: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.g2_field, app: ask, expect: include, why: "client flag geotech_intrusive"}
+      - {key: stage.g4_planning, app: ask, expect: include, why: "client flag geotech_planning"}
+      - {key: stage.g6_construction, app: option, expect: include, why: "default option"}
+      - {key: position.construction, app: O, expect: I, why: "follows g6"}
+      - {key: position.defects, app: O, expect: absent, why: "always O"}
+  - discipline: consultant.surveyor
+    template: land-surveying
+    built_in: "partial"
+    source: "knowledge/rfp/land-surveying.yaml titling"
+    must_include: ["Detail survey with neighbours' windows and heights", "Boundary identification", "Services records", "Strata plan of subdivision", "Final and work-as-executed survey"]
+    must_not_include: ["Interior scan", "Occupied-site access"]
+    expect:
+      stages_include: [s1_plan, s2_detail, s3_boundary, s4_services, s7_completion]
+      stages_option: [s5_support, s6_construction]
+      stages_absent: []
+      positions: {control: I, records: I, boundary: I, adjoining: I, titling: I, asbuilt: I, setout: O, monitoring: O, exposure: X, interior: absent, buried: absent, sewer: absent, access: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s2_detail, app: ask, expect: include, why: "client flag survey_detail"}
+      - {key: stage.s7_completion, app: option, expect: include, why: "default option; strata plan and final survey"}
+      - {key: position.titling, app: O, expect: I, why: "always O; strata subdivision is base"}
+      - {key: position.asbuilt, app: O, expect: I, why: "follows s7"}
+      - {key: position.interior, app: O, expect: absent, why: "always O"}
+  - discipline: consultant.landscape
+    template: landscape-architecture
+    built_in: "partial"
+    source: "knowledge/rfp/landscape-architecture.yaml podium"
+    must_include: ["Concept to ADG deep soil and communal open space", "DA landscape plan", "Developed design", "Podium and roof planter build-ups", "D&C and post-contract documentation"]
+    must_not_include: ["Tree assessment", "Traditional tender documentation", "Public-domain package (base)"]
+    expect:
+      stages_include: [s1_inception, s2_concept, s3_approval, s4_developed, s6_dnc]
+      stages_option: [s7_construction, s8_establishment]
+      stages_absent: [s5_tender, s9_advisory]
+      positions: {design: I, podium: I, irrigation_brief: I, trees: X, civil_structure: X, environment: X, public: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s2_concept, app: ask, expect: include, why: "client flag landscape_design"}
+      - {key: stage.s4_developed, app: option, expect: include, why: "after the s3_approval boundary"}
+      - {key: stage.s6_dnc, app: option, expect: include, why: "after the boundary"}
+      - {key: stage.s9_advisory, app: option, expect: absent, why: "default option"}
+      - {key: position.podium, app: ask, expect: I, why: "client flag landscape_podium"}
+  - discipline: consultant.quantity_surveyor
+    template: cost-planning
+    built_in: "partial"
+    source: "knowledge/rfp/cost-planning.yaml allocation"
+    must_include: ["Feasibility estimate", "CIV estimate for the DA fee", "Design cost plans", "Mixed-use cost allocation", "D&C tender evaluation", "Progress claim reports"]
+    must_not_include: ["Valuation or depreciation", "Remediation costing"]
+    expect:
+      stages_include: [s1_basis, s2_concept, s3_authority, s4_design, s5_tender, s6_construction]
+      stages_option: [s7_completion]
+      stages_absent: [s8_advice]
+      positions: {construction_plan: I, total_budget: I, contract_allowances: I, allocation: I, risk: I, tender: I, claims: I, lender: O, lifecycle: O, valuation: X, existing_costs: absent, remediation: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s2_concept, app: ask, expect: include, why: "client flag cost_concept"}
+      - {key: stage.s5_tender, app: option, expect: include, why: "after the s4_design boundary"}
+      - {key: stage.s6_construction, app: option, expect: include, why: "after the boundary"}
+      - {key: position.allocation, app: ask, expect: I, why: "client flag cost_allocation; not driven by mixed_use"}
+  - discipline: consultant.fire_engineer
+    template: fire-engineering
+    built_in: "partial"
+    source: "knowledge/rfp/fire-engineering.yaml occupants"
+    must_include: ["Fire strategy", "Performance design brief", "FER for scheduled solutions", "Mixed occupancy basis", "Verification before OC"]
+    must_not_include: ["Wet and dry fire design", "Matrix programming", "Special hazards"]
+    expect:
+      stages_include: [s1_strategy, s3_brief, s4_report, s7_verification]
+      stages_option: [s2_early, s5_integration, s6_construction]
+      stages_absent: [s8_specialist, s8_staging, s9_advisory, s9_peer]
+      positions: {brief: I, fer: I, occupants: I, strategy_review: I, witnessing: I, wet_design: X, dry_design: X, matrix_design: X, other_roles: X, existing: absent, specialist: absent, hazards: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s3_brief, app: ask, expect: include, why: "client flag fe_solutions"}
+      - {key: stage.s7_verification, app: option, expect: include, why: "default option"}
+      - {key: position.witnessing, app: O, expect: I, why: "follows s7"}
+  - discipline: consultant.acoustic
+    template: null
+    built_in: "no"
+    must_include: ["DA acoustic report: road noise, retail and plant noise, SEPP (Transport and Infrastructure) where it applies (verified: false)", "NCC Part F7 sound insulation between units and between units and the retail (verified: false)", "Facade glazing schedule", "Pre-completion testing"]
+    must_not_include: ["Room acoustics for the retail fit-out", "Environmental noise monitoring beyond the DA"]
+  - discipline: consultant.esd
+    template: null
+    built_in: "no"
+    must_include: ["BASIX certificate and NatHERS for the apartments", "Section J (DTS or JV3) for the retail shells", "BASIX completion support at OC"]
+    must_not_include: ["Green Star", "NABERS"]
+  - discipline: consultant.hazmat
+    template: null
+    built_in: "no"
+    must_include: ["Hazardous materials survey of the buildings to be demolished", "Asbestos removal specification", "Clearance inspection and certificate"]
+    must_not_include: ["Contaminated land investigation"]
+  - discipline: consultant.environmental
+    template: null
+    built_in: "no"
+    must_include: ["Preliminary site investigation for the change to residential use", "Waste classification of spoil (option)"]
+    must_not_include: ["Site audit statement (only under contaminated-land)"]
+  - discipline: consultant.vertical_transport
+    template: null
+    built_in: "no"
+    must_include: ["Lift traffic analysis", "Performance specification for the D&C tender"]
+    must_not_include: ["Escalators", "Goods lifts"]
+
+triggers:
+  - id: effective-height-over-25m
+    label: Building taller than 25 m effective height
+    evidence: ["eight storeys with an effective height of 26.4 m", "the fire-isolated stairs are pressurised", "an emergency lift is required"]
+    negation: ["The effective height is less than 25 m", "six storeys, effective height 18.9 m"]
+    profile: [det.effective_height, det.rise_in_storeys]
+    adds:
+      procurement: [consultant.fire_engineer]
+      work_items: [{system: fire-active.smoke-control, action: new}, {system: mechanical.fire-mode-air-systems, action: new}, {system: vertical-transport.lift-fire-service, action: new}]
+      cost_plan: ["Stair pressurisation", "Emergency lift", "Emergency warning and intercom system (EWIS)"]
+      program: ["Install stair pressurisation", "Commission smoke control"]
+      rfps: [{discipline: consultant.mechanical, must_include: ["Smoke control design under the fire strategy"]}]
+      authority: ["FRNSW referral (verified: false)"]
+    why: "25 m thresholds are verified: false; a fire control centre comes only above 50 m (verified: false); no generator reads det.effective_height"
+    built_in: {procurement: "no", work_items: "no", cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/rfp/mechanical-services.yaml smoke"
+  - id: heritage-conservation-area
+    label: Site in a heritage conservation area or with a contributory facade
+    evidence: ["The site is within the Main Street Heritage Conservation Area", "the Federation shopfront at No. 42 is a contributory building to be retained"]
+    negation: ["The site is not a heritage item and is not in a heritage conservation area"]
+    profile: [det.heritage_status]
+    adds:
+      procurement: [consultant.heritage]
+      work_items: [{system: structure.alterations, action: retain}]
+      cost_plan: ["Heritage consultant", "Facade retention and temporary support"]
+      program: ["Heritage impact statement", "Heritage referral"]
+      rfps: [{discipline: consultant.town_planner, must_include: ["Heritage controls in the SEE"]}]
+      authority: ["Council heritage referral"]
+    built_in: {procurement: "yes", program: "partial", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
+  - id: classified-road-frontage
+    label: Frontage to a classified (state) road
+    evidence: ["The site fronts Parramatta Road, a classified road", "TfNSW concurrence is required for the driveway", "vehicle access must be from the rear lane, not the highway"]
+    negation: ["The site fronts a local road; no classified road frontage"]
+    profile: [flag.state_road, flag.tfnsw_referral]
+    adds:
+      cost_plan: ["Road-noise facade upgrade"]
+      program: ["TfNSW referral"]
+      rfps: [{discipline: consultant.traffic, must_include: ["TfNSW consultation", "Construction traffic management plan"]}, {discipline: consultant.acoustic, must_include: ["Road noise assessment to the SEPP (Transport and Infrastructure) (verified: false)"]}]
+      authority: ["TfNSW concurrence (verified: false)"]
+    built_in: {rfps: "partial", program: "no", cost_plan: "no"}
+    source: "knowledge/rfp/traffic.yaml ctmp"
+  - id: cl46-variation
+    label: Height or FSR exceeds the LEP standard
+    evidence: ["A clause 4.6 request to vary the height of buildings standard accompanies the DA", "the lift overrun exceeds the 21 m height control by 1.8 m"]
+    negation: ["The proposal complies with the height and floor space ratio standards"]
+    profile: [flag.cl46]
+    adds:
+      program: ["Prepare clause 4.6 variation request"]
+      rfps: [{discipline: consultant.town_planner, must_include: ["Clause 4.6 variation request"]}]
+    built_in: {rfps: "yes", program: "no"}
+    source: "knowledge/rfp/town-planning.yaml variation_request"
+  - id: groundwater-dewatering
+    label: Groundwater above the base of the basement
+    evidence: ["Groundwater was measured at 4.5 m below ground in BH2", "dewatering will be required during excavation", "a tanked basement is recommended"]
+    negation: ["No groundwater was encountered to the base of the boreholes"]
+    profile: [flag.groundwater]
+    adds:
+      cost_plan: ["Dewatering and treatment", "Tanked basement"]
+      program: ["Groundwater monitoring", "Dewatering approval"]
+      rfps: [{discipline: consultant.geotechnical, must_include: ["Groundwater monitoring wells and hydrogeological assessment"]}, {discipline: consultant.civil, must_include: ["Earthworks suitability coordinated with groundwater"]}]
+      authority: ["WaterNSW dewatering approval; integrated development (verified: false)"]
+    built_in: {rfps: "partial", cost_plan: "no", program: "no"}
+    source: "knowledge/rfp/civil.yaml earthworks_suitability"
+  - id: contaminated-land
+    label: Former service station or dry cleaner on the site
+    evidence: ["The site was a service station until 1992; underground tanks may remain", "a dry cleaner operated in the ground-floor shop", "the PSI recommends a detailed site investigation"]
+    negation: ["The PSI found a low risk of contamination and no further investigation is required"]
+    profile: [det.potentially_contaminated_land]
+    adds:
+      procurement: [consultant.environmental]
+      work_items: [{system: site.contamination, action: repair}]
+      cost_plan: ["Detailed site investigation, remediation action plan and site auditor", "Remediation and validation"]
+      program: ["Detailed site investigation", "Remediation and validation", "Site audit statement"]
+      rfps: [{discipline: consultant.civil, must_include: ["Earthworks suitability advice"]}]
+      authority: ["SEPP (Resilience and Hazards) 2021 Chapter 4 (verified: false)"]
+    built_in: {procurement: "no", cost_plan: "no", program: "partial", rfps: "yes"}
+    source: "knowledge/rfp/civil.yaml earthworks_suitability"
+  - id: flood-affected
+    label: Flood-affected site or overland flow along the lane
+    evidence: ["The land is subject to flood related development controls", "overland flow along the rear lane", "basement entry crest above the PMF level"]
+    negation: ["The land is not subject to flood related development controls"]
+    profile: [det.flood_hazard]
+    adds:
+      work_items: [{system: site.flooding, action: new}]
+      cost_plan: ["Flood report", "Flood barrier at the basement entry"]
+      program: ["Construct flood protection"]
+      rfps: [{discipline: consultant.civil, must_include: ["Flood report and floor levels", "Flood evacuation plan option"]}]
+      authority: ["Council flood advice"]
+    built_in: {work_items: "no", rfps: "yes", program: "partial", cost_plan: "no"}
+    source: "knowledge/program/fragments.yaml fr.flood-2"
+  - id: rail-corridor
+    label: Site next to a rail corridor
+    evidence: ["The site adjoins the rail corridor on its southern boundary", "Sydney Trains concurrence is required for the excavation"]
+    negation: ["There is no rail infrastructure near the site"]
+    profile: [flag.rail]
+    adds:
+      cost_plan: ["Rail vibration and noise attenuation"]
+      program: ["Sydney Trains referral and concurrence"]
+      rfps: [{discipline: consultant.structural, must_include: ["Authority asset assessment for the rail corridor"]}, {discipline: consultant.acoustic, must_include: ["Rail noise and vibration assessment"]}]
+      authority: ["Sydney Trains / ASA concurrence (verified: false)"]
+    built_in: {rfps: "partial", program: "no", cost_plan: "no"}
+    source: "knowledge/rfp/structural.yaml authority_asset"
+  - id: sydney-water-asset
+    label: Sydney Water main crossing the site
+    evidence: ["A Sydney Water sewer main crosses the rear of the site", "the main must be diverted before the basement is excavated"]
+    negation: ["No Sydney Water assets are within the site"]
+    profile: [flag.authority_asset]
+    adds:
+      cost_plan: ["Sewer main diversion"]
+      program: ["Sydney Water asset assessment and diversion"]
+      rfps: [{discipline: consultant.structural, must_include: ["Authority asset assessment"]}, {discipline: consultant.hydraulic, must_include: ["Sewer diversion design"]}]
+      authority: ["Sydney Water building-over or diversion approval"]
+    built_in: {rfps: "partial", cost_plan: "no", program: "no"}
+    source: "knowledge/rfp/structural.yaml authority_asset"
+  - id: traditional-lump-sum
+    label: Traditional lump-sum tender on full documentation
+    evidence: ["The design team will complete full construction documentation and tender it as a lump sum under AS 4000", "no novation of consultants"]
+    negation: ["The project will be procured as a design and construct contract with novation of the design team"]
+    profile: [hdr.cond.procurement_route, fact.contract_form]
+    adds:
+      program: ["Tender documents (traditional)", "Bidding"]
+      rfps: [{discipline: consultant.architect, must_include: ["Tender documents", "For-construction documents", "Construction-phase services"]}, {discipline: consultant.structural, must_include: ["Construction documents"]}]
+    removes:
+      program: ["Novate the design consultants"]
+    why: "Skeleton becomes sk.new-traditional-da; fr.novation drops; RFP stages follow procurement"
+    built_in: {program: "yes", rfps: "yes"}
+    source: "knowledge/program/skeletons.yaml sk.new-traditional-da"
+  - id: supermarket-anchor
+    label: Supermarket or large anchor tenant in the retail podium
+    evidence: ["A 1,500 m² supermarket occupies the ground floor and part of basement 1", "deliveries by 12.5 m heavy rigid vehicles", "a dedicated loading dock with a turntable"]
+    negation: ["The ground floor is three small specialty shops"]
+    profile: [flag.heavy_vehicles]
+    adds:
+      work_items: [{system: site.loading-docks, action: new}, {system: vertical-transport.goods-lifts, action: new}]
+      cost_plan: ["Loading dock and turntable", "Goods lift"]
+      program: ["Install loading dock equipment"]
+      rfps: [{discipline: consultant.traffic, must_include: ["Heavy vehicle swept paths and loading management plan"]}, {discipline: consultant.acoustic, must_include: ["Loading dock and refrigeration plant noise"]}]
+    built_in: {work_items: "no", cost_plan: "no", program: "no", rfps: "partial"}
+    source: "knowledge/rfp/traffic.yaml"
+  - id: fire-pumps-tanks
+    label: Town mains cannot meet fire-water demand
+    evidence: ["The Sydney Water statement of available pressure and flow is inadequate for the hydrant and sprinkler demand", "a fire pump room and two fire-water tanks in basement 2"]
+    negation: ["The town mains meet the hydrant and sprinkler demand without pumps"]
+    profile: []
+    adds:
+      work_items: [{system: fire-active.fire-water, action: new}]
+      cost_plan: ["Fire pumps and tanks"]
+      program: ["Install fire pump set and tanks"]
+      rfps: [{discipline: consultant.fire_services, must_include: ["Fire-water pumps and tanks", "Plant interfaces"]}]
+    why: "fire-active.fire-water has no fragment; fs_plant_interfaces is a client flag"
+    built_in: {work_items: "no", cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/costs/elements.yaml code 07"
+  - id: public-domain-works
+    label: Council public domain upgrade along the frontage
+    evidence: ["Council's public domain plan requires a new granite footpath, kerb realignment and street trees", "works in the road reserve under a Roads Act s138 approval"]
+    negation: ["Only a new vehicle crossing is proposed in the road reserve"]
+    profile: [flag.public_road]
+    adds:
+      cost_plan: ["Public domain works"]
+      program: ["Public domain design approval"]
+      rfps: [{discipline: consultant.civil, must_include: ["Public road works element", "Authority submission schedule", "Road safety audit option"]}, {discipline: consultant.landscape, must_include: ["Public domain package"]}]
+      authority: ["Council s138 approval (verified: false)"]
+    built_in: {rfps: "yes", cost_plan: "partial", program: "no"}
+    source: "knowledge/rfp/civil.yaml public_road"
+
+  - id: rise-three-storeys
+    label: Three-storey shop-top (two apartment levels over a shop)
+    evidence: ["A three-storey shop-top housing development: ground-floor shop with two levels of apartments above", "rise in storeys of 3; one basement level"]
+    negation: ["Six storeys: ground-floor retail with five residential levels above"]
+    profile: [det.rise_in_storeys, hdr.scale.total_storeys, det.effective_height, det.sprinklered]
+    adds:
+      cost_plan: ["Home Building Compensation Fund insurance"]
+      program: ["Builder provides HBCF insurance certificate"]
+      rfps: [{discipline: consultant.fire_services, must_include: ["Hydrants and detection only; no sprinkler design"]}]
+      authority: ["HBCF required (R4); Class 2 still under the DBP Act (R3)"]
+    removes:
+      cost_plan: ["Strata building bond"]
+      program: ["Lodge the strata building bond", "Strata bond interim and final inspections", "Sprinkler rough-in", "Sprinkler pressure test before ceilings", "Fit off and commission sprinklers"]
+    why: "The scenario sets det.sprinklered: false and leaves the fire-active.sprinklers scope row out. HBCF exemption needs a rise of more than 3 with 2 or more dwellings (R4; verified: false); Class 2 sprinklers need a rise of 4 or more (verified: false); Table C2D2 gives A for the Class 2 part and B for Class 6 at a rise of 3, so C2D4 decides the building (verified: false). No generator reads these thresholds"
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+  - id: trees-affected
+    label: Street or neighbour trees affected by the works
+    evidence: ["the basement excavation encroaches into the tree protection zone of the council street tree", "the awning and hoarding are within the canopy of the two street plane trees"]
+    negation: ["No trees on or next to the site are affected by the works"]
+    profile: [flag.arborist_tree_impacts, flag.arborist_offsite_trees]
+    adds:
+      procurement: [consultant.arborist]
+      work_items: [{system: site.trees, action: retain}]
+      cost_plan: ["Arborist", "Tree protection"]
+      program: ["Arborist impact assessment", "Install tree protection"]
+      rfps: [{discipline: consultant.arborist, must_include: ["AS 4970 impact assessment", "Tree protection plan", "Construction supervision hold points"]}]
+      authority: ["Council consent to prune or remove street trees"]
+    built_in: {procurement: "no", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
+    source: "knowledge/rfp/arborist.yaml"
+  - id: acid-sulfate-soils
+    label: Site mapped for acid sulfate soils
+    evidence: ["The site is Class 3 on the Acid Sulfate Soils Map", "an acid sulfate soils management plan is required for the basement excavation"]
+    negation: ["The land is not mapped as acid sulfate soils"]
+    profile: [det.acid_sulfate_soils_mapped]
+    adds:
+      work_items: [{system: site.acid-sulfate-soils, action: investigate}]
+      cost_plan: ["Acid sulfate soils assessment and treatment"]
+      program: ["Acid sulfate soils assessment"]
+      rfps: [{discipline: consultant.civil, must_include: ["Earthworks suitability advice"]}, {discipline: consultant.geotechnical, must_include: ["Acid sulfate soils assessment"]}]
+      authority: ["The LEP's acid sulfate soils clause (number varies by LEP; verified: false)"]
+    built_in: {work_items: "no", cost_plan: "no", program: "partial", rfps: "partial"}
+    source: "knowledge/program/fragments.yaml fr.investigate-acid-sulfate"
+  - id: underpinning-neighbour
+    label: Neighbour's footings must be underpinned
+    evidence: ["The adjoining shop at No. 38 is on shallow strip footings and must be underpinned before bulk excavation", "underpinning of the party wall footings"]
+    negation: ["The adjoining buildings are founded on rock below the basement level; no underpinning is needed"]
+    profile: [flag.excavation_adjoining]
+    adds:
+      work_items: [{system: substructure.underpinning, action: new}]
+      cost_plan: ["Underpinning of adjoining footings"]
+      program: ["Underpin adjoining structures", "Neighbour's consent for underpinning"]
+      rfps: [{discipline: consultant.structural, must_include: ["Underpinning interfaces", "Temporary works interfaces", "Dilapidation surveys"]}]
+      authority: ["Adjoining owner's consent"]
+    why: "flag.excavation_adjoining is already yes in the base, so the RFP rows exist; the change is the underpinning item"
+    built_in: {work_items: "no", cost_plan: "partial", program: "partial", rfps: "yes"}
+    source: "knowledge/program/fragments.yaml fr.underpinning-2"
+  - id: regionally-significant
+    label: Capital investment value over the regional threshold
+    evidence: ["The CIV of the development exceeds $30 million, so it is regionally significant development", "to be determined by the Sydney District Planning Panel"]
+    negation: ["The development will be determined by the Local Planning Panel"]
+    profile: [flag.panel]
+    adds:
+      program: ["Regional planning panel briefing and determination"]
+      rfps: [{discipline: consultant.town_planner, must_include: ["Panel briefing and attendance"]}]
+      authority: ["Sydney district planning panel (threshold verified: false)"]
+    why: "flag.panel is already yes in the base, so the app changes nothing; zero-delta for the harness"
+    built_in: {program: "no", rfps: "yes"}
+    source: "knowledge/rfp/town-planning.yaml panel_attendance"
+gaps:
+  - {area: profile, what: "residential_retail carries ncc_class 2/6: no 7a, and the compound value maps to no category; det.ncc_class must be set", evidence: "knowledge/profile/taxonomy.yaml mixed residential_retail; testing/synthetic/reference/index/procurement.md NCC class adds building categories"}
+  - {area: profile, what: "Mixed scale fields use total_storeys and total_gfa_sqm; budget splits read hdr.scale.storeys and program per-unit rows read plan.gross_floor_area (250 m2 assumed); no field for basement levels, tenancies or effective height", evidence: "knowledge/profile/taxonomy.yaml residential_retail scale_fields; knowledge/costs/budget_splits.yaml; knowledge/program/durations.yaml assumptions"}
+  - {area: profile, what: "quality_level applies to residential only, so it is not offered for mixed", evidence: "knowledge/profile/taxonomy.yaml conditions quality_level applies_to"}
+  - {area: profile, what: "Parts exist but package suggestions read det.* and scope.* from the whole part only; no per-part class for scope, cost or program", evidence: "internal/store/packages.go packageOverview query"}
+  - {area: scope, what: "Mixed default list is the apartments list: lacks sprinklers, trade waste, gas, loading dock, signage, accessible facilities, slab on ground, vehicle doors, occupant warning, openings, external wall fire", evidence: "knowledge/profile/scope_defaults.yaml categories[1]"}
+  - {area: procurement, what: "Acoustic, ESD/BASIX, landscape, waste, QS, hazmat and fire engineer are never suggested; environmental rule is dead", evidence: "knowledge/works/package_defaults.yaml baselines, scope_additions, complexity_additions[2]"}
+  - {area: procurement, what: "D&C sets novation option on every consultant, including certifier, planner, BCA, QS and traffic", evidence: "internal/procurement/proposed.go BuilderDesigns; internal/procurement/packages.go DefaultNovation"}
+  - {area: program, what: "No Class 6 or 7a new-build fragments: no retail shell, tenancy provisions, loading dock or car-park fit-out; Class 2 rows stand for the whole building", evidence: "testing/synthetic/reference/index/program-fragments.md Which NCC classes and work types any fragment names"}
+  - {area: program, what: "fr.switchboard-2 and fr.switchboard-major both fire on the one switchboard item because 6 matches major", evidence: "knowledge/program/fragments.yaml fr.switchboard-major"}
+  - {area: program, what: "Under D&C, construction docs carry 'Client sign-off for tender' after award and the CC sits in approvals before procurement; no staged CCs", evidence: "knowledge/program/fragments.yaml fr.construction-docs-2, fr.construction-certificate; knowledge/program/skeletons.yaml sk.new-dc-da"}
+  - {area: program, what: "No rows for DBP declarations, RAB Act notice, strata bond, strata plan, s138, Section 73, long service levy, panel determination, hazmat clearance, fire safety certificate, tenancy handover", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
+  - {area: program, what: "Demolition fragment needs action remove but site.demolition is not in default scope and implied_by gives new", evidence: "knowledge/program/fragments.yaml fr.demolition-2; knowledge/profile/scope_defaults.yaml implied_by strip-out"}
+  - {area: program, what: "Reinforcement hold point needs a slab-on-ground item, which the mixed list lacks", evidence: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour"}
+  - {area: cost_plan, what: "Split commercial_hotel is hotel-centred, low confidence, no fire-passive share", evidence: "knowledge/costs/budget_splits.yaml commercial_hotel"}
+  - {area: cost_plan, what: "No lines for HPC, long service levy, s138 fees, strata bond, strata registration, retail shell provisions, preliminaries; accessible facilities child missing", evidence: "knowledge/costs/starter_lines.yaml; knowledge/costs/elements.yaml code 13"}
+  - {area: rfp, what: "Every template's default boundary ends before post-novation, regulated design and construction services, so they are priced options", evidence: "internal/rfp/resolve.go resolveStages; knowledge/rfp/architecture.yaml boundary"}
+  - {area: rfp, what: "Discipline declarations (hyd, fs, mech, elec) are client flags, not driven by proj.regulated_design", evidence: "knowledge/rfp/skeleton.yaml flags; knowledge/rfp/hydraulic-services.yaml declarations"}
+  - {area: rfp, what: "ADG design verification is an option", evidence: "knowledge/rfp/architecture.yaml apartment_design, existing_interfaces"}
+  - {area: rfp, what: "Derived mixed_use flag drives only architecture, access, fire engineering and waste rows; BCA classification map and QS allocation need client flags", evidence: "knowledge/rfp/modules.yaml mixed_use; knowledge/rfp/bca-certification.yaml classification_map; knowledge/rfp/cost-planning.yaml allocation"}
+  - {area: rfp, what: "No template for acoustic, ESD/BASIX, hazmat, environmental or vertical transport", evidence: "testing/synthetic/reference/index/rfp-templates.md Disciplines in data/intake/disciplines.json with no RFP template"}
+  - {area: profile, what: "det.effective_height and det.commercial_kitchen feed no generator; no 25 m threshold rule produces smoke control or emergency lifts", evidence: "testing/synthetic/reference/index/triggers.md §1"}
+  - {area: harness, what: "fire-pumps-tanks has no profile key, so a scenario can only express it through a scope row", evidence: "knowledge/determinants.yaml has no fire-water supply determinant"}
+  - {area: program, what: "Reinforcement hold point links every structure.concrete row before the ground slab, so a concrete-frame building pours its basement slab after the roof slab", evidence: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour; internal/program/generate.go holdPointLinks"}
+  - {area: program, what: "Sprinkler hold point takes in the fit-off row, so ceilings are forced after sprinkler fit-off; heads are fitted off after ceilings", evidence: "knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings; knowledge/program/fragments.yaml fr.sprinklers-2"}
+  - {area: program, what: "fr.slab-2 and fr.basement-2 both make a ground-slab pour for the one slab", evidence: "knowledge/program/fragments.yaml fr.slab-2, fr.basement-2"}
+  - {area: program, what: "DNSP supply and Section 73 applications are anchored at construction stage start, after award; they are lodged after consent", evidence: "knowledge/program/fragments.yaml fr.utility-major, fr.services-connections-major attach stage_start"}
+  - {area: procurement, what: "No discipline id for a Water Servicing Coordinator (Section 73 applications)", evidence: "data/intake/disciplines.json"}
+  - {area: harness, what: "RFP pairing should prefer the discipline over the template when two expectations share a template (BCA and certifier both use bca-certification)", evidence: "testing/synthetic/tools/score_shapes.py score_rfps"}
+  - {area: harness, what: "Rise-in-storeys thresholds (HBCF, strata bond, Class 2 sprinklers) are read by no generator, so rise-three-storeys changes only floor-cycle durations", evidence: "testing/synthetic/reference/index/triggers.md"}
+  - {area: program, what: "One CC row only: no staged CCs (early works, then main works), and nothing marks that demolition under a DA needs no CC", evidence: "knowledge/program/fragments.yaml fr.construction-certificate"}
+  - {area: harness, what: "score_procurement matches on the discipline id only and ignores aliases, so an app package created as BASIX scores as a miss against consultant.esd", evidence: "testing/synthetic/tools/score_shapes.py score_procurement"}
+variants: [rise-three-storeys, heritage-conservation-area, classified-road-frontage, cl46-variation, groundwater-dewatering, contaminated-land, traditional-lump-sum, effective-height-over-25m, public-domain-works]

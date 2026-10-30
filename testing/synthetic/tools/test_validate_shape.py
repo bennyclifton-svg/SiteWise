@@ -137,6 +137,44 @@ class ValidateShapeTests(unittest.TestCase):
         for word in ["not_expected_procurement", "det.dragon_risk", "both include", "colour.blue", "removes", "surprise_section"]:
             self.assertIn(word, joined)
 
+    def test_phrases_may_be_strings_or_keyed_and_aliases_are_string_lists(self):
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["rfps"][0]["must_include"] = ["footing design", {"text": "Dilapidation surveys", "key": "position.dilapidation"}]
+        ok["rfps"][0]["must_not_include"] = [{"text": "Shared Revit model"}]
+        ok["triggers"][0]["adds"]["rfps"] = [{"discipline": "consultant.structural", "must_include": [{"text": "Retention", "key": "stage.retention"}]}]
+        ok["cost_plan"][0]["aliases"] = ["P02 Construction contingency"]
+        ok["program"]["activities"][0]["aliases"] = ["Tree protection"]
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+
+        bad = yaml.safe_load(yaml.safe_dump(ok))
+        bad["rfps"][0]["must_include"][1]["key"] = "colour.blue"
+        bad["rfps"][0]["must_not_include"] = [{"key": "stage.x"}, 7]
+        bad["triggers"][0]["adds"]["rfps"][0]["must_include"][0]["key"] = "text.x"
+        bad["cost_plan"][0]["aliases"] = "Contingency"
+        bad["program"]["activities"][0]["aliases"] = ["ok", 3]
+        errors, _ = check(bad)
+        joined = "\n".join(errors)
+        for word in ["colour.blue", "must_not_include[0]", "must_not_include[1]", "text.x", "cost_plan[0]: aliases", "activities[0]: aliases"]:
+            self.assertIn(word, joined)
+
+    def test_discipline_aliases_must_be_discipline_ids(self):
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["procurement"][0]["aliases"] = ["consultant.basix"]
+        ok["rfps"][0]["aliases"] = ["consultant.bca"]
+        ok["not_expected_procurement"] = [{"discipline": "consultant.esd", "aliases": ["consultant.basix"], "why": "x"}]
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+
+        bad = yaml.safe_load(yaml.safe_dump(ok))
+        bad["procurement"][0]["aliases"] = ["consultant.wizard"]
+        bad["rfps"][0]["aliases"] = "consultant.bca"
+        bad["not_expected_procurement"][0]["aliases"] = ["consultant.dragon"]
+        errors, _ = check(bad)
+        joined = "\n".join(errors)
+        for word in ["procurement[0]: alias consultant.wizard", "rfps[0]: aliases", "not_expected_procurement[0]: alias consultant.dragon"]:
+            self.assertIn(word, joined)
+
     def test_folder_must_match_type_id(self):
         bad = dict(GOOD, type_id="T02")
         errors, _ = check(bad)

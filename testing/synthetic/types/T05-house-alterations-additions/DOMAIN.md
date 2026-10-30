@@ -29,17 +29,18 @@ area than by how much of the existing house is touched. [D]
 pattern is traditional procurement:
 
 - the architect (or a building designer) designs, documents and lodges the DA;
-- the client appoints the structural engineer, surveyor, geotechnical engineer, BASIX assessor and
-  hazardous materials surveyor directly, or the architect coordinates them;
-- stormwater drainage is shown on the architect's site plan and designed and certified by the plumber;
-  an engineer's stormwater plan is needed only under `stormwater-engineering-required` (OSD, a charged
-  line, an easement or a fall to the rear);
+- the client appoints the structural engineer, civil (stormwater) engineer, surveyor, geotechnical
+  engineer, BASIX assessor and hazardous materials surveyor directly, or the architect coordinates them;
+- the added roof and the changed hard surfaces outside change the stormwater catchment, so a civil
+  engineer recalculates the drainage and designs the connection (owner ruling R1). Only an
+  alteration whose documents say the roof footprint and hard surfaces are unchanged drops the civil
+  engineer (variant `internal-only-alteration`);
 - documentation goes to tender with 3–4 licensed builders;
 - the builder signs a lump-sum domestic contract: HIA or MBA NSW, or occasionally ABIC (`fact.contract_form:
   domestic_hia`). [D]
 
 The certifier is appointed by the owner. The plumber, electrician and air-conditioning installer design
-their own systems under the builder, so there is normally no hydraulic, electrical, mechanical or civil
+their own systems under the builder, so there is normally no hydraulic, electrical or mechanical
 consultant. [D]
 
 **What makes it go wrong** [D]:
@@ -72,9 +73,9 @@ Base-scenario actions. `shape.yaml work_items` holds the same list. Where one sy
   kitchen.
 - `earthworks` new: minor levels.
 - `erosion-sediment-control` new.
-- `stormwater-detention` new: the added roof drains by gravity to the existing system or a kerb outlet,
-  shown on the architect's site plan; on-site detention (OSD) and an engineer only under
-  `stormwater-engineering-required`.
+- `stormwater-detention` new: the civil engineer designs the drainage of the added roof and hard
+  surfaces to the existing system or a kerb outlet (owner ruling R1); on-site detention (OSD), an
+  easement or a charged line only under `osd-or-drainage-easement`.
 - `services-connections` alter: extend the sewer junction and the water service; cap services to the
   demolished wing.
 - `landscape` alter: reinstatement.
@@ -185,7 +186,9 @@ Base-scenario actions. `shape.yaml work_items` holds the same list. Where one sy
 
 - `stairs-and-ramps` new: steps to the garden.
 - `barriers` only where a deck or floor is more than 1 m above the ground (first floor or sloping site).
-- `livable-housing`: NSW did not adopt the NCC 2022 livable housing provisions (`verified: false`). [D]
+- `livable-housing`: out of the base. Livable housing design is optional for houses in NSW: guidelines
+  and standards, not a mandatory requirement (owner ruling R6). The NCC clause references stay
+  `verified: false`.
 - `pool-barriers` applies only if a pool exists on the property and the work affects the barrier.
 - Accessible paths and accessible facilities are Class 2–9 only.
 
@@ -222,8 +225,8 @@ This is the part that makes T05 different from T01.
     Essential Energy) and a Level 2 accredited service provider.
 - Gas: hot water or cooktop changeover; the gas meter may need relocating by the gas network if it is
   on the rear wall.
-- Stormwater: the added roof connects into an existing system of unknown condition, so CCTV or locating is
-  needed. In older houses rear downpipes are often found discharging to the sewer; Sydney Water requires
+- Stormwater: the added roof connects into an existing system of unknown condition, so the civil
+  engineer needs CCTV or locating (the civil RFP's `retained_services` row). In older houses rear downpipes are often found discharging to the sewer; Sydney Water requires
   them disconnected once found.
 - Existing rooftop solar PV is removed at the roof tie-in and reinstated by a CEC-accredited installer;
   the NBN lead-in is relocated if the addition is built over it (trigger `existing-solar-pv`).
@@ -304,10 +307,10 @@ This is the part that makes T05 different from T01.
 | Architect or building designer (`consultant.architect`) | Concept | Always | Measures the existing house or relies on a measure-up; DA, CC and tender documents; often lodges. |
 | Surveyor (`consultant.surveyor`) | Investigation | Always | Detail, level and boundary survey for the DA; neighbours' ridge and window levels; peg-out near the boundary. |
 | Structural engineer (`consultant.structural`) | Concept to CC | Always | Openings, beams, footings, framing; existing-structure assessment; inspections. |
-| Civil / stormwater engineer (`consultant.civil`) | DA | Trigger | Only under `stormwater-engineering-required` (OSD, charged line, easement, fall to the rear, council pipe, or a council checklist asking for an engineer's plan) or `flood-affected`. Otherwise the architect shows the drainage on the site plan and the plumber designs and certifies it to AS/NZS 3500.3 (`verified: false`). |
+| Civil / stormwater engineer (`consultant.civil`) | DA | Always (base) | Owner ruling R1: the roof area grows or the outside impervious area changes, so the catchment changes and the drainage is recalculated. Stormwater concept for the DA, CC design, works-as-executed certificate. Dropped only in variant `internal-only-alteration` (roof footprint and hard surfaces unchanged). OSD, easements and flood add scope under `osd-or-drainage-easement` and `flood-affected`. |
 | Geotechnical engineer (`consultant.geotechnical`) | Investigation | Usually | Site classification for the new footings; some engineers accept an existing report. |
 | Certifier (`consultant.certifier`) | After DA | Always | CC, principal certifier, critical-stage inspections, OC. |
-| BASIX assessor (`consultant.basix`) | Approval documentation | Usually; the architect may generate it | The BASIX certificate is always needed above the cost threshold (`verified: false`, believed to be $50,000); for alterations the architect often generates it with the DIY thermal method. |
+| BASIX assessor (`consultant.basix`) | Approval documentation | Usually; the architect may generate it | A BASIX certificate, through the NSW Planning Portal, is needed when the work is valued at $50,000 or more, or installs a pool or spa over 40,000 litres (owner ruling R5, confirmed). It is a simpler process than for a new dwelling, and the architect often generates it with the DIY thermal method. Work that in effect creates a new dwelling is assessed as a new dwelling. |
 | Hazardous materials surveyor (`consultant.hazmat`) | Investigation | Always for a house built before 2004 (WHS, `verified: false`); asbestos is likely before about 1990 | Survey of the demolition and disturbance zone; clearance after removal. |
 | Heritage consultant (`consultant.heritage`) | Concept | Trigger | Heritage impact statement in a conservation area or for an item. |
 | Town planner (`consultant.town_planner`) | Concept | Trigger | Heritage, a clause 4.6 variation, objections, or a complex DA. Otherwise the architect writes the statement of environmental effects. |
@@ -324,9 +327,13 @@ complexity_additions[0]; testing/synthetic/reference/index/type-predictions.md T
 has `mechanical.local-exhaust` and `mechanical.air-conditioning`, so `scope_additions[2]` adds Mechanical
 as a tenth [K: package_defaults.yaml scope_additions[2]]. Against the list above:
 
-- **Civil, Electrical, Hydraulic, Mechanical and Town Planner are false positives for the base job.** The
-  plumber, electrician and air-conditioning installer design their systems; the architect shows the
-  drainage and writes the SEE.
+- **Civil is right for the base job** (owner ruling R1), and its source is `baselines[0]`, which fires for
+  work type `extend` [K: testing/synthetic/reference/KNOWLEDGE_INDEX.md §2.1 baselines[0]]. No rule
+  removes it when the catchment is unchanged, so the app is wrong in the `internal-only-alteration`
+  variant.
+- **Electrical, Hydraulic, Mechanical and Town Planner are false positives for the base job.** The
+  plumber, electrician and air-conditioning installer design their systems; the architect writes the
+  SEE.
 - **BASIX and Hazmat are missed.** Arborist and Dilapidation are missed only under their triggers.
 
 The head contract (`trade.main_works`) is proposed only once work items are accepted for planning
@@ -343,8 +350,7 @@ The head contract (`trade.main_works`) is proposed only once work items are acce
   - existing, demolition and proposed plans;
   - shadow diagrams;
   - BASIX certificate;
-  - stormwater drainage on the architect's site plan (an engineer's plan only under
-    `stormwater-engineering-required`);
+  - the civil engineer's stormwater concept plan for the changed catchment (owner ruling R1);
   - demolition waste management plan;
   - erosion and sediment control plan;
   - a cost estimate report;
@@ -369,8 +375,11 @@ The head contract (`trade.main_works`) is proposed only once work items are acce
 - After consent:
   - construction certificate;
   - long service levy paid before the CC (`verified: false` for the threshold);
-  - home building compensation fund cover before the deposit or start, for residential work above the
-    statutory value (Home Building Act 1989 (NSW), threshold `verified: false`);
+  - home building compensation fund (HBCF) cover, required for residential building work where the
+    contract price is over $20,000 including GST (owner ruling R4, confirmed against SIRA). The
+    principal contractor takes it out before starting work or taking a deposit; an owner-builder cannot
+    take it out; a variation that takes the price over $20,000 needs a certificate before any further
+    payment. The Home Building Act 1989 (NSW) section numbers stay `verified: false`;
   - principal certifier appointed and notice of commencement given (period `verified: false`);
   - council bonds and permits (footpath, skip bins, a kerb outlet or road opening under the Roads Act if
     the stormwater goes to the kerb).
@@ -381,24 +390,31 @@ The head contract (`trade.main_works`) is proposed only once work items are acce
   - waterproofing certificate;
   - BASIX completion evidence.
 
-**Inspections and hold points** (critical-stage inspections by the principal certifier, list
-`verified: false`) [D]:
+**Inspections and hold points.** Critical-stage inspections by the principal certifier for Class 1 and
+10 work (owner ruling R7). Items 2 to 8 are confirmed against Hornsby Council's list, which cites the
+2000 Regulation; the current clause, clause 61 of the EP&A (Development Certification and Fire Safety)
+Regulation 2021, stays `verified: false`. The project's CC lists the inspections that apply.
 
-- footing excavation before pour;
-- slab reinforcement before pour;
-- frame before linings or roof cladding;
-- wet-area waterproofing before tiling (AS 3740, NCC Housing Provisions Part 10.2, `verified: false`);
-- stormwater drainage connections before backfill;
-- final.
+1. pre-start (pre-commencement) inspection of the site, before the start of works;
+2. after excavation and before footings are placed;
+3. before pouring any in-situ reinforced concrete element (the slab);
+4. before covering the framework (the frame inspection);
+5. before covering waterproofing in wet areas (AS 3740, NCC Housing Provisions Part 10.2,
+   `verified: false`);
+6. before covering stormwater drainage connections;
+7. a pool, before its in-situ concrete is poured and once the barrier is erected: not in this map,
+   because no T05 trigger adds a pool;
+8. a final inspection after the work is finished and before the occupation certificate.
 
 Builder's own hold points: no break-through into the existing house before the addition is weathertight;
 the asbestos clearance certificate before demolition continues.
 
 The app produces `fr.da-lodgement`, `fr.da-exhibition`, `fr.da-assessment` and
 `fr.construction-certificate`, and the frame hold point `if.frame-inspected-before-roof`
-[K: knowledge/program/fragments.yaml; knowledge/clusters/structure/interfaces.yaml]. It has no
-waterproofing or stormwater hold point, and no reinforcement hold point for a timber house (that hold
-point needs `structure.concrete`).
+[K: knowledge/program/fragments.yaml; knowledge/clusters/structure/interfaces.yaml]. The footing
+inspection sits inside `fr.footings-1a`. It has no pre-commencement, waterproofing, stormwater or final
+inspection row. The reinforcement hold point does fire, through the `structure.concrete` tag on the
+`fr.slab-on-ground-1a` pour activity (confirmed by a read-only Go run, 30 October 2026).
 
 **NCC.** NCC 2022 Volume Two and the ABCB Housing Provisions apply to the new work [D]:
 
@@ -428,10 +444,10 @@ No amounts. Lines only; `shape.yaml cost_plan` has the full list with built-in s
 
 **Consultants**
 
-- Architect, Surveyor, Structural, Geotechnical, Certifier, BASIX, Hazardous materials survey. Civil
-  only under `stormwater-engineering-required` or `flood-affected`.
+- Architect, Surveyor, Structural, Civil, Geotechnical, Certifier, BASIX, Hazardous materials survey.
+  Civil is in the base (owner ruling R1) and drops out only under `internal-only-alteration`.
 - The app produces one fee line per adopted package [K: internal/costs/suggest.go], so it also produces
-  Civil, Electrical, Hydraulic, Mechanical and Town Planner lines the base job does not need.
+  Electrical, Hydraulic, Mechanical and Town Planner lines the base job does not need.
 - The Certifier fee line and the "CC and certifier fees" starter line double count.
 
 **Construction (elemental, house alterations convention)**
@@ -483,38 +499,44 @@ construction documentation → procurement → construction → completion → d
 - **The DA is on the critical path**, including notification and any objections
   (`uc.extension-approval-slow-or-objected` [K: knowledge/clusters/delivery/unforeseen.yaml]).
 - **Construction documentation** can overlap assessment at the client's risk.
-- **The CC needs** structural design, the stormwater drainage on the architect's site plan (an engineer's
-  plan only under `stormwater-engineering-required`), the levy paid and pre-CC conditions met (plus the
-  Sydney Water approval where it applies).
+- **The CC needs** structural design, the civil engineer's stormwater design, the levy paid and pre-CC
+  conditions met (plus the Sydney Water approval where it applies). The stormwater concept goes with the
+  DA.
 
 **Construction logic:**
 
 1. Owners vacate.
-2. Site establishment, temporary power, sediment control.
-3. Isolate services.
-4. Asbestos removal and clearance (if found).
-5. Demolition and strip-out.
-6. Footings, termite management, slab.
-7. Frame.
-8. Frame inspection.
-9. Roof tie-in and cover.
-10. Windows and cladding: the addition is now weathertight.
-11. **Break through into the existing house.** Propping goes in at this point, and the existing openings
+2. Pre-commencement inspection by the principal certifier.
+3. Site establishment, temporary power, sediment control.
+4. Isolate services.
+5. Asbestos removal and clearance (if found).
+6. Demolition and strip-out.
+7. Footing excavation, footing inspection, footings.
+8. Termite management, damp-proof membrane, reinforcement inspection, slab.
+9. Stormwater drainage, inspected before the connections are covered.
+10. Frame.
+11. Frame inspection.
+12. Roof tie-in and cover.
+13. Windows and cladding: the addition is now weathertight.
+14. **Break through into the existing house.** Propping goes in at this point, and the existing openings
     and beams are formed.
-12. Services rough-in, including the switchboard upgrade.
-13. Insulation.
-14. Linings.
-15. Wet-area waterproofing.
-16. Waterproofing inspection.
-17. Tiling.
-18. Joinery.
-19. Painting.
-20. Floor finishes and make good, with sanding of existing boards last.
-21. Landscape reinstatement.
-22. PC.
-23. OC.
-24. Handover.
-25. Owners return.
+15. Services rough-in, including the switchboard upgrade.
+16. Insulation.
+17. Linings.
+18. Wet-area waterproofing.
+19. Waterproofing inspection.
+20. Tiling.
+21. Joinery.
+22. Painting.
+23. Floor finishes and make good, with sanding of existing boards last.
+24. Landscape reinstatement.
+25. PC.
+26. Final inspection, with the stormwater works-as-executed certificate.
+27. OC.
+28. Handover.
+29. Owners return.
+30. Defects liability period: HIA and MBA residential contracts carry one (owner ruling R8; length
+    `verified: false`).
 
 When the owners stay (variant), this becomes Stage 1 (addition to lock-up) then Stage 2 (existing
 rooms).
@@ -552,7 +574,8 @@ rooms).
   erosion control and tree protection.
 - With the **default** extend scope (all `new`), linings, painting, floors and cabling do fire; the gap
   appears once a document or the user sets those items to `alter`.
-- There is no break-through, staging, owners-vacate or waterproofing-hold-point activity.
+- There is no break-through, staging, owners-vacate, stormwater design, pre-commencement, waterproofing,
+  stormwater or final inspection activity.
 
 ## 8. RFP shape
 
@@ -561,9 +584,9 @@ rooms).
 | Architect | `architecture` (house and existing_building modules) | Measured drawings or reliance on them; existing, demolition and proposed drawings and old-to-new interfaces (`existing_interfaces`); concept, schematic, DA with SEE, shadow diagrams and notification plan; planning response; design development; one tender and construction set (`house_documents`); kitchen, bathroom, laundry and joinery design and selections; BASIX commitments on the plans; bidding; construction support as an option | BIM model or coordination; interiors stage for beyond-house; separate tender and for-construction stages; regulated design; apartment design, facade certification, Green Star |
 | Structural | `structural` | Existing-structure assessment; beams, posts and bearing pads at openings and removed walls; residential footing, framing, bracing and tie-down; footings matched to the existing; strengthening option; construction documents; inspections option | Temporary propping design (the builder's temporary works designer); shoring or piled retention; included shared Revit model; regulated design; D&C or post-novation stages |
 | Surveyor | `land-surveying` | Detail and level survey including the existing house's floor, ridge and eave levels; boundary identification; neighbours' windows and ridges; sewer and drainage locations; peg-out option | Subdivision or strata; monitoring without excavation; occupied-site access when vacant |
-| Certifier | `bca-certification` | CC (B2), principal certifier inspections (B3), OC (B4), BASIX check; limited existing-house assessment (smoke alarms, affected part) | BCA advisory A1–A3 as the default; fire referrals; included performance solutions; staged occupation when vacant |
+| Certifier | `bca-certification` | CC (B2), principal certifier critical-stage inspections from pre-commencement to final (B3, owner ruling R7), OC (B4), BASIX check; limited existing-house assessment (smoke alarms, affected part) | BCA advisory A1–A3 as the default; fire referrals; included performance solutions; staged occupation when vacant |
 | Geotechnical | `geotechnical` | Investigation plan; boreholes or augers plus a test pit at an existing footing; AS 2870 classification and footing advice; report | Contamination; groundwater monitoring; acid sulfate unless mapped; pavement parameters |
-| Civil / stormwater (trigger `stormwater-engineering-required` only) | `civil` | Stormwater concept for the DA, discharge point, connection to the existing system or kerb; CC stormwater design; investigation of retained drainage; OSD only if the DCP requires it | Roads and pavements element; public road works; MUSIC, NorBE, trunk drainage; 3D model and design criteria document |
+| Civil / stormwater (base, owner ruling R1) | `civil` (existing_building module) | Stormwater concept for the DA for the changed catchment, discharge point, connection to the existing system or kerb; investigation of retained drainage (`retained_services`); CC stormwater design; erosion and sediment control; works-as-executed certificate for the OC | Roads and pavements element (no driveway); public road works; MUSIC, NorBE, trunk drainage; OSD unless `osd-or-drainage-easement`; flood report unless `flood-affected`; 3D model and design criteria document; regulated-design declarations |
 | BASIX | none (generic report) | BASIX certificate for alterations and additions; thermal assessment of the addition; commitments schedule; revision at CC | Section J; Green Star; rating of unaltered parts |
 | Hazmat | none (generic report) | Pre-demolition and refurbishment survey of every affected area including roof space, subfloor and eaves; NATA-analysed sampling including ceiling dust where ceilings come down; register for the tender; clearance option | Doing the removal; soil contamination |
 
@@ -572,6 +595,8 @@ stage and position keys, and an `app_differs` list. The main differences:
 - client-decision flags leave survey, geotechnical and certifier rows at "ask";
 - the certifier boundary falls back to the A stages;
 - `bidding` is priced as an option after the house boundary;
+- the civil `for_construction` and `as_built` stages are priced as options after the traditional
+  boundary (`detailed_tender`), and the civil `roads` element is always shown;
 - the measure-up, the SEE and the test pit at an existing footing are not named in any template.
 
 The base `profile` sets every flag those blocks read (all `no` except `architect_lodges`) so the rows are
@@ -587,7 +612,9 @@ deterministic.
 - The certifier boundary defaults to the advisory A stages unless the client sets `bca_certification`
   [K: knowledge/rfp/bca-certification.yaml boundary].
 - The civil template has no house module, so roads and pavements stay in [K: knowledge/rfp/civil.yaml
-  elements].
+  elements]. Its `retained_services` row comes from the `existing_building` module, which is on for
+  `extend` [K: knowledge/rfp/modules.yaml existing_building; knowledge/rfp/civil.yaml retained_services].
+  The civil expectation follows T01's civil key in form.
 - The surveyor's detail, boundary and services stages each wait on a client flag [K:
   knowledge/rfp/land-surveying.yaml].
 
@@ -609,22 +636,26 @@ Full evidence, negation and consequences are in `shape.yaml triggers`. Summary:
 | `significant-tree` (variant) | "jacaranda within 3 m of the addition"; "neighbour's gum roots in the footing zone" | "no trees within 5 m" | Arborist AIA and TPP, tree protection, council tree permit |
 | `cdc-pathway` (variant) | "complying development under the Housing Code"; "CDC to a registered certifier" | "a DA is required as it doesn't meet the Housing Code"; "the site is in a heritage conservation area, so complying development is not available" | CDC instead of DA, CC and notification; removes DA fees; certifier and planner RFPs block in the app |
 | `electrical-supply-upgrade` | "overhead service crosses the addition roof"; "three-phase supply" | "existing supply has capacity" | DNSP application, Level 2 ASP works, `fr.utility-1a`, authority fees |
-| `flood-affected` | "flood control lot; floor 500 mm above 1% AEP"; "overland flow across the rear yard" | "not flood affected"; "flood test the shower recess" is not flood | Flood report, floor levels, `fr.flood-1a`, civil flood scope |
-| `stormwater-engineering-required` (variant) | "OSD required above the DCP threshold"; "site falls to the rear; inter-allotment easement over No. 9"; "charged line to the kerb"; "council's pipe and easement through the rear yard"; "stormwater plan by a qualified engineer" | "roof water connects to the existing gravity system to the kerb; OSD not required" | Civil/stormwater engineer, Civil fee line, civil RFP, council stormwater approval and easement |
+| `flood-affected` | "flood control lot; floor 500 mm above 1% AEP"; "overland flow across the rear yard" | "not flood affected"; "flood test the shower recess" is not flood | Flood report, floor levels, `fr.flood-1a`, civil flood scope (the civil engineer is already in the base) |
+| `internal-only-alteration` (variant) | "works are internal only; roof footprint and paved areas unchanged"; "verandah enclosed under the existing roof; no new roof area"; "no change to the impervious area" | "the addition adds about 55 m² of new roof"; "new paved terrace and rear deck" | Removes the civil engineer, its fee line and RFP, the stormwater work item, design, drainage, inspection and works-as-executed activities (owner ruling R1); the app keeps Civil |
+| `osd-or-drainage-easement` (variant) | "OSD required above the DCP threshold"; "site falls to the rear; inter-allotment easement over No. 9"; "charged line to the kerb"; "council's pipe and easement through the rear yard" | "roof water connects to the existing gravity system to the kerb; OSD not required" | OSD design (civil `osd_new`), easement or charged-line design, OSD tank, easement survey and legal costs, council stormwater approval and covenant; no new package |
 | `sloping-site` (variant) | "rear yard falls 1.8 m to the back boundary; suspended floor with retaining to the cut"; "deck 2.1 m above ground" | "level site; slab at natural ground" | Retaining walls, piers, barriers over 1 m; geotech slope and retaining parameters; structural retaining design |
 | `termite-damage-found` | "timber pest inspection found active termites in the subfloor bearers"; "termite damage to the wall plates found when linings came off" | "no evidence of termite activity or damage" | Treatment, repair of bearers, joists and plates, latent-conditions provisional sum |
 | `loose-fill-asbestos` | "listed on the NSW loose-fill asbestos insulation register"; "loose-fill asbestos insulation found in the ceiling space" | "register search returned no listing" | Register process before any ordinary alterations (`verified: false`); the job cannot proceed as planned |
 | `existing-solar-pv` | "existing solar panels on the rear roof plane removed for the tie-in and reinstated"; "NBN lead-in and gas meter on the rear wall relocated" | "no solar panels; meters on the front elevation" | Remove and reinstate PV by a CEC-accredited installer, relocate lead-in and meter |
 | `unapproved-existing-work` | "sunroom enclosed without approval"; "no record of approval for the garage conversion" | "council holds the approval and OC for the 1994 addition" | Building information certificate, rectify or demolish |
 
-Three triggers also take items out of the base (`removes` in `shape.yaml`):
+Four triggers also take items out of the base (`removes` in `shape.yaml`):
+- `internal-only-alteration` removes the civil engineer, the Civil fee line, the civil RFP, the
+  `site.stormwater-detention` item and the stormwater concept, CC design, drainage, inspection and
+  works-as-executed activities (owner ruling R1);
 - `cdc-pathway` removes the DA fees line, the CC and certifier fees line, and the DA, notification,
   assessment and CC activities;
 - `occupied-during-works` removes the owners-vacate and owners-return activities, the temporary
   accommodation line and the vacant-house insurance line;
 - `sloping-site` removes the slab and its activity, because the addition is on a suspended floor.
 
-The app's five false-positive consultants and their fee lines are listed under `not_expected_procurement`
+The app's four false-positive consultants and their fee lines are listed under `not_expected_procurement`
 and `not_expected_cost_plan`. The facts a scenario's documents must state, with the exact phrasing the
 triggers need, are under `scenario_inputs`.
 
@@ -714,9 +745,10 @@ Also in `shape.yaml gaps` with evidence. In order of effect on this type:
    wet-area, sanitary, water, joinery, exhaust, slab, termite or temporary-works items, and
    `structure.alterations` defaults to `new`. Expect no Site works line, no demolition activity, and no
    existing-building Implications, until documents or the user add scope.
-3. **Consultant list.** Expect five wrong fee lines (Civil, Electrical, Hydraulic, Mechanical, Town
-   Planner) and two missing ones (BASIX, Hazmat). Arborist and Dilapidation are missed only under their
-   triggers.
+3. **Consultant list.** Expect four wrong fee lines (Electrical, Hydraulic, Mechanical, Town Planner)
+   and two missing ones (BASIX, Hazmat). Civil is right in the base (owner ruling R1) but stays when the
+   roof and hard surfaces are unchanged (`internal-only-alteration`). Arborist and Dilapidation are
+   missed only under their triggers.
 4. **RFPs.** No template for BASIX, Hazmat, Heritage, Bushfire or a building consultant. The certifier
    defaults to BCA advisory. Certifier and town planner RFPs block on CDC. The civil RFP keeps roads and
    pavements. Retained-services investigation in the hydraulic and electrical templates waits on client
@@ -726,7 +758,9 @@ Also in `shape.yaml gaps` with evidence. In order of effect on this type:
    line. The certifier is counted twice.
 6. **Occupied homes.** No staging, temporary facilities or break-through logic. Protection hangs on a
    vehicle-impact system. The live-site module is worded for institutions.
-7. **Hold points.** No waterproofing or stormwater hold point fires. There are no fragments for flashings,
+7. **Hold points.** Of the owner's critical-stage list (R7), only the footing inspection, the frame
+   hold point and the reinforcement hold point fire; no pre-commencement, waterproofing, stormwater or
+   final inspection row does. There are no fragments for flashings,
    exhaust, adjoining structures, retaining walls or access items, and a retained tree gets no
    tree-protection row (`fr.tree-protection` needs new, alter or repair).
 8. **Profile triggers.** The existing-building and year triggers are narrow (§10). BASIX applicability is
@@ -759,23 +793,47 @@ Also in `shape.yaml gaps` with evidence. In order of effect on this type:
 - `data/intake/disciplines.json`
 - `data/eval/rfp/answer-keys/small-class1-extension.yaml`
 
+**Confirmed by the owner's rulings (30 October 2026,
+`testing/synthetic/reference/OWNER_RULINGS.md`):**
+
+- R1: the civil (stormwater) engineer is in the base whenever the roof area grows or the outside
+  impervious area changes; it drops out only where the documents say both are unchanged. This
+  reverses the round 1 review finding that made civil a trigger.
+- R3: the Design and Building Practitioners Act applies to Class 2 and 9c, not to a Class 1 house, so
+  `proj.regulated_design: no` and no regulated-design stage.
+- R4: HBCF cover is required for residential building work where the contract price is over $20,000
+  including GST; the principal contractor takes it out before starting work or taking a deposit; an
+  owner-builder cannot; a variation that takes the price over $20,000 needs a certificate before any
+  further payment. Source: SIRA, "Insurance obligations for residential building work",
+  https://www.sira.nsw.gov.au/resources-library/home-building-compensation-resources/publications/insurance-obligations-for-residential-building-works
+- R5: BASIX for alterations and additions when the work is valued at $50,000 or more, or installs a pool
+  or spa over 40,000 litres; a simpler process than a new dwelling. Source: NSW Planning Portal, BASIX,
+  "Alterations and additions",
+  https://www.planningportal.nsw.gov.au/basix/about-basix/dwelling-types/alterations-and-additions
+- R6: livable housing design is optional for houses in NSW (guidelines and standards, not mandatory).
+- R7: the critical-stage inspection list in §5 (pre-commencement is the owner's addition; items 2 to 8
+  are listed by Hornsby Council, citing the 2000 Regulation),
+  https://www.hornsby.nsw.gov.au/Property/Building-and-development/Building-certification/Critical-Stage-Inspections-and-Occupation-Certificates
+- R8: HIA and MBA residential contracts carry a defects liability period.
+
 **Not verified against the instrument** (all `verified: false`):
 
-- BASIX cost threshold for alterations and additions, and whether it requires a rainwater tank.
+- Whether BASIX for alterations and additions requires a rainwater tank.
 - NCC 2022 H3D6 / Housing Provisions Part 9.5 (smoke alarms), Part 9.2 (fire separation near boundary),
-  Part 10.2 (wet areas).
+  Part 10.2 (wet areas); the NCC livable housing clause references.
 - AS 3740 edition referenced.
 - Housing Code part numbers, and heritage and conservation-area exclusions.
 - Long service levy threshold.
-- Home Building Act contract and HBCF thresholds.
+- Home Building Act contract requirements and section numbers (the HBCF threshold itself is confirmed).
 - Notice of commencement period.
-- Critical-stage inspection list.
+- The current critical-stage clause: clause 61 of the EP&A (Development Certification and Fire Safety)
+  Regulation 2021.
+- The length of the defects liability period.
 - WHS Regulation asbestos licensing classes, notification period and 10 m² threshold.
 - AS 4361.2 for lead paint.
 - Mr Fluffy register coverage.
 - Access to Neighbouring Land Act procedure.
 - QS cost-report threshold.
-- NSW non-adoption of the livable housing provisions.
 
 **Assumptions.** Domain practice tagged `[D]` reflects Sydney residential practice; regional NSW differs
 on councils, the DNSP (Essential Energy) and water authorities (local council water and sewer instead of
@@ -787,4 +845,4 @@ might pick up the 1a-reno fragments, because work types are joined per part
 
 ## Disputed review findings
 
-None. All 15 findings in `REVIEW.md` were applied. Brief 01's variant count was taken as guidance, so there are 9 variants.
+None. All 15 findings in `REVIEW.md` were applied. Brief 01's variant count was taken as guidance, so there are 10 variants. Owner ruling R1 (30 October 2026) later reversed the round 1 ruling that made the civil engineer a trigger; see `REVIEW.md`, "Owner rulings applied".

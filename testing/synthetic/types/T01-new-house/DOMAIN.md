@@ -52,7 +52,8 @@ lump-sum contract. A project-home builder doing design and construct is the main
 5. **CC conditions not met.** Long service levy unpaid, Sydney Water building plan approval missing, DA
    conditions requiring further documents (structural certification, stormwater design, dilapidation).
 6. **Builder risk.** The domestic market has thin-margin builders. Insolvency, unlicensed subcontracting,
-   missing Home Building Compensation Fund (HBCF) cover, deposits above the statutory cap, and variations
+   missing Home Building Compensation Fund (HBCF) cover (required where the contract price is over
+   $20,000 including GST, owner ruling R4), deposits above the statutory cap, and variations
    from loose provisional sums and PC items.
 7. **Defects.** Wet-area waterproofing, window and door flashings, balcony and deck waterproofing, and
    cracking on reactive clay.
@@ -220,7 +221,7 @@ Out of scope. A home lift (`vertical-transport.platform-lifts`) is an uncommon o
 |---|---|---|
 | `access-egress.stairs-and-ramps` **+** | new | Internal stair to ABCB Housing Provisions Part 11.2 (verified: false). Not in default list; arrives only when a read document says "stair" (`implied_by` stair). [K: knowledge/profile/scope_defaults.yaml implied_by stair] |
 | `access-egress.barriers` **+** | new | Stair and void balustrades, balcony balustrade, and fall protection to upper-floor bedroom windows (ABCB Housing Provisions Part 11.3, verified: false). Not in default list. [D] |
-| `access-egress.livable-housing` | out | NSW did not adopt the NCC 2022 livable housing provisions for Class 1a when other states did (verified: false). [D] |
+| `access-egress.livable-housing` | out | Livable housing design is optional for houses in NSW: guidelines and standards, not a mandatory requirement, so it is not in the base scope (owner ruling R6). The NCC clause references stay verified: false. |
 | `access-egress.pool-barriers` | new (trigger) | Only with a pool. |
 | `access-egress.accessible-access`, `.accessible-facilities`, `.exits`, `.egress-doors`, `.maintenance-access` | out | No NCC accessibility or egress provisions for a Class 1a house beyond the stair and barriers. |
 
@@ -314,7 +315,7 @@ Clause numbers below are from memory of the instruments, so they are all `verifi
 | Construction certificate | Registered certifier (or council) | After DA conditions for the CC are met and construction documents are complete; before work starts |
 | Principal certifier appointment and notice of commencement | Owner appoints; notice to council at least two days before work (EP&A Act s6.6, verified: false) | Before site establishment |
 | Occupation certificate | Principal certifier | After the final inspection, with the BASIX completion requirements met, before occupation (EP&A Act s6.9, verified: false) |
-| Home Building Act documents | Builder | HBCF insurance certificate before any deposit or work for a contract over the threshold; licensed builder; compliant written contract with the deposit cap (Home Building Act 1989 Part 6, s7, s8, verified: false) |
+| Home Building Act documents | Builder | HBCF insurance certificate, taken out by the principal contractor before starting work or taking a deposit, for residential building work where the contract price is over $20,000 including GST (owner ruling R4, confirmed against SIRA). An owner-builder cannot take it out; a variation that takes the price over $20,000 needs a certificate before any further payment. Licensed builder; compliant written contract with the deposit cap (Home Building Act 1989 Part 6, s7, s8: section numbers verified: false) |
 | Electrical certificate of compliance (CCEW) | Licensed electrician | At connection and completion |
 | Plumbing certificate of compliance | Licensed plumber, to NSW Fair Trading as plumbing regulator (verified: false) | At completion |
 | Termite management notice, waterproofing certificate, glazing certificate, truss and frame certificates, structural and stormwater engineer's certificates, works-as-executed drainage plan | Subcontractors and engineers | Collected by the builder for the occupation certificate |
@@ -342,25 +343,30 @@ Clause numbers below are from memory of the instruments, so they are all `verifi
 
 ### Inspections and hold points
 
-NSW mandatory critical-stage inspections for Class 1 and 10 by the principal certifier (Environmental
-Planning and Assessment (Development Certification and Fire Safety) Regulation 2021, verified: false): [D]
+NSW critical-stage inspections for Class 1 and 10 by the principal certifier (owner ruling R7). Items 2
+to 8 are confirmed against Hornsby Council's list, which cites the 2000 Regulation; the current clause,
+clause 61 of the Environmental Planning and Assessment (Development Certification and Fire Safety)
+Regulation 2021, stays verified: false. The project's CC or CDC lists the inspections that apply.
 
-1. After excavation for footings, before the footings are poured.
-2. Before pouring any in-situ reinforced concrete element (the slab).
-3. Before covering the framework of floors, walls and roof.
-4. Before covering waterproofing in wet areas. [K: knowledge/clusters/envelope/rules.yaml
+1. A pre-start (pre-commencement) inspection of the site, before the CC or the start of works (the
+   owner's addition).
+2. After excavation and before the footings are placed.
+3. Before pouring any in-situ reinforced concrete element (the slab).
+4. Before covering the framework (the frame inspection).
+5. Before covering waterproofing in wet areas. [K: knowledge/clusters/envelope/rules.yaml
    rule.state.waterproofing-inspection-before-tiling]
-5. Before covering stormwater drainage connections.
-6. After the building work is completed, before the occupation certificate.
-7. With a pool: after the barrier is erected and before the pool is filled (trigger `swimming-pool`).
+6. Before covering stormwater drainage connections.
+7. With a pool: before pouring its in-situ concrete, and once the pool barrier is erected (trigger
+   `swimming-pool`).
+8. A final inspection after the work is finished and before the occupation certificate.
 
 Engineering hold points the structural engineer usually adds: pier and footing base inspection,
 reinforcement inspection before the slab pour, and frame or tie-down inspection where specified. The
 surveyor provides identification surveys at slab (setbacks) and at frame or roof stage (height). [D]
 
 The app's own hold points that can fire here: `if.frame-inspected-before-roof` (frame before roof
-cladding) fires. `if.reinforcement-inspected-before-pour` needs a `structure.concrete` item, which a house
-does not have, so it does not fire. `if.underground-services-before-paving` needs a program row on
+cladding) fires. `if.reinforcement-inspected-before-pour` also fires: it is tagged through `structure.concrete` on
+the `fr.slab-on-ground-1a` pour activity (confirmed by a read-only Go run, 30 October 2026). `if.underground-services-before-paving` needs a program row on
 `site.vehicle-access`, which has no fragment, so it does not fire. [K:
 knowledge/clusters/structure/interfaces.yaml]
 
@@ -448,7 +454,8 @@ knowledge/program/skeletons.yaml]
    levy, s138, Sydney Water) are met.
 7. **Procurement.** Tender documents, tender period, evaluation, contract signed, HBCF certificate,
    deposit. In practice the CC and the tender often run in parallel.
-8. **Start.** Appoint the principal certifier, notice of commencement, site establishment.
+8. **Start.** Appoint the principal certifier, notice of commencement, pre-commencement inspection,
+   site establishment.
 9. **Construction.** Sediment control, temporary power, building set-out survey, earthworks, footings (inspection), slab
    (inspection), termite barrier, identification survey at slab, frames and trusses, roof, windows, brick veneer and cladding (lock-up),
    services rough-in, frame inspection (before wall batts conceal bracing and tie-downs), insulation, linings, ceilings, internal doors, waterproofing (inspection), tiling, joinery,
@@ -456,8 +463,9 @@ knowledge/program/skeletons.yaml]
    utility connections.
 10. **Completion.** Practical completion inspection, final inspection and occupation certificate,
     handover with certificates and warranties.
-11. **Defects.** Contract defects or maintenance period (if any), then the statutory warranty periods
-    under the Home Building Act (s18E: 2 years, 6 years for a major defect; verified: false).
+11. **Defects.** The contract's defects liability period (HIA and MBA residential contracts carry one,
+    owner ruling R8; its length verified: false), then the statutory warranty periods under the Home
+    Building Act (s18E: 2 years, 6 years for a major defect; verified: false).
 
 **Logic that drives the job:** survey and geotech → concept; BASIX + stormwater + landscape → DA
 lodgement; DA determination → construction documents → CC; CC + contract + HBCF + notice of commencement
@@ -499,8 +507,8 @@ returnables R1–R9 apply to every RFP. [K: knowledge/rfp/skeleton.yaml returnab
   domestic contract (only if the owner asks, `flag contract_admin`); s4.55 modification applications;
   loose FF&E.
 - **Must not carry:** BIM coordination or clash detection; tenant fit-out; signage; façade certification;
-  apartment design-quality submission; Green Star or NABERS; regulated-design declarations (Design and
-  Building Practitioners Act does not reach a Class 1a house; verified: false); D&C tender documents or
+  apartment design-quality submission; Green Star or NABERS; regulated-design declarations (the Design
+  and Building Practitioners Act applies to Class 2 and 9c, not a Class 1a house: owner ruling R3); D&C tender documents or
   post-novation stages; community consultation.
 - **App note:** `required_facts: [budget]` raises the blocking check `fact:budget` until a construction
   budget is stated. The scenario documents state one (a scenario input, not an app price); without it the
@@ -619,7 +627,7 @@ or RFP. The machine-readable form is in `shape.yaml`.
 | `osd-required` | "OSD is required under council's stormwater policy"; "on-site detention tank under the driveway" | "The site is exempt from on-site detention" | Civil OSD design; OSD tank; positive covenant and restriction on title |
 | `sewer-main-in-lot` | "A Sydney Water sewer main crosses the rear of the lot"; "the sewer diagram shows the main 1.2 m from the rear boundary"; "building over or next to a Sydney Water asset" | "No Sydney Water assets are within the property" | Sydney Water building-over or adjacent-to-asset approval; piers to below the zone of influence; possible CCTV of the main; structural authority-asset stage |
 | `reactive-site-class` | "Site classification Class H1 in accordance with AS 2870"; "highly reactive clay"; "Class P due to uncontrolled fill" | "Site classification: Class M"; "Class S" | H1/H2: stiffened raft or waffle slab with deeper edge beams and an engineer's footing inspection. Piers only for Class P, E or founding to rock. Drainage controls around the building. No app delta today (`site_class` is read by nothing). |
-| `swimming-pool` | "In-ground concrete pool with frameless glass fencing"; "plunge pool next to the alfresco" | "No pool is proposed" | Pool and AS 1926.1 barrier; pool builder; pool registration and barrier compliance certificate; BASIX pool commitments; usually its own approval |
+| `swimming-pool` | "In-ground concrete pool with frameless glass fencing"; "plunge pool next to the alfresco" | "No pool is proposed" | Pool and AS 1926.1 barrier; pool builder; critical-stage inspections before the pool's in-situ concrete is poured and once the barrier is erected (owner ruling R7); pool registration and barrier compliance certificate; BASIX pool commitments; usually its own approval |
 | `gas-connection` | "Natural gas to the cooktop and instantaneous hot water"; "Jemena meter on the side boundary" | "All-electric home: induction cooktop and heat-pump hot water" | Gas piping work item; Jemena connection; gas compliance certificate |
 | `basement-or-boundary-excavation` | "Basement garage excavated to a depth of 3 m"; "excavation within 900 mm of the neighbour's dwelling" | "No basement; slab on ground at natural level" | Retention and shoring design; dilapidation surveys of neighbours; waterproofing; groundwater advice; possible ventilation |
 | `builder-designs` | "Design and construct contract with a project-home builder"; "the builder's drafting team will prepare the DA and CC drawings" | "Architect-led traditional lump-sum tender" | No owner-engaged design team: the builder's in-house drafting and engineers produce the DA and CC set. The owner appoints only the principal certifier (and optionally an independent inspector). Program: builder's preliminary (design) agreement, builder prepares DA/CC set, new-homes contract; no tender. Nothing to novate. The app instead sets novation `option` on every consultant, adds `fr.novation` and post-novation RFP stages and moves to `sk.new-dc-da`: a gap, not the answer. |
@@ -702,7 +710,8 @@ What is missing, and what the app will probably produce wrongly as a result. The
    `sk.new-traditional-da` runs before construction documentation.
 5. **No program rows for NSW house steps:** BASIX certificate, Sydney Water Tap in, long service levy,
    HBCF, notice of commencement and principal certifier appointment, s138 crossing, NBN, critical-stage
-   inspections other than the frame hold point, rainwater tank, driveway, garage door, stair, set-out and
+   inspections other than the footing inspection and the frame hold point (no pre-commencement,
+   reinforcement, wet-area, stormwater, pool or final inspection row), rainwater tank, driveway, garage door, stair, set-out and
    identification surveys.
 6. **Investigation fragments do not fire on default actions.** `fr.investigate-survey` and
    `fr.investigate-geotech` need `investigate` actions; the defaults are `new`, and
@@ -763,7 +772,7 @@ What is missing, and what the app will probably produce wrongly as a result. The
 `testing/synthetic/reference/`.
 
 **Instruments named from professional knowledge, every clause `verified: false`:** EP&A Act 1979 (Part 4,
-s4.14, s4.15, s6.6, s6.9, s7.11, s7.12, s10.7) and EP&A (Development Certification and Fire Safety) Regulation 2021 (critical-stage inspections);
+s4.14, s4.15, s6.6, s6.9, s7.11, s7.12, s10.7) and EP&A (Development Certification and Fire Safety) Regulation 2021 (critical-stage inspections, clause 61; the list itself is confirmed by owner ruling R7);
 SEPP (Exempt and Complying Development Codes) 2008, Part 3 Housing Code; SEPP (Sustainable Buildings)
 2022 (BASIX); SEPP (Biodiversity and Conservation) 2021, Chapter 2 (trees); Home Building Act 1989 (s4,
 s7, s8, s18B, s18E, Part 6 HBCF); Building and Construction Industry Long Service Payments Act 1986;
@@ -772,18 +781,31 @@ Regulation 2017 (NSW); Planning for Bush Fire Protection 2019; NCC 2022 Volume T
 11.2, 11.3); AS 2870, AS 1684.2, AS 4055, AS 3660.1, AS 3740, AS 2047, AS 1288, AS 3786, AS 3959,
 AS 4970, AS 1926.1.
 
+**Confirmed by the owner's rulings (30 October 2026, `testing/synthetic/reference/OWNER_RULINGS.md`):**
+
+- R3: the Design and Building Practitioners Act applies to Class 2 and 9c buildings, not to a Class 1
+  house, so no regulated-design stage or declaration appears here.
+- R4: HBCF cover is required for residential building work where the contract price is over $20,000
+  including GST; the principal contractor takes it out before starting work or taking a deposit; an
+  owner-builder cannot; a variation that takes the price over $20,000 needs a certificate before any
+  further payment. Source: SIRA, "Insurance obligations for residential building work",
+  https://www.sira.nsw.gov.au/resources-library/home-building-compensation-resources/publications/insurance-obligations-for-residential-building-works
+  The Home Building Act section numbers stay verified: false.
+- R6: livable housing design is optional for houses in NSW (guidelines and standards, not mandatory);
+  the NCC clause references stay verified: false.
+- R7: the critical-stage inspection list in §5. The pre-commencement inspection is the owner's addition;
+  items 2 to 8 are listed by Hornsby Council, citing the 2000 Regulation:
+  https://www.hornsby.nsw.gov.au/Property/Building-and-development/Building-certification/Critical-Stage-Inspections-and-Occupation-Certificates
+  The current clause (clause 61 of the EP&A (Development Certification and Fire Safety) Regulation
+  2021) stays verified: false.
+- R8: HIA and MBA residential contracts carry a defects liability period; its length stays verified:
+  false.
+
 **Claims I am least sure of:**
 
-- That NSW did not adopt the NCC 2022 livable housing provisions for Class 1a.
-- The exact NSW critical-stage inspection list for Class 1 and 10 (I listed six from memory of the
-  2000 and 2021 Regulations).
-- Whether the HIA and MBA NSW domestic contracts carry a defects or maintenance period beyond the
-  statutory warranties.
 - That a Section 73 certificate is usually not needed for one new house on an existing serviced lot.
 - That the app's `fr.da-exhibition` and `fr.construction-certificate` placement is as I read it (from the
   fragment and skeleton files, not a Go run).
-- That the critical-stage inspections sit in the EP&A (Development Certification and Fire Safety)
-  Regulation 2021 rather than the general EP&A Regulation 2021 (reviewer's belief, not confirmed offline).
 
 ## Review applied (29 October 2026)
 

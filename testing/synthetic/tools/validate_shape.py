@@ -121,6 +121,41 @@ def _profile_key_ok(key, ids):
     return False
 
 
+PHRASE_KEY = re.compile(r"^(stage|position|element)\.\S+$")
+
+
+def _phrase_errors(where, items):
+    """A must_include / must_not_include item is a string or {text, key}; key names a template row."""
+    out = []
+    for j, p in enumerate(items or []):
+        if isinstance(p, str) and p.strip():
+            continue
+        if not isinstance(p, dict) or not isinstance(p.get("text"), str) or not p["text"].strip() or set(p) - {"text", "key"}:
+            out.append(f"{where}[{j}]: must be a string or {{text, key}}")
+        elif "key" in p and not PHRASE_KEY.match(str(p["key"])):
+            out.append(f"{where}[{j}]: key {p['key']} must start with stage., position. or element.")
+    return out
+
+
+def _aliases_errors(where, item):
+    aliases = item.get("aliases")
+    if aliases is None:
+        return []
+    if not isinstance(aliases, list) or not all(isinstance(a, str) and a.strip() for a in aliases):
+        return [f"{where}: aliases must be a list of strings"]
+    return []
+
+
+def _discipline_aliases_errors(where, item, ids):
+    """Other discipline ids that also count as this entry (CONVENTIONS.md C2)."""
+    aliases = item.get("aliases")
+    if aliases is None:
+        return []
+    if not isinstance(aliases, list):
+        return [f"{where}: aliases must be a list of discipline ids"]
+    return [f"{where}: alias {a} is not in disciplines.json" for a in aliases if a not in ids["disciplines"]]
+
+
 def validate(path, ids):
     path = Path(path)
     errors, warnings = [], []
@@ -188,6 +223,7 @@ def validate(path, ids):
         if item.get("kind") not in ("services", "works", "supply"):
             err(f"procurement[{i}]: kind must be services, works or supply")
         built_in(f"procurement[{i}]", item)
+        errors.extend(_discipline_aliases_errors(f"procurement[{i}]", item, ids))
     for i, item in enumerate(shape["cost_plan"]):
         if not item.get("line"):
             err(f"cost_plan[{i}]: line is required")
@@ -196,6 +232,7 @@ def validate(path, ids):
         if any(k in item for k in ("amount", "rate", "price", "budget")):
             err(f"cost_plan[{i}]: a shape names lines, never prices")
         built_in(f"cost_plan[{i}]", item)
+        errors.extend(_aliases_errors(f"cost_plan[{i}]", item))
 
     program = shape["program"] or {}
     skeleton = program.get("skeleton")
@@ -214,6 +251,7 @@ def validate(path, ids):
             if dep not in labels:
                 err(f"{where}: after names an unknown activity: {dep}")
         built_in(where, a)
+        errors.extend(_aliases_errors(where, a))
 
     for i, r in enumerate(shape["rfps"]):
         where = f"rfps[{i}]"
@@ -221,8 +259,11 @@ def validate(path, ids):
             err(f"{where}: discipline {r.get('discipline')} is not in disciplines.json")
         if r.get("template") is not None and r.get("template") not in ids["rfps"]:
             err(f"{where}: template {r.get('template')} is not a knowledge/rfp id")
+        errors.extend(_discipline_aliases_errors(where, r, ids))
         if not r.get("must_include"):
             err(f"{where}: must_include is required")
+        errors.extend(_phrase_errors(f"{where} must_include", r.get("must_include")))
+        errors.extend(_phrase_errors(f"{where} must_not_include", r.get("must_not_include")))
         built_in(where, r)
         expect = r.get("expect")
         if expect is not None:
@@ -260,6 +301,9 @@ def validate(path, ids):
         for d in adds.get("procurement") or []:
             if d not in ids["disciplines"]:
                 err(f"{where}: adds discipline {d} is not in disciplines.json")
+        for j, add in enumerate(adds.get("rfps") or []):
+            for name in ("must_include", "must_not_include"):
+                errors.extend(_phrase_errors(f"{where} adds.rfps[{j}] {name}", add.get(name)))
         for j, w in enumerate(adds.get("work_items") or []):
             work_item(f"{where} adds.work_items[{j}]", w)
         removes = t.get("removes") or {}
@@ -281,11 +325,13 @@ def validate(path, ids):
             err(f"not_expected_procurement[{i}]: discipline {item.get('discipline')} is not in disciplines.json")
         if not item.get("why"):
             err(f"not_expected_procurement[{i}]: why is required")
+        errors.extend(_discipline_aliases_errors(f"not_expected_procurement[{i}]", item, ids))
     for i, item in enumerate(shape.get("not_expected_cost_plan") or []):
         if not item.get("line") or not item.get("why"):
             err(f"not_expected_cost_plan[{i}]: line and why are required")
         if item.get("section") not in ("fees_and_charges", "consultants", "construction", "contingency"):
             err(f"not_expected_cost_plan[{i}]: section must be fees_and_charges, consultants, construction or contingency")
+        errors.extend(_aliases_errors(f"not_expected_cost_plan[{i}]", item))
     for name in ("expected_derived", "scenario_inputs"):
         for i, item in enumerate(shape.get(name) or []):
             if not _profile_key_ok(str(item.get("key", "")), ids):
@@ -313,7 +359,8 @@ def main(argv):
     if not argv or argv[0] in ("-h", "--help"):
         print(__doc__)
         return 0 if argv else 2
-    ids = load_ids(Path("."))
+    # The repo root, so the validator works from any working directory.
+    ids = load_ids(Path(__file__).resolve().parents[3])
     failed = False
     for name in argv:
         errors, warnings = validate(name, ids)

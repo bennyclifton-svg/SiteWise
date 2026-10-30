@@ -29,7 +29,10 @@ Do not edit `DOMAIN.md` or `shape.yaml`. Write
    - Approvals, authority connections, hold points and certification.
    - Existing-building interfaces, where they apply.
    - The common triggers. Name any you would expect that are missing.
-4. **Domain accuracy.** Flag anything:
+4. **Domain accuracy.** First read
+   `testing/synthetic/reference/OWNER_RULINGS.md`. The owner's rulings
+   override your own view; flag any place the map breaks one. Check
+   `reference/CONVENTIONS.md` too. Then flag anything:
    - a consultant the job does not need, or a needed one that is missing;
    - logic in the wrong order;
    - an NSW pathway or authority that is wrong;
