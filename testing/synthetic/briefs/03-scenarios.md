@@ -95,6 +95,13 @@ that trigger true**. Copy the base and change only what the trigger needs:
 - documents the trigger `removes` (for example a statement of environmental
   effects under a CDC) are dropped.
 
+- **every other document that mentions the old condition in passing** is
+  changed too. For example, under a CDC no fee proposal, invoice, email,
+  survey report or drawing revision note may still say "DA". Search the
+  base manifest's `content` and `carries` for the old condition's words
+  (and the base corpus, if it exists) before deciding the list. A stray
+  old-condition mention in a read document makes the variant's key wrong.
+
 List every changed, added or removed document under `changed_from_base` in
 the variant's manifest, with the reason. Profile values may differ from the
 base only on the trigger's `profile` keys. The checker enforces both.

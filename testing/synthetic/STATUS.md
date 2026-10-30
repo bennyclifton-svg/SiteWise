@@ -13,8 +13,8 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 | 0 Scaffolding and shape validator | ok | `tools/validate_shape.py`, briefs, this file | 35 tests pass (validator + scorer) |
 | 1 Knowledge index | ok | `reference/KNOWLEDGE_INDEX.md` | brief `briefs/00-knowledge-index.md` |
 | 4 Shape scoring rules | ok | `SCORING.md`, `tools/score_shapes.py` | TDD from the T01 shape |
-| 5 Scenario brief and expected JSON schema | — | `briefs/03-scenarios.md`, `tools/validate_expected.py` | after the pilot maps are approved |
-| 6 Rendering brief and leak lint | — | `briefs/04-render.md`, `tools/lint_corpus.py` | |
+| 5 Scenario brief and expected JSON schema | ok | `briefs/03-scenarios.md`, `03r`, `tools/validate_expected.py` | 23 tests; T01 done, T05 and T09 not started |
+| 6 Rendering brief and leak lint | ok | `briefs/04-render.md`, `04r`, `tools/lint_corpus.py` | 10 tests; T01 rendered |
 | 7 Harness | — | `harness/` | Python, local API |
 | 8 Pilot run | — | `REPORT.md`, `FINDINGS.md` | live Jev approved 28 Oct |
 
@@ -22,20 +22,20 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 
 | ID | Type | Map | Validate | Review | Owner | Scenarios | Docs | Run |
 |---|---|---|---|---|---|---|---|---|
-| T01 | New detached house (pilot) | ok | ok | ok | ok | — | — | — |
+| T01 | New detached house (pilot) | ok | ok | ok | ok | ok | ok | — |
 | T02 | Apartments | ok | ok | ok | gate | — | — | — |
-| T03 | Office fit-out | — | — | — | — | — | — | — |
-| T04 | Warehouse | — | — | — | — | — | — | — |
+| T03 | Office fit-out | ok | ok | run | — | — | — | — |
+| T04 | Warehouse | ok | ok | run | — | — | — | — |
 | T05 | House alterations and additions (pilot) | ok | ok | ok | ok | — | — | — |
-| T06 | Sprinkler pump and tank upgrade | — | — | — | — | — | — | — |
-| T07 | Mechanical plant upgrade | — | — | — | — | — | — | — |
-| T08 | Roof remediation | — | — | — | — | — | — | — |
+| T06 | Sprinkler pump and tank upgrade | ok | ok | run | — | — | — | — |
+| T07 | Mechanical plant upgrade | ok | ok | run | — | — | — | — |
+| T08 | Roof remediation | ok | ok | fix | — | — | — | — |
 | T09 | Waterproofing remediation (pilot) | ok | ok | ok | ok | — | — | — |
 | T10 | Knock-down rebuild | ok | ok | ok | gate | — | — | — |
 | T11 | Dual occupancy or townhouses | ok | ok | ok | gate | — | — | — |
 | T12 | Granny flat | ok | ok | ok | gate | — | — | — |
 | T13 | Mixed-use shop-top | ok | ok | ok | gate | — | — | — |
-| T14 | Retail or café fit-out | — | — | — | — | — | — | — |
+| T14 | Retail or café fit-out | ok | ok | fix | — | — | — | — |
 | T15 | Childcare centre | — | — | — | — | — | — | — |
 | T16 | Office base-building refurbishment | — | — | — | — | — | — | — |
 | T17 | Cladding remediation | ok | ok | ok | gate | — | — | — |
@@ -263,3 +263,37 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
   link, panel wording, and an ssd-affordable-housing trigger. The author is
   applying them.
 - 2026-10-30: T02 round 2 items applied, validator ok, 17 triggers. T02 is ready for owner review. All six batch 1 maps are at owner review.
+- 2026-10-30: Batch 1, the conventions and the scorer committed and pushed
+  (7b59d9b). Batch 2 (T03, T04, T06, T07, T08, T14) launched.
+- 2026-10-30: Task 5 started with T01 only (owner asked to run one type end to end before mapping more). Brief 03 and `tools/validate_expected.py` written; 23 tests pass. Cost plan, program and RFP keys point at the shape, because `score_shapes.py` already derives them. The checker enforces the metamorphic rule: a variant's profile differs from the base only on its trigger's keys, and every changed document is declared. T01 author launched for base, cdc-pathway and trees-affected.
+- 2026-10-30: Owner is away and asked to go straight on to rendering once the T01 scenarios pass review (owner gate 2 waived for T01; the owner reviews the pilot run instead). Written: brief 03r (scenario review), brief 04 (render), brief 04r (render review), `tools/lint_corpus.py` with 10 tests.
+- 2026-10-30: T01 scenarios written, checker ok: ST01-base (17 documents, 4 waves), ST01-cdc-pathway (16), ST01-trees-affected (19). Missed by design: the target construction start is only in an owner email. The author keyed `flag.arborist_offsite_trees` and `det.site_class`, which the shape's base profile lacks. Review launched (brief 03r).
+- 2026-10-30: T01 scenario review: FIX, 4 findings. The base must deny off-site trees in words the profile reading catches ("No neighbouring or street trees are affected by the works"). d02's number and date sit in a table, and the notes must say the app will miss them. The reviewer agrees the shape's base profile should gain `det.site_class: M` and `flag.arborist_offsite_trees: "no"`. That shape change is left for the owner. The author is applying the fixes.
+- 2026-10-30: T01 scenario fixes applied (4 of 4, none disputed), checker ok on all three, and the orchestrator confirmed them. Scenarios done. ST01-base render launched (brief 04); the variants are rendered from it afterwards.
+- 2026-10-30: ST01-base rendered: 17 documents, lint ok. The orchestrator removed an unrealistic "(stated)" from the d15 invoice total, in the corpus and all three manifests. Render review launched (brief 04r).
+- 2026-10-30: T08 map done (14 triggers, 4 packages, 23 cost lines, 33 activities, 3 RFPs, 23 gaps), validator ok, review launched. The app has no asbestos knowledge and only 2 program activities for this job.
+- 2026-10-30: T14 map done (13 triggers, 5 packages, 34 cost lines, 79 activities, 3 RFPs), validator ok, review launched. The app suggests 10 consultants, 7 of them wrong, and the grease arrestor and exhaust never appear.
+- 2026-10-30: T03 map done (13 triggers, 13 packages, 35 cost lines, 69 activities, 11 RFPs), validator ok, review launched. A refurb starts with no scope, the landlord is missing everywhere, and CDC blocks the certifier RFP.
+- 2026-10-30: ST01-base render review: FIX, 9 findings. The writer applied the corpus-only fixes, including moving the neighbour's jacaranda about 12 m clear of the boundary. The orchestrator applied the four that needed new manifest wording, in the base corpus and all three manifests: no "(single owner)", the Connecting with Country line without "heritage", "No public road works are required", and climate zone 5 without "zone 56". Checker and lint ok. ST01-base corpus is final. Variant renders launched.
+- 2026-10-30: T07 map done (15 triggers, 6 packages, 28 cost lines, 44 activities, 5 RFPs), validator ok, review launched. There are no plant fragments, the consultants are wrong, and an exempt job still gets CC fees and an OC row.
+- 2026-10-30: T06 map done (14 triggers, 9 packages, 36 cost lines, 82 activities, 7 RFPs), validator ok, review launched. There is no fire-water fragment, NSW fire safety law is not encoded, and the sprinkler test is ordered after ceilings (third sighting).
+- 2026-10-30: T04 map done (15 triggers, 20 packages, 49 cost lines, 94 activities, 19 RFPs), validator ok, review launched. All six batch 2 maps are written and in review.
+- 2026-10-30: Variants rendered, lint ok. ST01-cdc-pathway (16 documents): the first pass left "DA" in 8 documents, some of them read (fee proposals, survey), which would have made the expected `cdc` a conflict. Rewritten, with each one now in changed_from_base. Brief 03 now requires every passing mention of the old condition to change. ST01-trees-affected (19 documents): the survey puts the jacaranda 2 m from the boundary, the arborist's figures are realistic, and the SEE gains a trees paragraph. Both variants are in render review.
+- 2026-10-30: T08 review: FIX, 16 findings.
+  - The map now cites the WHS Regulation 2025.
+  - Add a building consultant as the author of the roof specification.
+  - Long service levy: 0.25% on work of $250,000 or more (added to
+    CONVENTIONS C4).
+  The author is applying the fixes.
+- 2026-10-30: ST01-cdc-pathway render review: FIX, 4 findings (DA hints: cl 4.6 wording, "complying development application"). All applied, checks ok. The CDC corpus is final.
+- 2026-10-30: T14 review: FIX, 17 findings.
+  - The certifier RFP stages are "ask", not "option".
+  - R3 (the DBP Act) applies on the riser variant with apartments above.
+    This is an inference; flag it for the owner.
+  - Add the Tap in approval and a kitchen designer.
+  The base (DA, trades design the exhaust and plumbing) is confirmed. The
+  author is applying the fixes.
+- 2026-10-30: ST01-trees-affected render review: FIX, 6 findings, all applied. The site plan Rev B now shows the jacaranda, TPZ fencing and piers. Root cutting is worded without "pruning" so `flag.arborist_pruning` stays unset. Open owner questions: (1) should trees-affected also set arborist_pruning; (2) should the shape's base profile add `det.site_class: M` and `flag.arborist_offsite_trees: "no"`. All three T01 corpora are final: checker and lint ok, 52 documents. Next is Task 7, the harness.
+- 2026-10-30: T08 round 1 fixes are in: 16 applied, 0 disputed, 2 new
+  triggers. Counts are now 16 triggers, 5 packages, 25 cost lines, 35
+  activities, 4 RFPs. Round 2 review launched.

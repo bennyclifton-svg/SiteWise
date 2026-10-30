@@ -31,7 +31,7 @@ lot/DP number and ABN is invented, and emails use `example.com`.
 | `DISCOVERY.md` | How the app files, reads and reconciles; the owner's open questions |
 | `PROJECT_TYPES.md` | The 20 locked project types and the pilot |
 | `STATUS.md` | Live tracker |
-| `briefs/` | Self-contained subagent briefs: 00 knowledge index, 01 domain map, 02 review (03 and 04 come later) |
+| `briefs/` | Self-contained subagent briefs: 00 knowledge index, 01 domain map, 02 review, 03 scenarios (04 render comes later) |
 | `reference/` | The shared knowledge index (Task 1) |
 | `types/<id>-<slug>/` | One project type: `DOMAIN.md`, `shape.yaml`, `REVIEW.md` |
 | `scenarios/` | Base and variant scenarios: `manifest.json`, `expected/`, `corpus/` (Task 5 on) |
@@ -43,4 +43,5 @@ lot/DP number and ABN is invented, and emails use `example.com`.
 ```
 python -m unittest discover -s testing/synthetic/tools
 python testing/synthetic/tools/validate_shape.py testing/synthetic/types/*/shape.yaml
+python testing/synthetic/tools/validate_expected.py testing/synthetic/scenarios/*
 ```
