@@ -6,15 +6,14 @@ T01 New detached house (trees-affected)
   Program [scored]: skeleton sk.generic (expected sk.new-traditional-da), matched 53/85, missed 32 (7 built in, 25 known gaps), extra 19, false positives 0, wrong stage 2; links holds 44, violated 7, unknown 0, unscored 49; orphans 4, cycles 0
     missed built in: Lodge services applications; Excavate and inspect footings; Under-slab sanitary drainage; Reinforce and pour slab; Stand wall frames; Install roof trusses and bracing (+1 more)
     violated: Prepare construction documentation after DA assessment and determination; Coordinate consultant documentation after DA assessment and determination; Install erosion and sediment controls after Establish the site; Reinforcement inspection before slab pour after Install termite management system; Lay brick veneer after Install windows and external doors; Wrap and clad external walls after Install windows and external doors (+1 more)
-  RFPs: found 9/11 (0 built-in missing), not expected present 0, extra 3; expect ok 109, new failures 98, known differences 44, fixed 0; must_include missing 29 (unknown 1); must_not_include present 5 (known 8)
-    consultant.architect: stage.house_documents; stage.brief_masterplan; stage.dnc_tender; stage.regulated_design; stage.post_novation; position.water_asset (+20 more)
-    consultant.structural: stage.tender_traditional; stage.construction_documents; stage.authority_asset; stage.dnc_tender; stage.post_novation; position.inspection_schedule (+11 more)
-    consultant.civil: stage.detailed_tender; stage.dnc_tender; stage.post_novation; position.norbe; position.osd_new; position.osd_existing (+16 more)
-    consultant.geotechnical: stage.g4_planning; blocking.allowance:groundwater; blocking.allowance:reports; blocking.fact:flag.geotech_ass; blocking.fact:flag.geotech_asset_exposure; blocking.fact:flag.geotech_civil_parameters (+11 more)
-    consultant.surveyor: position.access; blocking.allowance:control; blocking.allowance:features; blocking.allowance:issues; blocking.allowance:visits; blocking.fact:flag.staged (+15 more)
-    consultant.certifier: stage.a4_construction; blocking.allowance:duration_months; blocking.allowance:meetings; blocking.allowance:plan_sets; blocking.allowance:reports; blocking.allowance:rfi_hours (+15 more)
+  RFPs: found 9/11 (0 built-in missing), not expected present 0, extra 3; expect ok 128, new failures 27, known differences 46, fixed 0, awaiting user input 50; must_include missing 6 (unknown 6); must_not_include present 6 (known 9)
+    consultant.architect: stage.house_documents; stage.brief_masterplan; stage.dnc_tender; stage.regulated_design; stage.post_novation; position.water_asset (+7 more)
+    consultant.structural: stage.tender_traditional; stage.construction_documents; stage.authority_asset; stage.dnc_tender; stage.post_novation; blocking.fact:procurement (+3 more)
+    consultant.civil: stage.detailed_tender; stage.dnc_tender; stage.post_novation; position.earthworks_suitability; blocking.fact:procurement; blocking.slot:project:intro
+    consultant.geotechnical: blocking.slot:project:intro
+    consultant.surveyor: position.access; blocking.fact:flag.staged; blocking.slot:project:intro
+    consultant.certifier: blocking.slot:project:intro; missing 'Every NSW critical-stage inspection the CC lists for Class 1 and 10: pre-commencement, footings, slab, frame, wet-area waterproofing, stormwater connections, final before the OC (owner ruling R7)'; missing 'Occupation certificate with BASIX completion check'
     consultant.basix: missing 'NatHERS thermal assessment with stamped plans'; missing 'BASIX certificate: water, energy, thermal comfort'; missing 'One revision for the CC design'
     consultant.landscape: missing
-    consultant.town_planner: blocking.allowance:authority_meetings; blocking.fields; blocking.slot:project:intro; blocking.terms
+    consultant.town_planner: blocking.slot:project:intro
     consultant.quantity_surveyor: missing
-    consultant.arborist: missing 'AS 4970 impact assessment'

@@ -14,3 +14,10 @@ Other changes from the first run, probably run-to-run variation in Jev:
 missed (CDC) and a conflict (trees); `flag.authority_asset` a conflict
 (trees); the email d04's discipline is now right (CDC). `proj.lga` is now
 the single wrong value "City of Ryde Section" (F2, still open).
+
+## RFP triage (2 November)
+
+See `RFP_TRIAGE.md`. After the scorer fixes and the shape corrections, RFP
+new failures are base 34, CDC 32, trees 27, and awaiting user input is 50,
+46 and 50. Every base failure that is left is a knock-on of a blank profile
+value; F4 alone accounts for 14. New app findings: F9 to F12.

@@ -83,6 +83,27 @@ for that firm exists from its fee proposal. `internal/invoices/read.go`
 (supplier question). Found 2 Nov after the scorer stopped counting state
 flags as false alarms.
 
+**F9. The certifier RFP has no CDC pathway.** On the CDC variant, every
+principal-certifier stage (B stages) is excluded and the RFP blocks on
+`pathway_unsupported`: `knowledge/rfp/bca-certification.yaml` lists cdc in
+`unsupported_pathways`, and the B stages are gated to da and ssd. A CDC
+house needs exactly this appointment. (RFP triage A5.)
+
+**F10. The certifier RFP leaves out the Class 1 and 10 critical-stage
+inspections and the BASIX check at the OC** (all scenarios; owner ruling
+R7). Related: a certifier package still opens as BCA advisory (a1 to a3),
+because `bca_certification` is a client scope decision. Whether a house
+should default to certification is an owner call. (RFP triage A1.)
+
+**F11. `flag.mixed_use` is yes for a house with a garage.** Class 1a plus
+10a counts as "parts with different classes" (`internal/rfp/drivers.go`
+around line 304), so the architect RFP of an ordinary house asks for a
+"Class and use map by part". Class 10 alongside one other class should
+not make a project mixed use. (RFP triage A3.)
+
+**F12. The structural RFP has no row for footings that avoid a tree's
+structural root zone** (trees variant, owner ruling R9). (RFP triage A4.)
+
 ## Known gaps confirmed (already named in the shape)
 
 - Electrical, hydraulic and mechanical consultants are suggested for a
@@ -118,10 +139,16 @@ flags as false alarms.
   `fact.contract_form` and `proj.regulated_design`: to be checked whether
   the documents' wording matches the app's reading triggers before calling
   them app misses.
-- **RFPs.** Around 100 "new failures" per scenario, mostly `blocking`
-  entries (allowances and facts the user fills in) and stage rows. They
-  need triage against the shape's `expect` before they are reported as
-  defects.
+- **RFPs.** *(Triaged 2 Nov: `runs/20261102-fixes-1-4-6/RFP_TRIAGE.md`.)*
+  The ~100 "new failures" per scenario were mostly not app defects. The
+  scorer now reads a position the app marks "not required by the current
+  brief" as absent (18 per scenario), and reports blocks that wait on user
+  input (allowances, issue fields, terms, client scope decisions) as
+  "awaiting user input", not failures (about 50). The T01 shape's phrases are
+  now keyed to template rows where one exists, and its structural
+  inspection schedule is I, not O. Base new failures: 105 to 34, all
+  knock-ons of blank profile values (14 from F4). The real RFP defects are
+  F9 to F12.
 
 ## What worked
 

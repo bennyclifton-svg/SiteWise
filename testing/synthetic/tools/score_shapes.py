@@ -25,6 +25,32 @@ import yaml
 SCORE_SCHEMA = "sitewise-synthetic-score/1"
 ROOT = Path(__file__).resolve().parents[3]
 DISCIPLINES = ROOT / "data" / "intake" / "disciplines.json"
+SKELETON = ROOT / "knowledge" / "rfp" / "skeleton.yaml"
+# internal/rfp/resolve.go resolvePositions: the party given to a row the brief does not need.
+INACTIVE_PARTY = "not required by the current brief"
+
+
+def _scope_decisions(path=SKELETON):
+    """Flag keys the RFP skeleton marks scope_decision: the client chooses them."""
+    data = yaml.safe_load(Path(path).read_text(encoding="utf8")) if Path(path).exists() else {}
+    out = set()
+    for v in (data or {}).values():
+        if isinstance(v, list):
+            out |= {f.get("key") for f in v if isinstance(f, dict) and f.get("scope_decision")}
+    return out
+
+
+SCOPE_DECISIONS = _scope_decisions()
+
+
+def user_input_check(check_id):
+    """A blocking check that clears only when the user types or chooses something:
+    an allowance, the issue fields, the terms, or a client scope decision. A harness
+    run never types, so these are reported apart from new failures."""
+    if check_id.startswith("allowance:") or check_id in ("fields", "terms"):
+        return True
+    flag = check_id[len("fact:flag."):] if check_id.startswith("fact:flag.") else None
+    return flag in SCOPE_DECISIONS
 
 # A phrase is found in a control label or a block of RFP text when this share
 # of its words is there. Prose phrasing in shapes is approximate; the score
@@ -174,9 +200,16 @@ def expectations(shape, triggers=()):
                             for x in adds.get("program") or [] if x not in have]
         e["not_activities"] = [a for a in e["not_activities"] if a["label"] not in set(adds.get("program") or [])]
 
-        gone = set(removes.get("rfps") or [])
+        # A removes.rfps item is a discipline (drop the RFP) or {discipline,
+        # must_include, must_not_include} (drop only those phrases; the RFP stays).
+        gone = {x for x in removes.get("rfps") or [] if isinstance(x, str)}
         e["not_rfps"] += [dict(r, why=why) for r in e["rfps"] if r["discipline"] in gone]
         e["rfps"] = [r for r in e["rfps"] if r["discipline"] not in gone]
+        for part in (x for x in removes.get("rfps") or [] if isinstance(x, dict)):
+            for r in (r for r in e["rfps"] if r["discipline"] == part.get("discipline")):
+                for name in ("must_include", "must_not_include"):
+                    drop = {phrase_text(p).strip() for p in part.get(name) or []}
+                    r[name] = [p for p in r.get(name) or [] if phrase_text(p).strip() not in drop]
         for add in adds.get("rfps") or []:
             target = next((r for r in e["rfps"] if r["discipline"] == add["discipline"]), None)
             if target is None:
@@ -534,6 +567,8 @@ def _controls(view):
         for c in g.get("controls") or []:
             kind, _, key = str(c.get("key", "")).partition(":")
             if kind in ("stage", "element", "position") and key:
+                if kind == "position" and c.get("party") == INACTIVE_PARTY:
+                    continue  # shown as X but out of the brief: absent
                 values[f"{kind}.{key}"] = c.get("value")
                 labels[f"{kind}.{key}"] = c.get("label") or key
     return values, labels
@@ -548,7 +583,7 @@ def _same(key, got, want):
 
 
 def _compare_expect(r, values, checks):
-    out = {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": []}
+    out = {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": [], "awaiting_user": []}
     expect = r.get("expect") or {}
     differs = {d["key"]: d for d in r.get("app_differs") or []}
     wanted = {}
@@ -563,6 +598,8 @@ def _compare_expect(r, values, checks):
     for key, d in differs.items():
         if key.startswith("text."):
             out["not_checked"].append({"key": key, "why": d.get("why")})
+        elif key.startswith("blocking."):
+            continue  # compared per check below
         elif key not in wanted:
             wanted[key] = d.get("expect")
     for key, want in wanted.items():
@@ -581,12 +618,27 @@ def _compare_expect(r, values, checks):
             out["known_difference"].append({"key": key, "want": want, "app": got, "why": d.get("why")})
         else:
             out["new_failure"].append({"key": key, "want": want, "app": got if present else "absent", "app_differs_said": d.get("app") if d else None})
-    if "blocking" in expect:
+    # Blocking checks, one key per check id: blocking.<id> is 'blocking' or 'not blocking'.
+    blocking_differs = {k[len("blocking."):]: d for k, d in differs.items() if k.startswith("blocking.")}
+    if "blocking" in expect or blocking_differs:
         want_b = set(expect.get("blocking") or [])
-        for c in sorted(want_b - checks):
-            out["new_failure"].append({"key": "blocking." + c, "want": "blocking", "app": "not blocking"})
-        for c in sorted(checks - want_b):
-            out["new_failure"].append({"key": "blocking." + c, "want": "not blocking", "app": "blocking"})
+        ids = sorted(set(blocking_differs) | (want_b | checks if "blocking" in expect else set()))
+        for c in ids:
+            d = blocking_differs.get(c)
+            want = ("blocking" if c in want_b else "not blocking") if "blocking" in expect else d.get("expect")
+            got = "blocking" if c in checks else "not blocking"
+            key = "blocking." + c
+            if got == want:
+                if d:
+                    out["fixed"].append({"key": key, "want": want, "app": got, "was": d.get("app")})
+                else:
+                    out["ok"] += 1
+            elif d and got == d.get("app"):
+                out["known_difference"].append({"key": key, "want": want, "app": got, "why": d.get("why")})
+            elif got == "blocking" and user_input_check(c):
+                out["awaiting_user"].append({"key": key, "want": want, "app": got})
+            else:
+                out["new_failure"].append({"key": key, "want": want, "app": got, "app_differs_said": d.get("app") if d else None})
     return out
 
 
@@ -694,7 +746,7 @@ def score_rfps(exp, reports, packages):
             entry.update(status="missing", found=False)
             entry["must_include"] = {"present": 0, "missing": [phrase_text(p) for p in r.get("must_include") or []], "unknown": [], "known": []}
             entry["must_not_include"] = {"absent": 0, "present": [], "unknown": [], "known": []}
-            entry["expect"] = {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": []}
+            entry["expect"] = {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": [], "awaiting_user": []}
             out.append(entry)
             continue
         a = app[pairs[ei][0]]
@@ -702,7 +754,7 @@ def score_rfps(exp, reports, packages):
         checks = {c.get("id") for c in (a["view"].get("rfp") or {}).get("checks") or [] if c.get("blocking")}
         entry.update(status="found", found=True, report=a["id"], app_template=a["template"])
         entry["expect"] = _compare_expect(r, values, checks) if r.get("expect") or r.get("app_differs") else \
-            {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": []}
+            {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": [], "awaiting_user": []}
         entry["must_include"], entry["must_not_include"] = _phrases(r, a["view"], values, labels)
         out.append(entry)
     rest = [a for i, a in enumerate(app) if i not in used]
@@ -762,6 +814,7 @@ def _summary_counts(result):
             "expect_new_failure": sum(len(r["expect"]["new_failure"]) for r in found),
             "expect_known_difference": sum(len(r["expect"]["known_difference"]) for r in found),
             "expect_fixed": sum(len(r["expect"]["fixed"]) for r in found),
+            "expect_awaiting_user": sum(len(r["expect"].get("awaiting_user", [])) for r in found),
             "must_include_missing": sum(len(r["must_include"]["missing"]) for r in found),
             "must_include_unknown": sum(len(r["must_include"]["unknown"]) for r in found),
             "must_not_include_present": sum(len(r["must_not_include"]["present"]) for r in found),
@@ -803,7 +856,7 @@ def summary(result):
     lines += _list("cycles", [" > ".join(c) for c in result["program"]["cycle_labels"]], show=3)
     lines.append(f"  RFPs: found {r['found']}/{r['expected']} ({r['missing_built_in']} built-in missing), not expected present {r['not_expected_present']}, "
                  f"extra {r['extra']}; expect ok {r['expect_ok']}, new failures {r['expect_new_failure']}, known differences "
-                 f"{r['expect_known_difference']}, fixed {r['expect_fixed']}; must_include missing {r['must_include_missing']} "
+                 f"{r['expect_known_difference']}, fixed {r['expect_fixed']}, awaiting user input {r['expect_awaiting_user']}; must_include missing {r['must_include_missing']} "
                  f"(unknown {r['must_include_unknown']}); must_not_include present {r['must_not_include_present']} (known {r['must_not_include_known']})")
     for e in result["rfps"]:
         if e["status"] == "found" and (e["expect"]["new_failure"] or e["must_include"]["missing"] or e["must_not_include"]["present"]):

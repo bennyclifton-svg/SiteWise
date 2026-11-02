@@ -381,13 +381,47 @@ class RFPTests(unittest.TestCase):
         self.assertIn("position.shared_model", [d["key"] for d in st["known_difference"]])
         self.assertIn("stage.planning_approval", [d["key"] for d in st["fixed"]])
 
+    def test_blocking_differences_per_check(self):
+        arch = next(r for r in self.sh["rfps"] if r["discipline"] == "consultant.architect")
+        arch["expect"]["blocking"] = []
+        arch["app_differs"] += [
+            {"key": "blocking.fact:budget", "app": "blocking", "expect": "not blocking", "why": "known"},
+            {"key": "blocking.fact:site_area", "app": "blocking", "expect": "not blocking", "why": "now cleared"},
+        ]
+        checks = self.report("architecture")["rfp"]["checks"]
+        checks[:] = [{"id": "fact:budget", "blocking": True}, {"id": "fact:gfa", "blocking": True}, {"id": "note", "blocking": False}]
+        result = s.score(self.sh, self.app)
+        ex = find(result["rfps"], discipline="consultant.architect")["expect"]
+        self.assertIn("blocking.fact:budget", [d["key"] for d in ex["known_difference"]])
+        self.assertIn("blocking.fact:site_area", [d["key"] for d in ex["fixed"]])
+        self.assertEqual([f["key"] for f in ex["new_failure"]], ["blocking.fact:gfa"])
+
+    def test_blocks_waiting_on_user_input_are_apart(self):
+        arch = next(r for r in self.sh["rfps"] if r["discipline"] == "consultant.architect")
+        arch["expect"]["blocking"] = []
+        checks = self.report("architecture")["rfp"]["checks"]
+        checks[:] = [{"id": "allowance:visits", "blocking": True}, {"id": "terms", "blocking": True},
+                     {"id": "fact:flag.geotech_intrusive", "blocking": True}, {"id": "fact:flag.staged", "blocking": True}]
+        ex = find(s.score(self.sh, self.app)["rfps"], discipline="consultant.architect")["expect"]
+        self.assertEqual(sorted(d["key"] for d in ex["awaiting_user"]),
+                         ["blocking.allowance:visits", "blocking.fact:flag.geotech_intrusive", "blocking.terms"])
+        self.assertEqual([f["key"] for f in ex["new_failure"]], ["blocking.fact:flag.staged"])
+
+    def test_inactive_position_counts_as_absent(self):
+        view = {"rfp": {"groups": [{"id": "positions", "controls": [
+            {"key": "position:norbe", "value": "X", "party": s.INACTIVE_PARTY},
+            {"key": "position:discharge", "value": "I", "party": "Consultant"}]}]}}
+        values, _ = s._controls(view)
+        self.assertEqual(values, {"position.discharge": "I"})
+
     def test_must_include_and_must_not_include(self):
         draft = self.report("geotechnical")["draft"]["sections"][0]["blocks"]
-        draft[:] = [b for b in draft if "Laboratory" not in b["text"]]
+        # A plain (unkeyed) phrase is decided by its words; keyed ones by their row.
+        draft[:] = [b for b in draft if "Investigation plan" not in b["text"]]
         draft.append({"id": "bad", "label": "", "text": "Contamination or waste classification of excavated material."})
         result = s.score(self.sh, self.app)
         geo = find(result["rfps"], discipline="consultant.geotechnical")
-        self.assertEqual(geo["must_include"]["missing"], ["Laboratory reactivity testing"])
+        self.assertEqual(geo["must_include"]["missing"], ["Investigation plan"])
         self.assertEqual([p["phrase"] for p in geo["must_not_include"]["present"]], ["Contamination or waste classification"])
 
     def test_an_excluded_scope_row_is_not_present(self):
@@ -457,6 +491,26 @@ class TriggerTests(unittest.TestCase):
         certifier = find(result["rfps"], discipline="consultant.certifier")
         self.assertIn("CDC assessment and determination", certifier["must_include"]["missing"])
         self.assertEqual(result["scenario"]["triggers"], ["cdc-pathway"])
+
+    def test_removes_rfps_can_drop_only_named_phrases(self):
+        sh = shape()
+        app = app_from_shape(sh)
+        geo = next(r for r in sh["rfps"] if r["discipline"] == "consultant.geotechnical")
+        sh["triggers"].append({"id": "contaminated", "label": "x", "evidence": ["a", "b"], "negation": ["c"],
+                               "adds": {"rfps": [{"discipline": "consultant.geotechnical", "must_include": ["Contamination or waste classification"]}]},
+                               "removes": {"rfps": [{"discipline": "consultant.geotechnical", "must_include": ["Laboratory reactivity testing"],
+                                                     "must_not_include": ["Contamination or waste classification"]}]}})
+        draft = next(r for r in app["reports"] if r["rfp"]["discipline"] == "geotechnical")["draft"]["sections"][0]["blocks"]
+        draft[:] = [b for b in draft if "Laboratory" not in b["text"]]
+        result = s.score(sh, app, triggers=["contaminated"])
+        got = find(result["rfps"], discipline="consultant.geotechnical")
+        self.assertEqual(got["status"], "found")  # the RFP stays expected
+        self.assertEqual(got["must_include"]["missing"], ["Contamination or waste classification"])  # the add is expected
+        exp = s.expectations(sh, ["contaminated"])
+        geo_exp = next(r for r in exp["rfps"] if r["discipline"] == "consultant.geotechnical")
+        self.assertNotIn("Laboratory reactivity testing", geo_exp["must_include"])
+        self.assertNotIn("Contamination or waste classification", geo_exp["must_not_include"])
+        self.assertEqual(len(geo_exp["must_include"]), len(geo["must_include"]))  # one dropped, one added
 
     def test_unknown_trigger_is_an_error(self):
         with self.assertRaises(ValueError):

@@ -1389,7 +1389,7 @@
       "report": "f2044b17-c60b-48a4-8f41-b082bd0dd5de",
       "app_template": "architecture",
       "expect": {
-        "ok": 26,
+        "ok": 32,
         "new_failure": [
           {
             "key": "stage.planning_response",
@@ -1440,61 +1440,7 @@
             "app_differs_said": null
           },
           {
-            "key": "position.country",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.bim_model",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.tenant_fitout",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.signage",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.facade_certification",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.community",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:client_presentations",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fields",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.slot:project:intro",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.terms",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
@@ -1514,23 +1460,33 @@
             "key": "text.planning_approval",
             "why": "domain-only deliverables the template does not list"
           }
+        ],
+        "awaiting_user": [
+          {
+            "key": "blocking.allowance:client_presentations",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
         ]
       },
       "must_include": {
-        "present": 7,
-        "missing": [
-          "Concept and schematic design",
-          "DA planning approval documentation",
-          "Planning response to council requests",
-          "Tender (bidding) support",
-          "Lodging the DA through the NSW Planning Portal",
-          "Option: construction-phase support"
-        ],
+        "present": 13,
+        "missing": [],
         "unknown": [],
         "known": []
       },
       "must_not_include": {
-        "absent": 8,
+        "absent": 6,
         "present": [
           {
             "phrase": "Green Star or NABERS",
@@ -1545,6 +1501,16 @@
           {
             "phrase": "D&C tender documents",
             "where": "control:stage.dnc_tender",
+            "coverage": 1.0
+          },
+          {
+            "phrase": "Community consultation",
+            "where": "project/rfp:project:conditions",
+            "coverage": 1.0
+          },
+          {
+            "phrase": "Connecting with Country input",
+            "where": "project/rfp:project:conditions",
             "coverage": 1.0
           }
         ],
@@ -1562,7 +1528,7 @@
       "report": "0c621cbc-c607-4a19-aebc-bf175eb55666",
       "app_template": "structural",
       "expect": {
-        "ok": 18,
+        "ok": 22,
         "new_failure": [
           {
             "key": "stage.tender_traditional",
@@ -1595,49 +1561,13 @@
             "app_differs_said": null
           },
           {
-            "key": "position.inspection_schedule",
-            "want": "O",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.retention_design",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.temporary_works_interfaces",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.strengthening",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.fact:procurement",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
           },
           {
-            "key": "blocking.fields",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.slot:project:intro",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.terms",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
@@ -1670,14 +1600,23 @@
           }
         ],
         "fixed": [],
-        "not_checked": []
+        "not_checked": [],
+        "awaiting_user": [
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
       },
       "must_include": {
-        "present": 3,
-        "missing": [
-          "Design basis with site class and AS 4055 wind class",
-          "AS 2870 footing and slab design"
-        ],
+        "present": 5,
+        "missing": [],
         "unknown": [],
         "known": []
       },
@@ -1686,7 +1625,7 @@
         "present": [
           {
             "phrase": "Authority asset stage",
-            "where": "stages/rfp:stages",
+            "where": "key:stage.authority_asset",
             "coverage": 1.0
           }
         ],
@@ -1713,7 +1652,7 @@
       "report": "d60120c9-10c9-4011-83a4-6e5b77fd0969",
       "app_template": "civil",
       "expect": {
-        "ok": 24,
+        "ok": 33,
         "new_failure": [
           {
             "key": "stage.detailed_tender",
@@ -1734,63 +1673,9 @@
             "app_differs_said": null
           },
           {
-            "key": "position.norbe",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.osd_new",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.osd_existing",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.osd_replacement",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.retained_services",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
             "key": "position.earthworks_suitability",
             "want": "absent",
             "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.flood_report",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.flood_evacuation",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.public_road_approvals",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.civil_declarations",
-            "want": "absent",
-            "app": "X",
             "app_differs_said": null
           },
           {
@@ -1800,19 +1685,7 @@
             "app_differs_said": null
           },
           {
-            "key": "blocking.fields",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.slot:project:intro",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.terms",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
@@ -1851,18 +1724,38 @@
           }
         ],
         "fixed": [],
-        "not_checked": []
+        "not_checked": [
+          {
+            "key": "text.roads",
+            "why": "civil.yaml roads element is generic (RFP triage 2 Nov)"
+          },
+          {
+            "key": "text.detailed_tender",
+            "why": "domain-only deliverable (RFP triage 2 Nov)"
+          }
+        ],
+        "awaiting_user": [
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
       },
       "must_include": {
-        "present": 0,
-        "missing": [
-          "Stormwater concept plan for the DA with discharge point confirmed",
-          "Detailed stormwater design for the CC incl. rainwater tank overflow",
-          "Driveway long section and boundary levels for the vehicle crossing",
-          "Erosion and sediment control plan",
-          "Works-as-executed review and stormwater certificate for the OC"
+        "present": 4,
+        "missing": [],
+        "unknown": [
+          {
+            "phrase": "Detailed stormwater design for the CC incl. rainwater tank overflow",
+            "where": "key:stage.detailed_tender"
+          }
         ],
-        "unknown": [],
         "known": []
       },
       "must_not_include": {
@@ -1894,73 +1787,7 @@
         "ok": 8,
         "new_failure": [
           {
-            "key": "stage.g4_planning",
-            "want": "exclude",
-            "app": "option",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:groundwater",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:reports",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.geotech_ass",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.geotech_asset_exposure",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.geotech_civil_parameters",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.geotech_foundation",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.geotech_handback",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.geotech_intrusive",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fields",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.slot:project:intro",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.terms",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
@@ -1972,6 +1799,12 @@
             "want": "include",
             "app": "ask",
             "why": "client flag geotech_intrusive cannot be keyed"
+          },
+          {
+            "key": "stage.g4_planning",
+            "want": "exclude",
+            "app": "option",
+            "why": "client flag geotech_planning unset; after the g3 boundary it is priced as an option (RFP triage 2 Nov)"
           },
           {
             "key": "stage.g7_transfer",
@@ -2023,28 +1856,83 @@
           }
         ],
         "fixed": [],
-        "not_checked": []
+        "not_checked": [
+          {
+            "key": "text.g2_field",
+            "why": "house-specific tests the template does not list (RFP triage 2 Nov)"
+          }
+        ],
+        "awaiting_user": [
+          {
+            "key": "blocking.allowance:groundwater",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:reports",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.geotech_ass",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.geotech_asset_exposure",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.geotech_civil_parameters",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.geotech_foundation",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.geotech_handback",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.geotech_intrusive",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
       },
       "must_include": {
-        "present": 1,
-        "missing": [
-          "Field work: boreholes or test pits with DCP tests",
-          "Laboratory reactivity testing",
-          "Report with AS 2870 site classification, founding depth and footing recommendations",
-          "Option: pier and footing inspections"
+        "present": 3,
+        "missing": [],
+        "unknown": [
+          {
+            "phrase": "Field work: boreholes or test pits with DCP tests",
+            "where": "key:stage.g2_field"
+          },
+          {
+            "phrase": "Laboratory reactivity testing",
+            "where": "key:stage.g2_field"
+          }
         ],
-        "unknown": [],
         "known": []
       },
       "must_not_include": {
         "absent": 1,
-        "present": [
-          {
-            "phrase": "Groundwater monitoring wells",
-            "where": "allowances/rfp:allowances#0",
-            "coverage": 1.0
-          }
-        ],
+        "present": [],
         "unknown": [
           {
             "phrase": "Acid sulfate soils assessment",
@@ -2056,6 +1944,10 @@
           }
         ],
         "known": [
+          {
+            "phrase": "Groundwater monitoring wells",
+            "where": "key:position.monitoring"
+          },
           {
             "phrase": "Novation or transfer",
             "where": "control:position.transfer"
@@ -2082,85 +1974,13 @@
             "app_differs_said": null
           },
           {
-            "key": "blocking.allowance:control",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:features",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:issues",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:visits",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.fact:flag.staged",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
           },
           {
-            "key": "blocking.fact:flag.survey_adjoining",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.survey_boundary",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.survey_buried",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.survey_detail",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.survey_services",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.survey_sewer",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fields",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.slot:project:intro",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.terms",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
@@ -2235,22 +2055,85 @@
           }
         ],
         "fixed": [],
-        "not_checked": []
+        "not_checked": [],
+        "awaiting_user": [
+          {
+            "key": "blocking.allowance:control",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:features",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:issues",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:visits",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.survey_adjoining",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.survey_boundary",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.survey_buried",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.survey_detail",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.survey_services",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.survey_sewer",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
       },
       "must_include": {
-        "present": 0,
-        "missing": [
-          "Detail and contour survey on AHD with trees and street features",
-          "Adjoining windows, ridge heights and trees for the DA",
-          "Sewer location from records",
-          "Option: building set-out",
-          "Option: identification surveys at slab and frame or roof stage",
-          "Option: final survey for the OC"
-        ],
+        "present": 4,
+        "missing": [],
         "unknown": [
+          {
+            "phrase": "Detail and contour survey on AHD with trees and street features",
+            "where": "key:stage.s2_detail"
+          },
           {
             "phrase": "Boundary identification with easements",
             "where": "control:position.boundary"
+          },
+          {
+            "phrase": "Adjoining windows, ridge heights and trees for the DA",
+            "where": "key:position.adjoining"
           }
         ],
         "known": []
@@ -2308,108 +2191,6 @@
             "app_differs_said": null
           },
           {
-            "key": "stage.a4_construction",
-            "want": "exclude",
-            "app": "option",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:duration_months",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:meetings",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:plan_sets",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:reports",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:rfi_hours",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:solution_versions",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:visits",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.allowance:witness_events",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.bca_advisory",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.bca_certification",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.bca_classification_map",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.bca_existing_assessment",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.bca_fire_referrals",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.bca_residential_evidence",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fact:flag.bca_staged_occupation",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.fields",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
             "key": "blocking.pathway_unsupported",
             "want": "not blocking",
             "app": "blocking",
@@ -2417,12 +2198,6 @@
           },
           {
             "key": "blocking.slot:project:intro",
-            "want": "not blocking",
-            "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.terms",
             "want": "not blocking",
             "app": "blocking",
             "app_differs_said": null
@@ -2440,6 +2215,12 @@
             "want": "exclude",
             "app": "ask",
             "why": "as above"
+          },
+          {
+            "key": "stage.a4_construction",
+            "want": "exclude",
+            "app": "option",
+            "why": "after the a1..a3 boundary that applies without the client flag bca_certification (RFP triage 2 Nov)"
           },
           {
             "key": "position.statutory_functions",
@@ -2486,7 +2267,94 @@
             "was": "ask"
           }
         ],
-        "not_checked": []
+        "not_checked": [],
+        "awaiting_user": [
+          {
+            "key": "blocking.allowance:duration_months",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:meetings",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:plan_sets",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:reports",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:rfi_hours",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:solution_versions",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:visits",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:witness_events",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.bca_advisory",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.bca_certification",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.bca_classification_map",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.bca_existing_assessment",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.bca_fire_referrals",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.bca_residential_evidence",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.bca_staged_occupation",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
       },
       "must_include": {
         "present": 0,
@@ -2538,7 +2406,8 @@
         "new_failure": [],
         "known_difference": [],
         "fixed": [],
-        "not_checked": []
+        "not_checked": [],
+        "awaiting_user": []
       },
       "must_include": {
         "present": 0,
@@ -2586,7 +2455,8 @@
         "new_failure": [],
         "known_difference": [],
         "fixed": [],
-        "not_checked": []
+        "not_checked": [],
+        "awaiting_user": []
       }
     },
     {
@@ -2618,7 +2488,8 @@
         "new_failure": [],
         "known_difference": [],
         "fixed": [],
-        "not_checked": []
+        "not_checked": [],
+        "awaiting_user": []
       }
     },
     {
@@ -2699,14 +2570,15 @@
       "missing_built_in": 0,
       "not_expected_present": 1,
       "extra": 3,
-      "expect_ok": 90,
-      "expect_new_failure": 99,
-      "expect_known_difference": 38,
+      "expect_ok": 109,
+      "expect_new_failure": 32,
+      "expect_known_difference": 40,
       "expect_fixed": 1,
-      "must_include_missing": 31,
-      "must_include_unknown": 1,
-      "must_not_include_present": 5,
-      "must_not_include_known": 7
+      "expect_awaiting_user": 46,
+      "must_include_missing": 8,
+      "must_include_unknown": 6,
+      "must_not_include_present": 6,
+      "must_not_include_known": 8
     }
   }
 }
