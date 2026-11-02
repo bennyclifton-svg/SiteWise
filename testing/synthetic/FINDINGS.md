@@ -10,7 +10,7 @@ Run `runs/20261031-pilot` (T01 base, CDC and trees variants; app at
 
 ## App defects
 
-**F1. Update profile response cut off while the app is busy.** In 8 of 12
+**F1. Update profile response cut off while the app is busy.** *(2 Nov: improved by an owner fix, still 3 of 12 waves, only the first Update on a new project; see `runs/20261102-fixes-1-4-6`.)* In 8 of 12
 waves, `POST /projects/{id}/profile/read` returned 200 and then the
 connection was reset partway through the body (about 217 KB). The read was
 still queued, because that happens before the response is written. Idle,
@@ -32,7 +32,7 @@ planning certificate says "City of Ryde" and then a section heading or
 $9,000 ex GST, with `gst_inc_normalised` expected. All three scenarios.
 `internal/proposals/read.go`.
 
-**F4. Procurement route not read.** "Architect-led traditional lump-sum
+**F4. Procurement route not read.** *(2 Nov: still blank after the owner's fix; Jev is asked but nothing is applied.)* "Architect-led traditional lump-sum
 tender to three or four residential builders" in the owner's brief leaves
 `hdr.cond.procurement_route` blank. Knock-on: the program uses
 `sk.generic` instead of `sk.new-traditional-da`, in all three scenarios,
@@ -45,7 +45,7 @@ The app read ex GST as $3,900 (total minus GST) and raised `gst_rate`, not
 and left the amounts blank. Run-to-run variation on the same bytes.
 `internal/invoices/ledger.go` `Check`, `internal/invoices/read.go`.
 
-**F6. The BASIX assessor is not recognised as a discipline.** The
+**F6. The BASIX assessor is not recognised as a discipline.** *(2 Nov: fixed; verified in all three scenarios.)* The
 BASIX/NatHERS fee proposal (d09) gets no discipline (Jev 0.59, blank). So
 no BASIX package is created from it, and it misses both procurement and
 the cost plan. The knowledge has `consultant.basix`, but the filing

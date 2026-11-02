@@ -1,0 +1,19 @@
+T01 New detached house (base)
+  Procurement [scored]: matched 8/11, missed 3 (0 built in, 3 known gaps), extra 0, false positives 3
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical
+  Cost plan [scored]: matched 25/34, missed 9 (0 built in, 9 known gaps), extra 0, false positives 4, fabricated amounts 0 (from documents 10, typed 0)
+    false positives: Electrical; Hydraulic; Mechanical; Active fire protection
+  Program [scored]: skeleton sk.generic (expected sk.new-traditional-da), matched 51/83, missed 32 (9 built in, 23 known gaps), extra 17, false positives 0, wrong stage 1; links holds 43, violated 6, unknown 0, unscored 51; orphans 3, cycles 0
+    missed built in: Lodge services applications; Excavate and inspect footings; Under-slab sanitary drainage; Reinforcement inspection before slab pour; Reinforce and pour slab; Stand wall frames (+3 more)
+    violated: Prepare construction documentation after DA assessment and determination; Coordinate consultant documentation after DA assessment and determination; Install erosion and sediment controls after Establish the site; Lay brick veneer after Install windows and external doors; Wrap and clad external walls after Install windows and external doors; Install stormwater drainage after Install gutters and downpipes
+  RFPs: found 8/10 (0 built-in missing), not expected present 0, extra 3; expect ok 109, new failures 105, known differences 44, fixed 0; must_include missing 27 (unknown 1); must_not_include present 5 (known 8)
+    consultant.architect: stage.house_documents; stage.brief_masterplan; stage.dnc_tender; stage.regulated_design; stage.post_novation; position.water_asset (+21 more)
+    consultant.structural: stage.tender_traditional; stage.construction_documents; stage.authority_asset; stage.dnc_tender; stage.post_novation; position.inspection_schedule (+11 more)
+    consultant.civil: stage.detailed_tender; stage.dnc_tender; stage.post_novation; position.norbe; position.osd_new; position.osd_existing (+17 more)
+    consultant.geotechnical: stage.g4_planning; blocking.allowance:groundwater; blocking.allowance:reports; blocking.details; blocking.fact:flag.geotech_ass; blocking.fact:flag.geotech_asset_exposure (+12 more)
+    consultant.surveyor: position.access; blocking.allowance:control; blocking.allowance:features; blocking.allowance:issues; blocking.allowance:visits; blocking.details (+16 more)
+    consultant.certifier: stage.a4_construction; blocking.allowance:duration_months; blocking.allowance:meetings; blocking.allowance:plan_sets; blocking.allowance:reports; blocking.allowance:rfi_hours (+16 more)
+    consultant.basix: missing 'NatHERS thermal assessment with stamped plans'; missing 'BASIX certificate: water, energy, thermal comfort'; missing 'One revision for the CC design'
+    consultant.landscape: missing
+    consultant.town_planner: blocking.allowance:authority_meetings; blocking.details; blocking.fields; blocking.slot:project:intro; blocking.terms
+    consultant.quantity_surveyor: missing
