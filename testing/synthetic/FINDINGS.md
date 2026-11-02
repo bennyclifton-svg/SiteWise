@@ -32,11 +32,31 @@ planning certificate says "City of Ryde" and then a section heading or
 $9,000 ex GST, with `gst_inc_normalised` expected. All three scenarios.
 `internal/proposals/read.go`.
 
-**F4. Procurement route not read.** *(2 Nov: still blank after the owner's fix; Jev is asked but nothing is applied.)* "Architect-led traditional lump-sum
-tender to three or four residential builders" in the owner's brief leaves
-`hdr.cond.procurement_route` blank. Knock-on: the program uses
-`sk.generic` instead of `sk.new-traditional-da`, in all three scenarios,
-which accounts for much of the program's missed and out-of-order activity.
+**F4. Procurement route not read.** *(2 Nov: cause found; still open.)*
+"Architect-led traditional lump-sum tender to three or four residential
+builders" in the owner's brief leaves `hdr.cond.procurement_route` blank.
+Knock-on: the program uses `sk.generic` instead of `sk.new-traditional-da`,
+in all three scenarios, which accounts for much of the program's missed and
+out-of-order activity.
+
+*Cause.* The route question is never asked for that passage. Header
+questions (class, type, work type, every `hdr.cond.*`) go only to passages
+that `HeaderRouted` accepts (`internal/profile/questions.go`): ordinal ≤ 12,
+a section matching `headerSection` (description, outline, scope,
+introduction, project details, contract…), or a "the project comprises…"
+sentence. The brief's sentence is passage 15 under "## How we want to
+build", so it fails all three. Checked with `cmd/profile-eval -live`: the
+same text under "Contract and procurement" gets the route question, and
+Jev answers `traditional` with confidence 1.0. Under its real heading, the
+question is not in the request.
+
+*Suggested fix (owner's call, lane A).* Route the procurement-route
+question on its own cue words, not only on position: a passage matching
+words like tender, lump sum, design and construct, D&C, ECI, managing
+contractor or novat(ed/ion) gets `hdr.cond.procurement_route`, wherever it
+sits (the intent-routing pattern the code already cites). Adding
+"procurement|tender" to `headerSection` alone would not catch this brief,
+whose heading has neither word.
 
 **F5. Invoice with an arithmetic error flagged as a GST-rate error.** d15
 states ex $3,800, GST $380 and a total of $4,280 (it should be $4,180).
@@ -54,6 +74,14 @@ discipline question does not pick it.
 **F7. The planning certificate is filed as a town planner's document.** d02,
 a council s10.7 certificate, gets discipline `consultant.town_planner`
 (amber 0.73). The key is `none`: council is not a consultant.
+
+**F8. The supplier's name is never read from an invoice.** All nine
+invoices (three per scenario) have a blank `supplier`: Jev answers none at
+confidence 1.0, though each invoice names the firm in its heading and
+beside its ABN. So no invoice links to its package, even where a package
+for that firm exists from its fee proposal. `internal/invoices/read.go`
+(supplier question). Found 2 Nov after the scorer stopped counting state
+flags as false alarms.
 
 ## Known gaps confirmed (already named in the shape)
 
@@ -75,11 +103,12 @@ a council s10.7 certificate, gets discipline `consultant.town_planner`
 
 ## Key or harness issues (not app defects)
 
-- **Invoice flags `no_supplier`, `unmapped` and `period`.** The keys
-  expected none. `no_supplier` and `unmapped` are right while nothing is
-  awarded, and the harness awards nothing. `period` fires because the
-  invoices are dated May–June and the period is the upload month. The keys
-  should expect them; to correct in brief 03 and the T01 keys.
+- **Invoice flags `no_supplier`, `unmapped` and `period`.** *(Fixed 2
+  Nov, in the scorer.)* They follow from the project's state, not the
+  document: nothing is allocated or confirmed in a harness run, and the
+  upload month is after the invoice date. `harness/score.py` `state_flags`
+  now expects them, and brief 03 says keys list only document-caused
+  flags. No key changed.
 - **Conflicts on site area (650 vs 650.2 m²), GFA (300 vs 298 m²), access
   and authority assets.** The documents genuinely disagree, by design in
   some cases. The app shows them as conflicts that include the true value,

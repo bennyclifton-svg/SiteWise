@@ -36,6 +36,14 @@ class Rules(unittest.TestCase):
         self.assertFalse(s._profile_same("det.ncc_class")(["1a", "10a"], "1a"))
         self.assertTrue(s._profile_same("hdr.scale.storeys")(2, "2"))
 
+    def test_state_flags(self):
+        self.assertEqual(s.state_flags({"invoice_date": "2026-05-29"}, {"period": "2026-10-01", "date": "2026-05-29"}),
+                         {"unmapped", "no_supplier", "period"})
+        self.assertEqual(s.state_flags({"invoice_date": "2026-05-29"}, {"period": "2026-10-01", "date": ""}),
+                         {"unmapped", "no_supplier"})
+        self.assertEqual(s.state_flags({"invoice_date": "2026-10-03"}, {"period": "2026-10-01"}),
+                         {"unmapped", "no_supplier"})
+
     def test_profile_conflict(self):
         profile = {"header": [{"key": "hdr.cond.planning", "value": "", "alternatives": [{"value": "da"}, {"value": "cdc"}]}]}
         rows = s.score_profile({"values": {"hdr.cond.planning": {"value": "da", "read_by_design": True}}}, profile)

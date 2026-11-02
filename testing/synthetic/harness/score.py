@@ -195,6 +195,25 @@ def _find(items, filename):
     return None
 
 
+def state_flags(expected, app):
+    """Flags the ledger raises from the project's state, not the document.
+
+    The keys list only what the document itself causes. These follow from
+    what the harness does (internal/invoices/ledger.go Check): it never
+    allocates an invoice to a cost line (unmapped) or confirms a supplier
+    (no_supplier), and `period` fires when the invoice is dated in a month
+    before the upload month, which a run made later than the invoice date
+    always is."""
+    out = {"unmapped", "no_supplier"}
+    # Period needs a date the app read; a missed date is scored once, as a date.
+    read = ((app.get("fields") or {}).get("date") or {}).get("value") or app.get("date")
+    date = str(expected.get("invoice_date") or "") if read else ""
+    period = str(app.get("period") or "")
+    if date and period and date[:7] < period[:7]:
+        out.add("period")
+    return out
+
+
 def score_invoices(expected, manifest, invoices):
     names = {d["id"]: d["filename"] for d in manifest["documents"]}
     rows = []
@@ -220,10 +239,11 @@ def score_invoices(expected, manifest, invoices):
             rows.append({"doc": e["doc"], "field": field, "expected": want, "app": got,
                          "outcome": judge(want, got, same)})
         flags = {f.get("code") if isinstance(f, dict) else f for f in app.get("flags") or []}
-        for flag in e.get("flags", []):
+        wanted = set(e.get("flags", [])) | state_flags(e, app)
+        for flag in sorted(wanted):
             rows.append({"doc": e["doc"], "field": f"flag.{flag}", "expected": True, "app": flag in flags,
                          "outcome": "correct" if flag in flags else "missed"})
-        for flag in sorted(flags - set(e.get("flags", []))):
+        for flag in sorted(flags - wanted):
             rows.append({"doc": e["doc"], "field": f"flag.{flag}", "expected": False, "app": True, "outcome": "hallucinated"})
     return rows
 

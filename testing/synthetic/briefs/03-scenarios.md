@@ -264,6 +264,12 @@ arithmetic error, which must then appear in `flags` as `arithmetic`. Flags
 come from DISCOVERY.md §8. Put anything the app has no field for under
 `unsupported`.
 
+List only the flags the **document** causes (`arithmetic`, `gst_rate`,
+`abn_invalid`, `duplicate`, `credit_note` and so on). Do not list
+`unmapped`, `no_supplier` or `period`: they follow from the project's state
+(nothing allocated or confirmed, and the upload month), and the scorer
+expects them itself (`harness/score.py` `state_flags`).
+
 ### `expected/rfis.json`
 
 `{"schema": "sitewise-synthetic-rfis/1", "supported": false, "rfis": []}`.

@@ -1847,28 +1847,28 @@
     },
     {
       "doc": "d15",
-      "field": "flag.gst_rate",
-      "expected": false,
-      "app": true,
-      "outcome": "hallucinated"
-    },
-    {
-      "doc": "d15",
       "field": "flag.no_supplier",
-      "expected": false,
+      "expected": true,
       "app": true,
-      "outcome": "hallucinated"
+      "outcome": "correct"
     },
     {
       "doc": "d15",
       "field": "flag.period",
-      "expected": false,
+      "expected": true,
       "app": true,
-      "outcome": "hallucinated"
+      "outcome": "correct"
     },
     {
       "doc": "d15",
       "field": "flag.unmapped",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "field": "flag.gst_rate",
       "expected": false,
       "app": true,
       "outcome": "hallucinated"
@@ -1932,23 +1932,23 @@
     {
       "doc": "d16",
       "field": "flag.no_supplier",
-      "expected": false,
+      "expected": true,
       "app": true,
-      "outcome": "hallucinated"
+      "outcome": "correct"
     },
     {
       "doc": "d16",
       "field": "flag.period",
-      "expected": false,
+      "expected": true,
       "app": true,
-      "outcome": "hallucinated"
+      "outcome": "correct"
     },
     {
       "doc": "d16",
       "field": "flag.unmapped",
-      "expected": false,
+      "expected": true,
       "app": true,
-      "outcome": "hallucinated"
+      "outcome": "correct"
     },
     {
       "doc": "d17",
@@ -2009,16 +2009,16 @@
     {
       "doc": "d17",
       "field": "flag.no_supplier",
-      "expected": false,
+      "expected": true,
       "app": true,
-      "outcome": "hallucinated"
+      "outcome": "correct"
     },
     {
       "doc": "d17",
       "field": "flag.unmapped",
-      "expected": false,
+      "expected": true,
       "app": true,
-      "outcome": "hallucinated"
+      "outcome": "correct"
     }
   ],
   "fees": [
@@ -2166,17 +2166,17 @@
       "flag.arithmetic": {
         "missed": 1
       },
-      "flag.gst_rate": {
-        "hallucinated": 1
-      },
       "flag.no_supplier": {
-        "hallucinated": 3
+        "correct": 3
       },
       "flag.period": {
-        "hallucinated": 2
+        "correct": 2
       },
       "flag.unmapped": {
-        "hallucinated": 3
+        "correct": 3
+      },
+      "flag.gst_rate": {
+        "hallucinated": 1
       }
     },
     "fees_by_field": {

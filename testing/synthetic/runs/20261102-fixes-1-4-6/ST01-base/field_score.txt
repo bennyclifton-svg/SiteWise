@@ -37,10 +37,10 @@ ST01-base
     total_cents        correct 3
     supplier           missed 3
     flag.arithmetic    missed 1
+    flag.no_supplier   correct 3
+    flag.period        correct 2
+    flag.unmapped      correct 3
     flag.gst_rate      hallucinated 1
-    flag.no_supplier   hallucinated 3
-    flag.period        hallucinated 2
-    flag.unmapped      hallucinated 3
   Fees (per field):
     stated_total_cents correct 4, wrong 1
     firm_name          correct 5
