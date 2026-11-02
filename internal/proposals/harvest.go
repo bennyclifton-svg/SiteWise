@@ -198,6 +198,8 @@ type Evidence struct {
 	FormFirm map[string]string
 	// KindWords are the proposal cues printed in the filename or a heading.
 	KindWords []string
+	// InvoiceTitle is true when the document's title says it is an invoice.
+	InvoiceTitle bool
 	// OptionsAB is true when the proposal prices "Option A" and "Option B".
 	OptionsAB bool
 	Excerpt   string
@@ -424,6 +426,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 		}
 	}
 	ev.KindWords = cueWords(filename, lines)
+	ev.InvoiceTitle = invoiceTitled(lines)
 	ev.OptionsAB = optionAB.MatchString(sectionHeadings(ev.Sections))
 	ev.Excerpt = feeExcerpt(lines, ev.Amounts, 9000)
 	return ev
@@ -770,6 +773,25 @@ func domainName(email string) string {
 }
 
 var cuePhrases = []string{"fee proposal", "fee submission", "fee estimate", "fee quote", "fee schedule", "proposal for", "tender submission", "tender", "quotation", "quote", "proposal", "response form", "fee"}
+
+// invoiceTitle is a title line that names the document an invoice: "Tax
+// invoice", "# Tax invoice", "Title: Tax invoice", "Invoice 5521". Only the
+// title counts: a proposal's payment terms mention invoices too.
+var invoiceTitle = regexp.MustCompile(`^(title:\s*)?(tax\s+)?invoice(\s*(no\.?|number|#|:)?\s*[a-z0-9/-]*\d[a-z0-9/-]*)?$`)
+
+// invoiceTitled looks at the first few lines only, where a title sits.
+func invoiceTitled(lines []Line) bool {
+	for _, l := range lines[:min(len(lines), 5)] {
+		t := strings.ToLower(strings.TrimSpace(l.Text))
+		if len(l.Cells) > 1 {
+			t = strings.ToLower(strings.TrimSpace(strings.Join(l.Cells, " ")))
+		}
+		if invoiceTitle.MatchString(strings.Join(strings.Fields(t), " ")) {
+			return true
+		}
+	}
+	return false
+}
 
 // cueWords are proposal phrases in the filename and the leading lines.
 func cueWords(filename string, lines []Line) []string {

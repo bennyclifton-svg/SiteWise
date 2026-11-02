@@ -204,8 +204,13 @@ func (d *Draft) rule(field, value string) {
 // kindRule settles the kind when the document calls itself a proposal or a
 // quote and the filed discipline says which: a consultant's quotation is a
 // fee proposal, a trade's is a tender. "Fee" or "tender" alone is not
-// enough: a tender evaluation report says both.
+// enough: a tender evaluation report says both. A document titled as an
+// invoice is never a proposal: it claims against one, and read as one it
+// would supersede the firm's real proposal.
 func kindRule(ev Evidence, discipline string) string {
+	if ev.InvoiceTitle {
+		return KindNone
+	}
 	has := map[string]bool{}
 	for _, w := range ev.KindWords {
 		has[w] = true
