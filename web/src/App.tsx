@@ -1,5 +1,5 @@
 import { Pending } from "./Activity";
-// Shell: sign in with an invite token, choose or create a project, then file.
+// Shell: sign in, choose or create a project, then file.
 // Routing is two paths, so it is done with the History API directly.
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
@@ -10,6 +10,7 @@ import { ThemeButton } from "./ThemeButton";
 import { Wordmark } from "./Wordmark";
 import { Project } from "./Project";
 import { ShellPreview } from "./ShellPreview";
+import { SignIn } from "./SignIn";
 
 type Route = { name: "home" } | { name: "project"; id: string };
 
@@ -53,7 +54,7 @@ export function App() {
           setAuth("in");
         },
         () => {
-          setAuthError("That invite link has expired or was already used. Ask your project admin for a new one.");
+          setAuthError("That sign-in link has expired or was already used. Sign in with your email and password.");
           setAuth("out");
         },
       );
@@ -61,7 +62,10 @@ export function App() {
     };
     const onHash = () => void consume();
     window.addEventListener("hashchange", onHash);
-    if (!consume()) {
+    // A password reset link opens the sign-in panel in reset mode.
+    if (/reset=/.test(location.hash)) {
+      setAuth("out");
+    } else if (!consume()) {
       api.checkSession().then(
         () => setAuth("in"),
         () => setAuth("out"),
@@ -71,7 +75,7 @@ export function App() {
   }, []);
 
   const signedOut = useCallback(() => {
-    setAuthError("Your session has ended. Sign in again with a new invite.");
+    setAuthError("Your session has ended. Sign in again.");
     setAuth("out");
   }, []);
 
@@ -138,68 +142,6 @@ export function App() {
         </>
       )}
     </>
-  );
-}
-
-function SignIn({ initialError, onSignedIn }: { initialError: string; onSignedIn: () => void }) {
-  const [token, setToken] = useState("");
-  const [error, setError] = useState(initialError);
-  const [busy, setBusy] = useState(false);
-
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    const value = token.trim();
-    if (!value) {
-      setError("Paste the token from your invite email.");
-      return;
-    }
-    setBusy(true);
-    setError("");
-    try {
-      await api.signIn(value);
-      onSignedIn();
-    } catch (err) {
-      setBusy(false);
-      setError(
-        err instanceof ApiError && err.status === 401
-          ? "That token has expired or was already used. Ask your project admin for a new invite."
-          : err instanceof Error
-            ? err.message
-            : "Sign in failed.",
-      );
-    }
-  }
-
-  return (
-    <main className="entry">
-      <div className="entry-panel">
-        <Wordmark height={32} />
-        <span className="sr-only">SiteWise</span>
-        <h1>Sign in with your invite</h1>
-        <p>SiteWise is invite only. Open the link in your invite email, or paste its token here.</p>
-        <form className="stack-form" onSubmit={submit} noValidate>
-          <label htmlFor="token">Invite token</label>
-          <input
-            id="token"
-            className="input"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            autoComplete="one-time-code"
-            spellCheck={false}
-            aria-invalid={error ? "true" : undefined}
-            aria-describedby={error ? "token-error" : undefined}
-          />
-          {error && (
-            <span id="token-error" className="error-text" role="alert">
-              {error}
-            </span>
-          )}
-          <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? <Pending delayed>Signing in…</Pending> : "Sign in"}
-          </button>
-        </form>
-      </div>
-    </main>
   );
 }
 

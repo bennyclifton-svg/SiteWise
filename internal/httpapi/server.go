@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"sitewise/bench"
+	"sitewise/internal/auth"
 	"sitewise/internal/events"
 	"sitewise/internal/files"
 	"sitewise/internal/identity"
@@ -55,6 +56,8 @@ type Options struct {
 	// DevLogin mounts GET /dev/login, which signs a visitor in as the local
 	// owner. serve enables it only on a loopback address outside production.
 	DevLogin bool
+	// ResetMail sends password reset links. Nil sends none.
+	ResetMail auth.ResetMailer
 	// Knowledge and ProfileThresholds serve the project profile. Nil
 	// knowledge disables the profile routes (404).
 	Knowledge         *knowledge.Catalog
@@ -270,6 +273,7 @@ func New(opts Options) (*Server, error) {
 		ProfileThresholds: opts.ProfileThresholds,
 		ProfileReading:    opts.ProfileReading,
 		ProposalShowCount: opts.ProposalShowCount,
+		ResetMail:         opts.ResetMail,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})

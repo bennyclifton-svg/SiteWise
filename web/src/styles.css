@@ -271,6 +271,30 @@ select {
   color: var(--ink);
 }
 
+.entry-switch {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-top: 18px;
+  color: var(--ink-muted);
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--ember);
+}
+
 .projects {
   max-width: 720px;
   margin: 0 auto;

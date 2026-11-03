@@ -67,6 +67,11 @@
       "p90_us": 250000
     },
     {
+      "name": "account_auth",
+      "p50_us": 500000,
+      "p90_us": 1000000
+    },
+    {
       "name": "health_speed",
       "p50_us": 25000,
       "p90_us": 100000

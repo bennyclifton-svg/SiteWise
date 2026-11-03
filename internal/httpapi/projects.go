@@ -62,6 +62,9 @@ type Deps struct {
 	ProfileReading    profile.ReadPolicy
 	ProposalShowCount int
 	ReportBuild       string
+	// ResetMail sends password reset links. Nil sends none.
+	ResetMail auth.ResetMailer
+	limits    *authLimits
 }
 
 // InvoiceReader starts reading an invoice that outlives the upload request.
@@ -76,6 +79,7 @@ type Filer interface {
 
 // Handler serves session consumption and project routes.
 func Handler(deps Deps) http.Handler {
+	deps.limits = newAuthLimits()
 	if deps.ReportBuild == "" {
 		deps.ReportBuild = reportBuildVersion()
 	}
@@ -245,6 +249,9 @@ func Handler(deps Deps) http.Handler {
 		"POST /projects/{id}/packages/{pkg}/stage-sync":      postPackageStageSync,
 		"GET /reports/{r}/stage-sync":                        getReportStageSync,
 		"POST /reports/{r}/stage-sync":                       postReportStageSync,
+	}
+	for pattern, h := range accountRoutes {
+		routes[pattern] = h
 	}
 	for pattern, h := range routes {
 		h = reviewHook(pattern, h)
