@@ -114,6 +114,48 @@ func TestWordingMatchesContract(t *testing.T) {
 	}
 }
 
+// F4: a passage that states the procurement route is asked the route
+// question wherever it sits; it is the only header question the cue adds.
+func TestProcurementRouteRoutedOnCueWords(t *testing.T) {
+	cat := repoCatalog(t)
+	const route = "hdr.cond.procurement_route"
+	for _, text := range []string{
+		"Architect-led traditional lump-sum tender to three or four residential builders.",
+		"The works will be procured as design and construct.",
+		"We expect a D&C contract with the architect novated.",
+		"An ECI phase precedes the main works.",
+		"Early contractor involvement is planned.",
+		"A managing contractor will be engaged.",
+		"Construction management with trade packages let by the client.",
+		"The head contract will be AS 4000.",
+		"The project was tendered last year.",
+		"Novation of the design team to the builder.",
+		"The architect will novate to the builder.",
+		"A lump sum price is sought.",
+	} {
+		qs, _ := profile.LabelQuestions(profile.PassageInfo{Kind: "design_brief", Section: "How we want to build", Ordinal: 15, Text: text}, profile.Harvest(text, cat), cat)
+		if _, ok := qs[route]; !ok {
+			t.Fatalf("%q: route question missing from %v", text, keys(qs))
+		}
+		for id := range qs {
+			if strings.HasPrefix(id, "hdr.") && id != route {
+				t.Fatalf("%q: cue added another header question %s", text, id)
+			}
+		}
+	}
+	for _, text := range []string{"The kitchen joinery is painted two-pack white.", "Tenderness of the soil", "Specifically dispatched"} {
+		qs, _ := profile.LabelQuestions(profile.PassageInfo{Kind: "design_brief", Section: "Finishes", Ordinal: 15, Text: text}, profile.Harvest(text, cat), cat)
+		if _, ok := qs[route]; ok {
+			t.Fatalf("%q: route asked without a cue", text)
+		}
+	}
+	// A drawing the profile does not read gains nothing from a cue.
+	qs, _ := profile.LabelQuestions(profile.PassageInfo{Kind: "drawing", Ordinal: 15, Read: "auto", Text: "Tender issue"}, profile.Harvest("Tender issue", cat), cat)
+	if _, ok := qs[route]; ok {
+		t.Fatal("route asked on an unread drawing")
+	}
+}
+
 func keys[V any](m map[string]V) []string {
 	var out []string
 	for k := range m {

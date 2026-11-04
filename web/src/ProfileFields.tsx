@@ -118,7 +118,9 @@ export function Sources({ cell, onJump }: { cell: Cell; onJump: (id: string) => 
 }
 
 export function Conflict({ cell, onPick }: { cell: Cell; onPick: (v: string) => void }) {
-  if (cell.band !== "red" || cell.alternatives.length === 0) return null;
+  // Amber with alternatives: a lopsided choice settled on its leader; the
+  // dissenting values stay one click away.
+  if ((cell.band !== "red" && cell.band !== "amber") || cell.alternatives.length === 0) return null;
   return (
     <span className="pf-alts">
       {cell.alternatives.map((a) => (
