@@ -16,7 +16,11 @@ import (
 // FirmColumn is one firm in a package's price table. Totals are computed in
 // Go from the stored cells.
 type FirmColumn struct {
-	AppointmentTotal *int64                 `json:"-"`
+	AppointmentRows  []AppointmentRow `json:"appointment_rows,omitempty"`
+	AppointmentTotal *int64           `json:"-"`
+	// AppointmentBasis is how the included source fees relate to the
+	// letter's printed total: BasisReconciled, BasisListed or "".
+	AppointmentBasis string                 `json:"appointment_basis,omitempty"`
 	Quote            *proposals.QuoteReview `json:"quote,omitempty"`
 	// AwardStages are the source stages that add to the confirmed fee, so
 	// the award can write them as separate lines. Empty otherwise.
@@ -204,9 +208,26 @@ FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2 ORDER BY
 			}
 			if a, ok := col.Cells["comparison:appointment"]; ok && a.DecidedBy == proposals.ByUser && a.State == proposals.StatePriced && a.Cents != nil {
 				col.AwardStages = awardStages(col.Quote, *a.Cents)
-				for _, it := range items {
-					if strings.HasPrefix(it.Key, "comparison:") && it.Key != "comparison:appointment" && it.Base {
-						col.AwardStages = nil
+			}
+			if col.Quote != nil {
+				col.AppointmentRows, col.AppointmentTotal, col.AppointmentBasis = appointmentRows(items, col)
+				for key := range col.Decisions {
+					if strings.HasPrefix(key, appointmentPrefix) {
+						col.Totals.BaseTotal = col.AppointmentTotal
+						col.Totals.KnownBase = 0
+						col.Totals.NotPriced, col.Totals.Unread = 0, 0
+						for _, row := range col.AppointmentRows {
+							if row.Included {
+								if row.Amount != nil {
+									c, ok, _ := invoices.ParseCents(*row.Amount)
+									if ok {
+										col.Totals.KnownBase += c
+									}
+								} else if row.State != proposals.StateIncluded {
+									col.Totals.NotPriced++
+								}
+							}
+						}
 						break
 					}
 				}
@@ -286,6 +307,11 @@ type FirmCard struct {
 	Lowest      bool     `json:"lowest"`
 	NeedsReview bool     `json:"needs_review"`
 	Flags       []string `json:"flags"`
+	// PIExpiresOn is the last day of the professional indemnity period the
+	// document states; PIExpired is true once that day has passed in Sydney.
+	PIExpiresOn  string `json:"pi_expires_on,omitempty"`
+	PIExpired    bool   `json:"pi_expired,omitempty"`
+	PILimitCents *int64 `json:"pi_limit_cents,omitempty"`
 }
 
 // ProcurementBoard is every package's live firm cards, and the submissions
@@ -322,12 +348,25 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 				live = append(live, it.ScheduleItem)
 			}
 		}
-		cols, _, err := s.packageColumns(ctx, tx, org, project, pkg, live)
+		cols, earlier, err := s.packageColumns(ctx, tx, org, project, pkg, live)
 		if err != nil {
 			return nil, nil, err
 		}
 		for _, c := range cols {
 			out[pkg] = append(out[pkg], cardOf(c))
+		}
+		// A document dropped on the row that is not a proposal but names a
+		// firm (an invited builder's email, a consultant's advice) shows that
+		// firm as named. Nothing is priced or awarded from it (Walsh, 2026-10-27).
+		for _, sub := range earlier {
+			if sub.Status != SubmissionNotProposal || sub.FirmID == "" {
+				continue
+			}
+			f, err := readFirm(ctx, tx, org, sub.FirmID)
+			if err != nil {
+				return nil, nil, err
+			}
+			out[pkg] = append(out[pkg], cardOf(FirmColumn{Submission: sub, Firm: &f}))
 		}
 	}
 	loose := []FirmCard{}
@@ -366,7 +405,9 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 func cardOf(c FirmColumn) FirmCard {
 	card := FirmCard{SubmissionID: c.Submission.ID, Filename: c.Submission.Filename, ReceivedOn: c.Submission.ReceivedOn, Status: c.Submission.Status,
 		BaseTotal: c.Totals.BaseTotal, KnownBase: c.Totals.KnownBase, StatedTotal: c.Submission.StatedTotal, NotPriced: c.Totals.NotPriced, Unread: c.Totals.Unread, Lowest: c.Totals.Lowest,
-		NeedsReview: c.NeedsReview, Flags: stringsOrEmpty(c.Submission.Flags)}
+		NeedsReview: c.NeedsReview, Flags: stringsOrEmpty(c.Submission.Flags),
+		PIExpiresOn: c.Submission.PIExpiresOn, PILimitCents: c.Submission.PILimitCents,
+		PIExpired: c.Submission.PIExpiresOn != "" && c.Submission.PIExpiresOn < SydneyDate(time.Now())}
 	if c.Firm != nil {
 		card.FirmName = c.Firm.Name
 	}

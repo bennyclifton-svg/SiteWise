@@ -119,8 +119,9 @@ value is never overwritten.
 ## Operating Context
 
 A Go single binary serves the API, event stream (SSE) and embedded React SPA
-from one host with PostgreSQL 17 and content-addressed files. Access is
-invite-only per organisation; every project belongs to one org. Documents are
+from one host with PostgreSQL 17 and content-addressed files. Anyone can
+sign up with email and password; each account is its own org with one owner
+and many projects, and every project belongs to one org. No sharing yet. Documents are
 the working material: consultant drawings with title blocks, reports, specs,
 spreadsheets. Scanned PDFs without a text layer are stored but not filed.
 
@@ -148,9 +149,12 @@ spreadsheets. Scanned PDFs without a text layer are stored but not filed.
 
 ## Brand Commitments
 
-- Keep the Sitewise mark and wordmark and the owner-approved Clerk cockpit
-  adaptation: Instrument Sans, shared semantic surfaces and compact working
-  controls. `web/DESIGN.md` is the shared visual authority; current shell tokens
+- The mark is the datum lockup (owner-approved 3 November 2026): the
+  surveyor's level datum with "sitewise" standing on its datum line, drawn as
+  one graphite pencil stroke. It replaced the blue S mark. The workbench wears
+  Trace (owner-approved the same day): a drawing sheet on a drafting table,
+  white butter paper over the header, and three hand marks used sparingly.
+  Instrument Sans, shared semantic surfaces and compact working controls stay. `web/DESIGN.md` is the shared visual authority; current shell tokens
   govern light and dark appearance. The earlier warm-paper/IBM Plex register
   in `../clerk/DESIGN.md` records the product's origin, not a separate identity
   for new workbench surfaces.

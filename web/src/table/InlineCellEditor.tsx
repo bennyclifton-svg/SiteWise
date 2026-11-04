@@ -53,7 +53,7 @@ export function InlineCellEditor({ value, label, error, onCommit, onCancel, clas
     else finish("blur");
   };
   const common = {
-    className: `inline-cell-editor ${className}`, "aria-label": label, "aria-invalid": error ? true as const : undefined,
+    className: `inline-cell-editor field-plain ${className}`, "aria-label": label, "aria-invalid": error ? true as const : undefined,
     disabled: busy, value: text, onKeyDown: keys, onBlur: blur,
     onClick: (e: React.MouseEvent) => e.stopPropagation(),
     onDoubleClick: (e: React.MouseEvent) => e.stopPropagation(),

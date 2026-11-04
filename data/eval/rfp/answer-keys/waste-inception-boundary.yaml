@@ -54,13 +54,11 @@ description: Early evidence appointment leaves selected operational plan as pric
   beyond end.
 expect:
   waste-management:
-    stages_include:
-    - s1_inception
-    stages_option:
-    - s2_concept
-    - s3_operational
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception]
     positions:
-      operational: O
-      collection: O
-      rooms: O
-      shared: O
+      operational: X
+      collection: X
+      rooms: X
+      shared: X
+    stages_absent: [s2_concept, s3_operational]

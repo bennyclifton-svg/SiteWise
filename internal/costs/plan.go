@@ -36,6 +36,9 @@ type Plan struct {
 	// Budget is the construction budget the profile states, read on every
 	// plan read; nil when the profile has none.
 	Budget *ConstructionBudget `json:"construction_budget,omitempty"`
+	// Estimate is a builder's preliminary cost advice the profile states,
+	// shown beside the budget; never a budget or a price. Nil when none.
+	Estimate *PreliminaryEstimate `json:"preliminary_estimate,omitempty"`
 }
 type CostSystem struct {
 	ID    string `json:"id"`

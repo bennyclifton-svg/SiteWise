@@ -66,16 +66,8 @@ description: Separate A/B packages, mixed-use occupied fit-out and D&C transfer 
   stage.
 expect:
   bca-certification:
-    stages_include:
-    - a1_inception
-    - a2_planning
-    - a3_tender
-    - b1_preliminary
-    - b2_construction_approval
-    - b3_construction
-    - b4_occupation
-    stages_option:
-    - a4_construction
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [a1_inception, a2_planning, a3_tender, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation, a4_construction]
     positions:
       statutory_functions: I
       existing_assessment: I
@@ -83,9 +75,6 @@ expect:
       staged_occupation: I
       fire_referrals: I
       residential_evidence: I
-      performance_assessment: O
-      extra_visits: O
-    role:
-    - advisory
-    - statutory
-    - independence
+      performance_assessment: I
+      extra_visits: I
+    role: [advisory, statutory, independence]

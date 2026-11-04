@@ -1,23 +1,29 @@
 .project-side-panel .reg-table col.reg-open { width: 2.5rem; }
-.project-side-panel .reg-table col.reg-life { width: 5.5rem; }
 .register .reg-line { user-select: none; }
 .reg-line td[data-editable]:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
 .project-side-panel .reg-line td[data-editing] { overflow: visible; white-space: normal; }
-.reg-edit {
+/* The editor lies over the whole cell: same size as the row, a square 1px
+   line, text where it was. The cell keeps its content height underneath. */
+.project-side-panel .reg-line td[data-editing] { position: relative; }
+.register .reg-edit.inline-cell-editor,
+.register .reg-edit.inline-cell-editor:focus {
+  position: absolute;
+  inset: 0;
   user-select: text;
   width: 100%;
+  height: 100%;
   min-width: 0;
-  padding: 0;
-  height: 1rem;
+  min-height: 0;
+  margin: 0;
+  padding: inherit;
   line-height: 1.25;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px var(--azure);
   color: var(--ink);
   font: inherit;
 }
 
 .reg-edit-error { display: block; color: var(--alert); overflow-wrap: anywhere; }
-@container repo (max-width: 49rem) {
-  .project-side-panel :is(col, th, td).reg-life { display: none; }
-}
 
 .project-side-panel .reg-doc[data-selected] .reg-line:hover td { background: var(--table-selection-bg); }
 .project-side-panel .reg-doc .reg-line td[data-editing] { background: var(--table-edit-bg); }
@@ -25,3 +31,37 @@
 .reg-bulk-edit { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; width: 100%; }
 .reg-bulk-edit select { width: auto; min-width: 0; max-width: 12rem; padding: .35rem .5rem; font: inherit; }
 .reg-bulk-message { width: 100%; margin: 0; }
+
+/* Row actions live behind one ⋮ button (and right-click); the menu is portalled to the body. */
+.project-side-panel .reg-table col.reg-more { width: 2rem; }
+.reg-table th.reg-more, .reg-line td.reg-more { padding: 3px 2px 0 0; text-align: right; }
+.reg-more-btn { display: inline-grid; place-items: center; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink-muted); cursor: pointer; }
+.reg-more-btn svg { width: 16px; height: 16px; }
+.reg-more-btn:hover, .reg-more-btn[aria-expanded="true"] { background: color-mix(in oklab, var(--ink) 10%, transparent); color: var(--ink); }
+.reg-more-btn:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
+.reg-menu { position: fixed; z-index: 1000; min-width: 15rem; max-width: 22rem; padding: 6px 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); box-shadow: 0 4px 16px color-mix(in oklab, #000 18%, transparent), 0 1px 3px color-mix(in oklab, #000 12%, transparent); color: var(--ink); font-size: var(--fs-sm, .875rem); }
+.reg-menu-head { margin: 0; padding: 4px 16px 6px; color: var(--ink-muted); font-size: var(--fs-xs, .75rem); }
+.reg-menu-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 7px 16px; border: 0; background: none; color: inherit; font: inherit; text-align: left; white-space: nowrap; cursor: pointer; }
+.reg-menu-item:hover:not(:disabled), .reg-menu-item:focus-visible { outline: none; background: color-mix(in oklab, var(--ink) 8%, transparent); }
+.reg-menu-item[data-danger] { color: var(--alert); }
+.reg-menu-item:disabled { opacity: .45; cursor: default; }
+.reg-menu-sep { height: 1px; margin: 6px 0; background: var(--line); }
+.reg-field-choice { width: 100%; margin-bottom: 12px; }
+.reg-notice:empty { display: none; }
+.reg-notice { margin: 0; padding: 6px 12px; border-bottom: 1px solid var(--line); font-size: var(--fs-xs, .75rem); }
+
+/* Selection reads like a file browser: a clear blue band, the focused row outlined. */
+.register { --reg-selected: color-mix(in oklab, var(--azure) 22%, var(--paper)); }
+:root[data-theme="dark"] .register { --reg-selected: color-mix(in oklab, var(--azure) 42%, var(--paper)); }
+.project-side-panel .register .reg-doc[data-selected] .reg-line td,
+.project-side-panel .register .reg-doc[data-selected] .reg-line:hover td { background: var(--reg-selected); color: var(--ink); }
+.project-side-panel .register .reg-doc[data-selected] + .reg-doc[data-selected] .reg-line td { box-shadow: inset 0 1px 0 color-mix(in oklab, var(--paper) 70%, transparent); }
+.register .reg-line:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
+
+/* Documents the profile does not read: quieter text and an eye struck through. */
+.project-side-panel .register .reg-doc[data-excluded]:not([data-selected]) .reg-line td { color: var(--ink-muted); }
+.reg-unread { display: inline-grid; place-items: center; margin-right: 4px; color: var(--ink-muted); vertical-align: -2px; }
+.reg-unread svg { width: 13px; height: 13px; }
+.reg-menu-icon { display: inline-grid; place-items: center; width: 18px; height: 18px; flex: none; color: var(--ink-muted); }
+.reg-menu-icon svg { width: 16px; height: 16px; }
+.reg-menu-item[data-danger] .reg-menu-icon { color: inherit; }

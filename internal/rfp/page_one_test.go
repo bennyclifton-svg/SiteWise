@@ -137,7 +137,7 @@ func TestPageOnePrintsTheGridAndConditions(t *testing.T) {
 		return nil, nil
 	}
 	got, blocks := ids("project")
-	if strings.Join(got, ",") != "rfp:project:intro,rfp:project:grid,rfp:project:conditions,rfp:project:information" {
+	if strings.Join(got, ",") != "rfp:project:intro,rfp:project:grid,rfp:project:conditions" {
 		t.Fatalf("page one blocks = %v", got)
 	}
 	grid := blocks[1].table
@@ -149,11 +149,15 @@ func TestPageOnePrintsTheGridAndConditions(t *testing.T) {
 	if len(cond) != 2 || !strings.HasPrefix(cond[0], "Conditions that do not apply: Work to an existing building") || !strings.HasPrefix(cond[1], "Conditions not yet known: ") || !strings.Contains(cond[1], "Groundwater above the base of excavation") {
 		t.Fatalf("conditions = %q", blocks[2].text)
 	}
-	if blocks[3].text != "Information provided: Survey and geotechnical report" {
-		t.Fatalf("information = %q", blocks[3].text)
+	if _, info := ids("transmittal"); len(info) != 1 || info[0].text != "Survey and geotechnical report" {
+		t.Fatalf("transmittal = %+v", info)
 	}
-	role, roleBlocks := ids("positions")
-	if strings.Join(role, ",") != "rfp:role,rfp:positions" || !strings.HasSuffix(roleBlocks[0].text, "Design vehicle: 19 m semi-trailer") {
+	// Scope by stage: the scope wording, then its one stage table.
+	if got, _ := ids("positions"); got != nil {
+		t.Fatalf("positions section printed: %v", got)
+	}
+	role, roleBlocks := ids("role")
+	if strings.Join(role, ",") != "rfp:role,rfp:stages" || !strings.HasSuffix(roleBlocks[0].text, "Design vehicle: 19 m semi-trailer") {
 		t.Fatalf("role = %v %+v", role, roleBlocks)
 	}
 }
@@ -225,5 +229,30 @@ func TestMissingTermsAreTheirOwnCheck(t *testing.T) {
 	}
 	if strings.Contains(byID["fields"].Text, "Client agreement") {
 		t.Fatalf("issue details check names a term: %+v", byID["fields"])
+	}
+}
+
+func TestEmptyProjectAlwaysHasTransmittal(t *testing.T) {
+	cat := loadCatalog(t)
+	sk, _ := cat.RFPSkeleton()
+	for _, id := range []string{"architecture", "hydraulic-services", "access"} {
+		sections, err := Sections(Resolve(discipline(t, id), sk, DriverSet{}, nil), consultantTemplate(t))
+		if err != nil {
+			t.Fatal(err)
+		}
+		count := 0
+		for _, section := range sections {
+			for _, block := range section.Blocks {
+				if block.ID == "rfp:project:information" {
+					count++
+					if block.Table == nil || len(block.Table.Columns) != 5 || len(block.Table.Rows) != 0 {
+						t.Fatalf("%s empty transmittal: %+v", id, block.Table)
+					}
+				}
+			}
+		}
+		if count != 1 {
+			t.Fatalf("%s: %d transmittals", id, count)
+		}
 	}
 }

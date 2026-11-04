@@ -20,6 +20,8 @@ async function newProject(page: Page, name: string): Promise<string> {
   await page.getByLabel("New project").fill(name);
   await page.getByRole("button", { name: "Create project", exact: true }).click();
   await expect(page).toHaveURL(/\/projects\/[0-9a-f-]{36}$/);
+  const navigation = page.getByRole("button", { name: "Project navigation", exact: true });
+  if (await navigation.isVisible()) await navigation.click();
   await expect(page.getByRole("button", { name: "Program", exact: true })).toBeVisible();
   return new URL(page.url()).pathname.split("/").pop()!;
 }
@@ -228,8 +230,10 @@ test.describe("touch", () => {
     await page.setViewportSize({ width: 1024, height: 700 });
     await signIn(page);
     const project = await newProject(page, "Program touch");
+    // Scrolling needs more rows than the responsive pane can display.
     await serveSynthetic(page, project, 10, 10);
     await page.reload();
+    await page.getByRole("button", { name: "Project navigation", exact: true }).click();
     await page.getByRole("button", { name: "Program", exact: true }).click();
     await expect(page.locator(".pg-layer-bars .pg-bar").first()).toBeVisible();
     const body = page.locator(".pg-body");
@@ -540,3 +544,73 @@ for (const theme of ["light", "dark"] as const) {
     });
   }
 }
+
+test("fit resets horizontal scroll even when the fitted scale is unchanged", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await signIn(page);
+  const project = await newProject(page, "Repeat fit");
+  await serveSynthetic(page, project, 2, 2);
+  await page.reload();
+  await openProgram(page);
+  const body = page.locator('.pg-body');
+  await page.getByRole('button', { name: 'Fit to screen', exact: true }).click();
+  await page.waitForTimeout(100);
+  const fitted = await body.evaluate(el => el.scrollLeft);
+  await body.evaluate(el => { el.scrollLeft = el.scrollWidth; });
+  await page.waitForTimeout(100);
+  await body.evaluate(el => { el.scrollLeft = el.scrollWidth; });
+  await expect.poll(() => body.evaluate(el => el.scrollLeft)).toBeGreaterThan(fitted + 5);
+  await page.waitForTimeout(100);
+  await page.getByRole('button', { name: 'Fit to screen', exact: true }).click();
+  await expect.poll(() => body.evaluate(el => el.scrollLeft)).toBeLessThanOrEqual(fitted + 1);
+});
+
+test("calendar saves working days and shared file actions follow the visible page", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const project = await seededProject(page, "Program calendar controls");
+  const prepared = await page.request.post(`/api/projects/${project}/program/prepare`, { headers: origin(page), data: { surface: "program" } });
+  expect(prepared.ok(), await prepared.text()).toBeTruthy();
+  const initial = await (await page.request.get(`/api/projects/${project}/program`)).json();
+  const added = await page.request.post(`/api/projects/${project}/program/ops`, { headers: origin(page), data: { program_id: initial.program.id, version: initial.program.version, ops: [{ op: "add", temp_id: "calendar-test", parent_id: initial.activities[0].id, label: "Calendar activity", kind: "activity", duration_days: 10 }] } });
+  expect(added.ok(), await added.text()).toBeTruthy();
+  await openProgram(page);
+  await expect(page.locator('.pg-body')).toBeVisible();
+  await expect(page.locator('.pg-summary, .pg-checks, .pg-strip')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Working calendar', exact: true }).click();
+  await page.getByLabel('Working week', { exact: true }).selectOption('63');
+  await page.getByRole('button', { name: 'Save calendar' }).click();
+  await expect(page.getByRole('button', { name: 'Save calendar' })).toBeDisabled();
+  expect((await (await page.request.get(`/api/projects/${project}/program`)).json()).program.working_week).toBe(63);
+  await page.getByRole('toolbar', { name: 'Program tools' }).getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.getByLabel('Working week', { exact: true })).toHaveValue('31');
+  await page.getByLabel('Working week', { exact: true }).selectOption('custom');
+  for (const day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']) await page.getByRole('checkbox', { name: day, exact: true }).uncheck();
+  await expect(page.getByRole('button', { name: 'Save calendar' })).toBeDisabled();
+  await page.getByRole('checkbox', { name: 'Sunday', exact: true }).check();
+  await page.getByRole('button', { name: 'Save calendar' }).click();
+  await expect(page.getByRole('button', { name: 'Save calendar' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.getByRole('button', { name: 'Expand all', exact: true }).click();
+  await expect(activityRows(page).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Collapse all', exact: true }).click();
+  await expect(activityRows(page)).toHaveCount(0);
+  const download = page.getByRole('button', { name: 'Download', exact: true });
+  await download.click();
+  await expect(page.getByRole('menuitem', { name: 'Export CSV', exact: true })).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: /Import program file/ })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(download).toBeFocused();
+  await page.screenshot({ path: '../tmp/program-ui-desktop.png', fullPage: true });
+  for (const name of ['Costs', 'Procurement', 'Specifications', 'Profile']) {
+    await page.getByRole('button', { name, exact: true }).click();
+    await expect(download).toHaveCount(1);
+    await download.click();
+    await expect(page.locator('.page-action-menu')).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'Export CSV', exact: true })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+  }
+  await openProgram(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: '../tmp/program-ui-mobile.png', fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});

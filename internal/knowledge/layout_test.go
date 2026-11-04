@@ -28,6 +28,7 @@ func TestLayoutPlacesInputsInBuildOrder(t *testing.T) {
 		"det.site_class":          "substructure", // first of its systems
 		"det.water_supply_source": "hydraulic",    // a leaf system's top level
 		"proj.client":             "",             // not placed
+		"proj.flag.hyd_process":   HomeProject,    // unplaced appointment input stays editable
 	} {
 		if got := cat.Home(key); got != want {
 			t.Errorf("Home(%s) = %q, want %q", key, got, want)

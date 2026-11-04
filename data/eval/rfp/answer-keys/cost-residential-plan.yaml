@@ -55,26 +55,16 @@ scenario: cost-residential-plan
 description: Residential cost plans include explicitly selected contract allowances, not authority/lender work.
 expect:
   cost-planning:
-    stages_include:
-    - s1_basis
-    - s2_concept
-    - s4_design
-    stages_absent:
-    - s3_authority
-    - s8_advice
-    stages_option:
-    - s5_tender
-    - s6_construction
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_basis, s2_concept, s4_design]
+    stages_absent: [s3_authority, s8_advice, s5_tender, s6_construction, s7_completion]
     positions:
       construction_plan: I
       contract_allowances: I
       total_budget: absent
       risk: I
-      claims: O
-      lender: O
+      claims: X
+      lender: X
       valuation: X
-    party:
-      valuation: valuer
     blocking_only: true
     blocking: []

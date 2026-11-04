@@ -38,7 +38,11 @@ func TestActionThresholdAndScopeAreIndependent(t *testing.T) {
 		{"presence floor is not action floor", "replace", nil, true, "new"},
 		{"action below own floor", "replace", conf(.99), true, "new"},
 		{"silence defaults", "not_stated", conf(.8), true, "new"},
-		{"action alone is not scope", "replace", conf(.8), false, ""},
+		// Since the action floor was calibrated (2026-10-24), an applied
+		// action is scope on its own (Walsh review, 2026-10-27); below its
+		// floor it still is not.
+		{"applied action alone is scope", "replace", conf(.8), false, "replace"},
+		{"action below floor alone is not scope", "replace", conf(.99), false, ""},
 		{"several needs mapping", "several", conf(.8), true, ""},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

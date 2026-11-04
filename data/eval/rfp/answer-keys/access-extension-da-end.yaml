@@ -56,20 +56,14 @@ description: Historic industrial context adds no assumed testing/audit; DA-end b
   work options.
 expect:
   access:
-    stages_include:
-    - s1_inception
-    - s2_concept
-    - s3_planning
-    stages_option:
-    - s4_approval
-    - s5_tender
-    - s6_postcontract
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s2_concept, s3_planning]
     positions:
       existing: I
       housing: absent
       facilities: absent
-      solutions: O
-      testing: O
+      solutions: X
+      testing: X
     blocking_only: true
     blocking: []
+    stages_absent: [s4_approval, s5_tender, s6_postcontract, s7_completion]

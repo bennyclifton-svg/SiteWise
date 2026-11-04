@@ -62,18 +62,13 @@ description: Residential remediation explicitly appoints specialist, staging, in
   purchased positions become I and statutory/trade duties stay separate.
 expect:
   fire-engineering:
-    stages_include:
-    - s6_construction
-    - s7_verification
-    - s8_specialist
-    - s8_staging
-    stages_option:
-    - s9_peer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s6_construction, s7_verification, s8_specialist, s8_staging]
     positions:
       wet_design: X
       dry_design: X
       matrix_design: X
-      peer: O
+      peer: X
       remediation: I
       interim: I
       specialist: I
@@ -82,3 +77,4 @@ expect:
       existing: I
     blocking_only: true
     blocking: []
+    stages_absent: [s9_peer]

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"flag"
@@ -12,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -48,6 +50,9 @@ func run(args []string, getenv func(string) string, stderr, stdout io.Writer) in
 	}
 	if len(args) > 0 && args[0] == "bootstrap" {
 		return runBootstrap(args[1:], getenv, stderr, stdout)
+	}
+	if len(args) > 0 && args[0] == "set-password" {
+		return runSetPassword(args[1:], getenv, os.Stdin, stderr, stdout)
 	}
 	if len(args) > 0 && args[0] == "serve" {
 		return runServe(args[1:], getenv, stderr, stdout)
@@ -212,6 +217,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		PublicOrigin:   origin,
 		SecureCookie:   cfg.Env == "production",
 		DevLogin:       *devLogin,
+		ResetMail:      resetMail(cfg, *devLogin, logger),
 		MaxUploadBytes: *maxUpload,
 		Log:            logger,
 
@@ -371,7 +377,7 @@ func runBootstrap(args []string, getenv func(string) string, stderr, stdout io.W
 	}
 	var mail auth.Mailer = &auth.Sink{}
 	if cfg.Env == "production" {
-		mail = auth.SMTP{Addr: cfg.SMTPAddr, From: cfg.MailFrom}
+		mail = smtpMail(cfg)
 	}
 	raw, _, err := auth.Bootstrap(ctx, st, mail, *org, *email, stderr)
 	if err != nil {
@@ -379,5 +385,79 @@ func runBootstrap(args []string, getenv func(string) string, stderr, stdout io.W
 		return 1
 	}
 	fmt.Fprintln(stdout, raw)
+	return 0
+}
+
+func smtpMail(cfg config.Config) auth.SMTP {
+	return auth.SMTP{Addr: cfg.SMTPAddr, From: cfg.MailFrom, User: cfg.SMTPUser, Password: cfg.SMTPPassword}
+}
+
+// resetMail picks how password reset links leave the server. Production
+// always has SMTP (config refuses to start without it). Local dev without
+// SMTP prints the link to the log, and only behind -dev-login.
+func resetMail(cfg config.Config, devLogin bool, logger *log.Logger) auth.ResetMailer {
+	if cfg.SMTPAddr != "" && cfg.MailFrom != "" {
+		return smtpMail(cfg)
+	}
+	if devLogin {
+		return auth.DevResetMail{Log: logger}
+	}
+	return nil
+}
+
+// runSetPassword gives an existing user a password, for accounts made by
+// invite before sign-up existed. The password is read from stdin so it never
+// lands in shell history.
+func runSetPassword(args []string, getenv func(string) string, stdin io.Reader, stderr, stdout io.Writer) int {
+	fs := flag.NewFlagSet("set-password", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	email := fs.String("email", "", "the user's email")
+	org := fs.String("org", "", "org id, when the email is in more than one org")
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+	normal, err := auth.NormalEmail(*email)
+	if err != nil {
+		fmt.Fprintln(stderr, "set-password requires a valid -email")
+		return 2
+	}
+	line, err := bufio.NewReader(stdin).ReadString('\n')
+	if err != nil && line == "" {
+		fmt.Fprintln(stderr, "set-password reads the new password from stdin")
+		return 2
+	}
+	hash, err := auth.HashPassword(strings.TrimRight(line, "\r\n"))
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 2
+	}
+	cfg, err := config.Load(getenv)
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	ctx := context.Background()
+	st, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	defer st.Close()
+	if err := st.Migrate(ctx); err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	switch err := st.SetPassword(ctx, *org, normal, hash); {
+	case errors.Is(err, store.ErrNotFound):
+		fmt.Fprintln(stderr, "no single user has that email; pass -org to choose one")
+		return 1
+	case errors.Is(err, store.ErrEmailTaken):
+		fmt.Fprintln(stderr, "another account already signs in with that email")
+		return 1
+	case err != nil:
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	fmt.Fprintln(stdout, "password set for", normal)
 	return 0
 }

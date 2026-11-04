@@ -52,18 +52,13 @@ description: Warehouse concept plus existing investigation does not buy full des
 snapshot: false
 expect:
   electrical-services:
-    stages_include:
-    - inception
-    - investigation
-    - concept
-    stages_option:
-    - design
-    - tender
-    - continuation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, investigation, concept]
     positions:
-      distribution: O
-      controls: O
-      dry_fire: O
+      distribution: X
+      controls: X
+      dry_fire: X
       existing: I
-      continuation: O
-      declarations: O
+      continuation: X
+      declarations: X
+    stages_absent: [design, tender, continuation]

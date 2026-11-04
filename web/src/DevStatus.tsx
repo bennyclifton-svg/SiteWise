@@ -22,18 +22,25 @@ export function DevStatus() {
 
   useEffect(() => {
     let live = true;
+    let confirmed = false;
+    let absent = false;
     const check = async () => {
+      if (absent) return;
       try {
         const res = await fetch("/dev/build", { cache: "no-store" });
         if (!live) return;
         // A server without -dev-login answers with the app shell: not dev.
         if (!res.ok || !res.headers.get("content-type")?.includes("json")) {
-          setState((s) => (s.kind === "up" || s.kind === "offline" ? { kind: "offline" } : { kind: "absent" }));
+          absent = !confirmed;
+          setState(confirmed ? { kind: "offline" } : { kind: "absent" });
           return;
         }
-        setState({ kind: "up", build: (await res.json()) as Build });
+        const build = (await res.json()) as Build;
+        if (!live) return;
+        confirmed = true;
+        setState({ kind: "up", build });
       } catch {
-        if (live) setState((s) => (s.kind === "absent" ? s : { kind: "offline" }));
+        if (live && confirmed) setState({ kind: "offline" });
       }
     };
     check();

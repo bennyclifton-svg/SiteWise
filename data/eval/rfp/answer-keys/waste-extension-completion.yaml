@@ -56,11 +56,10 @@ description: Hospital extension explicitly appoints construction checking; later
   controlled clinical waste stays specialist.
 expect:
   waste-management:
-    stages_include:
-    - s7_completion
-    - s8_operational
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s7_completion, s8_operational]
     positions:
       completion: I
       postoccupation: I
       hazardous: X
-      independent: O
+      independent: X

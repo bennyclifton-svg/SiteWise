@@ -56,15 +56,12 @@ description: Industrial remediation buys diagnostics only in addition to invento
   remain optional.
 expect:
   arborist:
-    stages_include:
-    - s6_investigation
-    stages_option:
-    - s6_risk
-    - s7_monitoring
-    - s7_peer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s6_investigation, s6_risk]
     positions:
       investigation: I
-      risk: O
-      monitoring: O
+      risk: I
+      monitoring: X
     blocking_only: true
     blocking: []
+    stages_absent: [s7_monitoring, s7_peer]

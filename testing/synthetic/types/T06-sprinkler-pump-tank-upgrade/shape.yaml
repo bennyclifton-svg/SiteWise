@@ -1,0 +1,891 @@
+schema: sitewise-synthetic-shape/1
+type_id: T06
+slug: sprinkler-pump-tank-upgrade
+name: Sprinkler pump and tank upgrade, with fit-out
+reviewed: false
+state: NSW
+# Every yes/no/partial value is quoted: bare yes/no are YAML 1.1 booleans.
+#
+# Base scenario: an occupied 1988 Class 5 office building in Sydney, six storeys
+# over one basement car park (Class 7a), sprinklered throughout. The last AFSS
+# round and a Sydney Water pressure and flow statement show the town-main-fed
+# sprinkler supply no longer meets AS 2118.1 demand. The owner replaces the old
+# single electric pump with a new electric duty pumpset, a diesel standby
+# pumpset, a jockey pump and a fire water storage tank in an enlarged basement
+# pump room. The owner is also fitting out the vacant level 3 floor for a new
+# tenant; its sprinkler layout is calculated against the new supply, so the
+# fit-out's sprinkler commissioning waits on the new pumps. A hydraulic and fire
+# services engineer leads the upgrade, an interior designer the fit-out. One
+# principal certifier and two CDCs: the pump, tank, pump room and fire service
+# works under the Fire Safety Code (Part 8, EPI 2013 No 706; verified: false);
+# the level 3 fit-out, including its sprinkler, detection and EWIS changes,
+# under the commercial internal alterations code (Part 5 or now Part 5A;
+# verified: false). Two works
+# contracts: a fire protection contractor (AS 4000) for the base-building
+# upgrade and a fit-out builder (AS 4000) for level 3. Prose: DOMAIN.md.
+profile:
+  hdr.building_class: commercial
+  hdr.subclass: office
+  hdr.work_type: refurb
+  hdr.cond.planning: cdc
+  hdr.cond.procurement_route: traditional
+  hdr.cond.operational_constraints: partial_occupation   # levels 1-2 and 4-6 tenanted; level 3 vacant
+  hdr.cond.access_constraints: urban_constrained
+  hdr.cond.stakeholder_complexity: single_owner
+  hdr.cond.quality_level: mid
+  hdr.cond.environmental_sensitivity: standard
+  hdr.scale.storeys: 6
+  det.ncc_class: ["5", "7a"]        # office over a basement car park
+  det.state: NSW
+  det.existing_building: true
+  det.existing_building_year: 1988
+  det.rise_in_storeys: 6
+  det.sprinklered: true
+  det.heritage_status: none
+  det.flood_hazard: false            # 'pump room flooding' passages must not set it (keyword traps)
+  det.potentially_contaminated_land: false   # 'backflow ... contamination of the water supply' must not set it
+  det.bushfire_prone_land: false
+  det.water_supply_source: reticulated
+  fact.contract_form: as4000
+  fact.contract_basis: lump_sum
+  proj.regulated_design: "no"        # DBP Act covers Class 2 and 9c (owner ruling R3), not Class 5
+  # RFP flags set explicitly so unknowns do not turn excluded rows into priced options.
+  flag.basement: "no"                # the pump room is in the existing basement; no basement is built or excavated
+  flag.excavation_adjoining: "no"
+  flag.authority_asset: "no"         # connecting to the street water main is not building over an asset
+  flag.rail: "no"
+  flag.transfer_structures: "no"
+  flag.osd_existing: "no"
+  flag.osd_required: "no"
+  flag.staged: "no"                  # 'stage 1 cut-over' is impairment sequencing, not staged construction
+  flag.multi_building: "no"
+  flag.public_road: "no"             # base keeps the existing fire service connection; no road opening
+  flag.state_road: "no"
+  flag.heavy_vehicles: "no"
+  flag.sustainability_target: "no"
+  flag.fire_special_hazards: "no"    # 'fire water storage tank' and 'diesel fuel storage' are not special hazards
+  flag.fire_specialist_systems: "no"
+  flag.fire_vulnerable_occupants: "no"
+  flag.groundwater: "no"
+  flag.coastal: "no"
+  flag.panel: "no"
+  flag.cl46: "no"
+
+# Values the app derives or cannot set through PUT /profile; not inputs.
+expected_derived:
+  - {key: det.ncc_class, value: ["5", "7a"], source: "knowledge/profile/taxonomy.yaml office ncc_class", note: "The subclass office implies Class 5, but det.ncc_class is never derived from the subclass (KNOWLEDGE_INDEX §0 rule 3). The basement car park adds 7a, which a document must state."}
+  - {key: det.existing_building, value: true, source: "internal/rfp/drivers.go deriveFlags", note: "The RFP drivers derive flag.existing_building from work type refurb; the profile row itself is not derived."}
+  - {key: det.type_of_construction, value: A, source: "knowledge/clusters/fire/rules.yaml rule.ncc.type-of-construction", note: "Table C2D2 (verified: true in the rule): Class 5 and 7 at rise 4 or more give Type A. Derived by profile reconcile; whether the lookup accepts two classes on one part is unverified."}
+
+# Facts the scenario documents must state; the scenario author picks the values.
+scenario_inputs:
+  - {key: det.ncc_class, note: "Both classes, in the fire safety schedule or BCA wording.", phrasing: "The building is Class 5 (office) with a Class 7a basement car park."}
+  - {key: det.existing_building_year, note: "Gates the hazardous-materials survey implication and the asbestos trigger.", phrasing: "The building was constructed in <year>."}
+  - {key: det.rise_in_storeys, note: "Feeds the Type of Construction lookup.", phrasing: "The building has a rise in storeys of <n>."}
+  - {key: det.sprinklered, note: "The trigger word 'sprinkler' is everywhere in these documents; the statement must be explicit.", phrasing: "The building is sprinkler protected throughout to AS 2118.1."}
+  - {key: hdr.cond.planning, note: "CDC wording in the certifier's fee proposal. Two CDCs: Fire Safety Code for the pump works, the commercial alterations code for level 3.", phrasing: "The works will be approved by two complying development certificates under the Codes SEPP: one under the Fire Safety Code and one for the level 3 fit-out."}
+  - {key: hdr.cond.operational_constraints, note: "partial_occupation or live_environment are both acceptable.", phrasing: "All floors except level 3 remain tenanted and in use throughout the works."}
+  - {key: det.heritage_status, note: "Enumerated none is evidence; silence is not.", phrasing: "The site is not a heritage item and is not in a heritage conservation area."}
+  - {key: proj.budget_stated, note: "Owner's capital works budget; amount chosen by the scenario author. Ideally split base building and fit-out.", phrasing: "Approved budget: $<amount> excluding GST (fire services upgrade $<amount>; level 3 fit-out $<amount>)"}
+  - {key: fact.contract_form, note: "Stated in the tender documents.", phrasing: "AS 4000-1997 General conditions of contract, with special conditions"}
+
+work_items:
+  # Base-building fire services upgrade
+  - {system: fire-active.fire-water, action: upgrade, why: "New electric duty and diesel standby pumpsets, a jockey pump, controllers and a fire water storage tank replace a single town-main-assisted pump. Capacity rises, so upgrade, not replace."}
+  - {system: fire-active.sprinklers, action: alter, why: "Connect the new pump discharge to the existing control valve sets; relocate and add level 3 heads with new hydraulic calculations against the new supply. No change in hazard or design density."}
+  - {system: fire-active.hydrants, action: retain, why: "The hydrant system and booster stay in service on the town main during the works; protect and keep operating."}
+  - {system: hydraulic.backflow-prevention, action: upgrade, why: "Containment backflow device on the fire service brought to current Sydney Water requirements and registered (verified: false)."}
+  - {system: structure.alterations, action: alter, why: "Tank and pump plinths, any slab strengthening found by the assessment, and core holes for suction, test and fill pipes."}
+  - {system: fire-passive.rated-elements, action: alter, why: "The pump room is enlarged into the adjoining store; new fire-resisting walls and a rated door enclose it (AS 2941, verified: false)."}
+  - {system: fire-passive.penetrations, action: new, why: "New pipe and cable penetrations through rated walls and slabs are fire-stopped."}
+  - {system: mechanical.local-exhaust, action: new, why: "Pump room ventilation: diesel combustion and cooling make-up air, plant room exhaust and the engine exhaust flue discharge. Plant room exhaust is local exhaust, not outdoor-air ventilation (services-wet-air/systems.yaml mechanical.ventilation excludes)."}
+  - {system: electrical.switchboards, action: alter, why: "New fire pump supply connected at the main switchboard on the supply side of the main switch (AS/NZS 3000, verified: false)."}
+  - {system: electrical.cabling-wiring, action: alter, why: "Fire-rated submain to the electric fire pump controller; level 3 power and data reticulation."}
+  - {system: site.demolition, action: remove, why: "Decommission and remove the old pump, controller and redundant pipework; soft strip of level 3."}
+  # Level 3 fit-out
+  - {system: interiors.walls-linings, action: new, why: "Partitions for offices, meeting rooms and a comms room."}
+  - {system: interiors.ceilings, action: alter, why: "Existing suspended grid kept; new tiles, bulkheads and set-out to the new layout."}
+  - {system: interiors.internal-doors, action: new, why: "Doors and hardware to new rooms."}
+  - {system: interiors.internal-glazing, action: new, why: "Glazed meeting-room fronts."}
+  - {system: interiors.joinery, action: new, why: "Tea point and reception joinery."}
+  - {system: interiors.painting, action: replace, why: "Repaint the floor."}
+  - {system: interiors.floor-finishes, action: replace, why: "New carpet tiles and vinyl to the tea point."}
+  - {system: mechanical.air-distribution, action: alter, why: "Relocate VAV boxes and diffusers off the base-building AHU to suit the new layout."}
+  - {system: mechanical.air-conditioning, action: new, why: "Supplementary split system to the comms room."}
+  - {system: hydraulic.cold-water, action: alter, why: "Tea point sink and boiling and chilled water unit."}
+  - {system: hydraulic.hot-water, action: new, why: "Point-of-use hot water unit at the tea point."}
+  - {system: hydraulic.sanitary, action: alter, why: "Tea point waste connected to the existing stack."}
+  - {system: electrical.lighting, action: replace, why: "New LED luminaires and controls."}
+  - {system: fire-active.detection, action: alter, why: "Relocate detectors to the new room layout; add pump run, fault and diesel signals to the FIP."}
+  - {system: fire-active.occupant-warning, action: alter, why: "Relocate and add EWIS speakers to new rooms."}
+  - {system: fire-active.emergency-lighting, action: alter, why: "Relocate exit signs and emergency luminaires to the new layout."}
+  - {system: comms-security.structured-cabling, action: new, why: "Data outlets and cabling to the comms room."}
+
+procurement:
+  - {discipline: consultant.fire_services, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", aliases: [consultant.hydraulic, consultant.services], why: "Lead designer: a hydraulic and fire services engineer. Investigates the supply, designs the pumps, tank and pipework, documents, witnesses commissioning, and designs the level 3 wet and dry fire alterations. Also suggested by scope_additions[1] via fire-active.fire-water. A combined 'Hydraulic and Fire Services' proposal may file as Hydraulic, hence the alias."}
+  - {discipline: consultant.structural, kind: services, built_in: "no", why: "Tank operating load, plinths, any slab strengthening and core holes in post-tensioned or conventional slabs [K: if.fire-tanks-load-structure]. The refurb baseline (baselines[2]) has no Structural, and no scope addition names structure."}
+  - {discipline: consultant.electrical, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Maximum demand check, fire pump supply and fire-rated submain, MSB alteration; level 3 lighting and power. Also scope_additions[4]."}
+  - {discipline: consultant.mechanical, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Diesel pump room ventilation and exhaust; level 3 air distribution and comms room cooling. Also scope_additions[2]."}
+  - {discipline: consultant.certifier, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Registered certifier: CDCs, fire safety schedule, principal certifier, inspections, occupation certificate, receives the final fire safety certificate."}
+  - {discipline: consultant.interior_design, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[4]", aliases: [consultant.architect], why: "Fit-out designer for level 3: brief, concept, design development, documentation, CDC drawings, tender, site queries. An architect firm often does it, hence the alias."}
+  - {discipline: consultant.hazmat, kind: services, built_in: "no", why: "1988 building: a pre-refurbishment hazardous materials survey of the pump room, the store being taken in, the risers and level 3 before strip-out; update the asbestos register (WHS Regulation 2025 (NSW; clause numbers verified: false)). No package rule names Hazmat."}
+  - {discipline: trade.fire_services, kind: works, built_in: "no", why: "Licensed fire protection contractor under a direct AS 4000 lump sum for the pumps, tank, pipework, pump room builder's works (subcontracted), electrical supply (subcontracted), cut-over and commissioning. Trade packages are never suggested (KNOWLEDGE_INDEX §2.4)."}
+  - {discipline: trade.main_works, kind: works, built_in: "partial", source: "internal/procurement/proposed.go ProposeHeadContract", why: "Fit-out builder for level 3 under AS 4000. The app proposes a head contract only from gaps on accepted work items, and refurb starts with none; it would also fold the fire upgrade into the same head contract."}
+
+not_expected_procurement:
+  - {discipline: consultant.architect, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "The fit-out needs one designer; the app suggests both Architect and Interior Design. Counts only when Interior Design is also present (the alias covers the other case)."}
+  - {discipline: consultant.hydraulic, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "The fire services engineer covers the fire service connection and backflow device; the tea point plumbing is plumber design-and-install. A separate hydraulic engineer is not needed unless amenities change (fit-out-amenities)."}
+  - {discipline: consultant.bca, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "On a deemed-to-satisfy CDC the certifier's assessment and the engineers' design certificates cover compliance. A separate BCA consultant comes with a performance solution (performance-solution trigger). Owner to confirm (DOMAIN.md §12)."}
+  - {discipline: consultant.access, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Open-plan refit with no change to amenities, entrances or paths of travel beyond the floor; the certifier checks access within the new work. Access joins under fit-out-amenities or affected-part-access."}
+
+cost_plan:
+  # Fees and charges
+  - {line: "Complying development certificate and certifier fees", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml cc-fees", aliases: ["Construction certificate and certifier fees"], why: "No CDC line; the app keeps P05 'Construction certificate and certifier fees' on a CDC, which holds it under the wrong label. Certifier also appears as a fee line (double-count risk)."}
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "0.25% of the cost of building work of $250,000 or more, including GST (CONVENTIONS C4, checked). Paid before work starts; paying it before the CDC issues is verified: false. No starter line."}
+  - {line: "Sydney Water: statement of available pressure and flow, fire service alteration approval and backflow registration", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml service-authority", aliases: ["Service authority connection fees"], why: "One generic P06 line; no Sydney Water fire service items (statement requested through Tap in; product names and fees verified: false)."}
+  # Consultants
+  - {line: "Fire services engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Fee line per adopted package."}
+  - {line: "Structural engineer", section: consultants, built_in: "partial", source: "internal/costs/suggest.go Suggest", why: "Fee line per package, but the package is never suggested for refurb."}
+  - {line: "Electrical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Fee line per adopted package."}
+  - {line: "Mechanical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Fee line per adopted package."}
+  - {line: "Certifier", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Professional fee; P05 duplicates it."}
+  - {line: "Interior designer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[4]", why: "Fee line per adopted package."}
+  - {line: "Hazardous materials consultant", section: consultants, built_in: "partial", source: "internal/costs/suggest.go Suggest", why: "Fee line per package; the package is never suggested."}
+  - {line: "Fire safety practitioner assessments for the final fire safety certificate", section: consultants, built_in: "no", why: "An accredited practitioner assesses each new or altered measure (EP&A (Development Certification and Fire Safety) Regulation 2021, verified: false). Usually the building's AS 1851 maintenance contractor; no discipline id."}
+  # Construction: base-building fire services upgrade (fire protection contract)
+  - {line: "Decommission and remove the existing fire pump, controller and redundant pipework", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 01", why: "site.demolition prices under '01 Site works and external works', a misleading label for plant removal inside the building."}
+  - {line: "Fire pumpsets: electric duty, diesel standby, jockey and controllers", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 07", why: "Folded into one '07 Active fire protection' line with the fit-out's sprinkler, detection and EWIS work."}
+  - {line: "Fire water storage tank, level controls and fill valves", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 07", why: "Folded into '07 Active fire protection'."}
+  - {line: "Pump room pipework, valves, test line and connection to the sprinkler valve sets", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 07", why: "Folded into '07 Active fire protection'."}
+  - {line: "Diesel fuel tank, bunding and exhaust flue", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 07", why: "Diesel fuel storage for fire pumps is part of fire-active.fire-water (systems.yaml describes); still one 07 line."}
+  - {line: "Pump room ventilation", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 08", why: "Shares '08 Mechanical services' with the level 3 air distribution, under a different contract."}
+  - {line: "Structural works: plinths, slab strengthening and core holes", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 03", why: "'03 Structure' once structure.alterations exists."}
+  - {line: "Pump room fire-rated enclosure, door and fire stopping", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 06", why: "'06 Passive fire protection'."}
+  - {line: "Fire pump electrical supply: MSB connection and fire-rated submain", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 10", why: "Shares '10 Electrical services' with the fit-out lighting and power."}
+  - {line: "Fire service backflow prevention device", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 09", why: "'09 Hydraulic services'; mapped to trade.hydraulic_plumbing only if that works package exists, else the head contract. In practice the fire contractor carries it."}
+  - {line: "Temporary fire protection during impairment: hire pump, fire watch, out-of-hours cut-over", section: construction, built_in: "no", why: "A real cost on a live building; no line or system models it."}
+  - {line: "Testing and commissioning: hydrostatic, pump flow and integrated tests", section: construction, built_in: "no", why: "No testing or commissioning line exists."}
+  - {line: "Preliminaries and occupied-building controls", section: construction, built_in: "no", why: "Site establishment, after-hours work, dock and lift bookings, protection of the car park. No preliminaries line; the split spreads it pro rata."}
+  # Construction: level 3 fit-out (fit-out contract)
+  - {line: "Level 3 soft strip", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 01", why: "Same '01 Site works and external works' line as the pump removal."}
+  - {line: "Interiors and finishes", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml elements code 05", why: "Partitions, ceilings, doors, glazing, joinery, paint and floors: the app's '05 Interiors and finishes' fits the fit-out."}
+  - {line: "Fit-out sprinkler, detection, EWIS and emergency lighting alterations", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 07", why: "Merged into the same 07 line as the pumps and tank, though a different contract."}
+  - {line: "Fit-out mechanical: air distribution and comms room cooling", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 08", why: "Merged with pump room ventilation in 08."}
+  - {line: "Tea point plumbing", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 09", why: "Merged with the backflow device in 09."}
+  - {line: "Fit-out lighting and power", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml elements code 10", why: "Merged with the fire pump supply in 10."}
+  - {line: "Communications and security", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml elements code 11", why: "Structured cabling to level 3."}
+  # Contingency
+  - {line: "Design contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml design-contingency", why: "Always suggested."}
+  - {line: "Construction contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml construction-contingency", why: "Always suggested. Latent conditions in the pump room and the supply test result make it matter."}
+  - {line: "Escalation", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml escalation", why: "Always suggested."}
+  - {line: "Exclusions", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml exclusions", why: "Tenant FF&E and IT equipment, Sydney Water main augmentation, asbestos removal unless found."}
+  - {line: "Provisional sum: asbestos removal found by the survey", section: contingency, built_in: "no", why: "Pre-2004 building; extent unknown until the survey. No provisional-sum line."}
+
+not_expected_cost_plan:
+  - {line: "Architect (consultant fee)", app_label: "F0n Architect", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Adopted suggestion on cost-plan prepare; duplicates the interior designer."}
+  - {line: "Hydraulic (consultant fee)", app_label: "F0n Hydraulic", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Adopted suggestion; see not_expected_procurement."}
+  - {line: "BCA (consultant fee)", app_label: "F0n BCA", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Adopted suggestion; not needed on a deemed-to-satisfy CDC."}
+  - {line: "Access (consultant fee)", app_label: "F0n Access", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Adopted suggestion; no amenities or entry change."}
+  - {line: "Stairs, ramps, handrails and nosings", app_label: "13.x Stairs, ramps, handrails and nosings", section: construction, source: "knowledge/profile/scope_defaults.yaml implied_by stair", why: "Fires when 'fire stairs' wording in the impairment plan implies access-egress.stairs-and-ramps (keyword trap)."}
+
+program:
+  skeleton: sk.refurb-traditional-cdc
+  activities:
+    # Investigation
+    - {label: "Collect the fire safety schedule, last AFSS, AS 1851 records and as-built fire drawings", stage: investigation, fragment: null, after: [], built_in: "no", why: "The existing approval basis and the defects that started the job. cq.nsw-essential-measures-continuity-review raises this only as an Implication."}
+    - {label: "Apply to Sydney Water for a statement of available pressure and flow", stage: investigation, fragment: null, after: [], built_in: "no", why: "The design supply case, requested through Sydney Water Tap in; FRNSW expects one for any hydraulic fire safety system design or alteration (verified: false). uc.authority-requires-water-main-upgrade is an Implication only."}
+    - {label: "Flow and pressure test of the existing fire water supply", stage: investigation, fragment: null, after: ["Collect the fire safety schedule, last AFSS, AS 1851 records and as-built fire drawings"], built_in: "no", why: "Test at the booster or test line before design. uc.existing-fire-water-fails-flow-test proposes it as an Implication only."}
+    - {label: "Measure the existing building", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "Pump room, store and level 3 survey."}
+    - {label: "Hazardous-materials survey", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "1988 building; before any strip-out or pump room demolition."}
+    - {label: "Trace existing services", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "Existing fire mains, valve sets, MSB and risers."}
+    - {label: "Structural assessment of the tank location and pump room slab", stage: investigation, fragment: null, after: ["Measure the existing building"], built_in: "no", why: "Tank operating load on the basement slab; scan before coring. No structural package or investigate item."}
+    - {label: "Maximum demand and main switchboard capacity check for the fire pump", stage: investigation, fragment: null, after: ["Trace existing services"], built_in: "no", why: "Fire pump start current and supply-side connection space (fm.fire-pump-start-drops-board-voltage)."}
+    # Concept design
+    - {label: "Fire services options report: supply strategy, pump configuration, tank size and location", stage: concept_design, fragment: null, after: ["Flow and pressure test of the existing fire water supply", "Apply to Sydney Water for a statement of available pressure and flow", "Structural assessment of the tank location and pump room slab", "Maximum demand and main switchboard capacity check for the fire pump"], built_in: "no", why: "The decision the whole job hangs on. No fire-water fragment exists."}
+    - {label: "Impairment and staging strategy for the occupied building", stage: concept_design, fragment: null, after: ["Fire services options report: supply strategy, pump configuration, tank size and location"], built_in: "no", why: "How the sprinkler system stays protected during cut-over (rule.project.fire-system-impairment applies only when fire-control or exits are present, and reaches no generator)."}
+    - {label: "Owner approves the upgrade option and budget", stage: concept_design, fragment: null, after: ["Fire services options report: supply strategy, pump configuration, tank size and location"], built_in: "no", why: "Client gate before documentation."}
+    - {label: "Confirm the brief", stage: concept_design, fragment: fr.concept-design-fitout, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Level 3 tenant brief."}
+    - {label: "Prepare the concept design", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Confirm the brief"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Fit-out test fit and concept."}
+    - {label: "Client review of the concept", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Prepare the concept design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Owner and tenant sign-off."}
+    - {label: "Develop the design", stage: concept_design, fragment: fr.design-development-fitout, after: ["Client review of the concept"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.design-development-fitout", why: "Fit-out design development."}
+    # Construction documentation
+    - {label: "Fire services design, hydraulic calculations and specification", stage: construction_documentation, fragment: null, after: ["Owner approves the upgrade option and budget", "Impairment and staging strategy for the occupied building"], built_in: "no", why: "Pumps, tank, pipework, controls, cut-over sequence and the level 3 head layout calculated on the new supply."}
+    - {label: "Structural design: tank plinth, slab strengthening and penetrations", stage: construction_documentation, fragment: null, after: ["Fire services design, hydraulic calculations and specification"], built_in: "no", why: "Needs the selected tank's operating load (if.fire-tanks-load-structure)."}
+    - {label: "Electrical design: fire pump supply and fire-rated submain", stage: construction_documentation, fragment: null, after: ["Fire services design, hydraulic calculations and specification"], built_in: "no", why: "Supply-side connection, cable route protection (if.essential-power-supplies-fire-water)."}
+    - {label: "Competent fire safety practitioner endorses the fire services plans and specifications", stage: construction_documentation, fragment: null, after: ["Fire services design, hydraulic calculations and specification"], built_in: "no", why: "Plans and specifications for installing or modifying a relevant fire safety system (sprinklers) are prepared or endorsed by a competent fire safety practitioner and lodged with the CDC application (EP&A (DCFS) Regulation 2021, verified: false). Covers both the pump works and the level 3 sprinkler changes."}
+    - {label: "Prepare fit-out documentation", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["Develop the design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Level 3 drawings and specification."}
+    - {label: "Coordinate consultant documentation", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["Prepare fit-out documentation"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Generic; does not name the fire services upgrade."}
+    - {label: "Client sign-off for tender", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["Coordinate consultant documentation", "Fire services design, hydraulic calculations and specification", "Structural design: tank plinth, slab strengthening and penetrations", "Electrical design: fire pump supply and fire-rated submain"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Both packages signed off."}
+    # Approvals
+    - {label: "Prepare and lodge the complying development certificate", stage: approvals, fragment: fr.cdc-application, after: ["Client sign-off for tender", "Competent fire safety practitioner endorses the fire services plans and specifications"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.cdc-application", why: "The Fire Safety Code CDC (Part 8, verified: false) for the pump, tank, pump room and fire service works. The app has one CDC fragment."}
+    - {label: "Prepare and lodge the fit-out CDC", stage: approvals, fragment: null, after: ["Client sign-off for tender", "Competent fire safety practitioner endorses the fire services plans and specifications"], built_in: "no", why: "Second code: the Codes SEPP code for internal alterations to commercial buildings (historically Part 5 Commercial and Industrial Alterations Code; now possibly Part 5A Industrial and Business Buildings Code; verified: false). Carries the level 3 sprinkler, detection and EWIS changes. The app has one CDC fragment."}
+    - {label: "Pay the long service levy", stage: approvals, fragment: null, after: ["Prepare and lodge the complying development certificate"], built_in: "no", why: "Before the CDC issues (verified: false)."}
+    - {label: "Certifier determination", stage: approvals, fragment: fr.cdc-application, after: ["Prepare and lodge the complying development certificate", "Pay the long service levy"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.cdc-application", why: "CDC determination."}
+    - {label: "Fire safety schedule issued with the fit-out CDC", stage: approvals, fragment: null, after: ["Certifier determination", "Prepare and lodge the fit-out CDC"], built_in: "no", why: "Lists existing and new essential fire safety measures and their standards of performance. The Fire Safety Code CDC may be exempt from the schedule and the fire safety certificate for an alteration to a hydraulic fire safety system (Info Sheet 8.1, citing the 2000 Regulation; 2021 provision verified: false). Also stands for the fit-out CDC determination; the app has one CDC fragment."}
+    - {label: "Sydney Water approval of the fire service and backflow alterations", stage: approvals, fragment: null, after: ["Client sign-off for tender"], built_in: "no", why: "Application process verified: false."}
+    # Procurement
+    - {label: "Assemble the tender package", stage: procurement, fragment: fr.tender-docs-fitout, after: ["Client sign-off for tender"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.tender-docs-fitout", why: "One tender row; the job has two tenders (fire protection contractor and fit-out builder)."}
+    - {label: "Tender period", stage: procurement, fragment: fr.tender-period-fitout, after: ["Assemble the tender package"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-period-fitout", why: "Site inspection of the pump room is essential."}
+    - {label: "Evaluate tenders", stage: procurement, fragment: fr.tender-evaluation-fitout, after: ["Tender period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-evaluation-fitout", why: "Check contractor licence, pumpset make and lead time, impairment method."}
+    - {label: "Award the contract", stage: procurement, fragment: fr.contract-award, after: ["Evaluate tenders", "Certifier determination"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.contract-award", why: "Two awards in practice."}
+    - {label: "Fire services engineer reviews pumpset, controller and tank submittals", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "Pump curves checked against the duty points before ordering; the commonest cause of a failed acceptance test (fm.fire-pump-fails-flow-test)."}
+    - {label: "Order long-lead pumpsets, controllers and tank", stage: procurement, fragment: null, after: ["Fire services engineer reviews pumpset, controller and tank submittals"], built_in: "no", why: "Diesel pumpsets and controllers are long-lead items; no lead-time row exists for fire-water."}
+    # Construction: base-building upgrade
+    - {label: "Appoint the principal certifier and give notice of commencement", stage: construction, fragment: null, after: ["Award the contract", "Fire safety schedule issued with the fit-out CDC"], built_in: "no", why: "Before work starts (notice period verified: false)."}
+    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-fitout, after: ["Appoint the principal certifier and give notice of commencement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-fitout", why: "Basement compound, dock bookings, protection."}
+    - {label: "Notify the impairment: building manager, tenants, fire wardens, monitoring provider and insurer", stage: construction, fragment: null, after: ["Establish the site"], built_in: "no", why: "Before any isolation (process verified: false). Nothing in the app models it."}
+    - {label: "Isolate services and protect adjacent areas", stage: construction, fragment: fr.strip-out-fitout, after: ["Establish the site"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.strip-out-fitout", why: "Level 3 strip-out."}
+    - {label: "Soft-strip partitions, ceilings and services", stage: construction, fragment: fr.strip-out-fitout, after: ["Isolate services and protect adjacent areas"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.strip-out-fitout", why: "Level 3 strip-out."}
+    - {label: "Make good retained structure and services", stage: construction, fragment: fr.strip-out-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.strip-out-fitout", why: "Level 3."}
+    - {label: "Alter and protect retained structure", stage: construction, fragment: fr.structure-alterations, after: ["Establish the site"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.structure-alterations", why: "Plinths and core holes. The app links it after the level 3 strip-out, which is a different area."}
+    - {label: "Pump room fire-rated enclosure and door", stage: construction, fragment: null, after: ["Alter and protect retained structure"], built_in: "no", why: "fire-passive.rated-elements has no fragment."}
+    - {label: "Assemble the fire water tank and install pumpsets, controllers and pipework", stage: construction, fragment: null, after: ["Alter and protect retained structure", "Order long-lead pumpsets, controllers and tank"], built_in: "no", why: "The core of the job. fire-active.fire-water has no fragment (KNOWLEDGE_INDEX §8 gap 3)."}
+    - {label: "Pump room ventilation and diesel exhaust flue", stage: construction, fragment: null, after: ["Pump room fire-rated enclosure and door"], built_in: "no", why: "mechanical.local-exhaust has no fragment."}
+    - {label: "Fire pump electrical supply: main switchboard alteration and fire-rated submain", stage: construction, fragment: null, after: ["Establish the site"], built_in: "no", why: "fr.switchboard-major needs new, replace or upgrade; an alter item gets nothing."}
+    - {label: "Seal service penetrations", stage: construction, fragment: fr.fire-stopping, after: ["Assemble the fire water tank and install pumpsets, controllers and pipework"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fire-stopping", why: "The fragment has no predecessor, so the app floats it from the stage start."}
+    - {label: "Hold point: a location-based inspection record for concealed fire stopping", stage: construction, fragment: null, after: ["Seal service penetrations"], built_in: "yes", source: "knowledge/clusters/fire/interfaces.yaml if.fire-stopping-before-concealment", why: "Fires; the app places it before every interiors row, including the level 3 partitions."}
+    - {label: "Install the fire service backflow device and register it with Sydney Water", stage: construction, fragment: null, after: ["Sydney Water approval of the fire service and backflow alterations", "Establish the site"], built_in: "no", why: "hydraulic.backflow-prevention has no fragment."}
+    - {label: "Hydrostatic test of the new fire pipework", stage: construction, fragment: null, after: ["Assemble the fire water tank and install pumpsets, controllers and pipework"], built_in: "no", why: "AS 2118.1 test pressure and duration verified: false."}
+    - {label: "Planned impairment: cut the sprinkler system over to the new pumps and tank", stage: construction, fragment: null, after: ["Hydrostatic test of the new fire pipework", "Fire pump electrical supply: main switchboard alteration and fire-rated submain", "Install the fire service backflow device and register it with Sydney Water", "Notify the impairment: building manager, tenants, fire wardens, monitoring provider and insurer", "Pump room ventilation and diesel exhaust flue"], built_in: "no", why: "Out of hours, with temporary protection and a restoration test before the isolation is withdrawn."}
+    - {label: "Pump commissioning: flow tests at duty points, diesel start tests and alarm signals to the FIP", stage: construction, fragment: null, after: ["Planned impairment: cut the sprinkler system over to the new pumps and tank"], built_in: "no", why: "AS 2941 acceptance tests (verified: false); witnessed by the fire services engineer (fm.fire-pump-fails-flow-test)."}
+    - {label: "Remove the old pump and redundant pipework", stage: construction, fragment: null, after: ["Pump commissioning: flow tests at duty points, diesel start tests and alarm signals to the FIP"], built_in: "no", why: "Only after the new system is proven; the app's strip-out rows sit at the start of construction."}
+    # Construction: level 3 fit-out
+    - {label: "Frame and line partitions", stage: construction, fragment: fr.partitions-fitout, after: ["Make good retained structure and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.partitions-fitout", why: "Fit-out."}
+    - {label: "Alter ductwork and pipework", stage: construction, fragment: fr.mechanical-fitout, after: ["Make good retained structure and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "Fires through the mechanical.air-conditioning item; the air-distribution item has no fragment."}
+    - {label: "Electrical rough-in", stage: construction, fragment: fr.electrical-fitout, aliases: ["Rough-in"], after: ["Make good retained structure and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.electrical-fitout", why: "Fit-out power and lighting rough-in."}
+    - {label: "Sanitary rough-in", stage: construction, fragment: fr.hydraulic-sanitary-fitout, aliases: ["Rough-in"], after: ["Make good retained structure and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-fitout", why: "Tea point waste."}
+    - {label: "Alter cold water", stage: construction, fragment: fr.hydraulic-cold-fitout, after: ["Make good retained structure and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-cold-fitout", why: "Tea point."}
+    - {label: "Install or alter the local hot-water unit", stage: construction, fragment: fr.hydraulic-hot-fitout, after: ["Make good retained structure and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-hot-fitout", why: "Tea point."}
+    - {label: "Install structured cabling", stage: construction, fragment: fr.comms-fitout, after: ["Frame and line partitions"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.comms-fitout", why: "Fit-out."}
+    - {label: "Alter and test sprinklers", stage: construction, fragment: fr.sprinklers-fitout, after: ["Frame and line partitions", "Alter ductwork and pipework"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.sprinklers-fitout", why: "Pipework and drops above the ceiling grid, before tiles close. The app links it after fr.ceilings-fitout, the wrong way round."}
+    - {label: "Hold point: a recorded pressure test of the sprinkler pipework", stage: construction, fragment: null, after: ["Alter and test sprinklers"], built_in: "yes", source: "knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings", why: "Fires, but its link to the ceilings is dropped as a loop (addGuarded), so the ceilings are not held."}
+    - {label: "Install ceilings", stage: construction, fragment: fr.ceilings-fitout, after: ["Hold point: a recorded pressure test of the sprinkler pipework", "Hold point: a location-based inspection record for concealed fire stopping"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.ceilings-fitout", why: "Ceiling tiles close only after the pressure test."}
+    - {label: "Alter detection and warning", stage: construction, fragment: fr.detection-fitout, after: ["Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.detection-fitout", why: "Detectors in the new ceiling."}
+    - {label: "Relocate EWIS speakers, exit signs and emergency lighting", stage: construction, fragment: null, after: ["Install ceilings"], built_in: "no", why: "fire-active.occupant-warning and fire-active.emergency-lighting have no fragment."}
+    - {label: "Install luminaires", stage: construction, fragment: fr.lighting-fitout, after: ["Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lighting-fitout", why: "Fit-out."}
+    - {label: "Hang doors", stage: construction, fragment: fr.internal-doors-fitout, after: ["Frame and line partitions"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.internal-doors-fitout", why: "Fit-out."}
+    - {label: "Procure and deliver joinery", stage: construction, fragment: fr.joinery-fitout, aliases: ["Procure and deliver"], after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.joinery-fitout", why: "Fit-out."}
+    - {label: "Install joinery", stage: construction, fragment: fr.joinery-fitout, aliases: ["Install"], after: ["Frame and line partitions", "Procure and deliver joinery"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.joinery-fitout", why: "Fit-out."}
+    - {label: "Sanitary fit-off", stage: construction, fragment: fr.hydraulic-sanitary-fitout, aliases: ["Fit off"], after: ["Install joinery", "Sanitary rough-in"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-fitout", why: "Tea point."}
+    - {label: "Electrical fit-off", stage: construction, fragment: fr.electrical-fitout, aliases: ["Fit off"], after: ["Install ceilings", "Electrical rough-in"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.electrical-fitout", why: "Fit-out."}
+    - {label: "Commission the altered system", stage: construction, fragment: fr.mechanical-fitout, after: ["Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "Air balancing of level 3."}
+    - {label: "Paint the fit-out", stage: construction, fragment: fr.painting-fitout, after: ["Install joinery"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.painting-fitout", why: "Fit-out."}
+    - {label: "Lay floor finishes", stage: construction, fragment: fr.floors-fitout, after: ["Paint the fit-out"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.floors-fitout", why: "Fit-out."}
+    - {label: "Integrated fire system test: pumps, flow switches, FIP, EWIS and monitoring", stage: construction, fragment: null, after: ["Pump commissioning: flow tests at duty points, diesel start tests and alarm signals to the FIP", "Alter detection and warning", "Relocate EWIS speakers, exit signs and emergency lighting"], built_in: "no", why: "rule.project.integrated-fire-testing needs fire-control present; no fragment."}
+    # Completion
+    - {label: "Fire safety practitioner assessment of each new and altered measure", stage: completion, fragment: null, after: ["Integrated fire system test: pumps, flow switches, FIP, EWIS and monitoring"], built_in: "no", why: "Competent fire safety practitioner (verified: false)."}
+    - {label: "Owner issues the final fire safety certificate; copy to FRNSW with the fire safety schedule; displayed in the building", stage: completion, fragment: null, after: ["Fire safety practitioner assessment of each new and altered measure"], built_in: "no", why: "Owner's certificate before the OC; copy to FRNSW with the current fire safety schedule and displayed in the building (s 85 per FRNSW 'Lodge a fire safety certificate'; verified: false). The council receives it from the principal certifier with the OC. Needed for the level 3 measures; the Fire Safety Code works may be exempt (verified: false). No NSW fire safety step exists in the knowledge."}
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lay floor finishes", "Remove the old pump and redundant pipework", "Integrated fire system test: pumps, flow switches, FIP, EWIS and monitoring", "Electrical fit-off", "Sanitary fit-off", "Commission the altered system", "Install luminaires", "Hang doors", "Install structured cabling"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.practical-completion", why: "Two contracts reach PC separately in practice."}
+    - {label: "Final inspection by the principal certifier", stage: completion, fragment: null, after: ["Owner issues the final fire safety certificate; copy to FRNSW with the fire safety schedule; displayed in the building"], built_in: "no", why: "Before the OC (critical-stage inspections for Class 5 verified: false)."}
+    - {label: "Occupation certificate", stage: completion, fragment: fr.occupation-certificate, after: ["Final inspection by the principal certifier", "Practical completion inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.occupation-certificate", why: "Needed before the tenant occupies level 3; the app has no link to the fire safety certificate."}
+    - {label: "Handover", stage: completion, fragment: fr.handover, after: ["Occupation certificate"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.handover", why: "Generic. The job needs as-builts, block plan, pump test logbook, O&M manuals and handover to the AS 1851 maintenance contractor."}
+    - {label: "Update the essential measures register and AS 1851 maintenance schedule", stage: completion, fragment: null, after: ["Handover"], built_in: "no", why: "rule.as1851.fire-system-maintenance names it but reaches no generator."}
+    # Defects
+    - {label: "Defects inspection", stage: defects, fragment: fr.defects-inspection, after: ["Handover"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-inspection", why: "Standard."}
+    - {label: "Defects liability period", stage: defects, fragment: fr.defects-liability-end, after: ["Defects inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "AS 4000 period (length verified: false)."}
+    - {label: "Final defects inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Defects liability period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Standard."}
+    - {label: "Next annual fire safety statement covers the new measures", stage: defects, fragment: null, after: ["Update the essential measures register and AS 1851 maintenance schedule"], built_in: "no", why: "The owner's AFSS falls due annually; the new measures join it (verified: false)."}
+
+rfps:
+  - discipline: consultant.fire_services
+    template: fire-services
+    built_in: "partial"
+    source: "knowledge/rfp/fire-services.yaml"
+    aliases: [consultant.hydraulic]
+    must_include:
+      - {text: "Review of the fire safety schedule, last AFSS, AS 1851 records and as-built drawings", key: stage.inception}
+      - {text: "Investigation of the existing supply, pump, valve sets and booster, with a flow and pressure test", key: stage.investigation}
+      - {text: "Sydney Water statement of available pressure and flow (Tap in), and approval of the fire service and backflow alterations", key: position.authority}
+      - {text: "Demand and storage calculations to AS 2118.1 (verified: false)", key: position.supply}
+      - {text: "Pumpset and tank design to AS 2941: electric duty, diesel standby, jockey, controllers (verified: false)", key: position.wet}
+      - {text: "Upgrade design of the existing system", key: position.upgrade}
+      - {text: "Pump room interfaces: structure, power, ventilation, drainage and brigade access", key: position.plant}
+      - {text: "Impairment, staging and restoration plan for the occupied building", key: position.staging}
+      - {text: "Level 3 sprinkler, detection and EWIS alterations", key: position.dry}
+      - {text: "Pump signals to the FIP and monitoring: cause-and-effect coordination", key: position.controls}
+      - {text: "Tender documentation: drawings, calculations, specification", key: stage.tender}
+      - {text: "Construction-phase reviews and hold-point inspections", key: stage.construction}
+      - {text: "Commissioning witness: hydrostatic, pump flow, diesel start and integrated tests", key: stage.handover}
+      - {text: "Design compliance certificates for the CDC", key: position.declarations}
+    must_not_include:
+      - {text: "Fire engineering strategy or performance solutions", key: position.strategy}
+      - {text: "Special hazard suppression", key: position.hazards}
+      - "Development application documentation"
+      - {text: "Advisory-only report", key: stage.advisory}
+    expect:
+      stages_include: [inception, investigation, concept, design, tender, construction, handover]
+      stages_option: [continuation]
+      stages_absent: [advisory]
+      positions: {wet: I, supply: I, authority: I, dry: I, controls: I, plant: I, existing: I, upgrade: I, staging: I, remediation: O, hazards: X, strategy: X, declarations: I, continuation: O, construction: I, witness: I, execution: O}
+      blocking: []
+      sources:
+        - "boundary always inception..design (fire-services.yaml boundary); a traditional consultant-designed upgrade needs documentation, construction support and commissioning witness"
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "client flag fs_investigation cannot be keyed"}
+      - {key: stage.tender, app: option, expect: include, why: "after the boundary end (design)"}
+      - {key: stage.construction, app: option, expect: include, why: "after the boundary end; default option"}
+      - {key: stage.handover, app: option, expect: include, why: "after the boundary end; commissioning witness is core on a pump upgrade"}
+      - {key: stage.advisory, app: option, expect: absent, why: "always option"}
+      - {key: position.wet, app: ask, expect: I, why: "client flag fs_wet"}
+      - {key: position.supply, app: ask, expect: I, why: "client flag fs_supply"}
+      - {key: position.authority, app: ask, expect: I, why: "client flag fs_authority"}
+      - {key: position.dry, app: ask, expect: I, why: "client flag fs_dry"}
+      - {key: position.controls, app: ask, expect: I, why: "client flag fs_controls"}
+      - {key: position.plant, app: ask, expect: I, why: "client flag fs_plant_interfaces"}
+      - {key: position.existing, app: ask, expect: I, why: "client flag fs_investigation"}
+      - {key: position.upgrade, app: ask, expect: I, why: "client flag fs_upgrade"}
+      - {key: position.declarations, app: ask, expect: I, why: "client flag fs_declarations"}
+      - {key: position.staging, app: O, expect: I, why: "always O; impairment management is core in an occupied building"}
+      - {key: position.construction, app: O, expect: I, why: "follows the construction stage, which the app prices as an option"}
+      - {key: position.witness, app: O, expect: I, why: "follows the handover stage, which the app prices as an option"}
+  - discipline: consultant.structural
+    template: structural
+    built_in: "partial"
+    source: "knowledge/rfp/structural.yaml stages existing_assessment"
+    why: "The template fits once the user adds the package; the package is never suggested for refurb."
+    must_include:
+      - {text: "Assessment of the existing slab for the tank operating load", key: stage.existing_assessment}
+      - "Tank and pump plinth design; slab strengthening if the assessment needs it"
+      - {text: "Fixing and seismic restraint of the tank, pumpsets and pipework", key: position.services_fixings}
+      - "Core hole and penetration review, with scanning before coring"
+      - {text: "Structural certification for the CDC", key: stage.planning_approval}
+      - {text: "Inspection of plinths and strengthening before concrete", key: stage.construction_phase}
+    must_not_include:
+      - {text: "Geotechnical brief", key: position.geotech_brief}
+      - {text: "Shoring or retention design", key: position.retention_design}
+      - {text: "Revit model shared with the design team", key: position.shared_model}
+      - {text: "Regulated design (DBP Act)", key: stage.regulated_design}
+      - {text: "Authority asset assessment", key: stage.authority_asset}
+      - "Construction certificate certification"
+    expect:
+      stages_include: [existing_assessment, planning_approval, design_development, tender_traditional, construction_documents, construction_phase]
+      stages_option: []
+      stages_absent: [concept_schematic, authority_asset, dnc_tender, regulated_design, post_novation]
+      positions: {design_basis: I, safety_in_design: I, value_management: I, delegated_design: I, strengthening: O, services_fixings: I, metalwork: O, inspection_schedule: I, temporary_works_design: X, dilapidation: X, geotech_brief: absent, residential_framing: absent, shared_model: absent, specialist_element_design: absent, retention_design: absent, temporary_works_interfaces: absent, super_flat_floor: absent, compaction: absent, demolition_drawings: absent, services_footings: absent}
+      blocking: []
+      sources:
+        - "existing_assessment: when work_type refurb (structural.yaml stages existing_assessment)"
+        - "planning_approval: pathway cdc; the certifier needs structural certification at CDC"
+        - "delegated_design I: the tank manufacturer designs the modular tank; the engineer designs its base"
+    app_differs:
+      - {key: stage.concept_schematic, app: include, expect: absent, why: "always included; a plinth commission starts with the existing assessment"}
+      - {key: stage.construction_phase, app: option, expect: include, why: "after the boundary end (construction_documents); resolveStages applies the boundary before include_when scale complex"}
+      - {key: position.geotech_brief, app: I, expect: absent, why: "always I; no ground works"}
+      - {key: position.shared_model, app: I, expect: absent, why: "service_level complex I because of the Class 5 part"}
+      - {key: position.specialist_element_design, app: O, expect: absent, why: "O whenever procurement is not design_construct"}
+      - {key: position.services_fixings, app: O, expect: I, why: "always O; pump and tank fixings are core scope"}
+      - {key: position.super_flat_floor, app: O, expect: absent, why: "client flag cannot be set; if_unknown option"}
+      - {key: position.compaction, app: X, expect: absent, why: "always X; no ground works"}
+      - {key: position.demolition_drawings, app: X, expect: absent, why: "always X"}
+      - {key: position.services_footings, app: I, expect: absent, why: "always I; no footings"}
+      - {key: text.construction_documents, app: "design certification for the construction certificate", expect: "design certification for the CDC", why: "deliverable wording assumes a CC"}
+  - discipline: consultant.electrical
+    template: electrical-services
+    built_in: "partial"
+    source: "knowledge/rfp/electrical-services.yaml"
+    must_include:
+      - {text: "Investigation: MSB capacity, maximum demand and the existing pump supply", key: stage.investigation}
+      - {text: "Fire pump supply, supply-side connection and fire-rated submain", key: position.plant}
+      - {text: "Distribution and protection design", key: position.distribution}
+      - {text: "Level 3 lighting, emergency lighting and controls", key: position.lighting}
+      - {text: "Level 3 passive data cabling", key: position.ict}
+      - {text: "Tender documentation", key: stage.tender}
+      - {text: "Witness of the fire pump supply and changeover tests", key: stage.handover}
+      - {text: "Design compliance certificate for the CDC", key: position.declarations}
+    must_not_include:
+      - {text: "Utility (DNSP) application", key: stage.planning}
+      - {text: "Fire detection and EWIS design (fire services engineer)", key: position.dry_fire}
+      - {text: "Standby generation, PV or EV design", key: position.generation}
+    expect:
+      stages_include: [inception, investigation, concept, design, tender, construction, handover]
+      stages_option: [continuation, defects]
+      stages_absent: [planning, advisory]
+      positions: {distribution: I, utility: O, asp3: X, lighting: I, feature: O, controls: I, ict: I, plant: I, existing: I, staging: I, specialist: X, continuation: O, construction: I, handover: I, defects: O, studies: O, declarations: I, generation: absent, dry_fire: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "client flag elec_investigation"}
+      - {key: stage.planning, app: option, expect: absent, why: "client flag elec_planning; if_unknown option; no DNSP application in the base"}
+      - {key: stage.tender, app: option, expect: include, why: "after the boundary end"}
+      - {key: stage.construction, app: option, expect: include, why: "after the boundary end"}
+      - {key: stage.handover, app: option, expect: include, why: "after the boundary end"}
+      - {key: position.utility, app: I, expect: O, why: "follows the concept stage; no utility demand application in the base"}
+      - {key: position.controls, app: ask, expect: I, why: "client flag elec_controls"}
+      - {key: position.ict, app: O, expect: I, why: "client flag elec_ict; if_unknown option"}
+      - {key: position.existing, app: ask, expect: I, why: "client flag elec_investigation"}
+      - {key: position.staging, app: ask, expect: I, why: "client flag elec_staging; tenancy metering for level 3"}
+      - {key: position.declarations, app: ask, expect: I, why: "client flag elec_declarations"}
+      - {key: position.generation, app: O, expect: absent, why: "client flag elec_generation; if_unknown option"}
+      - {key: position.dry_fire, app: ask, expect: absent, why: "client flag elec_dry_fire; the fire services engineer designs dry fire"}
+      - {key: position.construction, app: O, expect: I, why: "follows the construction stage"}
+      - {key: position.handover, app: O, expect: I, why: "follows the handover stage"}
+  - discipline: consultant.mechanical
+    template: mechanical-services
+    built_in: "partial"
+    source: "knowledge/rfp/mechanical-services.yaml"
+    must_include:
+      - {text: "Investigation of base-building AHU capacity and the existing pump room ventilation", key: stage.investigation}
+      - {text: "Pump room local exhaust: diesel combustion and cooling make-up air, plant room exhaust and the engine flue discharge", key: position.local}
+      - {text: "Coordination of plinths, openings and power for pump room plant", key: position.interfaces}
+      - {text: "Level 3 air distribution and comms room cooling", key: position.hvac}
+      - {text: "BMS points for relocated VAV boxes", key: position.controls}
+      - {text: "Tender documentation", key: stage.tender}
+      - {text: "Commissioning and air balance witness", key: stage.handover}
+    must_not_include:
+      - {text: "Smoke control design", key: position.smoke}
+      - {text: "Commercial kitchen exhaust", key: position.kitchen}
+      - {text: "Planning submission", key: stage.planning}
+    expect:
+      stages_include: [inception, investigation, concept, design, tender, construction, handover]
+      stages_option: [continuation, seasonal]
+      stages_absent: [planning, advisory]
+      positions: {hvac: I, controls: I, interfaces: I, existing: I, declarations: I, energy: X, acoustic: X, specialist: X, staging: O, remediation: O, continuation: O, construction: I, witness: I, seasonal: O, execution: O, local: I, kitchen: absent, smoke: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "client flag mech_investigation"}
+      - {key: stage.planning, app: ask, expect: absent, why: "client flag mech_planning; CDC needs no planning submission"}
+      - {key: stage.tender, app: option, expect: include, why: "after the boundary end"}
+      - {key: stage.construction, app: option, expect: include, why: "after the boundary end"}
+      - {key: stage.handover, app: option, expect: include, why: "after the boundary end"}
+      - {key: stage.advisory, app: option, expect: absent, why: "always option"}
+      - {key: position.controls, app: ask, expect: I, why: "client flag mech_controls"}
+      - {key: position.interfaces, app: ask, expect: I, why: "client flag mech_interfaces"}
+      - {key: position.existing, app: ask, expect: I, why: "client flag mech_investigation"}
+      - {key: position.declarations, app: ask, expect: I, why: "client flag mech_declarations"}
+      - {key: position.local, app: ask, expect: I, why: "client flag mech_local; plant room exhaust is local exhaust"}
+      - {key: position.kitchen, app: ask, expect: absent, why: "client flag mech_kitchen; a tea point is not a kitchen"}
+      - {key: position.smoke, app: ask, expect: absent, why: "client flag mech_smoke"}
+      - {key: position.construction, app: O, expect: I, why: "follows the construction stage"}
+      - {key: position.witness, app: O, expect: I, why: "follows the handover stage"}
+  - discipline: consultant.certifier
+    template: bca-certification
+    built_in: "no"
+    source: "knowledge/rfp/bca-certification.yaml unsupported_pathways"
+    why: "The certifier is the approval authority, but the template blocks on cdc and its B stages need da or ssd (owner key data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml, a Class 5 CDC)."
+    must_include:
+      - "CDC assessment under each code: the Fire Safety Code (Part 8) for the pump works and the commercial internal alterations code for level 3 (verified: false)"
+      - "Fire safety schedule with the fit-out CDC, listing existing and new measures; confirm whether the Fire Safety Code CDC needs one (verified: false)"
+      - "Principal certifier appointment and inspections"
+      - "Review of the final fire safety certificate"
+      - "Occupation certificate for level 3 and the pump room works"
+    must_not_include:
+      - "Construction certificate (there is none under a CDC)"
+      - "Development application advice"
+      - "Fire safety design or performance solution authorship"
+      - "Building supervision"
+    expect:
+      stages_include: []
+      stages_option: []
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      blocking: ["pathway_unsupported"]
+      sources:
+        - "data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml: CDC must receive its own scope; existing CC stages cannot be relabelled"
+    app_differs:
+      - {key: stage.a1_inception, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
+      - {key: stage.a3_tender, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
+      - {key: stage.a4_construction, app: option, expect: absent, why: "after the boundary end"}
+      - {key: text.cdc_scope, app: "no CDC stage exists", expect: "CDC assessment, fire safety schedule, principal certifier, inspections and OC", why: "Gap: the template has no CDC scope"}
+  - discipline: consultant.interior_design
+    template: null
+    built_in: "no"
+    aliases: [consultant.architect]
+    must_include:
+      - "Tenant brief and test fit for level 3"
+      - "Concept and design development to the landlord's fit-out guide"
+      - "CDC drawings and specification under the Codes SEPP code for internal alterations to commercial buildings (historically Part 5 Commercial and Industrial Alterations Code; now possibly Part 5A Industrial and Business Buildings Code; verified: false)"
+      - "Coordination with the fire services engineer on head layout, ceilings and the new supply"
+      - "Tender documentation and tender assessment for the fit-out builder"
+      - "Construction-phase site visits, RFIs and shop drawing review"
+    must_not_include:
+      - "Development application or town planning"
+      - "Base-building fire services design"
+      - "BASIX or NatHERS"
+      - "Structural design"
+    app_differs:
+      - {key: text.template, app: "generic tpl.rfp-capex", expect: "a fit-out design RFP carrying the must_include scope", why: "No knowledge/rfp file lists consultant.interior_design"}
+  - discipline: consultant.hazmat
+    template: null
+    built_in: "no"
+    must_include:
+      - "Pre-refurbishment hazardous materials survey: pump room, store, risers and level 3 ceiling and floor"
+      - "Sampling and NATA-accredited laboratory analysis"
+      - "Update of the asbestos register and management plan (WHS Regulation 2025 (NSW; clause numbers verified: false))"
+      - "Removal scope if asbestos is found, then air monitoring and clearance inspection"
+    must_not_include:
+      - "Contaminated land or soil assessment"
+      - "Remediation action plan"
+    app_differs:
+      - {key: text.template, app: "generic tpl.rfp-capex", expect: "a hazardous materials survey brief", why: "No knowledge/rfp file lists consultant.hazmat"}
+
+triggers:
+  - id: tank-needs-consent
+    label: Tank or pump house fails the Fire Safety Code standards, or the land is excluded from complying development
+    evidence:
+      - "Two of the basement car spaces will be lost to the new tank, below the number required by the original consent."
+      - "Council advised that the tank and pump house are not complying development and a DA is required."
+      - "The proposed external pump house would sit over a registered easement, so it fails the Fire Safety Code standards."
+    negation:
+      - "The tank fits within the existing basement store; no car spaces or external areas are affected."
+      - "The certifier confirmed the tank and pump house meet the Fire Safety Code development standards."
+    profile: [hdr.cond.planning]
+    adds:
+      procurement: [consultant.town_planner, consultant.bca]
+      cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees"]
+      program: ["Lodge the application", "Public exhibition", "Assessment", "Construction certificate", "Fire safety schedule issued with the construction certificate"]
+      rfps:
+        - {discipline: consultant.town_planner, must_include: ["Statement of environmental effects for the tank and screening", "Car parking assessment"]}
+      authority: ["Development consent", "Construction certificate"]
+    removes:
+      cost_plan: ["Complying development certificate and certifier fees"]
+      program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Prepare and lodge the fit-out CDC", "Fire safety schedule issued with the fit-out CDC"]
+    why: "An external tank alone is not a DA trigger: the Fire Safety Code has standards for water storage tanks and external pump houses (Info Sheet 8.1; verified: false). The DA and CC fragments fire on hdr.cond.planning alone and the skeleton becomes sk.refurb-traditional-da. The certifier RFP unblocks on da. BCA joins for the design-side compliance report; the app suggests it anyway. Assumes the fit-out is folded into the DA (a separate fit-out CDC is possible). The levy and the award re-link to 'Construction certificate'. The app has no fire safety schedule row, hence program partial."
+    built_in: {procurement: "yes", cost_plan: "yes", program: "partial", rfps: "yes"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[0]"
+  - id: performance-solution
+    label: Fire-engineered performance solution (pump room access, tank capacity or booster location)
+    evidence:
+      - "The pump room is not directly accessible from outside; a performance solution is proposed."
+      - "A fire engineer will prepare a fire engineering brief and report for the reduced tank capacity."
+      - "The proposal departs from the deemed-to-satisfy provisions for the sprinkler water supply."
+    negation:
+      - "The design complies with the deemed-to-satisfy provisions; no performance solution is proposed."
+    profile: [flag.fire_specialist_systems]
+    adds:
+      procurement: [consultant.fire_engineer, consultant.bca]
+      cost_plan: ["Fire engineer", "BCA consultant", "FRNSW referral fees"]
+      program: ["Fire engineering brief and stakeholder meeting", "Initial fire safety report referred to FRNSW", "Fire engineering report", "Final fire safety report to FRNSW"]
+      rfps:
+        - {discipline: consultant.fire_engineer, must_include: ["Fire engineering brief", "Performance solution report against the sprinkler supply provisions", "FRNSW referral responses"]}
+      authority: ["FRNSW referral for a performance solution against a Category 2 fire safety provision (verified: false)", "Whether a CDC can still be used (verified: false)"]
+    why: "No package rule suggests a fire engineer; the fire-engineering template exists but needs the package added. Nothing models the FRNSW referral. Under this trigger the app's BCA suggestion becomes correct."
+    built_in: {procurement: "no", rfps: "partial", program: "no", cost_plan: "partial"}
+    source: "knowledge/rfp/fire-engineering.yaml"
+  - id: town-main-inadequate
+    label: Town main cannot fill or supply the system; new or upsized fire service connection
+    evidence:
+      - "Sydney Water's statement shows the 100 mm main cannot meet the tank refill rate."
+      - "A new 150 mm fire service connection will be made to the main in George Street, with a road opening permit."
+      - "Sydney Water may require the main to be upgraded as a condition of the connection."
+    negation:
+      - "The existing fire service connection is retained; Sydney Water confirmed the main is adequate."
+    profile: [flag.public_road]
+    adds:
+      work_items:
+        - {system: site.services-connections, action: upgrade}
+      cost_plan: ["New fire service connection and road restoration", "Provisional sum: Sydney Water main augmentation", "Council road opening permit fee"]
+      program: ["Sydney Water connection application and design", "Road opening permit and traffic control plan", "Connect the new fire service in the road"]
+      authority: ["Sydney Water connection approval (verified: false)", "Council road opening permit under Roads Act 1993 s 138 (verified: false)"]
+    why: "fr.services-connections-major fires for class 5 with a site.services-connections upgrade item. Augmentation is a client cost (uc.authority-requires-water-main-upgrade, an Implication only)."
+    built_in: {program: "partial", cost_plan: "partial", work_items: "partial"}
+    source: "knowledge/program/fragments.yaml fr.services-connections-major"
+  - id: hydrant-system-upgrade
+    label: Hydrant system or booster also upgraded (combined pumps, AS 2419.1)
+    evidence:
+      - "The new pumps will serve both the sprinkler and hydrant systems."
+      - "The booster assembly will be relocated to the street frontage within sight of the main entry."
+      - "The hydrant system will be brought up to AS 2419.1-2021 as part of the works."
+    negation:
+      - "The hydrant system is unaffected and remains town-main fed through the existing booster."
+    profile: []
+    adds:
+      work_items:
+        - {system: fire-active.hydrants, action: upgrade}
+      cost_plan: ["Hydrant pumps, booster relocation and block plan"]
+      program: ["Booster location agreed with FRNSW", "Hydrant flow and pressure test", "Update the block plan at the booster"]
+      rfps:
+        - {discipline: consultant.fire_services, must_include: ["Hydrant system upgrade design to AS 2419.1 (verified: false)", "Booster location and brigade access"]}
+      authority: ["FRNSW consultation on booster location (verified: false)"]
+    removes:
+      work_items: [{system: fire-active.hydrants, action: retain}]
+    why: "Hydrant fragments exist only for classes 2 and 7b, new or extend."
+    built_in: {cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/costs/elements.yaml elements code 07"
+  - id: asbestos-found
+    label: Asbestos found in the pump room or the level 3 strip-out zone
+    evidence:
+      - "The survey identified asbestos-containing gaskets and fibre cement lining in the pump room."
+      - "The asbestos register lists vinyl floor tiles under the level 3 carpet."
+      - "Bonded asbestos sheeting lines the existing store to be taken into the pump room."
+    negation:
+      - "The 2024 hazardous materials survey found no asbestos in the areas affected by the works."
+    profile: [det.existing_building_year]
+    adds:
+      cost_plan: ["Licensed asbestos removal", "Air monitoring and clearance certificate"]
+      program: ["SafeWork NSW notification before licensed removal", "Asbestos removal", "Clearance inspection before works resume"]
+      authority: ["SafeWork NSW notification (period verified: false)"]
+    why: "fr.existing-conditions gives the survey; nothing gives removal. cq.pre-2004-fabric-hazardous-materials-survey is an Implication only."
+    built_in: {program: "partial", cost_plan: "no"}
+    source: "knowledge/program/fragments.yaml fr.existing-conditions"
+  - id: diesel-noise-exhaust
+    label: Diesel pump noise or exhaust affects tenants or neighbours
+    evidence:
+      - "The weekly diesel pump test run will be audible in the ground-floor tenancy."
+      - "The diesel exhaust must discharge above the roof, through the existing riser."
+      - "A residential building adjoins the rear lane where the exhaust would discharge."
+    negation:
+      - "Two electric pumpsets on separate supplies are proposed; there is no diesel engine."
+    profile: []
+    adds:
+      procurement: [consultant.acoustic]
+      work_items:
+        - {system: interiors.acoustic-separation, action: new}
+      cost_plan: ["Acoustic consultant", "Acoustic treatment of the pump room", "Exhaust flue riser to roof"]
+      program: ["Acoustic assessment of the pump test run", "Install acoustic treatment and flue"]
+      rfps:
+        - {discipline: consultant.acoustic, must_include: ["Pump test run noise assessment against tenancy and neighbour criteria", "Treatment design and verification"]}
+    why: "No package rule names Acoustic and there is no acoustic RFP template."
+    built_in: {procurement: "no", cost_plan: "partial", program: "no", rfps: "no"}
+    source: "knowledge/costs/elements.yaml elements code 05"
+  - id: electrical-supply-upgrade
+    label: Main switchboard or incoming supply cannot take the fire pump
+    evidence:
+      - "The main switchboard has no space for a supply-side fire pump connection; a new section is needed."
+      - "Maximum demand with the new pump exceeds the supply capacity; an Ausgrid application is required."
+    negation:
+      - "The electrical engineer confirmed the MSB has capacity and a spare supply-side connection."
+    profile: [det.network_operator]
+    adds:
+      work_items:
+        - {system: electrical.switchboards, action: upgrade}
+        - {system: electrical.utility-supply, action: upgrade}
+      cost_plan: ["New MSB section for the fire pump", "DNSP connection application and supply upgrade"]
+      program: ["Procure and deliver the MSB section", "Install the MSB section", "DNSP connection application"]
+      rfps:
+        - {discipline: consultant.electrical, must_include: ["DNSP application and supply upgrade", "MSB section design"]}
+      authority: ["DNSP connection application (Ausgrid, Endeavour Energy or Essential Energy; verified: false)"]
+    removes:
+      work_items: [{system: electrical.switchboards, action: alter}]
+    why: "fr.switchboard-major fires for class 5 with an upgrade item, but prints the generic 'Procure and deliver' and 'Install', which clash with joinery, so the descriptive labels here are scored as no. fr.utility-major is gated to classes 2, 7b and 9b. The electrical RFP planning stage carries the DNSP application."
+    built_in: {program: "no", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/program/fragments.yaml fr.switchboard-major"
+  - id: pump-tank-only
+    label: Fire services upgrade only, no fit-out
+    evidence:
+      - "The scope is limited to the fire pump and tank upgrade; no tenancy works are included."
+      - "Level 3 remains leased to the existing tenant and is not affected."
+    negation:
+      - "The level 3 fit-out is delivered with the fire services upgrade."
+    profile: []
+    adds:
+      program: []
+      authority: ["One CDC under the Fire Safety Code (verified: false)", "Fire safety schedule and final fire safety certificate may not be required for a Fire Safety Code alteration to a hydraulic fire safety system (verified: false)"]
+    removes:
+      procurement: [consultant.interior_design, trade.main_works]
+      rfps: [consultant.interior_design]
+      work_items:
+        - {system: interiors.walls-linings, action: new}
+        - {system: interiors.ceilings, action: alter}
+        - {system: interiors.internal-doors, action: new}
+        - {system: interiors.internal-glazing, action: new}
+        - {system: interiors.joinery, action: new}
+        - {system: interiors.painting, action: replace}
+        - {system: interiors.floor-finishes, action: replace}
+        - {system: mechanical.air-distribution, action: alter}
+        - {system: mechanical.air-conditioning, action: new}
+        - {system: hydraulic.cold-water, action: alter}
+        - {system: hydraulic.hot-water, action: new}
+        - {system: hydraulic.sanitary, action: alter}
+        - {system: electrical.lighting, action: replace}
+        - {system: fire-active.occupant-warning, action: alter}
+        - {system: fire-active.emergency-lighting, action: alter}
+        - {system: comms-security.structured-cabling, action: new}
+      cost_plan: ["Interior designer", "Level 3 soft strip", "Interiors and finishes", "Fit-out mechanical: air distribution and comms room cooling", "Tea point plumbing", "Fit-out lighting and power", "Communications and security", "Fit-out sprinkler, detection, EWIS and emergency lighting alterations"]
+      program: ["Confirm the brief", "Prepare the concept design", "Client review of the concept", "Develop the design", "Prepare fit-out documentation", "Frame and line partitions", "Install ceilings", "Install luminaires", "Lay floor finishes", "Paint the fit-out", "Install joinery", "Procure and deliver joinery", "Hang doors", "Install structured cabling", "Alter cold water", "Install or alter the local hot-water unit", "Sanitary rough-in", "Sanitary fit-off", "Relocate EWIS speakers, exit signs and emergency lighting", "Alter ductwork and pipework", "Commission the altered system", "Isolate services and protect adjacent areas", "Soft-strip partitions, ceilings and services", "Make good retained structure and services", "Hold point: a recorded pressure test of the sprinkler pipework", "Hold point: a location-based inspection record for concealed fire stopping", "Prepare and lodge the fit-out CDC", "Fire safety schedule issued with the fit-out CDC"]
+    why: "With no interiors items neither hold point has a before row, so holdPointRows adds neither; the PC link to floor finishes falls away. The electrical, sprinkler and detection fit-out fragments still fire on the base-building cabling, sprinkler and detection items (checked by running program.Generate), so their rows stay; links to the removed ceilings fall away. fr.strip-out-fitout still fires on the pump-removal demolition item, so the app prints the three strip-out rows; they are expected noise, like the fit-out concept rows. The FFSC rows stay until the owner confirms the exemption. Keyword trap: the fit-out project fragments (concept, design development, fit-out documentation, tender) still fire on class 5 refurb with no fit-out scope, so the app shows 'Prepare the concept design' for a pump job."
+    built_in: {program: "no"}
+  - id: tenant-procured-fitout
+    label: The incoming tenant procures its own fit-out under the lease
+    evidence:
+      - "The tenant will carry out its fit-out under the agreement for lease, using its own designer and builder."
+      - "Landlord's works are limited to the base-building fire services upgrade; tenant works must comply with the fit-out guide."
+    negation:
+      - "The landlord delivers the level 3 fit-out as landlord's works."
+    profile: []
+    adds:
+      cost_plan: ["Landlord's review of tenant fit-out design (fire services, mechanical, structural)", "Tenant fit-out incentive or contribution"]
+      program: ["Landlord review and approval of the tenant's design", "Tenant's fire services alterations tested against the new supply"]
+      rfps:
+        - {discipline: consultant.fire_services, must_include: ["Review of the tenant's sprinkler and detection design and witness of its tests"]}
+    removes:
+      procurement: [consultant.interior_design, trade.main_works]
+      rfps: [consultant.interior_design]
+    why: "No landlord-review or tenant-works model."
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+  - id: fire-safety-order
+    label: Council or FRNSW action requires the upgrade (fire safety order or notice of intention)
+    evidence:
+      - "Council has issued a notice of intention to give a fire safety order for the sprinkler water supply."
+      - "Following an FRNSW inspection, council requires the fire safety measures to be upgraded within the stated period."
+      - "The annual fire safety statement could not be issued for the automatic fire sprinkler system."
+    negation:
+      - "The upgrade is a voluntary capital works item; no order or notice has been issued."
+    profile: []
+    adds:
+      program: ["Respond to the notice of intention and agree a compliance period", "Report compliance to council within the order period"]
+      authority: ["Fire safety order under the EP&A Act (schedule and clause verified: false)", "Whether work under an order still needs a CDC or CC (verified: false)"]
+      rfps:
+        - {discipline: consultant.fire_services, must_include: ["Response to the notice and FRNSW report items"]}
+    why: "No fire-safety-order model, which T17 also lacks."
+    built_in: {program: "no", rfps: "no"}
+  - id: fit-out-amenities
+    label: Fit-out adds or alters amenities (accessible toilet, showers)
+    evidence:
+      - "The level 3 fit-out includes a new accessible toilet and two showers."
+      - "Existing male and female toilets on level 3 will be refurbished."
+    negation:
+      - "The base-building toilets on level 3 are not altered."
+    profile: []
+    adds:
+      procurement: [consultant.access, consultant.hydraulic]
+      work_items:
+        - {system: interiors.wet-area-waterproofing, action: new}
+        - {system: interiors.tiling, action: new}
+        - {system: access-egress.accessible-facilities, action: new}
+      cost_plan: ["Accessible sanitary facilities and hearing augmentation", "Access consultant", "Hydraulic engineer"]
+      program: ["Wet-area waterproofing", "Wall and floor tiling"]
+      rfps:
+        - {discipline: consultant.access, must_include: ["Accessible sanitary facility design review to AS 1428.1 (verified: false)"]}
+    why: "Under this trigger the app's Access and Hydraulic suggestions become correct. Access is already suggested by baselines[3]; the wet-area and tiling fit-out fragments fire, printing the system labels (instantiate); accessible facilities get a 13.x cost line but no fragment."
+    built_in: {procurement: "yes", program: "yes", cost_plan: "yes", rfps: "yes"}
+    source: "knowledge/program/fragments.yaml fr.wet-area-fitout"
+  - id: heritage-item
+    label: The building is a heritage item or in a conservation area
+    evidence:
+      - "The building is listed as a local heritage item in Schedule 5 of the LEP."
+      - "The site is within the Martin Place heritage conservation area."
+    negation:
+      - "The site is not a heritage item and not in a heritage conservation area."
+    profile: [det.heritage_status, hdr.cond.planning]
+    adds:
+      procurement: [consultant.heritage]
+      cost_plan: ["Heritage consultant"]
+      program: ["Heritage referral"]
+      authority: ["CDC is generally not available on a heritage item (verified: false)", "Heritage advice on new penetrations and the flue"]
+    why: "complexity_additions[1] and fr.heritage-referral fire; the Heritage consultant has no RFP template."
+    built_in: {procurement: "yes", program: "yes", cost_plan: "yes", rfps: "no"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
+  - id: strata-office
+    label: The building is a commercial strata scheme
+    evidence:
+      - "Client: The Owners - Strata Plan 54321 (commercial)."
+      - "The pump room and tank are common property; the upgrade needs a general meeting resolution."
+    negation:
+      - "The building is in single ownership."
+    profile: [hdr.cond.stakeholder_complexity]
+    adds:
+      cost_plan: ["Strata manager and legal costs", "Special levy administration"]
+      program: ["General meeting resolves the upgrade and levy"]
+      authority: ["Owners corporation resolution (SSMA 2015, verified: false)"]
+    why: "hdr.cond.stakeholder_complexity strata is read by no generator."
+    built_in: {cost_plan: "no", program: "no"}
+  - id: roof-or-crane-tank
+    label: Tank on the roof or delivered by crane over the street
+    evidence:
+      - "The new tank will sit on the roof plant deck; the roof structure must be checked for the load."
+      - "Tank panels will be lifted by mobile crane from George Street under a road occupancy licence."
+    negation:
+      - "Tank panels are carried in through the basement car park entry; no crane is needed."
+    profile: [flag.public_road]
+    adds:
+      cost_plan: ["Crane hire and road occupancy", "Roof structure strengthening"]
+      program: ["Road occupancy licence and traffic control plan", "Crane lift"]
+      rfps:
+        - {discipline: consultant.structural, must_include: ["Roof structure assessment and strengthening for the tank load"]}
+      authority: ["Road occupancy licence (TfNSW or council, verified: false)"]
+    why: "The contractor's traffic controller prepares the traffic control plan; no traffic consultant. The structural existing-assessment stage already applies."
+    built_in: {cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/rfp/structural.yaml stages existing_assessment"
+  - id: affected-part-access
+    label: Owner-lodged fit-out triggers a Premises Standards affected-part upgrade
+    evidence:
+      - "The certifier advises the path of travel from the principal pedestrian entrance to level 3 is an affected part and must be upgraded."
+      - "The access report finds the entrance doors and the level 3 lift lobby do not comply; TGSIs, door hardware and braille and tactile signage are to be upgraded."
+    negation:
+      - "The certifier confirmed the existing path of travel from the principal pedestrian entrance to level 3 already complies; no affected-part upgrade is required."
+      - "No affected-part upgrade is required."
+    profile: []
+    adds:
+      procurement: [consultant.access]
+      work_items:
+        - {system: access-egress.accessible-access, action: upgrade}
+      cost_plan: ["Accessible paths, TGSIs and braille/tactile signage"]
+      program: ["Affected-part path of travel upgrade"]
+      authority: ["Disability (Access to Premises - Buildings) Standards 2010 affected part (verified: false)"]
+    why: "Under this trigger the app's Access suggestion (baselines[3]) becomes correct; accessible-access gets a 13.x cost line but no fragment."
+    built_in: {procurement: "yes", cost_plan: "yes", program: "no"}
+    source: "knowledge/costs/elements.yaml elements access-egress items"
+  - id: existing-fire-engineered-building
+    label: Existing performance solutions rely on the sprinkler system
+    evidence:
+      - "The building operates under a fire engineering report dated 2006 that relies on the sprinkler system for extended travel distances."
+      - "The fire safety schedule lists performance solutions dependent on the automatic fire sprinkler system."
+    negation:
+      - "The building has no performance solutions; it was approved to the deemed-to-satisfy provisions."
+    profile: []
+    adds:
+      procurement: [consultant.fire_engineer]
+      cost_plan: ["Fire engineer"]
+      program: ["Fire engineering review of the existing report against the upgrade"]
+      rfps:
+        - {discipline: consultant.fire_engineer, must_include: ["Review of the existing fire engineering report and its sprinkler assumptions", "Confirm the upgrade preserves the performance solutions"]}
+    why: "No package rule suggests a fire engineer; the fire-engineering template exists once the package is added."
+    built_in: {procurement: "no", rfps: "partial", cost_plan: "partial", program: "no"}
+    source: "knowledge/rfp/fire-engineering.yaml"
+  - id: da-fire-upgrade
+    label: DA pathway with a consent-authority fire safety upgrade of the existing building
+    evidence:
+      - "Council's consent requires the existing building's fire safety measures to be upgraded to current standards."
+      - "A fire safety upgrade report is required with the development application."
+    negation:
+      - "The works proceed as complying development; no consent-authority upgrade applies."
+    profile: [hdr.cond.planning]
+    adds:
+      procurement: [consultant.bca, consultant.town_planner]
+      cost_plan: ["BCA consultant", "Fire safety upgrade works required by the consent"]
+      program: ["BCA fire safety upgrade report", "Fire safety upgrade works"]
+      authority: ["Consent authority may require fire safety upgrade of the existing building (former cl 94, now in the 2021 Regulation; number verified: false)"]
+    why: "BCA is suggested on refurb and Town Planner on DA; nothing models the upgrade requirement. Combine with tank-needs-consent for the DA rows."
+    built_in: {procurement: "yes", cost_plan: "partial", program: "no"}
+    source: "knowledge/works/package_defaults.yaml baselines[3]"
+  - id: interim-occupation
+    label: Tenant wants level 3 before the new pumps are commissioned
+    evidence:
+      - "The tenant requires access to level 3 before the fire pump upgrade is complete."
+      - "An interim occupation certificate is sought for level 3."
+    negation:
+      - "Level 3 is occupied only after the fire services upgrade is commissioned."
+    profile: []
+    adds:
+      program: ["Interim fire safety certificate for level 3", "Interim occupation certificate for level 3"]
+      authority: ["Interim fire safety certificate and interim OC (verified: false)"]
+    why: "Works only if the level 3 sprinklers can run on the old supply; otherwise the link to pump commissioning holds."
+    built_in: {program: "no"}
+
+gaps:
+  - {area: scope, what: "Refurb is an empty work type: no work items exist until a document or the user adds them, so the pumps and tank are never proposed by default.", evidence: "knowledge/profile/scope_defaults.yaml empty_work_types"}
+  - {area: scope, what: "One work item per system and part: base-building and fit-out work on the same system (sprinklers, ventilation, cabling) merge into one item with one action.", evidence: "internal/profile/works.go ProposedWorks"}
+  - {area: program, what: "fire-active.fire-water has no fragment: no tank assembly, pumpset installation, hydrostatic test, cut-over, flow test or commissioning rows. The core of the job is missing.", evidence: "testing/synthetic/reference/index/program-fragments.md leaf systems with no work-item fragment"}
+  - {area: program, what: "No NSW fire safety process steps: fire safety schedule, final fire safety certificate, copy to FRNSW (the council receives it with the OC), AFSS, competent fire safety practitioner. The OC fragment does not depend on a fire safety certificate.", evidence: "knowledge/program/fragments.yaml fr.occupation-certificate"}
+  - {area: program, what: "No impairment, isolation, temporary protection or restoration steps. rule.project.fire-system-impairment needs fire-control or exits present and reaches no generator; the consequences are Implications only.", evidence: "knowledge/clusters/fire/rules.yaml rule.project.fire-system-impairment"}
+  - {area: program, what: "fr.sprinklers-fitout attaches after fr.ceilings-fitout, but the sprinkler pressure-test hold point must come before the ceilings; the hold point's link to the ceilings is dropped as a loop, so the ceilings are not held.", evidence: "knowledge/program/fragments.yaml fr.sprinklers-fitout; internal/program/generate.go holdPointLinks"}
+  - {area: program, what: "fr.fire-stopping has no predecessor and the fire-stopping hold point precedes every interiors row, including the level 3 partitions; fire stopping floats to the start of construction.", evidence: "knowledge/clusters/fire/interfaces.yaml if.fire-stopping-before-concealment"}
+  - {area: program, what: "fr.mechanical-fitout attaches to mechanical.air-conditioning; mechanical.air-distribution (the usual fit-out mechanical scope), mechanical.local-exhaust (pump room ventilation), occupant-warning, emergency-lighting, backflow-prevention and rated-elements have no fragment. fr.switchboard-major ignores alter.", evidence: "knowledge/program/fragments.yaml fr.mechanical-fitout, fr.switchboard-major"}
+  - {area: program, what: "The fit-out project fragments fire on any class 5 refurb, so a pump-only job still gets fit-out concept, design development and documentation rows; there is one CDC and one tender row for a job with two CDCs and two contracts; no lead-time row for pumpsets.", evidence: "knowledge/program/fragments.yaml fr.concept-design-fitout, fr.cdc-application, fr.tender-docs-fitout"}
+  - {area: procurement, what: "The refurb baseline has no Structural, so the engineer for tank loads, plinths and coring is never suggested. Hazmat, the fire safety practitioner and the fire protection contractor are never suggested.", evidence: "knowledge/works/package_defaults.yaml baselines[2], baselines[3]"}
+  - {area: procurement, what: "Over-suggests for this job: Architect and Interior Design together, Hydraulic beside Fire Services, BCA and Access on a deemed-to-satisfy CDC.", evidence: "knowledge/works/package_defaults.yaml baselines[2], baselines[3], baselines[4]"}
+  - {area: procurement, what: "No id for the competent fire safety practitioner (AFSS and final fire safety certificate), the AS 1851 maintenance contractor, the alarm monitoring provider or a Sydney Water listed provider.", evidence: "data/intake/disciplines.json"}
+  - {area: procurement, what: "Filing traps: 'Hydraulic and Fire Services Engineer' proposals may file as Hydraulic; trade.fire_services aliases 'Sprinkler' and 'Sprinklers' may file a consultant's 'sprinkler upgrade' report as the trade.", evidence: "data/intake/disciplines.json consultant.hydraulic, trade.fire_services"}
+  - {area: procurement, what: "One head-contract proposal only, from accepted items; the job's two works contracts (fire protection contractor and fit-out builder) are not modelled, and trade packages are never suggested.", evidence: "internal/procurement/proposed.go ProposeHeadContract"}
+  - {area: cost_plan, what: "One construction line per top-level system: the pump upgrade and the fit-out share 07, 08, 09 and 10 though they are different contracts and often different funding (landlord capex against fit-out). Plant removal prices under '01 Site works and external works'.", evidence: "knowledge/costs/elements.yaml elements"}
+  - {area: cost_plan, what: "The commercial_fitout split gives fire-active 4% and interiors 50%; a stated budget for a pump-and-tank job is spread mostly into interiors; it also has no structure or site share, so the 03 and 01 lines receive nothing from a stated budget.", evidence: "knowledge/costs/budget_splits.yaml commercial_fitout"}
+  - {area: cost_plan, what: "P05 says construction certificate on a CDC; no long service levy, Sydney Water fire service, temporary fire protection, testing and commissioning, preliminaries or provisional-sum lines.", evidence: "knowledge/costs/starter_lines.yaml cc-fees, service-authority"}
+  - {area: rfp, what: "bca-certification blocks on cdc and has no CDC scope, so the job's approval authority cannot be sent an RFP.", evidence: "knowledge/rfp/bca-certification.yaml unsupported_pathways"}
+  - {area: rfp, what: "fire-services boundary ends at design for every job, so documentation, construction support and commissioning witness are priced as options; staging (impairment) is always O; every wet, supply, authority, plant and upgrade row waits on client flags.", evidence: "knowledge/rfp/fire-services.yaml boundary, positions staging"}
+  - {area: rfp, what: "structural treats any Class 5 part as complex (shared Revit model I), always includes the geotechnical brief and concept stage, and prices services fixings, the core of this commission, as an option; construction-documents wording assumes a CC.", evidence: "knowledge/rfp/structural.yaml scale.complex, positions services_fixings"}
+  - {area: rfp, what: "No RFP template for Interior Design, Hazmat, Acoustic or Heritage; all fall to the generic tpl.rfp-capex.", evidence: "testing/synthetic/reference/index/rfp-templates.md disciplines with no RFP template"}
+  - {area: profile, what: "Keyword traps: 'pump room in the basement' routes to the basement flag (yes would add retention, temporary works and dilapidation); 'water main' to authority_asset; 'fire water storage tank' and 'diesel fuel storage for the fire pump' to fire_special_hazards; 'structural ... fire' to fire_specialist_systems; 'pump room flooding' to flood_hazard; 'backflow ... contamination' to potentially_contaminated_land; 'stage 1 cut-over' to staged; 'Sydney Water asset' in a Tap in letter to authority_asset.", evidence: "knowledge/profile/flag_readings.yaml basement, authority_asset, fire_special_hazards, staged; knowledge/determinants.yaml flood_hazard, potentially_contaminated_land"}
+  - {area: profile, what: "implied_by traps: 'fire stairs' in the impairment plan implies access-egress.stairs-and-ramps (a 13.x cost line); 'tea kitchen' implies joinery, hydraulic and local exhaust; 'strip-out' and 'demolish' imply site.demolition (correct here).", evidence: "knowledge/profile/scope_defaults.yaml implied_by stair, kitchen, strip-out"}
+  - {area: knowledge, what: "The Fire Safety Code's scope (water-pressure alterations only), its possible exemption from the fire safety schedule and certificate, and the CFSP endorsement of plans are not encoded; one project has one planning value, so two CDCs cannot be modelled.", evidence: "knowledge/profile/taxonomy.yaml conditions planning"}
+  - {area: knowledge, what: "NSW fire safety law is not encoded: fire safety schedule, final and annual fire safety statements, competent fire safety practitioners, Category 2 fire safety provisions and FRNSW referral, fire safety orders. rule.as2941.fire-pumps cites AS 2941:2014; the current edition is AS 2941-2013 (Standards Australia store). Correct the instrument; clauses stay clause_verified: false.", evidence: "knowledge/clusters/fire/rules.yaml rule.as1851.fire-system-maintenance, rule.as2941.fire-pumps"}
+  - {area: implications, what: "uc.existing-fire-water-fails-flow-test attaches to fire-water but is triggered by sprinkler or hydrant works. It fires here only because the sprinkler connection is alter. A pump job that leaves sprinklers and hydrants untouched gets none.", evidence: "knowledge/clusters/fire/unforeseen.yaml uc.existing-fire-water-fails-flow-test"}
+
+variants: [tank-needs-consent, performance-solution, affected-part-access, town-main-inadequate, hydrant-system-upgrade, asbestos-found, electrical-supply-upgrade, pump-tank-only, fit-out-amenities]

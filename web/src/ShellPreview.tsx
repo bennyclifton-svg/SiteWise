@@ -43,6 +43,7 @@ export function ShellPreview() {
       projectId={projectId}
       catalog={catalog}
       projects={projects}
+      onRenamed={(id, name) => setProjects(current => current.map(p => p.id === id ? { ...p, name } : p))}
       navigate={(path) => {
         const m = path.match(/\/projects\/([0-9a-fA-F-]{36})/);
         if (m) setProjectId(m[1]);

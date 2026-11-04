@@ -8,7 +8,7 @@ import (
 )
 
 func TestPositionFollowsAppointedStage(t *testing.T) {
-	d := discipline(t, "structural")
+	d := ruled(t, "structural")
 	d.Positions = append(d.Positions, knowledge.RFPPosition{Key: "appointment_test", Label: "Construction attendance", Kind: "technical", Value: &knowledge.RFPCell{Value: "I", When: knowledge.RFPWhen{{"stage_included": {"construction_phase"}}}, Else: "O"}})
 	for _, c := range []struct{ state, want string }{{Include, "I"}, {Option, "O"}, {Exclude, "O"}} {
 		r := Resolve(d, skeleton(t), facts(t), set("stage:construction_phase", `"`+c.state+`"`))
@@ -19,7 +19,7 @@ func TestPositionFollowsAppointedStage(t *testing.T) {
 }
 
 func TestFireResponsibilitiesUseSeparateAppointments(t *testing.T) {
-	d := discipline(t, "structural")
+	d := ruled(t, "structural")
 	d.Positions = []knowledge.RFPPosition{{Key: "wet", Label: "Sprinkler design", Kind: "technical", Value: &knowledge.RFPCell{Value: "X"}, Responsible: "fire-services designer"}}
 	for _, c := range []struct {
 		id, title string
@@ -60,22 +60,22 @@ func TestScopeScheduleSurvivesSeparateFromPositions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// By stage, an allocation note prints with its service in the stage table.
 	for _, section := range sections {
-		if section.ID != "positions" {
-			continue
-		}
-		text := Markdown([]reports.Section{section})
-		for _, row := range r.ScopeSchedule {
-			if !strings.Contains(text, row.Text) {
-				t.Fatalf("allocation lost: %s", row.Key)
+		for _, block := range section.Blocks {
+			if block.ID != "rfp:stages" {
+				continue
 			}
+			text := Markdown([]reports.Section{{Blocks: []reports.Block{block}}})
+			for _, row := range r.ScopeSchedule {
+				if !strings.Contains(text, row.Text) {
+					t.Fatalf("allocation lost: %s", row.Key)
+				}
+			}
+			return
 		}
-		if len(section.Blocks) != 2 || section.Blocks[1].ID != "rfp:positions" {
-			t.Fatal("role and allocation not integrated")
-		}
-		return
 	}
-	t.Fatal("positions section missing")
+	t.Fatal("stage table missing")
 }
 
 func TestScopeChoicesDoNotLeakIntoOtherRFPs(t *testing.T) {

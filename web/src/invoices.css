@@ -13,7 +13,7 @@
 .costs-tab { position: relative; padding: 8px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-muted); font: inherit; font-weight: 500; cursor: pointer; }
 .costs-tab[aria-selected="true"] { border-bottom-color: var(--ember); color: var(--ink); }
 .costs-tab:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
-.costs-tab-count { margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--ground); font-size: 11px; font-variant-numeric: tabular-nums; }
+.costs-tab-count { margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--ground); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
 
 .cost-ledger { background-color: var(--canvas) !important; }
 .cost-grid thead .cost-ledger { color: var(--ink); }
@@ -23,33 +23,35 @@
 .invoices { position: relative; }
 .inv-drop { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; margin-bottom: 12px; padding: 14px 16px; border: 1.5px dashed var(--line-strong); border-radius: var(--radius-sm); background: var(--ground); }
 .inv-drop .drop-title { margin: 0; }
-.inv-drop-hint { margin: 2px 0 0; color: var(--ink-muted); font-size: 13px; }
+.inv-drop-hint { margin: 2px 0 0; color: var(--ink-muted); font-size: var(--fs-md); }
 
-.inv-uploads { display: grid; gap: 4px; margin: 0 0 12px; padding: 0; list-style: none; font-size: 13px; }
+.inv-uploads { display: grid; gap: 4px; margin: 0 0 12px; padding: 0; list-style: none; font-size: var(--fs-md); }
 .inv-uploads li { display: flex; align-items: center; gap: 12px; padding: 5px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); }
 .inv-uploads li[data-state="failed"] { border-color: var(--alert); background: var(--alert-soft); }
 .inv-uploads li[data-state="already"] { background: var(--azure-soft); }
 .inv-upload-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 
-.inv-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 14px; margin-bottom: 10px; font-size: 12px; color: var(--ink-muted); }
+.inv-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 14px; margin-bottom: 10px; font-size: var(--fs-sm); color: var(--ink-muted); }
 .inv-filters label { display: grid; gap: 2px; }
-.inv-filters select { min-width: 150px; max-width: 240px; padding: 4px 6px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: 13px; }
+.inv-filters select { min-width: 150px; max-width: 240px; padding: 4px 6px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-md); }
 
 .inv-table-scroll { max-width: 100%; max-height: calc(100vh - 330px); overflow: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
-.inv-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
-.inv-table th, .inv-table td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; background: var(--paper); }
-.inv-table thead th { position: sticky; top: 0; z-index: 1; background: var(--canvas); color: var(--ink-muted); font-weight: 500; font-size: 12px; white-space: nowrap; }
+.inv-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--fs-md); }
+.inv-table th, .inv-table td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; background: var(--paper); white-space: nowrap; }
+.inv-table thead th { position: sticky; top: 0; z-index: 1; background: var(--canvas); color: var(--ink-muted); font-weight: 500; font-size: var(--fs-sm); white-space: nowrap; }
 .inv-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.inv-table tbody tr { cursor: pointer; }
+.inv-discipline { max-width: 240px; min-width: 120px; padding: 2px 4px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--ink); font: inherit; }
+.inv-discipline:hover, .inv-discipline:focus-visible { border-color: var(--line-strong); background: var(--paper); }
+.inv-discipline:disabled { opacity: 0.6; }
 .inv-table tbody tr:hover td { background: var(--ground); }
 .inv-table tbody tr[aria-selected="true"] td { background: var(--azure-soft); }
 .inv-table tbody tr[data-status="void"] td, .inv-table tbody tr[data-status="superseded"] td { color: var(--ink-muted); text-decoration: line-through; text-decoration-color: var(--line-strong); }
 .inv-open { padding: 0; border: 0; background: none; color: var(--azure); font: inherit; font-weight: 500; text-align: left; cursor: pointer; }
 .inv-open:hover { text-decoration: underline; }
-.inv-share { display: block; color: var(--ink-muted); font-size: 11px; }
+.inv-share { display: inline; color: var(--ink-muted); font-size: var(--fs-xs); }
 
 /* A chip carries words and an icon; the colour only repeats them. */
-.inv-chip { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 11px; color: var(--ink-muted); white-space: nowrap; text-decoration: none; }
+.inv-chip { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-size: var(--fs-xs); color: var(--ink-muted); white-space: nowrap; text-decoration: none; }
 .inv-table .num .inv-chip { justify-content: flex-end; }
 .inv-chip svg { flex: none; width: 12px; height: 12px; }
 .inv-chip[data-state="confirmed"] { color: var(--ok); }
@@ -57,13 +59,13 @@
 .inv-chip[data-state="user"] { color: var(--ember-hot); }
 .inv-chip[data-state="unchecked"] { background: repeating-linear-gradient(135deg, transparent 0 4px, var(--hatch) 4px 5px); }
 
-.inv-status { display: inline-block; padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 11.5px; white-space: nowrap; }
+.inv-status { display: inline-block; padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: var(--fs-xs); white-space: nowrap; }
 .inv-status[data-status="filed"] { border-color: var(--ok); color: var(--ok); }
 .inv-status[data-status="needs_review"] { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
 .inv-status[data-status="not_read"] { border-style: dashed; }
 .inv-status[data-status="reading"] { border-style: dotted; color: var(--ink-muted); }
-.inv-out { display: block; margin-top: 2px; color: var(--ink-muted); font-size: 11px; }
-.inv-flag { display: block; margin-top: 2px; color: var(--warn); font-size: 11px; white-space: normal; max-width: 220px; }
+.inv-out { display: inline; color: var(--ink-muted); font-size: var(--fs-xs); }
+.inv-flag { display: block; margin-top: 2px; color: var(--warn); font-size: var(--fs-xs); white-space: normal; max-width: 220px; }
 
 .inv-empty { padding: 20px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); color: var(--ink-body); }
 .inv-empty h2 { font-size: 16px; margin: 0 0 6px; }
@@ -78,22 +80,22 @@
 .inv-pdf p { padding: 16px; }
 .inv-fields { overflow-y: auto; padding: 14px 18px 32px; }
 .inv-field { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); align-items: center; gap: 2px 10px; margin-bottom: 8px; }
-.inv-field label { color: var(--ink-muted); font-size: 12.5px; }
-.inv-field input, .inv-field select { width: 100%; padding: 5px 7px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: 13.5px; }
+.inv-field label { color: var(--ink-muted); font-size: var(--fs-sm); }
+.inv-field input, .inv-field select { width: 100%; padding: 5px 7px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-md); }
 .inv-field .inv-chip { grid-column: 2; margin-top: 0; }
-.inv-flags { margin: 0 0 12px; padding: 8px 10px 8px 26px; border: 1px solid var(--warn); border-radius: var(--radius-sm); background: var(--warn-soft); font-size: 13px; color: var(--ink); }
+.inv-flags { margin: 0 0 12px; padding: 8px 10px 8px 26px; border: 1px solid var(--warn); border-radius: var(--radius-sm); background: var(--warn-soft); font-size: var(--fs-md); color: var(--ink); }
 .inv-flags li[data-info="true"] { color: var(--ink-muted); }
-.inv-note { margin: 0 0 12px; padding: 8px 10px; border: 1px dashed var(--line-strong); font-size: 13px; }
-.inv-error { margin: 0 0 12px; color: var(--alert); font-size: 13px; }
+.inv-note { margin: 0 0 12px; padding: 8px 10px; border: 1px dashed var(--line-strong); font-size: var(--fs-md); }
+.inv-error { margin: 0 0 12px; color: var(--alert); font-size: var(--fs-md); }
 .inv-split { margin: 12px 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
-.inv-split legend { padding: 0 4px; color: var(--ink-muted); font-size: 12.5px; }
-.inv-split ul { margin: 0 0 8px; padding-left: 18px; font-size: 13px; }
+.inv-split legend { padding: 0 4px; color: var(--ink-muted); font-size: var(--fs-sm); }
+.inv-split ul { margin: 0 0 8px; padding-left: 18px; font-size: var(--fs-md); }
 .inv-split .btn { margin: 4px 6px 0 0; }
 .inv-split-row { display: flex; gap: 6px; margin-bottom: 6px; }
 .inv-split-row select { flex: 1; min-width: 0; }
 .inv-split-row input { width: 110px; text-align: right; }
 .inv-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-.inv-file { color: var(--ink-muted); font-size: 12px; overflow-wrap: anywhere; }
+.inv-file { color: var(--ink-muted); font-size: var(--fs-sm); overflow-wrap: anywhere; }
 
 @media (max-width: 900px) {
   .costs-download-menu { right: auto; left: 0; }
@@ -119,6 +121,7 @@
   html, body, .cockpit-page, .cockpit-shell, .project-main-panel, .cockpit-scroll, .costs, .cost-grid-scroll, .inv-table-scroll,
   .cost-grid th, .cost-grid td, .inv-table th, .inv-table td { background: #fff !important; color: #000 !important; box-shadow: none !important; }
   .inv-chip, .inv-status, .inv-flag, .inv-out, .cost-ledger, .cost-placeholder, .cost-open, .inv-open { background: none !important; color: #000 !important; border-color: #000 !important; }
+  .inv-discipline { color: #000 !important; background: #fff !important; border: 0; appearance: none; opacity: 1; }
   .inv-chip { color: #333 !important; }
   .inv-chip svg { display: none; }
   .print-only { display: block; margin: 0 0 8px; font-size: 9pt; color: #000; }

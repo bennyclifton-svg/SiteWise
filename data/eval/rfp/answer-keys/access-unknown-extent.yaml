@@ -52,14 +52,9 @@ description: Unknown report/housing/facility decisions raise questions rather th
   option.
 expect:
   access:
-    stages_ask:
-    - s3_planning
-    - s4_approval
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      housing: ask
-      facilities: ask
-    blocking:
-    - fact:flag.access_planning
-    - fact:flag.access_approval
-    - fact:flag.access_housing
-    - fact:flag.access_facilities
+      housing: I
+      facilities: I
+    blocking: ['fact:flag.access_planning', 'fact:flag.access_approval', 'fact:flag.access_housing', 'fact:flag.access_facilities']
+    stages_include: [s3_planning, s4_approval]

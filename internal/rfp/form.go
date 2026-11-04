@@ -31,7 +31,9 @@ type FormHeader struct {
 func ResponseForm(h FormHeader, items []ScheduleItem, returnables []Row) []xlsx.Sheet {
 	bold := func(s string) xlsx.Cell { return xlsx.Cell{Text: s, Bold: true} }
 	text := func(s string) xlsx.Cell { return xlsx.Cell{Text: s} }
-	fees := xlsx.Sheet{Name: "R1 Fees", Widths: []float64{22, 60, 18, 10, 10, 40}}
+	// Fee only: weeks and hours per item cost a firm effort the comparison
+	// does not use (owner direction, 2 November 2026). R7 holds durations.
+	fees := xlsx.Sheet{Name: "R1 Fees", Widths: []float64{22, 60, 18, 40}}
 	fees.Rows = append(fees.Rows, []xlsx.Cell{bold(h.Title + " — response form")}, []xlsx.Cell{text(h.Project)})
 	if h.Ref != "" {
 		fees.Rows = append(fees.Rows, []xlsx.Cell{text("RFP reference " + h.Ref)})
@@ -41,7 +43,7 @@ func ResponseForm(h FormHeader, items []ScheduleItem, returnables []Row) []xlsx.
 		fees.Rows = append(fees.Rows, []xlsx.Cell{bold(f), {}})
 	}
 	fees.Rows = append(fees.Rows, nil, []xlsx.Cell{text("Fees exclude GST. Enter \"Not priced\" or \"Included in <ref>\" instead of an amount where that applies.")}, nil)
-	fees.Rows = append(fees.Rows, []xlsx.Cell{bold(FormRef), bold("Item"), bold("Fee $ excl. GST"), bold("Weeks"), bold("Hours"), bold("Notes")})
+	fees.Rows = append(fees.Rows, []xlsx.Cell{bold(FormRef), bold("Item"), bold("Fee $ excl. GST"), bold("Notes")})
 	fees.TitleRow = len(fees.Rows)
 	first := len(fees.Rows) + 1
 	var options []ScheduleItem
@@ -53,16 +55,16 @@ func ResponseForm(h FormHeader, items []ScheduleItem, returnables []Row) []xlsx.
 			options = append(options, item)
 			continue
 		}
-		fees.Rows = append(fees.Rows, []xlsx.Cell{text(item.Key), text(item.Label), {}, {}, {}, {}})
+		fees.Rows = append(fees.Rows, []xlsx.Cell{text(item.Key), text(item.Label), {}, {}})
 	}
 	last := len(fees.Rows)
-	fees.Rows = append(fees.Rows, []xlsx.Cell{bold("base_total"), bold("Base fee total"), sum("C", first, last), {}, {}, {}})
+	fees.Rows = append(fees.Rows, []xlsx.Cell{bold("base_total"), bold("Base fee total"), sum("C", first, last), {}})
 	if len(options) > 0 {
 		first = len(fees.Rows) + 1
 		for _, item := range options {
-			fees.Rows = append(fees.Rows, []xlsx.Cell{text(item.Key), text("Option: " + item.Label), {}, {}, {}, {}})
+			fees.Rows = append(fees.Rows, []xlsx.Cell{text(item.Key), text("Option: " + item.Label), {}, {}})
 		}
-		fees.Rows = append(fees.Rows, []xlsx.Cell{bold("options_total"), bold("Options total"), sum("C", first, len(fees.Rows)), {}, {}, {}})
+		fees.Rows = append(fees.Rows, []xlsx.Cell{bold("options_total"), bold("Options total"), sum("C", first, len(fees.Rows)), {}})
 	}
 	rates := xlsx.Sheet{Name: "R3 Rates", Widths: []float64{28, 40, 30, 18}, TitleRow: 1}
 	rates.Rows = append(rates.Rows, []xlsx.Cell{bold(FormRef), bold("Role"), bold("Name"), bold("Rate $/h excl. GST")})

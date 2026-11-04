@@ -1,0 +1,329 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Owner's brief: alterations and additions at 41 Tallowwood Avenue",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-00942",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "City of Canada Bay"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.surveyor",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "PR-26-0217",
+      "revision": null,
+      "title": "Detail and boundary survey report",
+      "date": "2026-03-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Pemberton & Rao Surveyors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Timing for the building work",
+      "date": "2026-03-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "KHA-FP-2604",
+      "revision": null,
+      "title": "Fee proposal: architectural services",
+      "date": "2026-03-10",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Kestrel Hill Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "ISE-2611",
+      "revision": null,
+      "title": "Structural engineering fee proposal",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ironbark Structural Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.civil",
+      "lifecycle": "consultant",
+      "number": "LCS-P-0311",
+      "revision": null,
+      "title": "Fee proposal: civil and stormwater engineering",
+      "date": "2026-03-13",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Lindqvist Civil & Stormwater Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "consultant",
+      "number": "SG-P-0742",
+      "revision": null,
+      "title": "Fee proposal: geotechnical investigation",
+      "date": "2026-03-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Sandstone Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.hazmat",
+      "lifecycle": "consultant",
+      "number": "CS-Q-1187",
+      "revision": null,
+      "title": "Fee proposal: pre-demolition hazardous materials survey",
+      "date": "2026-03-18",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "ClearSample Hazmat Services Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.basix",
+      "lifecycle": "consultant",
+      "number": "NER-0519",
+      "revision": null,
+      "title": "Fee proposal: BASIX certificate for alterations and additions",
+      "date": "2026-03-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Northlight Energy Ratings Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.hazmat",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "CS-26-0388",
+      "revision": "0",
+      "title": "Pre-demolition hazardous materials survey report",
+      "date": "2026-04-14",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "ClearSample Hazmat Services Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "design",
+      "number": "SG-26-0742",
+      "revision": "0",
+      "title": "Geotechnical investigation report",
+      "date": "2026-04-22",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Sandstone Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "KHA-DS-01",
+      "revision": "A",
+      "title": "Architectural design statement",
+      "date": "2026-05-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Kestrel Hill Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-201",
+      "revision": "A",
+      "title": "Proposed ground floor plan",
+      "date": "2026-05-06",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Kestrel Hill Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-201",
+      "revision": "B",
+      "title": "Proposed ground floor plan",
+      "date": "2026-05-27",
+      "supersedes": "d14",
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Kestrel Hill Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d16",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.town_planner",
+      "lifecycle": "authorities",
+      "number": "CP-SEE-0526",
+      "revision": null,
+      "title": "Statement of environmental effects",
+      "date": "2026-05-28",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Carrick Planning Pty Ltd"
+      }
+    },
+    {
+      "doc": "d20",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.heritage",
+      "lifecycle": "consultant",
+      "number": "MHC-26-031",
+      "revision": null,
+      "title": "Fee proposal: heritage impact statement",
+      "date": "2026-03-19",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Morrow Heritage Consulting Pty Ltd"
+      }
+    },
+    {
+      "doc": "d21",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.town_planner",
+      "lifecycle": "consultant",
+      "number": "CP-FP-0319",
+      "revision": null,
+      "title": "Fee proposal: town planning services",
+      "date": "2026-03-19",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Carrick Planning Pty Ltd"
+      }
+    },
+    {
+      "doc": "d22",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.heritage",
+      "lifecycle": {
+        "accept": [
+          "authorities",
+          "design"
+        ]
+      },
+      "number": "MHC-HIS-031",
+      "revision": "1",
+      "title": "Heritage impact statement",
+      "date": "2026-05-25",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Morrow Heritage Consulting Pty Ltd"
+      }
+    }
+  ]
+}

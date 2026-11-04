@@ -27,6 +27,7 @@ type priceTableBody struct {
 			ID         string `json:"id"`
 			Status     string `json:"status"`
 			DocumentID string `json:"document_id"`
+			Version    int64  `json:"version"`
 		} `json:"submission"`
 		Firm *struct {
 			Name string `json:"name"`
@@ -130,6 +131,7 @@ func TestProposalDroppedOnPackageReadsComparesAwardsAndStaysPrivate(t *testing.T
 		{"PUT", cell + "/cells/" + url.PathEscape(first), `{"state":"not_priced"}`},
 		{"PUT", base + "/comparison-row", `{"key":"` + first + `","label":"Private","section":"base"}`},
 		{"POST", cell + "/alignment", `{"target":"` + first + `","price_ids":["private"],"version":1}`},
+		{"PUT", cell + "/appointment-row", `{"id":"quote:private","included":true,"version":1}`},
 		{"PATCH", cell, `{"status":"withdrawn"}`},
 		{"GET", cell + "/file", ""},
 		{"POST", base + "/award/preview", `{"submission_id":"` + sub + `","lines":[{"label":"All","item_keys":["` + first + `"]}]}`},

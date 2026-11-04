@@ -79,7 +79,7 @@ flags:
     asks: does the passage state that community consultation is required?
   - key: architect_lodges
     triggers: ['\blodge(?:d|s|ment)?\b', '\blodging\b']
-    asks: does the passage state that the architect lodges the development application, state significant development application or complying development application for this project?
+    asks: does the passage state that the architect lodges the development application, state significant development application or complying development application for this project, or that the architect's stated services run through to its lodgement (for example "design through to DA lodgement")? Lodgement by a town planner, the owner or the builder, or an architect's service that stops before lodgement, does not establish this.
   - key: sustainability_target
     triggers: ['green star', 'nabers', 'passive ?haus|passive ?house', '\bleed\b', 'net[- ]zero']
     asks: does the passage state that a Green Star, NABERS or similar rating target is set for this project?

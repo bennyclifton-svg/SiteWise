@@ -1,0 +1,51 @@
+{
+  "schema": "sitewise-synthetic-procurement/1",
+  "shape": "types/T05-house-alterations-additions/shape.yaml",
+  "triggers": [
+    "heritage-conservation-area"
+  ],
+  "from_proposals": [
+    {
+      "doc": "d05",
+      "discipline": "consultant.architect",
+      "kind": "services"
+    },
+    {
+      "doc": "d06",
+      "discipline": "consultant.structural",
+      "kind": "services"
+    },
+    {
+      "doc": "d07",
+      "discipline": "consultant.civil",
+      "kind": "services"
+    },
+    {
+      "doc": "d08",
+      "discipline": "consultant.geotechnical",
+      "kind": "services"
+    },
+    {
+      "doc": "d09",
+      "discipline": "consultant.hazmat",
+      "kind": "services"
+    },
+    {
+      "doc": "d10",
+      "discipline": "consultant.basix",
+      "kind": "services"
+    },
+    {
+      "doc": "d20",
+      "discipline": "consultant.heritage",
+      "kind": "services"
+    },
+    {
+      "doc": "d21",
+      "discipline": "consultant.town_planner",
+      "kind": "services"
+    }
+  ],
+  "route": "traditional",
+  "novation": {}
+}

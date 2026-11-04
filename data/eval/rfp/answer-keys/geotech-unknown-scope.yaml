@@ -47,29 +47,21 @@ scenario: geotech-unknown-scope
 description: Missing appointment selections remain blocking questions, never exclusions or automatic intrusive investigation.
 expect:
   geotechnical:
-    stages_ask:
-    - g2_field
-    - g4_planning
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
       plan: I
-      foundation: ask
-      civil_parameters: ask
-      monitoring: O
-      asset_exposure: ask
-      clearance: ask
+      foundation: I
+      civil_parameters: I
+      monitoring: I
+      asset_exposure: I
+      clearance: I
       access: X
-      defects: O
+      defects: I
       environment: X
-      ass: ask
-      handback: ask
-      construction: O
-      transfer: O
-    blocking:
-    - fact:flag.geotech_intrusive
-    - fact:flag.geotech_foundation
-    - fact:flag.geotech_civil_parameters
-    - fact:flag.geotech_asset_exposure
-    - fact:flag.geotech_ass
-    - fact:flag.geotech_handback
-    - fact:flag.geotech_planning
+      ass: I
+      handback: I
+      construction: X
+      transfer: X
+    blocking: ['fact:flag.geotech_intrusive', 'fact:flag.geotech_foundation', 'fact:flag.geotech_civil_parameters', 'fact:flag.geotech_asset_exposure', 'fact:flag.geotech_ass', 'fact:flag.geotech_handback', 'fact:flag.geotech_planning']
     blocking_only: true
+    stages_include: [g2_field, g4_planning]

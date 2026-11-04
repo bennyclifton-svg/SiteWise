@@ -55,28 +55,22 @@ scenario: survey-plan-only
 description: Residential initial plan appointment leaves requested detail/boundary/services as later options.
 expect:
   land-surveying:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      titling: O
+      titling: X
       control: I
       records: I
       exposure: X
-      interior: O
-      monitoring: O
-      setout: O
-      asbuilt: O
-      boundary: O
-      adjoining: O
-      buried: O
-      sewer: O
+      interior: X
+      monitoring: X
+      setout: X
+      asbuilt: X
+      boundary: X
+      adjoining: X
+      buried: X
+      sewer: X
       access: absent
-    stages_include:
-    - s1_plan
-    stages_option:
-    - s5_support
-    - s6_construction
-    - s7_completion
-    - s2_detail
-    - s3_boundary
-    - s4_services
+    stages_include: [s1_plan]
     blocking_only: true
     blocking: []
+    stages_absent: [s5_support, s6_construction, s7_completion, s2_detail, s3_boundary, s4_services]

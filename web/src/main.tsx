@@ -12,6 +12,13 @@ import "./styles.css";
 import "./cockpit.css";
 import { applyTheme, readStoredTheme } from "./theme";
 import { App } from "./App";
+// Trace quiets the surface chrome, so it loads after App's stylesheets.
+import "./trace.css";
+import "./trace-profile.css";
+import "./trace-procurement.css";
+import "./trace-pages.css";
+// Last, so its sizes hold over every surface stylesheet App imports.
+import "./sizing.css";
 
 applyTheme(readStoredTheme());
 

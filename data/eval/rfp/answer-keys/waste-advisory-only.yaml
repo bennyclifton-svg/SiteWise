@@ -54,19 +54,11 @@ description: Evidence-limited peer review ends at its report; no automatic opera
   service.
 expect:
   waste-management:
-    stages_include:
-    - s1_inception
-    - s8_advisory
-    stages_absent:
-    - s2_concept
-    - s3_operational
-    - s3_cd
-    - s4_review
-    - s5_tender
-    - s6_contractor
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s8_advisory]
+    stages_absent: [s2_concept, s3_operational, s3_cd, s4_review, s5_tender, s6_contractor, s7_completion]
     positions:
       operational: absent
       cd: absent
-      independent: O
-      postoccupation: O
+      independent: I
+      postoccupation: X

@@ -50,15 +50,16 @@ settings:
     "allowance:ca_inspections": "6"
 expect:
   architecture:
-    stages_include: [concept, schematic, planning_approval, design_development, house_documents]
-    stages_option: [bidding, construction_support]
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded,
+    # and an excluded service names no party.
+    stages_include: [concept, schematic, planning_approval, design_development, house_documents, bidding, construction_support]
     stages_absent: [brief_masterplan, planning_response, interiors, tender_traditional, for_construction, dnc_tender, regulated_design, contract_admin, post_novation]
     positions:
       house_interiors: I
       house_selections: I
       specification: I
       lodgement: X
-      water_asset: O
+      water_asset: I
       coordination: I
       tenant_fitout: absent
       signage: absent
@@ -73,7 +74,6 @@ expect:
       existing_interfaces: absent
       mixed_use_map: absent
       apartment_design: absent
-    party: {lodgement: client}
     allowances_present: [design_meetings, concept_options, client_presentations, drawing_sheets, bidding_cap, ca_inspections]
     allowances_absent: [bim_lod, qs_reviews, workshops, planning_cap]
     scale: simple

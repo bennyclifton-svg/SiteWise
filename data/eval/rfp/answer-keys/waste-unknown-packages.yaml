@@ -50,15 +50,10 @@ scenario: waste-unknown-packages
 description: Building class cannot infer which waste plans are commissioned.
 expect:
   waste-management:
-    stages_ask:
-    - s2_concept
-    - s3_operational
-    - s3_cd
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      operational: ask
-      cd: ask
-      shared: ask
-    blocking:
-    - fact:flag.waste_operational
-    - fact:flag.waste_cd
-    - fact:flag.waste_shared
+      operational: I
+      cd: I
+      shared: I
+    blocking: ['fact:flag.waste_operational', 'fact:flag.waste_cd', 'fact:flag.waste_shared']
+    stages_include: [s2_concept, s3_operational, s3_cd]

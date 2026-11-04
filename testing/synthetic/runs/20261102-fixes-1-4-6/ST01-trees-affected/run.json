@@ -1,0 +1,380 @@
+{
+  "scenario": "ST01-trees-affected",
+  "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "07b9bc6562707c67d105c9babb3aa78bef781394",
+    "app_files_modified": 115
+  },
+  "started": "20261102-fixes-1-4-6",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": null,
+      "seconds": 14.6
+    },
+    {
+      "wave": 2,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 6,
+      "seconds": 16.9
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 19.1
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.4
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Owner brief - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "7695d5fd-9f05-4ba3-b0a2-969861aae8c8",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Owner brief - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:34:56.559702+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 14 DP 1302865.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "e7da0b80-5fdc-482e-ace3-80316c22f2a6",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Planning certificate s10.7 - Lot 14 DP 1302865.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:34:56.58383+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ce951367-3878-47fc-914d-e931f392914f",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Detail and boundary survey report - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:34:56.59949+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Timing for the build.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "b996bcd4-a390-4531-a3cc-4169a8de84b3",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "RE Timing for the build.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:34:56.606324+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural services - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "be844119-892b-4c94-88e2-4c620a67d669",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Fee proposal - Architectural services - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:11.400379+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal TCE-2603.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "dc716aef-b13f-4e6e-916e-0b460c6feb7f",
+        "submission_id": "5bcdee74-aca4-4d3b-9bf1-613dc4df76cb"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Brennan Civil - stormwater fee - Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "d09767da-09ba-4ec1-a671-b37e048a433a",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Brennan Civil - stormwater fee - Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:11.457343+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Geotechnical investigation fee proposal - Ridgeback.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "57af79df-70d5-4041-bf5f-e0115e51858d",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Geotechnical investigation fee proposal - Ridgeback.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:11.463758+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "BASIX and NatHERS fee proposal - Thermacheck.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "6d36b5b4-26b8-4881-8b20-f459bdfb257d",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "BASIX and NatHERS fee proposal - Thermacheck.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:11.469391+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d18",
+      "filename": "Arborist fee proposal - Canopy Line.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "6cbce30a-7926-40da-8493-2d94a89628e5",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Arborist fee proposal - Canopy Line.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:11.481296+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Geotechnical report RG-26-0388 - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5acfd63e-a0b2-45c3-b346-88138d595fd2",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Geotechnical report RG-26-0388 - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:28.480097+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d11",
+      "filename": "Architectural design statement - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "539bdd9c-4e27-4ecd-a911-49579bf85005",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Architectural design statement - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:28.497484+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "Site plan A-101 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "1f5f8866-5342-4962-953d-e6d408fa3f01",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Site plan A-101 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:28.503199+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Site plan A-101 Rev B.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "4eeabcf2-642e-4664-8311-9ceefd738223",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Site plan A-101 Rev B.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:28.529785+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Statement of environmental effects - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "965ffe61-334e-45da-9b8f-e8746f40852a",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Statement of environmental effects - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:28.555404+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d19",
+      "filename": "Arboricultural impact assessment CLA-AIA-0927.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "52632d56-940a-447f-89e4-13753cf58d8e",
+        "project_id": "af598867-69ef-46c5-803e-48f74d7f40fe",
+        "filename": "Arboricultural impact assessment CLA-AIA-0927.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-02T12:35:28.587285+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Tax invoice RG-0418.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "07d886e8-9a20-4616-9b4b-94d0ff33d6cc",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d16",
+      "filename": "Tax invoice INV-2307 Harbourline.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "1c818e14-02be-476e-b375-633ac78b44be",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d17",
+      "filename": "TCE invoice 5521.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "a53ebf26-eb52-4c3f-aed8-7dfeb6f5ef60",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": [
+    {
+      "wave": 1,
+      "error": "ConnectionResetError"
+    }
+  ]
+}

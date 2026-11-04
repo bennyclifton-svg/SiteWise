@@ -3,7 +3,10 @@ package profile
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
 
 	"sitewise/internal/jev"
@@ -98,6 +101,8 @@ func pick(list []Candidate, id string) (Candidate, bool) {
 // default, the evidence band for a document, user for the user.
 func Build(in Input, cat *knowledge.Catalog) []Row {
 	in.Facts = readFacts(in.Facts, in.Read)
+	var implied map[string]string
+	in.Facts, implied = splitImplied(in.Facts)
 	// Defaults depend only on headers. Derivations produce determinant rows,
 	// so reconciling every source twice cannot change these header choices.
 	rows := Reconcile(scopeHeaders(in), cat)
@@ -122,6 +127,8 @@ func Build(in Input, cat *knowledge.Catalog) []Row {
 	rows = Reconcile(in, cat)
 	rows = withExistingSystems(rows, whole)
 	rows = withScope(rows, whole, suggested)
+	rows = withImpliedScope(rows, whole, implied)
+	rows = withProposedGFA(rows, whole)
 	rows = withAddressState(rows, whole)
 	// Scope suggestions are added after reconciliation and need provenance too.
 	Annotate(rows, cat)
@@ -200,8 +207,105 @@ func withScope(rows []Row, whole string, defaults []string) []Row {
 		}
 		add(leaf, r.Band)
 	}
+	// An applied works action names a system the works touch: a stair to
+	// relocate, a bathroom to upgrade. It puts the system in scope when its
+	// presence answer fell short, unless the documents state it is not
+	// included. Retain and investigate do no work on the system.
+	notIncluded := map[string]bool{}
+	for _, r := range rows {
+		if leaf, ok := strings.CutPrefix(r.Key, "sys."); ok && r.PartID == whole && strings.HasSuffix(leaf, ".presence") && r.Value == "not_included" && appliedWorkRow(r) {
+			notIncluded[strings.TrimSuffix(leaf, ".presence")] = true
+		}
+	}
+	for _, r := range rows {
+		leaf, ok := strings.CutPrefix(r.Key, "sys.")
+		if !ok || r.PartID != whole || !strings.HasSuffix(leaf, ".action") || !appliedWorkRow(r) || !scopeAction[r.Value] {
+			continue
+		}
+		leaf = strings.TrimSuffix(leaf, ".action")
+		if notIncluded[leaf] {
+			continue
+		}
+		if i, ok := byKey[scopePrefix+leaf]; ok && rows[i].Band == bandUser && rows[i].Value == scopeOut {
+			if r.Band != bandUser && rows[i].Note == "" {
+				rows[i].Note = cut("A document says the works "+r.Value+" it: "+firstExcerpt(r), maxNote)
+			}
+			continue
+		}
+		add(leaf, r.Band)
+	}
 	return rows
 }
+
+// withImpliedScope suggests the systems the documents' own words imply
+// ("ensuite" implies wet-area waterproofing). It never overrides a row:
+// the user's choice and document evidence stand, and a default keeps its band.
+func withImpliedScope(rows []Row, whole string, implied map[string]string) []Row {
+	if whole == "" || len(implied) == 0 {
+		return rows
+	}
+	have := map[string]bool{}
+	for _, r := range rows {
+		if r.PartID == whole {
+			have[r.Key] = true
+		}
+	}
+	leaves := make([]string, 0, len(implied))
+	for leaf := range implied {
+		leaves = append(leaves, leaf)
+	}
+	sort.Strings(leaves)
+	for _, leaf := range leaves {
+		if have[scopePrefix+leaf] {
+			continue
+		}
+		rows = append(rows, Row{PartID: whole, Key: scopePrefix + leaf, Value: scopeIn, Band: bandSuggest,
+			Note: cut("Implied by the documents' words: \""+implied[leaf]+"\"", maxNote)})
+	}
+	return rows
+}
+
+// withProposedGFA computes the building's GFA after the works as existing
+// plus added, when both are applied and no proposed GFA is stated or typed.
+// One unknown input leaves it unknown.
+func withProposedGFA(rows []Row, whole string) []Row {
+	const proposed, existing, added = "hdr.scale.gfa_sqm", "hdr.scale.existing_gfa_sqm", "hdr.scale.added_gfa_sqm"
+	at := map[string]int{}
+	for i, r := range rows {
+		if r.PartID == whole {
+			at[r.Key] = i
+		}
+	}
+	if i, ok := at[proposed]; ok && strings.TrimSpace(rows[i].Value) != "" {
+		return rows
+	}
+	ei, eok := at[existing]
+	ai, aok := at[added]
+	if !eok || !aok || !appliedWorkRow(rows[ei]) || !appliedWorkRow(rows[ai]) {
+		return rows
+	}
+	e, err1 := strconv.ParseFloat(strings.ReplaceAll(rows[ei].Value, ",", ""), 64)
+	a, err2 := strconv.ParseFloat(strings.ReplaceAll(rows[ai].Value, ",", ""), 64)
+	if err1 != nil || err2 != nil || e < 0 || a < 0 {
+		return rows
+	}
+	// A sum, even of two typed values, is a calculation: amber with its
+	// derivation, never the user's own word.
+	r := Row{PartID: whole, Key: proposed, Value: strconv.FormatFloat(e+a, 'f', -1, 64), Band: bandAmber,
+		Note: fmt.Sprintf("Existing %s m² plus %s m² added by the works.", rows[ei].Value, rows[ai].Value),
+		Derived: &Derived{Rule: "proposed GFA = existing GFA + added GFA", State: knowledge.StateDetermined,
+			Provenance: DerivationProvenance{Inputs: []DerivationInput{
+				{Ref: whole + "/" + existing, Origin: rows[ei].Origin, ReviewStatus: rows[ei].ReviewStatus},
+				{Ref: whole + "/" + added, Origin: rows[ai].Origin, ReviewStatus: rows[ai].ReviewStatus}}}}}
+	if i, ok := at[proposed]; ok {
+		rows[i] = r
+		return rows
+	}
+	return append(rows, r)
+}
+
+// scopeAction are the works actions that do work on a system.
+var scopeAction = map[string]bool{"new": true, "replace": true, "upgrade": true, "alter": true, "repair": true, "remove": true}
 
 func firstExcerpt(r Row) string {
 	for _, s := range r.Sources {

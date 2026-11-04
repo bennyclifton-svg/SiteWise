@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to build Residential camp and commercial kitchen (Class 3, 9b) at 1 Example Street, Example NSW.
@@ -11,52 +9,66 @@ Example Client intends to build Residential camp and commercial kitchen (Class 3
 
 Conditions that apply: Parts with different NCC classes.
 
-Information provided: Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
-
 ### 2. Scope of services
 
 Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings, schedules and design-basis records. For shared connections name the design, evidence, installation, controls, testing and acceptance owners. Resolve gaps before reliance.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+R2 sets maturity, native formats, revisions, review rounds, recipients/reliance and dates. R1 Fee by stage: Fee/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; numbered addenda/validity and authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Evidence |  | Included |  |
+|  | Brief/system map | Included |  |
+|  | Accessible asset/record review | Included |  |
+|  | Connections/levels/capacity/easements | Included |  |
+|  | Evidence gaps | Included |  |
+| S2 Investigation |  | Included |  |
+|  | Selected tracing/CCTV/flow/logging/sampling | Included |  |
+|  | Access/isolation/reinstatement, limits | Included |  |
+|  | Upgrades separate | Included |  |
+| S3 Concept |  | Included |  |
+|  | Brief/options/preliminary demands | Included |  |
+|  | Source/storage/treatment, spatial/access and cost inputs | Included |  |
+| S4 Authority |  | Included |  |
+|  | Selected servicing plans/water-efficiency inputs | Included |  |
+|  | Applications/roles/tracker and bounded responses | Included |  |
+|  | Coordinate utility connections and approvals. Coordinate utility boundaries, build-over and sewer-proximity requirements and applications. Water Services Coordinator services are separately appointed. | Included |  |
+| S5 Design |  | Included |  |
+|  | Selected calculations/schedules | Included |  |
+|  | Levels/routes/plant/controls/penetrations/access/overflow/safety | Included |  |
+|  | Design potable and hot water services. Size pipework and water heaters for demand, pressure and flow; provide backflow protection, temperature control and metering. | Included |  |
+|  | Design and select domestic tanks and pumps. Size and select domestic storage tanks, pumps, boosters, controls and refill connections. Fire tanks and pumps are separate. | Included |  |
+|  | Design rainwater collection and reuse. Design collection, storage and reuse connections; agree quality, demand and irrigation supply point with the landscape designer. | Included |  |
+|  | Design connections for alternative water supplies. Design connections to specified river, carted or other supplies; agree source quality, reliability and treatment boundaries. | Included |  |
+|  | Design sanitary plumbing and sewer connections. Size sanitary pipework and vents, set grades and coordinate sewer connections. Treatment and trade waste are separate. | Included |  |
+|  | Design onsite sewage treatment. Design the treatment system to agreed inflows, effluent quality and capacity; coordinate the boundary with hydraulic reticulation. | Excluded |  |
+|  | Design trade-waste drainage and discharge controls. Identify contaminants; design arrestors and pretreatment and prepare discharge-approval inputs. Confirm the receiving system requirements. | Included |  |
+|  | Design roof and terrace drainage. Size primary and overflow drainage; coordinate levels, capacity and the handover from downpipes to below-ground civil drainage. | Included |  |
+|  | Design site stormwater and detention. Design site pits, detention and overland flow paths, including easements and discharge points. Agree the boundary with the civil engineer. | Excluded |  |
+|  | Design gas and specialist-fluid services. Design pipework, connections and controls for specified demand; medical, laboratory and process systems require a competent specialist. | Included |  |
+|  | Select plumbing fixtures. Select fixtures and fittings; coordinate hydraulic demands and connections. Normally selected by the architect. | Excluded |  |
+|  | Design fire-water systems and fire strategy. Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate shared water connections. | Excluded |  |
+|  | Coordinate hydraulic design with other disciplines. Coordinate penetrations, supports, fire stopping, waterproofing, power, controls and condensate connections; specialists retain their design. | Included |  |
+|  | Design staged and temporary hydraulic services. Design temporary supplies and staged connections, including tenancy meters, shutdowns, access and acceptance arrangements. | Included |  |
+| S6 Tender |  | Included |  |
+|  | Traditional complete design | Included |  |
+|  | D&C intent/remaining design owner | Included |  |
+|  | Drawings/specs/calculations/RFIs/addenda | Included |  |
+|  | Prepare hydraulic design declarations. Prepare and lodge applicable design declarations; confirm jurisdiction, competent author and lodgement responsibilities. | Included |  |
+| S7 Later design | Not part of this appointment | Excluded | — |
+| S8 Support | Not part of this appointment | Excluded | — |
+| S9 Witness | Not part of this appointment | Excluded | — |
+| S10 Defects | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Water supply and storage — Design potable and hot water services. Size pipework and water heaters for demand, pressure and flow; provide backflow protection, temperature control and metering. | X |  |  |  |
-| Design and select domestic tanks and pumps. Size and select domestic storage tanks, pumps, boosters, controls and refill connections. Fire tanks and pumps are separate. | X |  |  |  |
-| Design rainwater collection and reuse. Design collection, storage and reuse connections; agree quality, demand and irrigation supply point with the landscape designer. | X |  |  |  |
-| Design connections for alternative water supplies. Design connections to specified river, carted or other supplies; agree source quality, reliability and treatment boundaries. | X |  |  |  |
-| Sewerage and trade waste — Design sanitary plumbing and sewer connections. Size sanitary pipework and vents, set grades and coordinate sewer connections. Treatment and trade waste are separate. | X |  |  |  |
-| Design onsite sewage treatment. Design the treatment system to agreed inflows, effluent quality and capacity; coordinate the boundary with hydraulic reticulation. By treatment designer, not yet engaged |  |  | X |  |
-| Design trade-waste drainage and discharge controls. Identify contaminants; design arrestors and pretreatment and prepare discharge-approval inputs. Confirm the receiving system requirements. | X |  |  |  |
-| Stormwater drainage — Design roof and terrace drainage. Size primary and overflow drainage; coordinate levels, capacity and the handover from downpipes to below-ground civil drainage. | X |  |  |  |
-| Design site stormwater and detention. Design site pits, detention and overland flow paths, including easements and discharge points. Agree the boundary with the civil engineer. By civil engineer, not yet engaged |  |  | X |  |
-| Gas and specialist fluids — Design gas and specialist-fluid services. Design pipework, connections and controls for specified demand; medical, laboratory and process systems require a competent specialist. | X |  |  |  |
-| Coordination and approvals — Select plumbing fixtures. Select fixtures and fittings; coordinate hydraulic demands and connections. Normally selected by the architect. By the architect |  |  | X |  |
-| Design fire-water systems and fire strategy. Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate shared water connections. By fire services consultant, not yet engaged |  |  | X |  |
-| Coordinate hydraulic design with other disciplines. Coordinate penetrations, supports, fire stopping, waterproofing, power, controls and condensate connections; specialists retain their design. | X |  |  |  |
-| Coordinate utility connections and approvals. Coordinate utility boundaries, build-over and sewer-proximity requirements and applications. Water Services Coordinator services are separately appointed. | X |  |  |  |
-| Design staged and temporary hydraulic services. Design temporary supplies and staged connections, including tenancy meters, shutdowns, access and acceptance arrangements. | X |  |  |  |
-| Prepare hydraulic design declarations. Prepare and lodge applicable design declarations; confirm jurisdiction, competent author and lodgement responsibilities. | X |  |  |  |
-
-### 3. Scope by stage and fee proposal
-
-R2 sets maturity, native formats, revisions, review rounds, recipients/reliance and dates.  R1 Fee by stage: Fee/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; numbered addenda/validity and authorised signatory. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Evidence — Included | Brief/system map; accessible asset/record review; connections/levels/capacity/easements; evidence gaps |  |  |  |
-| S2 Investigation — Included | Selected tracing/CCTV/flow/logging/sampling; access/isolation/reinstatement, limits; upgrades separate |  |  |  |
-| S3 Concept — Included | Brief/options/preliminary demands; source/storage/treatment, spatial/access and cost inputs |  |  |  |
-| S4 Authority — Included | Selected servicing plans/water-efficiency inputs; applications/roles/tracker and bounded responses |  |  |  |
-| S5 Design — Included | Selected calculations/schedules; levels/routes/plant/controls/penetrations/access/overflow/safety |  |  |  |
-| S6 Tender — Included | Traditional complete design; D&C intent/remaining design owner; drawings/specs/calculations/RFIs/addenda |  |  |  |
-| S7 Later design — Option | Complete design/alternatives/construction issue; retained duties and separate novation terms |  |  |  |
-| S8 Support — Option | Submittal/RFI reviews; before-backfill/lining, penetration/fire-stop/waterproofing/plant hold points; records |  |  |  |
-| S9 Witness — Option | Review selected tests, flushing/disinfection, as-builts/O&M and training; witness retests. Trades execute tests; no unseen-work certification. |  |  |  |
-| S10 Defects — Option | Deferred tests/visits/monitoring; operating prerequisites/period, closure/residual items |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -101,6 +113,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Inputs/providers/versions/dates: fixtures/occupancy/equipment, authority/levels/tests/source quality, civil/OSD/treatment/fire/operator; methods/checks/gates/isolation/temporary supply/test criteria/closure. |
 | R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence/liability/reliance/IP/termination/novation. |
 | R9 Reimbursables | Authority/Water Services Coordinator/surveys/CCTV/tests/lab/access/isolation/make-good/specialists/travel: quantities/payer/markup/GST/approval; no duplicate fees. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

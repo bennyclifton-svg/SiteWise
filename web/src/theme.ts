@@ -13,9 +13,9 @@ export function isColorTheme(value: unknown): value is ColorTheme {
 export function readStoredTheme(): ColorTheme {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return isColorTheme(stored) ? stored : "dark";
+    return isColorTheme(stored) ? stored : "light";
   } catch {
-    return "dark";
+    return "light";
   }
 }
 

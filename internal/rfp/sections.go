@@ -97,11 +97,40 @@ func (b *builder) project() {
 		b.add("project", "rfp:project:conditions", "", b.conditionLines(), nil, map[string]any{"conditions": b.r.Conditions})
 	}
 	for _, row := range rest {
-		b.add("project", "rfp:project:"+row.Key, "", row.Label+": "+row.Text, nil, map[string]any{"row": row})
+		if row.Key != "information" {
+			b.add("project", "rfp:project:"+row.Key, "", row.Label+": "+row.Text, nil, map[string]any{"row": row})
+		}
 	}
+	b.transmittal()
 	if b.r.Budget != "" {
 		b.add("project", BudgetBlockID, "Construction budget", "$"+formatNumber(b.r.Budget)+" "+b.budgetBasis(), nil, map[string]any{"budget": b.r.Budget})
 	}
+}
+
+func (b *builder) transmittal() {
+	_, disciplines := vocabLabels()
+	rows := [][]string{}
+	ids := []string{}
+	for _, item := range b.r.Transmittal {
+		var basis struct {
+			Sources []map[string]string `json:"sources"`
+		}
+		if json.Unmarshal(item.Basis, &basis) != nil || len(basis.Sources) == 0 {
+			continue
+		}
+		source := basis.Sources[0]
+		if label := disciplines[source["discipline"]]; label != "" {
+			source["discipline"] = label
+		}
+		rows = append(rows, []string{source["document_number"], source["title"], source["revision"], source["date"], source["discipline"]})
+		ids = append(ids, item.ID)
+	}
+	text := ""
+	// Keep explicitly authored information as a note alongside the schedule.
+	if b.r.Fields["information"].Value != "" {
+		text = b.r.Fields["information"].Value
+	}
+	b.add("project", "rfp:project:information", "Transmittal", text, doc([]string{"Doc number", "Title", "Rev", "Date", "Discipline"}, rows), map[string]any{"document_ids": ids})
 }
 
 // grid lays the project grid out in the Profile card's three columns, each

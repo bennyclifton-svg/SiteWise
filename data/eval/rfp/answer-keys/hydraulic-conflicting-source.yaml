@@ -82,11 +82,12 @@ description: Conflicting source/treatment, trade and declarations cannot be gues
 snapshot: false
 expect:
   hydraulic-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      rainwater: ask
-      alternative_sources: ask
-      treatment: ask
-      trade: ask
-      declarations: ask
-      continuation: O
+      rainwater: I
+      alternative_sources: I
+      treatment: I
+      trade: I
+      declarations: I
+      continuation: X
       process: X

@@ -631,6 +631,19 @@ def check_scope_defaults(rel: str, doc: dict, taxonomy: dict, systems: dict, dep
         if entry.get("category") not in categories:
             report.error(where, f"unknown building category {entry.get('category')}")
         leaves(where, entry.get("systems"))
+    seen_terms = set()
+    for term in doc.get("implied_by") or []:
+        where = f"{rel} [implied_by {term.get('id')}]"
+        if not term.get("id") or not str(term.get("label", "")).strip() or term.get("id") in seen_terms:
+            report.error(where, "implied term needs a unique id and a label")
+        seen_terms.add(term.get("id"))
+        try:
+            re.compile(str(term.get("pattern") or ""))
+        except re.error as exc:
+            report.error(where, f"pattern does not compile: {exc}")
+        if not str(term.get("pattern") or "").strip():
+            report.error(where, "pattern is required")
+        leaves(where, term.get("systems"))
 
 
 def predicate_determinants(pred) -> set:

@@ -60,16 +60,9 @@ description: New office CC/principal-certifier package has no advisory appointme
   certification remains independent.
 expect:
   bca-certification:
-    stages_include:
-    - b1_preliminary
-    - b2_construction_approval
-    - b3_construction
-    - b4_occupation
-    stages_absent:
-    - a1_inception
-    - a2_planning
-    - a3_tender
-    - a4_construction
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+    stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction]
     positions:
       statutory_functions: I
       existing_assessment: absent
@@ -77,16 +70,7 @@ expect:
       staged_occupation: absent
       fire_referrals: absent
       residential_evidence: absent
-      extra_visits: O
-    role:
-    - statutory
-    - independence
-    role_absent:
-    - advisory
-    allowances_present:
-    - cc_packages
-    - oc_packages
-    party:
-      specialist_design: specialist
-      other_approvals: project lead
-      supervision: owner
+      extra_visits: I
+    role: [statutory, independence]
+    role_absent: [advisory]
+    allowances_present: [cc_packages, oc_packages]

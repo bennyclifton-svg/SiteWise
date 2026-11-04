@@ -1,0 +1,19 @@
+T01 New detached house (cdc-pathway)
+  Procurement [scored]: matched 6/10, missed 4 (0 built in, 4 known gaps), extra 0, false positives 4
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical; consultant.town_planner
+  Cost plan [scored]: matched 22/34, missed 12 (0 built in, 12 known gaps), extra 0, false positives 6, fabricated amounts 0 (from documents 10, typed 0)
+    false positives: Electrical; Hydraulic; Mechanical; Active fire protection; DA fees and contributions; Construction certificate and certifier fees
+  Program [scored]: skeleton sk.generic (expected sk.new-traditional-da), matched 49/81, missed 32 (9 built in, 23 known gaps), extra 17, false positives 0, wrong stage 1; links holds 39, violated 4, unknown 0, unscored 47; orphans 3, cycles 0
+    missed built in: Lodge services applications; Excavate and inspect footings; Under-slab sanitary drainage; Reinforcement inspection before slab pour; Reinforce and pour slab; Stand wall frames (+3 more)
+    violated: Install erosion and sediment controls after Establish the site; Lay brick veneer after Install windows and external doors; Wrap and clad external walls after Install windows and external doors; Install stormwater drainage after Install gutters and downpipes
+  RFPs: found 6/9 (0 built-in missing), not expected present 1, extra 3; expect ok 90, new failures 99, known differences 38, fixed 1; must_include missing 28 (unknown 1); must_not_include present 5 (known 7)
+    consultant.architect: stage.planning_response; stage.house_documents; stage.brief_masterplan; stage.dnc_tender; stage.regulated_design; stage.post_novation (+21 more)
+    consultant.structural: stage.tender_traditional; stage.construction_documents; stage.authority_asset; stage.dnc_tender; stage.post_novation; position.inspection_schedule (+10 more)
+    consultant.civil: stage.detailed_tender; stage.dnc_tender; stage.post_novation; position.norbe; position.osd_new; position.osd_existing (+16 more)
+    consultant.geotechnical: stage.g4_planning; blocking.allowance:groundwater; blocking.allowance:reports; blocking.fact:flag.geotech_ass; blocking.fact:flag.geotech_asset_exposure; blocking.fact:flag.geotech_civil_parameters (+11 more)
+    consultant.surveyor: position.access; blocking.allowance:control; blocking.allowance:features; blocking.allowance:issues; blocking.allowance:visits; blocking.fact:flag.staged (+15 more)
+    consultant.certifier: stage.b2_construction_approval; stage.b3_construction; stage.b4_occupation; stage.b1_preliminary; stage.a4_construction; blocking.allowance:duration_months (+23 more)
+    consultant.basix: missing
+    consultant.landscape: missing
+    consultant.quantity_surveyor: missing
+    consultant.town_planner: not_expected

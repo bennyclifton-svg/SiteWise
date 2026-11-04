@@ -1,3 +1,4 @@
+import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { Pending } from "./Activity";
 // One report, full width, opened from a Procurement row. Sources open beside
 // the value; edits stay visibly protected. Assembly and last-completed consent
@@ -20,7 +21,7 @@ const referenceNames = { E: "Evidence", U: "User input", C: "Calculation", A: "A
 const staleText = (reason: string) => staleNames[reason] ?? "Saved sources or report rules changed";
 const staleNames: Record<string,string> = { not_assembled: "Draft not yet assembled", reading_pending: "Document reading is pending", reading_failed: "Document reading stopped", saved_profile: "Project profile needs updating", package_retired: "This package is retired", packages: "Package or scope changed", works: "Work items changed", delivery: "Delivery records changed", profile_inputs: "Project inputs changed" };
 
-export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: string; tick: number; onBack: () => void; onSignedOut: () => void }) {
+export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { transmittal?: TransmittalSelection; reportId: string; tick: number; onBack: () => void; onSignedOut: () => void }) {
   const [issueDate, setIssueDate] = useState(localDate);
   // null until the user ticks or clears it: a consultant RFP prints the
   // budget by default (owner decision, 13 October 2026); a tender to
@@ -32,6 +33,13 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
   const [issueVersion, setIssueVersion] = useState(0);
   useEffect(() => { setIssuing(false); setIssueVersion(0); setIssueDate(localDate()); setDiscloseBudget(null); setAcceptStale(false); setStaleReason(""); }, [reportId]);
   const [view, setView] = useState<ReportView | null>(null);
+  const selectionReport = useRef("");
+  useEffect(() => {
+    if (!view?.draft || !transmittal || selectionReport.current === reportId) return;
+    const block = view.draft.sections.flatMap(s => s.blocks ?? []).find(b => b.id === "rfp:project:information");
+    transmittal.onSelectDocuments((block?.basis?.document_ids ?? []) as string[]);
+    selectionReport.current = reportId;
+  }, [view, reportId, transmittal]);
   const discloseBudget = () => discloseChoice ?? view?.report.kind === "rfp";
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -73,6 +81,12 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
     reportApi.read(reportId).then(async next => {
       if (!stopped && !next.draft && next.issues.length === 0 && !next.stale.includes("package_retired")) {
         await reportApi.ensure(reportId);
+        return reportApi.read(reportId);
+      }
+      // Older drafts predate the structured transmittal. Refresh once to
+      // populate it from saved documents, preserving report settings and wording.
+      if (!stopped && next.rfp && next.draft && !next.stale.includes("package_retired") && !next.draft.sections.flatMap(s => s.blocks ?? []).find(b => b.id === "rfp:project:information")?.table) {
+        await reportApi.refresh(reportId, true);
         return reportApi.read(reportId);
       }
       return next;
@@ -183,12 +197,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
-        <header className="report-toolbar"><div><h2>{view.report.title}</h2><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</div><div className="report-refresh">{!!view.stale.length && draft && <span className="report-stale" role="status" title="Refresh keeps protected wording and flags changed sources.">{view.stale.map((reason, i) => <span key={reason}>{i > 0 && " · "}<span>{staleText(reason)}</span></span>)}</span>}{view.rfp && draft && <a className="btn" href={submissionApi.responseFormURL(view.report.id)} download title="An Excel form with a row for every fee item and a table for each returnable schedule. Proposals returned on it are read row by row.">Response form</a>}<button type="button" className="btn" disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()}>{busy ? <Pending delayed>Saving…</Pending> : draft ? "Refresh draft" : "Assemble draft"}</button></div></header>
-        {view.rfp && <>
-          {draft?.sections.find(s => s.id === "issue_dates")?.blocks.filter(b => b.edited || b.source_missing).map(blockView)}
-          <RfpReleaseDates controls={view.rfp} busyKey={busy || !!busyKey || !!editor ? "busy" : ""} onWrite={writeSetting} />
-          <SectionMarkers controls={view.rfp} section="issue_dates" busyKey={busyKey} onWrite={writeSetting} onJump={jump} />
-        </>}
+        <header className="report-toolbar"><div><h2>{view.rfp ? <>{view.report.title.replace(/^RFP\s*[—–-]\s*/, "RFP ")} {draft && <span className="rfp-version">Version {draft.version}</span>}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div><div className="report-refresh">{!!view.stale.length && draft && <span className="report-stale" role="status" title="Refresh keeps protected wording and flags changed sources.">{view.stale.map((reason, i) => <span key={reason}>{i > 0 && " · "}<span>{staleText(reason)}</span></span>)}</span>}{view.rfp && draft && <a className="btn" href={submissionApi.responseFormURL(view.report.id)} download title="An Excel form with a row for every fee item and a table for each returnable schedule. Proposals returned on it are read row by row.">Response form</a>}<button type="button" className="btn" disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()}>{busy ? <Pending delayed>Saving…</Pending> : draft ? "Refresh draft" : "Assemble draft"}</button></div></header>
         {view.rfp_suggestion && <div className="report-notice" role="status"><strong>This package looks like {view.rfp_suggestion.title.toLowerCase()}</strong><p>Use the {view.rfp_suggestion.title.toLowerCase()} RFP, built from the reviewed golden set, instead of the generic one? This records the package's discipline; the package title alone never changes the scope.</p><div className="report-actions"><button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => void confirmDiscipline()}>Use the {view.rfp_suggestion.title.toLowerCase()} RFP</button></div></div>}
         {view.rfp && <RfpStages reportId={reportId} tick={tick} onChanged={() => setReload(n => n + 1)} onSignedOut={onSignedOut} />}
         {!!view.issues?.length && <section className="report-notice" aria-label="Issued reports"><h3>Issued reports</h3><ul>{view.issues.map(item => <li key={item.id}><a href={`/api/reports/${reportId}/versions/${item.id}/file`}>Download issue {item.number} — {item.reporting_date}</a></li>)}</ul><p>Issued PDFs retain their saved sources and wording.</p></section>}
@@ -203,14 +212,23 @@ export function Reports({ reportId, tick, onBack, onSignedOut }: { reportId: str
             ? <section className="report-section" key={section.id}>
               <h3 id={`rs-${section.id}`}>{section.title}</h3>
               <SectionMarkers controls={view.rfp} section="project" busyKey={busyKey} onWrite={writeSetting} onJump={jump} />
-              <ProjectPage blocks={section.blocks ?? []} controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump} renderBlock={blockView} />
+              <ProjectPage transmittal={transmittal} blocks={section.blocks ?? []} controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} />
+            </section>
+            : view.rfp && section.id === "transmittal"
+            ? <section className="report-section" key={section.id}>
+              <h3 id={`rs-${section.id}`}>{section.title}</h3>
+              <RfpTransmittal block={section.blocks?.find(b => b.id === "rfp:project:information")} selection={transmittal} busy={!!busyKey} onWrite={writeSetting} />
             </section>
             : <section className="report-section" key={section.id}>
             {view.rfp && editable.has(section.id) ? <div className="report-section-head"><h3 id={`rs-${section.id}`}>{section.title}</h3><button type="button" className="btn btn-small" aria-expanded={openEdits.has(section.id)} aria-controls={`rfp-edit-${section.id}`} aria-label={`${openEdits.has(section.id) ? "Done editing" : "Edit"} ${section.title}`} disabled={!!editor} onClick={() => toggleEdit(section.id)}>{openEdits.has(section.id) ? "Done" : "Edit"}</button></div> : <h3>{section.title}</h3>}
             {view.rfp && <SectionMarkers controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} onJump={jump} />}
             {view.rfp && editable.has(section.id) && openEdits.has(section.id) && <div id={`rfp-edit-${section.id}`}><RfpSectionEditor controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} /></div>}
             {(section.blocks ?? []).map(blockView)}</section>)}
-          {view.rfp && <RfpIssue controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump}>{issueForm(draft.version, view.rfp.decisions.length > 0)}</RfpIssue>}
+          {view.rfp && <RfpIssue controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump}>
+            {draft.sections.find(s => s.id === "issue_dates")?.blocks.filter(b => b.edited || b.source_missing).map(blockView)}
+            <RfpReleaseDates controls={view.rfp} busyKey={busy || !!busyKey || !!editor ? "busy" : ""} onWrite={writeSetting} />
+            {issueForm(draft.version, view.rfp.decisions.length > 0)}
+          </RfpIssue>}
           </div>
         </div>}
       </>}

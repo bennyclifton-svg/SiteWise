@@ -49,9 +49,9 @@ test("evidence whose stage was deleted is an orphan; evidence on a live row is n
 });
 
 test("the review banner names each kind of change with its count (plan 7.4)", () => {
-  expect(reviewWords({ add: 3, remove: 1, rename: 2, duration: 0, link: 0 }, 6)).toBe("Scope and procurement changed: 3 to add, 1 to remove, 2 renamed.");
-  expect(reviewWords({ add: 0, remove: 0, rename: 0, duration: 1, link: 2 }, 3)).toBe("Scope and procurement changed: 1 duration changed, 2 links changed.");
-  expect(reviewWords(null, 1)).toBe("Scope and procurement changed: 1 change.");
+  expect(reviewWords({ add: 3, remove: 1, rename: 2, duration: 0, link: 0 }, 6)).toBe("Profile or Procurement changed: 3 to add, 1 to remove, 2 renamed.");
+  expect(reviewWords({ add: 0, remove: 0, rename: 0, duration: 1, link: 2 }, 3)).toBe("Profile or Procurement changed: 1 duration changed, 2 links changed.");
+  expect(reviewWords(null, 1)).toBe("Profile or Procurement changed: 1 change.");
 });
 
 test("only PDF, DOCX and XLSX files are imported", () => {

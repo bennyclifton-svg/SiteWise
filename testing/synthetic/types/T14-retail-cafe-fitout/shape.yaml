@@ -1,0 +1,659 @@
+schema: sitewise-synthetic-shape/1
+type_id: T14
+slug: retail-cafe-fitout
+name: Retail or café fit-out (kitchen, grease trap)
+reviewed: false
+state: NSW
+# Base: a café of about 120 m2 fitted out in a vacant ground-floor shop in a single-storey 1960s strip of
+# shops on a Sydney local main street. The previous use was a non-food shop, so a DA is lodged for the
+# food and drink premises use, the kitchen exhaust and the signage. Commercial kitchen with an exhaust hood
+# discharging through the tenancy's own roof, a new in-ground grease arrestor, an accessible unisex WC,
+# about 36 seats inside. All-electric cooking. Small designer-led team: an interior designer leads, the
+# tenant (café operator) is the client, the landlord approves the design, a shopfitter builds under a
+# lump-sum contract, and the services trades design and certify their own work.
+# Every yes/no/partial value is quoted: bare yes/no are YAML 1.1 booleans.
+profile:
+  hdr.building_class: commercial
+  hdr.subclass: food_beverage
+  hdr.work_type: refurb
+  hdr.cond.planning: da
+  hdr.cond.procurement_route: traditional
+  hdr.cond.quality_level: mid
+  hdr.cond.operational_constraints: vacant
+  hdr.cond.stakeholder_complexity: single_owner
+  hdr.cond.access_constraints: urban_constrained
+  hdr.cond.environmental_sensitivity: standard
+  hdr.scale.gfa_sqm: 120
+  hdr.scale.existing_gfa_sqm: 120
+  hdr.scale.added_gfa_sqm: 0
+  hdr.scale.seats: 36
+  hdr.scale.kitchen_sqm: 25
+  hdr.scale.storeys: 1
+  det.ncc_class: ["6"]
+  det.state: NSW
+  det.existing_building: true
+  det.existing_building_year: 1965
+  det.heritage_status: none
+  det.sprinklered: false
+  det.bushfire_prone_land: false
+  det.flood_hazard: false
+  det.potentially_contaminated_land: false
+  det.acid_sulfate_soils_mapped: false
+  det.gas_supply: none
+  det.sewer_connection: reticulated
+  det.water_supply_source: reticulated
+  fact.contract_form: abic
+  fact.contract_basis: lump_sum
+  proj.regulated_design: "no"
+  # RFP flags set explicitly so unknowns do not turn excluded rows into priced options.
+  flag.cl46: "no"
+  flag.panel: "no"
+  flag.community: "no"
+  flag.staged: "no"
+  flag.multi_building: "no"
+  flag.architect_lodges: "no"
+  flag.sustainability_target: "no"
+  flag.country: "no"
+  flag.basement: "no"
+  flag.excavation_adjoining: "no"
+  flag.authority_asset: "no"
+  flag.arborist_tree_impacts: "no"
+  flag.public_road: "no"
+  flag.heavy_vehicles: "no"
+  flag.state_road: "no"
+  flag.tfnsw_referral: "no"
+  flag.fire_vulnerable_occupants: "no"
+  flag.fire_special_hazards: "no"
+  flag.fire_specialist_systems: "no"
+
+# Values the app derives or cannot set through PUT /profile (no profile_group); not inputs.
+expected_derived:
+  - {key: det.commercial_kitchen, value: true, source: "knowledge/determinants.yaml commercial_kitchen", note: "no profile_group and no triggers, so it can be neither set nor read; rule.as1668-1.kitchen-exhaust-fire-rated-duct and rule.water-authority.trade-waste-agreement gate on it and therefore never apply"}
+  - {key: det.trade_waste_use, value: true, source: "knowledge/determinants.yaml trade_waste_use", note: "no profile_group and no triggers; same effect as commercial_kitchen"}
+  - {key: det.energy_compliance_pathway, value: section_j_dts, source: "knowledge/determinants.yaml energy_compliance_pathway", note: "Section J applies to the new lighting and air-conditioning of a Class 6 fit-out (verified: false); no profile_group, so not settable"}
+  - {key: det.occupant_load, note: "seats plus staff drive the NCC sanitary facility count (rule.ncc.sanitary-facility-quantities); no profile_group, so not settable; the scenario states seats and staff numbers"}
+
+# Facts the scenario's documents must state; the scenario author picks the value.
+scenario_inputs:
+  - {key: proj.budget_stated, note: "stated in the tenant's brief; amount chosen by the scenario author; spreads by the commercial_fitout split", phrasing: "Fit-out budget: $<amount> excluding GST, excluding kitchen equipment"}
+  - {key: proj.owner_supply_stated, note: "kitchen equipment is supplied by the tenant direct from a commercial kitchen supplier", phrasing: "Owner supply: commercial kitchen equipment, coffee machine and grinders, loose furniture and smallwares"}
+  - {key: det.existing_building, note: "the determinant triggers only on the words 'existing building'", phrasing: "The works are a fit-out of an existing building: a ground-floor shop in a single-storey strip of shops"}
+  - {key: det.existing_building_year, note: "the trigger needs 'built in <year>' or 'year built'", phrasing: "The building was built in <year>"}
+  - {key: det.ncc_class, note: "never derived from the subclass; must be read from the certifier's or designer's report", phrasing: "Building classification: Class 6 (café)"}
+  - {key: det.heritage_status, note: "stated as the enumerated none on the s10.7 planning certificate (verified: false)", phrasing: "The land is not a heritage item and is not within a heritage conservation area"}
+  - {key: hdr.cond.planning, note: "the DA is named in the brief and the planner's or designer's letter", phrasing: "A development application will be lodged with council for the change of use to a café, the kitchen exhaust and the signage"}
+  - {key: det.gas_supply, note: "base is all-electric cooking; the enumerated none must be stated", phrasing: "There is no gas supply to the tenancy and none is proposed; all cooking equipment is electric"}
+
+work_items:
+  - {system: site.demolition, action: remove, why: "Strip out the previous retail fit-out: shelving, ceiling, floor coverings and redundant services"}
+  - {system: site.signage, action: new, why: "Fascia and under-awning signs; in the DA unless exempt"}
+  - {system: site.waste-storage, action: new, why: "Bin storage for general waste, recycling and food organics at the rear, to the DA waste management plan"}
+  - {system: envelope.windows-doors, action: alter, why: "New shopfront glazing and an accessible entry door"}
+  - {system: envelope.roof-coverings, action: alter, why: "Roof penetration, flashing and fan plinth for the kitchen exhaust"}
+  - {system: interiors.walls-linings, action: new, why: "Kitchen walls lined with smooth, impervious, washable finishes (FSANZ Standard 3.2.3, AS 4674; verified: false); WC partitions"}
+  - {system: interiors.ceilings, action: new, why: "Sealed, washable ceiling over the kitchen; feature ceiling to the dining area"}
+  - {system: interiors.floor-finishes, action: new, why: "Impervious, slip-resistant, coved kitchen floor; dining floor finish"}
+  - {system: interiors.tiling, action: new, why: "Accessible WC and kitchen wall tiling"}
+  - {system: interiors.wet-area-waterproofing, action: new, why: "Accessible WC and the kitchen floor graded to floor wastes"}
+  - {system: interiors.joinery, action: new, why: "Front counter, coffee bar, display, back bar and banquettes"}
+  - {system: interiors.internal-doors, action: new, why: "WC door and kitchen door"}
+  - {system: interiors.painting, action: new, why: "Internal painting"}
+  - {system: interiors.ffe, action: new, why: "Commercial kitchen equipment, coffee machine and refrigerated display; loose furniture. The scenario documents must state: supplied and installed by the tenant's kitchen supplier, outside the contract (provider owner), or it double counts with the owner-supply line"}
+  - {system: fire-passive.penetrations, action: new, why: "Fire-stop service penetrations through the walls separating the tenancy from its neighbours"}
+  - {system: fire-active.portable-extinguishers, action: new, why: "Extinguishers and a fire blanket at the cooking line (AS 2444; verified: false)"}
+  - {system: fire-active.emergency-lighting, action: new, why: "Exit signs and emergency lighting (AS 2293.1; verified: false)"}
+  - {system: mechanical.local-exhaust, action: new, why: "Kitchen exhaust hood, grease filters, duct and roof fan with vertical discharge (AS 1668.2; verified: false); WC exhaust"}
+  - {system: mechanical.ventilation, action: new, why: "Make-up air to the kitchen so the hood works and doors are not pressurised"}
+  - {system: mechanical.air-conditioning, action: new, why: "Split or ducted air-conditioning to the dining area"}
+  - {system: hydraulic.trade-waste, action: new, why: "In-ground grease arrestor, trade waste drainage from sinks and dishwasher, sampling point; Sydney Water permit"}
+  - {system: hydraulic.sanitary, action: alter, why: "New floor wastes, sinks, hand basins and the accessible WC on the existing sewer connection"}
+  - {system: hydraulic.cold-water, action: alter, why: "Water to sinks, hand basins, dishwasher, coffee machine and ice machine"}
+  - {system: hydraulic.hot-water, action: new, why: "Commercial hot-water unit sized for the dishwasher and hand basins"}
+  - {system: hydraulic.backflow-prevention, action: new, why: "Containment device at the meter and individual protection on the coffee and ice machines"}
+  - {system: electrical.switchboards, action: upgrade, why: "New tenancy distribution board for the kitchen load"}
+  - {system: electrical.cabling-wiring, action: alter, why: "Dedicated circuits for kitchen equipment, coffee machine and refrigeration"}
+  - {system: electrical.lighting, action: new, why: "Dining and kitchen lighting; Section J lighting power (verified: false)"}
+  - {system: comms-security.structured-cabling, action: new, why: "Point-of-sale, data and Wi-Fi points"}
+  - {system: access-egress.accessible-facilities, action: new, why: "Accessible unisex WC to AS 1428.1 (verified: false)"}
+  - {system: access-egress.accessible-access, action: alter, why: "Accessible entry and path of travel from the street to the accessible WC (Premises Standards affected part; verified: false)"}
+  - {system: access-egress.egress-doors, action: alter, why: "Entry door doubles as the exit; hardware and swing"}
+
+procurement:
+  - {discipline: consultant.interior_design, kind: services, need: always, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[4]", why: "Design lead: concept, DA drawings, fit-out documentation, landlord submissions, tender; an architect is an alternative, not an addition"}
+  - {discipline: consultant.certifier, kind: services, need: always, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "CC for the fit-out, principal certifier, inspections, fire safety schedule and certificate, OC for the new use; does the NCC and access assessment on a job this size. Engaged at concept: on a change of use the B1 preliminary assessment (fire safety and access upgrade risk) must come before DA lodgement"}
+  - {discipline: consultant.town_planner, kind: services, need: optional, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[0]", why: "SEE and plan of management for the change of use; the designer often writes the SEE for a simple café DA"}
+  - {discipline: consultant.hazmat, kind: services, need: usually, built_in: "no", why: "Refurbishment asbestos survey of a 1965 building before strip-out, unless the landlord's asbestos register already covers the tenancy (WHS Regulation; verified: false); no package rule"}
+  - {discipline: none, kind: supply, need: usually, built_in: "no", why: "Commercial kitchen designer, usually the equipment supplier: layout, equipment schedule, hood size and services loads; no discipline id (data/intake/disciplines.json); supplier.* rows are refused by DisciplinePackage. Recorded as a gap"}
+  - {discipline: trade.main_works, kind: works, need: always, built_in: "partial", source: "internal/procurement/proposed.go ProposeHeadContract", why: "Shopfitter on a lump-sum contract; kitchen exhaust, plumbing (grease arrestor) and electrical are design-and-construct subcontracts under it; proposed only from gaps on accepted work items. Under the traditional route the proposal carries install lines only; design of mechanical.local-exhaust, hydraulic.trade-waste and electrical stays a gap (BuilderDesigns false)"}
+
+not_expected_procurement:
+  - {discipline: consultant.architect, app_label: "Architect", app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "One design lead. The interior designer leads a small café fit-out; an architect replaces the designer, it is never added to it"}
+  - {discipline: consultant.bca, app_label: "BCA", app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "The certifier assesses a single-tenancy fit-out; a separate BCA consultant is needed only for a fire upgrade or performance solution (trigger bca-upgrade-on-change-of-use)"}
+  - {discipline: consultant.mechanical, app_label: "Mechanical", app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]; scope_additions[2]", why: "Also re-suggested by scope_additions[2] from any mechanical.* item. Kitchen exhaust through the tenancy's own roof is designed and certified by the exhaust subcontractor; an engineer is needed only for a riser through other floors (trigger exhaust-riser-through-building)"}
+  - {discipline: consultant.hydraulic, app_label: "Hydraulic", app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]; scope_additions[3]", why: "Also re-suggested by scope_additions[3] from any hydraulic.* item. The licensed plumber designs the drainage, sizes the grease arrestor and makes the Sydney Water application; a hydraulic engineer only when the arrestor has no room (trigger grease-arrestor-location-constrained)"}
+  - {discipline: consultant.electrical, app_label: "Electrical", app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]; scope_additions[4]", why: "Also re-suggested by scope_additions[4] from any electrical.* item or fire-active.emergency-lighting. Design-and-install by the electrician, including the distribution board and Section J lighting"}
+  - {discipline: consultant.fire_services, app_label: "Fire Services", app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "An unsprinklered single-storey shop needs only extinguishers, a fire blanket, exit signs and emergency lighting, installed by the electrician and an extinguisher supplier"}
+  - {discipline: consultant.access, app_label: "Access", app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "With a level entry the certifier assesses the accessible WC and path of travel; an access consultant only for a step entry or hardship claim (trigger step-at-entry). Also suggested by scope_additions[5]"}
+
+cost_plan:
+  # fees and charges
+  - {line: "DA fees and contributions", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml da-fees", why: "DA and notification fees and the s7.12 levy on the cost of works where the council plan applies one (verified: false)"}
+  - {line: "Construction certificate and certifier fees", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml cc-fees", why: "Statutory CC and OC fees; the certifier's professional fee belongs on one line only"}
+  - {line: "Service authority connection fees", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml service-authority", why: "Generic line; on this job it holds little unless the water meter or sewer junction changes"}
+  - {line: "Sydney Water trade wastewater permit and charges", section: fees_and_charges, built_in: "no", why: "Application and ongoing trade waste charges for a food business; no starter line names Sydney Water"}
+  - {line: "Sydney Water Tap in approval fee", section: fees_and_charges, built_in: "no", why: "Building plan approval before the CC (verified: false); separate from the trade wastewater permit"}
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "Only when the cost of works reaches the levy threshold (verified: false); the scenario budget decides. Paid before the CC"}
+  - {line: "Council food premises inspection and registration fees", section: fees_and_charges, built_in: "no", why: "Council environmental health inspection before trading; NSW Food Authority notification"}
+  - {line: "Landlord's design review and base-building contractor fees", section: fees_and_charges, built_in: "no", why: "Most leases charge the tenant for the landlord's review of fit-out drawings and any base-building contractor attendance"}
+  - {line: "Council permits during works (skip bin, footpath occupancy)", section: fees_and_charges, built_in: "no", why: "Shopfront works on a main street need a skip bin and footpath occupancy permit; no hoarding on the base job"}
+  # consultants
+  - {line: "Interior designer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[4]", aliases: ["Interior Design"], why: "Fee line from the adopted package"}
+  - {line: "Certifier", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Professional fee; the app also adds P05, a double-count risk"}
+  - {line: "Town planner (optional)", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[0]", why: "Optional; the designer may write the SEE"}
+  - {line: "Commercial kitchen designer", section: consultants, built_in: "no", why: "Kitchen layout, equipment schedule and services loads; often bundled with the equipment supply; no discipline id"}
+  - {line: "Hazardous materials survey", section: consultants, built_in: "no", why: "Refurbishment asbestos survey before strip-out; no package rule"}
+  # construction
+  - {line: "Preliminaries and builder's margin", section: construction, built_in: "no", why: "No line; a stated budget spreads preliminaries pro rata"}
+  - {line: "Strip-out and make good", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml", why: "A QS shows strip-out as its own first line; the app folds site.demolition into site works"}
+  - {line: "Site works and external works", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 01", why: "Signage, bin store, and the strip-out the app folds in; the commercial_fitout split gives it no budget share"}
+  - {line: "Building envelope", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 04", why: "Shopfront glazing, entry door, roof penetration; the commercial_fitout split gives it no budget share"}
+  - {line: "Interiors and finishes", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 05", why: "Partitions, linings, ceilings, floors, WC, joinery, painting"}
+  - {line: "Joinery: front counter, coffee bar and back bar", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml overrides interiors.joinery", why: "Split out only when a trade.joinery_kitchens package exists"}
+  - {line: "Passive fire protection", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 06", why: "Fire stopping of penetrations"}
+  - {line: "Active fire protection", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 07", why: "Extinguishers, fire blanket, exit signs and emergency lighting; a QS often carries the emergency lighting in electrical"}
+  - {line: "Mechanical services", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 08", why: "Kitchen exhaust hood, duct and fan, make-up air, air-conditioning, WC exhaust"}
+  - {line: "Hydraulic services", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 09", why: "Grease arrestor, trade waste drainage, sanitary, hot water, backflow; the commercial_fitout split gives hydraulic 2%, far below a café's share (split verified: false)"}
+  - {line: "Electrical services", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 10", why: "Distribution board, kitchen circuits, lighting"}
+  - {line: "Communications and security", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 11", why: "POS and data cabling"}
+  - {line: "Accessible sanitary facilities and hearing augmentation", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 13", why: "Accessible unisex WC; itemised child of access and egress"}
+  - {line: "Accessible paths, TGSIs and braille/tactile signage", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 13", why: "Accessible entry and path of travel; itemised child"}
+  - {line: "Egress doors and hardware", section: construction, built_in: "yes", source: "knowledge/costs/elements.yaml code 13", why: "Entry and exit door hardware; itemised child"}
+  - {line: "Provisional sums and PC items", section: construction, built_in: "no", why: "Allowances for finishes not yet selected and for existing-services upgrades found on opening up"}
+  # contingency and other
+  - {line: "Design contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml design-contingency", why: "Always"}
+  - {line: "Construction contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml construction-contingency", why: "Carries latent conditions in an old shop: sewer depth, power capacity, asbestos"}
+  - {line: "Escalation", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml escalation", why: "Always"}
+  - {line: "Exclusions", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml exclusions", why: "Always"}
+  - {line: "Owner supply items (kitchen equipment, coffee machine, furniture)", section: contingency, built_in: "partial", source: "internal/store/cost_budget.go applyBriefFigures", aliases: ["Owner supply: commercial kitchen equipment"], why: "Only when proj.owner_supply_stated is read; the biggest owner cost on a café"}
+
+# Lines the app produces that the answer key does not expect; a scorer should report them, not miss them.
+not_expected_cost_plan:
+  - {line: "Access (consultant fee)", app_label: "F01 Access", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Adopted suggestion on cost-plan prepare"}
+  - {line: "Architect (consultant fee)", app_label: "F02 Architect", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Adopted suggestion; doubles the design lead"}
+  - {line: "BCA (consultant fee)", app_label: "F03 BCA", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Adopted suggestion; duplicates the certifier's assessment"}
+  - {line: "Electrical (consultant fee)", app_label: "F05 Electrical", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Adopted suggestion on cost-plan prepare"}
+  - {line: "Fire Services (consultant fee)", app_label: "F06 Fire Services", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Adopted suggestion on cost-plan prepare"}
+  - {line: "Hydraulic (consultant fee)", app_label: "F07 Hydraulic", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Adopted suggestion on cost-plan prepare"}
+  - {line: "Mechanical (consultant fee)", app_label: "F09 Mechanical", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Adopted suggestion on cost-plan prepare"}
+
+program:
+  skeleton: sk.refurb-traditional-da
+  activities:
+    # investigation
+    - {label: "Review the lease, landlord's fit-out guide and base-building information", stage: investigation, fragment: null, after: [], built_in: "no", why: "Sets the landlord's works versus tenant's works, approval steps, nominated contractors and make-good"}
+    - {label: "Measure the existing building", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "Measure-up of the shop"}
+    - {label: "Hazardous-materials survey", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", aliases: ["Asbestos refurbishment survey"], why: "1965 building; before strip-out"}
+    - {label: "Trace existing services", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "Sewer junction depth and route, water meter size, supply capacity, roof route for the exhaust"}
+    - {label: "Planning certificate and permissible use check", stage: investigation, fragment: null, after: [], built_in: "no", why: "s10.7 certificate (verified: false), zone permits food and drink premises, prior consents, heritage"}
+    - {label: "Sydney Water sewer diagram and trade waste pre-check", stage: investigation, fragment: null, after: ["Trace existing services"], built_in: "no", why: "Finds whether a grease arrestor can drain to the sewer by gravity and where it can sit"}
+    # concept design
+    - {label: "Confirm the brief", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Review the lease, landlord's fit-out guide and base-building information"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Menu, seats, hours, equipment, budget"}
+    - {label: "Commercial kitchen layout and equipment schedule", stage: concept_design, fragment: null, after: ["Confirm the brief"], built_in: "no", why: "Kitchen designer or equipment supplier; fixes the hood, arrestor and electrical loads"}
+    - {label: "Kitchen exhaust concept and discharge location for the DA", stage: concept_design, fragment: null, after: ["Commercial kitchen layout and equipment schedule"], built_in: "no", why: "Kitchen designer or an exhaust contractor engaged early: hood size, duct route, fan position, discharge height and distance to neighbours; council assesses odour and discharge at DA"}
+    - {label: "Prepare the concept design", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Confirm the brief", "Measure the existing building"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Layout and look"}
+    - {label: "Client review of the concept", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Prepare the concept design", "Commercial kitchen layout and equipment schedule"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Tenant approval"}
+    - {label: "Landlord's approval of the concept design", stage: concept_design, fragment: null, after: ["Client review of the concept"], built_in: "no", why: "Lease condition; landlord also signs owner's consent for the DA"}
+    - {label: "Develop the design", stage: concept_design, fragment: fr.design-development-fitout, after: ["Landlord's approval of the concept design", "Trace existing services", "Hazardous-materials survey", "Planning certificate and permissible use check"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.design-development-fitout", why: "Design development"}
+    # approval documentation
+    - {label: "Prepare DA drawings, statement of environmental effects, plan of management and waste management plan", stage: approval_documentation, fragment: null, after: ["Develop the design", "Sydney Water sewer diagram and trade waste pre-check", "Kitchen exhaust concept and discharge location for the DA"], built_in: "no", why: "No approval-documentation fragment exists for fit-out (only 1a, 2, 7b, 9b)"}
+    - {label: "Landlord signs owner's consent for the DA", stage: approval_documentation, fragment: null, after: ["Prepare DA drawings, statement of environmental effects, plan of management and waste management plan"], built_in: "no", why: "The DA cannot be lodged without the land owner's consent"}
+    # approvals
+    - {label: "Lodge the DA", stage: approvals, fragment: fr.da-lodgement, after: ["Landlord signs owner's consent for the DA"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-lodgement", aliases: ["Lodge the application"], why: "NSW Planning Portal"}
+    - {label: "Neighbour notification", stage: approvals, fragment: fr.da-exhibition, after: ["Lodge the DA"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-exhibition", aliases: ["Public exhibition"], why: "Neighbours often object to odour, noise and hours"}
+    - {label: "DA assessment and determination", stage: approvals, fragment: fr.da-assessment, after: ["Neighbour notification"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.da-assessment", aliases: ["Assessment"], why: "Includes council's environmental health review of the kitchen"}
+    - {label: "Apply for the Sydney Water trade wastewater permit", stage: construction_documentation, fragment: null, after: ["Prepare fit-out documentation"], built_in: "no", why: "Needs the arrestor size and kitchen fixture list; the permit must be in place before discharge"}
+    # construction documentation
+    - {label: "Prepare fit-out documentation", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["DA assessment and determination"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Drawings, finishes schedule, specification, kitchen and services performance briefs"}
+    - {label: "Coordinate consultant documentation", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["DA assessment and determination"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Kitchen designer, consent conditions, landlord criteria"}
+    - {label: "Landlord's approval of the fit-out documentation", stage: construction_documentation, fragment: null, after: ["Prepare fit-out documentation"], built_in: "no", why: "Lease condition before works"}
+    - {label: "Client sign-off for tender", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["Prepare fit-out documentation", "Coordinate consultant documentation", "Landlord's approval of the fit-out documentation"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Sign-off"}
+    # procurement
+    - {label: "Assemble the tender package", stage: procurement, fragment: fr.tender-docs-fitout, after: ["Client sign-off for tender"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-docs-fitout", why: "Select tender to three shopfitters"}
+    - {label: "Tender period", stage: procurement, fragment: fr.tender-period-fitout, after: ["Assemble the tender package"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-period-fitout", why: "Tender"}
+    - {label: "Evaluate tenders", stage: procurement, fragment: fr.tender-evaluation-fitout, after: ["Tender period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-evaluation-fitout", why: "Price and program"}
+    - {label: "Award the contract", stage: procurement, fragment: fr.contract-award, after: ["Evaluate tenders"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.contract-award", why: "Lump-sum fit-out contract"}
+    - {label: "Contractor's kitchen exhaust and plumbing design certificates", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "Exhaust design to AS 1668.2 and the grease arrestor sizing come from the subcontractors (verified: false)"}
+    - {label: "Order kitchen equipment, exhaust canopy and fan", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "Long lead: fabricated stainless canopy and imported equipment"}
+    - {label: "Procure and deliver the tenancy switchboard", stage: procurement, fragment: fr.switchboard-major, after: ["Award the contract"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.switchboard-major", aliases: ["Procure and deliver"], why: "Long lead; the app places it in construction"}
+    - {label: "Sydney Water Tap in building plan approval", stage: procurement, fragment: null, after: ["DA assessment and determination", "Prepare fit-out documentation"], built_in: "no", why: "DA consents routinely require the approved plans to go through Sydney Water Tap in before the CC; new in-ground arrestor and drainage in an old strip (verified: false); separate from the trade wastewater permit"}
+    - {label: "Pay long service levy", stage: procurement, fragment: null, after: ["DA assessment and determination"], built_in: "no", why: "Only when the cost of works reaches the levy threshold (verified: false); the scenario budget decides. Before the CC"}
+    - {label: "Construction certificate", stage: procurement, fragment: fr.construction-certificate, after: ["Contractor's kitchen exhaust and plumbing design certificates", "Pay long service levy", "Sydney Water Tap in building plan approval"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.construction-certificate", why: "On a fit-out with design-and-construct services the CC waits for the subcontractors' design certificates after award; the app puts it in approvals, before documentation and tender"}
+    - {label: "Appoint principal certifier and give notice of commencement", stage: procurement, fragment: null, after: ["Construction certificate"], built_in: "no", why: "Before any work"}
+    # construction
+    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-fitout, after: ["Appoint principal certifier and give notice of commencement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-fitout", why: "Site start; neighbours keep trading"}
+    - {label: "Build the bin store", stage: construction, fragment: null, after: ["Establish the site"], built_in: "no", why: "site.waste-storage has no fragment"}
+    - {label: "Isolate services and protect adjacent areas", stage: construction, fragment: fr.strip-out-fitout, after: ["Establish the site"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.strip-out-fitout", why: "Needs a site.demolition item with action remove; implied_by strip-out gives the refurb default alter"}
+    - {label: "Soft-strip partitions, ceilings and services", stage: construction, fragment: fr.strip-out-fitout, after: ["Isolate services and protect adjacent areas"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.strip-out-fitout", why: "As above"}
+    - {label: "Make good retained structure and services", stage: construction, fragment: fr.strip-out-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.strip-out-fitout", why: "As above"}
+    - {label: "Install grease arrestor and trade waste drainage", stage: construction, fragment: null, after: ["Soft-strip partitions, ceilings and services"], built_in: "no", why: "hydraulic.trade-waste has no fragment; saw-cut slab, excavate, set the arrestor, drain"}
+    - {label: "Sanitary drainage rough-in", stage: construction, fragment: fr.hydraulic-sanitary-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-fitout", aliases: ["Rough-in"], why: "Floor wastes, sinks, WC"}
+    - {label: "Alter cold water", stage: construction, fragment: fr.hydraulic-cold-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-cold-fitout", why: "Water to fixtures and equipment"}
+    - {label: "Electrical rough-in", stage: construction, fragment: fr.electrical-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.electrical-fitout", aliases: ["Rough-in"], why: "Kitchen circuits"}
+    - {label: "Install the tenancy switchboard", stage: construction, fragment: fr.switchboard-major, after: ["Procure and deliver the tenancy switchboard", "Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.switchboard-major", aliases: ["Install"], why: "New distribution board"}
+    - {label: "Install kitchen exhaust ductwork, roof penetration and fan", stage: construction, fragment: null, after: ["Soft-strip partitions, ceilings and services", "Order kitchen equipment, exhaust canopy and fan"], built_in: "no", why: "mechanical.local-exhaust has no fragment; fr.ventilation-fitout is on mechanical.ventilation"}
+    - {label: "Install kitchen make-up air", stage: construction, fragment: fr.ventilation-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.ventilation-fitout", aliases: ["Alter exhaust ventilation"], why: "Fires from the mechanical.ventilation item; the app label speaks of exhaust"}
+    - {label: "Alter ductwork and pipework", stage: construction, fragment: fr.mechanical-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "Air-conditioning rough-in"}
+    - {label: "Frame and line partitions", stage: construction, fragment: fr.partitions-fitout, after: ["Sanitary drainage rough-in", "Electrical rough-in"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.partitions-fitout", why: "Kitchen and WC walls"}
+    - {label: "Seal service penetrations", stage: construction, fragment: fr.fire-stopping, after: ["Sanitary drainage rough-in", "Electrical rough-in", "Install kitchen exhaust ductwork, roof penetration and fan"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fire-stopping", why: "Class 6"}
+    - {label: "Fire-stopping inspection before concealment", stage: construction, fragment: null, after: ["Seal service penetrations"], built_in: "yes", source: "knowledge/clusters/fire/interfaces.yaml if.fire-stopping-before-concealment", aliases: ["Hold point: a location-based inspection record for concealed fire stopping"], why: "holdPointRows: fire-passive.penetrations rows before interiors rows (internal/program/generate.go)"}
+    - {label: "Waterproof amenities", stage: construction, fragment: fr.wet-area-fitout, after: ["Frame and line partitions"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.wet-area-fitout", why: "Accessible WC and kitchen floor"}
+    - {label: "Tile amenities", stage: construction, fragment: fr.tiling-fitout, after: ["Waterproof amenities"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tiling-fitout", why: "WC and kitchen walls"}
+    - {label: "Install ceilings", stage: construction, fragment: fr.ceilings-fitout, after: ["Frame and line partitions", "Fire-stopping inspection before concealment", "Install kitchen exhaust ductwork, roof penetration and fan", "Install kitchen make-up air", "Alter ductwork and pipework"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.ceilings-fitout", why: "Services above the ceiling first"}
+    - {label: "Install the shopfront and entry door", stage: construction, fragment: null, after: ["Make good retained structure and services"], built_in: "no", why: "Windows fragments exist only for 1a, 2, 7b and 9b"}
+    - {label: "Hang doors", stage: construction, fragment: fr.internal-doors-fitout, after: ["Frame and line partitions"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.internal-doors-fitout", why: "WC and kitchen doors"}
+    - {label: "Procure and deliver joinery", stage: construction, fragment: fr.joinery-fitout, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.joinery-fitout", why: "Shop drawings and manufacture; long lead"}
+    - {label: "Install joinery", stage: construction, fragment: fr.joinery-fitout, after: ["Procure and deliver joinery", "Frame and line partitions", "Lay floor finishes"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.joinery-fitout", why: "Counter and coffee bar"}
+    - {label: "Install structured cabling", stage: construction, fragment: fr.comms-fitout, after: ["Frame and line partitions"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.comms-fitout", why: "POS and data"}
+    - {label: "Install luminaires", stage: construction, fragment: fr.lighting-fitout, after: ["Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lighting-fitout", why: "Lighting"}
+    - {label: "Paint the fit-out", stage: construction, fragment: fr.painting-fitout, after: ["Install joinery", "Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.painting-fitout", why: "Painting"}
+    - {label: "Lay floor finishes", stage: construction, fragment: fr.floors-fitout, after: ["Waterproof amenities", "Install ceilings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.floors-fitout", why: "The coved kitchen floor goes down before joinery plinths and equipment; the app orders floors after painting (fr.floors-fitout attach), a known difference"}
+    - {label: "Install the commercial kitchen equipment and canopy", stage: construction, fragment: null, after: ["Lay floor finishes", "Install kitchen exhaust ductwork, roof penetration and fan", "Order kitchen equipment, exhaust canopy and fan"], built_in: "no", why: "interiors.ffe has no fragment; tenant-supplied equipment set in by the supplier"}
+    - {label: "Install or alter the local hot-water unit", stage: construction, fragment: fr.hydraulic-hot-fitout, after: ["Soft-strip partitions, ceilings and services"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-hot-fitout", why: "Commercial hot-water unit"}
+    - {label: "Sanitary fit-off", stage: construction, fragment: fr.hydraulic-sanitary-fitout, after: ["Install the commercial kitchen equipment and canopy", "Tile amenities"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-fitout", aliases: ["Fit off"], why: "Connect sinks, dishwasher, hand basins"}
+    - {label: "Electrical fit-off", stage: construction, fragment: fr.electrical-fitout, after: ["Install the commercial kitchen equipment and canopy", "Install luminaires"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.electrical-fitout", aliases: ["Fit off"], why: "Connect equipment"}
+    - {label: "Install accessible WC fixtures and grab rails", stage: construction, fragment: null, after: ["Tile amenities"], built_in: "no", why: "access-egress.accessible-facilities has no fragment"}
+    - {label: "Install exit signs, emergency lighting, extinguishers and fire blanket", stage: construction, fragment: null, after: ["Install ceilings"], built_in: "no", why: "fire-active.emergency-lighting and .portable-extinguishers have no fragment"}
+    - {label: "Install signage", stage: construction, fragment: null, after: ["Install the shopfront and entry door"], built_in: "no", why: "site.signage has no fragment"}
+    - {label: "Commission the altered system", stage: construction, fragment: fr.mechanical-fitout, after: ["Alter ductwork and pipework", "Electrical fit-off"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "Air-conditioning commissioning"}
+    - {label: "Commission and air-flow test the kitchen exhaust and make-up air", stage: construction, fragment: null, after: ["Install the commercial kitchen equipment and canopy", "Electrical fit-off"], built_in: "no", why: "Hood capture and air-flow balance; feeds the fire safety and mechanical certificates"}
+    - {label: "Backflow test and plumbing compliance certificates", stage: construction, fragment: null, after: ["Sanitary fit-off"], built_in: "no", why: "Testable device report and certificate of compliance (verified: false)"}
+    # completion
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lay floor finishes", "Sanitary fit-off", "Electrical fit-off", "Install accessible WC fixtures and grab rails", "Install exit signs, emergency lighting, extinguishers and fire blanket", "Install signage", "Commission the altered system", "Commission and air-flow test the kitchen exhaust and make-up air", "Backflow test and plumbing compliance certificates", "Install grease arrestor and trade waste drainage", "Build the bin store"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.practical-completion", why: "PC"}
+    - {label: "Final fire safety certificate", stage: completion, fragment: null, after: ["Install exit signs, emergency lighting, extinguishers and fire blanket", "Commission and air-flow test the kitchen exhaust and make-up air"], built_in: "no", why: "For the new essential fire safety measures on the fire safety schedule (EP&A (Development Certification and Fire Safety) Regulation 2021; verified: false)"}
+    - {label: "Final inspection by the principal certifier", stage: completion, fragment: null, after: ["Practical completion inspection"], built_in: "no", why: "Before the OC"}
+    - {label: "Occupation certificate", stage: completion, fragment: fr.occupation-certificate, after: ["Final fire safety certificate", "Final inspection by the principal certifier"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.occupation-certificate", why: "Needed for the new use before trading"}
+    - {label: "Sydney Water grease arrestor inspection and trade wastewater permit", stage: completion, fragment: null, after: ["Install grease arrestor and trade waste drainage", "Apply for the Sydney Water trade wastewater permit"], built_in: "no", why: "No discharge before the permit"}
+    - {label: "Food business notification and council food premises inspection", stage: completion, fragment: null, after: ["Practical completion inspection"], built_in: "no", why: "Council's environmental health officer checks the fit-out against FSANZ 3.2.3 before trading (verified: false)"}
+    - {label: "Handover", stage: completion, fragment: fr.handover, after: ["Occupation certificate"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.handover", why: "Keys, manuals, warranties, certificates"}
+    - {label: "Open for trade", stage: completion, fragment: null, after: ["Handover", "Sydney Water grease arrestor inspection and trade wastewater permit", "Food business notification and council food premises inspection"], built_in: "no", why: "The tenant's real milestone; rent often starts at a fixed date regardless"}
+    # defects
+    - {label: "Defects inspection", stage: defects, fragment: fr.defects-inspection, after: ["Handover"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-inspection", why: "Defects"}
+    - {label: "Defects liability period", stage: defects, fragment: fr.defects-liability-end, after: ["Defects inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Length set by the contract (verified: false)"}
+    - {label: "Final defects inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Defects liability period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Release of security"}
+
+# RFP expectations use the data/eval/rfp/answer-keys keys exactly. They state the CORRECT answer for this café.
+# app_differs is structured: {key, app, expect, why}. The app's predicted output = expect overridden by app_differs.
+rfps:
+  - discipline: consultant.interior_design
+    template: null
+    built_in: "partial"
+    source: "knowledge/reports/templates.yaml tpl.rfp-capex"
+    why: "No discipline template; the app issues the generic capital-works RFP with no scope rows"
+    must_include:
+      - "Measure-up and existing-conditions review"
+      - "Concept design and design development with the kitchen designer's layout"
+      - "DA drawings for the change of use, kitchen exhaust and signage"
+      - "Fit-out documentation, finishes schedule and specification for tender"
+      - "Food premises finishes to FSANZ Standard 3.2.3 and AS 4674 (verified: false)"
+      - "Landlord design submissions"
+      - "Performance briefs for the design-and-construct exhaust, plumbing and electrical trades"
+      - "Tender support"
+      - "Option: contract administration and site visits"
+    must_not_include: ["Base-building design", "BIM coordination", "Green Star or NABERS", "Mechanical, hydraulic or electrical engineering design", "Novation"]
+  - discipline: consultant.certifier
+    template: bca-certification
+    built_in: "partial"
+    source: "knowledge/rfp/bca-certification.yaml"
+    must_include:
+      - {text: "Preliminary assessment of the change of use, fire safety and access to the affected part", key: stage.b1_preliminary}
+      - {text: "Construction certificate assessment", key: stage.b2_construction_approval}
+      - {text: "Principal certifier services and inspections", key: stage.b3_construction}
+      - {text: "Occupation certificate and fire safety certificate", key: stage.b4_occupation}
+      - {text: "Existing building and change-of-use assessment, affected part only", key: position.existing_assessment}
+      - {text: "Option: performance solution assessment", key: position.performance_assessment}
+    must_not_include:
+      - {text: "BCA advisory stages A1 to A3 as the default appointment", key: stage.a1_inception}
+      - {text: "Residential BASIX evidence review", key: position.residential_evidence}
+      - {text: "Staged occupation", key: position.staged_occupation}
+      - {text: "Fire system referrals and witnessing", key: position.fire_referrals}
+    expect:
+      stages_include: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction]
+      positions:
+        statutory_functions: I
+        evidence_registers: I
+        existing_assessment: I
+        performance_assessment: O
+        extra_visits: O
+        specialist_design: X
+        other_approvals: X
+        supervision: X
+        residential_evidence: absent
+        classification_map: absent
+        staged_occupation: absent
+        fire_referrals: absent
+      blocking: []
+      sources:
+        - "existing_assessment I: the change of use makes the certifier decide whether the existing building needs a fire safety upgrade (verified: false)"
+    app_differs:
+      - {key: stage.a1_inception, app: ask, expect: absent, why: "no boundary resolves while bca_advisory and bca_certification are unknown (resolveBoundary sets one only on a yes), so every stage asks; data/eval/rfp/answer-keys/bca-unknown-decisions.yaml"}
+      - {key: stage.a2_planning, app: ask, expect: absent, why: "no boundary resolves while bca_advisory and bca_certification are unknown, so every stage asks"}
+      - {key: stage.a3_tender, app: ask, expect: absent, why: "no boundary resolves while bca_advisory and bca_certification are unknown, so every stage asks"}
+      - {key: stage.a4_construction, app: ask, expect: absent, why: "no boundary resolves while bca_advisory and bca_certification are unknown, so every stage asks"}
+      - {key: stage.b1_preliminary, app: ask, expect: include, why: "no boundary resolves while bca_advisory and bca_certification are unknown, so every stage asks"}
+      - {key: stage.b2_construction_approval, app: ask, expect: include, why: "no boundary resolves while bca_advisory and bca_certification are unknown, so every stage asks"}
+      - {key: stage.b3_construction, app: ask, expect: include, why: "no boundary resolves while bca_advisory and bca_certification are unknown, so every stage asks"}
+      - {key: stage.b4_occupation, app: ask, expect: include, why: "no boundary resolves while bca_advisory and bca_certification are unknown, so every stage asks"}
+      - {key: blocking.fact:flag.bca_advisory, app: blocking, expect: not blocking, why: "client-decision flag cannot be keyed, so the app blocks issue until the client decides (bca-unknown-decisions.yaml blocking)"}
+      - {key: blocking.fact:flag.bca_certification, app: blocking, expect: not blocking, why: "client-decision flag cannot be keyed, so the app blocks issue until the client decides (bca-unknown-decisions.yaml blocking)"}
+      - {key: blocking.fact:flag.bca_existing_assessment, app: blocking, expect: not blocking, why: "client-decision flag cannot be keyed, so the app blocks issue until the client decides (bca-unknown-decisions.yaml blocking)"}
+      - {key: blocking.fact:flag.bca_classification_map, app: blocking, expect: not blocking, why: "client-decision flag cannot be keyed, so the app blocks issue until the client decides (bca-unknown-decisions.yaml blocking)"}
+      - {key: blocking.fact:flag.bca_staged_occupation, app: blocking, expect: not blocking, why: "client-decision flag cannot be keyed, so the app blocks issue until the client decides (bca-unknown-decisions.yaml blocking)"}
+      - {key: blocking.fact:flag.bca_fire_referrals, app: blocking, expect: not blocking, why: "client-decision flag cannot be keyed, so the app blocks issue until the client decides (bca-unknown-decisions.yaml blocking)"}
+      - {key: blocking.fact:flag.bca_residential_evidence, app: blocking, expect: not blocking, why: "client-decision flag cannot be keyed, so the app blocks issue until the client decides (bca-unknown-decisions.yaml blocking)"}
+      - {key: blocking.allowance:plan_sets, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: blocking.allowance:reports, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: blocking.allowance:meetings, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: blocking.allowance:rfi_hours, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: blocking.allowance:solution_versions, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: blocking.allowance:visits, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: blocking.allowance:witness_events, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: blocking.allowance:duration_months, app: blocking, expect: not blocking, why: "client-owned allowance with no default and no stage gate blocks issue until the count is set (resolveAllowances, boughtNow)"}
+      - {key: position.statutory_functions, app: ask, expect: I, why: "row needs the client flag bca_certification"}
+      - {key: position.existing_assessment, app: ask, expect: I, why: "client flag bca_existing_assessment"}
+      - {key: position.residential_evidence, app: ask, expect: absent, why: "client flag bca_residential_evidence"}
+      - {key: position.classification_map, app: ask, expect: absent, why: "client flag bca_classification_map"}
+      - {key: position.staged_occupation, app: ask, expect: absent, why: "client flag bca_staged_occupation"}
+      - {key: position.fire_referrals, app: ask, expect: absent, why: "client flag bca_fire_referrals"}
+  - discipline: consultant.town_planner
+    template: town-planning
+    built_in: "partial"
+    source: "knowledge/rfp/town-planning.yaml planning_report"
+    must_include:
+      - {text: "Preliminary advice on the LEP use definition and DCP controls", key: stage.prelim_advice}
+      - {text: "Statement of environmental effects with a plan of management (hours, seats, odour, noise, waste)", key: stage.planning_report}
+      - {text: "Lodgement", key: stage.lodgement}
+      - {text: "Assessment and responses to council requests", key: stage.assessment}
+      - {text: "Planning certificate and prior consents searches", key: position.certificates}
+    must_not_include:
+      - {text: "Clause 4.6 variation request", key: stage.variation_request}
+      - {text: "Panel attendance", key: position.panel_attendance}
+      - "SSD"
+      - {text: "Specialist reports", key: position.specialist_reports}
+    expect:
+      stages_include: [prelim_advice, planning_report, lodgement, assessment, determination_review]
+      stages_option: [pre_lodgement, post_approval]
+      stages_absent: [variation_request]
+      positions: {specialist_review: I, certificates: I, compliance_matrix: I, ad_hoc_advice: I, historic_consents: O, submissions_response: O, modification: O, court: X, authority_fees: X, specialist_reports: X, panel_attendance: absent}
+      blocking: []
+      sources:
+        - "submissions_response O: café DAs draw objections on odour, noise and hours often enough to price it"
+    app_differs:
+      - {key: position.panel_attendance, app: O, expect: absent, why: "O even with flag.panel no"}
+      - {key: stage.pre_lodgement, app: include, expect: option, why: "included on any DA; optional for a small café"}
+
+triggers:
+  - id: cdc-pathway
+    label: Complying development instead of a DA
+    evidence: ["A complying development certificate will be sought under the Commercial and Industrial Alterations Code", "the certifier confirms the change of use and fit-out can be approved as complying development"]
+    negation: ["A development application will be lodged with council", "The kitchen exhaust and signage do not meet the code standards, so a DA is required"]
+    profile: [hdr.cond.planning]
+    adds:
+      program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Landlord signs owner's consent for the CDC"]
+      cost_plan: ["Contributions still payable under the CDC"]
+      rfps: [{discipline: consultant.certifier, must_include: ["CDC assessment and determination"]}]
+      authority: ["CDC by the registered certifier; neighbour notice before work (Codes SEPP; verified: false)"]
+    removes:
+      procurement: [consultant.town_planner]
+      cost_plan: ["DA fees and contributions"]
+      program: ["Prepare DA drawings, statement of environmental effects, plan of management and waste management plan", "Landlord signs owner's consent for the DA", "Lodge the DA", "Neighbour notification", "DA assessment and determination", "Construction certificate"]
+      rfps: [consultant.town_planner]
+    why: "Skeleton becomes sk.refurb-traditional-cdc. The town planner drops, because complexity_additions[0] needs da or ssd. The bca-certification RFP then blocks on cdc (unsupported_pathways), so the certifier's RFP cannot issue. cc-fees is always produced (applies_when true) and is the app line that should carry the CDC and OC fees, so it is kept, not removed, and no separate CDC fee line is added (T03 convention; the trigger schema takes plain strings, so the alias cannot be keyed). A CDC also needs the land owner's consent, so the landlord's signature stays. Under a CDC the exhaust and arrestor design must be complete before determination, so the subcontractors' design moves before tender (an early exhaust contractor or a mechanical engineer)"
+    built_in: {program: "yes", cost_plan: "partial", procurement: "yes", rfps: "no"}
+    source: "knowledge/program/fragments.yaml fr.cdc-application"
+  - id: existing-food-premises
+    label: The previous tenant was a café or takeaway with an existing grease arrestor and exhaust
+    evidence: ["The tenancy was previously operated as a café and has an existing 1,000 L grease arrestor in the rear yard", "the existing kitchen canopy and roof fan are to be retained and serviced"]
+    negation: ["The previous use was a clothing shop; there is no grease arrestor or kitchen exhaust", "No existing trade waste connection serves the tenancy"]
+    profile: []
+    adds:
+      work_items: [{system: hydraulic.trade-waste, action: alter}, {system: mechanical.local-exhaust, action: alter}]
+      cost_plan: ["Pump out, inspect and service the existing grease arrestor and exhaust"]
+      program: ["Inspect the existing grease arrestor and kitchen exhaust for reuse", "Transfer or reapply for the trade wastewater permit"]
+      authority: ["A new Sydney Water trade wastewater permit for the new operator (verified: false)"]
+    removes:
+      program: ["Install grease arrestor and trade waste drainage"]
+    why: "No profile key changes (the base value already holds). uc.existing-grease-arrestor-undersized-for-new-kitchen and uc.kitchen-exhaust-has-no-rated-riser-in-existing-shaft attach as Implications only; nothing reaches the program or cost plan"
+    built_in: {work_items: "no", cost_plan: "no", program: "no"}
+  - id: exhaust-riser-through-building
+    label: Kitchen exhaust must rise through floors above to the roof
+    evidence: ["The tenancy is on the ground floor of a three-storey shop-top building with apartments above", "the kitchen exhaust riser will run in a fire-rated shaft through levels 1 and 2 to discharge above the roof"]
+    negation: ["The tenancy is single storey and the exhaust discharges directly through its own roof", "There are no floors above the tenancy"]
+    profile: [det.rise_in_storeys, det.ncc_class, proj.regulated_design, hdr.cond.stakeholder_complexity]
+    adds:
+      procurement: [consultant.mechanical, consultant.structural, consultant.acoustic]
+      work_items: [{system: fire-passive.rated-elements, action: new}, {system: structure.alterations, action: alter}, {system: interiors.acoustic-separation, action: upgrade}]
+      cost_plan: ["Mechanical engineer", "Structural engineer", "Acoustic consultant", "Fire-rated exhaust shaft and duct"]
+      program: ["Owners corporation or landlord approval of the riser route", "Penetrate floors and build the fire-rated shaft", "Acoustic and odour assessment for the DA", "Registered design practitioner declarations before the CC"]
+      rfps: [{discipline: consultant.mechanical, must_include: [{text: "Kitchen exhaust hood, fire-rated duct and discharge design (AS 1668.1, AS 1668.2; verified: false)", key: position.kitchen}, "Make-up air", "Discharge location and odour control to the residences above"]}]
+      authority: ["Strata by-law or owners corporation approval for work on common property (Strata Schemes Management Act 2015; verified: false)", "DBP Act regulated designs and compliance declarations for work affecting the Class 2 part (owner ruling R3 applied by inference: R3 covers Class 2 buildings, and the riser through the residential floors is work on the Class 2 part; whether a ground-floor Class 6 fit-out alone is caught is verified: false and flagged for the owner)"]
+    why: "Mechanical is already suggested by baselines[3]; structural and acoustic are never suggested for a refurb. The mechanical RFP's kitchen position needs the client flag mech_kitchen and asks. Apartments above make the building partly Class 2 (det.ncc_class 2,6) and the owners corporation the stakeholder (strata). Applying R3 here is an inference for the owner to confirm. When proj.regulated_design becomes yes, the scorer should see the regulated-design RFP rows (for example architecture regulated_design, hydraulic and mechanical declarations) change"
+    built_in: {procurement: "partial", work_items: "no", cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/rfp/mechanical-services.yaml kitchen"
+  - id: grease-arrestor-location-constrained
+    label: The grease arrestor has no room in the tenancy or cannot drain by gravity
+    evidence: ["There is no rear yard; the grease arrestor must go in the basement car park on common property", "the sewer junction is too shallow for an in-ground arrestor so a pumped system is proposed"]
+    negation: ["The grease arrestor will be installed in-ground in the tenancy's rear yard and drains by gravity to the existing junction"]
+    profile: []
+    adds:
+      procurement: [consultant.hydraulic]
+      work_items: [{system: hydraulic.specialist-process, action: new}]
+      cost_plan: ["Hydraulic engineer", "Pumped trade waste system or remote arrestor"]
+      program: ["Hydraulic design and Sydney Water trade waste assessment", "Landlord or owners corporation approval of the arrestor location"]
+      rfps: [{discipline: consultant.hydraulic, must_include: [{text: "Trade waste drainage, grease arrestor sizing and discharge controls", key: position.trade}, "Sydney Water trade wastewater application"]}]
+      authority: ["Sydney Water acceptance of the arrestor location and any pumped discharge (verified: false)"]
+    why: "No profile key changes (the base value already holds). uc.shop-to-cafe-change-has-no-path-for-grease-arrestor is an Implication only. The hydraulic RFP's trade position needs the client flag hyd_trade (if_unknown option)"
+    built_in: {procurement: "yes", work_items: "no", cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/works/package_defaults.yaml baselines[2]"
+  - id: outdoor-footway-dining
+    label: Outdoor seating on the council footpath
+    evidence: ["12 outdoor seats on the footpath under a council outdoor dining approval", "tables and chairs will be placed on the footway in front of the shop"]
+    negation: ["No outdoor seating is proposed", "All seating is inside the tenancy"]
+    profile: [hdr.scale.seats]
+    adds:
+      work_items: [{system: site.public-domain, action: new}]
+      cost_plan: ["Outdoor dining application and annual footway licence fee", "Outdoor furniture, screens and planters"]
+      program: ["Apply for the council outdoor dining approval"]
+      rfps: [{discipline: consultant.interior_design, must_include: ["Outdoor dining layout plan with clear footpath width"]}]
+      authority: ["Council footway dining approval (Roads Act 1993 s125; verified: false)"]
+    why: "No generator reads outdoor seating; site.public-domain has no fragment. More seats can also raise the sanitary facility count"
+    built_in: {work_items: "no", cost_plan: "no", program: "no", rfps: "no"}
+  - id: step-at-entry
+    label: The shop entry has a step and there is no level access
+    evidence: ["There is a 180 mm step at the shopfront entry", "the floor of the shop is above the footpath and a ramp cannot fit within the tenancy"]
+    negation: ["The shop floor is level with the footpath and the entry is step-free"]
+    profile: []
+    adds:
+      procurement: [consultant.access]
+      work_items: [{system: access-egress.stairs-and-ramps, action: new}]
+      cost_plan: ["Access consultant", "Ramp, threshold and handrails"]
+      program: ["Access report and performance solution or hardship assessment"]
+      rfps: [{discipline: consultant.access, must_include: [{text: "Access review of the existing entry and the affected part", key: position.existing}, {text: "Performance solution for the entry", key: position.solutions}, {text: "Construction approval report", key: stage.s4_approval}]}]
+      authority: ["Premises Standards affected-part upgrade or unjustifiable hardship (Disability (Access to Premises - Buildings) Standards 2010; verified: false)"]
+    why: "No profile key changes (the base value already holds). Access is already suggested by baselines[3] and scope_additions[5], so the procurement claim holds; the stage s4_approval needs the client flag access_approval and asks"
+    built_in: {procurement: "yes", work_items: "no", cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/works/package_defaults.yaml scope_additions[5]"
+  - id: gas-cooking
+    label: Gas cooking equipment and a new gas meter
+    evidence: ["The wok burners and chargrill are natural gas", "a new gas meter and regulator will be installed by Jemena"]
+    negation: ["All cooking equipment is electric; there is no gas supply", "No gas is proposed"]
+    profile: [det.gas_supply]
+    adds:
+      work_items: [{system: hydraulic.gas, action: new}]
+      cost_plan: ["Gas network connection and meter fees"]
+      program: ["Apply to the gas network for a meter or upgrade", "Install consumer gas", "Gas compliance certificate"]
+      authority: ["Gas network connection; gas installation to AS/NZS 5601.1 with a compliance certificate (verified: false)"]
+    why: "fr.gas-commercial fires for class 6 with a new hydraulic.gas item; det.gas_supply itself changes nothing"
+    built_in: {work_items: "no", cost_plan: "no", program: "partial"}
+    source: "knowledge/program/fragments.yaml fr.gas-commercial"
+  - id: power-supply-upgrade
+    label: The kitchen load needs a larger electricity supply
+    evidence: ["The existing single-phase supply cannot carry the kitchen load; a three-phase upgrade is required", "Ausgrid connection application for an increased supply"]
+    negation: ["The existing three-phase supply has capacity for the kitchen load"]
+    profile: []
+    adds:
+      work_items: [{system: electrical.utility-supply, action: upgrade}]
+      cost_plan: ["DNSP connection and Level 2 service provider fees"]
+      program: ["Lodge the DNSP connection application", "Level 2 service provider upgrades the consumer mains"]
+      authority: ["Ausgrid (or the local DNSP) connection offer; Level 2 accredited service provider (verified: false)"]
+    why: "No profile key changes (the base value already holds). fr.utility-major covers classes 2, 7b and 9b only, so a class 6 supply upgrade gets no program row; long lead"
+    built_in: {work_items: "no", cost_plan: "partial", program: "no"}
+    source: "knowledge/costs/starter_lines.yaml service-authority"
+  - id: shopping-centre-tenancy
+    label: The tenancy is in a managed, sprinklered shopping centre
+    evidence: ["Shop 14 in the centre; the works must follow the centre's tenancy design criteria and fit-out guide", "the landlord's nominated fire services contractor will alter the sprinklers and detection"]
+    negation: ["The shop is a freestanding strip shop with no centre management", "The building is not sprinklered"]
+    profile: [det.sprinklered, hdr.cond.operational_constraints]
+    adds:
+      procurement: [trade.fire_services]
+      work_items: [{system: fire-active.sprinklers, action: alter}, {system: fire-active.detection, action: alter}, {system: fire-active.occupant-warning, action: alter}]
+      cost_plan: ["Landlord's nominated contractor works (sprinklers, detection, base-building connections)", "Out-of-hours works premium"]
+      program: ["Landlord's design review against the tenancy design criteria", "Alter and test sprinklers", "Alter detection and warning", "Hold point: a recorded pressure test of the sprinkler pipework", "Sprinkler isolation and impairment notices"]
+      rfps: [{discipline: consultant.certifier, must_include: [{text: "Fire system referrals and witnessing", key: position.fire_referrals}]}]
+      authority: ["Landlord's fit-out approval and base-building certification; the centre's annual fire safety statement"]
+    why: "fr.sprinklers-fitout and fr.detection-fitout fire for class 6 refurb with alter items; if.sprinkler-pressure-test-before-ceilings makes a hold point. Fire Services consultant is already suggested; the landlord's nominated trade is not (trades are never suggested)"
+    built_in: {procurement: "no", work_items: "no", cost_plan: "no", program: "partial", rfps: "partial"}
+    source: "knowledge/program/fragments.yaml fr.sprinklers-fitout"
+  - id: heritage-conservation-area
+    label: The shop is in a heritage conservation area
+    evidence: ["The site is within the Main Street Heritage Conservation Area", "the original shopfront and awning are contributory and are to be retained"]
+    negation: ["The land is not a heritage item and is not within a heritage conservation area"]
+    profile: [det.heritage_status]
+    adds:
+      procurement: [consultant.heritage]
+      cost_plan: ["Heritage consultant"]
+      program: ["Heritage referral", "Heritage impact statement"]
+      rfps: [{discipline: consultant.town_planner, must_include: ["Heritage controls for the shopfront and signage"]}]
+      authority: ["Council heritage officer review of the shopfront, signage and exhaust visibility"]
+    why: "Heritage is suggested (complexity_additions[1], no template) and fr.heritage-referral fires; town-planning scale becomes complex"
+    built_in: {procurement: "yes", cost_plan: "yes", program: "partial", rfps: "partial"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
+  - id: asbestos-found
+    label: The survey finds asbestos in the tenancy
+    evidence: ["The hazardous materials survey identified bonded asbestos in the vinyl floor tiles and the switchboard backing", "asbestos-containing fibre cement sheeting to the rear wall"]
+    negation: ["No asbestos-containing materials were identified in the areas to be disturbed"]
+    profile: []
+    adds:
+      cost_plan: ["Asbestos removal (provisional sum)", "Asbestos clearance inspection"]
+      program: ["Notify SafeWork NSW and remove asbestos", "Asbestos clearance certificate"]
+      rfps: [{discipline: consultant.interior_design, must_include: ["Asbestos removal scope shown in the strip-out documents"]}]
+      authority: ["SafeWork NSW notice before licensed removal (WHS Regulation 2017; notice period verified: false)"]
+    why: "No profile key changes (the base value already holds). cq.pre-2004-fabric-hazardous-materials-survey is an Implication only; no generator adds removal rows"
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+  - id: bca-upgrade-on-change-of-use
+    label: The change of use triggers a fire safety upgrade of the building
+    evidence: ["Council's consent requires the building to be upgraded to comply with the BCA fire safety provisions", "a BCA report identifies non-compliant fire separation between the shop and the dwelling at the rear"]
+    negation: ["The certifier confirms no upgrade of the existing building is required for the change of use"]
+    profile: []
+    adds:
+      procurement: [consultant.bca, consultant.fire_engineer]
+      work_items: [{system: fire-passive.compartments, action: upgrade}, {system: fire-active.hydrants, action: new}]
+      cost_plan: ["BCA consultant", "Fire engineer", "Fire safety upgrade works"]
+      program: ["BCA upgrade report", "Fire engineering performance solution and Fire and Rescue NSW referral"]
+      rfps: [{discipline: consultant.certifier, must_include: [{text: "Fire system referrals and witnessing", key: position.fire_referrals}, {text: "Performance-solution assessment", key: position.performance_assessment}]}]
+      authority: ["Council or certifier requires a fire safety upgrade on change of use (EP&A (Development Certification and Fire Safety) Regulation 2021; verified: false)"]
+    why: "No profile key changes (the base value already holds). BCA is already suggested by baselines[3]; the fire engineer is never suggested; fire_referrals asks on a client flag"
+    built_in: {procurement: "partial", work_items: "no", cost_plan: "partial", program: "no", rfps: "partial"}
+    source: "knowledge/works/package_defaults.yaml baselines[3]"
+  - id: liquor-licence
+    label: The café will hold an on-premises liquor licence
+    evidence: ["The operator will apply for an on-premises liquor licence for dining", "licensed to serve alcohol with meals until 10 pm"]
+    negation: ["No liquor licence is proposed; the café will not serve alcohol"]
+    profile: [hdr.scale.liquor_license_type]
+    adds:
+      cost_plan: ["Liquor licence application fees"]
+      program: ["Liquor licence application and community impact statement"]
+      rfps: [{discipline: consultant.town_planner, must_include: ["Plan of management covering licensed hours and patron numbers"]}]
+      authority: ["Liquor & Gaming NSW on-premises licence; DA consent for the licensed hours (verified: false)"]
+    why: "hdr.scale.liquor_license_type is held but no generator reads it"
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+
+  - id: residential-neighbours-acoustic
+    label: Dwellings near the exhaust fan or the trading area need an acoustic report
+    evidence: ["Dwellings adjoin the rear lane, about 8 m from the proposed roof exhaust fan", "council requires an acoustic report for the roof exhaust fan and the proposed trading hours"]
+    negation: ["There are no residential receivers near the tenancy; the strip backs onto a car park", "Council confirmed no acoustic report is required"]
+    profile: []
+    adds:
+      procurement: [consultant.acoustic]
+      cost_plan: ["Acoustic consultant", "Acoustic treatment to the exhaust fan (attenuator, enclosure)"]
+      program: ["Acoustic and odour report for the DA"]
+      authority: ["DA conditions on fan noise and trading hours; Protection of the Environment Operations Act 1997 offensive noise (verified: false)"]
+    why: "No profile key; noise_affected_site concerns noise on the site, not noise from it. An acoustic consultant is never suggested by any package rule. The common case is a single-storey strip with houses behind, not only the riser case"
+    built_in: {procurement: "no", cost_plan: "no", program: "no"}
+  - id: roof-cannot-carry-exhaust-fan
+    label: The existing roof cannot carry the exhaust fan and canopy hangers
+    evidence: ["The existing timber roof framing is not adequate for the exhaust fan and canopy hangers", "a structural engineer is to certify the fan support frame and the canopy fixings"]
+    negation: ["The fan sits on a proprietary roof plinth on the existing steel purlins, which the supplier confirms are adequate"]
+    profile: []
+    adds:
+      procurement: [consultant.structural]
+      work_items: [{system: structure.alterations, action: alter}]
+      cost_plan: ["Structural engineer", "Roof framing strengthening and fan support frame"]
+      program: ["Structural certification of fan and canopy support", "Alter and protect retained structure"]
+      authority: ["Structural design certificate for the CC (verified: false)"]
+    why: "No profile key. Refurb baselines never suggest Structural. uc.kitchen-canopy-heavier-than-existing-roof-framing is an Implication only. fr.structure-alterations fires for an alter item on refurb (app label 'Alter and protect retained structure')"
+    built_in: {procurement: "no", work_items: "no", cost_plan: "no", program: "partial"}
+    source: "knowledge/program/fragments.yaml fr.structure-alterations"
+  - id: patron-numbers-need-more-toilets
+    label: Patron numbers require separate patron toilets
+    evidence: ["60 seats inside and on the footpath", "the certifier requires separate male and female patron toilets in addition to the accessible WC"]
+    negation: ["Patrons use the accessible unisex WC, which the certifier accepts for the seat numbers", "Patron toilets are provided in the centre amenities"]
+    profile: [hdr.scale.seats]
+    adds:
+      work_items: [{system: hydraulic.sanitary, action: new}, {system: interiors.wet-area-waterproofing, action: new}]
+      cost_plan: ["Additional patron toilets"]
+      program: ["Build the patron toilets"]
+      authority: ["NCC 2022 Part F4 sanitary facility numbers for Class 6 (verified: false)"]
+    why: "rule.ncc.sanitary-facility-quantities gates on det.occupant_load, which cannot be set, so the app never derives the count; seats are held but unread"
+    built_in: {work_items: "no", cost_plan: "no", program: "no"}
+  - id: landlord-asbestos-register-covers-tenancy
+    label: The landlord's asbestos register already covers the areas to be disturbed
+    evidence: ["The landlord's current asbestos register and refurbishment survey cover the tenancy; no asbestos was found in the areas to be disturbed", "a refurbishment survey dated last year is attached to the lease disclosure"]
+    negation: ["No asbestos register is available for the building", "The landlord's register excludes areas not accessed, including the ceiling space"]
+    profile: []
+    adds:
+      program: ["Review the landlord's asbestos register and survey"]
+    removes:
+      procurement: [consultant.hazmat]
+      cost_plan: ["Hazardous materials survey"]
+      program: ["Hazardous-materials survey"]
+    why: "No profile key. Turns the base's 'usually' hazmat surveyor into a testable variant. The app never suggests hazmat, but fr.existing-conditions still adds the survey row, so the app keeps it"
+    built_in: {program: "no"}
+gaps:
+  - {area: procurement, what: "Seven of the ten suggested consultants are wrong for a small café: Architect alongside Interior Design, BCA alongside the certifier, Mechanical, Hydraulic, Electrical, Fire Services and Access. Refurb baselines do not look at size or at design-and-construct services, and scope additions re-suggest Mechanical, Hydraulic and Electrical from any services item, so a size or D&C test is needed in both rule sets", evidence: "knowledge/works/package_defaults.yaml baselines[2], baselines[3], baselines[4], scope_additions[2]-[5]"}
+  - {area: procurement, what: "Hazmat surveyor never suggested for a pre-2004 tenancy", evidence: "knowledge/works/package_defaults.yaml baselines, complexity_additions name no Hazmat"}
+  - {area: procurement, what: "Refurb gives no Structural or Acoustic consultant even when an exhaust riser crosses floors", evidence: "knowledge/works/package_defaults.yaml baselines[2], baselines[3]"}
+  - {area: scope, what: "Refurb starts with no work items, so the kitchen exhaust, grease arrestor, accessible WC and signage appear only if a document or the user adds them; implied_by kitchen adds joinery, sanitary, water and local exhaust but never hydraulic.trade-waste, and no pattern matches grease arrestor, grease trap or canopy", evidence: "knowledge/profile/scope_defaults.yaml empty_work_types; implied_by kitchen"}
+  - {area: profile, what: "det.commercial_kitchen and det.trade_waste_use have no profile_group and no triggers, so the AS 1668.1 kitchen-exhaust and trade-waste-agreement rules can never apply", evidence: "knowledge/determinants.yaml commercial_kitchen, trade_waste_use; knowledge/clusters/services-wet-air/rules.yaml rule.as1668-1.kitchen-exhaust-fire-rated-duct, rule.water-authority.trade-waste-agreement"}
+  - {area: profile, what: "No work type or condition for change of use, the key planning fact of a café in a former shop", evidence: "knowledge/profile/taxonomy.yaml work_types"}
+  - {area: program, what: "No fragments for hydraulic.trade-waste, mechanical.local-exhaust (kitchen exhaust), interiors.ffe (kitchen equipment), site.signage, site.public-domain, access-egress.accessible-facilities, fire-active.emergency-lighting or .portable-extinguishers, or shopfront glazing in a fit-out", evidence: "testing/synthetic/reference/index/program-fragments.md leaf systems with no work-item fragment"}
+  - {area: program, what: "No approval-documentation fragment for a fit-out DA, so the approval_documentation stage is empty", evidence: "knowledge/program/fragments.yaml fr.approval-docs-1a, -2, -7b, -9b only"}
+  - {area: program, what: "No rows for landlord approvals, owner's consent, Sydney Water trade wastewater permit, council food premises inspection, food business notification, fire safety certificate, notice of commencement or open for trade", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
+  - {area: program, what: "Construction certificate sits in approvals, before construction documentation and tender; a fit-out with D&C services certifies after award", evidence: "knowledge/program/fragments.yaml fr.construction-certificate; knowledge/program/skeletons.yaml sk.refurb-traditional-da"}
+  - {area: program, what: "Strip-out fragment needs action remove, but implied_by strip-out gives the refurb default alter", evidence: "knowledge/program/fragments.yaml fr.strip-out-fitout; knowledge/works/actions.yaml work_type_defaults"}
+  - {area: program, what: "Floor finishes follow painting, but a coved kitchen floor must be laid before equipment and joinery plinths", evidence: "knowledge/program/fragments.yaml fr.floors-fitout attach after fr.painting-fitout"}
+  - {area: program, what: "fr.utility-major excludes class 6, so a supply upgrade for a kitchen gets no row", evidence: "knowledge/program/fragments.yaml fr.utility-major"}
+  - {area: cost_plan, what: "commercial_fitout split is an office split: no site or envelope share, hydraulic 2%, though a café carries a grease arrestor, shopfront and signage", evidence: "knowledge/costs/budget_splits.yaml commercial_fitout"}
+  - {area: cost_plan, what: "No lines for Sydney Water trade waste, food premises inspection, landlord review fees, long service levy, strip-out as its own line or provisional sums; Certifier counted as both F-line and P05", evidence: "knowledge/costs/starter_lines.yaml; knowledge/costs/elements.yaml"}
+  - {area: rfp, what: "Interior Design has no RFP template; the design lead gets the generic capital-works RFP with no stages or positions", evidence: "testing/synthetic/reference/index/rfp-templates.md disciplines with no RFP template"}
+  - {area: rfp, what: "Certifier RFP: every stage asks until the client picks Package B, and the fact:flag.bca_* checks block issue; town-planning and bca-certification also block on cdc", evidence: "knowledge/rfp/bca-certification.yaml boundary, unsupported_pathways; data/eval/rfp/answer-keys/bca-unknown-decisions.yaml; knowledge/rfp/town-planning.yaml unsupported_pathways"}
+  - {area: procurement, what: "Traditional route with design-and-construct services subcontracts cannot be expressed: design gaps are never proposed into the head contract, so once the Mechanical and Hydraulic consultants are removed the exhaust and trade-waste design belong to no one", evidence: "internal/procurement/proposed.go ProposeHeadContract; internal/procurement/gaps.go CheckGaps"}
+  - {area: cost_plan, what: "A provider of owner on sys.interiors.ffe is not shown to stop the FF&E item being costed in Interiors and finishes as well as the owner-supply line (double count; confirm in the harness). The same applies to landlord's works with provider landlord", evidence: "internal/httpapi/profile.go provider options; internal/store/cost_budget.go applyBriefFigures"}
+  - {area: harness, what: "sys.<leaf>.provider rows cannot be written as scenario_inputs (the validator rejects sys.*), so the owner-supply and landlord's-works provider must be carried by document phrasing only", evidence: "testing/synthetic/tools/validate_shape.py _profile_key_ok"}
+  - {area: procurement, what: "No discipline id for a commercial kitchen designer or equipment supplier, and no supplier id for commercial kitchen equipment or a kitchen exhaust specialist; supplier.* rows are refused by DisciplinePackage, so the procurement row is keyed as discipline none", evidence: "data/intake/disciplines.json; internal/procurement/discipline.go DisciplinePackage"}
+  - {area: rfp, what: "Kitchen exhaust (mech_kitchen) and trade waste (hyd_trade) RFP rows depend on client flags the profile cannot read", evidence: "knowledge/rfp/mechanical-services.yaml kitchen; knowledge/rfp/hydraulic-services.yaml trade"}
+  - {area: knowledge, what: "No knowledge of FSANZ Standard 3.2.3, AS 4674, council food premises approval, footway dining, signage approval or retail lease obligations", evidence: "knowledge/clusters (grep for 4674, FSANZ and footway finds nothing)"}
+  - {area: implications, what: "Trade-waste and kitchen-exhaust unforeseen records exist but only reach Implications", evidence: "knowledge/clusters/services-wet-air/unforeseen.yaml uc.shop-to-cafe-change-has-no-path-for-grease-arrestor, uc.trade-waste-approval-delayed"}
+  - {area: harness, what: "Zero-delta trigger: liquor-licence changes nothing the app produces today (liquor_license_type has no reader)", evidence: "knowledge/profile/taxonomy.yaml food_beverage scale_fields liquor_license_type"}
+
+variants: [cdc-pathway, outdoor-footway-dining, exhaust-riser-through-building, grease-arrestor-location-constrained, step-at-entry, gas-cooking, shopping-centre-tenancy, existing-food-premises]

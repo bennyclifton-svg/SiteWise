@@ -60,22 +60,14 @@ description: New office selected design ends at tender; later work priced separa
 snapshot: true
 expect:
   mechanical-services:
-    stages_include:
-    - inception
-    - concept
-    - planning
-    - design
-    - tender
-    stages_option:
-    - continuation
-    - construction
-    - handover
-    - seasonal
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, concept, planning, design, tender]
     positions:
       hvac: I
       smoke: I
       controls: I
       existing: absent
-      witness: O
-      execution: O
+      witness: X
+      execution: X
       specialist: X
+    stages_absent: [continuation, construction, handover, seasonal]

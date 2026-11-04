@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to refurbish and fit out Occupied fit-out (Class 5) at 1 Example St, Example NSW.
@@ -11,47 +9,43 @@ Example Client intends to refurbish and fit out Occupied fit-out (Class 5) at 1 
 
 Conditions that apply: Work to an existing building; Site stays occupied or operating during the works.
 
-Information provided: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts are fixture choices.
-
 ### 2. Scope of services
 
 Independent cost advice from written instruction/complete inputs to named final output and query-period end. Estimate uncertainty is explicit; no guaranteed tender, final cost, approval or funding.
 Designers/specialists define design, compliance, retained-system adequacy and remediation; operator supplies equipment/owner costs; PM owns budget/change approval. QS prices gaps, administrator directs/certifies, advisers own tax/legal/valuation. Disclose client/contractor/lender conflicts.
 Cost basis: Confirm purpose/users; construction versus total-project boundary; currency/tax adviser, budget/date/approval, quality, measurement method, price date/location and escalation endpoints. Attach current revisions, contracts/quotes and conflicting identities/dates.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Confirm base stages, inputs and final query-period end; later services require written instruction. R1 Fee by stage: Price stages/options once: base/options/alternatives totals, fixed/time-ceiling/unit basis, quantities/GST/payments and dependent/standalone authority fees. Separate already-authorised work/ad hoc allowances. Confirm validity, numbered addenda and signatory authority. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Inception / cost basis |  | Included |  |
+|  | Reconcile brief, budget, scope/area/quantity definitions and evidence | Included |  |
+|  | Establish source, gap, risk and priced-assumption registers, reporting/program and input owners | Included |  |
+|  | Total project budget: fees/charges, off-site, FF&E, land/finance/tax; item boundaries and tax adviser agreed | Included |  |
+| S4 Design cost planning |  | Included |  |
+|  | At named milestones measure/price agreed documents | Included |  |
+|  | Coordinate services/siteworks, test value options with designers, reconcile changes/budget and risk/owner costs | Included |  |
+|  | Flag gaps before freeze | Included |  |
+|  | Construction cost plan at selected stages; measured/assumed quantities and missing specialist inputs recorded | Included |  |
+|  | Fit-out/refurb/live-site strip-out, make-good, isolation, after-hours and decanting; designers assess retained systems | Included |  |
+|  | Operator equipment/specialist operations; evidenced requirements or explicit allowances only | Included |  |
+|  | Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin | Included |  |
+|  | Life-cycle/carbon/LCA analysis; horizon/assumptions stated, designers approve performance effects; no compliance certification | Included |  |
+| S5 Procurement / tender | Not part of this appointment | Excluded | — |
+| S6 Post-contract cost advice | Not part of this appointment | Excluded | — |
+| S7 Final account | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Valuation, insurance replacement value and tax depreciation | Excluded |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts are fixture choices.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Cost planning and budget — Construction cost plan at selected stages; measured/assumed quantities and missing specialist inputs recorded | X |  |  |  |
-| Total project budget: fees/charges, off-site, FF&E, land/finance/tax; item boundaries and tax adviser agreed | X |  |  |  |
-| Fit-out/refurb/live-site strip-out, make-good, isolation, after-hours and decanting; designers assess retained systems | X |  |  |  |
-| Operator equipment/specialist operations; evidenced requirements or explicit allowances only | X |  |  |  |
-| Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin | X |  |  |  |
-| Specialist cost studies — Valuation, insurance replacement value and tax depreciation. By named valuer / insurer / tax adviser (R4) |  |  | X |  |
-| Life-cycle/carbon/LCA analysis; horizon/assumptions stated, designers approve performance effects; no compliance certification |  | X |  |  |
-| Procurement and construction advice — Tender/D&C/ECI review; normalise qualifications, PC/PS and alternatives; no novation or superintendent role |  | X |  |  |
-| Progress-claim reports; separate brief/inspection counts and administrator authority |  | X |  |  |
-| Lender reports; separate brief, inspections and reliance, never implied by progress-claim advice |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Confirm base stages, inputs and final query-period end; later services require written instruction.  R1 Fee by stage: Price stages/options once: base/options/alternatives totals, fixed/time-ceiling/unit basis, quantities/GST/payments and dependent/standalone authority fees. Separate already-authorised work/ad hoc allowances. Confirm validity, numbered addenda and signatory authority. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Inception / cost basis — Included | Reconcile brief, budget, scope/area/quantity definitions and evidence; establish source, gap, risk and priced-assumption registers, reporting/program and input owners |  |  |  |
-| S4 Design cost planning — Included | At named milestones measure/price agreed documents; coordinate services/siteworks, test value options with designers, reconcile changes/budget and risk/owner costs; flag gaps before freeze |  |  |  |
-| S5 Procurement / tender — Option | Separately select pretender estimate, BoQ/schedule, packages, clarifications/interviews/negotiation and recommendation; agree measurement rules/contractual quantity status. D&C/ECI design/risk allowances and tender-budget reconciliation |  |  |  |
-| S6 Post-contract cost advice — Option | Named contract; counted claims/variations, observations, cost reports/cashflow and forecast. Separate claimed, assessed/certified, paid, committed/disputed/forecast; reconcile PC/PS, contingency and client costs. Administrator retains powers; lender reliance separate |  |  |  |
-| S7 Final account — Option | Reconcile contract sum, variations/allowances/claims, commitments and risk; scoped retention/defects advice, unresolved disputes and final registers. Completion certification, entitlement and security release remain contract roles |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Tender/D&C/ECI review |  |  |  |
-| Service option | Progress-claim reports |  |  |  |
-| Service option | Lender reports |  |  |  |
-| Service option | Life-cycle/carbon/LCA analysis |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -94,6 +88,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Start/complete-input conditions, owners/due dates, cutoff/draft/review/final, authority/design/tender milestones, optional reporting cycle and appointment end; pauses/update triggers/consequences. |
 | R8 Insurance and compliance | Current PI $5 million (client selected), PL $20 million (client selected), workers evidence; project-selected limits before issue, claim/aggregate/expiry/exclusions and task-specific competence/registration. Old certificates establish no current cover. |
 | R9 Reimbursables | Travel/site, investigation/data access, authority/lender and specialist costs: included/allowance/unit, quantity/payer/GST/markup/approval. Identify client-direct costs; no R1 or budget duplication. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

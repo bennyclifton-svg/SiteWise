@@ -1076,6 +1076,41 @@ func (g *gen) lagDays(id string) (int, string, bool) {
 	return int(r.Typical), unit, true
 }
 
+// driverRaw is the value a per_unit or floor_cycle driver reads: the
+// determinant, or the planning value, or the library's assumed value when
+// the planning value is blank (assumed then names it).
+func (g *gen) driverRaw(d knowledge.DurationDriver) (raw, assumed string) {
+	if d.Determinant != "" {
+		return strings.TrimSpace(g.in.Values[d.Determinant]), ""
+	}
+	raw = strings.TrimSpace(g.in.Planning[d.PlanningKey])
+	if raw == "" {
+		if a, ok := g.cat.AssumedPlanning(d.PlanningKey); ok {
+			return a.Value, a.Label
+		}
+	}
+	return raw, ""
+}
+
+// driverSource records the driver value a duration was sized from, so a
+// later review can say what moved ("Gross floor area 250 m² to 300 m²").
+func (g *gen) driverSource(d knowledge.Duration) map[string]any {
+	if d.Driver == nil || (d.Basis != "per_unit" && d.Basis != "floor_cycle") {
+		return nil
+	}
+	raw, _ := g.driverRaw(*d.Driver)
+	key, label := d.Driver.PlanningKey, ""
+	if d.Driver.Determinant != "" {
+		key = d.Driver.Determinant
+	} else if pk, ok := g.cat.PlanningKey(key); ok {
+		label = pk.Label
+	}
+	if label == "" {
+		label = strings.ReplaceAll(key, "_", " ")
+	}
+	return map[string]any{"key": key, "label": label, "value": raw, "unit": d.Driver.Unit}
+}
+
 // compute feeds a reviewed row its driver: a planning value or determinant
 // for per_unit and floor_cycle, the indexed budget for time_cost. A blank
 // planning value takes the library's assumed value when it names one; the
@@ -1088,14 +1123,8 @@ func (g *gen) compute(d knowledge.Duration) (knowledge.DayRange, string, bool) {
 		if d.Driver == nil {
 			return knowledge.DayRange{}, "", false
 		}
-		raw := strings.TrimSpace(g.in.Planning[d.Driver.PlanningKey])
-		if d.Driver.Determinant != "" {
-			raw = strings.TrimSpace(g.in.Values[d.Driver.Determinant])
-		} else if raw == "" {
-			if a, ok := g.cat.AssumedPlanning(d.Driver.PlanningKey); ok {
-				raw, assumed = a.Value, a.Label
-			}
-		}
+		var raw string
+		raw, assumed = g.driverRaw(*d.Driver)
 		v, ok := new(big.Rat).SetString(raw)
 		if !ok || v.Sign() < 0 {
 			return knowledge.DayRange{}, "", false
@@ -1216,6 +1245,9 @@ func (g *gen) libraryDuration(r *Row, id string) bool {
 	}
 	low, high := int(dr.Low), int(dr.High)
 	source := map[string]any{"library": d.ID, "version": d.Version}
+	if drv := g.driverSource(d); drv != nil {
+		source["driver"] = drv
+	}
 	switch {
 	case assumed != "":
 		source["assumed"] = assumed

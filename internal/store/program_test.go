@@ -1002,3 +1002,32 @@ func TestProgramReorderAcrossStages(t *testing.T) {
 	res = apply(t, s, res.ProgramState, store.ProgramOp{Op: "link_add", PredID: approvals, SuccID: slab})
 	refuse(t, s, res.ProgramState, "ids", "remove that link first", store.ProgramOp{Op: "reorder", IDs: []string{slab}, ParentID: approvals})
 }
+
+func TestProgramWorkingWeek(t *testing.T) {
+	s, _, _ := workStore(t)
+	st := newProgram(t, s)
+	ctx := context.Background()
+	original := times(t, st, "Developed design").Finish
+	res := apply(t, s, st, store.ProgramOp{Op: "set_working_week", WorkingWeek: ip(63)})
+	if res.Program.WorkingWeek != 63 || times(t, res.ProgramState, "Developed design").Finish >= original {
+		t.Fatal("Saturday did not shorten the calendar span")
+	}
+	loaded, err := s.LoadProgram(ctx, orgA, projectA)
+	if err != nil || loaded.Program.WorkingWeek != 63 {
+		t.Fatalf("calendar not persisted: %v", err)
+	}
+	undo, err := s.UndoProgram(ctx, orgA, projectA, userA, res.Program.Version)
+	if err != nil || undo.Program.WorkingWeek != 31 || times(t, undo.ProgramState, "Developed design").Finish != original {
+		t.Fatalf("undo: %v", err)
+	}
+	redo, err := s.RedoProgram(ctx, orgA, projectA, userA, undo.Program.Version)
+	if err != nil || redo.Program.WorkingWeek != 63 {
+		t.Fatalf("redo: %v", err)
+	}
+	for _, mask := range []int{0, -1, 128} {
+		_, err := s.ApplyProgramOps(ctx, orgA, projectA, userA, redo.Program.ID, redo.Program.Version, []store.ProgramOp{{Op: "set_working_week", WorkingWeek: ip(mask)}})
+		if err == nil {
+			t.Fatalf("accepted invalid week %d", mask)
+		}
+	}
+}

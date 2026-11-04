@@ -1,0 +1,57 @@
+/* Trace: Cost Plan, Program and Specifications. The same sheet grammar as the
+   Profile and Procurement: page titles in one size, column heads ruled rather
+   than banded, group rows in sentence case, the open tab underlined in pencil. */
+
+/* Page titles */
+.costs-head h1,
+.cockpit-scroll .costs-head h1,
+.program-head h1,
+.spec-header h1,
+.spec-header h2 { color: var(--sw-text-primary); font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+
+/* ---------- Cost Plan ---------- */
+
+.cockpit-scroll .costs { padding: 0 0 40px; }
+.costs-tabs { border-bottom: 1px solid var(--trace-rule); }
+.costs-tab { border-bottom: 0; color: var(--sw-text-tertiary); }
+.costs-tab[aria-selected="true"] {
+  color: var(--sw-text-primary);
+  background: url("./assets/marks/pencil-graphite.svg") left 6px bottom 2px / 480px 6px repeat-x;
+  background-size: 480px 6px;
+}
+.costs-tab-count { background: var(--sw-surface-inset); }
+
+.cockpit-scroll .cost-grid thead th {
+  border-top: 1.5px solid var(--trace-rule-strong);
+  border-bottom: 1px solid var(--sw-border-strong);
+  background: var(--trace-sheet);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.cockpit-scroll .cost-grid .cost-group th {
+  padding-top: 18px;
+  background: var(--trace-sheet);
+  color: var(--sw-text-primary);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.cockpit-scroll .cost-grid .cost-sticky { background-color: var(--trace-sheet); }
+.cockpit-scroll .cost-subtotal th,
+.cockpit-scroll .cost-subtotal td { border-top: 1px solid var(--sw-border-strong); }
+.cockpit-scroll .cost-total th,
+.cockpit-scroll .cost-total td { border-top: 1.5px solid var(--trace-rule-strong); font-weight: 600; }
+
+/* ---------- Program ---------- */
+
+.program-head { margin-bottom: 14px; }
+.pg-gridhead { color: var(--sw-text-tertiary); font-size: 11.5px; }
+.pg-corner,
+.pg-scale { background: var(--trace-sheet); }
+
+/* ---------- Specifications ---------- */
+
+.spec-table-scroll { border: 0; border-radius: 0; border-top: 1.5px solid var(--trace-rule-strong); }
+.spec-table th { background: transparent; border-bottom: 1px solid var(--sw-border-strong); font-size: 11.5px; }
+.spec-table td { border-right-color: var(--trace-rule); border-top-color: var(--trace-rule); }
+.spec-section th { background: var(--sw-surface-inset); border-top: 1px solid var(--sw-border-strong); }

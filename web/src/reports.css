@@ -31,7 +31,7 @@
 .report-toolbar h2 { font-size: 22px; overflow-wrap: anywhere; }
 .report-toolbar > .btn { flex-shrink: 0; }
 .report-refresh { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; max-width: 100%; }
-.report-stale { min-width: 0; padding: 2px 8px; border: 1px solid var(--warn); border-radius: var(--radius-sm); font-size: 12px; line-height: 18px; overflow-wrap: anywhere; color: var(--ink-body); background: var(--warn-soft); cursor: help; }
+.report-stale { min-width: 0; padding: 2px 8px; border: 1px solid var(--warn); border-radius: var(--radius-sm); font-size: var(--fs-sm); line-height: 18px; overflow-wrap: anywhere; color: var(--ink-body); background: var(--warn-soft); cursor: help; }
 .report-notice { margin: 20px 0; padding: 16px; background: var(--warn-soft); color: var(--ink-body); }
 .report-notice h3 { margin: 0 0 10px; font-size: 16px; }
 .report-notice ul { padding-left: 20px; margin: 8px 0; }
@@ -39,8 +39,8 @@
 .report-section > h3 { margin: 0; padding-bottom: 10px; border-bottom: 1px solid var(--line-strong); font-size: 19px; }
 .report-block { padding: 18px 0; border-bottom: 1px solid var(--line); }
 .report-block-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
-.report-block h4 { margin: 0; font-size: 14px; }
-.report-block-heading span { font-size: 12px; color: var(--ink-muted); }
+.report-block h4 { margin: 0; font-size: var(--fs-lg); }
+.report-block-heading span { font-size: var(--fs-sm); color: var(--ink-muted); }
 .report-wording { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0 10px; max-width: 75ch; }
 .report-conflict { margin: 8px 0; color: var(--alert); }
 .report-block form { margin-top: 12px; }
@@ -48,7 +48,7 @@
 .report-block textarea { display: block; width: 100%; resize: vertical; padding: 10px; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
 .report-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .report-references { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 14px; margin-top: 12px; }
-.report-citation { min-width: 0; font-size: 12px; }
+.report-citation { min-width: 0; font-size: var(--fs-sm); }
 .report-citation summary { cursor: pointer; padding: 5px 2px; font-weight: 500; }
 .report-citation summary span { font-weight: 600; }
 .report-citation[data-label="E"] summary { color: #185c96; }
@@ -78,20 +78,20 @@
 .report-issue-form textarea { min-height: 90px; resize: vertical; }
 
 .report-table-scroll { max-width: 100%; overflow-x: auto; margin: .75rem 0; }
-.report-table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+.report-table { border-collapse: collapse; width: 100%; font-size: var(--fs-lg); }
 .report-table caption { text-align: left; padding-bottom: .5rem; font-weight: 600; }
 .report-table th, .report-table td { padding: .6rem; border: 1px solid var(--line, #cbd2db); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
 .report-table th { background: var(--paper, #f1f4f7); }
 
 .rfp-scope-position .report-table-scroll { margin: 1.5rem 0; }
 .rfp-scope-table { table-layout: fixed; }
-.rfp-scope-table caption { font-size: 14px; color: var(--ink); }
+.rfp-scope-table caption { font-size: var(--fs-lg); color: var(--ink); }
 .rfp-scope-item { width: 48%; }
 .rfp-scope-state { width: 17%; }
 .rfp-scope-table th[scope="row"] { font-weight: 500; background: transparent; }
 .rfp-scope-table td p { margin: 0; white-space: pre-wrap; }
 .rfp-scope-table td p + p { margin-top: .5rem; }
-.rfp-scope-note { margin: .5rem 0 0; font-size: .85rem; color: var(--ink-muted); }
+.rfp-scope-note { margin: .5rem 0 0; font-size: var(--fs-lg); color: var(--ink-muted); }
 @media (max-width: 760px) {
   .rfp-scope-table, .rfp-scope-table caption, .rfp-scope-table tbody { display: block; }
   .rfp-scope-table colgroup { display: none; }
@@ -103,12 +103,12 @@
 
 /* Works: one matrix grouped like Filing; the chosen row opens its detail in place. */
 .works-open { min-width: 0; padding: 8px; text-align: left; border: 0; background: transparent; cursor: pointer; overflow-wrap: anywhere; }
-.works-open span { display: block; font-size: 12px; color: var(--ink-muted); }
+.works-open span { display: block; font-size: var(--fs-sm); color: var(--ink-muted); }
 .works-open:hover, .works-open[aria-current="true"] { background: var(--ground); }
 .works-open[aria-current="true"] { font-weight: 600; }
 .works-included { display: flex; align-items: center; gap: 6px; }
 .works-detail { padding: 4px 8px 16px 16px; border-left: 3px solid var(--line-strong); margin: 4px 0 12px; }
-.works-detail h4, .works-detail h5 { margin: 6px 0; font-size: 13px; }
+.works-detail h4, .works-detail h5 { margin: 6px 0; font-size: var(--fs-md); }
 @media (max-width: 760px) {
   .works-detail { padding-left: 12px; }
 }
@@ -129,28 +129,28 @@
 .report-section-head .btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .rfp-edit { display: grid; gap: 12px; margin: 12px 0 18px; padding: 12px 12px 14px; background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); box-shadow: var(--shadow-xs); }
 .rfp-edit-group + .rfp-edit-group { padding-top: 12px; border-top: 1px solid var(--line); }
-.rfp-edit-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 6px 2px; font-size: 13.5px; font-weight: 600; color: var(--ink); }
-.rfp-saves { padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 11px; font-weight: 500; line-height: 18px; color: var(--ink-muted); }
+.rfp-edit-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 6px 2px; font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
+.rfp-saves { padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: var(--fs-xs); font-weight: 500; line-height: 18px; color: var(--ink-muted); }
 .rfp-edit .rfp-group-intro { padding: 0 6px 6px; }
 .rfp-status { margin: 0; font-weight: 500; color: var(--ink-body); }
-.rfp-rules-note { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-body); }
-.rfp-count { padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font: 500 11px var(--mono); color: var(--ink-muted); }
+.rfp-rules-note { margin: 6px 0 0; font-size: var(--fs-sm); color: var(--ink-body); }
+.rfp-count { padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font: 500 var(--fs-xs) var(--mono); color: var(--ink-muted); }
 .rfp-count-alert { border-color: var(--alert); color: var(--alert); }
-.rfp-group-intro { margin: 0; padding: 0 16px 8px; font-size: 12px; color: var(--ink-muted); }
+.rfp-group-intro { margin: 0; padding: 0 16px 8px; font-size: var(--fs-sm); color: var(--ink-muted); }
 .rfp-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 2px 12px; }
 .rfp-row { display: grid; align-content: start; gap: 4px; padding: 6px; border-radius: var(--radius-sm); }
 /* A fact changed elsewhere (cost plan, Profile) reads as read-only. */
 .rfp-segment:has(input:disabled), .rfp-control:disabled { opacity: 0.62; }
 .rfp-row:hover { background: var(--ground); }
 .rfp-row[aria-busy="true"] { opacity: 0.7; }
-.rfp-label { font-size: 12.5px; font-weight: 500; color: var(--ink-body); overflow-wrap: anywhere; }
+.rfp-label { font-size: var(--fs-sm); font-weight: 500; color: var(--ink-body); overflow-wrap: anywhere; }
 .rfp-value { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-width: 0; }
 .rfp-inline { display: contents; }
 .rfp-control { flex: 1 1 180px; min-width: 0; max-width: 100%; height: 30px; font: inherit; }
 .rfp-control.rfp-narrow { flex: 0 0 76px; }
-.rfp-why { flex-basis: 100%; font-size: 11.5px; color: var(--ink-muted); }
+.rfp-why { flex-basis: 100%; font-size: var(--fs-xs); color: var(--ink-muted); }
 .rfp-invalid { color: var(--alert); }
-.rfp-source { padding: 0 6px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 11px; line-height: 18px; color: var(--ink-muted); white-space: nowrap; }
+.rfp-source { padding: 0 6px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: var(--fs-xs); line-height: 18px; color: var(--ink-muted); white-space: nowrap; }
 .rfp-source[data-source="user"] { border-color: var(--ember); color: var(--ember-hot); }
 .rfp-source[data-source="unknown"], .rfp-source[data-source="assumed"] { border-color: var(--warn); color: var(--warn); }
 .rfp-source[data-source="conflict"] { border-color: var(--alert); color: var(--alert); }
@@ -160,14 +160,14 @@
 .rfp-segment-option + .rfp-segment-option { border-left: 1px solid var(--line-strong); }
 .rfp-segment-option input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
 .rfp-segment-option input:disabled { cursor: default; }
-.rfp-segment-option span { display: inline-flex; align-items: center; min-width: 30px; height: 28px; padding: 0 10px; justify-content: center; font-size: 12.5px; transition: background-color 150ms var(--ease-out); }
+.rfp-segment-option span { display: inline-flex; align-items: center; min-width: 30px; height: 28px; padding: 0 10px; justify-content: center; font-size: var(--fs-sm); transition: background-color 150ms var(--ease-out); }
 .rfp-segment-option:hover span { background: var(--ground); }
 .rfp-segment-option input:checked + span { background: var(--ink); color: var(--paper); font-weight: 600; }
 .rfp-segment-option input:focus-visible + span { outline: 2px solid var(--ember); outline-offset: -2px; }
-.rfp-parts { display: grid; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; font-size: 12.5px; }
+.rfp-parts { display: grid; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; font-size: var(--fs-sm); }
 .rfp-advisory summary { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .rfp-advisory .rfp-group-intro { padding: 6px 0 0; }
-.rfp-advisory ul { margin: 6px 0 0; padding-left: 20px; font-size: 12.5px; }
+.rfp-advisory ul { margin: 6px 0 0; padding-left: 20px; font-size: var(--fs-sm); }
 .rfp-advisory li { margin: 6px 0; }
 .rfp-boundary .rfp-control { flex-basis: 140px; }
 
@@ -182,17 +182,17 @@
 .procurement-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .procurement-head h1 { margin: 0; font-size: 22px; }
 .procurement-head .btn, .draft-form .btn { border-radius: 999px; }
-.procurement-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 10px; color: var(--ink-body); font-size: 13.5px; }
+.procurement-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 10px; color: var(--ink-body); font-size: var(--fs-md); }
 .procurement-line p { margin: 0; }
 .procurement-scroll { position: relative; max-width: 100%; overflow-x: auto; margin: 14px 0; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
-.procurement-table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13.5px; }
+.procurement-table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: var(--fs-md); }
 .procurement-table th, .procurement-table td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; white-space: nowrap; }
-.procurement-table thead th { font-size: 12px; font-weight: 600; color: var(--ink-muted); background: var(--canvas); border-bottom-color: var(--line-strong); }
-.procurement-table .group-row th { padding-top: 12px; font-size: 11.5px; font-weight: 600; font-variant: all-small-caps; letter-spacing: .04em; color: var(--ink-muted); background: var(--canvas); }
+.procurement-table thead th { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); background: var(--canvas); border-bottom-color: var(--line-strong); }
+.procurement-table .group-row th { padding-top: 12px; font-size: var(--fs-xs); font-weight: 600; font-variant: all-small-caps; letter-spacing: .04em; color: var(--ink-muted); background: var(--canvas); }
 .discipline-cell { width: 1%; font-weight: 600; color: var(--ink); }
 .row-suggested th, .row-suggested td { color: var(--ink-muted); }
 .row-suggested .discipline-cell { background-image: linear-gradient(var(--azure) 50%, transparent 50%); background-size: 2px 6px; background-repeat: repeat-y; font-weight: 500; }
-.firm-cell input { width: 9rem; height: 26px; padding: 0 8px; font: inherit; font-size: 12.5px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.firm-cell input { width: 9rem; height: 26px; padding: 0 8px; font: inherit; font-size: var(--fs-sm); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .firm-cell input:disabled { cursor: not-allowed; background: var(--canvas); color: var(--ink-muted); }
 .firm-cell input:disabled::placeholder { color: var(--ink-muted); opacity: .7; }
 .table-action { padding: 2px 0; border: 0; background: transparent; font: inherit; font-weight: 500; color: var(--azure); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
@@ -217,23 +217,23 @@
 .scope-link { margin-left: 8px; font-weight: 400; }
 .row-bin-cell { width: 1%; text-align: right; }
 .row-bin-cell .reg-del { margin-left: auto; }
-.firms-none { font-size: 12px; color: var(--ink-muted); }
+.firms-none { font-size: var(--fs-sm); color: var(--ink-muted); }
 .proposal-drop-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--ink-muted); }
 .proposal-drop-icon svg { width: 20px; height: 20px; }
 .firm-chips { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; overflow-x: auto; }
-.firm-chip { display: grid; grid-template-columns: 1fr; align-items: baseline; gap: 3px; padding: 3px 9px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); font: inherit; font-size: 12.5px; text-align: left; cursor: pointer; }
+.firm-chip { display: grid; grid-template-columns: 1fr; align-items: baseline; gap: 3px; padding: 3px 9px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); font: inherit; font-size: var(--fs-sm); text-align: left; cursor: pointer; }
 .firm-chip:hover { border-color: var(--ink-muted); }
 .firm-chip.lowest { border-color: var(--ok); background: color-mix(in oklab, var(--ok) 13%, var(--paper)); }
 .firm-chip-name { white-space: nowrap; font-weight: 500; }
 .firm-chip-figure { font-variant-numeric: tabular-nums; color: var(--ink-body); white-space: nowrap; }
-.firm-chip-status { grid-column: 1 / -1; font-size: 11px; color: var(--ink-muted); }
+.firm-chip-status { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--ink-muted); }
 .firm-chip-status.warn { color: var(--warn); }
 .firm-chip[data-status="awarded"] { border-color: var(--ok); }
 .firm-chip[data-status="awarded"] .firm-chip-status { color: var(--ok); font-weight: 600; }
 .firm-chip[data-status="unsuccessful"] { opacity: .7; }
 .procurement-table tr.row-drop td, .procurement-table tr.row-drop th { background: var(--azure-soft); box-shadow: inset 0 0 0 1px var(--azure); }
 .procurement-unassigned label { display: inline-flex; align-items: center; gap: 6px; }
-.procurement-unassigned select { padding: 3px 6px; font: inherit; font-size: 12.5px; }
+.procurement-unassigned select { padding: 3px 6px; font: inherit; font-size: var(--fs-sm); }
 .procurement-pmp { margin-top: 6px; }
 .procurement .banner { flex-wrap: wrap; }
 
@@ -253,11 +253,11 @@
    .pf-row); a value is quiet text until pointed at, then opens in place. */
 .rfp-page-one { display: grid; gap: 14px; margin-top: 12px; }
 .rfp-page-one .report-block { margin: 0; }
-.rfp-strip { justify-self: start; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--ink-muted); text-align: left; cursor: pointer; }
+.rfp-strip { justify-self: start; padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-md); color: var(--ink-muted); text-align: left; cursor: pointer; }
 .rfp-strip:hover { color: var(--ink); text-decoration: underline dotted; }
-.rfp-grid h4, .rfp-conditions h4 { margin: 0 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--ink); }
+.rfp-grid h4, .rfp-conditions h4 { margin: 0 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--line); font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
 .rfp-grid .pf-row { grid-template-columns: minmax(84px, 8.5rem) minmax(0, 1fr); gap: 8px; min-height: 30px; padding: 1px 4px; }
-.rfp-page-one .pf-label { color: var(--ink-muted); font-size: 12px; line-height: 1.25; }
+.rfp-page-one .pf-label { color: var(--ink-muted); font-size: var(--fs-sm); line-height: 1.25; }
 .rfp-cell { min-width: 0; padding: 2px 0; border: 0; background: none; font: inherit; color: var(--ink); text-align: left; overflow-wrap: anywhere; cursor: pointer; }
 .rfp-cell:hover:not(:disabled) { text-decoration: underline dotted; text-underline-offset: 3px; }
 .rfp-cell:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; border-radius: 2px; }
@@ -267,17 +267,17 @@
 .rfp-conditions .rfp-row { gap: 2px; padding: 4px; }
 .rfp-conditions .rfp-label { font-weight: 400; }
 .rfp-information .pf-row { grid-template-columns: minmax(84px, 8.5rem) minmax(0, 1fr); padding: 1px 4px; }
-.rfp-markers { display: grid; gap: 4px; margin: 10px 0 0; padding: 8px 12px; list-style: none; border-left: 3px solid var(--alert); background: var(--alert-soft); font-size: 13px; color: var(--ink-body); }
+.rfp-markers { display: grid; gap: 4px; margin: 10px 0 0; padding: 8px 12px; list-style: none; border-left: 3px solid var(--alert); background: var(--alert-soft); font-size: var(--fs-md); color: var(--ink-body); }
 .rfp-markers .cell-link { margin-left: 6px; }
 
 /* The closing Issue section: screen only, compact. */
 .rfp-issue { margin-top: 32px; }
-.rfp-issue .rfp-status { font-size: 13px; }
+.rfp-issue .rfp-status { font-size: var(--fs-md); }
 .rfp-issue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: 2px 12px; margin-top: 12px; }
-.rfp-advisory { margin-top: 12px; font-size: 13px; }
+.rfp-advisory { margin-top: 12px; font-size: var(--fs-md); }
 .rfp-advisory summary { cursor: pointer; }
 .rfp-issue-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
-.rfp-issue-form p { flex-basis: 100%; margin: 0; font-size: 12.5px; color: var(--ink-muted); }
+.rfp-issue-form p { flex-basis: 100%; margin: 0; font-size: var(--fs-sm); color: var(--ink-muted); }
 
 /* The printed RFP is the issued PDF; a browser print of the screen still
    reads as a document. */
@@ -313,7 +313,7 @@
   .hydraulic-service-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); padding: .7rem 0; }
   .hydraulic-service-table th:first-child { width: auto; grid-column: 1 / -1; }
   .hydraulic-service-table th, .hydraulic-service-table td { border: 0; padding: .3rem; }
-  .hydraulic-mobile-label { display: inline; font-size: .8rem; }
+  .hydraulic-mobile-label { display: inline; font-size: var(--fs-md); }
   .hydraulic-choice label { gap: .3rem; }
 }
 
@@ -336,3 +336,70 @@
 .firm-detach:hover:not(:disabled) { color: var(--alert); background: var(--ground); }
 .firm-detach:disabled { cursor: not-allowed; }
 @media (hover: none), (pointer: coarse) { .firm-detach { opacity: 1; } }
+
+/* Compact report editing: values carry the page; actions sit at its edge. */
+.rfp-version { margin-left: .6rem; font-size: var(--fs-md); font-weight: 400; color: var(--ink-muted); white-space: nowrap; }
+.rfp-grid { gap: 12px; }
+.rfp-grid .pf-row { grid-template-columns: minmax(68px, 38%) minmax(0, 1fr); gap: 6px; min-height: 26px; padding: 3px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.rfp-grid .pf-value { font-size: var(--fs-sm); line-height: 1.35; }
+.rfp-grid .rfp-why { display: none; }
+.rfp-conditions-help, .rfp-transmittal-help { margin: 4px 0 8px; color: var(--ink-muted); font-size: var(--fs-sm); }
+.rfp-transmittal-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.rfp-transmittal-heading h4 { margin: 0; font-size: var(--fs-md); }
+.rfp-transmittal-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.rfp-transmittal-table th, .rfp-transmittal-table td { padding: 5px 7px; font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.rfp-transmittal-table th:nth-child(2) { width: 45%; }
+.hydraulic-service-table th:first-child { width: auto; }
+.hydraulic-service-table th:last-child { width: 132px; }
+.hydraulic-service-table th, .hydraulic-service-table td { padding: 5px 7px; }
+.hydraulic-service-table .hydraulic-group th { padding-top: 10px; }
+.hydraulic-service-table .hydraulic-detail { margin-top: 3px; }
+.rfp-scope-position { vertical-align: top; }
+.rfp-position-choice { display: inline-flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; background: var(--paper); }
+.rfp-position-choice label { position: relative; display: flex; cursor: pointer; }
+.rfp-position-choice label + label { border-left: 1px solid var(--line); }
+.rfp-position-choice input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.rfp-position-choice span { min-width: 28px; padding: 4px 0; text-align: center; font-size: var(--fs-sm); font-weight: 600; color: var(--muted, var(--ink)); }
+.rfp-position-choice input:checked + span { background: var(--ember); color: var(--paper); }
+.rfp-position-choice input:focus-visible + span { outline: 2px solid var(--ember); outline-offset: -2px; }
+.rfp-position-choice input:disabled + span { opacity: .55; cursor: default; }
+@media (max-width: 600px) {
+  .hydraulic-service-table th:last-child { width: auto; }
+  .hydraulic-service-table .rfp-scope-position { grid-column: 1 / -1; justify-self: end; }
+}
+@media print {
+  .rfp-transmittal-actions, .rfp-transmittal-help, .rfp-conditions-help { display: none; }
+  .rfp-position-choice input:not(:checked) + span { display: none; }
+}
+
+.rfp-grid .pf-row { border-radius: 0; }
+.rfp-transmittal-table { min-width: 520px; }
+.rfp-transmittal-table th { white-space: nowrap; }
+.rfp-transmittal-table td:nth-child(3), .rfp-transmittal-table td:nth-child(4) { white-space: nowrap; }
+
+.rfp-page-one > *, .rfp-transmittal { min-width: 0; }
+
+/* Scope by stage: stage, scope line, In, Excluded, fee. Large targets:
+   the whole stage name opens it, and each tick box sits in a 44 px cell. */
+.rfp-stage-scope { min-width: 760px; table-layout: fixed; font-size: var(--fs-md); }
+.rfp-stage-scope th:first-child { width: 24%; }
+.rfp-stage-scope .rfp-inout { width: 108px; text-align: center; vertical-align: middle; white-space: nowrap; overflow-wrap: normal; }
+.rfp-stage-scope .rfp-fee { width: 14%; }
+.rfp-stage-scope td, .rfp-stage-scope th { vertical-align: middle; padding: 6px 12px; }
+.rfp-stage-row th, .rfp-stage-row td { border-top: 2px solid var(--line-strong, var(--line)); background: var(--sw-surface, var(--paper)); }
+.rfp-stage-toggle { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.rfp-stage-chevron { display: grid; place-items: center; flex: 0 0 36px; height: 36px; border: 1px solid var(--line-strong, var(--line)); border-radius: 8px; color: var(--ink); font-size: 18px; }
+.rfp-stage-toggle:hover .rfp-stage-chevron { background: var(--sw-hover-bg, var(--ground)); }
+.rfp-stage-count, .rfp-stage-whole { color: var(--sw-text-secondary, var(--ink)); }
+.rfp-tick { display: grid; place-items: center; width: 100%; padding: 4px 0; line-height: 1; cursor: pointer; }
+.rfp-tick input[type="checkbox"] { display: block; margin: 0; }
+.rfp-tick input[type="checkbox"] { width: 22px; height: 22px; }
+.rfp-stage-line td { background: transparent; padding-top: 0; padding-bottom: 0; }
+.rfp-stage-line td:nth-child(2) { padding-left: 16px; }
+.rfp-own-actions { display: inline-flex; gap: 8px; margin-left: 12px; vertical-align: middle; }
+.rfp-own-line { display: flex; gap: 8px; align-items: center; }
+.rfp-own-line input { flex: 1; min-width: 0; }
+.rfp-stage-add td { padding-top: 4px; padding-bottom: 10px; }
+.rfp-stage-total th, .rfp-stage-total td { font-weight: 600; border-top: 2px solid var(--line-strong, var(--line)); }
+.rfp-stage-more { margin-top: 12px; }
+tbody[data-stage-state="exclude"] .rfp-stage-row th, tbody[data-stage-state="exclude"] .rfp-stage-row td:nth-child(2) { color: var(--sw-text-tertiary, var(--ink)); }

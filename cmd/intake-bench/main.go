@@ -368,6 +368,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.signIn(ctx, st, o.apiSamples); err != nil {
 		return 0, err
 	}
+	if err := api.accounts(ctx, st); err != nil {
+		return 0, err
+	}
 	arrived := newArrivals()
 	stream, err := api.stream(ctx, 0, arrived.record)
 	if err != nil {
@@ -865,6 +868,36 @@ func (a *apiClient) signIn(ctx context.Context, st *store.Store, n int) error {
 		a.http = &http.Client{Jar: jar, Timeout: 60 * time.Second}
 		body, _ := json.Marshal(map[string]string{"token": raw})
 		if _, err := a.timed(ctx, "project_invite_auth", http.MethodPost, "/session", body, http.StatusNoContent); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// accounts times sign-up and password sign-in. Ten accounts, each signed up
+// and signed in once, give 20 samples and stay under the per-address limit.
+// Each runs in its own cookie jar so the owner session above is kept, and
+// each account's org is removed afterwards.
+func (a *apiClient) accounts(ctx context.Context, st *store.Store) error {
+	for i := 0; i < 10; i++ {
+		jar, err := cookiejar.New(nil)
+		if err != nil {
+			return err
+		}
+		c := &apiClient{origin: a.origin, http: &http.Client{Jar: jar, Timeout: 60 * time.Second}, samples: a.samples}
+		email := fmt.Sprintf("bench-account-%d-%d@bench.test", time.Now().UnixNano(), i)
+		body, _ := json.Marshal(map[string]string{"email": email, "password": "bench password"})
+		_, signUpErr := c.timed(ctx, "account_auth", http.MethodPost, "/signup", body, http.StatusNoContent)
+		var signInErr error
+		if signUpErr == nil {
+			_, signInErr = c.timed(ctx, "account_auth", http.MethodPost, "/signin", body, http.StatusNoContent)
+		}
+		if acct, err := st.AccountByEmail(ctx, email); err == nil {
+			if err := st.DeleteOrg(ctx, acct.OrgID); err != nil {
+				return err
+			}
+		}
+		if err := errors.Join(signUpErr, signInErr); err != nil {
 			return err
 		}
 	}

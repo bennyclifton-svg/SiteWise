@@ -19,7 +19,10 @@ import (
 // profile-7: building scope, alternatives and partial supply boundaries.
 // profile-6: staged and architect-lodges flags reworded (2026-10-24). A landlord
 // provider answer was tried and withdrawn; landlord stays a user choice only.
-const QuestionVersion = "profile-10"
+// profile-11: architect-lodges accepts services "through to DA lodgement";
+// owner targets, builder's estimate, existing/added/proposed GFA and the
+// party-wall signal; room words route passages (Walsh review, 2026-10-27).
+const QuestionVersion = "profile-11"
 
 // ReadRevision says which families of profile questions a document's label
 // reading covered. Raise it when a new family of questions is added without
@@ -30,9 +33,11 @@ const QuestionVersion = "profile-10"
 // read-8: profile-6 wording, so finished documents are asked again (2026-10-24).
 // read-10: refresh scope evidence together with header readings.
 // read-12: final profile-9 questions and programme candidates.
-// read-13: the procurement route is also asked of passages that state it in
+// read-13: implied scope from the documents' own words, owner targets and
+// the builder's estimate (2026-10-27).
+// read-14: the procurement route is also asked of passages that state it in
 // words, wherever they sit (F4, 2026-11-04).
-const ReadRevision = "read-13"
+const ReadRevision = "read-14"
 
 // PassageInfo is what header routing reads about a passage.
 type PassageInfo struct {

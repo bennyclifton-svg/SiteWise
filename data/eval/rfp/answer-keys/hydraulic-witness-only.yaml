@@ -69,15 +69,12 @@ description: Hospital selected witnessing is not design or contractor execution.
 snapshot: false
 expect:
   hydraulic-services:
-    stages_include:
-    - handover
-    stages_absent:
-    - design
-    - tender
-    - construction
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [handover]
+    stages_absent: [design, tender, construction]
     positions:
       domestic: absent
       pumps: absent
       interfaces: absent
       witness: I
-      defects: O
+      defects: X

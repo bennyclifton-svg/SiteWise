@@ -66,11 +66,18 @@ func Schedule(r Resolved) []ScheduleItem {
 	add := func(key, kind, label, detail string, base bool) {
 		out = append(out, ScheduleItem{Key: key, Kind: kind, Label: strings.TrimSpace(label), Detail: strings.TrimSpace(detail), Base: base, Ordinal: len(out)})
 	}
-	for _, s := range r.Stages {
-		if s.State == Exclude || s.State == Done {
-			continue
+	// By stage, an optional service is priced on its line under its stage,
+	// so it follows that stage here too (owner direction, 2 November 2026).
+	options := func(stage string) {
+		for _, p := range r.Positions {
+			if p.Value == "O" && p.Stage == stage {
+				add("option:"+p.Key, ItemOption, shortLabel(p.Label), p.Detail, false)
+			}
 		}
-		if s.ByElement {
+	}
+	stage := func(s StageResult) {
+		// By stage, one fee covers a stage and its elements.
+		if s.ByElement && !r.ScopeByStage {
 			priced := false
 			for _, e := range r.Elements {
 				if e.State == Exclude {
@@ -85,18 +92,30 @@ func Schedule(r Resolved) []ScheduleItem {
 				add("element:"+s.Key+":"+e.Key, kind, s.Name+": "+e.Code+" "+e.Name, e.Text, !option)
 			}
 			if priced {
-				continue
+				return
 			}
 		}
 		if s.State == Option {
 			add("stage:"+s.Key, ItemOption, s.Name, s.Text, false)
-			continue
+			return
 		}
 		add("stage:"+s.Key, ItemStage, s.Name, s.Text, true)
 	}
+	for _, s := range r.Stages {
+		if s.State == Exclude || s.State == Done {
+			continue
+		}
+		stage(s)
+		if r.ScopeByStage {
+			options(s.Key)
+		}
+	}
+	if r.ScopeByStage {
+		options("")
+	}
 	add(ReimbursablesKey, ItemReimbursable, "Reimbursables", "Included in the fee, or each item with its rate (R9)", true)
 	for _, p := range r.Positions {
-		if p.Value != "O" || (r.Discipline == "hydraulic-services" && hydraulicStageService(p.Key)) {
+		if r.ScopeByStage || p.Value != "O" || (r.Discipline == "hydraulic-services" && hydraulicStageService(p.Key)) {
 			continue
 		}
 		add("option:"+p.Key, ItemOption, shortLabel(p.Label), p.Detail, false)

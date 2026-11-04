@@ -68,23 +68,12 @@ description: Conflicting statutory appointment and existing-extent records block
   even when later B stages are boundary options.
 expect:
   bca-certification:
-    stages_include:
-    - a1_inception
-    - a2_planning
-    - a3_tender
-    stages_option:
-    - a4_construction
-    - b1_preliminary
-    - b2_construction_approval
-    - b3_construction
-    - b4_occupation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [a1_inception, a2_planning, a3_tender]
     positions:
-      statutory_functions: ask
-      existing_assessment: ask
-    blocking:
-    - fact:flag.bca_certification
-    - fact:flag.bca_existing_assessment
-    role:
-    - advisory
-    role_absent:
-    - statutory
+      statutory_functions: I
+      existing_assessment: I
+    blocking: ['fact:flag.bca_certification', 'fact:flag.bca_existing_assessment']
+    role: [advisory]
+    role_absent: [statutory]
+    stages_absent: [a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]

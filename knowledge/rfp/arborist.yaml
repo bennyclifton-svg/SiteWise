@@ -138,11 +138,14 @@ boundary:
   end: s7_advisory
 - start: s1_inventory
   end: s3_protection
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: s1_inventory
   name: S1 Inventory / condition
-  deliverable: 'Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement basis, health/structure/retention,
-    root/protection zones/calculation basis, access limits/further tests. No impact report'
+  lines:
+  - {key: inspect_scheduled_trees, text: "Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement basis, health/structure/retention, root/protection zones/calculation basis, access limits/further tests"}
+  - {key: no_impact_report, text: "No impact report"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -156,8 +159,10 @@ stages:
       or current requirements.
 - key: s2_impact
   name: S2 Concept / impact
-  deliverable: Retention and footprint/access/services alternatives; impact report by design revision, per-tree/cumulative
-    encroachment, pruning/removal reasons and protection; application responses to named milestone
+  lines:
+  - {key: retention_footprint_access, text: "Retention and footprint/access/services alternatives"}
+  - {key: impact_report_design, text: "impact report by design revision, per-tree/cumulative encroachment, pruning/removal reasons and protection"}
+  - {key: application_responses_named, text: "application responses to named milestone"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -179,8 +184,8 @@ stages:
     - arborist_impact_report
 - key: s3_protection
   name: S3 Consent / protection
-  deliverable: 'Conditions review and coordinated plan/method: fencing, ground protection, access/storage, excavation/services,
-    monitoring/hold points, investigation dependencies and unclosed conditions'
+  lines:
+  - {key: conditions_review_coordinated, text: "Conditions review and coordinated plan/method: fencing, ground protection, access/storage, excavation/services, monitoring/hold points, investigation dependencies and unclosed conditions"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -202,8 +207,10 @@ stages:
     - arborist_protection_plan
 - key: s4_tender
   name: S4 Tender / contractor design
-  deliverable: Protection specs, hold points/responsibilities and counted RFIs; D&C design intent versus contractor
-    methods/detailed advice. Post-contract/novation priced separately
+  lines:
+  - {key: protection_specs_hold, text: "Protection specs, hold points/responsibilities and counted RFIs"}
+  - {key: d_c_design, text: "D&C design intent versus contractor methods/detailed advice"}
+  - {key: post_contract_novation, text: "Post-contract/novation priced separately"}
   fee_basis: option
   shown_when: Selected service within appointment
   provenance:
@@ -220,9 +227,10 @@ stages:
   default: option
 - key: s5_construction
   name: S5 Construction / completion
-  deliverable: Scheduled protection-installation/excavation/pruning/root-zone visits; observations/departures,
-    latent conditions and qualified completion statement/unresolved items. No continuous supervision or unseen-work
-    certification
+  lines:
+  - {key: scheduled_protection_installation, text: "Scheduled protection-installation/excavation/pruning/root-zone visits"}
+  - {key: observations_departures_latent, text: "observations/departures, latent conditions and qualified completion statement/unresolved items"}
+  - {key: no_continuous_supervision, text: "No continuous supervision or unseen-work certification"}
   fee_basis: option
   shown_when: Selected service within appointment
   provenance:
@@ -239,8 +247,9 @@ stages:
   default: option
 - key: s6_investigation
   name: S6a Specialist investigation
-  deliverable: Question, trees/samples, aerial/internal/root/soil method, specialists/equipment, access/permits,
-    locating/reinstatement; written authority before intrusive work
+  lines:
+  - {key: question_trees_samples, text: "Question, trees/samples, aerial/internal/root/soil method, specialists/equipment, access/permits, locating/reinstatement"}
+  - {key: written_authority_before, text: "written authority before intrusive work"}
   fee_basis: option
   shown_when: Selected service within appointment
   provenance:
@@ -255,8 +264,9 @@ stages:
   default: option
 - key: s6_risk
   name: S6b Formal risk assessment
-  deliverable: Formal risk question/method, trees/targets, access/testing limits, evidence cutoff/action priorities.
-    Visual condition inspection does not buy formal risk
+  lines:
+  - {key: formal_risk_question, text: "Formal risk question/method, trees/targets, access/testing limits, evidence cutoff/action priorities"}
+  - {key: visual_condition_inspection, text: "Visual condition inspection does not buy formal risk"}
   fee_basis: option
   shown_when: Selected service within appointment
   provenance:
@@ -271,8 +281,10 @@ stages:
   default: option
 - key: s7_advisory
   name: S7a Advisory / remediation
-  deliverable: Feasibility/condition/remediation decision, cutoff/reliance, confidence/options/actions; preserve
-    evidence before root attribution; structural/geotechnical specialists diagnose
+  lines:
+  - {key: feasibility_condition_remediation, text: "Feasibility/condition/remediation decision, cutoff/reliance, confidence/options/actions"}
+  - {key: preserve_evidence_before, text: "preserve evidence before root attribution"}
+  - {key: structural_geotechnical_specialists, text: "structural/geotechnical specialists diagnose"}
   fee_basis: option
   shown_when: Selected service within appointment
   provenance:
@@ -288,8 +300,9 @@ stages:
     - advisory
 - key: s7_monitoring
   name: S7b Ongoing monitoring
-  deliverable: Repeat-inspection duration/visits/triggers, responsible party and report/closure criteria; no indefinite
-    obligation
+  lines:
+  - {key: repeat_inspection_duration, text: "Repeat-inspection duration/visits/triggers, responsible party and report/closure criteria"}
+  - {key: no_indefinite_obligation, text: "no indefinite obligation"}
   fee_basis: option
   shown_when: Selected service within appointment
   provenance:
@@ -302,8 +315,9 @@ stages:
   default: option
 - key: s7_peer
   name: S7c Independent peer review
-  deliverable: Independent review of named report/question, cutoff/reliance, method/response round; advisory does
-    not appoint peer review
+  lines:
+  - {key: independent_review_named, text: "Independent review of named report/question, cutoff/reliance, method/response round"}
+  - {key: advisory_does_not, text: "advisory does not appoint peer review"}
   fee_basis: option
   shown_when: Selected service within appointment
   provenance:
@@ -382,6 +396,7 @@ allowances:
   owner: client
 positions:
 - key: inventory
+  stage: [s1_inventory]
   group: Tree evidence and impacts
   label: Onsite tree survey/condition assessment; method, date and uncertainty stated
   kind: technical
@@ -394,6 +409,7 @@ positions:
     why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
       or current requirements.
 - key: offsite
+  stage: [s1_inventory]
   group: Tree evidence and impacts
   label: Neighbour/street trees; ownership, referrals and access limits; inaccessible trees retained with confidence
     limits
@@ -418,6 +434,7 @@ positions:
     - arborist_offsite_trees
   if_unknown: ask
 - key: heritage
+  stage: [s2_impact, s1_inventory]
   group: Tree evidence and impacts
   label: Significant/heritage tree controls and referrals; confirm current authority and permission owner
   kind: technical
@@ -437,6 +454,7 @@ positions:
     ref: arborist#29
     why: Confirm current controls without treating advice as permission.
 - key: impacts
+  stage: [s2_impact, s3_protection]
   group: Tree evidence and impacts
   label: Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; civil/structure
     design, surveyor locations
@@ -462,6 +480,7 @@ positions:
   - flag:
     - arborist_tree_impacts
 - key: pruning
+  stage: [s2_impact, s1_inventory]
   group: Recommendations and protection
   label: Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor
     executes/disposes/reinstates
@@ -481,6 +500,7 @@ positions:
       or current requirements.
   if_unknown: ask
 - key: supervision
+  stage: [s5_construction, s7_monitoring]
   group: Recommendations and protection
   label: Tree works/protection supervision at scheduled visits/hold points
   kind: technical
@@ -528,6 +548,7 @@ positions:
       or current requirements.
   responsible: appointed ecology, bushfire and heritage specialists
 - key: existing
+  stage: [s1_inventory]
   group: Tree evidence and impacts
   label: Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3
     plan separate; investigate before root attribution, structure/geotech diagnose
@@ -553,6 +574,7 @@ positions:
       or current requirements.
   if_unknown: ask
 - key: investigation
+  stage: [s6_investigation]
   group: Specialist investigations and others
   label: Internal/root/canopy/soil investigation; defined method and limits
   kind: technical
@@ -572,6 +594,7 @@ positions:
     why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
       or current requirements.
 - key: risk
+  stage: [s6_risk]
   group: Specialist investigations and others
   label: Formal risk assessment; defined method/limits, no freedom-from-failure warranty
   kind: technical
@@ -591,6 +614,7 @@ positions:
     why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
       or current requirements.
 - key: monitoring
+  stage: [s7_monitoring]
   group: Recommendations and protection
   label: Ongoing monitoring with finite duration, visits and close-out
   kind: technical

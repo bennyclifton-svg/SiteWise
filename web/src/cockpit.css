@@ -124,7 +124,7 @@ body {
   position: relative;
   display: grid;
   grid-template-columns: minmax(200px, 236px) minmax(0, 1fr) minmax(280px, 760px);
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   column-gap: var(--cockpit-shell-gutter);
   height: 100%;
   min-height: 0;
@@ -132,7 +132,7 @@ body {
 
 .cockpit-shell > .leftnav {
   grid-column: 1;
-  grid-row: 1 / span 2;
+  grid-row: 1 / span 3;
 }
 
 .cockpit-shell-header {
@@ -206,7 +206,7 @@ body {
 
 .project-main-panel {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 3;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -233,7 +233,7 @@ body {
 .project-side-panel {
   position: relative;
   grid-column: 3;
-  grid-row: 2;
+  grid-row: 3;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -352,7 +352,7 @@ body {
   background: transparent;
   color: var(--sw-text-secondary);
   font: inherit;
-  font-size: 15px;
+  font-size: var(--fs-lg);
   font-weight: 400;
   text-align: left;
   cursor: pointer;
@@ -404,7 +404,7 @@ body {
   gap: 10px;
   padding: 8px 12px;
   color: var(--sw-text-primary);
-  font-size: 14px;
+  font-size: var(--fs-lg);
   font-weight: 600;
 }
 
@@ -412,7 +412,7 @@ body {
   margin: 0;
   padding: 0 12px 8px;
   color: var(--sw-text-tertiary);
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 
 .leftnav .devstatus {
@@ -433,7 +433,7 @@ body {
   overflow-y: auto;
   border-width: 1px;
   border-radius: 0.875rem;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   line-height: 1.25;
 }
 
@@ -457,7 +457,7 @@ body {
 }
 
 .project-side-panel .reg-head h2 {
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   font-weight: 400;
   letter-spacing: 0;
   color: var(--sw-text-tertiary);
@@ -492,7 +492,7 @@ body {
   width: 100%;
   min-width: 0;
   table-layout: fixed;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
 }
 
 .project-side-panel .reg-table col.reg-sel { width: 1.25rem; }
@@ -508,15 +508,21 @@ body {
 /* Narrow rail: drop date and the two classifications together, then Use and
    State. Drawing number, title, revision and the bin stay. */
 @container repo (max-width: 39rem) {
+  .project-side-panel col.reg-kind,
+  .project-side-panel th.reg-kind,
+  .project-side-panel td.reg-kind {
+    display: none;
+  }
+}
+
+/* Date and discipline hold until the rail is genuinely narrow. */
+@container repo (max-width: 28rem) {
   .project-side-panel col.reg-date,
   .project-side-panel col.reg-disc,
-  .project-side-panel col.reg-kind,
   .project-side-panel th.reg-date,
   .project-side-panel th.reg-disc,
-  .project-side-panel th.reg-kind,
   .project-side-panel td.reg-date,
-  .project-side-panel td.reg-disc,
-  .project-side-panel td.reg-kind {
+  .project-side-panel td.reg-disc {
     display: none;
   }
 }
@@ -537,7 +543,7 @@ body {
   padding: 0;
   background: var(--sw-surface);
   color: var(--sw-text-tertiary);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
@@ -547,7 +553,7 @@ body {
 .project-side-panel .reg-table thead button {
   height: auto;
   padding: 8px 2px;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0;
 }
 
@@ -577,7 +583,7 @@ body {
 .project-side-panel .reg-file-hint {
   display: inline;
   margin: 0;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   line-height: 1.25;
   white-space: nowrap;
   vertical-align: baseline;
@@ -639,7 +645,7 @@ body {
 .reg-table thead th {
   background: var(--sw-surface);
   color: var(--sw-text-tertiary);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -720,7 +726,7 @@ body {
 
 .procurement-head h1,
 .costs-head h1 {
-  font-size: 15px;
+  font-size: var(--fs-lg);
   font-weight: 600;
   letter-spacing: 0.01em;
 }
@@ -737,7 +743,7 @@ body {
 .cockpit-scroll .cost-grid thead th {
   background: transparent;
   color: var(--sw-text-tertiary);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
 }
 
@@ -745,7 +751,7 @@ body {
   padding-top: 18px;
   background: transparent;
   color: var(--sw-text-tertiary);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 650;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -940,7 +946,7 @@ body {
   background: transparent;
   color: var(--sw-text-secondary);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 
 .ask-modes button {
@@ -997,7 +1003,7 @@ body {
 
   .cockpit-shell {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto minmax(24rem, auto) minmax(20rem, 50vh);
+    grid-template-rows: auto auto auto minmax(24rem, auto) auto minmax(20rem, 50vh);
     height: auto;
     row-gap: 8px;
   }
@@ -1051,7 +1057,7 @@ body {
   gap: 8px;
   margin: 0;
   color: var(--sw-text-tertiary);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1083,7 +1089,7 @@ body {
 }
 .pf-stack .pf-label {
   color: var(--sw-text-tertiary);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 1.3;
 }
 .pf-stack > .pf-control,
@@ -1095,7 +1101,7 @@ body {
 .pf-stack .pf-control {
   height: 36px;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: var(--fs-lg);
 }
 .pf-stack > .pf-derived {
   display: flex;
@@ -1114,9 +1120,9 @@ body {
   grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr);
   gap: 12px;
 }
-.pf-identity-grid .pf-control { height: 40px; font-size: 15px; color: var(--sw-text-primary); }
+.pf-identity-grid .pf-control { height: 40px; font-size: var(--fs-lg); color: var(--sw-text-primary); }
 .pf-place-grid { margin-top: -8px; }
-.pf-place-grid .pf-control { height: 32px; font-size: 13px; }
+.pf-place-grid .pf-control { height: 32px; font-size: var(--fs-md); }
 
 /* Choices with every option in view. */
 .pf-choice { display: grid; gap: 8px; min-width: 0; }
@@ -1135,7 +1141,7 @@ body {
   border: 1px solid var(--sw-border-default);
   border-radius: 10px;
   color: var(--sw-text-primary);
-  font-size: 13.5px;
+  font-size: var(--fs-md);
   cursor: pointer;
   transition: background-color 120ms ease, border-color 120ms ease;
 }
@@ -1166,7 +1172,7 @@ body {
   padding: 0 6px;
   gap: 8px;
   border-color: transparent;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 .pf-choice-list .pf-option::before {
   content: "";
@@ -1189,7 +1195,7 @@ body {
   align-items: end;
   gap: 16px;
 }
-.pf-budget .pf-control { height: 40px; font-size: 15px; text-align: right; }
+.pf-budget .pf-control { height: 40px; font-size: var(--fs-lg); text-align: right; }
 
 /* Subclass · Scale · Complexity, then the quieter approvals and delivery. */
 .pf-cards {
@@ -1246,8 +1252,126 @@ body {
 .pf-strips .pf-panel-flat:last-child .pf-panel-body { align-items: end; }
 
 .icon-bin, .project-side-panel .reg-del .icon-bin { width: 20px; height: 20px; flex-shrink: 0; }
+/* The side panel's 1rem bin button was smaller than its icon, so the hover
+   ring sat off the bin; size the button to hold the icon, centred. */
+.project-side-panel .reg-del { width: 22px; height: 22px; }
+.project-side-panel .reg-del .icon-bin { width: 16px; height: 16px; }
 
 /* Sticky identities must conceal the figures scrolling underneath. */
 .cockpit-scroll .cost-grid thead th { background: var(--canvas); }
 .cockpit-scroll .cost-grid .cost-group th { background: var(--ground); }
 .cockpit-scroll .cost-row[aria-selected="true"] td { background: color-mix(in oklab, var(--ember) 22%, var(--paper)); }
+
+.cockpit-title-block:has(.project-name-editor) { flex: 1; }
+.project-name-editor {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-overflow: ellipsis;
+}
+.project-name-editor:hover { border-bottom-color: var(--sw-border-default); }
+.project-name-editor:focus { border-bottom-color: var(--sw-text-secondary); }
+.project-name-error { margin: 4px 0; color: var(--sw-text-primary); font-size: var(--fs-sm); }
+
+/* Actions align to the panels they control, above their bordered surfaces. */
+.cockpit-page { display: flex; flex-direction: column; }
+.cockpit-shell { flex: 1; height: auto; }
+.workspace-controls { grid-column: 2; grid-row: 2; display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 44px; padding: 0 8px 8px; position: relative; z-index: 30; }
+.workspace-primary-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.repository-controls { grid-column: 3; grid-row: 2; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px 8px; }
+.page-action-rail { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
+.page-actions { position: relative; }
+.page-download { display: grid; place-items: center; width: 36px; height: 32px; padding: 6px; color: var(--ink); background: transparent; border: 0; border-radius: 4px; cursor: pointer; }
+.page-download svg { width: 20px; height: 20px; }
+.page-download:hover, .page-download[aria-expanded="true"] { background: var(--sw-hover-bg); }
+.page-download:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
+.page-action-menu { position: absolute; right: 0; top: 100%; min-width: 200px; max-width: calc(100vw - 32px); padding: 5px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); box-shadow: var(--shadow-sm); }
+.page-action-menu a, .page-action-menu button { display: block; width: 100%; padding: 9px 12px; color: var(--ink); background: none; border: 0; text-align: left; text-decoration: none; font: inherit; font-size: var(--fs-md); cursor: pointer; }
+.page-action-menu a:hover, .page-action-menu button:hover, .page-action-menu :focus-visible { background: var(--ground); }
+@media print { .page-action-rail { display: none !important; } .cockpit-page { display: block; } }
+
+@media print {
+  .cockpit-page, .cockpit-shell, .project-main-panel, .cockpit-scroll { height: auto !important; min-height: 0 !important; overflow: visible !important; }
+  .leftnav, .project-side-panel, .ask-bar, .profile-feedback-slot, .profile-toolbar, .page-action-rail,
+  .cockpit-header-actions, .procurement-head button, .spec-actions, .spec-tools { display: none !important; }
+  .cockpit-shell { display: block !important; }
+  .procurement-scroll, .spec-table-wrap { overflow: visible !important; max-height: none !important; }
+}
+
+@media (max-width: 1100px) {
+  .cockpit-shell > .leftnav { grid-row: 1; }
+  .cockpit-shell-header { grid-row: 2; }
+  .workspace-controls { grid-column: 1; grid-row: 3; }
+  .project-main-panel { grid-row: 4; }
+  .repository-controls { grid-column: 1; grid-row: 5; }
+  .project-side-panel { grid-row: 6; }
+  .workspace-controls { flex-wrap: wrap; }
+}
+@media print { .workspace-controls, .repository-controls { display: none !important; } }
+
+.cockpit-scroll .profile > .pf-section:first-of-type { margin-top: 0; }
+/* Production usability: pane width, rather than viewport width, owns forms. */
+.project-main-panel { container: workspace / inline-size; }
+@container workspace (max-width: 560px) {
+  .pf-identity-grid, .pf-place-grid, .pf-work-line, .pf-cards,
+  .pf-panel-wide .pf-panel-body,
+  .pf-strips .pf-panel-flat:last-child .pf-panel-body { grid-template-columns: minmax(0, 1fr); }
+  .pf-stack-head { flex-wrap: wrap; justify-content: flex-start; }
+}
+.choice-check { width: 14px; height: 14px; flex: none; margin-right: 6px; }
+.reg-title-review { display: inline-block; margin-left: 8px; color: var(--warn); font-size: var(--fs-sm); }
+.cockpit-scroll { scrollbar-color: var(--sw-border-strong) transparent; }
+.cockpit-scroll > *, .spec-table-wrap, .procurement-scroll { max-width: 100%; }
+.theme-button { width: 36px; height: 36px; box-shadow: none; }
+.theme-button svg { width: 20px; height: 20px; }
+.page-download { display: flex; align-items: center; gap: 6px; width: auto; min-height: 36px; padding: 0 10px; font: inherit; font-size: var(--fs-md); }
+.navigation-content { display: flex; flex-direction: column; min-height: 0; flex: 1; overflow-y: auto; }
+.cockpit-shell .switcher-list { position: relative; top: auto; width: 100%; max-height: none; margin-top: 6px; box-sizing: border-box; box-shadow: none; }
+.switcher-list .input { width: 100%; min-width: 0; box-sizing: border-box; }
+.switcher-results { padding: 0; margin: 6px 0; list-style: none; max-height: 30vh; overflow-y: auto; }
+.switcher-results button, .switcher-home { overflow-wrap: anywhere; font-size: var(--fs-md); }
+.switcher-home { border-top: 1px solid var(--line) !important; border-radius: 0 !important; }
+.nav-planned { display: block; font-size: var(--fs-sm); font-weight: 400; }
+.nav-item[aria-current="page"], .nav-item:hover:not(:disabled) { background: var(--sw-hover-bg); }
+.nav-item[aria-current="page"] .nav-icon { color: var(--sw-text-primary); }
+.mobile-nav-toggle { display: none; }
+.skip-link:focus { position: fixed; z-index: 2000; top: 8px; left: 8px; width: auto; height: auto; clip: auto; clip-path: none; padding: 12px; background: var(--paper); color: var(--ink); }
+.project-open { color: var(--ink); font-size: var(--fs-md); }
+.project-actions { position: relative; margin-right: 12px; }
+.project-actions summary { cursor: pointer; padding: 10px; font-size: var(--fs-md); color: var(--ink); }
+.project-actions button { position: absolute; right: 0; top: 100%; z-index: 2; white-space: nowrap; }
+.project-search { display: grid; gap: 6px; margin: 24px 0 12px; }
+.project-search input { width: 100%; }
+.home-load-error, .app-load-error { padding: 12px; color: var(--alert); background: var(--paper); }
+.app-load-error { position: relative; z-index: 40; }
+@media (max-width: 1100px) {
+  .cockpit-shell > .leftnav { padding: 8px; }
+  .mobile-nav-toggle { display: inline-flex; align-self: flex-start; }
+  .leftnav:not([data-mobile-open]) .navigation-content { display: none; }
+  .leftnav .leftnav-logo { height: 56px; }
+  .leftnav .navigation-content { max-height: 65vh; }
+  .cockpit-shell-header { height: auto; min-height: 80px; }
+  .cockpit-header-actions { gap: 8px; }
+  .cockpit-address { overflow-wrap: anywhere; }
+  .cockpit-scroll { max-width: 100%; }
+}
+@media print { .mobile-nav-toggle, .app-load-error { display: none !important; } }
+.project-list li { grid-template-columns: minmax(0, 1fr) auto; }
+.sign-out-control { position: relative; flex: none; }
+.sign-out-control [role="alert"] { position: absolute; right: 0; top: 100%; width: 200px; padding: 8px; background: var(--paper); font-size: var(--fs-md); z-index: 50; }
+/* Keep offscreen live regions inside the panel's scrollable containing block. */
+.cockpit-scroll { position: relative; }
+/* Frozen identities must leave room for the cell a user is editing. */
+@container workspace (max-width: 700px) {
+  .cost-grid .cost-sticky[data-col] { position: relative; left: auto; }
+  .cost-grid thead .cost-sticky[data-col] { position: sticky; left: auto; }
+}

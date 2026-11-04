@@ -1,0 +1,7 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T05-house-alterations-additions/shape.yaml",
+  "triggers": [
+    "first-floor-addition"
+  ]
+}

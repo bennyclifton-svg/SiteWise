@@ -100,7 +100,7 @@ export function Sources({ cell, onJump }: { cell: Cell; onJump: (id: string) => 
   if (cell.sources.length === 0) return null;
   return (
     <details className="pf-sources" ref={ref} onToggle={(e) => setOpen(e.currentTarget.open)}>
-      <summary aria-label={`${cell.sources.length} source${cell.sources.length === 1 ? "" : "s"}`}>
+      <summary title={`${cell.sources.length} source passage${cell.sources.length === 1 ? "" : "s"}`} aria-label={`${cell.sources.length} source${cell.sources.length === 1 ? "" : "s"}`}>
         {cell.sources.length}
       </summary>
       <ul>
@@ -159,7 +159,14 @@ export function FieldRow({
   stacked?: boolean;
 }) {
   const [draft, setDraft] = useState(field.value);
-  useEffect(() => setDraft(field.value), [field.value]);
+  const dirty = useRef(false);
+  useEffect(() => {
+    // A streamed reading must not discard a correction being typed or retried.
+    if (!dirty.current || field.value === draft) {
+      dirty.current = false;
+      setDraft(field.value);
+    }
+  }, [field.value, draft]);
   const id = `pf-${field.key}-${field.part_id}`;
   const part = parts && parts.length > 1 ? parts.find((p) => p.id === field.part_id) : undefined;
   const label = part && part.kind !== "whole" ? `${field.label} · ${part.label}` : field.label;
@@ -179,7 +186,7 @@ export function FieldRow({
   } else if (field.kind === "choice" && field.options && field.options.length > 0) {
     control = (
       <select id={id} className="select pf-control" value={field.value} onChange={(e) => write(e.target.value)} title={compact ? hint || undefined : undefined}>
-        <option value="">{stacked ? "Not stated" : "—"}</option>
+        <option value="">{stacked ? "Unknown" : "—"}</option>
         {field.options.map((o) => (
           <option key={o.id} value={o.id}>
             {o.label}
@@ -200,7 +207,7 @@ export function FieldRow({
           inputMode={field.kind === "number" ? "decimal" : undefined}
           value={draft}
           placeholder={field.kind === "multi" ? "e.g. 2, 6" : field.typical && !field.value ? field.typical : compact && hint ? hint : undefined}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => { dirty.current = true; setDraft(e.target.value); }}
           onBlur={() => commit()}
         />
         {field.unit && <span className="pf-unit">{field.unit === "m2" ? "m²" : field.unit}</span>}
@@ -289,6 +296,7 @@ export function ChoiceGroup({
           return (
             <label key={o.id} className="pf-option" data-on={on || undefined} data-band={on ? field.band || undefined : undefined}>
               <input type="radio" name={name} value={o.id} checked={on} onChange={() => onSet(field.key, { part_id: field.part_id, value: o.id })} />
+              {on && <svg className="choice-check" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3 3 7-7" fill="none" stroke="currentColor" strokeWidth="2" /></svg>}
               <span>{o.label}</span>
             </label>
           );

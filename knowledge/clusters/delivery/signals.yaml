@@ -114,6 +114,18 @@ signals:
     status: draft
     sources:
       - {"seed": "commercial-construction-guide.md", "anchor": "## Quality Assurance and Commissioning"}
+  # Walsh review, 2026-10-27: a terrace tie-in with its neighbour's wall had no
+  # question; the acoustic signal above is worded for offices beside factories.
+  - id: sig.party-wall-stated
+    type: noul
+    instructions: "Using `text`, does the passage state work to, or a tie-in with, a wall shared with a neighbouring building (a party, separating or common wall)?"
+    criteria:
+      "true": "It states work to, a tie-in with, or fire or sound separation at a wall shared with a neighbouring building."
+      "false": "It does not mention a shared wall, or mentions only a boundary fence or the building's own external walls."
+    runs_on: ["site", "structure", "fire-passive", "interiors"]
+    status: draft
+    sources:
+      - {"seed": "renovation-guide.md", "anchor": "## Dilapidation and neighbour management"}
   - id: sig.work-hours-restriction-stated
     type: noul
     instructions: "Using `text`, does the passage state permitted working hours or days for the site?"

@@ -141,11 +141,14 @@ boundary:
   end: s8_advice
 - start: s1_basis
   end: s4_design
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: s1_basis
   name: S1 Inception / cost basis
-  deliverable: Reconcile brief, budget, scope/area/quantity definitions and evidence; establish source, gap, risk
-    and priced-assumption registers, reporting/program and input owners
+  lines:
+  - {key: reconcile_brief_budget, text: "Reconcile brief, budget, scope/area/quantity definitions and evidence"}
+  - {key: establish_source_gap, text: "establish source, gap, risk and priced-assumption registers, reporting/program and input owners"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -157,8 +160,9 @@ stages:
       the historical PDF-only promises.
 - key: s2_concept
   name: S2 Feasibility / options
-  deliverable: Evidence-appropriate order-of-cost/measured estimate; normalise benchmark date/location/specification,
-    compare counted options, risk/escalation/sensitivity and investigations before commitment
+  lines:
+  - {key: evidence_appropriate_order, text: "Evidence-appropriate order-of-cost/measured estimate"}
+  - {key: normalise_benchmark_date, text: "normalise benchmark date/location/specification, compare counted options, risk/escalation/sensitivity and investigations before commitment"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -175,8 +179,12 @@ stages:
   if_unknown: ask
 - key: s3_authority
   name: S3 Authority estimate
-  deliverable: Confirmed current purpose/definition/form/date/signatory; draft, agreed review and signed final report.
-    Reconcile differences to cost plan; historical CIV is not the default. Authority decides approval
+  lines:
+  - {key: confirmed_current_purpose, text: "Confirmed current purpose/definition/form/date/signatory"}
+  - {key: draft_agreed_review, text: "draft, agreed review and signed final report"}
+  - {key: reconcile_differences_cost, text: "Reconcile differences to cost plan"}
+  - {key: historical_civ_is, text: "historical CIV is not the default"}
+  - {key: authority_decides_approval, text: "Authority decides approval"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -197,8 +205,10 @@ stages:
   if_unknown: ask
 - key: s4_design
   name: S4 Design cost planning
-  deliverable: At named milestones measure/price agreed documents; coordinate services/siteworks, test value options
-    with designers, reconcile changes/budget and risk/owner costs; flag gaps before freeze
+  lines:
+  - {key: named_milestones_measure, text: "At named milestones measure/price agreed documents"}
+  - {key: coordinate_services_siteworks, text: "coordinate services/siteworks, test value options with designers, reconcile changes/budget and risk/owner costs"}
+  - {key: flag_gaps_before, text: "flag gaps before freeze"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -215,9 +225,10 @@ stages:
   if_unknown: ask
 - key: s5_tender
   name: S5 Procurement / tender
-  deliverable: Separately select pretender estimate, BoQ/schedule, packages, clarifications/interviews/negotiation
-    and recommendation; agree measurement rules/contractual quantity status. D&C/ECI design/risk allowances and
-    tender-budget reconciliation
+  lines:
+  - {key: separately_select_pretender, text: "Separately select pretender estimate, BoQ/schedule, packages, clarifications/interviews/negotiation and recommendation"}
+  - {key: agree_measurement_rules, text: "agree measurement rules/contractual quantity status"}
+  - {key: d_c_eci, text: "D&C/ECI design/risk allowances and tender-budget reconciliation"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -230,9 +241,13 @@ stages:
   default: option
 - key: s6_construction
   name: S6 Post-contract cost advice
-  deliverable: Named contract; counted claims/variations, observations, cost reports/cashflow and forecast. Separate
-    claimed, assessed/certified, paid, committed/disputed/forecast; reconcile PC/PS, contingency and client costs.
-    Administrator retains powers; lender reliance separate
+  lines:
+  - {key: named_contract, text: "Named contract"}
+  - {key: counted_claims_variations, text: "counted claims/variations, observations, cost reports/cashflow and forecast"}
+  - {key: separate_claimed_assessed, text: "Separate claimed, assessed/certified, paid, committed/disputed/forecast"}
+  - {key: reconcile_pc_ps, text: "reconcile PC/PS, contingency and client costs"}
+  - {key: administrator_retains_powers, text: "Administrator retains powers"}
+  - {key: lender_reliance_separate, text: "lender reliance separate"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -249,9 +264,10 @@ stages:
   default: option
 - key: s7_completion
   name: S7 Final account
-  deliverable: Reconcile contract sum, variations/allowances/claims, commitments and risk; scoped retention/defects
-    advice, unresolved disputes and final registers. Completion certification, entitlement and security release
-    remain contract roles
+  lines:
+  - {key: reconcile_contract_sum, text: "Reconcile contract sum, variations/allowances/claims, commitments and risk"}
+  - {key: scoped_retention_defects, text: "scoped retention/defects advice, unresolved disputes and final registers"}
+  - {key: completion_certification_entitlement, text: "Completion certification, entitlement and security release remain contract roles"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -270,9 +286,10 @@ stages:
   default: option
 - key: s8_advice
   name: S8 Standalone advisory
-  deliverable: Define decision, extent, evidence cutoff, sample/inspection limits, data horizon, method/competence,
-    reliance and final report for selected feasibility/capex study. Lender, life-cycle/carbon/LCA and expert evidence
-    separately priced; valuation/tax by named specialists
+  lines:
+  - {key: define_decision_extent, text: "Define decision, extent, evidence cutoff, sample/inspection limits, data horizon, method/competence, reliance and final report for selected feasibility/capex study"}
+  - {key: lender_life_cycle, text: "Lender, life-cycle/carbon/LCA and expert evidence separately priced"}
+  - {key: valuation_tax_named, text: "valuation/tax by named specialists"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -399,6 +416,7 @@ allowances:
   owner: client
 positions:
 - key: construction_plan
+  stage: [s4_design, s2_concept, s8_advice]
   group: Cost planning and budget
   label: Construction cost plan at selected stages; measured/assumed quantities and missing specialist inputs recorded
   kind: technical
@@ -407,6 +425,7 @@ positions:
   - kind: seed
     ref: cost-planning#25,26,27,28,31
 - key: total_budget
+  stage: [s1_basis]
   group: Cost planning and budget
   label: 'Total project budget: fees/charges, off-site, FF&E, land/finance/tax; item boundaries and tax adviser
     agreed'
@@ -422,6 +441,7 @@ positions:
     ref: cost-planning#26
   if_unknown: ask
 - key: contract_allowances
+  stage: [s5_tender, s4_design]
   group: Cost planning and budget
   label: Contract PC/PS, owner supply and selection dates; no default contract form or contingency percentage
   kind: technical
@@ -436,6 +456,7 @@ positions:
     ref: cost-planning#25,28,29
   if_unknown: ask
 - key: existing_costs
+  stage: [s4_design, s2_concept, s1_basis]
   group: Cost planning and budget
   label: Fit-out/refurb/live-site strip-out, make-good, isolation, after-hours and decanting; designers assess retained
     systems
@@ -456,6 +477,7 @@ positions:
     ref: cost-planning#31,33
   if_unknown: ask
 - key: operator
+  stage: [s4_design, s2_concept, s1_basis]
   group: Cost planning and budget
   label: Operator equipment/specialist operations; evidenced requirements or explicit allowances only
   kind: technical
@@ -474,6 +496,7 @@ positions:
       unknown scope remains unresolved.
   if_unknown: ask
 - key: allocation
+  stage: [s4_design, s2_concept, s1_basis]
   group: Cost planning and budget
   label: Mixed-use/building/stage cost allocation; reconcile shared infrastructure and preliminaries to total
   kind: technical
@@ -488,6 +511,7 @@ positions:
     ref: cost-planning#33
   if_unknown: ask
 - key: remediation
+  stage: [s8_advice, s2_concept, s4_design, s1_basis]
   group: Specialist cost studies
   label: Defect/remediation/contamination costing; specialists diagnose, QS prices defined extent/ranges
   kind: technical
@@ -504,6 +528,7 @@ positions:
     ref: cost-planning#28,32
   if_unknown: ask
 - key: risk
+  stage: [s2_concept, s4_design, s1_basis]
   group: Cost planning and budget
   label: Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin
   kind: technical
@@ -512,6 +537,7 @@ positions:
   - kind: seed
     ref: cost-planning#27,28
 - key: tender
+  stage: [s5_tender]
   group: Procurement and construction advice
   label: Tender/D&C/ECI review; normalise qualifications, PC/PS and alternatives; no novation or superintendent
     role
@@ -526,6 +552,7 @@ positions:
   - kind: seed
     ref: cost-planning#25,29,30
 - key: claims
+  stage: [s6_construction]
   group: Procurement and construction advice
   label: Progress-claim reports; separate brief/inspection counts and administrator authority
   kind: technical
@@ -541,6 +568,7 @@ positions:
   - kind: seed
     ref: cost-planning#29
 - key: lender
+  stage: [s6_construction, s8_advice]
   group: Procurement and construction advice
   label: Lender reports; separate brief, inspections and reliance, never implied by progress-claim advice
   kind: technical
@@ -570,6 +598,7 @@ positions:
       lists do not commission these services.
   responsible: named valuer / insurer / tax adviser (R4)
 - key: lifecycle
+  stage: [s8_advice, s4_design]
   group: Specialist cost studies
   label: Life-cycle/carbon/LCA analysis; horizon/assumptions stated, designers approve performance effects; no compliance
     certification

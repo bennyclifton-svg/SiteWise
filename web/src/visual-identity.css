@@ -1,9 +1,9 @@
 .visual-review { margin-block: 1rem; border-top: 1px solid var(--line); padding-top: 1rem; }
-.visual-review h3 { font-size: .875rem; margin: 0 0 .5rem; }
+.visual-review h3 { font-size: var(--fs-lg); margin: 0 0 .5rem; }
 .visual-review-layout { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(0, 2fr); gap: 1.5rem; }
 .visual-review-field { padding-block: .75rem; overflow-wrap: anywhere; }
 .visual-review-field p { margin-block: .25rem; }
-.visual-review-field span { font-size: .875rem; }
+.visual-review-field span { font-size: var(--fs-lg); }
 .visual-review-tabs { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: .75rem; }
 .visual-review-tabs [aria-pressed="true"] { font-weight: 700; text-decoration: underline; }
 .visual-review-evidence img { display: block; width: 100%; max-height: 38rem; object-fit: contain; background: white; margin-bottom: .5rem; }
@@ -22,7 +22,7 @@
   align-items: center;
   gap: 4px 10px;
   margin-top: 4px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .reg-title-accept .cell-link {
   flex: none;

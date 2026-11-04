@@ -217,6 +217,8 @@ func invoiceMediaType(name string) string {
 	switch invoices.FormatOf(name) {
 	case "pdf":
 		return "application/pdf"
+	case "md":
+		return "text/markdown; charset=utf-8"
 	case "docx":
 		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 	case "xlsx":
@@ -369,6 +371,9 @@ func exportInvoices(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	f := invoices.Filter{Supplier: q.Get("supplier"), Month: q.Get("month"), Line: q.Get("line"), Status: q.Get("status")}
+	if group, ok := v.Groups[f.Line]; ok {
+		f.LineIDs = group.LineIDs
+	}
 	nm := ledgerNames(v)
 	meta := invoices.ExportMeta{Project: v.Project, Exported: time.Now(), Filters: f.String(func(id string) string { return nm.supplier(id) }, func(id string) string { return nm.line(id) })}
 	var rows []invoices.ExportRow
@@ -431,6 +436,9 @@ type ledgerNameIndex struct {
 
 func ledgerNames(v store.LedgerView) ledgerNameIndex {
 	n := ledgerNameIndex{packages: v.Titles, lines: map[string]string{}}
+	for id, g := range v.Groups {
+		n.lines[id] = g.Label
+	}
 	for _, l := range v.Lines {
 		n.lines[l.ID] = l.Label
 	}
@@ -549,12 +557,18 @@ type invoiceJSON struct {
 }
 
 type invoiceLedgerJSON struct {
-	Project  string             `json:"project"`
-	TaxBasis string             `json:"tax_basis"`
-	Summary  invoiceSummaryJSON `json:"summary"`
-	Invoices []invoiceJSON      `json:"invoices"`
-	Packages []invoices.Package `json:"packages"`
-	Lines    []invoiceLineJSON  `json:"lines"`
+	Groups   map[string]invoiceGroupJSON `json:"groups"`
+	Project  string                      `json:"project"`
+	TaxBasis string                      `json:"tax_basis"`
+	Summary  invoiceSummaryJSON          `json:"summary"`
+	Invoices []invoiceJSON               `json:"invoices"`
+	Packages []invoices.Package          `json:"packages"`
+	Lines    []invoiceLineJSON           `json:"lines"`
+}
+
+type invoiceGroupJSON struct {
+	invoiceLineJSON
+	LineIDs []string `json:"line_ids"`
 }
 
 func lineBody(l invoices.LineSummary) invoiceLineJSON {
@@ -565,6 +579,10 @@ func lineBody(l invoices.LineSummary) invoiceLineJSON {
 func ledgerBody(v store.LedgerView) invoiceLedgerJSON {
 	n := ledgerNames(v)
 	out := invoiceLedgerJSON{Project: v.Project, TaxBasis: v.TaxBasis, Invoices: []invoiceJSON{}, Packages: v.Packages, Lines: []invoiceLineJSON{}}
+	out.Groups = map[string]invoiceGroupJSON{}
+	for id, g := range v.Groups {
+		out.Groups[id] = invoiceGroupJSON{invoiceLineJSON: lineBody(g.LineSummary), LineIDs: g.LineIDs}
+	}
 	if out.Packages == nil {
 		out.Packages = []invoices.Package{}
 	}

@@ -56,28 +56,22 @@ scenario: survey-setout-only
 description: Appointed set-out does not purchase final work-as-executed checks.
 expect:
   land-surveying:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      titling: O
+      titling: I
       control: I
       records: I
       exposure: X
-      interior: O
-      monitoring: O
+      interior: I
+      monitoring: I
       setout: I
-      asbuilt: O
+      asbuilt: X
       boundary: I
       adjoining: I
       buried: I
       sewer: I
       access: absent
-    stages_include:
-    - s1_plan
-    - s2_detail
-    - s3_boundary
-    - s4_services
-    - s6_construction
-    stages_option:
-    - s5_support
-    - s7_completion
+    stages_include: [s1_plan, s2_detail, s3_boundary, s4_services, s6_construction, s5_support]
     blocking_only: true
     blocking: []
+    stages_absent: [s7_completion]

@@ -57,16 +57,13 @@ description: Residential tree-risk commission explicitly appoints formal risk an
   construction supervision and internal diagnostics remain options.
 expect:
   arborist:
-    stages_include:
-    - s6_risk
-    - s7_monitoring
-    stages_option:
-    - s6_investigation
-    - s7_peer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s6_risk, s7_monitoring, s6_investigation]
     positions:
-      investigation: O
+      investigation: I
       risk: I
       monitoring: I
-      supervision: O
+      supervision: I
     blocking_only: true
     blocking: []
+    stages_absent: [s7_peer]

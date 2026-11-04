@@ -47,6 +47,8 @@ role:
     text: "Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work."
     provenance: [{kind: evidence, ref: "bca-certification#24,38"}, {kind: client_decision, ref: "bca-certification#53", why: "Independently priced and appointed packages; neither role implies the other."}]
 stage_intro: "Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A; CDC/other routes need separately confirmed scope."
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 boundary:
   - {when: [{flag: [bca_advisory]}], start: a1_inception, end: a3_tender}
   - {when: [{flag: [bca_certification]}], start: b1_preliminary, end: b4_occupation}
@@ -54,7 +56,11 @@ boundary:
 stages:
   - key: a1_inception
     name: A1 Inception / schematic advice
-    deliverable: "Review brief/plans; classifications/code basis, markups, high-level report, action register and specialist input schedule. Inspect accessible affected existing fabric; state investigation limits."
+    lines:
+      - {key: review_brief_plans, text: "Review brief/plans"}
+      - {key: classifications_code_basis, text: "classifications/code basis, markups, high-level report, action register and specialist input schedule"}
+      - {key: inspect_accessible_affected, text: "Inspect accessible affected existing fabric"}
+      - {key: state_investigation_limits, text: "state investigation limits."}
     fee_basis: fixed
     when: [{flag: [bca_advisory]}]
     if_unknown: ask
@@ -62,7 +68,11 @@ stages:
     provenance: [{kind: evidence, ref: "bca-certification#2"}, {kind: seed, ref: "bca-certification#47-51"}]
   - key: a2_planning
     name: A2 Planning submission advice
-    deliverable: "Review planning drawings/interfaces and proposed performance solutions; draft/final BCA statement and applicable draft fire safety schedule. Ends at submission; price later responses separately."
+    lines:
+      - {key: review_planning_drawings, text: "Review planning drawings/interfaces and proposed performance solutions"}
+      - {key: draft_final_bca, text: "draft/final BCA statement and applicable draft fire safety schedule"}
+      - {key: ends_submission, text: "Ends at submission"}
+      - {key: price_later_responses, text: "price later responses separately."}
     fee_basis: fixed
     when: [{flag: [bca_advisory], pathway: [da, ssd]}]
     if_unknown: ask
@@ -70,7 +80,9 @@ stages:
     provenance: [{kind: evidence, ref: "bca-certification#3"}]
   - key: a3_tender
     name: A3 Detailed design / tender advice
-    deliverable: "Review updated plans, selected upgrade interfaces and specialist briefs/reports; tender BCA report records unresolved specialist design and statutory assessment issues."
+    lines:
+      - {key: review_updated_plans, text: "Review updated plans, selected upgrade interfaces and specialist briefs/reports"}
+      - {key: tender_bca_report, text: "tender BCA report records unresolved specialist design and statutory assessment issues."}
     fee_basis: fixed
     when: [{flag: [bca_advisory]}]
     if_unknown: ask
@@ -78,7 +90,10 @@ stages:
     provenance: [{kind: evidence, ref: "bca-certification#4,8-10,22"}]
   - key: a4_construction
     name: A4 Construction advisory support
-    deliverable: "BCA query/changed-design advice and action updates within allowances; price advisory visits, detail reviews and completion report individually. No statutory appointment"
+    lines:
+      - {key: bca_query_changed, text: "BCA query/changed-design advice and action updates within allowances"}
+      - {key: price_advisory_visits, text: "price advisory visits, detail reviews and completion report individually"}
+      - {key: no_statutory_appointment, text: "No statutory appointment"}
     fee_basis: option
     default: option
     when: [{flag: [bca_advisory]}]
@@ -87,7 +102,10 @@ stages:
     provenance: [{kind: evidence, ref: "bca-certification#4,22"}, {kind: seed, ref: "bca-certification#48,50"}, {kind: client_decision, ref: "bca-certification#53", why: "Construction advice extends beyond source B's tender-only appointment; price separately."}]
   - key: b1_preliminary
     name: B1 Preliminary regulatory assessment
-    deliverable: "Preliminary-document assessment, regulatory report and evidence checklist; scheduled visit. Identify independence limits on design advice."
+    lines:
+      - {key: preliminary_document_assessment, text: "Preliminary-document assessment, regulatory report and evidence checklist"}
+      - {key: scheduled_visit, text: "scheduled visit"}
+      - {key: identify_independence_limits, text: "Identify independence limits on design advice."}
     fee_basis: fixed
     when: [{flag: [bca_certification], pathway: [da, ssd]}]
     if_unknown: ask
@@ -95,7 +113,10 @@ stages:
     provenance: [{kind: evidence, ref: "bca-certification#5,24,38"}]
   - key: b2_construction_approval
     name: B2 Construction approval assessment
-    deliverable: "CC checklist/condition register; assess plans, specialist evidence and scheduled solutions/referrals; determine each CC package with reasons/outstanding actions, supporting documents and applicable fire safety schedule."
+    lines:
+      - {key: cc_checklist_condition, text: "CC checklist/condition register"}
+      - {key: assess_plans_specialist, text: "assess plans, specialist evidence and scheduled solutions/referrals"}
+      - {key: determine_each_cc, text: "determine each CC package with reasons/outstanding actions, supporting documents and applicable fire safety schedule."}
     fee_basis: fixed
     when: [{flag: [bca_certification], pathway: [da, ssd]}]
     if_unknown: ask
@@ -103,7 +124,10 @@ stages:
     provenance: [{kind: evidence, ref: "bca-certification#6-13"}, {kind: client_decision, ref: "bca-certification#57", why: "Only consent-followed-by-CC supported; no mechanical substitution of CDC."}]
   - key: b3_construction
     name: B3 Principal-certifier construction services
-    deliverable: "Appointment notices/inspection schedule, booking responsibilities and notice; scheduled inspections/photo reports, close-out and missed-inspection records; witness/referral tasks, occupation checklist and required compliance/complaint duties."
+    lines:
+      - {key: appointment_notices_inspection, text: "Appointment notices/inspection schedule, booking responsibilities and notice"}
+      - {key: scheduled_inspections_photo, text: "scheduled inspections/photo reports, close-out and missed-inspection records"}
+      - {key: witness_referral_tasks, text: "witness/referral tasks, occupation checklist and required compliance/complaint duties."}
     fee_basis: fixed
     when: [{flag: [bca_certification], pathway: [da, ssd]}]
     if_unknown: ask
@@ -111,7 +135,12 @@ stages:
     provenance: [{kind: evidence, ref: "bca-certification#14-18,25"}]
   - key: b4_occupation
     name: B4 Occupation assessment / handover
-    deliverable: "Assess conditions and completion evidence; final inspection/fire-authority coordination; determine each OC package. Certificates or reasons/outstanding items, approved-document index, inspection records and fire safety schedule; separate from practical completion."
+    lines:
+      - {key: assess_conditions_completion, text: "Assess conditions and completion evidence"}
+      - {key: final_inspection_fire, text: "final inspection/fire-authority coordination"}
+      - {key: determine_each_oc, text: "determine each OC package"}
+      - {key: certificates_reasons_outstanding, text: "Certificates or reasons/outstanding items, approved-document index, inspection records and fire safety schedule"}
+      - {key: separate_from_practical, text: "separate from practical completion."}
     fee_basis: fixed
     when: [{flag: [bca_certification], pathway: [da, ssd]}]
     if_unknown: ask
@@ -131,15 +160,15 @@ allowances:
 positions:
   - {group: "Compliance advice and evidence", key: evidence_registers, label: "Compliance evidence, action and condition registers (PDF/editable), every selected stage", kind: technical, value: I, provenance: [{kind: evidence, ref: "bca-certification#6-7"}, {kind: client_decision, ref: "bca-certification#56", why: "Keep reusable evidence and action records at every selected stage."}]}
   - {group: "Statutory assessment and occupation", key: statutory_functions, label: "Statutory/principal-certifier functions: Package B only, separate from A", kind: technical, when: [{flag: [bca_certification]}], value: {value: I, when: [{stage_included: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]}], else: O}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#6,13-24,38"}]}
-  - {group: "Compliance advice and evidence", key: existing_assessment, label: "Existing/fit-out/extension/changed-use assessment: agreed extent; opening-up/surveys by named others; no whole-building upgrade assumed", kind: technical, value: {value: I, when: [{flag: [bca_existing_assessment]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#2,4"}, {kind: seed, ref: "bca-certification#48"}]}
-  - {group: "Compliance advice and evidence", key: classification_map, label: "Mixed-use/building/tenancy classification and approval map: shared egress, fire/services and shell/tenant boundaries", kind: technical, value: {value: I, when: [{flag: [bca_classification_map]}], else: "-"}, if_unknown: ask, provenance: [{kind: seed, ref: "bca-certification#47,49"}]}
-  - {group: "Statutory assessment and occupation", key: staged_occupation, label: "Occupied/staged occupation boundaries and certificate packages; designers design temporary measures, contractor sets methods", kind: technical, value: {value: I, when: [{flag: [bca_staged_occupation]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#16,21"}, {kind: seed, ref: "bca-certification#48-50"}]}
-  - {group: "Statutory assessment and occupation", key: performance_assessment, label: "Performance-solution assessment; specialist author and assessor are different parties", kind: technical, value: O, provenance: [{kind: evidence, ref: "bca-certification#8-10,20,22"}, {kind: seed, ref: "bca-certification#51"}]}
-  - {group: "Statutory assessment and occupation", key: fire_referrals, label: "Fire-system/authority referrals and witnessing; contractor/specialists test and certify", kind: technical, value: {value: I, when: [{flag: [bca_fire_referrals]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#11-12,17-20"}, {kind: seed, ref: "bca-certification#50"}]}
-  - {group: "Compliance advice and evidence", key: residential_evidence, label: "Residential energy/design-evidence review (e.g. BASIX), only if required", kind: technical, value: {value: I, when: [{flag: [bca_residential_evidence]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#20"}, {kind: seed, ref: "bca-certification#47"}]}
+  - {group: "Compliance advice and evidence", key: existing_assessment, stage: [a1_inception, b1_preliminary, a3_tender, b2_construction_approval], label: "Existing/fit-out/extension/changed-use assessment: agreed extent; opening-up/surveys by named others; no whole-building upgrade assumed", kind: technical, value: {value: I, when: [{flag: [bca_existing_assessment]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#2,4"}, {kind: seed, ref: "bca-certification#48"}]}
+  - {group: "Compliance advice and evidence", key: classification_map, stage: [a1_inception, b1_preliminary, a2_planning, b2_construction_approval], label: "Mixed-use/building/tenancy classification and approval map: shared egress, fire/services and shell/tenant boundaries", kind: technical, value: {value: I, when: [{flag: [bca_classification_map]}], else: "-"}, if_unknown: ask, provenance: [{kind: seed, ref: "bca-certification#47,49"}]}
+  - {group: "Statutory assessment and occupation", key: staged_occupation, stage: [b4_occupation, a4_construction], label: "Occupied/staged occupation boundaries and certificate packages; designers design temporary measures, contractor sets methods", kind: technical, value: {value: I, when: [{flag: [bca_staged_occupation]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#16,21"}, {kind: seed, ref: "bca-certification#48-50"}]}
+  - {group: "Statutory assessment and occupation", key: performance_assessment, stage: [b2_construction_approval, a3_tender, a2_planning], label: "Performance-solution assessment; specialist author and assessor are different parties", kind: technical, value: O, provenance: [{kind: evidence, ref: "bca-certification#8-10,20,22"}, {kind: seed, ref: "bca-certification#51"}]}
+  - {group: "Statutory assessment and occupation", key: fire_referrals, stage: [b3_construction, b4_occupation, a4_construction], label: "Fire-system/authority referrals and witnessing; contractor/specialists test and certify", kind: technical, value: {value: I, when: [{flag: [bca_fire_referrals]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#11-12,17-20"}, {kind: seed, ref: "bca-certification#50"}]}
+  - {group: "Compliance advice and evidence", key: residential_evidence, stage: [b2_construction_approval, a2_planning, a3_tender], label: "Residential energy/design-evidence review (e.g. BASIX), only if required", kind: technical, value: {value: I, when: [{flag: [bca_residential_evidence]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#20"}, {kind: seed, ref: "bca-certification#47"}]}
   - {group: "Separate specialist responsibilities", key: specialist_design, label: "Detailed access/energy/structural/acoustic/waterproofing/passive-fire/bushfire design", kind: technical, value: X, responsible: "separately appointed specialist (name in R4)", provenance: [{kind: evidence, ref: "bca-certification#22-23"}, {kind: seed, ref: "bca-certification#51"}]}
   - {group: "Separate specialist responsibilities", key: other_approvals, label: "Utility/adjoining-owner/planning/road/demolition approvals", kind: technical, value: X, responsible: "client / project lead (name in R4)", provenance: [{kind: evidence, ref: "bca-certification#23"}]}
-  - {group: "Statutory assessment and occupation", key: extra_visits, label: "Extra visits, missed inspections and changed approved design: contingency rates/notice; required statutory action is not optional", kind: technical, value: O, provenance: [{kind: evidence, ref: "bca-certification#25,37"}, {kind: client_decision, ref: "bca-certification#54", why: "Separate contingency pricing without making required duties discretionary."}]}
+  - {group: "Statutory assessment and occupation", key: extra_visits, stage: [b3_construction, a4_construction], label: "Extra visits, missed inspections and changed approved design: contingency rates/notice; required statutory action is not optional", kind: technical, value: O, provenance: [{kind: evidence, ref: "bca-certification#25,37"}, {kind: client_decision, ref: "bca-certification#54", why: "Separate contingency pricing without making required duties discretionary."}]}
   - {group: "Separate specialist responsibilities", key: supervision, label: "Building supervision, contractual quality, methods and recurring annual inspections; no automatic retainer", kind: technical, value: X, responsible: "builder / contract administrator / owner (name in R4)", provenance: [{kind: evidence, ref: "bca-certification#22,24"}, {kind: seed, ref: "bca-certification#50"}, {kind: client_decision, ref: "bca-certification#53", why: "The appointment boundary does not create a continuing annual retainer."}]}
 terms:
   - key: agreement

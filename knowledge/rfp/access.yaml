@@ -140,11 +140,15 @@ boundary:
   end: s8_advisory
 - start: s1_inception
   end: s4_approval
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: s1_inception
   name: S1 Inception / evidence
-  deliverable: Agree brief/basis; inspect agreed existing routes, separate observed/measured/reported facts; route
-    map/photos, inaccessible areas, upgrade questions and prioritised actions
+  lines:
+  - {key: agree_brief_basis, text: "Agree brief/basis"}
+  - {key: inspect_agreed_existing, text: "inspect agreed existing routes, separate observed/measured/reported facts"}
+  - {key: route_map_photos, text: "route map/photos, inaccessible areas, upgrade questions and prioritised actions"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -170,8 +174,9 @@ stages:
       and reliance; no discrimination-immunity promise.
 - key: s2_concept
   name: S2 Concept advice
-  deliverable: 'Mark access-chain barriers/options: arrival/parking, entries/levels, routes, lifts and facilities;
-    flag solution candidates and required versus voluntary improvements'
+  lines:
+  - {key: mark_access_chain, text: "Mark access-chain barriers/options: arrival/parking, entries/levels, routes, lifts and facilities"}
+  - {key: flag_solution_candidates, text: "flag solution candidates and required versus voluntary improvements"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -192,8 +197,10 @@ stages:
   if_unknown: ask
 - key: s3_planning
   name: S3 Planning report
-  deliverable: Preliminary/final drawing review; BCA/architect liaison, draft/final access report and unresolved
-    register. Submission ends stage unless authority responses through determination quantified
+  lines:
+  - {key: preliminary_final_drawing, text: "Preliminary/final drawing review"}
+  - {key: bca_architect_liaison, text: "BCA/architect liaison, draft/final access report and unresolved register"}
+  - {key: submission_ends_stage, text: "Submission ends stage unless authority responses through determination quantified"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -212,8 +219,10 @@ stages:
   if_unknown: ask
 - key: s4_approval
   name: S4 Construction approval
-  deliverable: Review conditions and coordinated drawings/specs; preliminary mark-ups/final access report, close
-    earlier findings and schedule product/measurement evidence. Solution preparation separate
+  lines:
+  - {key: review_conditions_coordinated, text: "Review conditions and coordinated drawings/specs"}
+  - {key: preliminary_mark_ups, text: "preliminary mark-ups/final access report, close earlier findings and schedule product/measurement evidence"}
+  - {key: solution_preparation_separate, text: "Solution preparation separate"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -232,8 +241,10 @@ stages:
   if_unknown: ask
 - key: s5_tender
   name: S5 Tender support
-  deliverable: Review agreed tender access documents and counted queries; D&C design-intent/contractor duties explicit.
-    Access review does not prepare architectural design
+  lines:
+  - {key: review_agreed_tender, text: "Review agreed tender access documents and counted queries"}
+  - {key: d_c_design, text: "D&C design-intent/contractor duties explicit"}
+  - {key: access_review_does, text: "Access review does not prepare architectural design"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -251,8 +262,10 @@ stages:
   default: option
 - key: s6_postcontract
   name: S6 Post-contract review
-  deliverable: 'Separately appointed contractor details/substitutions: tactile indicators, doors, fixtures, signs/lifts;
-    effects on earlier reports/solutions and reassessment. No automatic novation'
+  lines:
+  - {key: separately_appointed_contractor, text: "Separately appointed contractor details/substitutions: tactile indicators, doors, fixtures, signs/lifts"}
+  - {key: effects_earlier_reports, text: "effects on earlier reports/solutions and reassessment"}
+  - {key: no_automatic_novation, text: "No automatic novation"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -270,9 +283,12 @@ stages:
   default: option
 - key: s7_completion
   name: S7 Construction / completion
-  deliverable: Counted hold-point visits, pre-final/final audits and close-out; location/photos, test/product/as-built
-    evidence and solution conditions. Qualified opinion only for inspected scope; outstanding gaps explicit; certifier
-    decides occupation
+  lines:
+  - {key: counted_hold_point, text: "Counted hold-point visits, pre-final/final audits and close-out"}
+  - {key: location_photos_test, text: "location/photos, test/product/as-built evidence and solution conditions"}
+  - {key: qualified_opinion_only, text: "Qualified opinion only for inspected scope"}
+  - {key: outstanding_gaps_explicit, text: "outstanding gaps explicit"}
+  - {key: certifier_decides_occupation, text: "certifier decides occupation"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -294,9 +310,9 @@ stages:
   default: option
 - key: s8_advisory
   name: S8 Advisory / operational
-  deliverable: 'Defined audit/inclusive brief: sampling, evidence cutoff, user consultation, sensory/cognitive needs,
-    priorities/actions and operator commitments. Operational plan cannot replace physical compliance or accepted
-    solution'
+  lines:
+  - {key: defined_audit_inclusive, text: "Defined audit/inclusive brief: sampling, evidence cutoff, user consultation, sensory/cognitive needs, priorities/actions and operator commitments"}
+  - {key: operational_plan_cannot, text: "Operational plan cannot replace physical compliance or accepted solution"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -417,6 +433,7 @@ positions:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
       not establish included work or current statutory requirements.
 - key: existing
+  stage: [s1_inception]
   group: Access strategy and routes
   label: Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade
     or exemption
@@ -448,6 +465,7 @@ positions:
       legal upgrade trigger.
   if_unknown: ask
 - key: shared_routes
+  stage: [s2_concept, s1_inception]
   group: Access strategy and routes
   label: 'Mixed uses/buildings/tenancies: continuous routes, shared entries/lifts/amenities; resolve adjoining-property/tenancy
     reliance'
@@ -469,6 +487,7 @@ positions:
       not establish included work or current statutory requirements.
   if_unknown: ask
 - key: housing
+  stage: [s2_concept, s1_inception]
   group: Facilities and housing
   label: 'Housing/SDA targets: named scheme, unit types and assessor; residential label alone does not appoint'
   kind: technical
@@ -489,6 +508,7 @@ positions:
       not establish included work or current statutory requirements.
   if_unknown: ask
 - key: facilities
+  stage: [s4_approval, s3_planning, s5_tender, s8_advisory]
   group: Facilities and housing
   label: Hearing/signage/tactile/lift/facility criteria review; services/AV designs hearing, architect signs, lift
     specialist lifts
@@ -508,6 +528,7 @@ positions:
       not establish included work or current statutory requirements.
   if_unknown: ask
 - key: solutions
+  stage: [s4_approval, s3_planning, s5_tender]
   group: Specialist assessments
   label: 'Performance departure: brief/method/report/revisions per departure; author/independent assessor, fire/egress
     interfaces and acceptance/completion conditions'
@@ -523,6 +544,7 @@ positions:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
       not establish included work or current statutory requirements.
 - key: testing
+  stage: [s7_completion, s8_advisory]
   group: Specialist assessments
   label: 'Luminance/slip tests: competent named provider, installed-product certificates and field-test extent separately
     priced'
@@ -536,6 +558,7 @@ positions:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do
       not establish included work or current statutory requirements.
 - key: occupied
+  stage: [s7_completion, s8_advisory]
   group: Access strategy and routes
   label: Occupied/staged route-continuity review at appointed stages; repeat audits only within selected visit/stage
     allowances; contractor methods/safety, operator management
@@ -566,6 +589,7 @@ positions:
       legal upgrade trigger.
   if_unknown: ask
 - key: inclusive
+  stage: [s8_advisory]
   group: Facilities and housing
   label: Beyond-minimum inclusive/user/operational brief, sensory/cognitive needs and action plan; owner training/ongoing
     management
@@ -590,6 +614,7 @@ positions:
     why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
       and reliance; no discrimination-immunity promise.
 - key: remediation
+  stage: [s2_concept, s8_advisory]
   group: Specialist assessments
   label: Remediation/heritage access options from specialist diagnosis/advice; no structural/fire/conservation/hazardous-material
     design
@@ -611,6 +636,7 @@ positions:
     why: Apply residential renovation evidence principles to other existing-building uses without inventing an automatic
       legal upgrade trigger.
 - key: peer
+  stage: [s8_advisory]
   group: Specialist assessments
   label: 'Independent peer review/expert evidence: independence, reliance and legal instruction; no transfer of
     design duty'

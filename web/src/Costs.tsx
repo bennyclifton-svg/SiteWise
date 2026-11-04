@@ -1,4 +1,5 @@
 import { Pending } from "./Activity";
+import { readLocationChoice, writeLocationChoice } from "./workbenchLocation";
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import { ApiError } from "./api";
 import { costApi, type CostPlan, type CostItem, type CostSettings, type CostValue, type CostTotals } from "./costApi";
@@ -6,7 +7,7 @@ import { packageApi, type PackageRecord } from "./packageApi";
 import { CostGrid, editContent } from "./CostGrid";
 import { InvoicesTab, VariationsTab } from "./Invoices";
 import { invoiceApi, type InvoiceFilter, type Ledger } from "./invoiceApi";
-import { IconDownload } from "./icons";
+import { PageActions } from "./PageActions";
 import { profileApi } from "./profileApi";
 import "./invoices.css";
 import "./reports.css";
@@ -22,48 +23,21 @@ type CostTab = "plan" | "invoices" | "variations";
 const NO_FILTER: InvoiceFilter = { supplier: "", month: "", line: "", status: "" };
 
 function CostDownloads({ projectId, tab, filter }: { projectId: string; tab: CostTab; filter: InvoiceFilter }) {
-  const [open, setOpen] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: MouseEvent) => {
-      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      e.stopPropagation();
-      setOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
   const scoped = tab === "invoices" ? filter : NO_FILTER;
-  // Close after the click's default action. Unmounting a download link in the
-  // same turn drops the navigation before the browser starts the file.
-  const closeAfter = () => { window.setTimeout(() => setOpen(false), 0); };
-  return (
-    <div className="costs-toolbar costs-export" ref={box} onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); } }}>
-      <button type="button" className="btn costs-download" aria-label="Download" title="Download" aria-haspopup="menu" aria-expanded={open} aria-controls="cost-download-menu" onClick={() => setOpen(v => !v)}>
-        <IconDownload />
-      </button>
-      {open && (
-        <div id="cost-download-menu" className="costs-download-menu" role="menu" aria-label="Download">
-          <a role="menuitem" href={invoiceApi.exportURL(projectId, scoped)} download onClick={closeAfter}>Export to Excel</a>
-          <a role="menuitem" href={invoiceApi.exportURL(projectId, NO_FILTER, "csv", "cost_plan")} download onClick={closeAfter}>Cost plan CSV</a>
-          <a role="menuitem" href={invoiceApi.exportURL(projectId, scoped, "csv", "invoices")} download onClick={closeAfter}>Invoices CSV</a>
-          <button type="button" role="menuitem" onClick={() => { setOpen(false); window.print(); }}>Print</button>
-        </div>
-      )}
-    </div>
-  );
+  return <PageActions surface="costs">
+    <a href={invoiceApi.exportURL(projectId, scoped)} download>Export to Excel</a>
+    <a href={invoiceApi.exportURL(projectId, NO_FILTER, "csv", "cost_plan")} download>Cost plan CSV</a>
+    <a href={invoiceApi.exportURL(projectId, scoped, "csv", "invoices")} download>Invoices CSV</a>
+    <button type="button" onClick={() => window.print()}>Print</button>
+  </PageActions>;
 }
 
 export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { projectId: string; tick: number; invoiceTick?: number; onSignedOut: () => void }) {
-  const [tab, setTab] = useState<CostTab>("plan");
+  const [tab, setActiveTab] = useState(() => readLocationChoice<CostTab>("costTab", ["plan", "invoices", "variations"], "plan"));
+  function setTab(next: CostTab) {
+    writeLocationChoice("costTab", next);
+    setActiveTab(next);
+  }
   const [ledger, setLedger] = useState<Ledger | null>(null), [ledgerReload, setLedgerReload] = useState(0), [ledgerError, setLedgerError] = useState(false);
   const [filter, setFilter] = useState<InvoiceFilter>(NO_FILTER), [invoice, setInvoice] = useState("");
   const [incoming, setIncoming] = useState<File[] | null>(null);
@@ -76,6 +50,8 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
     return () => { stop = true; clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, tick, invoiceTick, ledgerReload]);
+  const [reveal, setReveal] = useState<{ id: string }>();
+  function showCostLine(id: string) { setTab("plan"); setReveal({ id }); }
   function showInvoices(line: string) { setFilter({ ...NO_FILTER, line }); setInvoice(""); setTab("invoices"); }
   // Files dropped anywhere on the cost plan are invoices for the ledger.
   const dropFiles = {
@@ -185,11 +161,11 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
     </div>
     {ledgerError && <div className="banner" role="alert"><p>Could not load the invoice ledger. The cost plan is unaffected.</p><button className="btn" onClick={() => setLedgerReload(n => n + 1)}>Reload invoices</button></div>}
     <div role="tabpanel" id="cost-panel-invoices" aria-labelledby="cost-tab-invoices" hidden={tab !== "invoices"}>
-      {tab === "invoices" && <InvoicesTab projectId={projectId} ledger={ledger} filter={filter} onFilter={setFilter} selected={invoice} onSelect={setInvoice} onLedger={setLedger} onSignedOut={onSignedOut} reload={() => setLedgerReload(n => n + 1)} incoming={incoming} onIncoming={() => setIncoming(null)} />}
+      {tab === "invoices" && <InvoicesTab onCostLine={showCostLine} costLineIds={plan?.items.map(i => i.cost_item_id)} projectId={projectId} ledger={ledger} filter={filter} onFilter={setFilter} selected={invoice} onSelect={setInvoice} onLedger={setLedger} onSignedOut={onSignedOut} reload={() => setLedgerReload(n => n + 1)} incoming={incoming} onIncoming={() => setIncoming(null)} />}
     </div>
     <div role="tabpanel" id="cost-panel-variations" aria-labelledby="cost-tab-variations" hidden={tab !== "variations"}><VariationsTab /></div>
     <div role="tabpanel" id="cost-panel-plan" aria-labelledby="cost-tab-plan" hidden={tab !== "plan"}>
-    {!plan ? !error && <p role="status"><Pending delayed>Loading cost plan…</Pending></p> : <CostGrid plan={plan} totals={totals} packages={packages} editable={!frozen && !editing} busy={busy} quantities={quantities} onOpen={choose} onValue={saveAmount}
+    {!plan ? !error && <p role="status"><Pending delayed>Loading cost plan…</Pending></p> : <CostGrid key={projectId} projectId={projectId} reveal={reveal} plan={plan} totals={totals} packages={packages} editable={!frozen && !editing} busy={busy} quantities={quantities} onOpen={choose} onValue={saveAmount}
         onSubdivide={item => { choose(item.cost_item_id); setSplit({ base: plan, item, names: ["", ""], amounts: ["", ""], metric: "budget", residual: "explicit" }); }}
         onDetailedValue={(item, name, value) => save(() => costApi.value(projectId, plan, item.cost_item_id, name, value), false)}
         onReorder={ids => save(() => costApi.reorder(projectId, plan, ids), false)}
