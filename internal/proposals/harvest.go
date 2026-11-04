@@ -367,7 +367,11 @@ func Harvest(filename string, text identity.Text) Evidence {
 				}
 				label := rowLabel(l.Cells, j, m.before)
 				if markdown && len(l.Cells) > 1 && j > 0 {
-					label = l.Cells[0]
+					// The row's words are its first filled cell: a total row
+					// often leaves the Item column empty ("| | Total $7,000 |").
+					if first := firstFilled(l.Cells[:j]); first != "" {
+						label = first
+					}
 				}
 				above, localHeading := amountColumnContext(lines, i, j, m.before)
 				if excludedContext.MatchString(localHeading) || excludedContext.MatchString(label+" "+cell) || excludedContext.MatchString(above) && !strings.Contains(strings.ToLower(label+" "+cell), "fee") {
@@ -668,6 +672,15 @@ func rowLabel(cells []string, j int, prefix string) string {
 		}
 		if len(c) >= 3 && !strings.EqualFold(unitWord.FindString(c), c) {
 			return clip(c, 100)
+		}
+	}
+	return ""
+}
+
+func firstFilled(cells []string) string {
+	for _, c := range cells {
+		if c = strings.TrimSpace(c); c != "" {
+			return c
 		}
 	}
 	return ""
