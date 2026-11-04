@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"mime"
 	"net/http"
 	"regexp"
@@ -422,7 +423,10 @@ func visibleDocument(w http.ResponseWriter, r *http.Request, deps Deps, orgID st
 func writeJSON(w http.ResponseWriter, status int, body any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(body)
+	// The status is already sent; the log is the only place a failure shows.
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		log.Printf("json response: %v", err)
+	}
 }
 
 const (

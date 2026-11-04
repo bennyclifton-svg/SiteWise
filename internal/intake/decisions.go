@@ -204,6 +204,8 @@ func settleVocabulary(cat Catalog, filename string, text identity.Text) []Result
 	if id, ok := onePhrase(vocabularyEvidence("", text, "Discipline", disciplinePhrases(cat)), disciplinePhrases(cat)); ok {
 		out = append(out, Result{Field: FieldDiscipline, Settled: true, Rule: RuleUnique, Display: id, Normalized: id})
 	}
+	// After an explicit "Discipline:" caption, which still wins.
+	out = append(out, authorityIssuer(filename, text)...)
 	// Lifecycle is filing purpose, not the issue stamp. Technical drawings
 	// remain Design even when issued for construction (owner decision).
 	if (kindKnown && kind == "drawing") || hasDrawingIdentity(text) {
