@@ -5,7 +5,6 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"sitewise/internal/identity"
@@ -36,15 +35,6 @@ func syntheticText(t *testing.T, file string) identity.Text {
 		t.Fatal(err)
 	}
 	text, err := identity.Extract(context.Background(), "md", bytes.NewReader(body), int64(len(body)), ExtractLimits())
-	if err != nil {
-		t.Fatal(err)
-	}
-	return text
-}
-
-func mdText(t *testing.T, s string) identity.Text {
-	t.Helper()
-	text, err := identity.Extract(context.Background(), "md", strings.NewReader(s), int64(len(s)), ExtractLimits())
 	if err != nil {
 		t.Fatal(err)
 	}
