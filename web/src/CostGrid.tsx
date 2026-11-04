@@ -3,7 +3,7 @@ import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { RowHandle, startRowDrag } from "./table/RowHandle";
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import type { BudgetCheck, ConstructionBudget, CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue } from "./costApi";
+import type { BudgetCheck, ConstructionBudget, CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue, PreliminaryEstimate } from "./costApi";
 import type { PackageRecord } from "./packageApi";
 import type { Ledger, LedgerLine } from "./invoiceApi";
 
@@ -43,7 +43,8 @@ function LedgerCells({ line, onInvoices }: { line?: LedgerLine; onInvoices?: (id
     <td className={`cost-num cost-ledger${over}`}>{line.percent_spent ? `${line.percent_spent}%` : "—"}</td></>;
 }
 
-export function CostGrid({ plan, totals, packages, editable, busy, onOpen, onSubdivide, onDetailedValue, onReorder, onValue, onDelete, onItem, quantities, ledger, onInvoices, onBudget }: {
+export function CostGrid({ projectId, reveal, plan, totals, packages, editable, busy, onOpen, onSubdivide, onDetailedValue, onReorder, onValue, onDelete, onItem, quantities, ledger, onInvoices, onBudget }: {
+  projectId: string; reveal?: { id: string };
   plan: CostPlan; totals: CostTotals | null; packages: PackageRecord[]; editable: boolean;
   ledger?: Ledger | null; onInvoices?: (lineId: string) => void;
   /** Saves the construction budget to the profile; the plan re-spreads from it. */
@@ -60,19 +61,56 @@ export function CostGrid({ plan, totals, packages, editable, busy, onOpen, onSub
   const [selection, setSelection] = useState(emptySelection);
   const [drop, setDrop] = useState<{ id: string; after: boolean } | null>(null);
   const dragging = useRef(false);
+  const scroll = useRef<HTMLDivElement>(null);
+  const pendingReveal = useRef("");
+  const storageKey = `sitewise.costs.collapsed.${projectId}`;
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => {
+    try { const value: unknown = JSON.parse(localStorage.getItem(storageKey) ?? "[]"); return new Set(Array.isArray(value) ? value.filter((id): id is string => typeof id === "string") : []); }
+    catch { return new Set(); }
+  });
+  useEffect(() => { try { localStorage.setItem(storageKey, JSON.stringify([...collapsed])); } catch { /* Optional view preference. */ } }, [collapsed, storageKey]);
   const items = plan.items;
   useEffect(() => setSelection(s => prune(s, items.map(i => i.cost_item_id))), [items]);
   const category = (i: CostItem) => i.resolved_category || (i.line_kind === "project_wide" ? words(i.category) : packages.find(p => p.id === i.package_id)?.title || "Unassigned");
   const sortValue = (i: CostItem) => sort?.key === "category" ? category(i) : i.label;
   const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : [...list].sort((a,b) => (a.display_order ?? Number.MAX_SAFE_INTEGER) - (b.display_order ?? Number.MAX_SAFE_INTEGER) || (Number(["other", "exclusions"].includes(a.category)) - Number(["other", "exclusions"].includes(b.category))) || a.code.localeCompare(b.code, undefined, {numeric:true}) || a.label.localeCompare(b.label));
   const ids = new Set(items.map(i => i.cost_item_id));
+  const children = new Map<string, CostItem[]>();
+  for (const item of items) {
+    const siblings = children.get(item.parent_item_id) ?? [];
+    siblings.push(item); children.set(item.parent_item_id, siblings);
+  }
+  const groupIds = items.filter(i => !i.posting && children.has(i.cost_item_id)).map(i => i.cost_item_id);
+  useEffect(() => {
+    if (!reveal || !items.some(i => i.cost_item_id === reveal.id)) return;
+    const byId = new Map(items.map(i => [i.cost_item_id, i]));
+    const ancestors = new Set<string>();
+    for (let id = byId.get(reveal.id)?.parent_item_id; id && !ancestors.has(id); id = byId.get(id)?.parent_item_id) ancestors.add(id);
+    setCollapsed(current => new Set([...current].filter(id => !ancestors.has(id))));
+    setSelection(clickRow(emptySelection, reveal.id, [reveal.id]));
+    pendingReveal.current = reveal.id;
+  }, [reveal]);
+  useEffect(() => {
+    if (!pendingReveal.current) return;
+    const row = Array.from(scroll.current?.querySelectorAll<HTMLTableRowElement>("tr[data-id]") ?? []).find(r => r.dataset.id === pendingReveal.current);
+    if (row) {
+      row.scrollIntoView({ block: "nearest", inline: "nearest" });
+      // Start at the activity's identity columns after following an invoice.
+      if (scroll.current) scroll.current.scrollLeft = 0;
+      row.focus({ preventScroll: true }); pendingReveal.current = "";
+    }
+  });
+  function toggleGroup(id: string) {
+    setCollapsed(current => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+    setSelection(emptySelection);
+  }
   const ledgerLine = new Map((ledger?.summary.lines ?? []).map(l => [l.id, l]));
   const width = 4 + COLUMNS.length + LEDGER.length + (quantities ? 3 : 0);
   // Display positions are not identities: links continue to use cost_item_id.
   let rowNumber = 0;
   // Children follow their group line, indented; sorting applies within a level.
   const tree = (list: CostItem[], depth: number): { item: CostItem; depth: number }[] =>
-    ordered(list).flatMap(i => [{ item: i, depth }, ...tree(items.filter(c => c.parent_item_id === i.cost_item_id), depth + 1)]);
+    ordered(list).flatMap(i => [{ item: i, depth }, ...(collapsed.has(i.cost_item_id) ? [] : tree(children.get(i.cost_item_id) ?? [], depth + 1))]);
   const visible = GROUPS.flatMap(g => tree(items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id))), 0)).map(r => r.item.cost_item_id);
   function handleDown(e: ReactPointerEvent<HTMLElement>, item: CostItem) {
     if (!editable || busy || sort) return;
@@ -100,7 +138,10 @@ export function CostGrid({ plan, totals, packages, editable, busy, onOpen, onSub
   }
   const header = (key: SortKey, label: string) => <th scope="col" className="cost-sticky" data-col={key} aria-sort={sort?.key === key ? (sort.dir === 1 ? "ascending" : "descending") : undefined}>
     <button type="button" onClick={() => setSort(sort?.key === key ? (sort.dir === 1 ? { key, dir: -1 } : null) : { key, dir: 1 })}>{label}</button></th>;
-  return <div className="cost-grid-scroll"><table className="cost-grid" tabIndex={0} onKeyDown={e => {
+  return <>{groupIds.length > 0 && <div className="cost-disclosure" role="group" aria-label="Cost line detail">
+    <button type="button" className="btn btn-small" disabled={!groupIds.some(id => collapsed.has(id))} onClick={() => { setCollapsed(new Set()); setSelection(emptySelection); }}>Expand all</button>
+    <button type="button" className="btn btn-small" disabled={groupIds.every(id => collapsed.has(id))} onClick={() => { setCollapsed(new Set(groupIds)); setSelection(emptySelection); }}>Collapse all</button>
+  </div>}<div ref={scroll} className="cost-grid-scroll"><table className="cost-grid" tabIndex={0} onKeyDown={e => {
     if ((e.target as HTMLElement).closest("input,select,textarea,button,[popover]")) return;
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setSelection(selectAll(visible)); }
     if (e.key === "Escape") setSelection(emptySelection);
@@ -116,22 +157,25 @@ export function CostGrid({ plan, totals, packages, editable, busy, onOpen, onSub
         <tr className="cost-group"><th colSpan={width} scope="colgroup"><span>{g.title}</span></th></tr>
         {tree(top, 0).map(({ item: i, depth }) => {
           const f = totals?.items?.[i.cost_item_id];
-          return <tr key={i.cost_item_id} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} onClickCapture={e => { if ((e.ctrlKey || e.metaKey || e.shiftKey) && !(e.target as HTMLElement).closest("input,select,textarea,[popover]")) { e.stopPropagation(); setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); } }} data-id={i.cost_item_id} data-drop={drop?.id === i.cost_item_id ? (drop.after ? "after" : "before") : undefined} aria-selected={selection.ids.includes(i.cost_item_id)} onClick={e => { if (!dragging.current) setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); }}>
+          const group = !i.posting && children.has(i.cost_item_id);
+          const expanded = group && !collapsed.has(i.cost_item_id);
+          const summary = totals?.rollups?.[i.cost_item_id];
+          return <tr key={i.cost_item_id} tabIndex={-1} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} onClickCapture={e => { if ((e.ctrlKey || e.metaKey || e.shiftKey) && !(e.target as HTMLElement).closest("input,select,textarea,[popover]")) { e.stopPropagation(); setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); } }} data-id={i.cost_item_id} data-drop={drop?.id === i.cost_item_id ? (drop.after ? "after" : "before") : undefined} aria-selected={selection.ids.includes(i.cost_item_id)} onClick={e => { if (!dragging.current) setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); }}>
             <td className="cost-sticky" data-col="code">{editable && <RowHandle disabled={busy || !!sort} onPointerDown={e => handleDown(e, i)} />}{String(++rowNumber).padStart(2, "0")}</td>
             <td className="cost-sticky" data-col="category">{editable ? <CategoryCell item={i} plan={plan} packages={packages} label={category(i)} onSave={c => onItem(c, i.cost_item_id)} /> : category(i)}</td>
-            <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16}px` }}>{editable ? <TextCell label={i.label} value={i.label} selected={selection.ids.length === 1 && selection.ids.includes(i.cost_item_id)} onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} /> : i.label}{i.excluded && <span className="cost-tag">excluded</span>}</td>
+            <td className="cost-sticky" data-col="item" style={{ paddingLeft: `${8 + depth * 16 + (depth > 0 ? 32 : 0)}px` }}>{group && <button type="button" className="cost-disclosure-toggle" aria-label={`${expanded ? "Collapse" : "Expand"} ${i.label}`} aria-expanded={expanded} onClick={e => { e.stopPropagation(); toggleGroup(i.cost_item_id); }}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d={expanded ? "m4 6 4 4 4-4" : "m6 4 4 4-4 4"} /></svg></button>}{editable ? <TextCell label={i.label} value={i.label} selected={selection.ids.length === 1 && selection.ids.includes(i.cost_item_id)} onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} /> : i.label}{i.excluded && <span className="cost-tag">excluded</span>}</td>
             {quantities && <QuantityCells key={i.cost_item_id} item={i} editable={editable && i.posting} onSave={c => onItem(c, i.cost_item_id, true)} />}
-            {!i.posting && i.values.budget ? <>
-              <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /></td>
-              <td className="cost-num" title="The sum of the awarded lines below">{cell(f?.forecast)}</td>
-              <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
-              <td className="cost-num">{cell(f?.forecast)}</td>
-              <td className="cost-num">{fmt(f?.budget_variance)}</td>
-              <td className="cost-num cost-placeholder">—</td>
-              <td className="cost-num cost-placeholder">—</td>
-              <td className="cost-num cost-placeholder">—</td>
-              <LedgerCells line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} /></>
-            : !i.posting ? <td colSpan={COLUMNS.length + LEDGER.length} className="cost-note">Group · amounts are on the lines below</td> : <>
+            {!i.posting ? <>
+              <td className="cost-num">{i.values.budget ? <MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /> : expanded ? null : subtotal(summary?.values.budget)}</td>
+              <td className="cost-num">{expanded ? null : subtotal(summary?.values.commitment)}</td>
+              <td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td><td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td>
+              <td className="cost-num">{expanded ? null : subtotal(summary?.values.forecast)}</td>
+              <td className="cost-num">{expanded ? null : fmt(summary?.budget_variance)}</td>
+              <td className="cost-num">{expanded ? null : subtotal(summary?.values.claimed_to_date)}</td>
+              <td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td>
+              <td className="cost-num">{expanded ? null : fmt(summary?.remaining)}</td>
+              {expanded ? <><td className="cost-ledger" /><td className="cost-ledger" /><td className="cost-ledger" /></> : <LedgerCells line={ledger?.groups?.[i.cost_item_id]} onInvoices={onInvoices} />}
+            </> : <>
               <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /></td>
               <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "commitment", v)} metric="commitment" item={i} editable={editable} onSave={a => onValue(i, "commitment", a)} /></td>
               <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
@@ -166,8 +210,12 @@ export function CostGrid({ plan, totals, packages, editable, busy, onOpen, onSub
         <th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Construction budget</th>{quantities && <td colSpan={3} />}
         <td className="cost-num"><BudgetCell budget={plan.construction_budget} editable={editable && !!onBudget} onSave={a => onBudget ? onBudget(a) : Promise.resolve(false)} /></td>
         <td colSpan={COLUMNS.length - 1 + LEDGER.length} className="cost-note cost-budget-note"><span>{budgetNote(plan.construction_budget, totals?.construction_budget)}</span></td><td /></tr>}
+      {plan.preliminary_estimate && <tr className="cost-row cost-budget-row">
+        <th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Builder's preliminary estimate</th>{quantities && <td colSpan={3} />}
+        <td className="cost-num">{plan.preliminary_estimate.low === plan.preliminary_estimate.high ? fmt(plan.preliminary_estimate.low) : `${fmt(plan.preliminary_estimate.low)} – ${fmt(plan.preliminary_estimate.high)}`}</td>
+        <td colSpan={COLUMNS.length - 1 + LEDGER.length} className="cost-note cost-budget-note"><span>{estimateNote(plan.preliminary_estimate)}</span></td><td /></tr>}
     </tbody>
-  </table></div>;
+  </table></div></>;
 }
 
 // budgetNote says where the construction budget came from, how it is spread
@@ -184,6 +232,13 @@ function budgetNote(b?: ConstructionBudget, check?: BudgetCheck) {
   parts.push(b.origin === "document" ? `Read from a source document: “${b.stated.text}”` : "Typed");
   parts.push(b.stated.gst === "inc" ? "Converted from GST inclusive" : b.stated.gst === "ex" ? "Ex GST" : "GST not stated; taken as ex GST");
   return parts.filter(Boolean).join(" · ");
+}
+
+// estimateNote says what the builder's figure is: advice read from a
+// document, shown for comparison, never spread or awarded.
+function estimateNote(e: PreliminaryEstimate) {
+  return [`Read from a source document: “${e.text}”`, e.gst === "inc" ? "GST inclusive" : e.gst === "ex" ? "Ex GST" : "GST not stated",
+    "Preliminary advice for comparison: not a budget or a tender price"].join(" · ");
 }
 
 // BudgetCell edits the construction budget in place. It saves to the profile
@@ -209,6 +264,36 @@ function BudgetCell({ budget, editable, onSave }: { budget?: ConstructionBudget;
   return <button type="button" className="cost-cell" aria-label="Construction budget" disabled={!editable} onClick={() => setDraft(current ?? "")}>{current ? fmt(current) : "—"}</button>;
 }
 
+// Excel-style movement between editable cells (those carrying data-metric;
+// subtotal rows, range cells and calculated columns carry none).
+// Up/Down keep the column; Tab, Shift+Tab and Left/Right at the edge of the
+// text go along the row, wrapping to the next line as Excel does.
+function editableCells(from: HTMLElement, col?: string): HTMLElement[] {
+  const table = from.closest("table");
+  if (!table) return [];
+  return Array.from(table.querySelectorAll<HTMLElement>(col ? `[data-metric="${col}"]` : "[data-metric]")).filter(el => !(el as HTMLButtonElement).disabled);
+}
+function cellAfter(from: HTMLElement, step: 1 | -1, col?: string): HTMLElement | null {
+  const cells = editableCells(from, col);
+  const at = cells.indexOf(from);
+  return at < 0 ? null : cells[at + step] ?? null;
+}
+/** The cell a key asks for: an element, null at the grid's edge, or undefined
+ * when the key is not a move (or Tab has nowhere to go and should leave the grid). */
+function cellFor(e: React.KeyboardEvent<HTMLInputElement>): HTMLElement | null | undefined {
+  const el = e.currentTarget;
+  if (e.key === "Tab") return cellAfter(el, e.shiftKey ? -1 : 1) ?? undefined;
+  if (e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return undefined; // text selection keys stay with the field
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") return cellAfter(el, e.key === "ArrowDown" ? 1 : -1, el.dataset.metric);
+  // A fully selected figure counts as being at both edges, so one press moves on.
+  if (e.key === "ArrowRight" && el.selectionEnd === el.value.length) return cellAfter(el, 1);
+  if (e.key === "ArrowLeft" && el.selectionStart === 0) return cellAfter(el, -1);
+  return undefined;
+}
+function enterCell(el: HTMLElement) {
+  if (el instanceof HTMLButtonElement) el.click(); else el.focus();
+}
+
 // Single amounts edit directly; ranges retain both bounds in the cell editor.
 function MoneyCell({ item, metric, editable, onSave, onDetailed }: { onDetailed: (v: CostValue) => Promise<boolean>; metric: "budget" | "commitment"; item: CostItem; editable: boolean; onSave: (amount: string | null) => Promise<boolean> }) {
   const v = item.values[metric], range = v?.value_state === "known" && v.amount == null;
@@ -216,25 +301,36 @@ function MoneyCell({ item, metric, editable, onSave, onDetailed }: { onDetailed:
   // One editing session ends once; Enter and the blur that follows must not both save.
   const active = useRef(false), cancelled = useRef(false), saving = useRef(false);
   const label = `${metric === "budget" ? "Budget" : "Approved Contract"} for ${item.label}`;
-  async function commit() {
-    if (draft == null || !active.current || saving.current) return;
-    if (cancelled.current) { cancelled.current = false; active.current = false; setDraft(null); setInvalid(false); return; }
+  /** Resolves true once the cell has closed (saved, unchanged or cancelled). */
+  async function commit(): Promise<boolean> {
+    if (draft == null || !active.current || saving.current) return false;
+    if (cancelled.current) { cancelled.current = false; active.current = false; setDraft(null); setInvalid(false); return true; }
     const raw = draft.replace(/[,\s$]/g, "");
-    if (raw !== "" && !/^-?\d+(\.\d{1,2})?$/.test(raw)) { setInvalid(true); return; }
+    if (raw !== "" && !/^-?\d+(\.\d{1,2})?$/.test(raw)) { setInvalid(true); return false; }
     const amount = raw === "" ? null : raw;
-    if (amount === (v?.value_state === "known" ? v.amount : null)) { active.current = false; setDraft(null); return; }
+    if (amount === (v?.value_state === "known" ? v.amount : null)) { active.current = false; setDraft(null); return true; }
     saving.current = true;
     const ok = await onSave(amount);
     saving.current = false;
     if (ok) { active.current = false; setDraft(null); setInvalid(false); }
+    return ok;
   }
   if (range) return <DetailedValueCell item={item} metric={metric} editable={editable} onSave={onDetailed} />;
-  if (draft != null) return <input className="cost-input" aria-label={label} aria-invalid={invalid || undefined} autoFocus inputMode="decimal" value={draft}
-    onClick={e => e.stopPropagation()} onChange={e => { setDraft(e.target.value); setInvalid(false); }} onBlur={() => void commit()}
-    onKeyDown={e => { if (e.key === "Enter") void commit(); if (e.key === "Escape") { cancelled.current = true; void commit(); } }} />;
+  if (draft != null) return <input className="cost-input" data-metric={metric} aria-label={label} aria-invalid={invalid || undefined} autoFocus inputMode="decimal" value={draft}
+    onFocus={e => e.currentTarget.select()} onClick={e => e.stopPropagation()} onChange={e => { setDraft(e.target.value); setInvalid(false); }} onBlur={() => void commit()}
+    onKeyDown={e => {
+      if (e.key === "Enter") void commit();
+      if (e.key === "Escape") { cancelled.current = true; void commit(); }
+      const next = cellFor(e);
+      if (next !== undefined) {
+        e.preventDefault();
+        // Save first; move only once this cell has closed, so a refused value stays put.
+        void commit().then(closed => { if (closed && next?.isConnected) enterCell(next); });
+      }
+    }} />;
   // A share of the construction budget reads as a suggestion until edited.
   const spread = metric === "budget" && v?.origin === "assumption" && !!v.provenance?.spread;
-  return <button type="button" className={`cost-cell${spread ? " cost-spread" : ""}`} aria-label={label} disabled={!editable} title={spread ? v!.rationale : undefined}
+  return <button type="button" className={`cost-cell${spread ? " cost-spread" : ""}`} data-metric={metric} aria-label={label} disabled={!editable} title={spread ? v!.rationale : undefined}
     onClick={e => { e.stopPropagation(); if (editable) { active.current = true; setDraft(v?.value_state === "known" ? v.amount ?? "" : ""); } }}>{cell(v)}</button>;
 }
 
@@ -259,7 +355,7 @@ function CategoryCell({item, packages, label, onSave}: {item: CostItem; plan: Co
 function QuantityCells({item, editable, onSave}: {item:CostItem;editable:boolean;onSave:(c:CostContent)=>Promise<boolean>}) {
  const [draft,setDraft]=useState({quantity:item.quantity ?? "",unit:item.unit ?? "",rate:item.rate ?? ""});const saving=useRef(false);const saved=useRef(JSON.stringify(draft));
  async function commit(){if(saving.current || JSON.stringify(draft)===saved.current || !draft.quantity || !draft.unit || !draft.rate)return;if(draft.quantity===item.quantity && draft.unit===item.unit && draft.rate===item.rate)return;saving.current=true;const ok=await onSave(editContent(item,{quantity:draft.quantity,unit:draft.unit,rate:draft.rate,rate_basis:"User supplied"}));if(ok)saved.current=JSON.stringify(draft);saving.current=false;}
- return <>{(["quantity","unit","rate"] as const).map(k=><td key={k} className="cost-num">{editable?<input className="cost-input" aria-label={`${k} for ${item.label}`} value={draft[k]} onClick={e=>e.stopPropagation()} onChange={e=>setDraft({...draft,[k]:e.target.value})} onBlur={()=>void commit()} onKeyDown={e=>{if(e.key==="Enter")void commit();if(e.key==="Escape")setDraft({quantity:item.quantity??"",unit:item.unit??"",rate:item.rate??""});}} />:item[k]??"—"}</td>)}</>;
+ return <>{(["quantity","unit","rate"] as const).map(k=><td key={k} className="cost-num">{editable?<input className="cost-input" data-metric={k} aria-label={`${k} for ${item.label}`} value={draft[k]} onClick={e=>e.stopPropagation()} onChange={e=>setDraft({...draft,[k]:e.target.value})} onBlur={()=>void commit()} onKeyDown={e=>{if(e.key==="Enter")void commit();if(e.key==="Escape")setDraft({quantity:item.quantity??"",unit:item.unit??"",rate:item.rate??""});const next=cellFor(e);if(next){e.preventDefault();enterCell(next);}}} onFocus={e=>e.currentTarget.select()} />:item[k]??"—"}</td>)}</>;
 }
 function AddLineRow({group:g,plan,packages,columns,onSave}:{group:typeof GROUPS[number];plan:CostPlan;packages:PackageRecord[];columns:number;onSave:(c:CostContent)=>Promise<boolean>}){
  const kind=g.kind;

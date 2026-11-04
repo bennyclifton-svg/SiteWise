@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"sitewise/internal/events"
 )
@@ -15,6 +16,18 @@ func streamEvents(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+	remove := deps.streams.add(session.ID, cancel)
+	defer remove()
+	// Register before checking again so sign-out cannot race stream creation.
+	_, expires, err := deps.Store.LookupSession(ctx, session.ID)
+	if err != nil || !expires.After(time.Now()) {
+		http.Error(w, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+	timer := time.AfterFunc(time.Until(expires), cancel)
+	defer timer.Stop()
 	cursor := r.Header.Get("Last-Event-ID")
 	if cursor == "" {
 		cursor = r.URL.Query().Get("after")
@@ -36,8 +49,6 @@ func streamEvents(w http.ResponseWriter, r *http.Request, deps Deps) {
 	// The retry hint keeps a dropped stream's reconnect quick without a tight loop.
 	_, _ = w.Write([]byte("retry: 2000\n\n"))
 	w.(http.Flusher).Flush()
-	ctx, cancel := context.WithCancel(r.Context())
-	defer cancel()
 	go func() {
 		select {
 		case <-deps.Closing:

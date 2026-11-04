@@ -54,6 +54,8 @@ async function builtProgram(page: Page, name: string): Promise<string> {
 }
 
 async function openProgram(page: Page) {
+  const navigation = page.getByRole("button", { name: "Project navigation", exact: true });
+  if (await navigation.isVisible() && await navigation.getAttribute("aria-expanded") === "false") await navigation.click();
   await page.getByRole("button", { name: "Program", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Program", exact: true })).toBeVisible();
   await expect(page.locator(".pg-layer-bars .pg-bar").first()).toBeVisible();
@@ -548,7 +550,7 @@ test("row keys act only in the grid and chart: Backspace on a toolbar button del
   let posts = 0;
   page.on("request", (r) => /\/program\/(ops|undo|redo)$/.test(r.url()) && r.method() === "POST" && posts++);
   // Focus on a toolbar button: its keys are its own.
-  await page.getByRole("button", { name: "Links on", exact: true }).focus();
+  await page.getByRole("button", { name: "Show links", exact: true }).focus();
   for (const key of ["Backspace", "Delete", "ArrowDown", "Control+a", "Control+z"]) await page.keyboard.press(key);
   await page.waitForTimeout(300);
   expect(posts).toBe(0);

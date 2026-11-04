@@ -1,0 +1,20 @@
+T01 New detached house (trees-affected)
+  Procurement [scored]: matched 8/12, missed 4 (0 built in, 4 known gaps), extra 0, false positives 3
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical
+  Cost plan [scored]: matched 25/36, missed 11 (0 built in, 11 known gaps), extra 0, false positives 4, fabricated amounts 0 (from documents 10, typed 0)
+    false positives: Electrical; Hydraulic; Mechanical; Active fire protection
+  Program [scored]: skeleton sk.generic (expected sk.new-traditional-da), matched 53/85, missed 32 (7 built in, 25 known gaps), extra 19, false positives 0, wrong stage 2; links holds 44, violated 7, unknown 0, unscored 49; orphans 4, cycles 0
+    missed built in: Lodge services applications; Excavate and inspect footings; Under-slab sanitary drainage; Reinforce and pour slab; Stand wall frames; Install roof trusses and bracing (+1 more)
+    violated: Prepare construction documentation after DA assessment and determination; Coordinate consultant documentation after DA assessment and determination; Install erosion and sediment controls after Establish the site; Reinforcement inspection before slab pour after Install termite management system; Lay brick veneer after Install windows and external doors; Wrap and clad external walls after Install windows and external doors (+1 more)
+  RFPs: found 8/11 (0 built-in missing), not expected present 0, extra 3; expect ok 110, new failures 97, known differences 44, fixed 0; must_include missing 26 (unknown 1); must_not_include present 5 (known 8)
+    consultant.architect: stage.house_documents; stage.brief_masterplan; stage.dnc_tender; stage.regulated_design; stage.post_novation; position.water_asset (+20 more)
+    consultant.structural: stage.tender_traditional; stage.construction_documents; stage.dnc_tender; stage.post_novation; position.inspection_schedule; position.retention_design (+10 more)
+    consultant.civil: stage.detailed_tender; stage.dnc_tender; stage.post_novation; position.norbe; position.osd_new; position.osd_existing (+16 more)
+    consultant.geotechnical: stage.g4_planning; blocking.allowance:groundwater; blocking.allowance:reports; blocking.fact:flag.geotech_ass; blocking.fact:flag.geotech_asset_exposure; blocking.fact:flag.geotech_civil_parameters (+11 more)
+    consultant.surveyor: position.access; blocking.allowance:control; blocking.allowance:features; blocking.allowance:issues; blocking.allowance:visits; blocking.fact:flag.staged (+15 more)
+    consultant.certifier: stage.a4_construction; blocking.allowance:duration_months; blocking.allowance:meetings; blocking.allowance:plan_sets; blocking.allowance:reports; blocking.allowance:rfi_hours (+15 more)
+    consultant.basix: missing
+    consultant.landscape: missing
+    consultant.town_planner: blocking.allowance:authority_meetings; blocking.fields; blocking.slot:project:intro; blocking.terms
+    consultant.quantity_surveyor: missing
+    consultant.arborist: missing 'AS 4970 impact assessment'

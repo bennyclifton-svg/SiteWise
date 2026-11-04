@@ -1,0 +1,12 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T09-waterproofing-remediation/shape.yaml",
+  "triggers": [
+    "hazardous-materials"
+  ],
+  "scenario_facts": {
+    "program": {
+      "target_construction_start": "2027-02-01"
+    }
+  }
+}

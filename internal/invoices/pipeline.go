@@ -80,6 +80,8 @@ func FormatOf(filename string) string {
 		return "docx"
 	case ".xlsx":
 		return "xlsx"
+	case ".md", ".markdown":
+		return "md"
 	}
 	return ""
 }

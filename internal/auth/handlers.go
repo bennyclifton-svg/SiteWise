@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/smtp"
 	"sync"
 	"time"
@@ -38,16 +39,64 @@ func (s *Sink) SendInvite(_ context.Context, to, body string) error {
 	return nil
 }
 
-// SMTP delivers invite mail. Addr is host:port.
+// ResetMailer delivers a password reset link. Implementations must not log it.
+type ResetMailer interface {
+	SendReset(ctx context.Context, to, link string) error
+}
+
+// SendReset records the reset link.
+func (s *Sink) SendReset(_ context.Context, to, link string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.Messages = append(s.Messages, Message{To: to, Body: link})
+	return nil
+}
+
+// SMTP delivers mail. Addr is host:port. With a User the client signs in
+// (PLAIN, which Go only sends over TLS or to localhost); without one it
+// expects a local relay.
 type SMTP struct {
-	Addr string
-	From string
+	Addr     string
+	From     string
+	User     string
+	Password string
 }
 
 // SendInvite sends a plain-text invite. The token is in the message body only.
 func (s SMTP) SendInvite(_ context.Context, to, body string) error {
-	msg := "Subject: SiteWise invite\r\n\r\n" + body
-	return smtp.SendMail(s.Addr, nil, s.From, []string{to}, []byte(msg))
+	return s.send(to, "SiteWise invite", body)
+}
+
+// SendReset sends the password reset link.
+func (s SMTP) SendReset(_ context.Context, to, link string) error {
+	body := "Someone asked to reset the password for your SiteWise account.\r\n\r\n" +
+		"Open this link within one hour to choose a new password:\r\n" + link + "\r\n\r\n" +
+		"If it was not you, ignore this email. Your password stays the same.\r\n"
+	return s.send(to, "Reset your SiteWise password", body)
+}
+
+func (s SMTP) send(to, subject, body string) error {
+	var a smtp.Auth
+	if s.User != "" {
+		host, _, err := net.SplitHostPort(s.Addr)
+		if err != nil {
+			return err
+		}
+		a = smtp.PlainAuth("", s.User, s.Password, host)
+	}
+	msg := "From: SiteWise <" + s.From + ">\r\nTo: " + to + "\r\nSubject: " + subject +
+		"\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n" + body
+	return smtp.SendMail(s.Addr, a, s.From, []string{to}, []byte(msg))
+}
+
+// DevResetMail prints the reset link to the local server log. serve uses it
+// only with -dev-login and no SMTP, so a developer can finish a reset.
+type DevResetMail struct{ Log *log.Logger }
+
+// SendReset logs the link.
+func (d DevResetMail) SendReset(_ context.Context, to, link string) error {
+	d.Log.Printf("dev reset link for %s: %s", to, link)
+	return nil
 }
 
 // CreateInvite stores a hashed single-use token and hands the raw token to mail.

@@ -66,17 +66,13 @@ description: Residential concept appoints preliminary options; later detailed sy
 snapshot: false
 expect:
   hydraulic-services:
-    stages_include:
-    - inception
-    - concept
-    stages_option:
-    - design
-    - tender
-    - continuation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, concept]
     positions:
       concept: I
-      domestic: O
-      pumps: O
-      roof: O
-      declarations: O
+      domestic: X
+      pumps: X
+      roof: X
+      declarations: X
       trade: absent
+    stages_absent: [design, tender, continuation]

@@ -33,7 +33,7 @@
   border: 1px solid var(--sw-border-default);
   background: var(--sw-surface);
 }
-.document-preview-help { margin: 0; color: var(--sw-text-secondary); font-size: 0.8125rem; }
+.document-preview-help { margin: 0; color: var(--sw-text-secondary); font-size: var(--fs-md); }
 .document-text {
   margin: 0;
   padding: 1rem;

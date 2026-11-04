@@ -3,20 +3,23 @@ import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 // The document register: one compact line per filing, sortable, opening the
 // source and filing details in the centre workspace.
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode, type HTMLAttributes } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode, type HTMLAttributes } from "react";
 import type { Catalog, Doc, ReadSetting } from "./api";
 import { FIELDS, notFiledReason, type RowModel } from "./DocumentRow";
+import { createPortal } from "react-dom";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { IconBin, IconRetry, IconStored, IconUpload } from "./icons";
+import { IconBin, IconEye, IconEyeOff, IconMore, IconOpen, IconRename, IconRetry, IconStored, IconTag, IconUndo, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
 import { documentActivity } from "./documentActivity";
 import { clickRow, emptySelection, prune, selectAll as selectEveryRow, type Selection } from "./table/selection";
 import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
 import "./register-edit.css";
 
-type Col = "number" | "title" | "revision" | "date" | "discipline" | "kind" | "lifecycle";
+type Col = "number" | "title" | "revision" | "date" | "discipline";
 
 interface Props {
+  selection?: Selection;
+  onSelectionChange?: React.Dispatch<React.SetStateAction<Selection>>;
   rows: RowModel[];
   catalog: Catalog | null;
   live: "live" | "reconnecting" | "offline";
@@ -41,8 +44,6 @@ const COLUMNS: { col: Col; label: string; className: string }[] = [
   { col: "revision", label: "Rev", className: "reg-rev" },
   { col: "date", label: "Date", className: "reg-date" },
   { col: "discipline", label: "Discipline", className: "reg-disc" },
-  { col: "kind", label: "Kind", className: "reg-kind" },
-  { col: "lifecycle", label: "Lifecycle", className: "reg-life" },
 ];
 
 function fieldValue(doc: Doc | undefined, field: string): string {
@@ -82,11 +83,15 @@ function suggestedTitle(doc: Doc | undefined): string {
   return doc?.visual_title ?? "";
 }
 
-function RegisterCell({ doc, field, catalog, onCorrect, children, ...attrs }: {
+function RegisterCell({ doc, field, catalog, onCorrect, editRequest = 0, selected = false, children, ...attrs }: {
   doc: Doc | undefined;
   field: Col;
   catalog: Catalog | null;
   onCorrect: Props["onCorrect"];
+  /** Bumped by the row menu's Rename to open this cell's editor. */
+  editRequest?: number;
+  /** Announced first, since a plain table row cannot carry a selected state. */
+  selected?: boolean;
   children: ReactNode;
 } & HTMLAttributes<HTMLTableCellElement>) {
   const [editing, setEditing] = useState(false);
@@ -102,6 +107,7 @@ function RegisterCell({ doc, field, catalog, onCorrect, children, ...attrs }: {
     setError("");
     setEditing(true);
   };
+  useEffect(() => { if (editRequest > 0) begin(); }, [editRequest]);
   const finish = (key: CommitKey | "cancel") => {
     setEditing(false);
     if (key === "blur") return;
@@ -131,11 +137,10 @@ function RegisterCell({ doc, field, catalog, onCorrect, children, ...attrs }: {
     }
   };
   return <td {...attrs} ref={cell} data-editable={editable || undefined} data-editing={editing || undefined}
-    tabIndex={editable ? 0 : undefined} aria-label={editable ? `${spec.label}: ${options?.find(option => option.id === fieldValue(doc, field))?.label || fieldValue(doc, field) || "Not set"}. Double-click or press F2 to edit` : undefined}
-    onDoubleClick={e => { e.stopPropagation(); begin(); }}
+    tabIndex={editable ? 0 : undefined} aria-label={editable ? `${selected ? "Selected. " : ""}${spec.label}: ${options?.find(option => option.id === fieldValue(doc, field))?.label || fieldValue(doc, field) || "Not set"}. Press F2 to edit` : undefined}
     onKeyDown={e => {
       if (e.target !== e.currentTarget) return;
-      if (e.key === "F2" || e.key === "Enter") { e.preventDefault(); e.stopPropagation(); begin(); }
+      if (e.key === "F2") { e.preventDefault(); e.stopPropagation(); begin(); }
     }}>
     {editing ? <>
       <InlineCellEditor className="reg-edit" value={fieldValue(doc, field)} label={`Edit ${spec.label}`} error={error} busy={busy}
@@ -146,8 +151,16 @@ function RegisterCell({ doc, field, catalog, onCorrect, children, ...attrs }: {
   </td>;
 }
 
+// Kind and lifecycle stay editable in the document's filing details; the
+// register keeps to what people scan for.
+type FieldChoice = "discipline";
+type MenuItem = { label: string; icon: ReactNode; onSelect: () => void; disabled?: boolean; danger?: boolean } | "sep";
+interface MenuState { x: number; y: number; ids: string[]; rowKey: string; trigger: HTMLElement | null }
+
 export function Register({
   rows,
+  selection: controlledSelection,
+  onSelectionChange,
   catalog,
   live,
   onCorrect,
@@ -161,13 +174,17 @@ export function Register({
   onOpen,
 }: Props) {
   const [sort, setSort] = useState<{ col: Col; dir: 1 | -1 } | null>(null);
-  const [selection, setSelection] = useState<Selection>(emptySelection);
+  const [localSelection, setLocalSelection] = useState<Selection>(emptySelection);
+  const selection = controlledSelection ?? localSelection;
+  const setSelection = onSelectionChange ?? setLocalSelection;
   const selected = useMemo(() => new Set(selection.ids), [selection]);
   const [busy, setBusy] = useState(false);
-  const [bulkField, setBulkField] = useState("discipline");
-  const [bulkValue, setBulkValue] = useState<string | null>(null);
-  const [bulkMessage, setBulkMessage] = useState("");
-  const bulkSaving = useRef(false);
+  const [fieldEdit, setFieldEdit] = useState<{ field: FieldChoice; ids: string[] } | null>(null);
+  const [fieldChoice, setFieldChoice] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
+  const fieldSaving = useRef(false);
+  const [menu, setMenu] = useState<MenuState | null>(null);
+  const [rename, setRename] = useState<{ id: string; n: number } | null>(null);
   const [confirm, setConfirm] = useState<string[] | null>(null);
   const [deleting, setDeleting] = useState(false);
   const readKinds = useMemo(() => catalog?.profile_read_kinds ?? [], [catalog]);
@@ -199,16 +216,13 @@ export function Register({
   // Selection is by document id, in display order; rows that leave the list
   // leave the selection.
   const docIds = useMemo(() => ordered.flatMap((r) => (r.doc ? [r.doc.id] : [])), [ordered]);
-  useEffect(() => { setSelection(s => prune(s, docIds)); }, [docIds]);
+  useEffect(() => { setSelection(s => prune(s, docIds)); }, [docIds, setSelection]);
 
   const select = (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => {
-    if (bulkSaving.current) return;
-    setBulkMessage("");
+    if (fieldSaving.current) return;
+    setNotice("");
     setSelection(s => clickRow(s, id, docIds, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey }));
   };
-  const allSelected = docIds.length > 0 && docIds.every(id => selected.has(id));
-  const someSelected = selected.size > 0 && !allSelected;
-  const selectAll = () => { setBulkMessage(""); setSelection(allSelected ? emptySelection : selectEveryRow(docIds)); };
 
   const titleOf = (id: string) => {
     const doc = rows.find((r) => r.doc?.id === id)?.doc;
@@ -244,27 +258,65 @@ export function Register({
   };
 
   const disciplineLabel = (id: string) => catalog?.disciplines.find((d) => d.id === id)?.label ?? id;
-  const bulkOptions = catalog?.[bulkField === "discipline" ? "disciplines" : bulkField === "kind" ? "kinds" : "lifecycle"] ?? [];
-  const allFiled = [...selected].every(id => rows.find(row => row.doc?.id === id)?.doc?.status === "filed");
-  const correctSelected = async () => {
-    if (bulkSaving.current || bulkValue === null || !allFiled) return;
-    bulkSaving.current = true;
-    setBusy(true); setBulkMessage("");
-    const ids = [...selected];
+  const fieldOptions = fieldEdit ? catalog?.disciplines ?? [] : [];
+  const saveField = async () => {
+    if (!fieldEdit || fieldSaving.current || fieldChoice === null) return;
+    fieldSaving.current = true;
+    setBusy(true); setNotice("");
+    const { field, ids } = fieldEdit;
     const failed: string[] = [];
     // Bound concurrent requests while retaining the validated correction path.
     let next = 0;
     await Promise.all(Array.from({ length: Math.min(4, ids.length) }, async () => {
       while (next < ids.length) {
         const id = ids[next++];
-        try { await onCorrect(id, bulkField, bulkValue); }
+        try { await onCorrect(id, field, fieldChoice); }
         catch { failed.push(id); }
       }
     }));
-    setBulkMessage(failed.length ? `${ids.length - failed.length} saved; ${failed.length} could not be saved. Failed documents remain selected. Apply again to retry.` : `Updated ${bulkField} for ${ids.length} documents.`);
+    setNotice(failed.length ? `${ids.length - failed.length} saved; ${failed.length} could not be saved. They stay selected: set ${field} again to retry.` : `Updated ${field} for ${ids.length} document${ids.length === 1 ? "" : "s"}.`);
     if (failed.length) setSelection(selectEveryRow(failed));
-    bulkSaving.current = false;
+    fieldSaving.current = false;
     setBusy(false);
+    setFieldEdit(null);
+  };
+
+  // The menu acts on the selection when the row is part of it; otherwise the
+  // row becomes the selection, as a file browser does.
+  const openMenu = (row: RowModel, x: number, y: number, trigger: HTMLElement | null) => {
+    const id = row.doc?.id;
+    let ids: string[] = [];
+    if (id) {
+      if (selected.has(id)) ids = [...selection.ids];
+      else { setSelection(clickRow(emptySelection, id, docIds)); ids = [id]; }
+    }
+    setNotice("");
+    setMenu({ x, y, ids, rowKey: row.key, trigger });
+  };
+  const closeMenu = (restoreFocus: boolean) => {
+    if (restoreFocus) menu?.trigger?.focus({ preventScroll: true });
+    setMenu(null);
+  };
+  const menuItems = (m: MenuState): MenuItem[] => {
+    const docs = m.ids.flatMap(id => rows.find(r => r.doc?.id === id)?.doc ?? []);
+    const one = docs.length <= 1;
+    const filed = docs.length > 0 && docs.every(d => d.status === "filed");
+    const reads = docs.map(d => profileReads(d, readKinds));
+    const items: MenuItem[] = [];
+    if (one) items.push({ label: "Open", icon: <IconOpen />, onSelect: () => onOpen(m.rowKey) });
+    if (!docs.length) return items;
+    if (one) items.push({ label: "Rename", icon: <IconRename />, disabled: !filed, onSelect: () => setRename(r => ({ id: docs[0].id, n: (r?.n ?? 0) + 1 })) });
+    items.push("sep", {
+      label: "Set discipline…", icon: <IconTag />, disabled: !filed || !catalog,
+      onSelect: () => { setFieldChoice(null); setFieldEdit({ field: "discipline", ids: m.ids }); },
+    }, "sep");
+    if (reads.some(r => !r)) items.push({ label: "Include in profile", icon: <IconEye />, disabled: busy, onSelect: () => void apply(m.ids, "read") });
+    if (reads.some(r => r)) items.push({ label: "Exclude from profile", icon: <IconEyeOff />, disabled: busy, onSelect: () => void apply(m.ids, "skip") });
+    if (docs.some(d => d.profile_read === "read" || d.profile_read === "skip")) {
+      items.push({ label: "Reset profile reading to automatic", icon: <IconUndo />, disabled: busy, onSelect: () => void apply(m.ids, "auto") });
+    }
+    items.push("sep", { label: one ? "Delete…" : `Delete ${docs.length} documents…`, icon: <IconBin />, danger: true, onSelect: () => setConfirm(m.ids) });
+    return items;
   };
 
   return (
@@ -283,6 +335,7 @@ export function Register({
         </button>
       </div>
       {activity.length > 0 && <p className="reg-activity" role="status" aria-atomic="true"><Pending queued={!activeCount}>{[activeCount > 0 && `${activeCount} processing`, queuedCount > 0 && `${queuedCount} waiting`].filter(Boolean).join(" · ")}</Pending></p>}
+      <p className="reg-notice" role="status">{notice}</p>
       {notReadOnly && (
         <p className="reg-filter">
           Showing documents excluded from profile reading.{" "}
@@ -294,30 +347,23 @@ export function Register({
       {rows.length === 0 ? (
         <p className="reg-empty">Drop drawings, reports and schedules anywhere on this page. Each is filed in about a second.</p>
       ) : (
-        <table className="reg-table">
+        <table
+          className="reg-table"
+          aria-label="Documents. Click to select, Ctrl or Shift to add, double-click or Enter to open, right-click for actions."
+          onKeyDown={e => {
+            if ((e.target as HTMLElement).closest("input,select,textarea")) return;
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setNotice(""); setSelection(selectEveryRow(docIds)); }
+            else if (e.key === "Escape" && selected.size > 0) { setSelection(emptySelection); }
+          }}
+        >
           <colgroup>
-            <col className="reg-sel" />
             {COLUMNS.map((c) => (
               <col key={c.col} className={c.className} />
             ))}
-            <col className="reg-prof" />
-            <col className="reg-open" />
-            <col className="reg-bin" />
+            <col className="reg-more" />
           </colgroup>
           <thead>
             <tr>
-              <th scope="col" className="reg-sel">
-                <input
-                  type="checkbox"
-                  aria-label="Select all documents"
-                  checked={allSelected}
-                  ref={(el) => {
-                    if (el) el.indeterminate = someSelected;
-                  }}
-                  onChange={selectAll}
-                  disabled={busy || docIds.length === 0}
-                />
-              </th>
               {COLUMNS.map((c) => {
                 const active = (sort?.col ?? "number") === c.col;
                 return (
@@ -331,23 +377,7 @@ export function Register({
                   </th>
                 );
               })}
-              <th scope="col" className="reg-prof" title="Included for profile reading">
-                <span className="reg-th-text" aria-hidden>Use</span>
-                <span className="sr-only">Included for profile reading</span>
-              </th>
-              <th scope="col" className="reg-open"><span className="sr-only">Open document</span></th>
-              <th scope="col" className="reg-bin">
-                <button
-                  type="button"
-                  className="reg-del"
-                  disabled={selected.size === 0}
-                  title={selected.size === 0 ? "Select documents to delete them" : `Delete ${selected.size} selected`}
-                  onClick={() => setConfirm([...selected])}
-                >
-                  <IconBin />
-                  <span className="sr-only">Delete selected documents</span>
-                </button>
-              </th>
+              <th scope="col" className="reg-more"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           {ordered.map((row) => (
@@ -362,45 +392,32 @@ export function Register({
               selected={!!row.doc && selected.has(row.doc.id)}
               onSelect={select}
               reads={row.doc ? profileReads(row.doc, readKinds) : null}
-              onToggleRead={(doc, reads) => apply([doc.id], reads ? "skip" : "read")}
-              onDelete={(doc) => setConfirm([doc.id])}
+              menuOpen={menu?.rowKey === row.key}
+              onMenu={(x, y, trigger) => menu && trigger instanceof HTMLButtonElement && trigger === menu.trigger ? closeMenu(false) : openMenu(row, x, y, trigger)}
+              renameRequest={row.doc && rename?.id === row.doc.id ? rename.n : 0}
             />
           ))}
         </table>
       )}
-      {selected.size > 0 && (
-        <div className="reg-bulk" role="toolbar" aria-label="Selected documents">
-          <span className="reg-bulk-count">{selected.size} selected</span>
-          <div className="reg-bulk-edit">
-            <select className="select" aria-label="Bulk edit field" disabled={busy} value={bulkField} onChange={e => { setBulkField(e.target.value); setBulkValue(null); setBulkMessage(""); }}>
-              <option value="discipline">Discipline</option><option value="kind">Kind</option><option value="lifecycle">Lifecycle</option>
-            </select>
-            <select className="select" aria-label="Bulk edit value" disabled={busy || !catalog} value={bulkValue ?? "__choose"} onChange={e => { setBulkValue(e.target.value); setBulkMessage(""); }}>
-              <option value="__choose" disabled>Choose value…</option>
-              <option value="">None (clear value)</option>
-              {bulkOptions.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
-            </select>
-            <button type="button" className="btn btn-small" disabled={busy || bulkValue === null || !allFiled} onClick={() => void correctSelected()}>{busy ? "Saving…" : `Apply to ${selected.size}`}</button>
-            {!allFiled && <span>Only filed documents can be edited together.</span>}
-          </div>
-          {bulkMessage && <p className="reg-bulk-message" role="status">{bulkMessage}</p>}
-          <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "read")}>
-            Include for profile
-          </button>
-          <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "skip")}>
-            Exclude from profile
-          </button>
-          <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply([...selected], "auto")}>
-            Reset to automatic
-          </button>
-          <button type="button" className="btn btn-small btn-danger-quiet" disabled={busy} onClick={() => setConfirm([...selected])}>
-            <IconBin />
-            Delete
-          </button>
-          <button type="button" className="cell-link" disabled={busy} onClick={() => { setSelection(emptySelection); setBulkMessage(""); }}>
-            Clear
-          </button>
-        </div>
+      {menu && <RowMenu menu={menu} items={menuItems(menu)} onClose={closeMenu} />}
+      {fieldEdit && (
+        <ConfirmDialog
+          title={`Set ${fieldEdit.field}${fieldEdit.ids.length > 1 ? ` for ${fieldEdit.ids.length} documents` : ""}`}
+          message="The value you choose replaces the current one."
+          confirmLabel="Apply"
+          busyLabel="Saving…"
+          tone="plain"
+          busy={busy}
+          confirmDisabled={fieldChoice === null}
+          onConfirm={() => void saveField()}
+          onCancel={() => setFieldEdit(null)}
+        >
+          <select className="select reg-field-choice" aria-label={`New ${fieldEdit.field}`} disabled={busy} value={fieldChoice ?? "__choose"} onChange={e => setFieldChoice(e.target.value)}>
+            <option value="__choose" disabled>Choose…</option>
+            <option value="">None (clear value)</option>
+            {fieldOptions.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
+          </select>
+        </ConfirmDialog>
       )}
       {confirm && (
         <ConfirmDialog
@@ -413,6 +430,71 @@ export function Register({
         />
       )}
     </div>
+  );
+}
+
+/** The row actions menu, shared by the ⋮ button and right-click. Rendered on
+ * the body so the side panel's containment cannot clip or offset it. */
+function RowMenu({ menu, items, onClose }: { menu: MenuState; items: MenuItem[]; onClose: (restoreFocus: boolean) => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ left: menu.x, top: menu.y });
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const left = Math.max(8, Math.min(menu.x, window.innerWidth - r.width - 8));
+    const top = menu.y + r.height > window.innerHeight - 8 ? Math.max(8, menu.y - r.height) : menu.y;
+    setPos({ left, top });
+    el.querySelector<HTMLElement>('[role="menuitem"]:not(:disabled)')?.focus({ preventScroll: true });
+  }, [menu]);
+  const close = useRef(onClose);
+  close.current = onClose;
+  useEffect(() => {
+    const away = (e: PointerEvent) => {
+      const target = e.target as Node;
+      // The ⋮ button toggles the menu itself on click.
+      const toggle = menu.trigger instanceof HTMLButtonElement && menu.trigger.contains(target);
+      if (!ref.current?.contains(target) && !toggle) close.current(false);
+    };
+    const leave = () => close.current(false);
+    document.addEventListener("pointerdown", away, true);
+    window.addEventListener("resize", leave);
+    window.addEventListener("blur", leave);
+    return () => {
+      document.removeEventListener("pointerdown", away, true);
+      window.removeEventListener("resize", leave);
+      window.removeEventListener("blur", leave);
+    };
+  }, [menu]);
+  const count = menu.ids.length;
+  return createPortal(
+    <div
+      ref={ref}
+      className="reg-menu"
+      role="menu"
+      aria-label={count > 1 ? `Actions for ${count} documents` : "Document actions"}
+      style={{ left: pos.left, top: pos.top }}
+      onContextMenu={e => e.preventDefault()}
+      onKeyDown={e => {
+        if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); e.stopPropagation(); onClose(true); return; }
+        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+        e.preventDefault();
+        const all = Array.from(ref.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled)') ?? []);
+        const at = all.indexOf(document.activeElement as HTMLElement);
+        const next = e.key === "Home" ? 0 : e.key === "End" ? all.length - 1 : (at + (e.key === "ArrowUp" ? -1 : 1) + all.length) % all.length;
+        all[next]?.focus();
+      }}
+    >
+      {count > 1 && <p className="reg-menu-head" aria-hidden>{count} documents selected</p>}
+      {items.map((item, i) => item === "sep"
+        ? (i > 0 && items[i - 1] !== "sep" && i < items.length - 1 ? <div key={`sep-${i}`} role="separator" className="reg-menu-sep" /> : null)
+        : <button key={item.label} type="button" role="menuitem" className="reg-menu-item" data-danger={item.danger || undefined} disabled={item.disabled}
+            onClick={() => { onClose(true); item.onSelect(); }}>
+            <span className="reg-menu-icon" aria-hidden>{item.icon}</span>
+            {item.label}
+          </button>)}
+    </div>,
+    document.body,
   );
 }
 
@@ -456,8 +538,9 @@ function RegisterRow({
   selected,
   onSelect,
   reads,
-  onToggleRead,
-  onDelete,
+  menuOpen,
+  onMenu,
+  renameRequest,
 }: {
   row: RowModel;
   open: boolean;
@@ -468,13 +551,16 @@ function RegisterRow({
   selected: boolean;
   onSelect: (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => void;
   reads: boolean | null;
-  onToggleRead: (doc: Doc, reads: boolean) => void;
-  onDelete: (doc: Doc) => void;
+  menuOpen: boolean;
+  /** Opens (or, from the same trigger, closes) the row actions menu at x, y. */
+  onMenu: (x: number, y: number, trigger: HTMLElement | null) => void;
+  renameRequest: number;
 }) {
   const doc = row.doc;
   const suggested = suggestedTitle(doc);
   const [accepting, setAccepting] = useState(false);
   const [acceptError, setAcceptError] = useState("");
+  const more = useRef<HTMLButtonElement>(null);
   const acceptTitle = async () => {
     if (!doc || !suggested || accepting) return;
     setAccepting(true); setAcceptError("");
@@ -487,13 +573,18 @@ function RegisterRow({
   const activity = documentActivity(row);
   const missingTitle = titleNeedsReview ? "Title needs review" : "Title not extracted";
   const discipline = fieldValue(doc, "discipline");
-  const kind = fieldValue(doc, "kind");
-  const kindLabel = catalog?.kinds.find((k) => k.id === kind)?.label ?? kind;
   const date = fieldValue(doc, "date");
   const userSet = (field: string) => doc?.fields.find((f) => f.field === field)?.decided_by === "user";
+  const inControl = (e: { target: EventTarget }) => !!(e.target as HTMLElement).closest("input,select,textarea,button");
+  const menuFromRow = (el: HTMLElement) => {
+    const r = (more.current ?? el).getBoundingClientRect();
+    onMenu(r.right, r.bottom, more.current);
+  };
   const keys = (e: KeyboardEvent) => {
     if (e.target !== e.currentTarget && !(e.target instanceof HTMLTableCellElement)) return;
-    if (doc && (e.key === "Enter" || e.key === " ")) {
+    if (e.key === "Enter") { e.preventDefault(); onOpen(); return; }
+    if (e.key === "ContextMenu" || (e.key === "F10" && e.shiftKey)) { e.preventDefault(); menuFromRow(e.currentTarget as HTMLElement); return; }
+    if (doc && e.key === " ") {
       e.preventDefault();
       onSelect(doc.id, e);
     }
@@ -506,7 +597,8 @@ function RegisterRow({
   };
   const cell = (field: Col) => ({ doc, field, catalog, onCorrect });
   const override = doc?.profile_read === "read" || doc?.profile_read === "skip";
-  const readLabel = reads ? "Included for profile reading" : "Excluded from profile reading";
+  // A boolean, so a zero page count never renders as "0" beside the title.
+  const showTextStatus = !!doc?.text_status && (doc.text_status !== "done" || !!doc.text_empty_pages);
   return (
     <tbody
       className="reg-doc"
@@ -517,6 +609,7 @@ function RegisterRow({
       data-flash={row.flash ? "true" : undefined}
       data-landed={row.landed ? "true" : undefined}
       data-selected={selected ? "true" : undefined}
+      data-excluded={reads === false ? "true" : undefined}
       tabIndex={-1}
     >
       <tr
@@ -529,28 +622,30 @@ function RegisterRow({
         }}
         tabIndex={0}
         onClick={click}
+        onDoubleClick={e => { if (!inControl(e)) onOpen(); }}
+        onContextMenu={e => {
+          // An open editor keeps the browser's own menu for cut and paste.
+          if ((e.target as HTMLElement).closest("input,select,textarea")) return;
+          e.preventDefault();
+          onMenu(e.clientX, e.clientY, e.currentTarget);
+        }}
         onKeyDown={keys}
       >
-        <td className="reg-sel" onClick={(e) => e.stopPropagation()}>
-          {doc && (
-            <input
-              type="checkbox"
-              aria-label={`Select ${title || row.filename}`}
-              checked={selected}
-              onChange={() => undefined}
-              onClick={(e) => onSelect(doc.id, { shiftKey: e.shiftKey, ctrlKey: !e.shiftKey || e.ctrlKey, metaKey: e.metaKey })}
-            />
-          )}
-        </td>
         <RegisterCell {...cell("number")} className="reg-no" title={fieldValue(doc, "number")} data-user={userSet("number") || undefined}>
           {fieldValue(doc, "number")}
         </RegisterCell>
-        <RegisterCell {...cell("title")} className="reg-title" data-suggested={!!suggested || undefined} title={`${title || (titleNeedsReview ? "No title accepted automatically. Open this row to enter the title from the document." : missingTitle)}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
+        <RegisterCell {...cell("title")} editRequest={renameRequest} selected={selected} className="reg-title" data-suggested={!!suggested || undefined} title={`${title || (titleNeedsReview ? "No title accepted automatically. Open this row to enter the title from the document." : missingTitle)}\nFile: ${row.filename}`} data-user={userSet("title") || undefined}>
           <RowMark row={row} />
+          {reads === false && (
+            <span className="reg-unread" title={`Not read for the project profile${override ? " (your choice)" : " (automatic for this kind)"}. Right-click to include it.`}>
+              <IconEyeOff />
+              <span className="sr-only">Not read for the project profile.</span>
+            </span>
+          )}
           {row.uploadError ? <span className="error-text">{row.uploadError}</span> : title || (
             <>
-              <span className={ocrStage(doc) ? "ocr-summary" : "muted"}>{activity ? <Pending queued={activity!.state === "queued"}>{activity!.label}</Pending> : missingTitle}</span>
-              <span className="reg-file-hint"> · File: {row.filename}</span>
+              <span>{row.filename}</span>
+              <span className={ocrStage(doc) ? "ocr-summary" : "reg-title-review"}>{activity ? <Pending queued={activity.state === "queued"}>{activity.label}</Pending> : "Needs title review"}</span>
             </>
           )}
           {title && activity && !ocrStage(doc) && <span className="reg-file-hint"><Pending queued={activity!.state === "queued"}>{activity!.label}</Pending></span>}
@@ -563,9 +658,10 @@ function RegisterRow({
               {doc.reason === "no_text_layer" ? "Not filed · no readable text" : "Not filed · open for details"}
             </span>
           )}
-          {doc?.text_status && (
-            <span className="reg-text-status" data-state={doc.text_status} title={doc.text_status === "done" ? "Extracted text is saved. Check source coverage in the profile for unreadable pages and unresolved requirements." : undefined}>
-              {doc.text_status === "done" ? (doc.text_empty_pages ? "! Check text coverage" : doc.text_source_version ? `✓ Text ready${doc.text_pages ? ` · ${doc.text_pages} pages` : ""}` : "Text prepared · update profile") : doc.text_status === "failed" ? "! Text preparation failed" : <Pending queued={doc.text_status === "queued"}>{doc.text_status === "queued" ? "Text preparation queued" : "Preparing text…"}</Pending>}
+          {/* Text that is ready says nothing; only work in progress or a problem shows. */}
+          {showTextStatus && (
+            <span className="reg-text-status" data-state={doc!.text_status}>
+              {doc!.text_status === "done" ? "! Check text coverage" : doc!.text_status === "failed" ? "! Text preparation failed" : <Pending queued={doc!.text_status === "queued"}>{doc!.text_status === "queued" ? "Text preparation queued" : "Preparing text…"}</Pending>}
             </span>
           )}
           {row.progress !== undefined && !doc && <span className="reg-progress" style={{ transform: `scaleX(${row.progress})` }} />}
@@ -577,49 +673,20 @@ function RegisterRow({
         <RegisterCell {...cell("discipline")} className="reg-disc" title={discipline ? disciplineLabel(discipline) : undefined} data-user={userSet("discipline") || undefined}>
           {discipline ? disciplineLabel(discipline) : ""}
         </RegisterCell>
-        <RegisterCell {...cell("kind")} className="reg-kind" title={kindLabel || undefined} data-user={userSet("kind") || undefined}>
-          {kindLabel}
-        </RegisterCell>
-        <RegisterCell {...cell("lifecycle")} className="reg-life" data-user={userSet("lifecycle") || undefined}>
-          {catalog?.lifecycle.find(option => option.id === fieldValue(doc, "lifecycle"))?.label || fieldValue(doc, "lifecycle")}
-        </RegisterCell>
-        <td className="reg-prof">
-          {doc && reads !== null && (
-            <button
-              type="button"
-              className="reg-read"
-              data-reads={reads ? "true" : undefined}
-              data-override={override ? "true" : undefined}
-              aria-pressed={reads}
-              title={`${readLabel}${override ? " (your choice)" : " (automatic for this kind)"}. This is a selection, not reading progress. Click to ${reads ? "exclude it" : "include it"}; use Update project profile to start reading.`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleRead(doc, reads);
-              }}
-            >
-              <span aria-hidden>{reads ? "✓" : "–"}</span>
-              <span className="sr-only">{readLabel}</span>
-            </button>
-          )}
-        </td>
-        <td className="reg-open">
-          <button type="button" className="cell-link" aria-label={`Open document: ${title || row.filename}`} aria-controls={open ? "document-workspace" : undefined} aria-expanded={open} onClick={e => { e.stopPropagation(); onOpen(); }}>Open</button>
-        </td>
-        <td className="reg-bin">
-          {doc && (
-            <button
-              type="button"
-              className="reg-del"
-              title="Delete this document"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(doc);
-              }}
-            >
-              <IconBin />
-              <span className="sr-only">Delete {title || row.filename}</span>
-            </button>
-          )}
+        <td className="reg-more">
+          <button
+            ref={more}
+            type="button"
+            className="reg-more-btn"
+            aria-label={`More actions for ${title || row.filename}`}
+            title="More actions"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={e => { e.stopPropagation(); menuFromRow(e.currentTarget); }}
+            onDoubleClick={e => e.stopPropagation()}
+          >
+            <IconMore />
+          </button>
         </td>
       </tr>
     </tbody>

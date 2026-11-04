@@ -27,6 +27,9 @@ const VIEWS: { id: WorkbenchView | "plan"; label: string; name?: string; icon: s
 
 export function LeftNav({ projects, currentId, navigate, view, onView }: Props) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const current = projects?.find((p) => p.id === currentId);
 
@@ -45,7 +48,9 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
   };
 
   return (
-    <nav className="leftnav" aria-label="Projects">
+    <nav className="leftnav" aria-label="Projects" data-mobile-open={mobileOpen || undefined} onKeyDown={e => { if (e.key === "Escape" && !open) { setMobileOpen(false); menuButton.current?.focus(); } }}>
+      <button ref={menuButton} type="button" className="btn mobile-nav-toggle" aria-expanded={mobileOpen} aria-controls="project-navigation" onClick={() => setMobileOpen(value => !value)}>Project navigation</button>
+      <div id="project-navigation" className="navigation-content">
       <a
         className="leftnav-logo"
         href="/"
@@ -57,12 +62,17 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
       >
         <Wordmark height={30} />
       </a>
-      <div className="switcher" ref={box} onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
+      <div className="switcher" ref={box} onKeyDown={(e) => {
+        if (e.key === "Escape" && open) {
+          e.stopPropagation(); setOpen(false);
+          box.current?.querySelector<HTMLButtonElement>(".switcher-button")?.focus();
+        }
+      }}>
         <span className="switcher-label">Project</span>
         <button
           type="button"
           className="switcher-button"
-          aria-haspopup="listbox"
+          aria-controls="project-switcher"
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
           title={current?.name}
@@ -72,22 +82,18 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
           <span aria-hidden="true">▾</span>
         </button>
         {open && (
-          <ul className="switcher-list" role="listbox" aria-label="Switch project">
-            {(projects ?? []).map((p) => (
-              <li key={p.id} role="option" aria-selected={p.id === currentId}>
-                <button type="button" onClick={() => go(`/projects/${p.id}`)} data-active={p.id === currentId || undefined}>
-                  <span>{p.name}</span>
-                  {p.id === currentId && <span aria-hidden="true">✓</span>}
-                </button>
-              </li>
-            ))}
-            <li className="switcher-sep" role="presentation" />
-            <li role="option" aria-selected={false}>
-              <button type="button" onClick={() => go("/")}>
-                All projects and new project…
-              </button>
-            </li>
-          </ul>
+          <div id="project-switcher" className="switcher-list" aria-label="Switch project">
+            <input className="input" aria-label="Find project" placeholder="Find project" value={query} onChange={e => setQuery(e.target.value)} />
+            <ul className="switcher-results">
+              {(projects ?? []).filter(p => p.name.toLowerCase().includes(query.toLowerCase())).map(p => (
+                <li key={p.id}>
+                  <button type="button" onClick={() => go(`/projects/${p.id}`)} aria-current={p.id === currentId ? "true" : undefined} data-active={p.id === currentId || undefined}>{p.name}</button>
+                </li>
+              ))}
+              {projects && !projects.some(p => p.name.toLowerCase().includes(query.toLowerCase())) && <li className="muted">No matching projects.</li>}
+            </ul>
+            <button type="button" className="switcher-home" onClick={() => go("/")}>All projects and new project…</button>
+          </div>
         )}
       </div>
       <div className="nav-views" role="group" aria-label="Project views">
@@ -104,28 +110,23 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
               disabled={item.idle}
               title={item.idle ? "Not in this build yet" : undefined}
               onClick={() => {
-                if (!item.idle) onView(item.id as WorkbenchView);
+                if (!item.idle) {
+                  onView(item.id as WorkbenchView); setMobileOpen(false);
+                  if (menuButton.current?.offsetParent) menuButton.current.focus();
+                }
               }}
             >
               <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d={item.icon} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span>{item.label}</span>
+              <span>{item.label}{item.idle && <small className="nav-planned">Planned</small>}</span>
             </button>
           );
         })}
       </div>
       <div className="nav-spacer" />
-      <section className="nav-chats" aria-label="Chats">
-        <div className="nav-chats-label">
-          <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 6h14v9H8l-3 3z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-          </svg>
-          <span>Chats</span>
-        </div>
-        <p>No chats in this build.</p>
-      </section>
       <DevStatus />
+      </div>
     </nav>
   );
 }

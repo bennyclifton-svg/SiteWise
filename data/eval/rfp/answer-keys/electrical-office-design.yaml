@@ -53,17 +53,8 @@ description: Office complete tender design; utility design remains separately ap
 snapshot: true
 expect:
   electrical-services:
-    stages_include:
-    - inception
-    - concept
-    - planning
-    - design
-    - tender
-    stages_option:
-    - continuation
-    - construction
-    - handover
-    - defects
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, concept, planning, design, tender]
     positions:
       distribution: I
       lighting: I
@@ -72,6 +63,7 @@ expect:
       controls: I
       dry_fire: I
       existing: absent
-      handover: O
+      handover: X
       declarations: I
-      continuation: O
+      continuation: X
+    stages_absent: [continuation, construction, handover, defects]

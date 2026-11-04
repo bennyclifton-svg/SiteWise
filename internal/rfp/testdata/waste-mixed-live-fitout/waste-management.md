@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to refurbish and fit out Residential floors (Class 2) and Food retail fit-out (Class 6) at 1 Example St, Example NSW.
@@ -11,56 +9,56 @@ Example Client intends to refurbish and fit out Residential floors (Class 2) and
 
 Conditions that apply: Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Parts with different NCC classes.
 
-Information provided: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
-
 ### 2. Scope of services
 
 Selected waste advice from written instruction/agreed inputs to named final output and response round. Contractor implements; operator contracts collections; specialists classify controlled waste; traffic tests access. No approval, facility acceptance, diversion or savings guarantee.
 Revision-controlled PDFs/plans/calculations and editable registers: input revisions, units/source/date, assumptions, owners/dates, recipients/reliance and closure evidence. Separate observed, reported and estimated conditions.
 Waste basis: Confirm actual uses/occupancy/activity by part, streams, dated quantities/rates, local controls/conditions and mandatory versus voluntary targets; existing contracts, collection vehicles/frequency, rights and gaps. Building labels and absent records prove neither zero waste nor adequate collection.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Select base/options and named end; operational and C&D plans are separate purchases. Later work needs written activation. R1 Fee by stage: Price selected stages/services once: quantities, fixed/ceiling/unit basis, base/options, package dependencies, ex GST/GST/total, milestones and addenda. Confirm authorised signatory and addenda numbers. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Inception / evidence |  | Included |  |
+|  | Brief, local controls/consents, operator arrangements and agreed visits | Included |  |
+|  | Input gaps, stream/stakeholder schedule and responsibility map | Included |  |
+|  | Existing work: photos, retained/removed extent and safe access | Included |  |
+|  | Remediation follows specialist diagnosis | Included |  |
+| S2 Operational concept |  | Included |  |
+|  | Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste, rooms/routes/chutes and collection points | Included |  |
+|  | Compare feasibility before space is fixed | Included |  |
+|  | Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power | Included |  |
+|  | Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated assumptions | Included |  |
+| S3 Operational plan |  | Included |  |
+|  | Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties | Included |  |
+|  | Scheduled drafts, council forms/consultation/responses to named milestone | Included |  |
+|  | Confirm operator acceptance owner/date | Included |  |
+|  | Operational WMP: actual streams, bins/storage and collection; dated rates/records only | Included |  |
+|  | Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator engagement separate | Included |  |
+|  | Vehicle swept paths/clearances; civil/structural confirm grades and loads | Excluded |  |
+| S3 C&D plan |  | Included |  |
+|  | Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage, reuse/recycling/disposal pathways and tracking evidence | Included |  |
+|  | Confirm contractor processes/destinations later if unavailable | Included |  |
+|  | No hazardous audit | Included |  |
+|  | C&D plan: separate quantities, reuse/disposal pathways and tracking | Included |  |
+|  | Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings | Excluded |  |
+|  | Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service | Included |  |
+| S4 Consent / design review | Not part of this appointment | Excluded | — |
+| S5 Tender support | Not part of this appointment | Excluded | — |
+| S6 Contractor review | Not part of this appointment | Excluded | — |
+| S7 Construction / completion | Not part of this appointment | Excluded | — |
+| S8 Advisory review | Not part of this appointment | Excluded | — |
+| S8 Post-occupation review | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Waste planning and collection — Operational WMP: actual streams, bins/storage and collection; dated rates/records only | X |  |  |  |
-| C&D plan: separate quantities, reuse/disposal pathways and tracking | X |  |  |  |
-| Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings. By competent environmental/hazardous-waste specialist named in R4 |  |  | X |  |
-| Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator engagement separate | X |  |  |  |
-| Facilities and design interfaces — Vehicle swept paths/clearances; civil/structural confirm grades and loads. By traffic engineer named in R4, not yet engaged |  |  | X |  |
-| Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power | X |  |  |  |
-| Equipment design, supply and commissioning. By equipment supplier or engineer named in R4, not yet engaged |  |  | X |  |
-| Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated assumptions | X |  |  |  |
-| Delivery and verification — Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service |  | X |  |  |
-| Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee |  | X |  |  |
-| Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence |  | X |  |  |
-| Post-occupation records/cost review: separately selected period and operator actions |  | X |  |  |
-| Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Select base/options and named end; operational and C&D plans are separate purchases. Later work needs written activation.  R1 Fee by stage: Price selected stages/services once: quantities, fixed/ceiling/unit basis, base/options, package dependencies, ex GST/GST/total, milestones and addenda. Confirm authorised signatory and addenda numbers. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Inception / evidence — Included | Brief, local controls/consents, operator arrangements and agreed visits; input gaps, stream/stakeholder schedule and responsibility map. Existing work: photos, retained/removed extent and safe access; remediation follows specialist diagnosis |  |  |  |
-| S2 Operational concept — Included | Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste, rooms/routes/chutes and collection points. Compare feasibility before space is fixed |  |  |  |
-| S3 Operational plan — Included | Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties; scheduled drafts, council forms/consultation/responses to named milestone. Confirm operator acceptance owner/date |  |  |  |
-| S3 C&D plan — Included | Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage, reuse/recycling/disposal pathways and tracking evidence. Confirm contractor processes/destinations later if unavailable; no hazardous audit |  |  |  |
-| S4 Consent / design review — Option | Conditions and design changes checked against selected plans; space, routes, wash-down/drainage, ventilation/security and fire/acoustic interfaces. Assign/close actions; equipment drawings separately commissioned |  |  |  |
-| S5 Tender support — Option | Functional criteria, selected plan updates, waste targets/tracking clauses and counted RFIs. D&C design intent and contractor selections/detailed-design duties explicit; no daily waste management |  |  |  |
-| S6 Contractor review — Option | Selected processes/equipment/design changes, plan updates and counted authority responses; retained versus novated role and handover. No automatic novation or supplier design |  |  |  |
-| S7 Construction / completion — Option | Sample tracking/destination evidence and counted room/route hold-point visits; deviations, outstanding gaps and qualified completion report for inspected/evidenced scope. Authority/certifier retains approval |  |  |  |
-| S8 Advisory review — Option | Defined advice/audit/options/cost decision: evidence cutoff, sampling/inspection limits, calculations/confidence, reliance and prioritised actions; independent peer/expert evidence separately selected |  |  |  |
-| S8 Post-occupation review — Option | Review actual collection records/costs over stated period against assumptions; prioritise actions and operator ownership. No ongoing management or savings guarantee |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Occupied/staged/heritage/remediation interim plans/checks |  |  |  |
-| Service option | Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee |  |  |  |
-| Service option | Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence |  |  |  |
-| Service option | Post-occupation records/cost review: separately selected period and operator actions |  |  |  |
-| Service option | Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -101,6 +99,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Input/access owners/dates: plans/sections/DWGs/clearances, occupancy/activity, records, photos and quantity estimates; specialist reports and contractor processes/destinations. Method checks, council/operator/traffic dependencies, milestone/end, risks and expedited option. |
 | R8 Insurance and compliance | Current PI $5 million (client selected), PL $20 million (client selected), workers cover/duration, exclusions/renewals; subcontractors and agreement/precedence acceptance or departures. Historical cover is insufficient. |
 | R9 Reimbursables | Authority/collector/traffic/specialist/equipment/survey/travel/platform/expedite costs: included/allowance/unit, quantity, payer, GST/markup/prior approval; client-direct costs and no R1 duplication. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

@@ -37,9 +37,11 @@ settings:
     "allowance:client_presentations": "2"
 expect:
   architecture:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded,
+    # and an excluded service names no party.
     stages_include: [concept, schematic, planning_approval, design_development, house_documents]
     stages_absent: [tender_traditional, for_construction, interiors]
-    positions: {lodgement: ask, house_interiors: I, specification: I, signage: absent, tenant_fitout: absent}
+    positions: {lodgement: I, house_interiors: I, specification: I, signage: absent, tenant_fitout: absent}
     # An undecided engagement is the client's (owner decision 4, 2026-10-21).
     blocking: ["fact:flag.architect_lodges", "fact:budget"]
     no_checks: ["unallocated:signage", "unallocated:facade_certification", "engagement"]

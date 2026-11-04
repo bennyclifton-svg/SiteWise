@@ -61,18 +61,9 @@ description: New office explicitly allocates wet and dry design; construction an
 snapshot: true
 expect:
   fire-services:
-    stages_include:
-    - inception
-    - concept
-    - design
-    - tender
-    stages_absent:
-    - investigation
-    stages_option:
-    - continuation
-    - construction
-    - handover
-    - advisory
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, concept, design, tender]
+    stages_absent: [investigation, continuation, construction, handover, advisory]
     positions:
       wet: I
       supply: I
@@ -81,8 +72,8 @@ expect:
       hazards: X
       existing: absent
       upgrade: absent
-      witness: O
-      construction: O
-      execution: O
+      witness: X
+      construction: X
+      execution: X
     blocking_only: true
     blocking: []

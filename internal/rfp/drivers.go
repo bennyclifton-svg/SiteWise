@@ -67,11 +67,12 @@ var qualityLabels = map[string]string{
 // DriverSet is read once at refresh and frozen in the draft, so a setting
 // change re-resolves without reloading the project.
 type DriverSet struct {
-	Facts       map[string]Fact   `json:"facts"`
-	Parts       []Part            `json:"parts"`
-	Consultants []Consultant      `json:"consultants"`
-	Text        map[string]string `json:"text"`
-	Documents   int               `json:"documents"`
+	Facts            map[string]Fact      `json:"facts"`
+	Parts            []Part               `json:"parts"`
+	Consultants      []Consultant         `json:"consultants"`
+	Text             map[string]string    `json:"text"`
+	DocumentSchedule []reports.BriefValue `json:"document_schedule"`
+	Documents        int                  `json:"documents"`
 }
 
 func (d DriverSet) Fact(key string) Fact {
@@ -166,6 +167,7 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	}
 	d.Parts = parts(s, byPart, whole)
 	d.Consultants = consultants(s)
+	d.DocumentSchedule = s.Documents
 	d.Documents = len(s.Documents)
 	d.Text["register"] = registerSummary(s.Documents)
 	readFlags(d.Facts, value)
@@ -305,6 +307,29 @@ func deriveFlags(facts map[string]Fact, parts []Part) {
 	case len(classes) == 1 && !missing:
 		facts["flag.mixed_use"] = Fact{Values: []string{"no"}, State: Known, Source: "derived", Detail: "one class"}
 	}
+	deriveRegulatedDesign(facts, classes, missing)
+}
+
+// regulatedClasses are the classes the NSW Design and Building Practitioners
+// Act 2020 reaches (Class 2, and Class 3 and 9c from 3 July 2023). A project
+// whose every part has a class and none of these cannot be regulated design
+// (owner direction, 2 November 2026). A saved answer always wins, and a
+// project with one of these classes stays for professional advice.
+var regulatedClasses = []string{"2", "3", "9c"}
+
+func deriveRegulatedDesign(facts map[string]Fact, classes map[string]bool, missing bool) {
+	if f, ok := facts["regulated_design"]; ok && f.State != Unknown {
+		return
+	}
+	if missing || len(classes) == 0 {
+		return
+	}
+	for _, c := range regulatedClasses {
+		if classes[c] {
+			return
+		}
+	}
+	facts["regulated_design"] = Fact{Values: []string{"no"}, State: Known, Source: "derived", Detail: "no Class 2, 3 or 9c part"}
 }
 
 // parts keeps each building part with its own classes. The whole-project

@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to build Apartments (Class 2) and Shops (Class 6) at 1 Example St, Example NSW.
@@ -11,47 +9,62 @@ Example Client intends to build Apartments (Class 2) and Shops (Class 6) at 1 Ex
 
 Conditions that apply: Parts with different NCC classes.
 
-Information provided: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture quantities are client choices.
-
 ### 2. Scope of services
 
 Selected landscape design/advice from instruction, inputs and access to named output/response milestone. Specialists own technical design; authorities approve. No approval, plant-survival or unseen-work guarantee.
 Controlled PDFs/plans, schedules/calculations and registers; agree native formats, recipients/reliance, input revisions, rounds/dates. Verify instrument/edition before using ratios, canopy, soil-depth or load figures.
 Landscape basis: Confirm measured extent/map revision, actual users, private/common/public ground/roof areas; survey, levels/services, tree IDs, soil/environmental and structural/waterproofing evidence, current controls/consents, operator and access. Record gaps/conflicts.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Select base/options and end; later stages require instruction. Fit-out without landscape impact buys no design; advice ends at its report/response round. R1 Fee by stage: Price selected stages/quantities once: fixed/ceiling/unit, base/options/dependencies, ex GST/GST/total and milestones; confirm validity, authorised signatory and numbered addenda. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Inception / evidence |  | Included |  |
+|  | Agreed accessible-site review/photos, controls/use/maintenance brief, constraints and investigation register | Included |  |
+|  | Missing levels, services, soil, trees and access. | Included |  |
+|  | Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose cause; assign opening-up/testing/reinstatement | Excluded |  |
+| S2 Concept |  | Included |  |
+|  | Counted alternatives/tree workshops, layout/palette and measured deep-soil/canopy basis | Included |  |
+|  | Soil volumes/depths, loads, shade, water and maintenance assumptions. | Included |  |
+|  | Retained/street/neighbouring trees: condition/impact/protection; survey locates; no removal authority | Excluded |  |
+|  | Special external uses: name play/access, lighting/electrical, ecology/heritage/bushfire/horticulture specialists | Included |  |
+| S3 Approval / responses |  | Included |  |
+|  | Pathway-specific plans, planting schedule/details/calculations | Included |  |
+|  | Draft/consolidated comment/final and counted council responses to named milestone | Included |  |
+|  | Scales suit submission. | Included |  |
+| S4 Consent / developed design |  | Included |  |
+|  | Conditions/register, hard/soft landscape, soils and planting | Included |  |
+|  | Coordinate irrigation, public domain, civil, structure/waterproofing, access and long-lead items. | Included |  |
+|  | Planting/hardscape/external design only in enabled stages | Included |  |
+|  | Levels/runoff/WSUD by civil; retaining structure by structural; geotechnical soil advice | Excluded |  |
+|  | Podium/roof/planter build-up and loads; structure verifies, architect/waterproofing and drainage owners named | Included |  |
+|  | Irrigation notation/performance brief; hydraulic/electrical interfaces named | Included |  |
+|  | Public-domain manuals/approvals/bonds/handover; extent and authority lead agreed | Included |  |
+| S5 Traditional documentation |  | Included |  |
+|  | Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment requirements/hold points | Included |  |
+|  | Counted queries/substitutions. | Included |  |
+|  | Detailed irrigation design only by expressly selected competent designer | Included |  |
+| S7 Construction / completion |  | Included |  |
+|  | Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits | Included |  |
+|  | Departures/actions/evidence and bounded completion statement, distinct from contract PC/authority acceptance. | Included |  |
+|  | Construction visits/completion report against selected evidenced scope; contract PC remains administrator | Included |  |
+| S8 Establishment review |  | Included |  |
+|  | Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation, erosion/defects | Included |  |
+|  | End report to administrator/operator | Included |  |
+|  | Contractor maintains. | Included |  |
+|  | Plant establishment/maintenance inspections; contractor/operator maintains, quantified visits/end criteria | Included |  |
+| S9 Advice / rectification | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Existing/occupied/mixed/staged work: retained-condition/tie-ins, access and separate acceptance/establishment dates | Included |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture quantities are client choices.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Landscape and planting design — Planting/hardscape/external design only in enabled stages | X |  |  |  |
-| Retained/street/neighbouring trees: condition/impact/protection; survey locates; no removal authority. By arborist |  |  | X |  |
-| Podium/roof/planter build-up and loads; structure verifies, architect/waterproofing and drainage owners named | X |  |  |  |
-| Irrigation and design interfaces — Levels/runoff/WSUD by civil; retaining structure by structural; geotechnical soil advice. By civil engineer and structural engineer, not yet engaged |  |  | X |  |
-| Irrigation notation/performance brief; hydraulic/electrical interfaces named | X |  |  |  |
-| Detailed irrigation design only by expressly selected competent designer | X |  |  |  |
-| Special external uses: name play/access, lighting/electrical, ecology/heritage/bushfire/horticulture specialists | X |  |  |  |
-| Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose cause; assign opening-up/testing/reinstatement. By environmental consultant and relevant cause specialist, not yet engaged |  |  | X |  |
-| Public realm and delivery — Public-domain manuals/approvals/bonds/handover; extent and authority lead agreed | X |  |  |  |
-| Existing/occupied/mixed/staged work: retained-condition/tie-ins, access and separate acceptance/establishment dates | X |  |  |  |
-| Plant establishment/maintenance inspections; contractor/operator maintains, quantified visits/end criteria | X |  |  |  |
-| Construction visits/completion report against selected evidenced scope; contract PC remains administrator | X |  |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Select base/options and end; later stages require instruction. Fit-out without landscape impact buys no design; advice ends at its report/response round.  R1 Fee by stage: Price selected stages/quantities once: fixed/ceiling/unit, base/options/dependencies, ex GST/GST/total and milestones; confirm validity, authorised signatory and numbered addenda. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Inception / evidence — Included | Agreed accessible-site review/photos, controls/use/maintenance brief, constraints and investigation register; missing levels, services, soil, trees and access. |  |  |  |
-| S2 Concept — Included | Counted alternatives/tree workshops, layout/palette and measured deep-soil/canopy basis; soil volumes/depths, loads, shade, water and maintenance assumptions. |  |  |  |
-| S3 Approval / responses — Included | Pathway-specific plans, planting schedule/details/calculations; draft/consolidated comment/final and counted council responses to named milestone. Scales suit submission. |  |  |  |
-| S4 Consent / developed design — Included | Conditions/register, hard/soft landscape, soils and planting; coordinate irrigation, public domain, civil, structure/waterproofing, access and long-lead items. |  |  |  |
-| S5 Traditional documentation — Included | Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment requirements/hold points; counted queries/substitutions. |  |  |  |
-| S7 Construction / completion — Included | Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits; departures/actions/evidence and bounded completion statement, distinct from contract PC/authority acceptance. |  |  |  |
-| S8 Establishment review — Included | Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation, erosion/defects; end report to administrator/operator. Contractor maintains. |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -94,6 +107,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Input providers/dates, stage resources, access/test method, draft/review/final, authority/contractor dependencies, hold-point notice and establishment schedule; calculations/substitutions, evidence limits, urgent escalation/close-out. |
 | R8 Insurance and compliance | Current selected PI $5 million (client selected), PL $20 million (client selected), workers cover, duration/exclusions/renewals; agreement/precedence acceptance or departures, novation and reliance/IP. |
 | R9 Reimbursables | Travel/access, survey/locating, soil/lab/testing, authorities, specialists, samples/documents: included/allowance/unit, quantity/payer/GST/markup/approval; no R1 duplication or hidden installation/maintenance. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

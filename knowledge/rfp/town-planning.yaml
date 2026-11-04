@@ -41,6 +41,8 @@ role:
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/advisory-services-guide.md"}]
 
 stage_intro: "Price each stage that applies as a lump sum. Work beyond an allowance needs a written instruction."
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 
 boundary:
   - {when: [{pathway: [advice_only, exempt]}, {work_type: [advisory]}], start: prelim_advice, end: prelim_advice}
@@ -49,14 +51,26 @@ boundary:
 stages:
   - key: prelim_advice
     name: Preliminary planning advice
-    deliverable: "Review of the plans against the LEP, DCP and other controls; site constraints; historic consents; pathway confirmed; planning risks and the design changes that reduce them; reports needed for lodgement; information limits and recommended investigations. Advice report: 1 draft, 1 final"
+    lines:
+      - {key: review_plans_against, text: "Review of the plans against the LEP, DCP and other controls"}
+      - {key: site_constraints, text: "site constraints"}
+      - {key: historic_consents, text: "historic consents"}
+      - {key: pathway_confirmed, text: "pathway confirmed"}
+      - {key: planning_risks_design, text: "planning risks and the design changes that reduce them"}
+      - {key: reports_needed_lodgement, text: "reports needed for lodgement"}
+      - {key: information_limits_recommended, text: "information limits and recommended investigations"}
+      - {key: advice_report_1, text: "Advice report: 1 draft, 1 final"}
     fee_basis: fixed
     delivery_stage: concept_design
     shown_when: Always, even where earlier due diligence exists
     provenance: [{kind: evidence, ref: "town-planning#1-15"}, {kind: seed, ref: "data/reference/clerk/data/seed/advisory-services-guide.md"}]
   - key: pre_lodgement
     name: Pre-lodgement
-    deliverable: "Book the meeting; pre-lodgement letter with a scheme overview and compliance summary; attend {allowance:pre_lodgement_meetings} meeting(s); note of outcomes and plan changes"
+    lines:
+      - {key: book_meeting, text: "Book the meeting"}
+      - {key: pre_lodgement_letter, text: "pre-lodgement letter with a scheme overview and compliance summary"}
+      - {key: attend_meeting_s, text: "attend {allowance:pre_lodgement_meetings} meeting(s)"}
+      - {key: note_outcomes_plan, text: "note of outcomes and plan changes"}
     fee_basis: fixed
     delivery_stage: approval_documentation
     when: [{pathway: [da, ssd]}]
@@ -64,7 +78,9 @@ stages:
     provenance: [{kind: evidence, ref: "town-planning#18-22"}]
   - key: planning_report
     name: Planning report
-    deliverable: "{planning_report_long}; 1 draft, 1 client review, 1 final"
+    lines:
+      - {key: n, text: "{planning_report_long}"}
+      - {key: 1_draft_1, text: "1 draft, 1 client review, 1 final"}
     fee_basis: fixed
     delivery_stage: approval_documentation
     when: [{pathway: [da, ssd]}]
@@ -72,7 +88,8 @@ stages:
     provenance: [{kind: evidence, ref: "town-planning#25-27"}, {kind: practice, ref: "NSW SSD practice: SEARs then EIS"}]
   - key: variation_request
     name: Variation request
-    deliverable: "Clause 4.6 written request for each varied development standard"
+    lines:
+      - {key: clause_4_6, text: "Clause 4.6 written request for each varied development standard"}
     fee_basis: fixed
     delivery_stage: approval_documentation
     when: [{flag: [cl46], pathway: [da, ssd]}]
@@ -82,7 +99,8 @@ stages:
     provenance: [{kind: evidence, ref: "town-planning#29"}]
   - key: lodgement
     name: Lodgement
-    deliverable: "Forms, owner's consent, checklist, fee advice, collation and portal lodgement"
+    lines:
+      - {key: forms_owner_s, text: "Forms, owner's consent, checklist, fee advice, collation and portal lodgement"}
     fee_basis: fixed
     delivery_stage: approval_documentation
     when: [{pathway: [da, ssd]}]
@@ -90,7 +108,12 @@ stages:
     provenance: [{kind: evidence, ref: "town-planning#38-41"}]
   - key: assessment
     name: Assessment
-    deliverable: "Monitor and follow up; client updates; up to {allowance:rfi_responses} response(s) to authority information requests; {allowance:authority_meetings} meeting(s) with the authority; review of the assessment report and draft conditions"
+    lines:
+      - {key: monitor_follow, text: "Monitor and follow up"}
+      - {key: client_updates, text: "client updates"}
+      - {key: response_s_authority, text: "up to {allowance:rfi_responses} response(s) to authority information requests"}
+      - {key: meeting_s_authority, text: "{allowance:authority_meetings} meeting(s) with the authority"}
+      - {key: review_assessment_report, text: "review of the assessment report and draft conditions"}
     fee_basis: fixed
     delivery_stage: approval_documentation
     when: [{pathway: [da, ssd]}]
@@ -98,7 +121,9 @@ stages:
     provenance: [{kind: evidence, ref: "town-planning#43-49"}]
   - key: determination_review
     name: Determination review
-    deliverable: "Review of the consent conditions; advice on conditions to challenge or modify"
+    lines:
+      - {key: review_consent_conditions, text: "Review of the consent conditions"}
+      - {key: advice_conditions_challenge, text: "advice on conditions to challenge or modify"}
     fee_basis: fixed
     delivery_stage: approval_documentation
     when: [{pathway: [da, ssd]}]
@@ -106,7 +131,10 @@ stages:
     provenance: [{kind: evidence, ref: "town-planning#48"}]
   - key: post_approval
     name: Post-approval support
-    deliverable: "Conditions register separating pre-construction, pre-occupation and ongoing conditions, with the responsible consultant and the evidence each needs; consistency review of later design changes; condition compliance advice"
+    lines:
+      - {key: conditions_register_separating, text: "Conditions register separating pre-construction, pre-occupation and ongoing conditions, with the responsible consultant and the evidence each needs"}
+      - {key: consistency_review_later, text: "consistency review of later design changes"}
+      - {key: condition_compliance_advice, text: "condition compliance advice"}
     fee_basis: fixed
     delivery_stage: construction_documentation
     when: [{pathway: [da, ssd]}]
@@ -126,10 +154,11 @@ allowances:
   - {key: panel_meetings, label: Planning panel meetings, text: "{n}", default: "1", owner: client, when: [{flag: [panel]}], provenance: [{kind: evidence, ref: "town-planning#51"}]}
 
 positions:
-  - {group: "Planning evidence and submission", key: specialist_review, label: "Review of specialist reports for planning compliance before lodgement", kind: technical, value: I, when: [{pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#58"}]}
-  - {group: "Planning evidence and submission", key: certificates, label: "Planning certificate, title and DP searches (fees at cost)", kind: technical, value: I, provenance: [{kind: evidence, ref: "town-planning#4-5"}]}
-  - {group: "Planning evidence and submission", key: historic_consents, label: "Historic consents through GIPA", kind: technical, value: O, provenance: [{kind: evidence, ref: "town-planning#3"}]}
+  - {group: "Planning evidence and submission", key: specialist_review, stage: [planning_report, lodgement], label: "Review of specialist reports for planning compliance before lodgement", kind: technical, value: I, when: [{pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#58"}]}
+  - {group: "Planning evidence and submission", key: certificates, stage: [prelim_advice], label: "Planning certificate, title and DP searches (fees at cost)", kind: technical, value: I, provenance: [{kind: evidence, ref: "town-planning#4-5"}]}
+  - {group: "Planning evidence and submission", key: historic_consents, stage: [prelim_advice], label: "Historic consents through GIPA", kind: technical, value: O, provenance: [{kind: evidence, ref: "town-planning#3"}]}
   - key: compliance_matrix
+    stage: [prelim_advice]
     group: Planning evidence and submission
     label: "Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner and required date"
     kind: technical
@@ -137,6 +166,7 @@ positions:
     when: [{pathway: [da, ssd]}]
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/town-planning-guide.md (concept and common failures)"}]
   - key: submissions_response
+    stage: [assessment]
     group: Assessment and coordination
     label: "Response to public submissions"
     kind: technical
@@ -146,6 +176,7 @@ positions:
     assumption: "Price as an option: needed only if notification draws submissions."
     provenance: [{kind: evidence, ref: "town-planning#50"}]
   - key: panel_attendance
+    stage: [assessment]
     group: Assessment and coordination
     label: "Attendance at planning panel meetings, to the allowance in section 4"
     kind: technical
@@ -155,15 +186,16 @@ positions:
     assumption: "Price as an option: needed only if the application goes to a planning panel."
     provenance: [{kind: evidence, ref: "town-planning#51"}]
   - {group: "Assessment and coordination", key: ad_hoc_advice, label: "Ad hoc planning advice and consultant coordination, within the meeting allowance", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "town-planning#55-57"}]}
-  - {group: "Planning evidence and submission", key: lodgement_format, label: "Pre-lodgement plans in council's required format", kind: technical, value: I, when: [{stage: [pre_lodgement]}], provenance: [{kind: evidence, ref: "town-planning#23"}]}
+  - {group: "Planning evidence and submission", key: lodgement_format, stage: [pre_lodgement], label: "Pre-lodgement plans in council's required format", kind: technical, value: I, when: [{stage: [pre_lodgement]}], provenance: [{kind: evidence, ref: "town-planning#23"}]}
   - key: modification
+    stage: [post_approval]
     group: Separate services and costs
     label: "Modification application after approval"
     kind: technical
     value: O
     when: [{pathway: [da, ssd]}]
     provenance: [{kind: practice, ref: "town-planning-guide.md post-approval; replaces the v1 citation of ledger #62-63 (phase-a-changes C1.2)"}]
-  - {group: "Separate services and costs", key: court, label: "Land and Environment Court appeal or expert witness", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "town-planning#54"}]}
+  - {group: "Separate services and costs", key: court, stage: [determination_review, assessment], label: "Land and Environment Court appeal or expert witness", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "town-planning#54"}]}
   - {group: "Separate services and costs", key: authority_fees, label: "Council, agency and panel fees; contributions", kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "town-planning#24"}, {kind: evidence, ref: "town-planning#42"}]}
   - {group: "Separate services and costs", key: specialist_reports, label: "Specialist reports (traffic, acoustic and others)", kind: technical, value: X, responsible: "specialist consultants engaged by the client", provenance: [{kind: evidence, ref: "town-planning#59"}]}
 

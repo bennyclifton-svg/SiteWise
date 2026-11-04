@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>SiteWise · Project Profile · Option B, Off-form</title>
+<style>
+@font-face { font-family: "Instrument Sans"; font-weight: 400; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 500; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 600; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 700; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 400; src: url("../../../../web/node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("../../../../web/node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); }
+
+:root {
+  --ground: #1B1A18;
+  --text: #F0ECE5;
+  --text-2: #CFC7BB;
+  --text-3: #A1988C;
+  --text-4: #70695F;
+  --line: rgba(255,255,255,.07);
+  --line-2: rgba(255,255,255,.12);
+  --tray: #222120;
+  --stone: #D9D2C6;
+  --ember: #D9935E;
+  --azure: #93CEDD;
+  --amber: #EBB553;
+  --amber-text: #F4D29B;
+  --amber-bg: #392B1D;
+  --ok: #7EC798;
+  --sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Off-form concrete: fine aggregate, cloudy pour variation */
+  --aggregate: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='a'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .97  0 0 0 0 .92  0 0 0 .55 -.31'/></filter><rect width='100%' height='100%' filter='url(%23a)'/></svg>");
+  --pores: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='19' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 1.32'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  --pour: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.004 .006' numOctaves='4' seed='12' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .96  0 0 0 0 .9  0 0 0 .13 -.035'/></filter><rect width='100%' height='100%' filter='url(%23c)'/></svg>");
+  /* Brushed anodised metal: long horizontal grain */
+  --brushed: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='2400' height='240'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='.0009 .7' numOctaves='2' seed='8' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .2 -.075'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>");
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  position: relative;
+  font-family: var(--sans); color: var(--text); background: var(--ground);
+  -webkit-font-smoothing: antialiased; font-feature-settings: "tnum" 1;
+}
+/* Concrete ground with formwork joints and tie holes */
+.concrete { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle at 50% 46%, rgba(0,0,0,.42) 0 2.4px, rgba(0,0,0,.2) 3.8px, transparent 5px), radial-gradient(circle at 50% 58%, rgba(255,255,255,.045) 0 4.6px, transparent 6px),
+    linear-gradient(90deg, rgba(0,0,0,.34) 0 1px, rgba(255,255,255,.022) 1px 2px, transparent 2px),
+    linear-gradient(180deg, rgba(0,0,0,.34) 0 1px, rgba(255,255,255,.022) 1px 2px, transparent 2px),
+    var(--pores), var(--aggregate), var(--pour);
+  background-size: 225px 150px, 225px 150px, 675px 100%, 100% 300px, 300px 300px, 300px 300px, 900px 600px;
+  background-position: -12px 0, -12px 0, -12px 0, 0 -40px, 0 0, 40px 70px, 0 0;
+  opacity: 1;
+}
+.concrete::after { content: ""; position: absolute; inset: 0; background-image: var(--pores); background-size: 300px 300px; background-position: 150px 90px; opacity: .35; }
+
+.app { position: relative; z-index: 1; display: grid; grid-template-columns: 232px 1fr 64px; min-height: 100vh; }
+
+/* ---------- Navigation ---------- */
+nav.side { padding: 30px 16px 26px 22px; display: flex; flex-direction: column; }
+.logo { height: 25px; width: auto; filter: brightness(0) invert(1); opacity: .92; display: block; }
+.switcher { margin-top: 38px; height: 42px; border-radius: 12px; background: rgba(255,255,255,.045); box-shadow: inset 0 0 0 1px var(--line-2), inset 0 1px 0 rgba(255,255,255,.04); display: flex; align-items: center; gap: 10px; padding: 0 12px; font: 600 13.5px/1 var(--sans); color: var(--text); }
+.switcher .code { font: 500 11px/1 var(--mono); color: var(--text-3); box-shadow: inset 0 0 0 1px var(--line-2); border-radius: 5px; padding: 3px 5px; }
+.switcher svg { margin-left: auto; color: var(--text-3); }
+.navlist { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.navlist li { position: relative; display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: 10px; font-size: 14.5px; color: var(--text-2); }
+.navlist li svg { color: var(--text-3); flex: none; }
+.navlist li.on { color: var(--text); font-weight: 600; }
+.navlist li.on svg { color: var(--text); }
+.navlist li.off { color: var(--text-4); }
+.navlist li.off svg { color: var(--text-4); }
+.navlist li .soon { margin-left: auto; font-size: 11.5px; color: var(--text-4); }
+.side-foot { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 0 4px; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--stone); color: #1F1915; display: grid; place-items: center; font: 600 11.5px/1 var(--sans); }
+.side-foot .who { font-size: 13px; color: var(--text-2); }
+.iconbtn { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--text-3); box-shadow: inset 0 0 0 1px var(--line-2); }
+
+/* The anodised plate: brushed grain, raking light, a lit chamfer */
+.metal {
+  position: relative; isolation: isolate;
+  background-color: #2C2A27;
+  background-image:
+    linear-gradient(104deg, transparent 20%, rgba(255,250,240,.075) 33%, rgba(255,250,240,.018) 43%, transparent 55%, rgba(255,250,240,.04) 73%, transparent 86%),
+    radial-gradient(120% 140% at 8% -30%, rgba(255,236,210,.13), transparent 55%),
+    var(--brushed),
+    linear-gradient(180deg, #31302C 0%, #272522 100%);
+  background-size: 100% 100%, 100% 100%, 2400px 240px, 100% 100%;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.45),
+    inset 1px 0 0 rgba(255,255,255,.03),
+    0 1px 0 rgba(255,255,255,.035),
+    0 2px 4px rgba(0,0,0,.35),
+    0 28px 50px -24px rgba(0,0,0,.85);
+}
+.metal::before { /* specular line where light catches the top edge */
+  content: ""; position: absolute; left: 14px; right: 14px; top: 0; height: 1px; z-index: 1;
+  background: linear-gradient(90deg, transparent, rgba(255,248,236,.42) 12%, rgba(255,248,236,.16) 38%, rgba(255,248,236,.05) 70%, transparent);
+}
+.navlist li.on.metal { border-radius: 10px; }
+.navlist li.on.metal::before { left: 8px; right: 8px; }
+
+main { padding: 22px 28px 40px 16px; }
+.plate { border-radius: 20px; padding: 40px 48px 50px; display: flex; justify-content: space-between; align-items: flex-start; }
+h1 { margin: 0; font-weight: 600; font-size: 56px; line-height: 1; letter-spacing: -.032em; color: var(--text); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+.spec { margin-top: 20px; font-size: 20px; line-height: 1.4; color: var(--text); letter-spacing: -.008em; font-weight: 500; }
+.spec .s { color: var(--text-4); margin: 0 9px; font-weight: 400; }
+.place { margin-top: 10px; font-size: 14.5px; color: var(--text-3); display: flex; align-items: center; gap: 0; }
+.place .s { color: var(--text-4); margin: 0 9px; }
+.place .mono { font: 400 13.5px/1 var(--mono); color: var(--text-2); }
+.place .warn { display: inline-flex; align-items: center; gap: 7px; color: var(--amber-text); }
+.plate-right { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; padding-top: 2px; }
+.reading { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-3); }
+.reading svg { color: var(--ok); }
+.actions { display: flex; gap: 10px; }
+.btn { height: 38px; border-radius: 999px; padding: 0 18px; display: inline-flex; align-items: center; gap: 8px; font: 500 14px/1 var(--sans); color: var(--text); background: rgba(255,255,255,.05); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), inset 0 1px 0 rgba(255,255,255,.06); }
+.btn.primary { background: #EFEAE2; color: #1D1916; font-weight: 600; box-shadow: inset 0 -1px 0 rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.4); }
+.btn.sm { height: 32px; padding: 0 14px; font-size: 13px; }
+.ticks { position: absolute; left: 48px; right: 48px; bottom: 16px; height: 9px; opacity: .38;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.26) 0 1px, transparent 1px 80px) bottom left / 100% 9px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255,255,255,.13) 0 1px, transparent 1px 8px) bottom left / 100% 4px no-repeat;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 60%, transparent);
+          mask: linear-gradient(90deg, transparent, #000 8%, #000 60%, transparent);
+}
+
+/* ---------- Below the plate ---------- */
+.below { display: grid; grid-template-columns: minmax(0, 1fr) 704px; gap: 44px; margin-top: 44px; padding: 0 4px; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; height: 36px; margin-bottom: 14px; }
+h2 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -.012em; display: flex; align-items: center; gap: 10px; }
+h2 small { font-size: 14px; color: var(--text-3); font-weight: 400; letter-spacing: 0; }
+.count { min-width: 22px; height: 20px; border-radius: 999px; background: var(--amber-bg); color: var(--amber-text); font: 600 12px/20px var(--sans); text-align: center; padding: 0 6px; box-shadow: inset 0 0 0 1px rgba(235,181,83,.28); }
+
+/* Systems matrix: one cell per system, in building order */
+.key { display: flex; gap: 20px; font-size: 12.5px; color: var(--text-3); margin: -2px 0 12px; }
+.key span { display: inline-flex; align-items: center; gap: 8px; }
+.cellk { width: 10px; height: 14px; border-radius: 2px; display: inline-block; }
+.c-in { background: linear-gradient(180deg, #C9C1B4, #B3AB9E); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 1px 0 rgba(0,0,0,.45); }
+.c-out { background: rgba(255,255,255,.025); box-shadow: inset 0 0 0 1px rgba(255,255,255,.11); }
+.c-chk { background: var(--amber); box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 1px 0 rgba(0,0,0,.4); }
+.matrix { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-2); }
+.matrix > li { border-bottom: 1px solid var(--line); }
+.mrow { display: grid; grid-template-columns: 268px 1fr 64px; align-items: center; height: 38px; padding: 0 12px 0 2px; font-size: 14px; color: var(--text-2); }
+.mrow .cells { display: flex; gap: 4px; }
+.mrow .cells i { width: 10px; height: 15px; border-radius: 2px; display: block; }
+.mrow .n { text-align: right; font-size: 13px; color: var(--text-3); }
+.mrow .n b { color: var(--text); font-weight: 500; }
+.zero .mrow { color: var(--text-4); }
+.zero .mrow .n, .zero .mrow .n b { color: var(--text-4); font-weight: 400; }
+li.open { background: #201F1D; border-radius: 0; box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); }
+li.open .mrow { color: var(--text); font-weight: 600; }
+li.open .mrow .n b { font-weight: 600; }
+.systems { margin: 0 12px 14px 14px; border-top: 1px solid var(--line); }
+.srow { display: grid; grid-template-columns: 1fr 124px 116px 96px 44px; align-items: center; min-height: 36px; font-size: 13.5px; color: var(--text); border-bottom: 1px solid var(--line); }
+.srow:last-child { border-bottom: 0; }
+.srow.th { min-height: 30px; font-size: 11.5px; font-weight: 600; color: var(--text-3); letter-spacing: .01em; }
+.srow .m i { width: 7px; height: 10px; border-radius: 1.5px; display: block; }
+.srow .b, .srow .by { color: var(--text-3); font-size: 13px; }
+.srow .w { display: inline-flex; align-items: center; gap: 6px; color: var(--text); }
+.srow .w svg { color: var(--text-4); }
+.srow .ev { text-align: right; }
+.srow .flag { display: block; color: var(--amber-text); font-size: 12px; margin-top: 2px; }
+.srow.chk { min-height: 52px; }
+.srow .nm { display: flex; align-items: center; gap: 8px; }
+.srow.more { color: var(--text-3); min-height: 40px; }
+.srow.more b { color: var(--text-2); font-weight: 500; }
+.src { display: inline-flex; align-items: center; gap: 5px; font: 400 11px/1 var(--mono); color: var(--text-3); }
+.mk { width: 6px; height: 6px; border-radius: 50%; background: var(--ember); display: inline-block; flex: none; }
+.mk.j { background: transparent; box-shadow: inset 0 0 0 1.3px var(--azure); }
+.mk.u { border-radius: 1.5px; background: var(--text); }
+
+/* To check */
+.tray { background: var(--tray); border-radius: 16px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), inset 0 1px 0 rgba(255,255,255,.04); }
+.checks { list-style: none; margin: 0; padding: 4px 18px; }
+.checks li { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 0 8px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+.checks li:last-child { border-bottom: 0; }
+.checks .nm { font-size: 14px; font-weight: 600; color: var(--text); }
+.checks .nt { font-size: 13px; color: var(--text-3); margin-top: 3px; }
+.checks .opts { display: flex; gap: 6px; }
+.chip { height: 28px; border-radius: 999px; padding: 0 12px; display: inline-flex; align-items: center; font: 500 12.5px/1 var(--sans); color: var(--text); background: rgba(255,255,255,.05); box-shadow: inset 0 0 0 1px rgba(255,255,255,.13); white-space: nowrap; }
+.chip .n { font: 400 11px/1 var(--mono); color: var(--text-4); margin-left: 6px; }
+
+/* Details: grouped lists */
+.details { margin-top: 38px; }
+.seg { display: inline-flex; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.04); box-shadow: inset 0 0 0 1px var(--line-2); }
+.seg span { height: 26px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 999px; font-size: 12.5px; color: var(--text-3); }
+.seg span.on { background: rgba(255,255,255,.12); color: var(--text); font-weight: 600; box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+.legend { display: flex; gap: 18px; font-size: 12px; color: var(--text-3); margin: -4px 0 16px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.group + .group { margin-top: 20px; }
+.group h3 { margin: 0 0 8px 4px; font-size: 12.5px; font-weight: 600; color: var(--text-2); letter-spacing: .005em; }
+.group .tray { padding: 0 14px; }
+.kv { display: flex; align-items: center; gap: 10px; height: 36px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.kv:last-child { border-bottom: 0; }
+.kv .k { color: var(--text-3); flex: none; }
+.kv .v { margin-left: auto; color: var(--text); font-weight: 500; font-size: 13.5px; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
+.kv .v .u { color: var(--text-4); font-weight: 400; }
+.kv .v.unk { color: var(--text-3); font-weight: 400; }
+.kv .v.unk a { color: var(--text); font-weight: 500; text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+.kv .v.flagged { color: var(--amber-text); }
+.kv .v .mk { order: 2; }
+.delta { display: block; flex: none; }
+
+/* Documents, folded to an edge strip */
+aside.docs { position: relative; border-left: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 14px; background: rgba(0,0,0,.12); }
+aside.docs .iconbtn { margin: 0; }
+.docbadge { position: relative; }
+.docbadge b { position: absolute; top: -6px; right: -8px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--stone); color: #1D1916; font: 600 10.5px/18px var(--sans); text-align: center; padding: 0 4px; }
+.vlabel { writing-mode: vertical-rl; font-size: 12.5px; color: var(--text-3); letter-spacing: .02em; margin-top: 8px; }
+</style>
+</head>
+<body>
+<!--
+THESIS: The project as an object you could hold: one anodised plaque states the building, and its scope is read as a matrix of systems in building order. Refuses equal-weight boxed panels and the form wall.
+OWN-WORLD: Off-form concrete ground with formwork joints and tie holes; a brushed graphite plaque catching raking light; stone-coloured system cells; amber for checks, ember for evidence, cyan for Jev. Instrument Sans, Plex Mono for identifiers.
+STORY: A manager sees the building in one line, sees how much of each system is in scope at a glance, settles four checks, and finds any fact in a short grouped list.
+FIRST VIEWPORT: Plaque across the top; scope matrix left with the site group open; To check and grouped details right; documents folded to an edge strip.
+FORM: Material object (plaque on concrete), pinned by the brief.
+-->
+<div class="concrete"></div>
+<div class="app">
+
+  <nav class="side" aria-label="Workbench">
+    <img class="logo" src="../../../../web/public/brand/sitewise-lockup-dark.png" alt="Sitewise">
+    <div class="switcher"><span class="code">ST01</span>House CDC
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+    </div>
+    <ul class="navlist">
+      <li class="on metal"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 9.2 10 3.5l7 5.7V16.5H3z"/><path d="M8 16.5v-4.5h4v4.5"/></svg>Project profile</li>
+      <li class="off"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2.5v3M13 2.5v3"/></svg>Project plan<span class="soon">Planned</span></li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 16.5V8.5M8 16.5V4M12 16.5v-6M16 16.5V6.5"/></svg>Cost plan</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 5h7M6 10h8M10 15h7"/></svg>Program</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 7l7-3.5L17 7v7l-7 3.5L3 14z"/><path d="M3 7l7 3.5L17 7M10 10.5v7"/></svg>Procurement</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h7l3.5 3.5v11.5H5z"/><path d="M12 2.5V6h3.5M7.5 10h5M7.5 13h5"/></svg>Specifications</li>
+    </ul>
+    <div class="side-foot">
+      <span class="avatar">BC</span><span class="who">Sign out</span>
+      <span class="iconbtn"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M16.5 12.2A7 7 0 0 1 7.8 3.5a7 7 0 1 0 8.7 8.7z"/></svg></span>
+    </div>
+  </nav>
+
+  <main>
+    <section class="plate metal">
+      <div>
+        <h1>ST01 House CDC</h1>
+        <div class="spec">New build<span class="s">·</span>House, Class 1a<span class="s">·</span>Two storeys<span class="s">·</span>300 m² on a 650 m² site<span class="s">·</span>CDC<span class="s">·</span>$1,450,000 ex GST</div>
+        <div class="place">Dan and Mai Nguyen<span class="s">·</span><span class="mono">Lot 14 DP 1302865</span><span class="s">·</span>City of Ryde, NSW<span class="s">·</span>R2 Low Density Residential<span class="s">·</span><span class="warn" id="addr">Site address not stated</span></div>
+      </div>
+      <div class="plate-right">
+        <div class="reading"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.2l2.4 2.4 4.6-4.9"/></svg>Reading complete · 10 of 10 documents · 6:44 pm</div>
+        <div class="actions">
+          <span class="btn"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10M6 9.5l4 4 4-4M4 16.5h12"/></svg>Download</span>
+          <span class="btn primary">Update profile</span>
+        </div>
+      </div>
+      <i class="ticks"></i>
+    </section>
+
+    <div class="below">
+      <section aria-label="Scope and works">
+        <div class="sec-head">
+          <h2>Scope and works <small>50 systems in scope</small></h2>
+          <span class="btn sm">Typical fit-out <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></span>
+        </div>
+        <div class="key"><span><i class="cellk c-in"></i>In scope</span><span><i class="cellk c-out"></i>Not in scope</span><span><i class="cellk c-chk"></i>To check</span><span style="margin-left:auto">One cell per system, in building order</span></div>
+        <ul class="matrix" id="matrix"></ul>
+      </section>
+
+      <section aria-label="To check and project details">
+        <div class="sec-head"><h2>To check <span class="count">4</span></h2></div>
+        <div class="tray">
+          <ol class="checks">
+            <li><span class="tri" data-n="1"></span><div><div class="nm">Total GFA</div><div class="nt">Two documents disagree: 298 m² and 300 m².</div></div>
+              <div class="opts"><span class="chip">298 m²<span class="n">1</span></span><span class="chip">300 m²<span class="n">1</span></span></div></li>
+            <li><span class="tri" data-n="2"></span><div><div class="nm">Access constraints</div><div class="nt">Unrestricted, or urban constrained.</div></div>
+              <div class="opts"><span class="chip">Unrestricted<span class="n">1</span></span><span class="chip">Urban constrained<span class="n">1</span></span></div></li>
+            <li><span class="tri" data-n="3"></span><div><div class="nm">Demolition and hazardous materials</div><div class="nt">Typical for this work; documents say not included.</div></div>
+              <div class="opts"><span class="chip">Remove from scope</span><span class="chip">Keep</span></div></li>
+            <li><span class="tri" data-n="4"></span><div><div class="nm">Site address</div><div class="nt">Not stated in any filed document.</div></div>
+              <div class="opts"><span class="chip">Add address</span></div></li>
+          </ol>
+        </div>
+
+        <div class="details">
+          <div class="sec-head"><h2>Project details</h2><span class="seg"><span class="on">Whole project</span><span>+ Part</span></span></div>
+          <div class="legend"><span><i class="mk"></i>From documents</span><span><i class="mk j"></i>Picked by Jev</span><span><i class="mk u"></i>Set by you</span><span style="margin-left:auto">146 passages to review · thresholds provisional</span></div>
+          <div class="cols">
+            <div>
+              <div class="group"><h3>Place</h3><div class="tray">
+                <div class="kv"><span class="k">Client</span><span class="v">Dan and Mai Nguyen<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Site address</span><span class="v unk">Not stated <a>Add</a><span class="tri" data-n="4" data-s="16"></span></span></div>
+                <div class="kv"><span class="k">Lot and DP</span><span class="v">Lot 14 DP 1302865<i class="mk"></i></span></div>
+                <div class="kv"><span class="k">Local government area</span><span class="v">City of Ryde<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Zone</span><span class="v">R2 Low Density Residential<i class="mk"></i></span></div>
+                <div class="kv"><span class="k">State</span><span class="v">NSW<i class="mk"></i></span></div>
+              </div></div>
+              <div class="group"><h3>Building</h3><div class="tray">
+                <div class="kv"><span class="k">Class</span><span class="v">Residential<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Subclass</span><span class="v">House (Class 1a)<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">NCC class</span><span class="v">1a, 10a<i class="mk"></i></span></div>
+                <div class="kv"><span class="k">Work type</span><span class="v">New build<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Storeys</span><span class="v">2<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Quality level</span><span class="v">High-end custom home<i class="mk j"></i></span></div>
+              </div></div>
+            </div>
+            <div>
+              <div class="group"><h3>Scale and budget</h3><div class="tray">
+                <div class="kv"><span class="k">Site area</span><span class="v">650 <span class="u">m²</span><i class="mk"></i></span></div>
+                <div class="kv"><span class="k">Existing GFA</span><span class="v unk">Unknown</span></div>
+                <div class="kv"><span class="k">Added GFA</span><span class="v unk">Unknown</span></div>
+                <div class="kv"><span class="k">Proposed GFA</span><span class="v">300 <span class="u">m²</span><i class="mk"></i></span></div>
+                <div class="kv"><span class="k">Total GFA</span><span class="v flagged">298 or 300 <span class="u">m²</span><span class="tri" data-n="1" data-s="16"></span></span></div>
+                <div class="kv"><span class="k">Construction budget</span><span class="v">$1,450,000 <span class="u">ex GST</span><i class="mk"></i></span></div>
+              </div></div>
+              <div class="group"><h3>Approvals and site conditions</h3><div class="tray">
+                <div class="kv"><span class="k">Planning pathway</span><span class="v">CDC<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Procurement route</span><span class="v unk">Not stated</span></div>
+                <div class="kv"><span class="k">Stakeholders</span><span class="v">Single owner<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Operational</span><span class="v">Vacant, unoccupied<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Access constraints</span><span class="v flagged">Two readings<span class="tri" data-n="2" data-s="16"></span></span></div>
+                <div class="kv"><span class="k">Environmental</span><span class="v">Standard<i class="mk j"></i></span></div>
+                <div class="kv"><span class="k">Flood hazard area</span><span class="v">No<i class="mk"></i></span></div>
+                <div class="kv"><span class="k">Bushfire-prone land</span><span class="v">No<i class="mk"></i></span></div>
+                <div class="kv"><span class="k">Heritage</span><span class="v">None<i class="mk"></i></span></div>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <aside class="docs" aria-label="Documents, folded">
+    <span class="iconbtn docbadge"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h7l3.5 3.5v11.5H5z"/><path d="M12 2.5V6h3.5"/></svg><b>13</b></span>
+    <span class="iconbtn"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13V3M6 7l4-4 4 4M3.5 13v3.5h13V13"/></svg></span>
+    <span class="vlabel">Documents · drop files anywhere</span>
+  </aside>
+</div>
+
+<script>
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+function triSVG(n, size) {
+  const s = size || 20;
+  return `<svg class="delta" width="${s}" height="${s}" viewBox="0 0 20 20"><path d="M10 1.8 18.6 17.6H1.4z" fill="#392B1D" stroke="#EBB553" stroke-width="1.35" stroke-linejoin="round"/><text x="10" y="15.3" text-anchor="middle" font-family="Instrument Sans" font-weight="700" font-size="9.5" fill="#F4D29B">${n}</text></svg>`;
+}
+document.querySelectorAll(".tri").forEach(el => { el.innerHTML = triSVG(el.dataset.n, Number(el.dataset.s || 22)); });
+document.getElementById("addr").insertAdjacentHTML("afterbegin", triSVG(4, 16));
+
+// Building-order groups: [label, in scope, total]
+const groups = [
+  ["Planning and approvals", 8, 9], ["Site, ground and external works", 9, 21], ["Substructure", 3, 8], ["Structure", 3, 8],
+  ["Building envelope", 9, 14], ["Hydraulic services", 5, 9], ["Mechanical services", 3, 12], ["Electrical services", 5, 12],
+  ["Active fire protection", 1, 11], ["Communications and security", 2, 8], ["Vertical transport", 0, 6],
+  ["Passive fire protection", 0, 7], ["Interiors and finishes", 9, 12], ["Access and egress", 1, 9]
+];
+// Site systems in id order; 1 = in scope, 2 = in scope and to check
+const site = [0,0,0,2,1,1,0,1,0,1,0,0,0,0,1,0,1,1,0,1,0];
+const siteRows = [
+  ["Demolition and hazardous building materials", "Typical", "New", "Contractor", 1, true],
+  ["Earthworks, cut and fill", "From documents", "New", "Contractor", 2],
+  ["Erosion, sediment and dust control", "Typical", "New", "Contractor", 1],
+  ["Geotechnical ground conditions", "From documents", "Investigate", "Contractor", 8],
+  ["Landscape, planting and external grading", "From documents", "Retain", "Contractor", 2],
+  ["Site services connections and utility infrastructure", "Typical", "Investigate", "Contractor", 2],
+  ["Site stormwater, detention and water quality", "From documents", "New", "Contractor", 3],
+  ["Survey, boundaries, datum and set-out", "From documents", "Investigate", "Surveyor", 4],
+  ["Vehicle access, pavements and parking layout", "Typical", "New", "Contractor", 1]
+];
+const chev = `<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>`;
+function pattern(inScope, total, seed) {
+  const r = rng(seed); const idx = [...Array(total).keys()];
+  for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  const on = new Set(idx.slice(0, inScope)); return idx.map((_, i) => on.has(i) ? 1 : 0);
+}
+const m = document.getElementById("matrix");
+groups.forEach(([label, n, t], gi) => {
+  const cells = gi === 1 ? site : pattern(n, t, 40 + gi * 7);
+  const cellHTML = cells.map(c => `<i class="${c === 2 ? "c-chk" : c ? "c-in" : "c-out"}"></i>`).join("");
+  let html = `<div class="mrow"><span>${label}</span><span class="cells">${cellHTML}</span><span class="n"><b>${n}</b> / ${t}</span></div>`;
+  if (gi === 1) {
+    html += `<div class="systems"><div class="srow th"><span>System</span><span>Basis</span><span>Works</span><span>By</span><span class="ev">Sources</span></div>`;
+    siteRows.forEach(([nm, basis, works, by, ev, chk]) => {
+      html += `<div class="srow${chk ? " chk" : ""}">`
+        + `<span>${chk ? `<span class="nm">${nm}${triSVG(3, 16)}</span><span class="flag">Documents say not included</span>` : nm}</span>`
+        + `<span class="b">${basis}</span><span><span class="w">${works}${chev}</span></span><span class="by">${by}</span>`
+        + `<span class="ev"><span class="src"><i class="mk"></i>${ev}</span></span></div>`;
+    });
+    html += `<div class="srow more"><span><b>12 not in scope</b> · Show</span></div></div>`;
+  }
+  const li = document.createElement("li");
+  if (gi === 1) li.className = "open";
+  if (n === 0) li.className = "zero";
+  li.innerHTML = html; m.appendChild(li);
+});
+document.fonts.ready.then(() => { document.body.dataset.ready = "1"; });
+</script>
+</body>
+</html>

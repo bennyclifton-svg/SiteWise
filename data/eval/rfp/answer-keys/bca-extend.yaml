@@ -60,23 +60,13 @@ description: Agreed affected existing extent for extend with occupied staging; d
   not appoint a statutory certifier.
 expect:
   bca-certification:
-    stages_include:
-    - a1_inception
-    - a2_planning
-    - a3_tender
-    stages_option:
-    - a4_construction
-    stages_absent:
-    - b1_preliminary
-    - b2_construction_approval
-    - b3_construction
-    - b4_occupation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [a1_inception, a2_planning, a3_tender]
+    stages_absent: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation, a4_construction]
     positions:
       existing_assessment: I
       staged_occupation: I
       statutory_functions: absent
       specialist_design: X
-    role:
-    - advisory
-    role_absent:
-    - statutory
+    role: [advisory]
+    role_absent: [statutory]

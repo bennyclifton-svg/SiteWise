@@ -79,35 +79,22 @@ scenario: survey-conflicting-scope
 description: Conflicting package instructions require reconciliation before issue.
 expect:
   land-surveying:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      titling: O
+      titling: X
       control: I
       records: I
       exposure: X
-      interior: O
-      monitoring: O
-      setout: O
-      asbuilt: O
-      boundary: ask
-      adjoining: ask
-      buried: ask
-      sewer: ask
+      interior: I
+      monitoring: X
+      setout: X
+      asbuilt: X
+      boundary: I
+      adjoining: I
+      buried: I
+      sewer: I
       access: absent
-    stages_include:
-    - s1_plan
-    stages_option:
-    - s5_support
-    - s6_construction
-    - s7_completion
+    stages_include: [s1_plan, s2_detail, s3_boundary, s4_services]
     blocking_only: true
-    blocking:
-    - fact:flag.survey_detail
-    - fact:flag.survey_boundary
-    - fact:flag.survey_services
-    - fact:flag.survey_adjoining
-    - fact:flag.survey_buried
-    - fact:flag.survey_sewer
-    stages_ask:
-    - s2_detail
-    - s3_boundary
-    - s4_services
+    blocking: ['fact:flag.survey_detail', 'fact:flag.survey_boundary', 'fact:flag.survey_services', 'fact:flag.survey_adjoining', 'fact:flag.survey_buried', 'fact:flag.survey_sewer']
+    stages_absent: [s5_support, s6_construction, s7_completion]

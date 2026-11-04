@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to refurbish and fit out Housing (Class 2) and Shop (Class 6) at 1 Example St, Example NSW (Example LGA).
@@ -19,42 +17,65 @@ B: independent regulatory assessor for expressly appointed functions. Fees buy a
 Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work.
 Assessment basis: Confirm uses/classifications by part, new/retained/affected areas, consent and drawing revisions, governing NCC edition, prior approvals and missing/conflicting evidence in the information register.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A; CDC/other routes need separately confirmed scope. R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Separate A/B boundaries, stages/options, payment milestones, authority fees, unit rates, GST, stage dependencies, baseline and cancellation reconciliation. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| A1 Inception / schematic advice |  | Included |  |
+|  | Review brief/plans | Included |  |
+|  | Classifications/code basis, markups, high-level report, action register and specialist input schedule | Included |  |
+|  | Inspect accessible affected existing fabric | Included |  |
+|  | State investigation limits. | Included |  |
+|  | Existing/fit-out/extension/changed-use assessment: agreed extent; opening-up/surveys by named others; no whole-building upgrade assumed | Included |  |
+|  | Mixed-use/building/tenancy classification and approval map: shared egress, fire/services and shell/tenant boundaries | Included |  |
+| A2 Planning submission advice |  | Included |  |
+|  | Review planning drawings/interfaces and proposed performance solutions | Included |  |
+|  | Draft/final BCA statement and applicable draft fire safety schedule | Included |  |
+|  | Ends at submission | Included |  |
+|  | Price later responses separately. | Included |  |
+| A3 Detailed design / tender advice |  | Included |  |
+|  | Review updated plans, selected upgrade interfaces and specialist briefs/reports | Included |  |
+|  | Tender BCA report records unresolved specialist design and statutory assessment issues. | Included |  |
+| A4 Construction advisory support |  | Included |  |
+|  | BCA query/changed-design advice and action updates within allowances | Included |  |
+|  | Price advisory visits, detail reviews and completion report individually | Included |  |
+|  | No statutory appointment | Included |  |
+| B1 Preliminary regulatory assessment |  | Included |  |
+|  | Preliminary-document assessment, regulatory report and evidence checklist | Included |  |
+|  | Scheduled visit | Included |  |
+|  | Identify independence limits on design advice. | Included |  |
+| B2 Construction approval assessment |  | Included |  |
+|  | CC checklist/condition register | Included |  |
+|  | Assess plans, specialist evidence and scheduled solutions/referrals | Included |  |
+|  | Determine each CC package with reasons/outstanding actions, supporting documents and applicable fire safety schedule. | Included |  |
+|  | Performance-solution assessment; specialist author and assessor are different parties | Included |  |
+|  | Residential energy/design-evidence review (e.g. BASIX), only if required | Included |  |
+| B3 Principal-certifier construction services |  | Included |  |
+|  | Appointment notices/inspection schedule, booking responsibilities and notice | Included |  |
+|  | Scheduled inspections/photo reports, close-out and missed-inspection records | Included |  |
+|  | Witness/referral tasks, occupation checklist and required compliance/complaint duties. | Included |  |
+|  | Fire-system/authority referrals and witnessing; contractor/specialists test and certify | Included |  |
+|  | Extra visits, missed inspections and changed approved design: contingency rates/notice; required statutory action is not optional | Included |  |
+| B4 Occupation assessment / handover |  | Included |  |
+|  | Assess conditions and completion evidence | Included |  |
+|  | Final inspection/fire-authority coordination | Included |  |
+|  | Determine each OC package | Included |  |
+|  | Certificates or reasons/outstanding items, approved-document index, inspection records and fire safety schedule | Included |  |
+|  | Separate from practical completion. | Included |  |
+|  | Occupied/staged occupation boundaries and certificate packages; designers design temporary measures, contractor sets methods | Included |  |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Compliance evidence, action and condition registers (PDF/editable), every selected stage | Included |  |
+|  | Statutory/principal-certifier functions: Package B only, separate from A | Included |  |
+|  | Detailed access/energy/structural/acoustic/waterproofing/passive-fire/bushfire design | Excluded |  |
+|  | Utility/adjoining-owner/planning/road/demolition approvals | Excluded |  |
+|  | Building supervision, contractual quality, methods and recurring annual inspections; no automatic retainer | Excluded |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Compliance advice and evidence — Compliance evidence, action and condition registers (PDF/editable), every selected stage | X |  |  |  |
-| Existing/fit-out/extension/changed-use assessment: agreed extent; opening-up/surveys by named others; no whole-building upgrade assumed | X |  |  |  |
-| Mixed-use/building/tenancy classification and approval map: shared egress, fire/services and shell/tenant boundaries | X |  |  |  |
-| Residential energy/design-evidence review (e.g. BASIX), only if required | X |  |  |  |
-| Statutory assessment and occupation — Statutory/principal-certifier functions: Package B only, separate from A | X |  |  |  |
-| Occupied/staged occupation boundaries and certificate packages; designers design temporary measures, contractor sets methods | X |  |  |  |
-| Performance-solution assessment; specialist author and assessor are different parties |  | X |  |  |
-| Fire-system/authority referrals and witnessing; contractor/specialists test and certify | X |  |  |  |
-| Extra visits, missed inspections and changed approved design: contingency rates/notice; required statutory action is not optional |  | X |  |  |
-| Separate specialist responsibilities — Detailed access/energy/structural/acoustic/waterproofing/passive-fire/bushfire design. By separately appointed specialist (name in R4) |  |  | X |  |
-| Utility/adjoining-owner/planning/road/demolition approvals. By client / project lead (name in R4) |  |  | X |  |
-| Building supervision, contractual quality, methods and recurring annual inspections; no automatic retainer. By builder / contract administrator / owner (name in R4) |  |  | X |  |
-
-### 3. Scope by stage and fee proposal
-
-Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A; CDC/other routes need separately confirmed scope.  R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Separate A/B boundaries, stages/options, payment milestones, authority fees, unit rates, GST, stage dependencies, baseline and cancellation reconciliation. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| A1 Inception / schematic advice — Included | Review brief/plans; classifications/code basis, markups, high-level report, action register and specialist input schedule. Inspect accessible affected existing fabric; state investigation limits. |  |  |  |
-| A2 Planning submission advice — Included | Review planning drawings/interfaces and proposed performance solutions; draft/final BCA statement and applicable draft fire safety schedule. Ends at submission; price later responses separately. |  |  |  |
-| A3 Detailed design / tender advice — Included | Review updated plans, selected upgrade interfaces and specialist briefs/reports; tender BCA report records unresolved specialist design and statutory assessment issues. |  |  |  |
-| A4 Construction advisory support — Option | BCA query/changed-design advice and action updates within allowances; price advisory visits, detail reviews and completion report individually. No statutory appointment |  |  |  |
-| B1 Preliminary regulatory assessment — Included | Preliminary-document assessment, regulatory report and evidence checklist; scheduled visit. Identify independence limits on design advice. |  |  |  |
-| B2 Construction approval assessment — Included | CC checklist/condition register; assess plans, specialist evidence and scheduled solutions/referrals; determine each CC package with reasons/outstanding actions, supporting documents and applicable fire safety schedule. |  |  |  |
-| B3 Principal-certifier construction services — Included | Appointment notices/inspection schedule, booking responsibilities and notice; scheduled inspections/photo reports, close-out and missed-inspection records; witness/referral tasks, occupation checklist and required compliance/complaint duties. |  |  |  |
-| B4 Occupation assessment / handover — Included | Assess conditions and completion evidence; final inspection/fire-authority coordination; determine each OC package. Certificates or reasons/outstanding items, approved-document index, inspection records and fire safety schedule; separate from practical completion. |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Performance-solution assessment |  |  |  |
-| Service option | Extra visits, missed inspections and changed approved design: contingency rates/notice |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -100,6 +121,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. Completeness-review/assessment targets, inspection booking notice, authority dependencies and timing start/pause points; no guaranteed certificate date. |
 | R8 Insurance and compliance | Current registrations/eligibility, PI/PL limits and exclusions, workers compensation, conflicts and QA (ISO or equivalent). Agree project cover before appointment; no universal statutory insurance limit inferred. |
 | R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

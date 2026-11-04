@@ -39,7 +39,7 @@ test("visual suggestions need an explicit action and preserve edited fields", as
   }, doc.id);
   await expect(page.locator("tbody.reg-doc .reg-line .reg-title")).toContainText("Access assessment report");
   await expect(page.locator("tbody.reg-doc .reg-line .reg-title")).toContainText("Suggested · review");
-  await page.getByRole("button", { name: /^Open document:/ }).click();
+  await page.locator("tbody.reg-doc td.reg-no").dblclick();
   await page.getByRole("button", {name: "Filing details", exact: true}).click();
   const panel = page.getByRole("region", {name: "Image-assisted filing review"});
   await expect(panel.getByText("Access assessment report", {exact: true})).toBeVisible();
@@ -48,8 +48,8 @@ test("visual suggestions need an explicit action and preserve edited fields", as
   await page.getByRole("button", {name: "Close document", exact: true}).click();
   await page.getByRole("button", {name: "Accept suggested title", exact: true}).click();
   await expect(page.getByRole("button", {name: "Accept suggested title", exact: true})).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /^Open document:/ })).toHaveAttribute("aria-expanded", "false");
-  await page.getByRole("button", { name: /^Open document:/ }).click();
+  await expect(page.locator("tbody.reg-doc")).not.toHaveAttribute("data-open", "true");
+  await page.locator("tbody.reg-doc td.reg-no").dblclick();
   await page.getByRole("button", {name: "Filing details", exact: true}).click();
   await expect(panel.getByText("Matches saved value")).toBeVisible();
   expect(writes).toBe(1);

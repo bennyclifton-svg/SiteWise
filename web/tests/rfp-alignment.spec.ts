@@ -13,47 +13,53 @@ for (const d of disciplines) test(`${d.id}: complete unified scope, inputs and s
  await page.getByRole("button",{name:"Procurement",exact:true}).click();
  await page.getByRole("button",{name:/^Create RFP for /}).click();
  await expect(page.getByRole("heading",{name:"2. Scope of services",exact:true})).toBeVisible();
- await expect(page.getByRole("heading",{name:"3. Scope by stage and fee proposal",exact:true})).toBeVisible();
- await expect(page.getByRole("heading",{name:/Your role|Evaluation|Scope position/})).toHaveCount(0);
+ // Scope by stage (3 November 2026): one stage table under section 2.
+ await expect(page.getByRole("heading",{name:"3. Transmittal",exact:true})).toBeVisible();
+ await expect(page.getByRole("heading",{name:/Scope by stage|Service positions|Your role|Evaluation|Scope position/})).toHaveCount(0);
  await expect(page.getByText("This appointment buys",{exact:true})).toHaveCount(0);
  await expect(page.getByRole("group",{name:"Proposal dates",exact:true}).locator('input')).toHaveCount(2);
  const reports=await (await page.request.get(`/api/projects/${project}/reports`)).json();
  const reportId=reports[0].id;
  const view=await (await page.request.get(`/api/reports/${reportId}`)).json();
- const block=view.draft.sections.flatMap((s:any)=>s.blocks).find((b:any)=>b.id==="rfp:positions");
- const table=page.locator('.hydraulic-service-table');
+ const block=view.draft.sections.flatMap((s:any)=>s.blocks).find((b:any)=>b.id==="rfp:stages");
+ expect(block.basis.layout).toBe("stage_scope");
+ const table=page.locator('.rfp-stage-scope');
  await expect(table).toHaveCount(1);
- await expect(table.locator('.hydraulic-choice input[type=radio]')).toHaveCount(block.basis.positions.length*4);
- await expect(table.getByText('Rule',{exact:true})).toHaveCount(0);
+ await expect(table.getByRole('radio')).toHaveCount(0);
+ await expect(table.locator('select')).toHaveCount(0);
+ const applies=block.basis.stages.filter((s:any)=>!(s.state==="exclude"&&s.source==="rule"));
+ await expect(table.locator('.rfp-stage-row')).toHaveCount(applies.length+1);
+ // Open every stage: each shows its lines, its elements and its services.
+ for (let i = 0; i < await table.locator('.rfp-stage-toggle').count(); i++) { const t = table.locator('.rfp-stage-toggle').nth(i); if (await t.getAttribute('aria-expanded') === 'false') await t.click(); }
+ const shown=(key:string)=>block.basis.services.filter((v:any)=>(v.stage??"")===key&&!v.inactive).length;
+ let expected=shown("");
+ for (const st of applies) if (st.state!=="exclude") expected+=(st.lines??[]).length+(st.by_element?block.basis.elements.length:0)+shown(st.key);
+ await expect(table.locator('.rfp-stage-line')).toHaveCount(expected);
  const inputGroup=view.rfp.groups.find((g:any)=>g.id==='appointment');
  for (const input of inputGroup.controls) await expect(page.locator(`.rfp-scope-inputs [data-control="${input.key}"]`)).toHaveCount(1);
- const stages=view.rfp.groups.find((g:any)=>g.id==='stages').controls;
- await expect(page.locator('.hydraulic-stage-table input[type=checkbox]')).toHaveCount(stages.length);
- for (const stage of stages.filter((s:any)=>s.locked)) await expect(page.locator(`.hydraulic-stage-table [data-control="${stage.key}"] input[type=checkbox]`)).toBeDisabled();
- const service=block.basis.positions.find((s:any)=>s.control.startsWith('position:'));
- const row=table.locator(`[data-control="${service.control}"]`).first();
- await row.getByRole('radio',{name:`${service.label}: Included`,exact:true}).check();
- await expect(row.getByRole('radio',{name:`${service.label}: Included`,exact:true})).toBeEnabled();
- await row.getByRole('radio',{name:`${service.label}: Unknown`,exact:true}).check();
- await expect(row.getByRole('radio',{name:`${service.label}: Unknown`,exact:true})).toBeEnabled();
+ // Exclude one service, keep it after a reload, then include it again.
+ const service=block.basis.services.find((v:any)=>!v.inactive&&v.value==="I"&&applies.some((s:any)=>s.key===v.stage&&s.state!=="exclude"));
+ const out=table.getByRole('checkbox',{name:`${service.label}: excluded`,exact:true});
+ await out.check();
+ await expect(out).toBeChecked();
  const saved=await (await page.request.get(`/api/reports/${reportId}`)).json();
- expect(saved.rfp.decisions.some((c:any)=>c.control===service.control)).toBeTruthy();
+ expect(saved.draft.sections.flatMap((s:any)=>s.blocks).find((b:any)=>b.id==="rfp:stages").basis.services.find((v:any)=>v.key===service.key).value).toBe("X");
  await page.reload();
  await page.getByRole("button",{name:"Procurement",exact:true}).click();
  await page.getByRole("button",{name:/^View RFP for /}).click();
- await expect(row.getByRole('radio',{name:`${service.label}: Unknown`,exact:true})).toBeChecked();
- await row.getByRole('radio',{name:`${service.label}: Optional price`,exact:true}).check();
- await expect(row.getByRole('radio',{name:`${service.label}: Optional price`,exact:true})).toBeEnabled();
+ await table.getByRole('button',{name:applies.find((s:any)=>s.key===service.stage).name,exact:true}).click();
+ await expect(out).toBeChecked();
+ await table.getByRole('checkbox',{name:`${service.label}: included`,exact:true}).check();
+ await expect(table.getByRole('checkbox',{name:`${service.label}: included`,exact:true})).toBeChecked();
  if(d.id==='mechanical-services') {await page.screenshot({path:'../.tools/rfp-aligned-desktop.png',fullPage:true});await page.setViewportSize({width:390,height:844});await table.scrollIntoViewIfNeeded();await page.screenshot({path:'../.tools/rfp-aligned-mobile.png'});}
  if(d.id==='civil') {
-  const elements=page.locator('.hydraulic-service-table tr[data-control^="element:"]');
-  await expect(elements).toHaveCount(4);
+  // Elements are lines inside one stage fee.
+  const elements=table.locator('tr[data-control^="element:"]');
+  expect(await elements.count()).toBeGreaterThanOrEqual(4);
   const first=elements.first();
-  await first.getByRole('radio',{name:/: Included$/}).check();
-  await expect(first.getByRole('radio',{name:/: Included$/})).toBeEnabled();
-  await first.getByRole('radio',{name:/: Unknown$/}).check();
-  await expect(first.getByRole('radio',{name:/: Unknown$/})).toBeEnabled();
-  const unknownElement=await (await page.request.get(`/api/reports/${reportId}`)).json();
-  expect(unknownElement.rfp.decisions.some((c:any)=>c.id.startsWith('scope-element:'))).toBeTruthy();
+  await Promise.all([page.waitForResponse(r=>r.request().method()==="PUT"&&decodeURIComponent(r.url()).includes("/settings/element:")),first.getByRole('checkbox',{name:/: excluded$/}).check()]);
+  await expect(first.getByRole('checkbox',{name:/: excluded$/})).toBeChecked();
+  const after=await (await page.request.get(`/api/reports/${reportId}`)).json();
+  expect(after.draft.sections.flatMap((s:any)=>s.blocks).find((b:any)=>b.id==="rfp:stages").basis.elements.some((e:any)=>e.state==="exclude")).toBeTruthy();
  }
 });

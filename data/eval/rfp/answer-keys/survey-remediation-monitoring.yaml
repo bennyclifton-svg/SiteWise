@@ -58,13 +58,14 @@ description: Remediation explicitly appoints construction observations and compl
   remains separate.
 expect:
   land-surveying:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      titling: O
+      titling: I
       control: I
       records: I
       exposure: X
-      interior: O
-      monitoring: O
+      interior: I
+      monitoring: I
       setout: I
       asbuilt: I
       boundary: I
@@ -72,16 +73,7 @@ expect:
       buried: I
       sewer: I
       access: I
-    stages_include:
-    - s1_plan
-    - s2_detail
-    - s3_boundary
-    - s4_services
-    - s6_construction
-    - s7_completion
-    stages_option:
-    - s5_support
+    stages_include: [s1_plan, s2_detail, s3_boundary, s4_services, s6_construction, s7_completion, s5_support]
     blocking_only: true
     blocking: []
-    role:
-    - advice
+    role: [advice]

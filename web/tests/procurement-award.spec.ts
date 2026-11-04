@@ -21,7 +21,7 @@ test("a proposal attached to an existing firm keeps one column and appears in Do
   await page.getByLabel("Upload proposal for Chosen Planning").setInputFiles({ name: "Fee proposal.pdf", mimeType: "application/pdf", buffer: pdf });
   await expect(page.getByLabel("Upload proposal for Chosen Planning")).toHaveCount(0);
   await expect(page.locator(".consultant-comparison")).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator(".consultant-comparison .prices-total")).toContainText("Not confirmed");
+  await expect(page.locator(".consultant-comparison .prices-total")).toContainText("$");
   const table = await (await page.request.get(`${base}/prices`)).json();
   expect(table.columns).toHaveLength(1);
   expect(table.columns[0].submission.id).toBe(sub);
@@ -78,28 +78,30 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
   const table = page.locator(".consultant-comparison .prices-table");
   await expect(table.locator("thead th")).toHaveCount(4);
   const total = table.locator("tr.prices-total");
-  await expect(total).toContainText("Not confirmed");
+  await expect(total).toContainText("$");
   await expect(table.locator("td.lowest")).toHaveCount(0);
-  await expect(table.getByRole("row", { name: /^Quoted packages and totals/ })).toContainText("$");
+  await expect(table.getByRole("row", { name: /^Included in appointment/ })).toBeVisible();
   await expect(table).toContainText("Heritage statement");
 
   // Confirm one appointment amount with its scope; no source amounts are added.
   const gammaTotal = (n - 1) * 105000 + 10000;
-  await total.locator("td").nth(2).getByRole("button", { name: "Confirm amount and scope" }).click();
-  await page.getByLabel("Amount excluding GST").fill(String(gammaTotal / 100));
-  await page.getByLabel("Scope and source").fill("Planning appointment: advice and lodgement documents; excludes heritage statement.");
-  await page.getByRole("button", { name: "Confirm fee", exact: true }).click();
+  const gammaFee = table.getByRole("row").filter({ has: page.getByRole("rowheader", { name: "Professional fee", exact: true }) }).locator("td").nth(2);
+  await gammaFee.locator("summary").click();
+  await gammaFee.getByLabel("Amount ex GST").fill(String(gammaTotal / 100));
+  await gammaFee.getByLabel("Agreement note").fill("Planning appointment: advice and lodgement documents; excludes heritage statement.");
+  await gammaFee.getByRole("button", { name: "Save fee", exact: true }).click();
+  await gammaFee.locator("summary").click();
   await expect(total.locator("td").nth(2)).toContainText(dollars(gammaTotal));
-  await expect(total.locator("td").nth(0)).toContainText("Not confirmed");
+  await expect(total.locator("td").nth(0)).toContainText("$");
   await page.screenshot({ path: "../.tools/prices-compare.png", fullPage: true });
 
   // Only the confirmed appointment can become a contract value.
-  await total.locator("td").nth(2).getByRole("button", { name: "Award", exact: true }).click();
+  await total.locator("td").nth(2).getByRole("button", { name: "Award to Gamma Planning Pty Ltd", exact: true }).click();
   const dialog = page.getByRole("dialog");
-  await expect(dialog.getByText("Step 1 of 2")).toBeVisible();
+  await expect(dialog.getByRole("heading", { name: "Combine Lines", exact: true })).toBeVisible();
   await expect(dialog.getByText("To be written:")).toContainText(dollars(gammaTotal));
   await dialog.getByRole("button", { name: "Next: review" }).click();
-  await expect(dialog.getByText("Confirmed comparison fee", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Professional fee", { exact: true })).toBeVisible();
   await page.screenshot({ path: "../.tools/award-review.png" });
   await dialog.getByRole("button", { name: "Award and write to cost plan" }).click();
   await expect(page.getByText(/Awarded to Gamma Planning/)).toBeVisible();
@@ -108,7 +110,7 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
   // recommendation drafted from the figures that the PM edits and signs off.
   await page.getByRole("button", { name: "Report", exact: true }).click();
   await expect(page.getByRole("heading", { name: /Town Planner: comparison of 3 proposals/ })).toBeVisible();
-  await expect(page.getByLabel("Recommendation")).toHaveValue(/Gamma Planning Pty Ltd.*confirmed comparison fee/i);
+  await expect(page.getByLabel("Recommendation")).toHaveValue(/Gamma Planning Pty Ltd.*selected appointment total/i);
   await expect(page.getByText("Authority fees are excluded.").first()).toBeVisible();
   await page.getByLabel("Rating for Team, Gamma Planning Pty Ltd").selectOption("strong");
   await expect(page.getByLabel("Rating for Team, Gamma Planning Pty Ltd")).toHaveValue("strong");
@@ -124,15 +126,15 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
 
   // The cost plan shows only the confirmed appointment.
   await page.getByRole("button", { name: "Open cost plan" }).click();
-  await expect(page.getByRole("button", { name: /^Town Planner: Gamma Planning/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Confirmed comparison fee", exact: true })).toBeVisible();
+  await expect(page.getByRole("cell", { name: /^Town Planner: Gamma Planning/ }).first()).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Professional fee", exact: true })).toBeVisible();
   await page.screenshot({ path: "../.tools/award-cost-plan.png", fullPage: true });
 
   // Undo before any invoice restores the plan and the submissions.
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   // Procurement keeps its place: the price table is still open.
   await page.getByRole("button", { name: "Undo award" }).click();
-  await expect(total.locator("td").nth(2).getByRole("button", { name: "Award", exact: true })).toBeVisible();
+  await expect(total.locator("td").nth(2).getByRole("button", { name: "Award to Gamma Planning Pty Ltd", exact: true })).toBeVisible();
   const plan = await (await page.request.get(`/api/projects/${project}/cost-plan`)).json();
-  expect(plan.items.some((i: { label: string }) => i.label === "Confirmed comparison fee")).toBeFalsy();
+  expect(plan.items.some((i: { label: string }) => i.label === "Professional fee")).toBeFalsy();
 });

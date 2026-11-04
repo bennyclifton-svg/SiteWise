@@ -1,0 +1,271 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Owner's brief: new house at 27 Corella Rise",
+      "date": "2026-02-03",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-01187",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-10",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "City of Ryde"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.surveyor",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "CM-26-0412",
+      "revision": null,
+      "title": "Detail and boundary survey report",
+      "date": "2026-02-24",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Calder & Moss Surveyors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Timing for the build",
+      "date": "2026-03-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "HLA-FP-2611",
+      "revision": null,
+      "title": "Fee proposal: architectural services",
+      "date": "2026-03-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Harbourline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "TCE-2603",
+      "revision": null,
+      "title": "Structural engineering fee proposal",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Tallow Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.civil",
+      "lifecycle": "consultant",
+      "number": "BCE-1407",
+      "revision": null,
+      "title": "Fee proposal: civil and stormwater engineering",
+      "date": "2026-03-13",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Brennan Civil Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "consultant",
+      "number": "RG-P-0388",
+      "revision": null,
+      "title": "Fee proposal: geotechnical investigation",
+      "date": "2026-03-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ridgeback Geotechnics Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.basix",
+      "lifecycle": "consultant",
+      "number": "TEA-3391",
+      "revision": null,
+      "title": "Fee proposal: NatHERS assessment and BASIX certificate",
+      "date": "2026-03-18",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Thermacheck Energy Assessments Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "design",
+      "number": "RG-26-0388",
+      "revision": "0",
+      "title": "Geotechnical investigation report",
+      "date": "2026-04-21",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ridgeback Geotechnics Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "HLA-DS-01",
+      "revision": "A",
+      "title": "Architectural design statement",
+      "date": "2026-05-18",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Harbourline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "A",
+      "title": "Site plan",
+      "date": "2026-05-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Harbourline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "B",
+      "title": "Site plan",
+      "date": "2026-05-25",
+      "supersedes": "d12",
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Harbourline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.architect",
+      "lifecycle": "authorities",
+      "number": "HLA-SEE-01",
+      "revision": null,
+      "title": "Statement of environmental effects",
+      "date": "2026-05-26",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Harbourline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d18",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.arborist",
+      "lifecycle": "consultant",
+      "number": "CLA-0927",
+      "revision": null,
+      "title": "Fee proposal: arboricultural impact assessment",
+      "date": "2026-05-06",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Canopy Line Arboriculture Pty Ltd"
+      }
+    },
+    {
+      "doc": "d19",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.arborist",
+      "lifecycle": "design",
+      "number": "CLA-AIA-0927",
+      "revision": "1",
+      "title": "Arboricultural impact assessment",
+      "date": "2026-05-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Canopy Line Arboriculture Pty Ltd"
+      }
+    }
+  ]
+}

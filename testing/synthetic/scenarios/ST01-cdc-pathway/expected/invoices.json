@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d15",
+      "kind": "invoice",
+      "number": "RG-0418",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "84 022 765 333",
+      "supplier_discipline": "consultant.geotechnical",
+      "ex_gst_cents": 380000,
+      "gst_cents": 38000,
+      "total_cents": 428000,
+      "flags": [
+        "arithmetic"
+      ],
+      "unsupported": {
+        "claim_stage": "Investigation and report (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d16",
+      "kind": "invoice",
+      "number": "INV-2307",
+      "invoice_date": "2026-05-29",
+      "issuer_abn": "95 471 173 493",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 1800000,
+      "gst_cents": 180000,
+      "total_cents": 1980000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stage 1 Concept design (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "5521",
+      "invoice_date": "2026-06-05",
+      "issuer_abn": "25 999 583 278",
+      "supplier_discipline": "consultant.structural",
+      "ex_gst_cents": 150000,
+      "gst_cents": 15000,
+      "total_cents": 165000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Concept and CDC structural advice",
+        "retention": null
+      }
+    }
+  ]
+}

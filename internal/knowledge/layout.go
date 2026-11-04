@@ -37,10 +37,16 @@ func (c *Catalog) BuildOrder() []string {
 
 // Home is the entry a profile input is shown under: HomeProject,
 // HomePlanning or a top-level system id. An unlisted determinant goes under
-// its first system; any other unlisted key has no home ("").
+// its first system; unplaced appointment flags stay under Project. Any other
+// unlisted key has no home ("").
 func (c *Catalog) Home(key string) string {
 	if h, ok := c.layout.homes[key]; ok {
 		return h
+	}
+	// New appointment inputs remain reachable until the owner assigns a more
+	// specific building-system home. An absent layout entry must not hide them.
+	if strings.HasPrefix(key, "proj.flag.") {
+		return HomeProject
 	}
 	id, ok := strings.CutPrefix(key, "det.")
 	if !ok {

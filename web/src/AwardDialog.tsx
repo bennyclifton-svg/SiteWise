@@ -5,29 +5,38 @@ import { Pending } from "./Activity";
 // server previews. Nothing is written until the PM confirms, and every
 // figure, the running total included, is computed by the server. When the
 // server offers the letter's stages (they add to the confirmed fee), the PM
-// can write them as separate lines instead of the one total.
+// can write them as separate lines instead of the one total. A proposal
+// whose firm was not read asks for the firm first: the award appoints it.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ApiError } from "./api";
 import { fmt } from "./CostGrid";
-import { submissionApi, type Award, type AwardRequest, type PriceTable } from "./submissionApi";
+import { submissionApi, type Award, type AwardRequest, type Column, type FirmFields, type PriceTable } from "./submissionApi";
 
 const money = (m: string | null | undefined) => (m == null ? "—" : `$${fmt(m)}`);
 
-interface Row { id: string; key: string; priceId: string; quoteId: string; label: string; amount: string | null; extra: boolean }
+interface Row { id: string; key: string; priceId: string; quoteId: string; appointmentId?: string; label: string; amount: string | null; extra: boolean }
 type Mode = "stages" | "total";
 interface Line { label: string; rows: string[] }
 
-export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded, onSignedOut }: {
-  projectId: string; table: PriceTable; submissionId: string; onClose: () => void; onAwarded: (t: PriceTable) => void; onSignedOut: () => void;
+// What the reading found about the firm, as a starting point the PM edits.
+const readFirm = (col: Column): FirmFields => {
+  const v = (f: string) => col.fields[`firm_${f}`]?.value ?? "";
+  return { name: v("name"), abn: v("abn"), address: v("address"), contact: v("contact"), email: v("email"), phone: v("phone") };
+};
+
+export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded, onTable, onSignedOut }: {
+  projectId: string; table: PriceTable; submissionId: string; onClose: () => void; onAwarded: (t: PriceTable) => void; onTable: (t: PriceTable) => void; onSignedOut: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const col = table.columns.find(c => c.submission.id === submissionId)!;
+  const appointment = col.appointment_rows;
   const stages = table.builder ? [] : col.award_stages ?? [];
-  const [mode, setMode] = useState<Mode>(stages.length ? "stages" : "total");
+  const [mode, setMode] = useState<Mode>(appointment || stages.length ? "stages" : "total");
   const rowsFor = (m: Mode): Row[] => {
-    if (m === "stages") return stages.map(f => ({ id: `q:${f.id}`, key: "", priceId: "", quoteId: f.id, label: f.label, amount: f.amount, extra: false }));
-    const out: Row[] = [];
+    if (appointment) return appointment.filter(r => r.included && r.state === "priced" && r.amount != null).map(r => ({ id: r.id, appointmentId: r.id, key: "", priceId: "", quoteId: "", label: r.label, amount: r.amount, extra: false }));
+    const out: Row[] = m === "stages" ? stages.map(f => ({ id: `q:${f.id}`, key: "", priceId: "", quoteId: f.id, label: f.label, amount: f.amount, extra: false })) : [];
     for (const it of table.items) {
+      if (it.retired || (m === "stages" && it.key === "comparison:appointment")) continue;
       if ((col.quote || col.cells["comparison:appointment"]) && !table.builder && !it.key.startsWith("comparison:")) continue;
       const c = col.cells[it.key];
       // The comparison fee lands in the cost plan as the firm's professional
@@ -40,14 +49,21 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
   };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const rows = useMemo(() => rowsFor(mode), [table, col, mode]);
-  const defaultLines = (rs: Row[]): Line[] => rs.filter(r => !r.extra).map(r => ({ label: r.label, rows: [r.id] }));
-  const [lines, setLines] = useState<Line[]>(() => defaultLines(rows));
+  const defaultLines = (rs: Row[], selectedMode: Mode): Line[] => {
+    const included = rs.filter(r => !r.extra);
+    if (selectedMode === "total" && !table.builder && (col.quote || col.cells["comparison:appointment"]) && included.length)
+      return [{ label: "Professional fee", rows: included.map(r => r.id) }];
+    return included.map(r => ({ label: r.label, rows: [r.id] }));
+  };
+  const [lines, setLines] = useState<Line[]>(() => defaultLines(rows, mode));
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [combineName, setCombineName] = useState("");
   const [preview, setPreview] = useState<Award | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [firmFields, setFirmFields] = useState<FirmFields>(() => readFirm(col));
+  const needsFirm = !col.firm;
 
   useEffect(() => { const d = ref.current; if (d && !d.open) d.showModal(); return () => d?.close(); }, []);
 
@@ -55,25 +71,26 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
   const lineOf = (id: string) => lines.findIndex(l => l.rows.includes(id));
   const request = (): AwardRequest => ({
     submission_id: submissionId, total: "",
-    lines: lines.filter(l => l.rows.length).map(l => ({ label: l.label.trim(), item_keys: l.rows.map(id => byId.get(id)!.key).filter(Boolean), price_ids: l.rows.map(id => byId.get(id)!.priceId).filter(Boolean), quote_ids: l.rows.map(id => byId.get(id)!.quoteId).filter(Boolean) })),
+    appointment: !!appointment, version: col.submission.version,
+    lines: lines.filter(l => l.rows.length).map(l => ({ label: l.label.trim(), item_keys: l.rows.map(id => byId.get(id)!.key).filter(Boolean), price_ids: l.rows.map(id => byId.get(id)!.priceId).filter(Boolean), quote_ids: l.rows.map(id => byId.get(id)!.quoteId).filter(Boolean), appointment_ids: l.rows.map(id => byId.get(id)!.appointmentId).filter((id): id is string => !!id) })),
   });
 
   // The running total is the server's, refreshed as lines change.
   useEffect(() => {
     let stopped = false;
     const req = request();
-    if (!req.lines.length || req.lines.some(l => !l.label)) { setPreview(null); return; }
+    if (needsFirm || !req.lines.length || req.lines.some(l => !l.label)) { setPreview(null); return; }
     const t = setTimeout(() => {
       submissionApi.previewAward(projectId, table.package_id, req).then(p => { if (!stopped) { setPreview(p); setError(""); } })
         .catch(e => { if (stopped) return; if (e instanceof ApiError && e.status === 401) onSignedOut(); else setError("These lines cannot be awarded as they are. Check each line has a name and priced items."); });
     }, 120);
     return () => { stopped = true; clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lines]);
+  }, [lines, needsFirm]);
 
   function switchMode(m: Mode) {
     if (m === mode) return;
-    setMode(m); setLines(defaultLines(rowsFor(m))); setPicked(new Set()); setCombineName(""); setPreview(null);
+    setMode(m); setLines(defaultLines(rowsFor(m), m)); setPicked(new Set()); setCombineName(""); setPreview(null);
   }
   // By stage every stage must be written, so a combined stage goes back to
   // its own line instead of out of the award.
@@ -95,6 +112,12 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
     kept.splice(Math.min(first, kept.length), 0, { label: combineName.trim(), rows: ids });
     setLines(kept); setPicked(new Set()); setCombineName("");
   }
+  async function saveFirm() {
+    setBusy(true); setError("");
+    try { onTable(await submissionApi.edit(projectId, submissionId, { firm: { ...firmFields, name: firmFields.name.trim() } })); }
+    catch (e) { if (e instanceof ApiError && e.status === 401) onSignedOut(); else setError("Could not save the firm. Check the name and ABN."); }
+    finally { setBusy(false); }
+  }
   function rename(i: number, label: string) { setLines(lines.map((l, n) => n === i ? { ...l, label } : l)); }
 
   async function confirm() {
@@ -108,15 +131,23 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
   const firm = col.firm?.name ?? col.submission.filename;
   return <dialog ref={ref} className="award" aria-labelledby="award-title" onCancel={e => { e.preventDefault(); if (!busy) onClose(); }}>
     <h2 id="award-title">Award {table.title} to {firm}</h2>
-    <p className="award-step">Step {step} of 2 · {step === 1 ? "Choose what goes into the cost plan" : "Confirm the cost plan lines"}</p>
+    {step === 2 && <p className="award-step">Confirm the cost plan lines</p>}
     {error && <p className="award-error" role="alert">{error}</p>}
-    {step === 1 ? <>
-      {stages.length > 0 && <fieldset className="award-mode">
-        <legend>Write to the cost plan as</legend>
-        <label><input type="radio" name="award-mode" checked={mode === "stages"} onChange={() => switchMode("stages")} /> By stage: {stages.length} lines from the letter</label>
+    {needsFirm ? <form className="award-firm" onSubmit={e => { e.preventDefault(); void saveFirm(); }}>
+      <p>The firm was not read from this proposal. Name the appointed firm: the award appoints it, and its invoices are matched by ABN.</p>
+      <label>Firm name<input autoFocus required maxLength={200} value={firmFields.name} onChange={e => setFirmFields({ ...firmFields, name: e.target.value })} /></label>
+      <label>ABN <span className="award-muted">optional</span><input inputMode="numeric" maxLength={20} value={firmFields.abn} onChange={e => setFirmFields({ ...firmFields, abn: e.target.value })} /></label>
+      <div className="award-actions">
+        <button type="button" className="btn" disabled={busy} onClick={onClose}>Cancel</button>
+        <button className="btn btn-primary" disabled={busy || !firmFields.name.trim()}>{busy ? <Pending delayed>Saving…</Pending> : "Save firm and continue"}</button>
+      </div>
+    </form> : step === 1 ? <>
+      {(appointment || stages.length > 0) && <fieldset className="award-mode" aria-label="Display in Cost Plan">
+        <label><input type="radio" name="award-mode" checked={mode === "stages"} onChange={() => switchMode("stages")} /> By Stage</label>
         <label><input type="radio" name="award-mode" checked={mode === "total"} onChange={() => switchMode("total")} /> One total</label>
-        {mode === "stages" && <p className="award-muted">These stages add up to the confirmed fee of {money(col.cells["comparison:appointment"]?.amount)}. The fee total line in the letter is not added again.</p>}
       </fieldset>}
+      <section className="award-lines" aria-labelledby="award-combine-title">
+      <h3 id="award-combine-title">Combine Lines</h3>
       <table className="award-table">
         <thead><tr><th scope="col"><span className="sr-only">Select to combine</span></th><th scope="col">Item the firm priced</th><th scope="col" className="num">Amount ex GST</th><th scope="col">Cost plan line</th></tr></thead>
         <tbody>{rows.map(r => {
@@ -127,7 +158,7 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
             <td><input type="checkbox" aria-label={`Select ${r.label} to combine`} checked={picked.has(r.id)} disabled={!line} onChange={() => { const s = new Set(picked); if (s.has(r.id)) s.delete(r.id); else s.add(r.id); setPicked(s); }} /></td>
             <td>{r.label}{r.extra && <span className="award-tag">awaiting alignment</span>}</td>
             <td className="num">{money(r.amount)}</td>
-            <td>{mode === "stages" && line ? (first
+            <td>{(appointment || mode === "stages") && line ? (first
               ? <span className="award-line"><input aria-label={`Line name for ${r.label}`} value={line.label} maxLength={200} onChange={e => rename(i, e.target.value)} />{line.rows.length > 1 && <><span className="award-tag">{line.rows.length} stages</span><button type="button" className="table-action" onClick={() => separate(r.id)}>Separate</button></>}</span>
               : <span className="award-in">in “{line.label}” <button type="button" className="table-action" onClick={() => separate(r.id)}>Separate</button></span>)
               : !line ? <button type="button" className="table-action" onClick={() => toggleInclude(r.id)}>Include</button>
@@ -136,10 +167,12 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
           </tr>;
         })}</tbody>
       </table>
-      <div className="award-combine">
+      {/* Ticking two or more lines lights up the name box, so the PM sees combining is ready. */}
+      <div className={picked.size >= 2 ? "award-combine award-combine-ready" : "award-combine"}>
         <input aria-label="Name for combined line" placeholder="Name for the combined line, e.g. Design development and documentation" value={combineName} onChange={e => setCombineName(e.target.value)} />
         <button type="button" className="btn btn-small" disabled={picked.size < 2 || !combineName.trim()} onClick={combine}>Combine {picked.size || ""} selected</button>
       </div>
+      </section>
       <p className="award-total">To be written: <strong>{preview ? money(preview.total) : "—"}</strong> ex GST in {lines.length} line{lines.length === 1 ? "" : "s"}.</p>
       <div className="award-actions">
         <button type="button" className="btn" onClick={onClose}>Cancel</button>

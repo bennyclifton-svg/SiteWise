@@ -73,7 +73,8 @@ description: Conflicting sprinkler/calculation inclusions and dry-fire ownership
 snapshot: false
 expect:
   fire-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      wet: ask
-      dry: ask
-      supply: ask
+      wet: I
+      dry: I
+      supply: I

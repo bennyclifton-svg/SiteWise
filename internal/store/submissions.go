@@ -48,6 +48,10 @@ type Submission struct {
 	Flags        []string  `json:"flags"`
 	CreatedAt    time.Time `json:"created_at"`
 	Version      int64     `json:"version"`
+	// PI is the professional indemnity the document states: the cover
+	// limit and the last day of its period (Walsh review, 2026-10-27).
+	PILimitCents *int64 `json:"pi_limit_cents,omitempty"`
+	PIExpiresOn  string `json:"pi_expires_on,omitempty"`
 }
 
 // Firm is one firm in the organisation's directory.
@@ -342,9 +346,11 @@ func readSubmission(ctx context.Context, q querier, org, id string) (Submission,
 	var sub Submission
 	var flags []byte
 	err := q.QueryRow(ctx, `SELECT id::text, project_id::text, COALESCE(package_id::text,''), COALESCE(firm_id::text,''), COALESCE(document_id::text,''), filename,
- COALESCE(kind,''), status, received_on::text, COALESCE(superseded_by::text,''), stated_total_cents, gst_basis, flags, created_at, version
+ COALESCE(kind,''), status, received_on::text, COALESCE(superseded_by::text,''), stated_total_cents, gst_basis, flags, created_at, version,
+ pi_limit_cents, COALESCE(pi_expires_on::text,'')
 FROM submissions WHERE org_id=$1::uuid AND id::text=$2`, org, id).Scan(&sub.ID, &sub.ProjectID, &sub.PackageID, &sub.FirmID, &sub.DocumentID, &sub.Filename,
-		&sub.Kind, &sub.Status, &sub.ReceivedOn, &sub.SupersededBy, &sub.StatedTotal, &sub.GSTBasis, &flags, &sub.CreatedAt, &sub.Version)
+		&sub.Kind, &sub.Status, &sub.ReceivedOn, &sub.SupersededBy, &sub.StatedTotal, &sub.GSTBasis, &flags, &sub.CreatedAt, &sub.Version,
+		&sub.PILimitCents, &sub.PIExpiresOn)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return sub, ErrNotFound
 	}
@@ -513,6 +519,19 @@ WHERE submission_responses.decided_by <> 'user'`, org, project, id, r.Key, passa
 			return false, err
 		}
 	}
+	// Professional indemnity is read in code from the text, so every read
+	// states it afresh; a document that states none clears it.
+	var piLimit *int64
+	var piExpires *string
+	if out.PI != nil {
+		piLimit = out.PI.LimitCents
+		if out.PI.ExpiresOn != "" {
+			piExpires = &out.PI.ExpiresOn
+		}
+	}
+	if _, err := tx.Exec(ctx, `UPDATE submissions SET pi_limit_cents=$3, pi_expires_on=$4::date WHERE org_id=$1::uuid AND id::text=$2`, org, id, piLimit, piExpires); err != nil {
+		return false, err
+	}
 	var retry *time.Time
 	if out.Grey {
 		t := now.Add(30 * time.Second)
@@ -676,12 +695,32 @@ WHERE NOT EXISTS (SELECT 1 FROM submission_prices WHERE org_id=$1::uuid AND subm
 // supersedeEarlier marks an earlier live submission from the same firm for
 // the same package superseded by this one. An awarded one is never moved.
 func supersedeEarlier(ctx context.Context, tx pgx.Tx, org, project, id string) error {
+	// Earlier is by the documents' own dates when they differ, else by
+	// upload: an engagement letter supersedes the fee proposal it accepts
+	// even when the proposal is read after it (Walsh, 2026-10-27). The
+	// just-read submission supersedes older siblings, or is itself
+	// superseded by the newest later one.
 	_, err := tx.Exec(ctx, `UPDATE submissions o SET status='superseded', superseded_by=n.id, updated_at=now(), version=o.version+1
 FROM submissions n
 WHERE n.org_id=$1::uuid AND n.id=$3::uuid AND n.package_id IS NOT NULL AND n.firm_id IS NOT NULL AND n.status IN ('received','needs_review')
   AND o.org_id=n.org_id AND o.project_id=$2::uuid AND o.id<>n.id AND o.package_id=n.package_id AND o.firm_id=n.firm_id
-  AND o.status IN ('received','needs_review','unsuccessful') AND o.created_at < n.created_at`, org, project, id)
+  AND o.status IN ('received','needs_review','unsuccessful') AND `+submissionEarlier("o", "n"), org, project, id)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE submissions n SET status='superseded', superseded_by=l.id, updated_at=now(), version=n.version+1
+FROM (SELECT l.id FROM submissions l JOIN submissions n ON n.org_id=l.org_id AND n.id=$3::uuid
+  WHERE l.org_id=$1::uuid AND l.project_id=$2::uuid AND l.id<>n.id AND l.package_id=n.package_id AND l.firm_id=n.firm_id
+    AND l.status IN ('received','needs_review','awarded') AND `+submissionEarlier("n", "l")+`
+  ORDER BY l.received_on DESC, l.created_at DESC LIMIT 1) l
+WHERE n.org_id=$1::uuid AND n.id=$3::uuid AND n.package_id IS NOT NULL AND n.firm_id IS NOT NULL AND n.status IN ('received','needs_review')`, org, project, id)
 	return err
+}
+
+// submissionEarlier is SQL for "a is earlier than b": by printed date when
+// the two differ, else by upload.
+func submissionEarlier(a, b string) string {
+	return `(CASE WHEN ` + a + `.received_on <> ` + b + `.received_on THEN ` + a + `.received_on < ` + b + `.received_on ELSE ` + a + `.created_at < ` + b + `.created_at END)`
 }
 
 // PendingSubmissionReads are submissions still reading, for a restart.

@@ -1,0 +1,625 @@
+schema: sitewise-synthetic-shape/1
+type_id: T08
+slug: roof-remediation
+name: Roof remediation, including asbestos roof replacement
+reviewed: false
+state: NSW
+
+# Base scenario: a single-storey 1978 steel portal-frame warehouse (Class 7b) of
+# about 4,000 m2 in a NSW industrial zone, owned by an investor landlord and let to
+# one logistics tenant who keeps trading during the works. The roof is corrugated
+# asbestos cement (AC) sheeting with fibreglass skylight sheets, internal box
+# gutters and roof ventilators. It leaks and is brittle. The owner's PM replaces it
+# like for like with a metal roof: licensed (Class B) removal of the AC sheeting
+# bay by bay under an independent hygienist's air monitoring and clearance, new
+# metal sheeting with an insulation blanket and safety mesh, new skylights,
+# replacement box gutters with overflows sized to the current standard, a new
+# permanent roof safety system, and a structural check of the purlins for the new
+# sheeting and wind uplift. Exempt from consent, not sprinklered, no PV.
+# One AS 4000 lump-sum contract with a roofing contractor who holds (or
+# subcontracts) the asbestos removal licence. Prose: DOMAIN.md.
+profile:
+  hdr.building_class: industrial
+  hdr.subclass: warehouse
+  hdr.work_type: remediation
+  hdr.cond.planning: exempt
+  hdr.cond.procurement_route: traditional
+  hdr.cond.operational_constraints: live_environment   # accept partial_occupation or 24_7_occupied too (DOMAIN.md §12)
+  hdr.cond.stakeholder_complexity: single_owner
+  hdr.cond.hazardous_process: none
+  hdr.scale.existing_gfa_sqm: 4000
+  det.ncc_class: ["7b"]
+  det.state: NSW
+  det.existing_building: true
+  det.existing_building_year: 1978
+  det.rise_in_storeys: 1
+  det.sprinklered: false
+  det.heritage_status: none
+  det.flood_hazard: false                  # "flooding" from overflowing box gutters must not set it (keyword trap)
+  det.potentially_contaminated_land: false # "asbestos contamination" of gutters must not set it (keyword trap)
+  fact.contract_form: as4000
+  fact.contract_basis: lump_sum
+  proj.client: "Example Industrial Holdings Pty Ltd (fictional)"
+  # RFP flags set explicitly so unknowns do not turn excluded rows into priced options.
+  flag.basement: "no"
+  flag.excavation_adjoining: "no"
+  flag.authority_asset: "no"
+  flag.rail: "no"
+  flag.transfer_structures: "no"
+  flag.osd_existing: "no"
+  flag.staged: "no"                  # bay-by-bay sequencing within one contract is not staged delivery
+  flag.multi_building: "no"
+  flag.public_road: "no"             # the crane sets up inside the site (see crane-road-occupancy)
+  flag.fire_special_hazards: "no"
+  # proj.regulated_design is left unset: the DBP Act does not reach Class 7b
+  # (owner ruling R3), and the structural RFP's regulated_design stage is
+  # excluded anyway because its suggest rule (NSW and Class 2, 3 or 9c) is false.
+
+expected_derived:
+  - {key: det.ncc_class, value: ["7b"], source: "knowledge/profile/taxonomy.yaml warehouse ncc_class", note: "The subclass warehouse implies Class 7b, but det.ncc_class is never derived from the subclass (KNOWLEDGE_INDEX §0 rule 3)."}
+  - {key: det.existing_building, value: true, source: "internal/rfp/drivers.go deriveFlags", note: "The RFP drivers derive flag.existing_building from work type remediation; the profile row itself is not derived."}
+
+scenario_inputs:
+  - {key: det.existing_building_year, note: "Gates the asbestos expectation and cq.pre-2004-fabric-hazardous-materials-survey. The determinant trigger matches 'built in' or 'constructed in' a year, or 'year of construction'; 'completed in' does not match.", phrasing: "The warehouse was constructed in <year>."}
+  - {key: hdr.cond.planning, note: "Stated in the PM's scope report or a planner's or certifier's letter.", phrasing: "The like-for-like replacement of the roof sheeting is exempt development and does not require development consent or a complying development certificate."}
+  - {key: det.heritage_status, note: "Enumerated none is evidence; silence is not.", phrasing: "The site is not a heritage item and is not within a heritage conservation area."}
+  - {key: det.sprinklered, note: "Stated in the fire safety schedule or the PM's report. Gates the sprinklered-building trigger.", phrasing: "The building is not sprinkler protected."}
+  - {key: hdr.cond.operational_constraints, note: "Any of live_environment, partial_occupation or 24_7_occupied is acceptable; all set live_operations yes.", phrasing: "The tenant will continue to operate the warehouse throughout the works."}
+  - {key: fact.contract_form, note: "Stated in the tender documents.", phrasing: "AS 4000-1997 General conditions of contract, with special conditions"}
+  - {key: proj.budget_stated, note: "The order-of-cost estimate in the roof condition report; amount chosen by the scenario author. Below $250,000 including GST no long service levy line or activity is expected.", phrasing: "Estimated construction cost for the roof replacement: $<amount> excluding GST"}
+  - {key: proj.client, note: "The landlord is the client; the tenant is not (the client question excludes tenants).", phrasing: "Client: <owner company> Pty Ltd"}
+  - {key: hdr.scale.existing_gfa_sqm, note: "Roof area is close to the GFA for a single-storey warehouse. The program's per-unit durations read plan.gross_floor_area, assumed 250 m2 until stated.", phrasing: "The existing warehouse has a gross floor area of <n> m2."}
+
+work_items:
+  - {system: site.demolition, action: remove, why: "Licensed removal of the asbestos cement roof sheeting, ridge cappings, AC flashings and the old skylight sheets, with debris cleaned from the box gutters, then decontamination and disposal at a licensed facility. site.demolition covers licensed asbestos removal and clearance (clusters/structure/systems.yaml). Removal followed by a new roof could be argued as replace on the roof item; the removal itself is a separate licensed activity, so it is keyed here."}
+  - {system: envelope.roof-coverings, action: replace, why: "New metal roof sheeting with cappings, flashings and fasteners on the existing purlins. The id is labelled 'Pitched roof coverings' but its describes covers metal sheet roofing; a low-pitch metal deck is not a membrane roof."}
+  - {system: envelope.windows-doors, action: replace, why: "The fibreglass skylight sheets are replaced with new translucent sheets or framed skylights, with fall-through protection. This id covers skylights; roof-coverings excludes them."}
+  - {system: envelope.thermal-insulation, action: new, why: "A foil-faced insulation blanket under the new sheeting for condensation and rain-noise control. The AC roof had none, so the action is new."}
+  - {system: hydraulic.roof-drainage, action: upgrade, why: "Replacement box gutters, sumps and rainwater heads with overflows, checked and sized to current rainfall intensities (AS/NZS 3500.3, verified: false). Adding overflows and capacity is upgrade, not replace."}
+  - {system: structure.alterations, action: investigate, why: "Assessment of the existing purlins, cleats, bolts, bridging and rafters for the new sheeting span, the anchor loads of the roof safety system, and the higher net wind uplift on a lighter roof. structure.alterations covers assessing existing capacity and new loads on kept members. Strengthening is provisional until the assessment."}
+  - {system: access-egress.maintenance-access, action: new, why: "Permanent roof safety system: access ladder or hatch, walkways to gutters and skylights, static lines and anchors, certified on completion. The id covers AS 1657 access; static lines and anchors (AS/NZS 1891.4, AS/NZS 5532, verified: false) are not in its describes (see gaps)."}
+  - {system: mechanical.ventilation, action: replace, why: "Roof ventilators (whirlybirds or ridge vents) are replaced with the sheeting. They are installed by the roofer; no mechanical engineer is needed (see not_expected_procurement). Scorer: a ventilator filed under envelope.roof-coverings is acceptable."}
+
+procurement:
+  - {discipline: consultant.building, kind: services, built_in: "no", accept: [consultant.building, consultant.structural], why: "Roofing or building consultant: writes the roof replacement specification and drawings, runs the tender, acts as superintendent and holds the sheeting and roof safety hold points. Where the structural engineer's commission carries the roof sheeting and fixing specification, that satisfies it (accepted alternative, as in T09 under owner ruling R2). No package rule names it; remediation has no baseline (knowledge/works/package_defaults.yaml baselines)."}
+  - {discipline: consultant.hazmat, kind: services, built_in: "no", why: "Independent licensed asbestos assessor or occupational hygienist: reviews the asbestos register, surveys and samples the roof and roof-space surfaces, reviews the removalist's asbestos removal control plan, runs air monitoring during removal, does the clearance inspection, issues clearance certificates per area, and updates the register. Must be independent of the removalist. No package rule names Hazmat, and remediation has no baseline (knowledge/works/package_defaults.yaml baselines)."}
+  - {discipline: consultant.structural, kind: services, built_in: "no", why: "Assesses purlins, cleats and connections for the new sheeting span, the reduced dead load and higher net uplift, and the roof safety anchor loads; designs any strengthening; inspects and certifies. baselines[0] covers new and extend only."}
+  - {discipline: consultant.hydraulic, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[3]", why: "Box gutter, sump, overflow and downpipe capacity design (AS/NZS 3500.3, verified: false). Box gutter overflow into an occupied warehouse is a common reason for the job. Suggested only because the hydraulic.roof-drainage item is in scope; if a document does not name the gutters, it is not suggested."}
+  - {discipline: trade.main_works, kind: works, built_in: partial, source: "internal/procurement/proposed.go ProposeHeadContract", why: "Roofing contractor under a lump-sum head contract. It holds a SafeWork NSW asbestos removal licence (Class B for bonded AC sheeting) or subcontracts a licensed removalist, and designs, installs and certifies the roof safety system as a specialist subcontract element. Proposed only from gaps on accepted work items, and the roof safety design line is not proposed under the traditional route (ProposeHeadContract drops design lines when BuilderDesigns is false)."}
+
+not_expected_procurement:
+  - {discipline: consultant.mechanical, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[2]", why: "Fires on the mechanical.ventilation item (roof ventilators). The roofer supplies and fits them; no mechanical engineer."}
+  - {discipline: consultant.electrical, app_suggests: conditional, source: "knowledge/works/package_defaults.yaml scope_additions[4]", why: "Fires if a document puts lighting, roof-mounted cabling or lightning protection in scope. The builder's electrician isolates and reinstates fittings fixed to purlins. A PV trigger is different (see solar-pv)."}
+
+cost_plan:
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "NSW Long Service Corporation levy: 0.25% of the cost of the work where it is $250,000 or more including GST, paid before work begins (nsw.gov.au long service levy page; verified: false until the owner rules). Paid directly because there is no CC. Not expected below the threshold. No starter line exists."}
+  - {line: "Building consultant (roof specification, tender and superintendent)", section: consultants, aliases: ["Building Consultant"], built_in: "no", why: "No package rule suggests consultant.building, so the app makes no fee line until the user adds the package. Where the structural engineer carries the specification, this line folds into the structural fee."}
+  - {line: "Hazardous materials consultant (asbestos survey, air monitoring and clearance)", section: consultants, aliases: ["Hazmat"], built_in: partial, source: "internal/costs/suggest.go Suggest", why: "A fee line per live services package, but Hazmat is never suggested, so the line appears only after the user adds the package."}
+  - {line: "Asbestos air monitoring and clearance inspections during removal (per visit)", section: consultants, built_in: "no", why: "Priced as rates per monitoring day and per clearance, because the number of removal sections and rain delays set the count. No rate or disbursement line exists."}
+  - {line: "Structural engineer", section: consultants, aliases: ["Structural"], built_in: partial, source: "internal/costs/suggest.go Suggest", why: "Fee line per package; the package is not suggested for remediation."}
+  - {line: "Hydraulic engineer", section: consultants, aliases: ["Hydraulic"], built_in: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[3]", why: "The Hydraulic suggestion is adopted on cost-plan prepare and gets a fee line (prepareCostPlan adopts suggestions first)."}
+  - {line: "Preliminaries, site establishment and live-warehouse controls", section: construction, built_in: "no", why: "Supervision, amenities, traffic separation from forklifts, exclusion zones and working-hours limits. No preliminaries line; no remediation budget split."}
+  - {line: "Access and lifting: crane, EWPs, perimeter edge protection and temporary safety mesh", section: construction, built_in: "no", why: "Often the largest non-roofing cost. Scaffolding and edge protection have no system id (structure.temporary-works excludes scaffolding as access)."}
+  - {line: "Stock, racking and plant protection below the works; dust sheeting and exclusion zones", section: construction, built_in: "no", why: "Protects the tenant's stock from asbestos debris and rain. No system id; fr.occupied-protection needs refurb and site.impact-protection."}
+  - {line: "Licensed removal of asbestos cement roof sheeting, cappings and skylights, incl. decontamination and disposal", section: construction, aliases: ["Site works and external works"], built_in: partial, source: "knowledge/costs/elements.yaml elements code 01", why: "The site.demolition item makes '01 Site works and external works', costed under trade.civil_works, a misleading label and trade for roof asbestos removal."}
+  - {line: "Provisional sum: purlin and connection strengthening or replacement", section: construction, aliases: ["Structure"], built_in: partial, source: "knowledge/costs/elements.yaml elements code 03", why: "The structure.alterations investigate item makes a generic '03 Structure' line; no provisional-sum line exists."}
+  - {line: "Metal roof sheeting, flashings, cappings and fasteners", section: construction, aliases: ["Building envelope"], built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Appears only as the generic '04 Building envelope'."}
+  - {line: "Insulation blanket and permanent safety mesh", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Folded into '04 Building envelope'."}
+  - {line: "Skylights with fall-through protection", section: construction, built_in: partial, source: "knowledge/costs/elements.yaml elements code 04", why: "Folded into '04 Building envelope'."}
+  - {line: "Box gutters, sumps, rainwater heads, overflows and downpipe connections", section: construction, aliases: ["Hydraulic services"], built_in: partial, source: "knowledge/costs/elements.yaml elements code 09", why: "Shows as '09 Hydraulic services', costed under trade.hydraulic_plumbing; in practice the roofing contractor carries it."}
+  - {line: "Roof ventilators", section: construction, aliases: ["Mechanical services"], built_in: partial, source: "knowledge/costs/elements.yaml elements code 08", why: "Shows as '08 Mechanical services' under trade.mechanical; the roofer supplies them."}
+  - {line: "Roof safety system: anchors, static lines, walkways, access ladder, testing and certification", section: construction, aliases: ["Plant and maintenance access"], built_in: partial, source: "knowledge/costs/elements.yaml elements access-egress", why: "'13.7 Plant and maintenance access' child line (verified by running costs.Suggest): maintenance-access has no items entry, so it takes the system label."}
+  - {line: "Dilapidation survey before and after the works", section: construction, built_in: "no", why: "Condition record of the tenant's areas, office ceilings and stock below. No line exists."}
+  - {line: "Temporary weather protection and rain make-safe during sheet change", section: construction, built_in: "no", why: "Open roof over live stock. Weather risk sits with the contractor unless the contract says otherwise. No line exists."}
+  - {line: "Schedule of rates for concealed conditions (extra sheets, purlins, gutter sections)", section: construction, built_in: "no", why: "Quantities found on removal are unknowable in advance. No provisional-sum or rates line exists."}
+  - {line: "Design contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[0]", why: "Always suggested."}
+  - {line: "Construction contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[1]", why: "Always suggested; latent conditions (purlins, debris inside) argue for a higher allowance than new work."}
+  - {line: "Escalation", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[2]", why: "Always suggested; steel sheet prices move."}
+  - {line: "Exclusions", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml lines[6]", why: "Tenant stock moves, tenant fit-out fixed to purlins, and racking alterations are usually excluded."}
+  - {line: "Owner costs under the lease: tenant disruption, rent abatement or relocation contributions", section: contingency, built_in: "no", why: "Real owner costs outside the contract, set by the lease. No line exists."}
+
+not_expected_cost_plan:
+  - {line: "Construction certificate and certifier fees", app_label: "P05 Construction certificate and certifier fees", section: fees_and_charges, source: "knowledge/costs/starter_lines.yaml lines[4]", why: "Always suggested; an exempt re-roof needs no CC or certifier."}
+  - {line: "Service authority connection fees", app_label: "P06 Service authority connection fees", section: fees_and_charges, source: "knowledge/costs/starter_lines.yaml lines[5]", why: "Always suggested; no authority connection on the base (PV adds a DNSP application, not a connection fee line)."}
+  - {line: "Mechanical (consultant fee)", app_label: "F02 Mechanical", section: consultants, source: "knowledge/works/package_defaults.yaml scope_additions[2]", why: "Adopted on cost-plan prepare from the roof ventilator item (not_expected_procurement)."}
+
+program:
+  skeleton: missing          # no remediation skeleton; the app falls back to sk.generic
+  app_produces: sk.generic
+  activities:
+    - {label: "Collect records: asbestos register and management plan, drawings, leak log, lease roof obligations", stage: investigation, fragment: null, after: [], built_in: "no", why: "The register is a WHS duty for a workplace with asbestos (Work Health and Safety Regulation 2025 (NSW) (2017 numbering r 425; 2025 clause verified: false)). The lease decides who pays and what the tenant must allow."}
+    - {label: "Roof condition inspection and leak survey with fall protection", stage: investigation, fragment: null, after: ["Collect records: asbestos register and management plan, drawings, leak log, lease roof obligations"], built_in: "no", why: "AC sheeting is brittle and skylights are fragile; inspections use EWPs or anchored fall arrest, never walking the sheets."}
+    - {label: "Asbestos survey and sampling of the roof, gutters and high-level surfaces", stage: investigation, fragment: fr.existing-conditions, after: ["Collect records: asbestos register and management plan, drawings, leak log, lease roof obligations"], built_in: partial, source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "fr.existing-conditions includes a hazardous-materials survey but is gated to refurb and extend. cq.pre-2004-fabric-hazardous-materials-survey raises it as an Implication only."}
+    - {label: "Structural assessment of purlins, connections and wind uplift", stage: investigation, fragment: null, after: ["Roof condition inspection and leak survey with fall protection"], built_in: partial, source: "internal/program/generate.go investigationRows", why: "The structure.alterations investigate item gets one generic Investigation row titled with the item (verified by running program.Generate)."}
+    - {label: "Box gutter and roof drainage capacity assessment", stage: investigation, fragment: null, after: ["Roof condition inspection and leak survey with fall protection"], built_in: "no", why: "Catchments, gutter sizes, sumps, overflows and downpipes against current rainfall intensities."}
+    - {label: "Roof scope report with options and order-of-cost estimate", stage: investigation, fragment: null, after: ["Asbestos survey and sampling of the roof, gutters and high-level surfaces", "Structural assessment of purlins, connections and wind uplift", "Box gutter and roof drainage capacity assessment"], built_in: "no", why: "Overlay versus full removal, sheet profile, skylight layout, roof safety and PV-readiness choices for the owner."}
+    - {label: "Owner approves scope and budget; tenant consulted on access and sequencing", stage: concept_design, fragment: null, after: ["Roof scope report with options and order-of-cost estimate"], built_in: "no", why: "The landlord's capital approval and the lease's access notice to the tenant. No client gate exists in the generic skeleton."}
+    - {label: "Confirm exempt pathway (no development consent)", aliases: ["Confirm the exempt path"], stage: approvals, fragment: fr.exempt-confirmation, after: ["Owner approves scope and budget; tenant consulted on access and sequencing"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.exempt-confirmation", why: "Like-for-like re-roofing; confirm in writing (Codes SEPP and council asbestos policy, verified: false). Verified by running program.Generate."}
+    - {label: "Roof replacement specification and drawings", stage: construction_documentation, fragment: fr.construction-docs-7b, after: ["Owner approves scope and budget; tenant consulted on access and sequencing"], built_in: partial, source: "knowledge/program/fragments.yaml fr.construction-docs-7b", why: "Written by the building consultant (or the structural engineer). Sheeting profile and coating for the exposure, fixings, flashings, skylights, insulation, safety mesh, roof safety layout, sequence and hold points. The 7b documentation fragment is gated to new and extend."}
+    - {label: "Purlin strengthening and fixing design", stage: construction_documentation, fragment: null, after: ["Structural assessment of purlins, connections and wind uplift", "Owner approves scope and budget; tenant consulted on access and sequencing"], built_in: "no", why: "Cleat, bolt and bridging upgrades for uplift, and the anchor load check for the static lines."}
+    - {label: "Box gutter, sump and overflow design", stage: construction_documentation, fragment: null, after: ["Box gutter and roof drainage capacity assessment", "Owner approves scope and budget; tenant consulted on access and sequencing"], built_in: "no", why: "Sized details and calculations for the roofing contractor to build."}
+    - {label: "Asbestos removal specification: method, sequence, air monitoring and clearance regime", stage: construction_documentation, fragment: null, after: ["Asbestos survey and sampling of the roof, gutters and high-level surfaces", "Owner approves scope and budget; tenant consulted on access and sequencing"], built_in: "no", why: "Written by the hygienist so all tenderers price the same removal method, exclusion zones and clearance hold points."}
+    - {label: "Tender documents", stage: procurement, fragment: fr.tender-docs-7b, after: ["Roof replacement specification and drawings", "Purlin strengthening and fixing design", "Box gutter, sump and overflow design", "Asbestos removal specification: method, sequence, air monitoring and clearance regime", "Confirm exempt pathway (no development consent)"], built_in: partial, source: "knowledge/program/fragments.yaml fr.tender-docs-7b", why: "AS 4000 with special conditions, preliminaries, a schedule of rates for concealed conditions. Gated to new and extend."}
+    - {label: "Tender period with site inspection", stage: procurement, fragment: fr.tender-period-7b, after: ["Tender documents"], built_in: partial, source: "knowledge/program/fragments.yaml fr.tender-period-7b", why: "Roofers inspect from EWPs; gated to new and extend."}
+    - {label: "Tender evaluation and recommendation", stage: procurement, fragment: fr.tender-evaluation-7b, after: ["Tender period with site inspection"], built_in: partial, source: "knowledge/program/fragments.yaml fr.tender-evaluation-7b", why: "Checks the asbestos removal licence class, insurances that do not exclude asbestos, the live-warehouse methodology and the sheet manufacturer's warranty conditions. Gated to new and extend."}
+    - {label: "Contract award", stage: procurement, fragment: fr.contract-award, after: ["Tender evaluation and recommendation"], built_in: partial, source: "knowledge/program/fragments.yaml fr.contract-award", why: "Gated to work_type new, extend or refurb, so false for remediation."}
+    - {label: "Review asbestos removal control plan, SWMS and work-at-height plan", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "The licensed removalist prepares the asbestos removal control plan (Work Health and Safety Regulation 2025 (NSW) (2017 numbering r 464; 2025 clause verified: false)); SWMS for high-risk construction work at height and asbestos."}
+    - {label: "Agree tenant operations plan: exclusion zones, stock moves, hours, forklift separation", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "No one may work or store goods under a section being stripped. This sets the bay sequence."}
+    - {label: "Notify SafeWork NSW of licensed asbestos removal", stage: construction, fragment: null, after: ["Review asbestos removal control plan, SWMS and work-at-height plan"], built_in: "no", why: "Written notice before licensed removal work starts (Work Health and Safety Regulation 2025 (NSW) (2017 numbering r 466, at least 5 days; 2025 clause verified: false))."}
+    - {label: "Pay long service levy before work starts", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "Paid directly to the Long Service Corporation because there is no CC: 0.25% of the cost of the work where it is $250,000 or more including GST, paid before work begins (nsw.gov.au long service levy page; verified: false until the owner rules). Not expected below the threshold."}
+    - {label: "Site establishment, crane and EWPs, edge protection and safety mesh", stage: construction, fragment: fr.site-establishment-7b, after: ["Contract award"], built_in: partial, source: "knowledge/program/fragments.yaml fr.site-establishment-7b", why: "Gated to new and extend."}
+    - {label: "Dilapidation record of the tenant's areas, office ceilings and stock below the works", stage: construction, fragment: null, after: ["Contract award"], built_in: "no", why: "On a live warehouse this is how damage claims are settled."}
+    - {label: "Protect stock and plant below; isolate services under the work zone", stage: construction, fragment: null, after: ["Agree tenant operations plan: exclusion zones, stock moves, hours, forklift separation", "Site establishment, crane and EWPs, edge protection and safety mesh", "Dilapidation record of the tenant's areas, office ceilings and stock below the works"], built_in: "no", why: "Repeated per bay."}
+    - {label: "Remove AC roof sheeting and skylights by bay, with air monitoring", stage: construction, fragment: null, after: ["Protect stock and plant below; isolate services under the work zone", "Notify SafeWork NSW of licensed asbestos removal", "Pay long service levy before work starts"], built_in: "no", why: "Wet methods, no power tools on AC, sheets lowered whole and wrapped. fr.demolition-7b exists but is gated to new and extend."}
+    - {label: "Hold point: asbestos clearance inspection and certificate per bay", stage: construction, fragment: null, after: ["Remove AC roof sheeting and skylights by bay, with air monitoring"], built_in: "no", why: "Clearance by an independent assessor or competent person before the area below is reoccupied (Work Health and Safety Regulation 2025 (NSW) (2017 numbering r 473 and r 474; 2025 clause verified: false)). No hazmat hold point exists in the interfaces."}
+    - {label: "Purlin repairs and strengthening, then structural inspection", stage: construction, fragment: null, after: ["Remove AC roof sheeting and skylights by bay, with air monitoring", "Purlin strengthening and fixing design"], built_in: "no", why: "The engineer inspects exposed purlins and cleats before they are covered."}
+    - {label: "Install insulation blanket, safety mesh and metal roof sheeting with flashings", stage: construction, fragment: fr.roof-7b, after: ["Purlin repairs and strengthening, then structural inspection", "Install box gutters, sumps, overflows and downpipe connections"], built_in: partial, source: "knowledge/program/fragments.yaml fr.roof-7b", why: "The 7b roof fragment exists ('Install the metal roof') but is gated to new and extend. Each stripped bay is re-sheeted the same day or made weathertight."}
+    - {label: "Install box gutters, sumps, overflows and downpipe connections", stage: construction, fragment: null, after: ["Remove AC roof sheeting and skylights by bay, with air monitoring"], built_in: "no", why: "No 7b roof-drainage fragment exists (only 1a and 2)."}
+    - {label: "Hold point: sheeting fixing inspection against the manufacturer's fixing pattern", stage: construction, fragment: null, after: ["Install insulation blanket, safety mesh and metal roof sheeting with flashings"], built_in: "no", why: "The consultant checks fixings and laps against the manufacturer's pattern; the warranty depends on it. No envelope hold point fires (the envelope hold points use free text)."}
+    - {label: "Install skylights and roof ventilators", stage: construction, fragment: null, after: ["Install insulation blanket, safety mesh and metal roof sheeting with flashings"], built_in: "no", why: "No fragment for envelope.windows-doors or mechanical.ventilation on Class 7b."}
+    - {label: "Install, test and certify the roof safety system", stage: construction, fragment: null, after: ["Install insulation blanket, safety mesh and metal roof sheeting with flashings"], built_in: "no", why: "access-egress.maintenance-access has no work-item fragment. Anchors and static lines are load tested and certified before use (AS/NZS 1891.4, AS/NZS 5532, verified: false)."}
+    - {label: "Final asbestos clearance, waste disposal records and updated asbestos register", stage: completion, fragment: null, after: ["Hold point: asbestos clearance inspection and certificate per bay", "Install box gutters, sumps, overflows and downpipe connections"], built_in: "no", why: "The register and asbestos management plan are revised once the AC roof is gone (verified: false)."}
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Install skylights and roof ventilators", "Hold point: sheeting fixing inspection against the manufacturer's fixing pattern", "Install, test and certify the roof safety system", "Final asbestos clearance, waste disposal records and updated asbestos register"], built_in: partial, source: "knowledge/program/fragments.yaml fr.practical-completion", why: "Gated to new, extend or refurb."}
+    - {label: "Handover: roof and coating warranties, height-safety certificate, clearance certificates, as-built gutter details", stage: completion, fragment: fr.handover, after: ["Practical completion inspection"], built_in: partial, source: "knowledge/program/fragments.yaml fr.handover", why: "Gated to new, extend or refurb, and it follows fr.occupation-certificate, which does not apply."}
+    - {label: "Defects liability period and final inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Handover: roof and coating warranties, height-safety certificate, clearance certificates, as-built gutter details"], built_in: partial, source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Gated to new, extend or refurb. The contract sets the period (length verified: false)."}
+
+rfps:
+  - discipline: consultant.building
+    template: null
+    built_in: "no"
+    must_include:
+      - "Roof condition inspection and scope report with options (removal or overlay) and an order-of-cost estimate"
+      - "Roof replacement specification and drawings: sheet profile and coating, fixing pattern for the wind actions, flashings, skylights, insulation, safety mesh, roof safety layout, sequence and hold points"
+      - "Coordination of the hazmat, structural and hydraulic inputs into one tender package"
+      - "Tender documents, tender management, evaluation and recommendation (licence class, insurances, live-warehouse method, warranties)"
+      - "Superintendent under AS 4000, including payment claims under the NSW Security of Payment Act (verified: false)"
+      - "Hold-point inspections: sheeting fixing against the manufacturer's pattern, roof safety certification review"
+      - "Practical completion, defects inspection and collation of warranties and certificates"
+    must_not_include:
+      - "Development application or town planning services"
+      - "Architectural concept and schematic design"
+      - "Asbestos air monitoring or clearance (the hygienist's, independent of the contractor)"
+    app_differs:
+      - {key: text.template, app: "generic tpl.rfp-capex", expect: "a building consultant RFP carrying the must_include scope", why: "No knowledge/rfp file lists consultant.building in discipline_ids"}
+  - discipline: consultant.hazmat
+    template: null
+    built_in: "no"
+    must_include:
+      - "Review of the existing asbestos register and management plan"
+      - "Asbestos survey and sampling of roof sheeting, cappings, skylights, gutters, roof space and high-level internal surfaces, with laboratory analysis"
+      - "Condition and friability assessment of the AC sheeting (bonded or friable decides the removal licence class)"
+      - "Asbestos removal specification: method, sequencing, exclusion zones and clearance hold points"
+      - "Review of the removalist's asbestos removal control plan and SafeWork NSW notification"
+      - "Air monitoring during removal (control and clearance monitoring) (specified; mandatory only for Class A, 2017 numbering r 475, verified: false)"
+      - "Visual clearance inspection and clearance certificate for each removal area, independent of the removalist"
+      - "Updated asbestos register and management plan after removal"
+      - "Returnables: licensed asbestos assessor or occupational hygienist, NATA-accredited laboratory, PI and PL insurance without an asbestos exclusion"
+    must_not_include:
+      - "Contaminated land assessment, soil sampling or remediation action plan"
+      - "Development application or planning reports"
+      - "Removal works (the consultant must be independent of the removalist)"
+    app_differs:
+      - {key: text.template, app: "generic tpl.rfp-capex", expect: "a hazardous materials consultant RFP carrying the must_include scope", why: "No knowledge/rfp file lists consultant.hazmat in discipline_ids"}
+  - discipline: consultant.structural
+    template: structural
+    built_in: partial
+    source: "knowledge/rfp/structural.yaml stages existing_assessment"
+    must_include:
+      - {text: "Existing roof structure assessment: purlins, cleats, bolts, bridging, rafters and holding-down", key: stage.existing_assessment}
+      - {text: "Design basis: wind actions on the lighter metal roof and net uplift on purlins and connections (AS/NZS 1170.2, verified: false)", key: position.design_basis}
+      - {text: "Strengthening design where the assessment finds it necessary", key: position.strengthening}
+      - {text: "Roof safety anchor and static line loads on the purlins", key: position.delegated_design}
+      - {text: "Safety in design: fragile roof, temporary loss of purlin restraint while sheets are off", key: position.safety_in_design}
+      - {text: "Construction-phase inspection of exposed purlins and strengthening before cover", key: stage.construction_phase}
+      - {text: "Inspection schedule by hold point", key: position.inspection_schedule}
+    must_not_include:
+      - {text: "Geotechnical brief", key: position.geotech_brief}
+      - {text: "Revit model shared with the design team", key: position.shared_model}
+      - {text: "Concept and schematic design", key: stage.concept_schematic}
+      - {text: "Planning approval stage", key: stage.planning_approval}
+      - {text: "Footings affected by in-ground services", key: position.services_footings}
+      - {text: "Regulated design (DBP Act does not reach Class 7b: owner ruling R3)", key: stage.regulated_design}
+      - "Shoring, retention or basement design"
+    expect:
+      stages_include: [existing_assessment, design_development, tender_traditional, construction_documents, construction_phase]
+      stages_option: []
+      stages_absent: [concept_schematic, planning_approval, authority_asset, dnc_tender, regulated_design, post_novation]
+      positions: {design_basis: I, safety_in_design: I, value_management: I, delegated_design: I, strengthening: O, temporary_works_design: X, dilapidation: X, inspection_schedule: I, geotech_brief: absent, residential_framing: absent, shared_model: absent, specialist_element_design: absent, retention_design: absent, temporary_works_interfaces: absent, services_fixings: absent, metalwork: absent, super_flat_floor: absent, compaction: absent, demolition_drawings: absent, services_footings: absent}
+      blocking: []
+      sources:
+        - "existing_assessment: when work_type remediation (structural.yaml stages existing_assessment)"
+        - "scale simple: Class 7b is not in scale.complex and the budget is under $20 m (verified by running rfp.Resolve)"
+        - "strengthening O: the assessment decides whether purlin upgrades are needed"
+        - "temporary_works_design X: the contractor's temporary purlin restraint while sheets are off"
+        - "construction_phase include: the engineer must see exposed purlins and strengthening before re-sheeting"
+    app_differs:
+      - {key: stage.concept_schematic, app: include, expect: absent, why: "always included and inside the boundary; a re-roof appointment starts with the existing assessment"}
+      - {key: stage.construction_phase, app: option, expect: include, why: "after the boundary end (construction_documents), and default option with include_when scale complex; scale is simple for 7b"}
+      - {key: position.geotech_brief, app: I, expect: absent, why: "always I; no ground works"}
+      - {key: position.shared_model, app: O, expect: absent, why: "service_level simple O; a re-roof needs no shared model"}
+      - {key: position.specialist_element_design, app: O, expect: absent, why: "O whenever procurement is not design_construct; no piles or PT slabs"}
+      - {key: position.services_fixings, app: O, expect: absent, why: "always O; no new services in the base (solar-pv brings it in)"}
+      - {key: position.metalwork, app: O, expect: absent, why: "always O; walkways and ladders are supplier-designed in the roof safety system"}
+      - {key: position.super_flat_floor, app: O, expect: absent, why: "client flag cannot be set; if_unknown option"}
+      - {key: position.compaction, app: X, expect: absent, why: "always X with a geotechnical engineer named; no ground works"}
+      - {key: position.demolition_drawings, app: X, expect: absent, why: "always X with the architect named; there is no architect"}
+      - {key: position.services_footings, app: I, expect: absent, why: "always I; no footings"}
+  - discipline: consultant.hydraulic
+    template: hydraulic-services
+    built_in: partial
+    source: "knowledge/rfp/hydraulic-services.yaml positions roof"
+    must_include:
+      - {text: "Existing roof drainage investigation: gutters, sumps, overflows, downpipes and catchments", key: stage.investigation}
+      - {text: "Design roof drainage: box gutters, sumps, rainwater heads and overflows to AS/NZS 3500.3 (verified: false)", key: position.roof}
+      - {text: "Retained-system investigation of the downpipes and the connection to site stormwater", key: position.existing}
+      - {text: "Tender documentation for the roof drainage", key: stage.tender}
+      - {text: "Coordinate gutter design with the structural engineer and the roofing contractor", key: position.interfaces}
+      - {text: "Option: construction-stage review of gutter installation", key: stage.construction}
+    must_not_include:
+      - {text: "Design potable and hot water services", key: position.domestic}
+      - {text: "Design sanitary plumbing and sewer connections", key: position.sanitary}
+      - {text: "Design and select domestic tanks and pumps", key: position.pumps}
+      - {text: "Design rainwater collection and reuse", key: position.rainwater}
+      - {text: "Authority stage", key: stage.planning}
+      - {text: "Design site stormwater and detention", key: position.civil}
+    expect:
+      stages_include: [inception, investigation, design, tender]
+      stages_option: [construction, handover, advisory]
+      stages_absent: [concept, planning, continuation, defects]
+      positions: {roof: I, existing: I, interfaces: I, advice: O, staging: O, construction: O, witness: O, concept: absent, domestic: absent, pumps: absent, rainwater: absent, alternative_sources: absent, sanitary: absent, treatment: absent, trade: absent, process: absent, civil: absent, gas: absent, fixtures: absent, fire: absent, utility: absent, declarations: absent, continuation: absent, defects: absent}
+      blocking: []
+      sources:
+        - "roof I: hyd_roof is a client flag the validator rejects; unknown resolves if_unknown include (verified by running rfp.Resolve)"
+        - "advisory option: work_type remediation (hydraulic-services.yaml stages advisory)"
+        - "staging O: temporary drainage while a box gutter is out is usually the contractor's, so priced only as an option"
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "gated on the client flag hyd_investigation, which no document can set; blocks issue"}
+      - {key: stage.concept, app: include, expect: absent, why: "always included; a gutter replacement has no concept stage"}
+      - {key: stage.planning, app: ask, expect: absent, why: "gated on hyd_planning; no authority application on the exempt path"}
+      - {key: stage.tender, app: option, expect: include, why: "after the boundary end (design), so priced as an option"}
+      - {key: stage.continuation, app: option, expect: absent, why: "always option"}
+      - {key: stage.defects, app: option, expect: absent, why: "always option"}
+      - {key: position.existing, app: absent, expect: I, why: "needs stage investigation included or option and hyd_investigation; both are unresolved"}
+      - {key: position.concept, app: I, expect: absent, why: "follows the concept stage"}
+      - {key: position.domestic, app: I, expect: absent, why: "I whenever the design stage is included; no water services in scope"}
+      - {key: position.sanitary, app: I, expect: absent, why: "I whenever the design stage is included"}
+      - {key: position.pumps, app: I, expect: absent, why: "hyd_pumps unknown resolves if_unknown include"}
+      - {key: position.rainwater, app: I, expect: absent, why: "hyd_rainwater unknown resolves if_unknown include"}
+      - {key: position.treatment, app: ask, expect: absent, why: "hyd_treatment unknown asks"}
+      - {key: position.process, app: ask, expect: absent, why: "hyd_process unknown asks"}
+      - {key: position.civil, app: ask, expect: absent, why: "hyd_external unknown asks"}
+      - {key: position.declarations, app: ask, expect: absent, why: "hyd_declarations unknown asks; no hydraulic design declaration for this job"}
+      - {key: position.gas, app: O, expect: absent, why: "hyd_gas unknown resolves option"}
+      - {key: position.trade, app: O, expect: absent, why: "hyd_trade unknown resolves option"}
+      - {key: position.alternative_sources, app: O, expect: absent, why: "unknown resolves option"}
+      - {key: position.utility, app: O, expect: absent, why: "unknown resolves option"}
+      - {key: position.fixtures, app: X, expect: absent, why: "always X with the architect named"}
+      - {key: position.fire, app: X, expect: absent, why: "always X with a fire services consultant named"}
+      - {key: position.continuation, app: O, expect: absent, why: "follows the continuation stage"}
+      - {key: position.defects, app: O, expect: absent, why: "follows the defects stage"}
+
+triggers:
+  - id: friable-asbestos
+    label: AC sheeting found friable (fire- or hail-damaged until it crumbles by hand pressure), so removal is Class A
+    evidence:
+      - "Sampling and inspection found the fire-damaged sheeting in bays 4 to 6 can be crumbled by hand pressure; the hygienist classifies it as friable asbestos."
+      - "The hygienist's report classifies the charred sheeting in bays 4 to 6 as friable asbestos."
+      - "Removal of the damaged sheeting must be carried out by a Class A licensed removalist."
+    negation:
+      - "The AC sheeting is weathered but intact and bonded; it can be removed as non-friable asbestos under a Class B licence."
+      - "Although heavily weathered and moss-covered, the AC sheeting remains bonded (non-friable)."
+    profile: []
+    adds:
+      work_items:
+        - {system: site.demolition, action: remove}
+      cost_plan: ["Class A friable asbestos removal with enclosure and negative-pressure units", "Mandatory air monitoring by a licensed asbestos assessor"]
+      program: ["Erect enclosure and test negative pressure", "Clearance by a licensed asbestos assessor before dismantling the enclosure"]
+      rfps:
+        - {discipline: consultant.hazmat, must_include: ["Friability assessment and Class A removal specification", "Air monitoring throughout Class A removal (mandatory for Class A: Work Health and Safety Regulation 2025 (NSW), 2017 numbering r 475; 2025 clause verified: false)", "Clearance by a licensed asbestos assessor (2017 numbering r 473; 2025 clause verified: false)"]}
+      authority: ["SafeWork NSW notification of Class A friable removal (Work Health and Safety Regulation 2025 (NSW) (2017 numbering r 466; 2025 clause verified: false))"]
+    why: "Changes the removal licence class, method, cost and duration. Nothing in the knowledge distinguishes friable from bonded asbestos."
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+  - id: asbestos-debris-inside
+    label: Asbestos debris or dust has fallen into the warehouse onto stock, racking or structure
+    evidence:
+      - "AC debris and dust have accumulated on the top of the pallet racking and the purlin flanges below the broken sheets."
+      - "Hail damage has dropped fragments of the roof sheeting onto the warehouse floor and stored goods."
+      - "Asbestos contamination of the box gutters and internal high-level surfaces was confirmed by sampling."
+    negation:
+      - "No asbestos debris was found on internal surfaces; dust samples from the racking tops were negative."
+    profile: []
+    adds:
+      work_items:
+        - {system: site.demolition, action: remove}
+      cost_plan: ["Internal asbestos decontamination of structure, racking and high-level surfaces", "Stock inspection, cleaning or disposal", "Tenant decant of the affected zone"]
+      program: ["Isolate and seal the affected zone", "Internal decontamination", "Clearance of the internal zone before reoccupation"]
+      rfps:
+        - {discipline: consultant.hazmat, must_include: ["Internal dust and surface sampling, decontamination specification and clearance of the internal zone"]}
+    why: "Turns a roof job into a contaminated-workplace job: the tenant loses use of the zone until clearance. Not contaminated land (see the 'contamination' trap)."
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+  - id: purlin-replacement
+    label: Purlins undersized, at the wrong spacing or corroded, so they are strengthened or replaced
+    evidence:
+      - "The existing purlin spacing of 1.2 m suits AC sheeting; the new profile spans further but the purlins fail in uplift."
+      - "Several purlins in the bays below the box gutters are heavily corroded and must be replaced."
+      - "The engineer's assessment requires additional purlin bridging and new cleats at every rafter."
+    negation:
+      - "The structural engineer confirms the existing purlins and connections are adequate for the new sheeting and wind uplift."
+    profile: []
+    adds:
+      procurement: [trade.structural_steel]
+      work_items:
+        - {system: structure.steel, action: replace}
+        - {system: structure.alterations, action: upgrade}
+      cost_plan: ["Replacement purlins and bridging", "Cleat and bolt upgrades at rafters"]
+      program: ["Purlin shop drawings and supply (long lead)", "Replace purlins bay by bay with temporary restraint"]
+      rfps:
+        - {discipline: consultant.structural, must_include: [{text: "Purlin replacement and strengthening design", key: position.strengthening}, {text: "Temporary restraint of rafters while purlins are replaced (contractor's design, reviewed)", key: position.temporary_works_design}]}
+    removes:
+      cost_plan: ["Provisional sum: purlin and connection strengthening or replacement"]
+    why: "fr.steel-7b exists but is gated to new and extend. cq.existing-structural-intervention-sequence-review raises a hold point as an Implication. uc.existing-purlin-spacing-unsuited-to-replacement-sheet names the condition (Implications only)."
+    built_in: {cost_plan: partial, program: partial, rfps: partial}
+    source: "knowledge/program/fragments.yaml fr.steel-7b"
+  - id: drainage-capacity-upgrade
+    label: Box gutters or downpipes undersized, so the drainage is enlarged and new connections are made to site stormwater
+    evidence:
+      - "The box gutters overflowed into the warehouse in the February storm, flooding the dispatch area."
+      - "The hydraulic engineer's check shows the existing 300 mm box gutters and four downpipes are undersized for the 1% AEP rainfall intensity."
+      - "Additional downpipes and a new connection to the site stormwater pit are required."
+    negation:
+      - "The existing box gutters and downpipes have adequate capacity; overflows are added only."
+    profile: []
+    adds:
+      procurement: [consultant.civil]
+      work_items:
+        - {system: hydraulic.roof-drainage, action: upgrade}
+        - {system: site.stormwater-detention, action: alter}
+      cost_plan: ["Larger box gutters and additional downpipes", "Site stormwater connections and pits"]
+      program: ["Civil check of the site stormwater system capacity", "Install new downpipes and site connections"]
+      rfps:
+        - {discipline: consultant.civil, must_include: ["Capacity check of the existing site stormwater for the added roof downpipes", "Pit and pipe connections only; no detention redesign unless capacity fails"]}
+    why: "The civil RFP template would bring a full site drainage, earthworks-suitability and utility-plan scope (all I in the app for remediation). fr.stormwater-7b is gated to new and extend."
+    built_in: {procurement: "no", cost_plan: partial, program: "no", rfps: partial}
+    source: "knowledge/rfp/civil.yaml"
+  - id: solar-pv
+    label: Rooftop solar PV installed on the new roof
+    evidence:
+      - "The owner will install a 300 kW rooftop solar array on the new roof once the asbestos is removed."
+      - "The tenant has signed a power purchase agreement for a rooftop PV system."
+      - "The new roof must be designed to carry the future solar array and its cable trays."
+    negation:
+      - "No solar PV is proposed; the roof is not designed for PV loads."
+    profile: []
+    adds:
+      procurement: [trade.electrical]
+      work_items:
+        - {system: electrical.solar-pv, action: new}
+      cost_plan: ["Solar PV array, inverters and AC connection", "DNSP connection application and network studies", "PV mounting rails and roof penetrations"]
+      program: ["DNSP connection application and approval", "PV design and structural load check", "Install PV after the roof is complete", "Commission PV and DNSP witness test"]
+      rfps:
+        - {discipline: consultant.structural, must_include: [{text: "PV array dead and wind loads on the purlins and the mounting fixings", key: position.services_fixings}]}
+      authority: ["DNSP connection agreement for embedded generation (Ausgrid, Endeavour or Essential; size thresholds verified: false)", "Exempt development for rooftop solar under SEPP (Transport and Infrastructure) 2021 (clause verified: false)"]
+    why: "Usually a separate contract with a solar installer (trade.electrical stands in) whose accredited designer designs the array. The app suggests an Electrical consultant from scope_additions[4], which the job does not normally need. electrical.solar-pv has no program fragment. fm.pv-array-loads-roof and if.pv-array-loads-roof name the roof load interface (Implications only)."
+    built_in: {procurement: "no", cost_plan: partial, program: "no", rfps: partial}
+    source: "knowledge/costs/elements.yaml elements code 10"
+  - id: sprinklered-building
+    label: Warehouse is sprinkler protected, with pipework hung from the purlins
+    evidence:
+      - "The warehouse is sprinkler protected; the ranges are hung from the purlins."
+      - "Sprinkler heads below the roof must be protected during the works and the system kept in service."
+      - "Any sprinkler impairment must be notified to the insurer and the monitoring company."
+    negation:
+      - "The building is not sprinkler protected."
+    profile: [det.sprinklered]
+    adds:
+      procurement: [trade.fire_services]
+      work_items:
+        - {system: fire-active.sprinklers, action: retain}
+      cost_plan: ["Sprinkler protection, impairment management and recommissioning", "Temporary re-support of sprinkler ranges during purlin work"]
+      program: ["Sprinkler impairment plan agreed with the insurer and fire brigade monitoring", "Re-support and test sprinkler ranges"]
+      rfps:
+        - {discipline: consultant.structural, must_include: ["Sprinkler range hangers on purlins considered in the purlin assessment"]}
+      authority: ["Annual fire safety statement continuity for the essential fire safety measure (EP&A (DCFS) Regulation 2021, verified: false)"]
+    why: "A retain item still puts the system in scope (profile.ProjectWorkScope writes scope for every included item, whatever its action), so scope_additions[1] suggests a Fire Services consultant the job does not need; the fire services contractor manages the impairment. Retain brings no program rows. uc.sprinkler-hangers-do-not-fit-existing-purlins needs alter, upgrade or replace (Implications only)."
+    built_in: {procurement: "no", cost_plan: partial, program: "no"}
+    source: "knowledge/costs/elements.yaml elements code 07"
+  - id: roof-plant-relocation
+    label: Roof-mounted plant (AC units, exhaust fans) to lift and reinstate, with new permanent access
+    evidence:
+      - "Three rooftop package AC units serving the office must be disconnected, craned off and reinstated."
+      - "Exhaust fans and the evaporative cooler on the roof need new access walkways and a platform."
+      - "Plant on the roof is currently reached across fragile sheeting with no walkway."
+    negation:
+      - "There is no plant on the roof; the office AC condensers are on the ground at the rear."
+    profile: []
+    adds:
+      procurement: [consultant.roof_access]
+      work_items:
+        - {system: mechanical.air-conditioning, action: alter}
+        - {system: access-egress.maintenance-access, action: new}
+      cost_plan: ["Disconnect, crane off, store and reinstate roof plant", "Plant platforms and walkways"]
+      program: ["Plant shutdown agreed with the tenant", "Lift off and reinstate roof plant", "Recommission plant"]
+      rfps:
+        - {discipline: consultant.roof_access, must_include: ["Roof access and fall-protection layout to plant, gutters and skylights", "Certification of the installed system"]}
+    why: "consultant.roof_access has no RFP template and no package rule. The mechanical item makes the app suggest a Mechanical consultant (scope_additions[2]) the job does not need; the mechanical contractor disconnects and recommissions."
+    built_in: {procurement: "no", cost_plan: partial, program: "no", rfps: "no"}
+    source: "knowledge/costs/elements.yaml elements code 08"
+  - id: lead-paint-and-other-hazmat
+    label: Lead paint on the steelwork or other hazardous materials in the roof zone
+    evidence:
+      - "The purlins and rafters carry a lead-based primer; sampling found lead above the threshold."
+      - "The old fluorescent fittings fixed to the purlins may contain PCB capacitors."
+      - "Synthetic mineral fibre insulation was found above the office ceiling."
+    negation:
+      - "The hazardous materials survey found no lead paint, PCBs or SMF in the roof zone."
+    profile: [det.existing_building_year]
+    adds:
+      cost_plan: ["Lead paint management during purlin preparation and welding", "PCB fitting removal and disposal"]
+      program: ["Expand the hazardous materials survey", "Lead controls during steel preparation"]
+      rfps:
+        - {discipline: consultant.hazmat, must_include: ["Lead paint, PCB and SMF survey of the roof zone and fittings"]}
+    why: "uc.lead-paint-on-old-windows is window-specific; no record covers lead on steelwork. cq.pre-2004-fabric-hazardous-materials-survey gives a generic Implication."
+    built_in: {cost_plan: "no", program: "no", rfps: "no"}
+  - id: sensitive-stock-occupancy
+    label: Tenant stores food, pharmaceuticals or other dust-sensitive goods, or runs 24/7
+    evidence:
+      - "The tenant is a food distributor operating under a HACCP plan; no dust or debris may reach stored product."
+      - "The cold store and dispatch run 24 hours a day, seven days a week."
+      - "Pharmaceutical stock in the warehouse must be relocated before any roof work above it."
+    negation:
+      - "The warehouse is vacant during the works."
+      - "The tenant stores packaged building materials that can be covered in place."
+    profile: [hdr.cond.operational_constraints]
+    adds:
+      cost_plan: ["Full sealed protection below each bay or stock decant", "Temporary off-site storage", "Night or weekend work premium"]
+      program: ["Decant stock from each bay before removal", "Return stock after clearance"]
+    why: "Scorer: hdr.cond.operational_constraints 24_7_occupied is the expected reading where the evidence says 24/7. uc.occupancy-window-constrains-programme is gated to refurb."
+    built_in: {cost_plan: "no", program: "no"}
+  - id: cdc-pathway
+    label: Roof form, height or appearance changes, so a CDC is needed instead of exempt work
+    evidence:
+      - "The new roof will be raised 600 mm to increase the clear height, which is not exempt development."
+      - "A complying development certificate will be obtained from a registered certifier under the Codes SEPP commercial and industrial codes."
+      - "The council advised the re-roof is not exempt because the new sheeting colour changes the approved appearance."
+    negation:
+      - "The certifier confirmed in writing that the like-for-like re-roof is exempt."
+    profile: [hdr.cond.planning]
+    adds:
+      procurement: [consultant.certifier]
+      cost_plan: ["Construction certificate and certifier fees"]
+      program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Notice of commencement and principal certifier appointment", "Occupation certificate for the altered part"]
+      rfps:
+        - {discipline: consultant.certifier, must_include: ["CDC assessment, critical-stage inspections and the occupation certificate for the altered roof"]}
+      authority: ["Complying development certificate (Codes SEPP Part 5 or Part 5A, depending on whether the work is an alteration or an addition, verified: false)", "Occupation certificate (verified: false)"]
+    removes:
+      program: ["Confirm exempt pathway (no development consent)"]
+    why: "fr.cdc-application fires on hdr.cond.planning cdc and gives the first two activities (verified by running program.Generate); no fragment gives the notice of commencement, and fr.occupation-certificate is gated to new, extend or refurb. No Certifier is suggested for remediation (no baseline). The bca-certification RFP blocks on cdc (unsupported_pathways), so the certifier's RFP cannot be issued. P05 then becomes a needed line."
+    built_in: {program: partial, procurement: "no", rfps: "no", cost_plan: "yes"}
+    source: "knowledge/program/fragments.yaml fr.cdc-application"
+  - id: heritage-listed
+    label: Heritage item or conservation area (for example a sawtooth-roof factory)
+    evidence:
+      - "The former factory is listed as a local heritage item in Schedule 5 of the LEP."
+      - "The sawtooth roof form is identified as significant fabric in the heritage inventory."
+    negation:
+      - "The site is not a heritage item and not in a conservation area."
+    profile: [det.heritage_status, hdr.cond.planning]
+    adds:
+      procurement: [consultant.heritage, consultant.town_planner]
+      cost_plan: ["Heritage consultant", "DA fees and contributions"]
+      program: ["Heritage referral", "Lodge DA", "DA assessment"]
+      authority: ["Development consent or a heritage minor-works exemption under LEP cl 5.10(3) (verified: false)", "Codes SEPP exempt development generally unavailable on a heritage item (verified: false)"]
+    removes:
+      program: ["Confirm exempt pathway (no development consent)"]
+    why: "Heritage is suggested from complexity_additions[1] and fr.heritage-referral fires (verified by running the Go). If planning becomes da, complexity_additions[0] adds the Town Planner and the DA fragments fire. Heritage has no RFP template."
+    built_in: {procurement: "yes", program: "yes", cost_plan: "yes", rfps: "no"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
+  - id: crane-road-occupancy
+    label: Crane or deliveries must stand in the public road
+    evidence:
+      - "The site has no internal hardstand for a mobile crane; the crane will stand in the street."
+      - "A road occupancy licence and traffic control plan are required for sheet deliveries."
+    negation:
+      - "The crane sets up in the rear yard; all deliveries are within the site."
+    profile: [flag.public_road]
+    adds:
+      cost_plan: ["Council road occupancy and crane permit fees", "Traffic control"]
+      program: ["Council approval for the crane and road occupancy (Roads Act 1993 s 138, verified: false)", "Traffic control plan"]
+      authority: ["Council road occupancy approval (Roads Act 1993 s 138, verified: false)"]
+    why: "flag.public_road changes only civil and traffic RFP rows, and neither package is in this job; no cost line or activity exists."
+    built_in: {cost_plan: "no", program: "no"}
+  - id: storm-damage-insurance
+    label: Roof replacement follows hail or storm damage under an insurance claim
+    evidence:
+      - "The roof was damaged in the hailstorm of 14 November; the insurer's loss adjuster has approved replacement of the damaged sheets."
+      - "Emergency make-safe tarping was installed by the insurer's builder."
+    negation:
+      - "There is no insurance claim; the replacement is planned capital works."
+    profile: []
+    adds:
+      cost_plan: ["Emergency make-safe", "Insurance excess and items outside the claim"]
+      program: ["Emergency make-safe and temporary weatherproofing", "Loss adjuster scope agreement before tender", "Insurer approval of the contract price"]
+    why: "Changes who approves scope and price. uc.hail-damages-installed-roof-sheeting is about new sheeting during the works (Implications only)."
+    built_in: {cost_plan: "no", program: "no"}
+  - id: strata-industrial-unit
+    label: Warehouse is one unit in a strata industrial complex with a common-property roof
+    evidence:
+      - "The roof is common property of Strata Plan 54321; the owners corporation, not the unit owner, is responsible for its replacement."
+      - "The roof over units 1 to 6 is continuous; the common walls between units stop at the underside of the roof."
+    negation:
+      - "The building is in single ownership on its own lot."
+    profile: [hdr.cond.stakeholder_complexity]
+    adds:
+      cost_plan: ["Owners corporation costs: strata manager meetings and levy administration"]
+      program: ["General meeting resolves the works and the special levy", "Access notices to each unit occupier"]
+    why: "hdr.cond.stakeholder_complexity strata is read by no generator. 'Common walls' fires the party-wall implied_by pattern (see gaps)."
+    built_in: {cost_plan: "no", program: "no"}
+
+  - id: independent-height-safety-design
+    label: Owner engages an independent height safety consultant for the roof access layout
+    evidence:
+      - "The owner has engaged a height safety consultant to design the roof access and fall protection layout and certify the installation."
+      - "The roof access system is to comply with the owner's portfolio height safety standard and be audited by the owner's consultant."
+    negation:
+      - "The roofing contractor is to design, install and certify the roof safety system."
+    profile: []
+    adds:
+      procurement: [consultant.roof_access]
+      cost_plan: ["Roof access consultant"]
+      program: ["Roof access and fall protection layout design", "Independent audit and certification of the installed system"]
+      rfps:
+        - {discipline: consultant.roof_access, must_include: ["Roof access and fall protection layout to gutters, skylights and plant", "Audit and certification of the installed system against the portfolio standard"]}
+    why: "consultant.roof_access has no package rule and no RFP template (generic tpl.rfp-capex)."
+    built_in: {procurement: "no", rfps: "no", cost_plan: "no", program: "no"}
+  - id: overlay-over-ac
+    label: New metal roof laid over the bonded AC sheeting instead of removing it
+    evidence:
+      - "The new metal roof will be installed over the existing AC sheeting on a spacer system; the AC sheeting is left in place and encapsulated."
+      - "Option B: overlay the existing asbestos roof rather than remove it."
+    negation:
+      - "The AC sheeting will be removed in full before re-sheeting."
+    profile: []
+    adds:
+      cost_plan: ["Spacer or purlin-extension system over the existing sheeting", "Hygienist inspections during fixing through AC"]
+      program: ["Hygienist's work method for drilling and fixing through the AC sheeting", "Install spacer system over the existing sheeting", "Inspect spacer fixings into the purlins before sheeting", "Update the asbestos register and management plan for the encapsulated roof"]
+      rfps:
+        - {discipline: consultant.structural, must_include: [{text: "Spacer fixings through the AC into the existing purlins and the uplift check of the overlay", key: position.strengthening}]}
+        - {discipline: consultant.hazmat, must_include: ["Work method and supervision for drilling and fixing through AC sheeting; register and management plan update for the encapsulated roof"]}
+    removes:
+      work_items: [{system: site.demolition, action: remove}]
+      cost_plan: ["Licensed removal of asbestos cement roof sheeting, cappings and skylights, incl. decontamination and disposal", "Asbestos air monitoring and clearance inspections during removal (per visit)"]
+      program: ["Asbestos removal specification: method, sequence, air monitoring and clearance regime", "Notify SafeWork NSW of licensed asbestos removal", "Remove AC roof sheeting and skylights by bay, with air monitoring", "Hold point: asbestos clearance inspection and certificate per bay", "Purlin repairs and strengthening, then structural inspection", "Final asbestos clearance, waste disposal records and updated asbestos register"]
+      rfps:
+        - {discipline: consultant.hazmat, must_include: ["Asbestos removal specification: method, sequencing, exclusion zones and clearance hold points", "Review of the removalist's asbestos removal control plan and SafeWork NSW notification", "Air monitoring during removal (control and clearance monitoring) (specified; mandatory only for Class A, 2017 numbering r 475, verified: false)", "Visual clearance inspection and clearance certificate for each removal area, independent of the removalist"]}
+    why: "Avoids licensed removal over live stock; the AC stays on the asbestos register and management plan. Drilling and fixing through AC is still asbestos work, done to the hygienist's work method (verified: false). Program logic: the work method follows 'Asbestos survey and sampling of the roof, gutters and high-level surfaces'; 'Install box gutters, sumps, overflows and downpipe connections' and the sheeting row then follow 'Install spacer system over the existing sheeting', and the sheeting row follows 'Inspect spacer fixings into the purlins before sheeting'. The roof-coverings replace item and the purlin investigate item stay."
+    built_in: {cost_plan: partial, program: "no", rfps: partial}
+    source: "knowledge/costs/elements.yaml elements code 04"
+
+gaps:
+  - {area: scope, what: "Remediation is an empty work type, so no work items exist until a document or the user adds them; the roof, the asbestos removal and the gutters are never proposed.", evidence: "knowledge/profile/scope_defaults.yaml empty_work_types"}
+  - {area: scope, what: "The work-type default action is repair. A full re-roof is replace, licensed AC removal is remove, and the purlin check is investigate.", evidence: "knowledge/works/actions.yaml work_type_defaults remediation"}
+  - {area: scope, what: "envelope.roof-coverings is labelled 'Pitched roof coverings' and the metal-roof rule carries an unverified claim that roofs below 5 degrees need a membrane. A 1 to 3 degree warehouse metal deck may be misfiled as external waterproofing.", evidence: "knowledge/clusters/envelope/rules.yaml rule.ncc.metal-roof-installation"}
+  - {area: scope, what: "No system id for fall-arrest anchors and static lines (AS/NZS 1891.4, AS/NZS 5532); access-egress.maintenance-access describes AS 1657 platforms, walkways and ladders only. No id for temporary edge protection, safety mesh or scaffold either.", evidence: "knowledge/clusters/fire/systems.yaml access-egress.maintenance-access"}
+  - {area: procurement, what: "No consultant baseline for remediation. Building consultant, Hazmat and Structural are never suggested. Hydraulic is suggested only through the roof-drainage scope addition, and Mechanical wrongly through roof ventilators.", evidence: "knowledge/works/package_defaults.yaml baselines, scope_additions[2], scope_additions[3]"}
+  - {area: procurement, what: "Scope additions fire on any action, including retain, so a protected or retained service (sprinklers, lights) brings a consultant.", evidence: "internal/profile/works.go ProjectWorkScope; internal/procurement/defaults.go SuggestedPackages"}
+  - {area: procurement, what: "access-egress.maintenance-access new needs design (needs_design true), but ProposeHeadContract drops design lines when BuilderDesigns(route) is false, so under traditional procurement the roof safety design-and-install element never appears in the head contract proposal.", evidence: "internal/procurement/proposed.go ProposeHeadContract; knowledge/works/actions.yaml actions new"}
+  - {area: procurement, what: "No trade or supplier id for a roofing contractor, a licensed asbestos removalist, a height-safety installer or a solar installer. A separate direct asbestos removal contract cannot be keyed.", evidence: "data/intake/disciplines.json"}
+  - {area: procurement, what: "Hazmat aliases lack 'occupational hygienist', 'licensed asbestos assessor' and 'asbestos consultant', so fee proposals from them may not file to consultant.hazmat.", evidence: "data/intake/disciplines.json consultant.hazmat"}
+  - {area: procurement, what: "Default package stages (concept, approval and construction documentation, inspections) do not fit a hygienist (survey, specification, monitoring, clearance).", evidence: "knowledge/works/stages.yaml"}
+  - {area: program, what: "No remediation skeleton; sk.generic with no owner or tenant gate. Only fr.exempt-confirmation and one generic investigation row are produced (verified by running program.Generate).", evidence: "knowledge/program/skeletons.yaml"}
+  - {area: program, what: "fr.roof-7b, fr.demolition-7b, fr.steel-7b, the 7b documentation, tender and site-establishment fragments, contract award, practical completion, handover and defects are all gated to new or extend (or new, extend, refurb), so none fire for remediation.", evidence: "knowledge/program/fragments.yaml fr.roof-7b, fr.contract-award"}
+  - {area: program, what: "No asbestos activities or hold points: no SafeWork notification, removal control plan, air monitoring or clearance row. No 7b roof-drainage, skylight or maintenance-access fragment.", evidence: "knowledge/program/fragments.yaml (no fragment names asbestos); testing/synthetic/reference/index/program-fragments.md leaf systems with no work-item fragment"}
+  - {area: program, what: "Occupied-building protection is gated to refurb and the vehicle-impact system, and excludes Class 7b. Nothing models bay-by-bay sequencing under a live tenant.", evidence: "knowledge/program/fragments.yaml fr.occupied-protection"}
+  - {area: cost_plan, what: "Asbestos removal lands in '01 Site works and external works' under trade.civil_works. No preliminaries, access-equipment, stock-protection, provisional-sum or long service levy line. CC and service-authority starters are always suggested though an exempt re-roof needs neither.", evidence: "knowledge/costs/elements.yaml elements code 01; knowledge/costs/starter_lines.yaml lines[4], lines[5]"}
+  - {area: cost_plan, what: "No budget split for remediation (and none for industrial refurb), so a stated budget is not spread.", evidence: "knowledge/costs/budget_splits.yaml"}
+  - {area: rfp, what: "No RFP template for consultant.hazmat or consultant.roof_access; both fall to the generic tpl.rfp-capex.", evidence: "knowledge/rfp (no file with these discipline_ids)"}
+  - {area: rfp, what: "The hydraulic-services template includes domestic water, sanitary, pumps and rainwater design whenever its design stage is included, and blocks on client flags (hyd_investigation, hyd_planning and others) that no document can set. A roof-drainage-only commission comes out as a whole-building hydraulic brief.", evidence: "knowledge/rfp/hydraulic-services.yaml positions domestic, sanitary, pumps, rainwater"}
+  - {area: rfp, what: "The structural template always includes concept and schematic design, a geotechnical brief and in-ground services footings, and prices the construction phase only as an option for a simple-scale job.", evidence: "knowledge/rfp/structural.yaml stages concept_schematic, construction_phase; positions geotech_brief, services_footings"}
+  - {area: rfp, what: "The bca-certification template lists cdc as an unsupported pathway, so a certifier RFP for a CDC re-roof blocks.", evidence: "knowledge/rfp/bca-certification.yaml unsupported_pathways"}
+  - {area: profile, what: "'asbestos contamination' of gutters or internal surfaces matches the potentially_contaminated_land trigger (contaminat), and 'flooding' from box gutter overflow matches the flood_hazard trigger. Both only route a Jev question; expected readings are not true.", evidence: "knowledge/determinants.yaml potentially_contaminated_land, flood_hazard triggers"}
+  - {area: profile, what: "Implied scope fires in code on ordinary warehouse wording: 'office kitchen' or 'staff amenities bathroom' (hydraulic and exhaust, so Hydraulic and Mechanical again), 'common wall' between units (adjoining structures, compartments, acoustic separation), 'stairs' to the mezzanine (stairs and ramps), 'brickwork' parapets (masonry), 'demolition' (site.demolition, which is correct here).", evidence: "knowledge/profile/scope_defaults.yaml implied_by"}
+  - {area: profile, what: "The existing_building_year trigger matches 'built in' or 'constructed in' a year but not 'completed in' or 'erected in', so a common phrasing of the year is missed and the pre-2004 hazmat Implication does not fire.", evidence: "knowledge/determinants.yaml existing_building_year triggers"}
+  - {area: knowledge, what: "WHS asbestos law is not encoded: licence classes, SafeWork notification, removal control plan, air monitoring, clearance, register and management plan, and waste tracking. uc.asbestos-found-in-existing-building does not fire on remove or investigate actions.", evidence: "knowledge/clusters/structure/unforeseen.yaml uc.asbestos-found-in-existing-building"}
+  - {area: knowledge, what: "No friable versus bonded distinction anywhere, though it decides the licence class, method and clearance authority.", evidence: "knowledge/clusters/structure/systems.yaml site.demolition"}
+
+variants: [overlay-over-ac, purlin-replacement, drainage-capacity-upgrade, solar-pv, sprinklered-building, asbestos-debris-inside, roof-plant-relocation, cdc-pathway]

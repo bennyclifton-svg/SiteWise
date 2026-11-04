@@ -1,15 +1,16 @@
 import { Pending } from "./Activity";
-// Shell: sign in with an invite token, choose or create a project, then file.
+// Shell: sign in, choose or create a project, then file.
 // Routing is two paths, so it is done with the History API directly.
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, type Catalog, type Project as ProjectRow } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { IconBin } from "./icons";
+import { SignOutButton } from "./SignOutButton";
 import { ThemeButton } from "./ThemeButton";
 import { Wordmark } from "./Wordmark";
 import { Project } from "./Project";
 import { ShellPreview } from "./ShellPreview";
+import { SignIn } from "./SignIn";
 
 type Route = { name: "home" } | { name: "project"; id: string };
 
@@ -25,7 +26,10 @@ export function App() {
   const [authError, setAuthError] = useState("");
   const [route, setRoute] = useState<Route>(() => parseRoute(location.pathname));
   const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [projectsError, setProjectsError] = useState("");
+  const [catalogError, setCatalogError] = useState(false);
   const [projects, setProjects] = useState<ProjectRow[] | null>(null);
+  const sessionGeneration = useRef(0);
 
   const navigate = useCallback((path: string) => {
     history.pushState(null, "", path);
@@ -46,14 +50,14 @@ export function App() {
     const consume = (): boolean => {
       const m = location.hash.match(/token=([0-9a-fA-F]+)/);
       if (!m) return false;
-      history.replaceState(null, "", location.pathname);
+      history.replaceState(null, "", location.pathname + location.search);
       api.signIn(m[1]).then(
         () => {
           setAuthError("");
           setAuth("in");
         },
         () => {
-          setAuthError("That invite link has expired or was already used. Ask your project admin for a new one.");
+          setAuthError("That sign-in link has expired or was already used. Sign in with your email and password.");
           setAuth("out");
         },
       );
@@ -61,7 +65,10 @@ export function App() {
     };
     const onHash = () => void consume();
     window.addEventListener("hashchange", onHash);
-    if (!consume()) {
+    // A password reset link opens the sign-in panel in reset mode.
+    if (/reset=/.test(location.hash)) {
+      setAuth("out");
+    } else if (!consume()) {
       api.checkSession().then(
         () => setAuth("in"),
         () => setAuth("out"),
@@ -71,21 +78,49 @@ export function App() {
   }, []);
 
   const signedOut = useCallback(() => {
-    setAuthError("Your session has ended. Sign in again with a new invite.");
+    sessionGeneration.current++;
+    setProjects(null);
+    setCatalog(null);
+    setAuthError("Your session has ended. Sign in again.");
     setAuth("out");
   }, []);
 
+  useEffect(() => {
+    const done = () => {
+      sessionGeneration.current++;
+      setProjects(null);
+      setCatalog(null);
+      setProjectsError("");
+      setCatalogError(false);
+      setAuthError("");
+      setAuth("out");
+      navigate("/");
+    };
+    window.addEventListener("sitewise:signed-out", done);
+    return () => window.removeEventListener("sitewise:signed-out", done);
+  }, [navigate]);
+
   const loadProjects = useCallback(() => {
-    api.projects().then(setProjects, (e: unknown) => {
+    const generation = sessionGeneration.current;
+    setProjectsError("");
+    api.projects().then(value => { if (generation === sessionGeneration.current) setProjects(value); }, (e: unknown) => {
+      if (generation !== sessionGeneration.current) return;
+      setProjectsError("Could not load projects. Check your connection and retry.");
       if (e instanceof ApiError && e.status === 401) signedOut();
     });
   }, [signedOut]);
 
+  const loadCatalog = useCallback(() => {
+    const generation = sessionGeneration.current;
+    setCatalogError(false);
+    api.catalog().then(value => { if (generation === sessionGeneration.current) setCatalog(value); }, () => { if (generation === sessionGeneration.current) setCatalogError(true); });
+  }, []);
+
   useEffect(() => {
     if (auth !== "in") return;
     loadProjects();
-    api.catalog().then(setCatalog, () => setCatalog(null));
-  }, [auth, loadProjects]);
+    loadCatalog();
+  }, [auth, loadProjects, loadCatalog]);
 
   if (location.hash === "#shell-preview") return <ShellPreview />;
   if (auth === "checking") return null;
@@ -93,12 +128,14 @@ export function App() {
 
   return (
     <>
-      <a className="sr-only" href="#main">
+      <a className="sr-only skip-link" href="#main">
         Skip to content
       </a>
+      {catalogError && <div className="app-load-error" role="alert">Could not load filing choices. <button className="btn" onClick={loadCatalog}>Retry choices</button></div>}
       {route.name === "project" ? (
         <Project
           key={route.id}
+          onRenamed={(id, name) => setProjects(current => current?.map(p => p.id === id ? { ...p, name } : p) ?? null)}
           projectId={route.id}
           catalog={catalog}
           projects={projects}
@@ -122,10 +159,13 @@ export function App() {
             </a>
             <span className="bar-spacer" />
             <ThemeButton />
+            <SignOutButton />
           </header>
           <div id="main">
             <Projects
               projects={projects}
+              loadError={projectsError}
+              onRetry={loadProjects}
               onOpen={(id) => navigate(`/projects/${id}`)}
               onCreated={(id) => {
                 loadProjects();
@@ -141,82 +181,25 @@ export function App() {
   );
 }
 
-function SignIn({ initialError, onSignedIn }: { initialError: string; onSignedIn: () => void }) {
-  const [token, setToken] = useState("");
-  const [error, setError] = useState(initialError);
-  const [busy, setBusy] = useState(false);
-
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    const value = token.trim();
-    if (!value) {
-      setError("Paste the token from your invite email.");
-      return;
-    }
-    setBusy(true);
-    setError("");
-    try {
-      await api.signIn(value);
-      onSignedIn();
-    } catch (err) {
-      setBusy(false);
-      setError(
-        err instanceof ApiError && err.status === 401
-          ? "That token has expired or was already used. Ask your project admin for a new invite."
-          : err instanceof Error
-            ? err.message
-            : "Sign in failed.",
-      );
-    }
-  }
-
-  return (
-    <main className="entry">
-      <div className="entry-panel">
-        <Wordmark height={32} />
-        <span className="sr-only">SiteWise</span>
-        <h1>Sign in with your invite</h1>
-        <p>SiteWise is invite only. Open the link in your invite email, or paste its token here.</p>
-        <form className="stack-form" onSubmit={submit} noValidate>
-          <label htmlFor="token">Invite token</label>
-          <input
-            id="token"
-            className="input"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            autoComplete="one-time-code"
-            spellCheck={false}
-            aria-invalid={error ? "true" : undefined}
-            aria-describedby={error ? "token-error" : undefined}
-          />
-          {error && (
-            <span id="token-error" className="error-text" role="alert">
-              {error}
-            </span>
-          )}
-          <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? <Pending delayed>Signing in…</Pending> : "Sign in"}
-          </button>
-        </form>
-      </div>
-    </main>
-  );
-}
-
 function Projects({
   projects,
+  loadError,
+  onRetry,
   onOpen,
   onCreated,
   onDeleted,
   onSignedOut,
 }: {
   projects: ProjectRow[] | null;
+  loadError: string;
+  onRetry: () => void;
   onOpen: (id: string) => void;
   onCreated: (id: string) => void;
   onDeleted: (id: string) => void;
   onSignedOut: () => void;
 }) {
   const [name, setName] = useState("");
+  const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState<ProjectRow | null>(null);
@@ -287,16 +270,18 @@ function Projects({
           </span>
         )}
       </form>
-      {projects === null ? (
+      {loadError && <div className="home-load-error" role="alert">{loadError} <button className="btn" onClick={onRetry}>Retry projects</button></div>}
+      {projects && projects.length > 0 && <label className="project-search">Find a project<input className="input" type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search project names" /></label>}
+      {projects === null && !loadError ? (
         <p className="drop-sub"><Pending delayed>Loading projects…</Pending></p>
-      ) : projects.length === 0 ? (
+      ) : projects?.length === 0 ? (
         <div className="empty">
           <strong>No projects yet.</strong>
           Name your first project above, then drop its documents in.
         </div>
       ) : (
         <ul className="project-list">
-          {projects.map((p) => (
+          {(projects ?? []).filter(p => p.name.toLowerCase().includes(query.toLowerCase())).map((p) => (
             <li key={p.id}>
               <a
                 className="project-link"
@@ -309,19 +294,15 @@ function Projects({
                 <span className="project-name">{p.name}</span>
                 <span className="project-open">Open</span>
               </a>
-              <button
-                type="button"
-                className="reg-del project-delete"
-                aria-label={`Delete ${p.name}`}
-                title={`Delete ${p.name}`}
-                onClick={() => setConfirm(p)}
-              >
-                <IconBin />
-              </button>
+              <details className="project-actions">
+                <summary aria-label={`Actions for ${p.name}`}>Actions</summary>
+                <button type="button" className="btn" aria-label={`Delete ${p.name}`} onClick={e => { e.currentTarget.closest("details")?.removeAttribute("open"); setConfirm(p); }}>Delete project</button>
+              </details>
             </li>
           ))}
         </ul>
       )}
+      {projects && projects.length > 0 && !projects.some(p => p.name.toLowerCase().includes(query.toLowerCase())) && <p role="status">No projects match “{query}”.</p>}
       {confirm && (
         <ConfirmDialog
           title={`Delete ${confirm.name}?`}

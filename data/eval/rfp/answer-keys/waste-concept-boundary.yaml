@@ -54,13 +54,11 @@ description: Concept-only appointment buys capacity/collection/shared coordinati
   option.
 expect:
   waste-management:
-    stages_include:
-    - s1_inception
-    - s2_concept
-    stages_option:
-    - s3_operational
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s2_concept]
     positions:
-      operational: O
+      operational: X
       collection: I
       rooms: I
       shared: I
+    stages_absent: [s3_operational]

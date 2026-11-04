@@ -56,29 +56,22 @@ description: Commercial interior-only fit-out does not appoint whole-site detail
   interior measurement remains a priced option.
 expect:
   land-surveying:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      titling: O
+      titling: X
       control: I
       records: I
       exposure: X
-      interior: O
-      monitoring: O
-      setout: O
-      asbuilt: O
+      interior: X
+      monitoring: X
+      setout: X
+      asbuilt: X
       boundary: absent
       adjoining: absent
       buried: absent
       sewer: absent
       access: absent
-    stages_include:
-    - s1_plan
-    stages_option:
-    - s5_support
-    - s6_construction
-    - s7_completion
+    stages_include: [s1_plan]
     blocking_only: true
     blocking: []
-    stages_absent:
-    - s2_detail
-    - s3_boundary
-    - s4_services
+    stages_absent: [s2_detail, s3_boundary, s4_services, s5_support, s6_construction, s7_completion]

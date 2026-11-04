@@ -61,18 +61,12 @@ description: Capacity advice ends at report and does not buy design, constructio
 snapshot: false
 expect:
   fire-services:
-    stages_include:
-    - advisory
-    stages_absent:
-    - inception
-    - concept
-    - design
-    - tender
-    - construction
-    - handover
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [advisory]
+    stages_absent: [inception, concept, design, tender, construction, handover]
     positions:
       wet: absent
       supply: absent
       dry: absent
       strategy: X
-      remediation: O
+      remediation: I

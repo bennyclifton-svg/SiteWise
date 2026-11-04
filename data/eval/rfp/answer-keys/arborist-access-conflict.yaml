@@ -59,8 +59,8 @@ description: Infrastructure demolition interface has offsite trees but contradic
   assessment remains unresolved rather than excluded.
 expect:
   arborist:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      offsite: ask
-      impacts: O
-    blocking:
-    - fact:flag.arborist_offsite_access
+      offsite: I
+      impacts: I
+    blocking: ['fact:flag.arborist_offsite_access']

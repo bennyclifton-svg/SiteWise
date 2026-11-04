@@ -17,29 +17,36 @@ import (
 
 // budgetKeys are the profile rows the construction budget and its split are
 // read from (docs/plans/2026-10-21-source-to-cost-plan-design.md, Part 2).
-var budgetKeys = []string{"proj.budget_stated", "hdr.building_class", "hdr.subclass", "hdr.work_type", "hdr.scale.storeys", "proj.flag.basement", "proj.contingency_stated", "proj.owner_supply_stated", "proj.exclusions_stated"}
+var budgetKeys = []string{"proj.budget_stated", "hdr.building_class", "hdr.subclass", "hdr.work_type", "hdr.scale.storeys", "proj.flag.basement", "proj.contingency_stated", "proj.owner_supply_stated", "proj.exclusions_stated", "proj.preliminary_estimate"}
 
 // readBudgetProfile reads the applied value of each budget key, preferring
 // the whole-project part. A red or blank row is not applied.
 func readBudgetProfile(ctx context.Context, tx pgx.Tx, org, project string) (map[string]string, map[string]string, error) {
-	rows, err := tx.Query(ctx, `SELECT r.key, r.value, r.origin FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id
+	values, origins, _, err := readBudgetProfileWords(ctx, tx, org, project)
+	return values, origins, err
+}
+
+// readBudgetProfileWords is readBudgetProfile with each value's first source
+// excerpt, whose framing words ("including contingency") Go reads.
+func readBudgetProfileWords(ctx context.Context, tx pgx.Tx, org, project string) (map[string]string, map[string]string, map[string]string, error) {
+	rows, err := tx.Query(ctx, `SELECT r.key, r.value, r.origin, COALESCE(r.sources->0->>'excerpt','') FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id
  WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.key=ANY($3) AND r.value_state='set' AND r.value<>'' AND r.band NOT IN ('red','blank','unchecked')
  ORDER BY (p.kind='whole') DESC`, org, project, budgetKeys)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	defer rows.Close()
-	values, origins := map[string]string{}, map[string]string{}
+	values, origins, excerpts := map[string]string{}, map[string]string{}, map[string]string{}
 	for rows.Next() {
-		var key, value, origin string
-		if err := rows.Scan(&key, &value, &origin); err != nil {
-			return nil, nil, err
+		var key, value, origin, excerpt string
+		if err := rows.Scan(&key, &value, &origin, &excerpt); err != nil {
+			return nil, nil, nil, err
 		}
 		if _, seen := values[key]; !seen {
-			values[key], origins[key] = value, origin
+			values[key], origins[key], excerpts[key] = value, origin, excerpt
 		}
 	}
-	return values, origins, rows.Err()
+	return values, origins, excerpts, rows.Err()
 }
 
 // statedConstructionBudget reads the stated budget and chooses its split from the
@@ -104,7 +111,7 @@ func (s *Store) spreadConstructionBudget(ctx context.Context, tx pgx.Tx, org, pr
 	if p.Status != "draft" || cat == nil {
 		return 0, nil
 	}
-	values, origins, err := readBudgetProfile(ctx, tx, org, project)
+	values, origins, excerpts, err := readBudgetProfileWords(ctx, tx, org, project)
 	if err != nil {
 		return 0, err
 	}
@@ -112,6 +119,7 @@ func (s *Store) spreadConstructionBudget(ctx context.Context, tx pgx.Tx, org, pr
 	if b == nil || !b.Known || weights == nil {
 		return 0, nil
 	}
+	framing := budgetFramingNote(b, excerpts["proj.budget_stated"])
 	splitID := ""
 	for _, sp := range cat.BudgetSplits() {
 		if sp.Label == b.Split {
@@ -140,11 +148,11 @@ func (s *Store) spreadConstructionBudget(ctx context.Context, tx pgx.Tx, org, pr
 		v, has := i.Values["budget"]
 		prior, own := ownSpread(v)
 		writable := !has || v.ValueState == "unknown" && v.Origin != "user" || own
-		if !writable || own && prior.Budget == b.Stated.Amount && prior.Split == splitID && v.Amount != nil && *v.Amount == amount {
+		pct, _ := new(big.Rat).Quo(new(big.Rat).Mul(mustRat(amount), big.NewRat(100, 1)), total).Float64()
+		rationale := fmt.Sprintf("%.1f %% of the $%s construction budget, by the draft %s split (%s confidence); includes preliminaries and margin pro rata. %s", pct, groupDigits(b.Stated.Amount), strings.ToLower(b.Split), b.SplitConfidence, b.SplitBasis) + framing
+		if !writable || own && prior.Budget == b.Stated.Amount && prior.Split == splitID && v.Amount != nil && *v.Amount == amount && v.Rationale == rationale {
 			continue
 		}
-		pct, _ := new(big.Rat).Quo(new(big.Rat).Mul(mustRat(amount), big.NewRat(100, 1)), total).Float64()
-		rationale := fmt.Sprintf("%.1f %% of the $%s construction budget, by the draft %s split (%s confidence); includes preliminaries and margin pro rata. %s", pct, groupDigits(b.Stated.Amount), strings.ToLower(b.Split), b.SplitConfidence, b.SplitBasis)
 		provenance, _ := json.Marshal(map[string]any{"actor": actor, "spread": spreadValue{Budget: b.Stated.Amount, Split: splitID}, "budget_text": b.Stated.Text, "budget_origin": b.Origin})
 		a := amount
 		if err := writeCostValueWith(ctx, tx, org, project, p.ID, i.ID, "budget", costs.Value{Amount: &a, ValueState: "known", Origin: "assumption", Meaning: "allowance", Rationale: rationale}, provenance); err != nil {
@@ -153,6 +161,21 @@ func (s *Store) spreadConstructionBudget(ctx context.Context, tx pgx.Tx, org, pr
 		n++
 	}
 	return n, nil
+}
+
+// budgetFramingNote says, in the spread's own words, what the budget's
+// source says about contingency and GST. It never quantifies a contingency
+// the document leaves unquantified.
+func budgetFramingNote(b *costs.ConstructionBudget, excerpt string) string {
+	f := costs.ReadBudgetFraming(excerpt)
+	note := ""
+	if f.IncludesContingency {
+		note += " The stated budget includes a contingency the document does not quantify, so these shares include it."
+	}
+	if b.Stated.GST == "not_stated" && f.GST == "not_stated" {
+		note += " The document does not say whether the budget includes GST."
+	}
+	return note
 }
 
 func mustRat(m costs.Money) *big.Rat {
@@ -176,11 +199,17 @@ func groupDigits(m costs.Money) string {
 // attachConstructionBudget puts the stated budget on a plan read, so the
 // totals can compare it with the construction lines.
 func (s *Store) attachConstructionBudget(ctx context.Context, tx pgx.Tx, org, project string, p *costs.Plan) error {
-	values, origins, err := readBudgetProfile(ctx, tx, org, project)
+	values, origins, excerpts, err := readBudgetProfileWords(ctx, tx, org, project)
 	if err != nil {
 		return err
 	}
 	p.Budget, _ = statedConstructionBudget(s.workCatalog(), values, origins)
+	p.Estimate = nil
+	if text := values["proj.preliminary_estimate"]; text != "" {
+		if e, ok := costs.ReadEstimate(text, excerpts["proj.preliminary_estimate"]); ok {
+			p.Estimate = &e
+		}
+	}
 	return nil
 }
 
@@ -210,7 +239,7 @@ func (s *Store) applyBriefFigures(ctx context.Context, tx pgx.Tx, org, project, 
 	if p.Status != "draft" {
 		return 0, nil
 	}
-	values, origins, err := readBudgetProfile(ctx, tx, org, project)
+	values, origins, excerpts, err := readBudgetProfileWords(ctx, tx, org, project)
 	if err != nil {
 		return 0, err
 	}
@@ -227,7 +256,7 @@ func (s *Store) applyBriefFigures(ctx context.Context, tx pgx.Tx, org, project, 
 		if has && !(v.ValueState == "unknown" && v.Origin != "user") && !own {
 			return nil
 		}
-		if own && prior.Stated == stated && v.Amount != nil && *v.Amount == amount {
+		if own && prior.Stated == stated && v.Amount != nil && *v.Amount == amount && v.Rationale == rationale {
 			return nil
 		}
 		provenance, _ := json.Marshal(map[string]any{"actor": actor, "brief": briefValue{Key: key, Stated: stated}, "origin": origins[key]})
@@ -238,7 +267,11 @@ func (s *Store) applyBriefFigures(ctx context.Context, tx pgx.Tx, org, project, 
 	if text := values["proj.contingency_stated"]; text != "" {
 		if c, ok := costs.ParseStatedBudget(text); ok {
 			if i, ok := bySource["pw:construction-contingency"]; ok && i.Posting && !i.Excluded {
-				if err := write(i, "proj.contingency_stated", text, c.Amount, fmt.Sprintf("Contingency as a source document states it: %q.", text)); err != nil {
+				rationale := fmt.Sprintf("Contingency as a source document states it: %q.", text)
+				if costs.ReadBudgetFraming(excerpts["proj.contingency_stated"]).Additional {
+					rationale += " The document holds it in addition to the construction budget."
+				}
+				if err := write(i, "proj.contingency_stated", text, c.Amount, rationale); err != nil {
 					return n, err
 				}
 			}

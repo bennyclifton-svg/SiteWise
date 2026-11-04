@@ -1,0 +1,129 @@
+ST01-base: project 99280fbd-282a-4a08-a2bf-1a41c71b382c
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued None, 15.0 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: 3 documents in profile reading
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 19.0 s
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 3: 5 dropped, profile queued 3, 14.7 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.5 s
+    program prepare -> 200
+    RFP for Architect -> 201
+    RFP for BASIX -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+ST01-cdc-pathway: project 25e67188-e4ef-4262-801c-ff984e743dd0
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: 4 documents in profile reading, 2 jobs queued
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued None, 16.8 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 16.9 s
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: settling
+    waiting: 2 documents in profile reading, 2 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 3: 4 dropped, profile queued 2, 14.8 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.5 s
+    program prepare -> 200
+    RFP for Architect -> 201
+    RFP for BASIX -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+ST01-trees-affected: project af598867-69ef-46c5-803e-48f74d7f40fe
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued None, 14.6 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 6 documents filing, proposals reading, 6 jobs queued
+    waiting: settling
+    waiting: 6 documents in profile reading, 6 jobs queued
+    waiting: 7 documents in profile reading, 6 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 2: 6 dropped, profile queued 6, 16.9 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 19.1 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.4 s
+    program prepare -> 200
+    RFP for Arborist -> 201
+    RFP for Architect -> 201
+    RFP for BASIX -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+done: testing\synthetic\runs\20261102-fixes-1-4-6

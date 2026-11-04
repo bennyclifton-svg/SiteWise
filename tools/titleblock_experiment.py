@@ -18,8 +18,6 @@ import urllib.request
 import uuid
 import html
 from pathlib import Path
-import pypdfium2 as pdfium
-from PIL import Image, ImageDraw
 
 MODEL = 'jev-1.14.0'
 REGIONS={'bottom_left':(0,.72,.55,1),'bottom_right':(.45,.72,1,1),
@@ -87,6 +85,9 @@ def selected(record, candidates):
 
 
 def run(root, limit):
+    # Pure geometry helpers remain testable without the optional rendering runtime.
+    import pypdfium2 as pdfium
+    from PIL import Image
     items=json.loads((root/'manifest.json').read_text(encoding='utf-8-sig'))
     for item in items[:limit]:
         ex=json.loads((root/'extracted'/(item['id']+'.json')).read_text(encoding='utf-8'))
@@ -152,6 +153,9 @@ def valid_box(b):
 
 
 def regions(root, limit):
+    # Pure geometry helpers remain testable without the optional rendering runtime.
+    import pypdfium2 as pdfium
+    from PIL import Image
     items=json.loads((root/'manifest.json').read_text(encoding='utf-8-sig'))
     for item in items[:limit]:
         directory=root/'results'/item['id']
@@ -290,6 +294,9 @@ def report(root,limit):
 
 
 def prepare(root):
+    # Pure geometry helpers remain testable without the optional rendering runtime.
+    import pypdfium2 as pdfium
+    from PIL import Image
     items = json.loads((root / 'manifest.json').read_text(encoding='utf-8-sig'))
     for item in items:
         started = time.perf_counter()

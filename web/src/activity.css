@@ -35,7 +35,7 @@
 .activity-icon[data-delayed] { animation: activity-appear 0s 300ms both; }
 @keyframes activity-turn { to { transform: rotate(360deg); } }
 @keyframes activity-appear { from { visibility: hidden; } to { visibility: visible; } }
-.reg-activity { margin: 0; padding: 6px 12px; color: var(--ink-muted); font-size: 12px; }
+.reg-activity { margin: 0; padding: 6px 12px; color: var(--ink-muted); font-size: var(--fs-sm); }
 @media (prefers-reduced-motion: reduce) {
   .activity-icon[data-state="active"] svg { animation: none; }
 }

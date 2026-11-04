@@ -65,7 +65,19 @@ func writeProcurementReport(w http.ResponseWriter, r *http.Request, deps Deps, s
 					name = c.Firm.Name
 				}
 				fee := c.Cells["comparison:appointment"]
-				if fee.Cents == nil {
+				if c.AppointmentRows != nil {
+					if c.AppointmentTotal == nil {
+						lines = append(lines, name+": selected appointment has unpriced scope.")
+					} else {
+						scope := []string{}
+						for _, row := range c.AppointmentRows {
+							if row.Included {
+								scope = append(scope, row.Label)
+							}
+						}
+						lines = append(lines, name+": selected appointment total $"+invoices.DisplayCents(*c.AppointmentTotal)+" ex GST. Scope: "+strings.Join(scope, "; "))
+					}
+				} else if fee.Cents == nil {
 					lines = append(lines, name+": comparison fee not confirmed.")
 				} else {
 					lines = append(lines, name+": confirmed comparison fee $"+invoices.DisplayCents(*fee.Cents)+" ex GST. Scope: "+fee.Basis)

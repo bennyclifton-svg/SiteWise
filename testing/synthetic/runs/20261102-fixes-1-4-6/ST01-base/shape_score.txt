@@ -1,0 +1,19 @@
+T01 New detached house (base)
+  Procurement [scored]: matched 8/11, missed 3 (0 built in, 3 known gaps), extra 0, false positives 3
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical
+  Cost plan [scored]: matched 25/34, missed 9 (0 built in, 9 known gaps), extra 0, false positives 4, fabricated amounts 0 (from documents 10, typed 0)
+    false positives: Electrical; Hydraulic; Mechanical; Active fire protection
+  Program [scored]: skeleton sk.generic (expected sk.new-traditional-da), matched 51/83, missed 32 (9 built in, 23 known gaps), extra 17, false positives 0, wrong stage 1; links holds 43, violated 6, unknown 0, unscored 51; orphans 3, cycles 0
+    missed built in: Lodge services applications; Excavate and inspect footings; Under-slab sanitary drainage; Reinforcement inspection before slab pour; Reinforce and pour slab; Stand wall frames (+3 more)
+    violated: Prepare construction documentation after DA assessment and determination; Coordinate consultant documentation after DA assessment and determination; Install erosion and sediment controls after Establish the site; Lay brick veneer after Install windows and external doors; Wrap and clad external walls after Install windows and external doors; Install stormwater drainage after Install gutters and downpipes
+  RFPs: found 8/10 (0 built-in missing), not expected present 0, extra 3; expect ok 128, new failures 34, known differences 46, fixed 0, awaiting user input 50; must_include missing 5 (unknown 6); must_not_include present 6 (known 9)
+    consultant.architect: stage.house_documents; stage.brief_masterplan; stage.dnc_tender; stage.regulated_design; stage.post_novation; position.water_asset (+8 more)
+    consultant.structural: stage.tender_traditional; stage.construction_documents; stage.authority_asset; stage.dnc_tender; stage.post_novation; blocking.details (+3 more)
+    consultant.civil: stage.detailed_tender; stage.dnc_tender; stage.post_novation; position.earthworks_suitability; blocking.details; blocking.fact:procurement (+1 more)
+    consultant.geotechnical: blocking.details; blocking.slot:project:intro
+    consultant.surveyor: position.access; blocking.details; blocking.fact:flag.staged; blocking.slot:project:intro
+    consultant.certifier: blocking.details; blocking.slot:project:intro; missing 'Every NSW critical-stage inspection the CC lists for Class 1 and 10: pre-commencement, footings, slab, frame, wet-area waterproofing, stormwater connections, final before the OC (owner ruling R7)'; missing 'Occupation certificate with BASIX completion check'
+    consultant.basix: missing 'NatHERS thermal assessment with stamped plans'; missing 'BASIX certificate: water, energy, thermal comfort'; missing 'One revision for the CC design'
+    consultant.landscape: missing
+    consultant.town_planner: blocking.details; blocking.slot:project:intro
+    consultant.quantity_surveyor: missing

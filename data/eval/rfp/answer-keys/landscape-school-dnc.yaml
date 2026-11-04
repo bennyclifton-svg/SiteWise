@@ -53,14 +53,10 @@ scenario: landscape-school-dnc
 description: Occupied school D&C tender defines handover without automatic novation, works or establishment.
 expect:
   landscape-architecture:
-    stages_include:
-    - s6_dnc
-    stages_absent:
-    - s5_tender
-    stages_option:
-    - s7_construction
-    - s8_establishment
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s6_dnc]
+    stages_absent: [s5_tender, s7_construction, s8_establishment]
     positions:
       staging: I
-      construction: O
-      establishment: O
+      construction: X
+      establishment: X

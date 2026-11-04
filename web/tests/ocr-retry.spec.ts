@@ -24,7 +24,7 @@ test("Retry OCR shows completion without an SSE notification", async ({ page }) 
   });
   await page.reload();
   const row = page.locator("tbody.reg-doc");
-  await row.getByRole("button", { name: /^Open document:/ }).click();
+  await row.locator("td.reg-no").dblclick();
   await page.getByRole("button", { name: "Filing details", exact: true }).click();
   await page.locator(".document-workspace").getByRole("button", { name: "Retry OCR", exact: true }).click();
   await expect(row.locator(".ocr-summary")).toHaveText("OCR queued");

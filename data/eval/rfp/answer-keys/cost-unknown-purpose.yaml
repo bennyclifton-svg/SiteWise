@@ -52,12 +52,9 @@ scenario: cost-unknown-purpose
 description: Missing authority purpose and budget/operator extent stay blocking questions, never guessed exclusions.
 expect:
   cost-planning:
-    stages_ask:
-    - s3_authority
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      total_budget: ask
-      operator: ask
-    blocking:
-    - fact:flag.cost_authority
-    - fact:flag.cost_total_budget
-    - fact:flag.cost_operator
+      total_budget: I
+      operator: I
+    blocking: ['fact:flag.cost_authority', 'fact:flag.cost_total_budget', 'fact:flag.cost_operator']
+    stages_include: [s3_authority]

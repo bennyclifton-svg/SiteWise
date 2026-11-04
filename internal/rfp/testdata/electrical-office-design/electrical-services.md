@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to build Office (Class 5) at 1 Example Street, Example NSW.
@@ -9,60 +7,58 @@ Example Client intends to build Office (Class 5) at 1 Example Street, Example NS
 | Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
 | Building: Office: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; continuation/novation separately appointed. |
 
-Information provided: Issued system/load/utility evidence and separately quantified R1-R9 schedules.
-
 ### 2. Scope of services
 
 Design selected systems to purchased maturity; retain measured/utility/calculated basis, utility/deliverable/decision registers. Never assume spare capacity.
 Power is not process design. Utility/ASP3, ICT operator and contractors retain duties; review/witnessing is not installation testing/certification.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+R2 defines maturity/native formats/revisions/rounds/reliance/dates. R1 Fee by stage: Fees/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; authorised signatory, addenda/validity; no duplication. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Evidence |  | Included |  |
+|  | Brief/accessible assets/records | Included |  |
+|  | Condition/capacity gaps, utility risks and test plan | Included |  |
+| S3 Concept |  | Included |  |
+|  | Preliminary demand/options, supply/space/routes, critical loads/autonomy, systems and cost inputs | Included |  |
+| S4 Authority |  | Included |  |
+|  | Infrastructure/lighting/energy plans | Included |  |
+|  | Application author/submitter/payer and response cap | Included |  |
+| S5 Design |  | Included |  |
+|  | Demand/fault/protection/earthing/lighting calculations | Included |  |
+|  | Boards/cables/routes, controls, safety and builders work | Included |  |
+|  | Detailed distribution/protection/earthing/containment; fault/voltage/discrimination | Included |  |
+|  | Utility demand application; certified utility design separate | Included |  |
+|  | Contestable utility design/works/charges/easements/energisation | Excluded |  |
+|  | Detailed general/external/emergency/exit lighting/controls; not detection. Emergency/exit lighting: Electrical designer unless selected otherwise; supply/monitoring/test roles | Included |  |
+|  | Feature/sports/process lighting, separate brief | Included |  |
+|  | Metering/energy/BMS interface; programming/licences/cybersecurity owners | Included |  |
+|  | Standby/UPS/storage/PV/EV: capacity/export/islanding/approvals | Included |  |
+|  | Passive ICT/security/AV cabling; active/Wi-Fi/carrier/security/AV design separately selected | Included |  |
+|  | Detection/alarm/warning/monitoring, allocation below; no duplicate fees. Dry-fire/life-safety: name design, power/containment/cabling, programming/network, install, execute, witness and evidence owners per system; unknown stays open, N/A needs evidence. Wet pumps/tanks/sprinklers: fire-services designer; smoke plant: mechanical; strategy/solutions: fire engineer.. Automatic detection/manual alarm/FIP: Designer; devices/zones/panels/existing compatibility; role owners. Standalone/interconnected smoke alarms: Designer; coverage/connection boundary. Occupant warning/evacuation/PA: Designer; PA priority/audibility/test roles. Alarm monitoring/remote transmission: Designer/provider/protocol; fault/power resilience/acceptance test. Cause-and-effect/interfaces: Strategy/matrix/programmer; smoke/pump/lift/door/BMS/emergency-power owners | Included |  |
+|  | Plant/lift/pump/specialist power; process design separate | Included |  |
+|  | Mixed/staged/shell/fit-out metering, tenancy and energisation gates/tests | Included |  |
+|  | Hazardous/process/HV/critical distribution studies | Excluded |  |
+|  | Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor | Included |  |
+| S6 Tender |  | Included |  |
+|  | Traditional complete design/specifications | Included |  |
+|  | D&C intent/performance with delegated design matrix | Included |  |
+|  | Comparisons/RFIs/addenda | Included |  |
+|  | Selected declarations/lodgement; verify jurisdiction/competence | Included |  |
+| S7 Post-contract | Not part of this appointment | Excluded | — |
+| S8 Support | Not part of this appointment | Excluded | — |
+| S9 Witness/handover | Not part of this appointment | Excluded | — |
+| S10 Defects | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Issued system/load/utility evidence and separately quantified R1-R9 schedules.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Power supply and distribution — Detailed distribution/protection/earthing/containment; fault/voltage/discrimination | X |  |  |  |
-| Utility demand application; certified utility design separate | X |  |  |  |
-| Contestable utility design/works/charges/easements/energisation. By ASP3 / utility |  |  | X |  |
-| Standby/UPS/storage/PV/EV: capacity/export/islanding/approvals | X |  |  |  |
-| Plant/lift/pump/specialist power; process design separate | X |  |  |  |
-| Hazardous/process/HV/critical distribution studies. By competent specialist |  |  | X |  |
-| Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor |  | X |  |  |
-| Lighting and connected systems — Detailed general/external/emergency/exit lighting/controls; not detection. Emergency/exit lighting: Electrical designer unless selected otherwise; supply/monitoring/test roles | X |  |  |  |
-| Feature/sports/process lighting, separate brief |  | X |  |  |
-| Metering/energy/BMS interface; programming/licences/cybersecurity owners | X |  |  |  |
-| Passive ICT/security/AV cabling; active/Wi-Fi/carrier/security/AV design separately selected | X |  |  |  |
-| Fire detection and interfaces — Detection/alarm/warning/monitoring, allocation below; no duplicate fees. Dry-fire/life-safety: name design, power/containment/cabling, programming/network, install, execute, witness and evidence owners per system; unknown stays open, N/A needs evidence. Wet pumps/tanks/sprinklers: fire-services designer; smoke plant: mechanical; strategy/solutions: fire engineer.. Automatic detection/manual alarm/FIP: Designer; devices/zones/panels/existing compatibility; role owners. Standalone/interconnected smoke alarms: Designer; coverage/connection boundary. Occupant warning/evacuation/PA: Designer; PA priority/audibility/test roles. Alarm monitoring/remote transmission: Designer/provider/protocol; fault/power resilience/acceptance test. Cause-and-effect/interfaces: Strategy/matrix/programmer; smoke/pump/lift/door/BMS/emergency-power owners | X |  |  |  |
-| Existing services and project coordination — Mixed/staged/shell/fit-out metering, tenancy and energisation gates/tests | X |  |  |  |
-| Selected declarations/lodgement; verify jurisdiction/competence | X |  |  |  |
-| Later services — Continued design; novation only by separate agreed appointment |  | X |  |  |
-| Quantified construction support |  | X |  |  |
-| Selected witnessing/handover; execution by named contractors. Integrated verification: Leader/scripts: normal/fire/power failure/recovery; executors/witnesses/evidence acceptance |  | X |  |  |
-| Defects/operational verification |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-R2 defines maturity/native formats/revisions/rounds/reliance/dates.  R1 Fee by stage: Fees/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; authorised signatory, addenda/validity; no duplication. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Evidence — Included | Brief/accessible assets/records; condition/capacity gaps, utility risks and test plan |  |  |  |
-| S3 Concept — Included | Preliminary demand/options, supply/space/routes, critical loads/autonomy, systems and cost inputs |  |  |  |
-| S4 Authority — Included | Infrastructure/lighting/energy plans; application author/submitter/payer and response cap |  |  |  |
-| S5 Design — Included | Demand/fault/protection/earthing/lighting calculations; boards/cables/routes, controls, safety and builders work |  |  |  |
-| S6 Tender — Included | Traditional complete design/specifications; D&C intent/performance with delegated design matrix; comparisons/RFIs/addenda |  |  |  |
-| S7 Post-contract — Option | Complete design/changes; declarations only if selected; agree separate novation duties |  |  |  |
-| S8 Support — Option | Equipment/shop drawings/RFIs; concealed/earthing/board/energisation hold-point reports/actions |  |  |  |
-| S9 Witness/handover — Option | Scripts/results, factory/site/life-safety/failure/recovery tests; failures/retests, as-builts/settings/O&M/training/residuals |  |  |  |
-| S10 Defects — Option | Follow-up/deferred tests, demand/resilience, operating prerequisites/period and closure |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Feature/sports/process lighting, separate brief |  |  |  |
-| Service option | Continued design |  |  |  |
-| Service option | Quantified construction support |  |  |  |
-| Service option | Selected witnessing/handover |  |  |  |
-| Service option | Defects/operational verification |  |  |  |
-| Service option | Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -102,6 +98,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Inputs/providers/revisions/dates: loads/reserve/utility/interval data/single-lines/tests/fire strategy/MEP/ICT/operator; methods/checks/gates/shutdown/temporary power/test criteria/closure. |
 | R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates/activity exclusions; agreement/precedence/liability/reliance/IP/termination/novation. |
 | R9 Reimbursables | Utility/ASP3/specialist/logging/scans/openings/access/isolation/temporary power/tests/travel/printing: quantity/payer/markup/GST/approval; no R1/contractor/other-package duplication. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

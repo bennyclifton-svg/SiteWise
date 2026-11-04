@@ -53,20 +53,12 @@ scenario: landscape-house-approval
 description: House garden DA ends at response milestone; later construction and establishment separately optional.
 expect:
   landscape-architecture:
-    stages_include:
-    - s1_inception
-    - s2_concept
-    - s3_approval
-    stages_option:
-    - s4_developed
-    - s5_tender
-    - s7_construction
-    - s8_establishment
-    stages_absent:
-    - s6_dnc
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s2_concept, s3_approval]
+    stages_absent: [s6_dnc, s4_developed, s5_tender, s7_construction, s8_establishment]
     positions:
       design: I
       podium: absent
       irrigation_brief: absent
-      construction: O
-      establishment: O
+      construction: X
+      establishment: X

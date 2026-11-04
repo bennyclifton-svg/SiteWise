@@ -108,10 +108,14 @@ boundary:
   end: advisory
 - start: inception
   end: design
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: inception
   name: S1 Evidence
-  deliverable: Brief/accessible assets/records; condition/capacity gaps, utility risks and test plan
+  lines:
+  - {key: brief_accessible_assets, text: "Brief/accessible assets/records"}
+  - {key: condition_capacity_gaps, text: "condition/capacity gaps, utility risks and test plan"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -125,8 +129,11 @@ stages:
       requirements.
 - key: investigation
   name: S2 Investigation
-  deliverable: Circuit tracing/logging/tests; safe isolation/access/reinstatement owners; retained/new/removed;
-    upgrades separate
+  lines:
+  - {key: circuit_tracing_logging, text: "Circuit tracing/logging/tests"}
+  - {key: safe_isolation_access, text: "safe isolation/access/reinstatement owners"}
+  - {key: retained_new_removed, text: "retained/new/removed"}
+  - {key: upgrades_separate, text: "upgrades separate"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -144,7 +151,8 @@ stages:
   if_unknown: ask
 - key: concept
   name: S3 Concept
-  deliverable: Preliminary demand/options, supply/space/routes, critical loads/autonomy, systems and cost inputs
+  lines:
+  - {key: preliminary_demand_options, text: "Preliminary demand/options, supply/space/routes, critical loads/autonomy, systems and cost inputs"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -158,7 +166,9 @@ stages:
       requirements.
 - key: planning
   name: S4 Authority
-  deliverable: Infrastructure/lighting/energy plans; application author/submitter/payer and response cap
+  lines:
+  - {key: infrastructure_lighting_energy, text: "Infrastructure/lighting/energy plans"}
+  - {key: application_author_submitter, text: "application author/submitter/payer and response cap"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -177,8 +187,9 @@ stages:
   assumption: Not confirmed in the base appointment. Price separately as an option, state the scope and assumptions, and obtain client approval before starting.
 - key: design
   name: S5 Design
-  deliverable: Demand/fault/protection/earthing/lighting calculations; boards/cables/routes, controls, safety
-    and builders work
+  lines:
+  - {key: demand_fault_protection, text: "Demand/fault/protection/earthing/lighting calculations"}
+  - {key: boards_cables_routes, text: "boards/cables/routes, controls, safety and builders work"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -192,8 +203,10 @@ stages:
       requirements.
 - key: tender
   name: S6 Tender
-  deliverable: Traditional complete design/specifications; D&C intent/performance with delegated design matrix;
-    comparisons/RFIs/addenda
+  lines:
+  - {key: traditional_complete_design, text: "Traditional complete design/specifications"}
+  - {key: d_c_intent, text: "D&C intent/performance with delegated design matrix"}
+  - {key: comparisons_rfis_addenda, text: "comparisons/RFIs/addenda"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -207,7 +220,10 @@ stages:
       requirements.
 - key: continuation
   name: S7 Post-contract
-  deliverable: Complete design/changes; declarations only if selected; agree separate novation duties
+  lines:
+  - {key: complete_design_changes, text: "Complete design/changes"}
+  - {key: declarations_only_if, text: "declarations only if selected"}
+  - {key: agree_separate_novation, text: "agree separate novation duties"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -222,7 +238,9 @@ stages:
   default: option
 - key: construction
   name: S8 Support
-  deliverable: Equipment/shop drawings/RFIs; concealed/earthing/board/energisation hold-point reports/actions
+  lines:
+  - {key: equipment_shop_drawings, text: "Equipment/shop drawings/RFIs"}
+  - {key: concealed_earthing_board, text: "concealed/earthing/board/energisation hold-point reports/actions"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -237,7 +255,9 @@ stages:
   default: option
 - key: handover
   name: S9 Witness/handover
-  deliverable: Scripts/results, factory/site/life-safety/failure/recovery tests; failures/retests, as-builts/settings/O&M/training/residuals
+  lines:
+  - {key: scripts_results_factory, text: "Scripts/results, factory/site/life-safety/failure/recovery tests"}
+  - {key: failures_retests_as, text: "failures/retests, as-builts/settings/O&M/training/residuals"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -252,7 +272,8 @@ stages:
   default: option
 - key: defects
   name: S10 Defects
-  deliverable: Follow-up/deferred tests, demand/resilience, operating prerequisites/period and closure
+  lines:
+  - {key: follow_deferred_tests, text: "Follow-up/deferred tests, demand/resilience, operating prerequisites/period and closure"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -267,8 +288,9 @@ stages:
   default: option
 - key: advisory
   name: S11 Advisory
-  deliverable: Named decision/cutoff/extent/method/confidence/reliance/actions; diagnosis, remedy and verification
-    separate
+  lines:
+  - {key: named_decision_cutoff, text: "Named decision/cutoff/extent/method/confidence/reliance/actions"}
+  - {key: diagnosis_remedy_verification, text: "diagnosis, remedy and verification separate"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -333,6 +355,7 @@ allowances:
 
 positions:
 - key: distribution
+  stage: [design]
   group: Power supply and distribution
   label: Detailed distribution/protection/earthing/containment; fault/voltage/discrimination
   kind: technical
@@ -359,6 +382,7 @@ positions:
     - tender
     - continuation
 - key: utility
+  stage: [design]
   group: Power supply and distribution
   label: Utility demand application; certified utility design separate
   kind: technical
@@ -389,6 +413,7 @@ positions:
     - tender
     - continuation
 - key: asp3
+  stage: [design]
   group: Power supply and distribution
   label: Contestable utility design/works/charges/easements/energisation
   kind: technical
@@ -404,6 +429,7 @@ positions:
   value: X
   responsible: ASP3 / utility
 - key: lighting
+  stage: [design]
   group: Lighting and connected systems
   label: Detailed general/external/emergency/exit lighting/controls; not detection
   kind: technical
@@ -430,6 +456,7 @@ positions:
     - tender
     - continuation
 - key: feature
+  stage: [design]
   group: Lighting and connected systems
   label: Feature/sports/process lighting, separate brief
   kind: technical
@@ -449,6 +476,7 @@ positions:
     - tender
     - continuation
 - key: controls
+  stage: [design]
   group: Lighting and connected systems
   label: Metering/energy/BMS interface; programming/licences/cybersecurity owners
   kind: technical
@@ -478,6 +506,7 @@ positions:
     - elec_controls
   if_unknown: ask
 - key: generation
+  stage: [design]
   group: Power supply and distribution
   label: 'Standby/UPS/storage/PV/EV: capacity/export/islanding/approvals'
   kind: technical
@@ -508,6 +537,7 @@ positions:
   if_unknown: option
   assumption: Not confirmed in the base appointment. Price separately as an option, state the scope and assumptions, and obtain client approval before starting.
 - key: ict
+  stage: [design]
   group: Lighting and connected systems
   label: Passive ICT/security/AV cabling; active/Wi-Fi/carrier/security/AV design separately selected
   kind: technical
@@ -538,6 +568,7 @@ positions:
   if_unknown: option
   assumption: Not confirmed in the base appointment. Price separately as an option, state the scope and assumptions, and obtain client approval before starting.
 - key: dry_fire
+  stage: [design]
   group: Fire detection and interfaces
   label: Detection/alarm/warning/monitoring, allocation below; no duplicate fees
   kind: technical
@@ -567,6 +598,7 @@ positions:
     - elec_dry_fire
   if_unknown: ask
 - key: plant
+  stage: [design]
   group: Power supply and distribution
   label: Plant/lift/pump/specialist power; process design separate
   kind: technical
@@ -593,6 +625,7 @@ positions:
     - tender
     - continuation
 - key: existing
+  stage: [investigation, inception]
   group: Existing services and project coordination
   label: Existing/live condition/demand/circuit/label/route investigation; continuity and isolation owners
   kind: technical
@@ -618,6 +651,7 @@ positions:
     - elec_investigation
   if_unknown: ask
 - key: staging
+  stage: [design]
   group: Existing services and project coordination
   label: Mixed/staged/shell/fit-out metering, tenancy and energisation gates/tests
   kind: technical
@@ -647,6 +681,7 @@ positions:
     - elec_staging
   if_unknown: ask
 - key: specialist
+  stage: [design]
   group: Power supply and distribution
   label: Hazardous/process/HV/critical distribution studies
   kind: technical
@@ -660,6 +695,7 @@ positions:
   value: X
   responsible: competent specialist
 - key: continuation
+  stage: [continuation]
   group: Later services
   label: Continued design; novation only by separate agreed appointment
   kind: technical
@@ -682,6 +718,7 @@ positions:
   - stage:
     - continuation
 - key: construction
+  stage: [construction]
   group: Later services
   label: Quantified construction support
   kind: technical
@@ -704,6 +741,7 @@ positions:
   - stage:
     - construction
 - key: handover
+  stage: [handover]
   group: Later services
   label: Selected witnessing/handover; execution by named contractors
   kind: technical
@@ -726,6 +764,7 @@ positions:
   - stage:
     - handover
 - key: defects
+  stage: [defects]
   group: Later services
   label: Defects/operational verification
   kind: technical
@@ -748,6 +787,7 @@ positions:
   - stage:
     - defects
 - key: studies
+  stage: [design]
   group: Power supply and distribution
   label: Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor
   kind: technical
@@ -760,6 +800,7 @@ positions:
       brief.
   value: O
 - key: declarations
+  stage: [tender, continuation]
   group: Existing services and project coordination
   label: Selected declarations/lodgement; verify jurisdiction/competence
   kind: technical

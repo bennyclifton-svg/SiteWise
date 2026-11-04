@@ -33,6 +33,9 @@ func TestHarvestProjectDetailCandidates(t *testing.T) {
 		{"The site is located within the Inner West local government area.", "proj.lga", []string{"Inner West"}, nil},
 		{"The Contractor must pay all authority fees including Inner West Council NBN Co", "proj.lga", []string{"Inner West"}, nil},
 		{"The site is in the City of Parramatta.", "proj.lga", []string{"City of Parramatta"}, nil},
+		// Walsh fee proposal, 2026-10-27: the planning instrument is not the area.
+		{"City of Sydney LEP/DCP apply; heritage streetscape.", "proj.lga", []string{"City of Sydney"}, []string{"City of Sydney LEP"}},
+		{"The City of Sydney DCP 2012 applies.", "proj.lga", []string{"City of Sydney"}, []string{"City of Sydney DCP"}},
 		{"The land is described as Lot 12 in DP 123456 and Lots 1 and 2 DP 5432.", "site.lot", []string{"Lot 12 DP 123456", "Lots 1 and 2 DP 5432"}, nil},
 		{"Lot 7 Section 3 DP1234 Smith Street", "site.lot", []string{"Lot 7 Section 3 DP1234"}, nil},
 		{"The site is zoned B4 Mixed Use under the Inner West LEP 2022.", "proj.zone", []string{"B4 Mixed Use"}, nil},

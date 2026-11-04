@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to extend School extension (Class 9b) at 1 Example St, Example NSW.
@@ -12,53 +10,49 @@ Example Client intends to extend School extension (Class 9b) at 1 Example St, Ex
 Conditions that apply: Neighbouring or street trees affected; Lawful offsite tree access confirmed; Works affect trees roots or canopy; Tree pruning removal or clearance proposed; Work to an existing building; Site stays occupied or operating during the works; Delivered in stages.
 Conditions that do not apply: Heritage item or conservation area.
 
-Information provided: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with explicit limits.
-
 ### 2. Scope of services
 
 Assess scheduled trees and advise within competence. Client/approval lead obtains permissions; competent tree-work contractor executes pruning/removal/protection. Advice grants no permission, survival or future-safety guarantee; escalate urgent concerns.
 Coordinate survey, landscape, civil, structure and utilities; retain their design duties. Revision-controlled PDF/CAD plans, calculations and editable registers state observed/measured/reported/inferred basis, access limits, recipients and reliance.
 Tree basis: Confirm survey/DWG revision, IDs/count/ownership, inaccessible trees, works/access/laydown footprints, services, current controls/editions and permission owner.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Written instruction/agreed inputs to named output/response end. Price once across stages and positions; options need written activation. R1 Fee by stage: Price selected stages/services by quantity/basis, ex GST/GST/total; separate base/options/alternatives/dependencies, price once. State milestones/validity, acknowledge addenda and authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Inventory / condition |  | Included |  |
+|  | Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement basis, health/structure/retention, root/protection zones/calculation basis, access limits/further tests | Included |  |
+|  | No impact report | Included |  |
+|  | Onsite tree survey/condition assessment; method, date and uncertainty stated | Included |  |
+|  | Neighbour/street trees; ownership, referrals and access limits; inaccessible trees retained with confidence limits | Included |  |
+|  | Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3 plan separate; investigate before root attribution, structure/geotech diagnose | Included |  |
+| S2 Concept / impact |  | Included |  |
+|  | Retention and footprint/access/services alternatives | Included |  |
+|  | Impact report by design revision, per-tree/cumulative encroachment, pruning/removal reasons and protection | Included |  |
+|  | Application responses to named milestone | Included |  |
+|  | Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; civil/structure design, surveyor locations | Included |  |
+|  | Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor executes/disposes/reinstates | Included |  |
+| S3 Consent / protection |  | Included |  |
+|  | Conditions review and coordinated plan/method: fencing, ground protection, access/storage, excavation/services, monitoring/hold points, investigation dependencies and unclosed conditions | Included |  |
+| S4 Tender / contractor design | Not part of this appointment | Excluded | — |
+| S5 Construction / completion | Not part of this appointment | Excluded | — |
+| S6a Specialist investigation | Not part of this appointment | Excluded | — |
+| S6b Formal risk assessment | Not part of this appointment | Excluded | — |
+| S7a Advisory / remediation | Not part of this appointment | Excluded | — |
+| S7b Ongoing monitoring | Not part of this appointment | Excluded | — |
+| S7c Independent peer review | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Replacement planting / landscape design | Excluded |  |
+|  | Ecology, bushfire and heritage assessment | Excluded |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with explicit limits.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Tree evidence and impacts — Onsite tree survey/condition assessment; method, date and uncertainty stated | X |  |  |  |
-| Neighbour/street trees; ownership, referrals and access limits; inaccessible trees retained with confidence limits | X |  |  |  |
-| Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; civil/structure design, surveyor locations | X |  |  |  |
-| Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3 plan separate; investigate before root attribution, structure/geotech diagnose | X |  |  |  |
-| Recommendations and protection — Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor executes/disposes/reinstates | X |  |  |  |
-| Tree works/protection supervision at scheduled visits/hold points |  | X |  |  |
-| Ongoing monitoring with finite duration, visits and close-out |  | X |  |  |
-| Specialist investigations and others — Replacement planting / landscape design. By landscape architect |  |  | X |  |
-| Ecology, bushfire and heritage assessment. By appointed ecology, bushfire and heritage specialists |  |  | X |  |
-| Internal/root/canopy/soil investigation; defined method and limits |  | X |  |  |
-| Formal risk assessment; defined method/limits, no freedom-from-failure warranty |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Written instruction/agreed inputs to named output/response end. Price once across stages and positions; options need written activation.  R1 Fee by stage: Price selected stages/services by quantity/basis, ex GST/GST/total; separate base/options/alternatives/dependencies, price once. State milestones/validity, acknowledge addenda and authorised signatory. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Inventory / condition — Included | Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement basis, health/structure/retention, root/protection zones/calculation basis, access limits/further tests. No impact report |  |  |  |
-| S2 Concept / impact — Included | Retention and footprint/access/services alternatives; impact report by design revision, per-tree/cumulative encroachment, pruning/removal reasons and protection; application responses to named milestone |  |  |  |
-| S3 Consent / protection — Included | Conditions review and coordinated plan/method: fencing, ground protection, access/storage, excavation/services, monitoring/hold points, investigation dependencies and unclosed conditions |  |  |  |
-| S4 Tender / contractor design — Option | Protection specs, hold points/responsibilities and counted RFIs; D&C design intent versus contractor methods/detailed advice. Post-contract/novation priced separately |  |  |  |
-| S5 Construction / completion — Option | Scheduled protection-installation/excavation/pruning/root-zone visits; observations/departures, latent conditions and qualified completion statement/unresolved items. No continuous supervision or unseen-work certification |  |  |  |
-| S6a Specialist investigation — Option | Question, trees/samples, aerial/internal/root/soil method, specialists/equipment, access/permits, locating/reinstatement; written authority before intrusive work |  |  |  |
-| S6b Formal risk assessment — Option | Formal risk question/method, trees/targets, access/testing limits, evidence cutoff/action priorities. Visual condition inspection does not buy formal risk |  |  |  |
-| S7a Advisory / remediation — Option | Feasibility/condition/remediation decision, cutoff/reliance, confidence/options/actions; preserve evidence before root attribution; structural/geotechnical specialists diagnose |  |  |  |
-| S7b Ongoing monitoring — Option | Repeat-inspection duration/visits/triggers, responsible party and report/closure criteria; no indefinite obligation |  |  |  |
-| S7c Independent peer review — Option | Independent review of named report/question, cutoff/reliance, method/response round; advisory does not appoint peer review |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Tree works/protection supervision at scheduled visits/hold points |  |  |  |
-| Service option | Internal/root/canopy/soil investigation |  |  |  |
-| Service option | Formal risk assessment |  |  |  |
-| Service option | Ongoing monitoring with finite duration, visits and close-out |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -99,6 +93,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Input/access providers/dates, stage resources and field/draft/review/final milestones; authority dependencies/hold-point notice. Survey reconciliation, calculation/risk/test methods/limits, urgent escalation and condition closure. |
 | R8 Insurance and compliance | Current PI Client-selected $5m; PL Client-selected $20m; workers cover and required duration. Declare activity/height exclusions and renewals; match offered consulting/investigation; agreement/precedence acceptance or numbered departures. |
 | R9 Reimbursables | Travel/access/permits, survey/locating, testing/lab/equipment, traffic controls, tree contractors/reinstatement and documents: quantity, included/allowance/unit basis, payer/GST/markup/prior approval; no R1 duplication. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

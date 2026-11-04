@@ -111,11 +111,16 @@ stage_intro: Base stages only, from written instruction/input-access milestone t
 boundary:
 - start: g1_plan
   end: g3_report
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: g1_plan
   name: G1 Brief / plan
-  deliverable: Review design and prior tests for relevance; agree location/method/depth/refusal/lab schedule, groundwater,
-    clearance, safe fieldwork, access and handback; reconcile counts/levels. Deliver plan, inputs and issues register.
+  lines:
+  - {key: review_design_prior, text: "Review design and prior tests for relevance"}
+  - {key: agree_location_method, text: "agree location/method/depth/refusal/lab schedule, groundwater, clearance, safe fieldwork, access and handback"}
+  - {key: reconcile_counts_levels, text: "reconcile counts/levels"}
+  - {key: deliver_plan_inputs, text: "Deliver plan, inputs and issues register."}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -125,9 +130,11 @@ stages:
   shown_when: Appointed brief and report
 - key: g2_field
   name: G2 Field / laboratory
-  deliverable: Scheduled locating/clearance, drilling/coring/pits, sampling and tests; competent supervision. Record
-    locations/datum/precision, logs/photos, groundwater and incomplete/refusal points; traceable lab records and scheduled
-    site handback.
+  lines:
+  - {key: scheduled_locating_clearance, text: "Scheduled locating/clearance, drilling/coring/pits, sampling and tests"}
+  - {key: competent_supervision, text: "competent supervision"}
+  - {key: record_locations_datum, text: "Record locations/datum/precision, logs/photos, groundwater and incomplete/refusal points"}
+  - {key: traceable_lab_records, text: "traceable lab records and scheduled site handback."}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -142,9 +149,10 @@ stages:
   shown_when: Client selects this package
 - key: g3_report
   name: G3 Interpretation / report
-  deliverable: Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater,
-    aggressivity, pavement and classification parameters; location plan and designer parameter schedule. Identify pending
-    tests and further evidence.
+  lines:
+  - {key: factual_results_ground, text: "Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater, aggressivity, pavement and classification parameters"}
+  - {key: location_plan_designer, text: "location plan and designer parameter schedule"}
+  - {key: identify_pending_tests, text: "Identify pending tests and further evidence."}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -157,8 +165,11 @@ stages:
   shown_when: Appointed brief and report
 - key: g4_planning
   name: G4 Concept / planning
-  deliverable: Compare selected ground/foundation options and risk; nominated planning report and responses. Interim
-    report has stated limits; approval not guaranteed.
+  lines:
+  - {key: compare_selected_ground, text: "Compare selected ground/foundation options and risk"}
+  - {key: nominated_planning_report, text: "nominated planning report and responses"}
+  - {key: interim_report_has, text: "Interim report has stated limits"}
+  - {key: approval_not_guaranteed, text: "approval not guaranteed."}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -172,8 +183,12 @@ stages:
   shown_when: Client selects this package
 - key: g5_design
   name: G5 Design / tender support
-  deliverable: Review conditions and changed footprint/loads against coverage; supplementary work separately priced.
-    Review parameter use; tender inputs, hold points and scheduled queries. Review is not design authorship
+  lines:
+  - {key: review_conditions_changed, text: "Review conditions and changed footprint/loads against coverage"}
+  - {key: supplementary_work_separately, text: "supplementary work separately priced"}
+  - {key: review_parameter_use, text: "Review parameter use"}
+  - {key: tender_inputs_hold, text: "tender inputs, hold points and scheduled queries"}
+  - {key: review_is_not, text: "Review is not design authorship"}
   fee_basis: option
   provenance:
   - kind: seed
@@ -182,9 +197,11 @@ stages:
   shown_when: Optional later appointment
 - key: g6_construction
   name: G6 Construction / completion
-  deliverable: Scheduled founding/pile/excavation inspections, earthworks tests and monitoring reviews; changed-condition
-    advice, test/issues register and scoped completion statement. Record missed/inaccessible work; agree instruments
-    handover/decommissioning
+  lines:
+  - {key: scheduled_founding_pile, text: "Scheduled founding/pile/excavation inspections, earthworks tests and monitoring reviews"}
+  - {key: changed_condition_advice, text: "changed-condition advice, test/issues register and scoped completion statement"}
+  - {key: record_missed_inaccessible, text: "Record missed/inaccessible work"}
+  - {key: agree_instruments_handover, text: "agree instruments handover/decommissioning"}
   fee_basis: option
   provenance:
   - kind: evidence
@@ -198,8 +215,9 @@ stages:
   shown_when: Optional later appointment
 - key: g7_transfer
   name: G7 Contractor advice / transfer
-  deliverable: Define contractor design review, further investigation, client, reliance and endpoint. Separate appointment
-    and fee for novation/transfer
+  lines:
+  - {key: define_contractor_design, text: "Define contractor design review, further investigation, client, reliance and endpoint"}
+  - {key: separate_appointment_fee, text: "Separate appointment and fee for novation/transfer"}
   fee_basis: option
   provenance:
   - kind: seed
@@ -299,6 +317,7 @@ allowances:
     - g2_field
 positions:
 - key: plan
+  stage: [g1_plan]
   group: Investigation and access
   label: Investigation plan and issues register reconciled to allowances
   kind: technical
@@ -309,6 +328,7 @@ positions:
   - kind: seed
     ref: geotechnical#44,47
 - key: foundation
+  stage: [g3_report]
   group: Ground design parameters
   label: Foundation/bearing/settlement advice; structural engineer designs
   kind: technical
@@ -325,6 +345,7 @@ positions:
     ref: geotechnical#44,47,48
   if_unknown: ask
 - key: civil_parameters
+  stage: [g3_report]
   group: Ground design parameters
   label: Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance
   kind: technical
@@ -341,6 +362,7 @@ positions:
     ref: geotechnical#45
   if_unknown: ask
 - key: monitoring
+  stage: [g2_field, g3_report]
   group: Ground design parameters
   label: Beyond-spot groundwater monitoring / hydrogeology / dewatering; define objective, duration and specialist
   kind: technical
@@ -351,6 +373,7 @@ positions:
   - kind: seed
     ref: geotechnical#45
 - key: asset_exposure
+  stage: [g2_field, g3_report]
   group: Investigation and access
   label: Buried tank/OSD/services/asset exposure; no integrity certification; civil capacity/structural adequacy
   kind: technical
@@ -365,6 +388,7 @@ positions:
     ref: geotechnical#15,16,17,18,19,20
   if_unknown: ask
 - key: clearance
+  stage: [g2_field, g1_plan]
   group: Investigation and access
   label: Locating/clearance before intrusive work; name isolation/potholing party
   kind: technical
@@ -381,6 +405,7 @@ positions:
     ref: geotechnical#47
   if_unknown: ask
 - key: access
+  stage: [g2_field, g1_plan]
   group: Investigation and access
   label: Occupied access, tenant liaison and permits
   kind: technical
@@ -392,6 +417,7 @@ positions:
     ref: geotechnical#47
   responsible: client access lead (name in R4)
 - key: defects
+  stage: [g3_report]
   group: Specialist assessment
   label: Defect/distress diagnosis; expert evidence separate, structural engineer designs remedy
   kind: technical
@@ -400,6 +426,7 @@ positions:
   - kind: seed
     ref: geotechnical#48,49
 - key: environment
+  stage: [g3_report]
   group: Specialist assessment
   label: Contamination, waste classification, remediation/validation and independent audit
   kind: technical
@@ -411,6 +438,7 @@ positions:
     ref: geotechnical#50
   responsible: separately appointed environmental consultant (name in R4)
 - key: ass
+  stage: [g3_report]
   group: Specialist assessment
   label: Acid sulfate soil assessment; define desktop/intrusive/management package from evidence
   kind: technical
@@ -427,6 +455,7 @@ positions:
     ref: geotechnical#50
   if_unknown: ask
 - key: handback
+  stage: [g2_field, g1_plan]
   group: Investigation and access
   label: Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners
   kind: technical
@@ -444,6 +473,7 @@ positions:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
   if_unknown: ask
 - key: construction
+  stage: [g6_construction]
   group: Construction and transfer
   label: G6 inspections/tests/scoped completion; contractor books, named others supervise/design temporary works
   kind: technical
@@ -463,6 +493,7 @@ positions:
     why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the purchased
       stage.
 - key: transfer
+  stage: [g7_transfer]
   group: Construction and transfer
   label: G7 novation/transfer; separate appointment and fee, never inferred from route
   kind: technical

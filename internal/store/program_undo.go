@@ -85,8 +85,8 @@ func (s *Store) flipProgram(ctx context.Context, org, project, actor string, ver
 	if w.stageChange {
 		bump = 1
 	}
-	if err := tx.QueryRow(ctx, `UPDATE programs SET version=version+1,stage_revision=stage_revision+$3,start_date=NULLIF($4,'')::date,start_origin=NULLIF($5,''),updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid RETURNING version,stage_revision`,
-		org, p.ID, bump, string(w.prog.StartDate), string(w.prog.StartOrigin)).Scan(&w.prog.Version, &w.prog.StageRevision); err != nil {
+	if err := tx.QueryRow(ctx, `UPDATE programs SET version=version+1,stage_revision=stage_revision+$3,start_date=NULLIF($4,'')::date,start_origin=NULLIF($5,''),working_week=$6,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid RETURNING version,stage_revision`,
+		org, p.ID, bump, string(w.prog.StartDate), string(w.prog.StartOrigin), w.prog.WorkingWeek).Scan(&w.prog.Version, &w.prog.StageRevision); err != nil {
 		return ProgramResult{}, err
 	}
 	if err := tx.Commit(ctx); err != nil {
@@ -195,6 +195,12 @@ func (w *programWork) restore(entries []programInverse, undo bool) (programChang
 			if !w.restoreReading(e, from, to, &c) {
 				return c, changed
 			}
+		case "working_week":
+			var want, next int
+			if json.Unmarshal(from, &want) != nil || json.Unmarshal(to, &next) != nil || w.prog.WorkingWeek != want {
+				return c, changed
+			}
+			w.prog.WorkingWeek = next
 		case "program":
 			var want, next startImage
 			if json.Unmarshal(from, &want) != nil || json.Unmarshal(to, &next) != nil || programStart(w.prog) != want {

@@ -1,4 +1,6 @@
+import { PageActions, PagePrimaryAction } from "./PageActions";
 import { startRowDrag } from "./table/RowHandle";
+import { IconBin, IconCalendar, IconFitHeight, IconFitScreen, IconFitSelection, IconLinks, IconRedo, IconSequence, IconUndo } from "./icons";
 // The Program view (plan docs/plans/2026-10-18-program.md section 9):
 // toolbar, the completion header and a split pane with
 // the grid on the left and the chart on the right sharing one vertical
@@ -28,7 +30,6 @@ import {
   outlineRows,
   ROW_H,
   rowWindow,
-  shownFinish,
   stagesWithChildren,
   xOf,
   type Row,
@@ -42,7 +43,7 @@ import { Bars } from "./program/chart/Bars";
 import { Links, lagText } from "./program/chart/Links";
 import { Overlay, type OverlayHandle } from "./program/chart/Overlay";
 import { useDrag } from "./program/chart/useDrag";
-import { EvidenceNotice, HoldPointsPanel, ReadingsPanel, ReviewBanner, ReviewPanel } from "./program/Panels";
+import { EvidenceNotice, HoldPointsPanel, ReadingsPanel, ReviewPanel, UpdateProgramButton } from "./program/Panels";
 import { groupReadings, importable, orphanEvidence, proposedText, reviewWords } from "./program/readings";
 import type { RowNote } from "./program/grid/Grid";
 import type { Times } from "./program/types";
@@ -158,7 +159,7 @@ interface CommitOpts {
   refused?: (message: string) => void;
 }
 
-export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSignedOut, onProfileChanged }: Props) {
+export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSignedOut }: Props) {
   const [view, setView] = useState<ProgramView | null | undefined>(undefined);
   const [error, setError] = useState("");
   const [toast, setToast] = useState<Toast | null>(null);
@@ -166,6 +167,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   const [expanded, setExpanded] = useState<Set<string>>(() => readExpanded(projectId));
   const [sel, setSel] = useState<Selection>(emptySelection);
   const [ppd, setPpd] = useState(PX_DEFAULT);
+  const [, requestFit] = useState(0);
   const [rowH, setRowH] = useState(ROW_H);
   const [tooMany, setTooMany] = useState(false);
   const [showLinks, setShowLinks] = useState(true);
@@ -174,13 +176,13 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   const [win, setWin] = useState<Win>({ first: 0, last: 40, x0: 0, x1: 2048 });
   const [printing, setPrinting] = useState(false);
   const [printFirst, setPrintFirst] = useState(PRINT_ROWS);
-  const [checksOpen, setChecksOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [holdsOpen, setHoldsOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [changes, setChanges] = useState<{ list: ProgramChange[]; counts: Record<string, number> } | null>(null);
   const [readingsOpen, setReadingsOpen] = useState(true);
   const [dropping, setDropping] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
-  const [startInput, setStartInput] = useState("");
   const [editing, setEditing] = useState<Editing | null>(null);
   const [focus, setFocus] = useState<CellFocus | null>(null);
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -272,7 +274,6 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   useEffect(() => {
     if (pendingChanges <= 0) {
       setChanges(null);
-      setReviewOpen(false);
       return;
     }
     let stale = false;
@@ -551,6 +552,8 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
       const f = fitSpan(s, chartViewW);
       setPpd(f.pxPerDay);
       pendingScroll.current = { left: (f.viewStart - originAt(f.pxPerDay)) * f.pxPerDay };
+      // A repeated fit must apply its scroll even when the scale is unchanged.
+      requestFit(revision => revision + 1);
       return true;
     },
     [chartViewW, originAt],
@@ -692,17 +695,19 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     commit([{ op: "link_chain", ids }]);
   }, [view, sel, commit, note]);
 
-  const remove = useCallback(() => {
-    if (!view || !sel.ids.length) return;
+  const removeIds = useCallback((ids: readonly string[]) => {
+    if (!view || !ids.length) return;
     // The focused row may go: keep keyboard focus in the program so Undo still works.
     const inChart = !!(document.activeElement as HTMLElement | null)?.closest?.(".pg-chartcol");
     ((inChart ? scroller.current?.querySelector(".pg-chartcol") : gridcol.current) as HTMLElement | null)?.focus({ preventScroll: true });
-    const plan = deletePlan(sel.ids, view.activities, view.links);
+    const plan = deletePlan(ids, view.activities, view.links);
     if (plan.stages.length || plan.holds.length) {
       setReason("");
-      setDialog({ kind: "delete", ids: [...sel.ids], plan });
-    } else commit([{ op: "delete", ids: [...sel.ids] }], { note: deletedNote(plan) });
-  }, [view, sel, commit]);
+      setDialog({ kind: "delete", ids: [...ids], plan });
+    } else commit([{ op: "delete", ids: [...ids] }], { note: deletedNote(plan) });
+  }, [view, commit]);
+  const remove = useCallback(() => removeIds(sel.ids), [removeIds, sel]);
+  const removeRow = useCallback((id: string) => removeIds([id]), [removeIds]);
 
   const nudge = useCallback((days: number) => sel.ids.length && commit([{ op: "move", ids: [...sel.ids], days }]), [sel, commit]);
 
@@ -1051,7 +1056,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         <header className="program-head">
           <h1>Program</h1>
         </header>
-        {error && <Failure error={error} retry={load} />}
+      {error && <Failure error={error} retry={load} />}
         <div className="program-empty">
           <p>No program yet. SiteWise builds one from the Profile, the included work and the Procurement packages; nothing is guessed, and unknown durations stay unknown.</p>
           <button type="button" className="btn pg-build" disabled={busy} onClick={() => apply(() => programApi.prepare(projectId))}>
@@ -1064,12 +1069,6 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
 
   const m = model!;
   const d = docs!;
-  const finish = view.computed.finish;
-  const typical = shownFinish(m.cal, finish.typical, finish.typical_index);
-  const low = shownFinish(m.cal, finish.low, finish.low_index);
-  const high = shownFinish(m.cal, finish.high, finish.high_index);
-  // Evidence that lost its stage shows as its own notice with Dismiss (7.7).
-  const checks = (view.checks ?? []).filter((c) => c.code !== "evidence_without_stage");
   const orphaned = (view.checks ?? []).some((c) => c.code === "evidence_without_stage") ? d.orphans : [];
   const acceptCount = m.proposed + d.live.length;
   const labelOf = (id: string) => m.byId.get(id)?.label ?? "";
@@ -1092,8 +1091,6 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     );
   };
   const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer.types).includes("Files");
-  const q = view.question;
-  const askStart = !view.program.start_date;
   const anyOpen = rows.some((r) => !r.stage);
   const scaleProps = { cal: m.cal, v, lo, hi, scale, width: chartW, version: view.program.version };
   const zone = coarse ? ZONE_COARSE : ZONE_FINE;
@@ -1149,7 +1146,13 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
       </header>
 
       <div className="pg-toolbar" role="toolbar" aria-label="Program tools">
+        {/* Left: what changes the program. Right: how it is viewed (owner, 2026-11-02). */}
         <div className="pg-tools">
+          <button type="button" className="btn btn-small pg-icon" onClick={undo} aria-label="Undo" title="Undo (Ctrl+Z)"><IconUndo /></button>
+          <button type="button" className="btn btn-small pg-icon" onClick={redo} aria-label="Redo" title="Redo (Ctrl+Shift+Z)"><IconRedo /></button>
+          <span className="pg-sep" aria-hidden="true" />
+          <button type="button" className="btn btn-small pg-icon" disabled={sel.ids.length < 2} onClick={linkChain} aria-label="Link in sequence" title="Link selected rows in sequence (Ctrl+L)"><IconSequence /></button>
+          <span className="pg-sep" aria-hidden="true" />
           <label className="pg-start">
             <span>Start</span>
             <input
@@ -1166,36 +1169,9 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
               }}
             />
           </label>
-          <button type="button" className="btn btn-small" onClick={collapseAll} title="Ctrl+[">Collapse all</button>
-          <button type="button" className="btn btn-small" onClick={expandAll} title="Ctrl+]">Expand all</button>
+          <button type="button" className="btn btn-small pg-icon" aria-expanded={calendarOpen} onClick={() => setCalendarOpen(value => !value)} aria-label="Working calendar" title="Working calendar"><IconCalendar /></button>
         </div>
-        <div className="pg-tools">
-          <button type="button" className="btn btn-small" onClick={fitScreen} title="F">Fit to screen</button>
-          <button type="button" className="btn btn-small" onClick={fitSelection} title="Shift+F">Fit to selection</button>
-          <button type="button" className="btn btn-small" onClick={fitRows}>Fit height</button>
-          <button type="button" className="btn btn-small" aria-pressed={showLinks} onClick={() => setShowLinks((s) => !s)}>
-            Links {showLinks ? "on" : "off"}
-          </button>
-          <button type="button" className="btn btn-small pg-icon" aria-label="Zoom out" onClick={() => zoom(1 / 1.5)}>−</button>
-          <button type="button" className="btn btn-small pg-icon" aria-label="Zoom in" onClick={() => zoom(1.5)}>+</button>
-          <button type="button" className="btn btn-small" onClick={goToday}>Today</button>
-        </div>
-        <div className="pg-tools">
-          <button type="button" className="btn btn-small" onClick={undo} title="Ctrl+Z">Undo</button>
-          <button type="button" className="btn btn-small" onClick={redo} title="Ctrl+Shift+Z">Redo</button>
-          <button type="button" className="btn btn-small" disabled={sel.ids.length < 2} onClick={linkChain} title="Ctrl+L">Link in sequence</button>
-        </div>
-        <div className="pg-tools">
-          {acceptCount > 0 && (
-            <button type="button" className="btn btn-small pg-accept" disabled={busy} onClick={() => apply((cur) => programApi.acceptAll(projectId, cur!), { undoable: true })}>
-              Accept all ({acceptCount})
-            </button>
-          )}
-          {view.changes_pending > 0 && (
-            <button type="button" className="btn btn-small pg-accept" aria-expanded={reviewOpen} onClick={() => setReviewOpen((o) => !o)}>
-              Review changes ({view.changes_pending})
-            </button>
-          )}
+        <div className="pg-tools pg-tools-notices">
           {d.imports.map((imp) => (
             <button key={imp.id} type="button" className={`btn btn-small pg-import-text is-${imp.status}`} aria-expanded={readingsOpen} onClick={() => setReadingsOpen((o) => !o)}>
               {imp.text}
@@ -1206,9 +1182,6 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
               {d.proposalReadings} reading{d.proposalReadings === 1 ? "" : "s"} from awarded proposals
             </button>
           )}
-          <button type="button" className="btn btn-small" title="Read the dates of a PDF, DOCX or XLSX program, or drop one on the Program" onClick={() => fileInput.current?.click()}>
-            Import
-          </button>
           <input
             ref={fileInput}
             type="file"
@@ -1222,18 +1195,36 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
               importFiles(files);
             }}
           />
-          <a className="btn btn-small" href={programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed")} download>
-            Export
-          </a>
-          <button type="button" className="btn btn-small" onClick={() => window.print()}>Print</button>
+        </div>
+        <div className="pg-tools">
+          <button type="button" className="btn btn-small" onClick={goToday}>Today</button>
+          <span className="pg-sep" aria-hidden="true" />
+          <button type="button" className="btn btn-small pg-icon" aria-label="Zoom out" title="Zoom out" onClick={() => zoom(1 / 1.5)}>−</button>
+          <button type="button" className="btn btn-small pg-icon" aria-label="Zoom in" title="Zoom in" onClick={() => zoom(1.5)}>+</button>
+          <span className="pg-sep" aria-hidden="true" />
+          <button type="button" className="btn btn-small pg-icon" onClick={fitScreen} aria-label="Fit to screen" title="Fit to screen (F)"><IconFitScreen /></button>
+          <button type="button" className="btn btn-small pg-icon" onClick={fitSelection} aria-label="Fit to selection" title="Fit to selection (Shift+F)"><IconFitSelection /></button>
+          <button type="button" className="btn btn-small pg-icon" onClick={fitRows} aria-label="Fit height" title="Fit height"><IconFitHeight /></button>
+          <span className="pg-sep" aria-hidden="true" />
+          <button type="button" className="btn btn-small pg-icon" aria-pressed={showLinks} onClick={() => setShowLinks((s) => !s)} aria-label="Show links" title={showLinks ? "Links shown: click to hide" : "Links hidden: click to show"}><IconLinks /></button>
         </div>
       </div>
 
+      <PageActions surface="program">
+        <a href={programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed")} download>Export to Excel</a>
+        <a href={programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed").replace("format=xlsx", "format=csv")} download>Export CSV</a>
+        <button type="button" onClick={() => window.print()}>Print</button>
+        <button type="button" onClick={() => fileInput.current?.click()}>Import program file…</button>
+      </PageActions>
+      {calendarOpen && <ProgramCalendar week={view.program.working_week} busy={busy} onClose={() => setCalendarOpen(false)} onSave={week => commit([{ op: "set_working_week", working_week: week }], { note: "Calendar saved. Dates recalculated." })} />}
       {error && <Failure error={error} retry={load} />}
-      {view.changes_pending > 0 && !reviewOpen && <ReviewBanner words={reviewWords(changes?.counts, view.changes_pending)} onReview={() => setReviewOpen(true)} />}
+      <PagePrimaryAction surface="program">
+        <UpdateProgramButton pending={view.changes_pending} words={reviewWords(changes?.counts, view.changes_pending)} open={reviewOpen} onToggle={() => setReviewOpen((o) => !o)} />
+      </PagePrimaryAction>
       {reviewOpen && (
         <ReviewPanel
-          changes={changes?.list ?? null}
+          changes={view.changes_pending > 0 ? changes?.list ?? null : []}
+          words={reviewWords(changes?.counts, view.changes_pending)}
           busy={busy}
           onClose={() => setReviewOpen(false)}
           onAdoptAll={() => apply((cur) => programApi.adoptAll(projectId, cur!), { undoable: true, note: "Adopted every change that defaults to Adopt; edited rows wait for your choice." })}
@@ -1275,7 +1266,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
           }
         />
       )}
-      {d.holds.length > 0 && (
+      {holdsOpen && d.holds.length > 0 && (
         <HoldPointsPanel
           holds={d.holds}
           info={d.holdInfo}
@@ -1284,94 +1275,11 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         />
       )}
 
-      {(q || askStart) && (
-        <div className="pg-strip" role="region" aria-label="Question">
-          {q && (
-            <div className="pg-q">
-              <span className="pg-q-label">{q.label}</span>
-              {q.number ? (
-                <NumberAnswer disabled={busy} onSave={(n) => apply((cur) => programApi.answer(projectId, cur!, q.key, n), { undoable: true, then: onProfileChanged })} />
-              ) : (
-                q.options.map((label, i) => (
-                  <button
-                    key={label}
-                    type="button"
-                    className="btn btn-small"
-                    disabled={busy}
-                    // An answer's program changes are one undoable batch (plan 7.3); "Not sure" changes nothing.
-                    onClick={() => apply((cur) => programApi.answer(projectId, cur!, q.key, q.values[i] ?? "not_sure"), i < q.values.length ? { undoable: true, then: onProfileChanged } : {})}
-                  >
-                    {label}
-                  </button>
-                ))
-              )}
-              {q.narrows_by_days > 0 && <span className="pg-q-why">Narrows the finish by up to {q.narrows_by_days} working days</span>}
-            </div>
-          )}
-          {askStart && (
-            <div className="pg-q">
-              {view.start_suggestion ? (
-                <button type="button" className="btn btn-small" disabled={busy} onClick={() => apply((cur) => programApi.setStart(projectId, cur!, view.start_suggestion))}>
-                  Start on {fmtDate(view.start_suggestion)} (consent date)
-                </button>
-              ) : (
-                <span className="pg-q-label">No start date yet.</span>
-              )}
-              <label className="pg-start">
-                <span>Start date</span>
-                <input type="date" className="input" value={startInput} onChange={(e) => setStartInput(e.target.value)} />
-              </label>
-              <button
-                type="button"
-                className="btn btn-small"
-                disabled={busy || !/^\d{4}-\d{2}-\d{2}$/.test(startInput)}
-                onClick={() => apply((cur) => programApi.setStart(projectId, cur!, startInput))}
-              >
-                Set start
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="pg-summary">
-        <div className="pg-finish">
-          <span className="pg-k">Finish</span>
-          {typical ? (
-            <strong className="pg-v" data-testid="program-finish">{typical}</strong>
-          ) : (
-            <strong className="pg-v is-unknown" data-testid="program-finish">Not known yet</strong>
-          )}
-          {low && high && low !== high && (
-            <span className="pg-range" data-testid="program-range">
-              range {low} – {high}
-            </span>
-          )}
-        </div>
-        <div className="pg-status" data-testid="program-status">{view.computed.status.words}</div>
-        {view.skeleton.label && (
-          <div className="pg-skeleton">
-            <span className="pg-k">Stages</span>
-            <span data-testid="program-skeleton">{view.skeleton.reason || view.skeleton.label}</span>
-          </div>
-        )}
-        {m.cal.relative && <div className="pg-relative">No start date: dates show as weeks from the start.</div>}
-        {view.computed.cycle && <div className="pg-alert" role="alert">The links form a loop, so no dates can be worked out.</div>}
-        {checks.length > 0 && (
-          <div className="pg-checks">
-            <button type="button" className="pg-checks-toggle" aria-expanded={checksOpen} onClick={() => setChecksOpen((o) => !o)}>
-              {checks.length} check{checks.length === 1 ? "" : "s"}
-            </button>
-            {checksOpen && (
-              <ul>
-                {checks.map((c, i) => (
-                  <li key={`${c.code}-${i}`}>{c.message}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-      </div>
+      {view.computed.cycle && <div className="pg-alert" role="alert">The links form a loop, so no dates can be worked out.</div>}
+      {(acceptCount > 0 || d.holds.length > 0) && <div className="pg-secondary-actions">
+        {acceptCount > 0 && <button type="button" className="btn btn-small" disabled={busy} title="Confirm generated rows and apply eligible imported date and duration proposals. Undo is available." onClick={() => apply(cur => programApi.acceptAll(projectId, cur!), { undoable: true })}>Accept proposed values ({acceptCount})</button>}
+        {d.holds.length > 0 && <button type="button" className="btn btn-small" aria-expanded={holdsOpen} onClick={() => setHoldsOpen(value => !value)}>Hold-point releases ({d.holds.length})</button>}
+      </div>}
 
       {tooMany && <div className="pg-note" role="status">Too many rows to fit; try collapsing stages.</div>}
 
@@ -1383,8 +1291,8 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         style={{ ["--pg-grid-w" as string]: `${gw}px`, ["--pg-row-h" as string]: `${rowH}px` }}
       >
         <div className="pg-canvas" style={{ width: gw + chartW, height: SCALE_H + height }}>
-          <div className="pg-corner" aria-hidden="true">
-            <GridHeader narrow={narrow} />
+          <div className="pg-corner">
+            <GridHeader narrow={narrow} expanded={anyOpen} onToggle={anyOpen ? collapseAll : expandAll} selected={sel.ids.length} onDeleteSelected={remove} />
           </div>
           <div className="pg-scale">
             <TimescaleHeader {...scaleProps} />
@@ -1417,6 +1325,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
               onFocusCell={onFocusCell}
               onHandleDown={onHandleDown}
               onCatalogue={onCatalogue}
+              onDelete={removeRow}
               notes={d.notes}
             />
             <div ref={insert} className="pg-insert" hidden aria-hidden="true" />
@@ -1548,31 +1457,42 @@ function Failure({ error, retry }: { error: string; retry: () => void }) {
   );
 }
 
-function GridHeader({ narrow }: { narrow: boolean }) {
+function GridHeader({
+  narrow,
+  expanded,
+  onToggle,
+  selected = 0,
+  onDeleteSelected,
+}: {
+  narrow: boolean;
+  expanded?: boolean;
+  onToggle?: () => void;
+  selected?: number;
+  onDeleteSelected?: () => void;
+}) {
   return (
     <div className="pg-gridhead">
+      {onDeleteSelected && selected > 0 && (
+        <button
+          type="button"
+          className="pg-row-del pg-head-del"
+          aria-label={`Delete ${selected} selected row${selected === 1 ? "" : "s"}`}
+          title={`Delete ${selected} selected`}
+          onClick={onDeleteSelected}
+        >
+          <IconBin />
+        </button>
+      )}
       {(narrow ? (["Name"] as const) : GRID_COLUMNS).map((c) => (
         <span key={c} className={`pg-cell pg-h-${c === "#" ? "num" : c.toLowerCase()}`}>
-          {c}
+          {c === "Name" && onToggle && <button type="button" className="pg-master-toggle" aria-label={expanded ? "Collapse all" : "Expand all"} aria-expanded={expanded} onClick={onToggle}><svg viewBox="0 0 16 16" aria-hidden="true"><path d={expanded ? "M4 6l4 4 4-4" : "M6 4l4 4-4 4"} /></svg></button>}{c}
         </span>
       ))}
     </div>
   );
 }
 
-function NumberAnswer({ disabled, onSave }: { disabled: boolean; onSave: (v: string) => void }) {
-  const [n, setN] = useState("");
-  return (
-    <>
-      <input className="input pg-q-number" inputMode="decimal" aria-label="Answer" value={n} onChange={(e) => setN(e.target.value)} />
-      <button type="button" className="btn btn-small" disabled={disabled || !/^\d+(\.\d+)?$/.test(n.trim())} onClick={() => onSave(n.trim())}>
-        Save
-      </button>
-    </>
-  );
-}
 
-// Click a link line (plan 9.4): type, lag, unit, delete.
 function LinkPopover({
   x,
   y,
@@ -1714,4 +1634,20 @@ function PrintPages({
       ))}
     </div>
   );
+}
+
+function ProgramCalendar({ week, busy, onSave, onClose }: { week: number; busy: boolean; onSave: (week: number) => void; onClose: () => void }) {
+  const [draft, setDraft] = useState(week);
+  const [custom, setCustom] = useState(week !== 31 && week !== 63);
+  useEffect(() => setDraft(week), [week]);
+  return <section className="pg-calendar" aria-label="Program calendar">
+    <label>Working week <select className="input" aria-label="Working week" value={custom ? "custom" : String(draft)} onChange={event => {
+      setCustom(event.target.value === "custom");
+      if (event.target.value !== "custom") setDraft(Number(event.target.value));
+    }}><option value="31">Monday to Friday</option><option value="63">Monday to Saturday</option><option value="custom">Custom working days</option></select></label>
+    {custom && <fieldset><legend>Working days</legend>{["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day, index) => <label key={day}><input type="checkbox" checked={!!(draft & (1 << index))} onChange={() => setDraft(value => value ^ (1 << index))} />{day}</label>)}</fieldset>}
+    <p>Changes recalculate program dates. Existing holiday and day overrides are kept.</p>
+    <button type="button" className="btn btn-small" disabled={busy || draft === 0 || draft === week} onClick={() => onSave(draft)}>Save calendar</button>
+    <button type="button" className="btn btn-small" onClick={onClose}>Close</button>
+  </section>;
 }

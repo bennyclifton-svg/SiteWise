@@ -57,15 +57,14 @@ description: Industrial project documents specialist and battery hazard question
   detailed investigations remain separately priced.
 expect:
   fire-engineering:
-    stages_include:
-    - s1_strategy
-    stages_option:
-    - s8_specialist
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_strategy]
     positions:
-      specialist: O
-      hazards: O
-      fer: O
-      witnessing: O
-      peer: O
+      specialist: X
+      hazards: X
+      fer: X
+      witnessing: X
+      peer: X
     blocking_only: true
     blocking: []
+    stages_absent: [s8_specialist]

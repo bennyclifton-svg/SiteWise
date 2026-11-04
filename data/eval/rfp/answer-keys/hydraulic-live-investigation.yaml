@@ -69,14 +69,11 @@ description: Occupied apartment investigation distinguishes observed/tested/assu
 snapshot: false
 expect:
   hydraulic-services:
-    stages_include:
-    - investigation
-    stages_option:
-    - design
-    - construction
-    - advisory
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [investigation]
     positions:
       existing: I
-      domestic: O
-      witness: O
-      advice: O
+      domestic: X
+      witness: X
+      advice: X
+    stages_absent: [design, construction, advisory]

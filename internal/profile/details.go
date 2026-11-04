@@ -46,8 +46,9 @@ var (
 	// Ryde Section 7.11 Contributions Plan", "City of Ryde Duty planner".
 	lgaStop = map[string]bool{"Section": true, "Duty": true, "Development": true, "Contributions": true, "Local": true,
 		"Environmental": true, "Planning": true, "Plan": true, "Policy": true, "LEP": true, "DCP": true, "General": true}
-	lgaGeneric  = map[string]bool{"The": true, "Local": true, "Relevant": true, "Each": true, "Any": true, "This": true, "That": true, "Council": true, "Planning": true}
-	lgaTrailing = map[string]bool{"City": true, "Municipal": true, "Shire": true, "Regional": true, "Rural": true, "Town": true, "Council": true}
+	lgaGeneric    = map[string]bool{"The": true, "Local": true, "Relevant": true, "Each": true, "Any": true, "This": true, "That": true, "Council": true, "Planning": true}
+	lgaInstrument = map[string]bool{"LEP": true, "DCP": true, "SEPP": true}
+	lgaTrailing   = map[string]bool{"City": true, "Municipal": true, "Shire": true, "Regional": true, "Rural": true, "Town": true, "Council": true}
 
 	zoneCode = `(?:R[1-5]|B[1-8]|E[1-5]|MU1|IN[1-4]|SP[1-3]|RE[12]|RU[1-6]|SU[1-2]|W[1-4]|C[1-4])`
 	zoneRe   = regexp.MustCompile(`\b(` + zoneCode + `)\b((?:\s+(?:[A-Z][a-z]+|and|&)){0,3})`)
@@ -95,6 +96,12 @@ func detailCandidates(key, text string) []Candidate {
 		return clauseCandidates(text, ownerSupplyRe)
 	case "proj.exclusions_stated":
 		return clauseCandidates(text, exclusionRe)
+	case "proj.target_da_lodgement", "proj.target_construction_start":
+		return targetDateCandidates(text)
+	case "proj.max_construction_months", "proj.preliminary_construction_months":
+		return monthCountCandidates(text)
+	case "proj.preliminary_estimate":
+		return moneyRangeCandidates(text)
 	}
 	return nil
 }
@@ -323,6 +330,18 @@ func lgaCandidates(text string) []Candidate {
 				continue
 			}
 			if len(words) > 1 && lgaTrailing[words[len(words)-1]] && !strings.Contains(name, " of ") {
+				name = strings.Join(words[:len(words)-1], " ")
+				continue
+			}
+			// "City of Sydney LEP/DCP": the planning instrument is not the area.
+			if len(words) > 1 && lgaInstrument[strings.ToUpper(words[len(words)-1])] {
+				last := words[len(words)-1]
+				if strings.HasSuffix(strings.TrimSpace(text[start:end]), last) {
+					end = start + strings.LastIndex(text[start:end], last)
+					for end > start && text[end-1] == ' ' {
+						end--
+					}
+				}
 				name = strings.Join(words[:len(words)-1], " ")
 				continue
 			}

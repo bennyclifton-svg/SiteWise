@@ -42,11 +42,28 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 	for _, id := range ids {
 		t.Run(id, func(t *testing.T) {
 			old, d, sk := baseline[id], discipline(t, id), skeleton(t)
+			// A stage summary and a service's home stage only place scope on
+			// the page, like a group; the scope itself must not change.
+			// Lines split a deliverable at its semicolons and sentences; read
+			// both as one list so a split loses no words.
+			placed := append([]knowledge.RFPStage(nil), d.Stages...)
+			for i := range placed {
+				placed[i].Lines = nil
+			}
+			oldStages := append([]knowledge.RFPStage(nil), old.Stages...)
+			if d.ScopeByStage {
+				for i := range placed {
+					placed[i].Deliverable = strings.ReplaceAll(placed[i].Deliverable, ". ", "; ")
+				}
+				for i := range oldStages {
+					oldStages[i].Deliverable = strings.ReplaceAll(oldStages[i].Deliverable, ". ", "; ")
+				}
+			}
 			ledger = append(ledger, "## "+d.Title, "", "| Original item | Destination |", "| --- | --- |")
 			for _, pair := range []struct {
 				name          string
 				before, after any
-			}{{"role", old.Role, d.Role}, {"scope schedule", old.ScopeSchedule, d.ScopeSchedule}, {"stages", old.Stages, d.Stages}, {"elements", old.Elements, d.Elements}} {
+			}{{"role", old.Role, d.Role}, {"scope schedule", old.ScopeSchedule, d.ScopeSchedule}, {"stages", oldStages, placed}, {"elements", old.Elements, d.Elements}} {
 				if normalize(pair.before) != normalize(pair.after) {
 					t.Errorf("%s definitions changed or lost", pair.name)
 				}
@@ -59,7 +76,7 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 				if q.Group == "" {
 					t.Errorf("ungrouped scope %s", q.Key)
 				}
-				q.Group = p.Group
+				q.Group, q.Stage = p.Group, p.Stage
 				if normalize(p) != normalize(q) {
 					t.Errorf("scope %s content/rules changed", p.Key)
 				}
@@ -144,7 +161,7 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 				}
 			}
 			for _, s := range sections {
-				if s.ID == "role" || s.ID == "evaluation" {
+				if s.ID == "evaluation" {
 					t.Errorf("old section %s", s.ID)
 				}
 				for _, b := range s.Blocks {
@@ -153,8 +170,8 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 					}
 				}
 			}
-			if sections[0].ID != "issue_dates" {
-				t.Fatal("dates not first")
+			if sections[0].ID != "project" || sections[len(sections)-2].ID != "issue_dates" {
+				t.Fatal("project not first or dates not last")
 			}
 			_, issue := controlKeys(c, "issue")
 			if !reflect.DeepEqual(issue, []string{"field:issued", "field:closes"}) {
@@ -168,10 +185,23 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 						t.Fatal(err)
 					}
 					rr := Resolve(d, sk, drivers, settings)
-					if rr.Position(p.Key).Value != value {
+					want := value
+					if d.ScopeByStage {
+						// By stage a service is only in or out, and follows
+						// its stage when the stage is left out.
+						if value == "O" || value == Ask {
+							want = "I"
+						}
+						for _, st := range rr.Stages {
+							if st.Key == rr.Position(p.Key).Stage && st.State == Exclude {
+								want = "X"
+							}
+						}
+					}
+					if rr.Position(p.Key).Value != want {
 						t.Errorf("%s override %s lost", key, value)
 					}
-					if value == Ask && !rr.HasCheck("scope:"+p.Key) {
+					if value == Ask && !d.ScopeByStage && !rr.HasCheck("scope:"+p.Key) {
 						t.Errorf("unknown %s does not block issue", key)
 					}
 				}
@@ -187,7 +217,7 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 }
 
 func TestCivilElementUnknownAndOptionalFeeRows(t *testing.T) {
-	d, sk := discipline(t, "civil"), skeleton(t)
+	d, sk := ruled(t, "civil"), skeleton(t)
 	drivers := facts(t, "class=5", "work_type=new", "pathway=da", "procurement=traditional")
 	key := d.Elements[0].Key
 	settings := set("element:"+key, `"ask"`)

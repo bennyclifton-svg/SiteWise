@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 YMCA NSW intends to extend Accommodation lodges (Class 3) and Conference hall (Class 9b) at Springwood Rd, Yarramundi NSW (Hawkesbury).
@@ -14,87 +12,85 @@ YMCA NSW intends to extend Accommodation lodges (Class 3) and Conference hall (C
 Conditions that apply: Flood-affected site; Work to an existing building; Site stays occupied or operating during the works; Delivered in stages; Several buildings or a campus; Parts with different NCC classes; Drinking water catchment (neutral or beneficial effect); Works in a public road or intersection.
 Conditions not yet known: Contaminated or potentially contaminated land; Acid sulfate soils mapped; Groundwater above the base of excavation; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Existing on-site detention to keep or modify; On-site detention required by council; Council requires stormwater quality modelling.
 
-Information provided: 30 current documents in the project register, listed in the issue record
-
 ### 2. Scope of services
 
 Civil engineer for work outside building footprints: earthworks, roads and pavements, levels, stormwater and water quality. The hydraulic engineer designs roof drainage, downpipes and pumped systems; utility designers do water, sewer, power and communications; you combine their layouts with yours. The traffic engineer sets parking numbers, design vehicles and intersection layout; you design to them.
 After novation you are engaged by the head contractor. Price the stages before and after novation separately.
 Design vehicle: 14.5 m rigid bus
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Each design stage is issued as one draft and one final. Design stages are priced by element so firms can be compared line by line. R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Meetings are inside the stage prices, not a separate line. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| Schematic design for planning approval |  | Included |  |
+|  | Review of information | Included |  |
+|  | Site visit | Included |  |
+|  | Survey and services gap analysis (BYDA, existing utilities plan) | Included |  |
+|  | Review of 4 architect layouts | Included |  |
+|  | 2 civil options, then one agreed concept | Included |  |
+|  | Pre-DA meeting | Included |  |
+|  | DA drawings and civil report | Included |  |
+|  | Stormwater drainage model | Included |  |
+|  | Combined utility plan | Included |  |
+|  | A Earthworks and sediment control | Included |  |
+|  | B Roads pavements and levels | Included |  |
+|  | C Stormwater | Included |  |
+|  | D Public road works | Included |  |
+|  | Combined utility plan from others' layouts | Included |  |
+|  | Discharge point, downstream capacity, easements and approvals confirmed at schematic design | Included |  |
+|  | Stormwater drainage model (DRAINS or equal) | Included |  |
+|  | Hydraulic-to-civil connections: location, levels and who designs each side | Included |  |
+|  | Water quality modelling (MUSIC) and treatment design | Included |  |
+|  | Neutral or beneficial effect assessment (drinking water catchment) | Included |  |
+|  | Feasibility of keeping or modifying the existing on-site detention | Included |  |
+|  | Replacement on-site detention design, pending the feasibility assessment | Included |  |
+|  | On-site detention design | Included |  |
+|  | Investigation brief for retained drainage and services (CCTV, survey, potholing) and how findings change the design | Included |  |
+|  | Flood: floor levels and flood report for the application | Included |  |
+|  | Flood evacuation plan | Included |  |
+|  | Coordinated 3D civil model (surface and earthworks) | Included |  |
+|  | Design criteria document | Included |  |
+|  | Water management strategy (supply, reuse, effluent) | Included |  |
+|  | Civil safety in design report | Included |  |
+|  | Trunk drainage, external catchments, watercourse works | Included |  |
+| Design for the D&C tender | You hold the design to tender issue; the contractor holds it after award. | Included |  |
+|  | Design developed to the approved plans and consent conditions as far as the D&C tender needs | Included |  |
+|  | Performance specification | Included |  |
+|  | Schedule of the design you retain and the design the contractor completes | Included |  |
+|  | A Earthworks and sediment control | Included |  |
+|  | B Roads pavements and levels | Included |  |
+|  | C Stormwater | Included |  |
+|  | D Public road works | Included |  |
+|  | Geotechnical and environmental advice coordinated into earthworks reuse and disposal (balance depends on material suitability) | Included |  |
+|  | Detailed pavement design where the geotechnical report does not give it (name the designer in R4) | Included |  |
+|  | Structural design of retaining walls | Excluded |  |
+|  | Authority submission schedule: designer, review rounds, asset handover | Included |  |
+|  | 3D clash check of combined services | Included |  |
+|  | Civil design compliance declarations for the regulated designs | Included |  |
+|  | Shoring, rock anchors, slope stability | Included |  |
+|  | Authority asset approvals (specialist engineering assessment) | Excluded |  |
+|  | Road safety audit by an auditor independent of the design | Included |  |
+|  | Pre-tender estimate or bill of quantities | Excluded |  |
+| Final design after novation | Not part of this appointment | Excluded | — |
+| Construction phase | Not part of this appointment | Excluded | — |
+| As-built and completion |  | Included |  |
+|  | Review of the surveyor's works-as-executed survey | Included |  |
+|  | As-built drawings | Included |  |
+|  | Detention system certification | Included |  |
+|  | Maintenance information | Included |  |
+|  | Support for title, covenant or public-asset handover where it applies | Included |  |
+|  | Final certificate | Included |  |
+|  | Operation and maintenance manual for stormwater devices | Included |  |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Locating services; designing service relocations | Excluded |  |
+|  | Modification applications | Excluded |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Design basis and coordination — Combined utility plan from others' layouts | X |  |  |  |
-| Hydraulic-to-civil connections: location, levels and who designs each side | X |  |  |  |
-| Investigation brief for retained drainage and services (CCTV, survey, potholing) and how findings change the design | X |  |  |  |
-| Geotechnical and environmental advice coordinated into earthworks reuse and disposal (balance depends on material suitability) Basis: Included: coordination of geotechnical and environmental advice if contamination, acid sulfate soils or groundwater are found. | X |  |  |  |
-| 3D clash check of combined services |  | X |  |  |
-| Coordinated 3D civil model (surface and earthworks) | X |  |  |  |
-| Design criteria document | X |  |  |  |
-| Civil safety in design report | X |  |  |  |
-| Stormwater and water management — Discharge point, downstream capacity, easements and approvals confirmed at schematic design | X |  |  |  |
-| Stormwater drainage model (DRAINS or equal) | X |  |  |  |
-| Water quality modelling (MUSIC) and treatment design | X |  |  |  |
-| Neutral or beneficial effect assessment (drinking water catchment) | X |  |  |  |
-| Feasibility of keeping or modifying the existing on-site detention Basis: Included: assess whether existing detention can be kept, using the listed records and agreed investigations; report capacity, access and approval constraints. | X |  |  |  |
-| Replacement on-site detention design, pending the feasibility assessment Basis: Price replacement design as an option pending the feasibility assessment. |  | X |  |  |
-| On-site detention design Basis: Price as an option: needed if council requires on-site detention. |  | X |  |  |
-| Water management strategy (supply, reuse, effluent) |  | X |  |  |
-| Trunk drainage, external catchments, watercourse works |  | X |  |  |
-| Operation and maintenance manual for stormwater devices |  | X |  |  |
-| Flood, roads and structures — Flood: floor levels and flood report for the application | X |  |  |  |
-| Flood evacuation plan |  | X |  |  |
-| Detailed pavement design where the geotechnical report does not give it (name the designer in R4) |  | X |  |  |
-| Structural design of retaining walls. By structural engineer, not yet engaged |  |  | X |  |
-| Shoring, rock anchors, slope stability Basis: Price as an option: needed only for deep excavation or unstable slopes. |  | X |  |  |
-| Road safety audit by an auditor independent of the design |  | X |  |  |
-| Approvals and additional services — Authority submission schedule: designer, review rounds, asset handover | X |  |  |  |
-| Civil design compliance declarations for the regulated designs | X |  |  |  |
-| Audit of the contractor's quality system |  | X |  |  |
-| Locating services; designing service relocations. By services locator and utility designers, not yet engaged |  |  | X |  |
-| Authority asset approvals (specialist engineering assessment). By structural engineer, not yet engaged |  |  | X |  |
-| Pre-tender estimate or bill of quantities. By quantity surveyor, not yet engaged |  |  | X |  |
-| Modification applications. By town planner, not yet engaged |  |  | X |  |
-| Priced work elements — A Earthworks and sediment control. Bulk earthworks, cut and fill volumes; erosion and sediment control; building pads | X |  |  |  |
-| B Roads pavements and levels. Internal road and car park geometry; finished levels; pavement profiles from the geotechnical report; signage and line marking; turning paths; retaining wall geometry and levels outside buildings; accessible path grades | X |  |  |  |
-| C Stormwater. Drainage outside building footprints; overland flow; detention and water quality where section 2 includes them | X |  |  |  |
-| D Public road works. Intersection or driveway design to Austroads and the traffic engineer's advice; submission for council or TfNSW approval | X |  |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Each design stage is issued as one draft and one final. Design stages are priced by element so firms can be compared line by line. Elements priced in the design stages: R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Meetings are inside the stage prices, not a separate line. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| Schematic design for planning approval — Included | Review of information; site visit; survey and services gap analysis (BYDA, existing utilities plan); review of 4 architect layouts; 2 civil options, then one agreed concept; pre-DA meeting; DA drawings and civil report; stormwater drainage model; combined utility plan | By element below |  |  |
-| A — Included | Earthworks and sediment control |  |  |  |
-| B — Included | Roads pavements and levels |  |  |  |
-| C — Included | Stormwater |  |  |  |
-| D — Included | Public road works |  |  |  |
-| Design for the D&C tender — Included | Design developed to the approved plans and consent conditions as far as the D&C tender needs; performance specification; schedule of the design you retain and the design the contractor completes. You hold the design to tender issue; the contractor holds it after award. | By element below |  |  |
-| A — Included | Earthworks and sediment control |  |  |  |
-| B — Included | Roads pavements and levels |  |  |  |
-| C — Included | Stormwater |  |  |  |
-| D — Included | Public road works |  |  |  |
-| Final design after novation — Option | Construction set and construction certificate issue for the contractor after novation. The contractor holds the design after novation. |  |  |  |
-| Construction phase — Option | 6 inspections at hold points (subgrade, pipes, pavement); RFIs up to 10 hours; input to 2 construction certificate(s) and 1 occupation certificate; certificate to the certifier based on the inspections made |  |  |  |
-| As-built and completion — Option | Review of the surveyor's works-as-executed survey; as-built drawings; detention system certification; maintenance information; support for title, covenant or public-asset handover where it applies; final certificate |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Replacement on-site detention design, pending the feasibility assessment |  |  |  |
-| Service option | On-site detention design |  |  |  |
-| Service option | Flood evacuation plan |  |  |  |
-| Service option | Detailed pavement design where the geotechnical report does not give it (name the designer in R4) |  |  |  |
-| Service option | 3D clash check of combined services |  |  |  |
-| Service option | Water management strategy (supply, reuse, effluent) |  |  |  |
-| Service option | Audit of the contractor's quality system |  |  |  |
-| Service option | Shoring, rock anchors, slope stability |  |  |  |
-| Service option | Trunk drainage, external catchments, watercourse works |  |  |  |
-| Service option | Road safety audit by an auditor independent of the design |  |  |  |
-| Service option | Operation and maintenance manual for stormwater devices |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -140,6 +136,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. |
 | R8 Insurance and compliance | PI $10 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest. |
 | R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

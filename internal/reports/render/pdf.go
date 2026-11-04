@@ -210,7 +210,7 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 				pad := 10.0
 				if document {
 					widths, pad = columnWidths(*table, width), 4
-					if table.Columns[0] == "Scope of services" || table.Columns[0] == "Stage / position" {
+					if table.Columns[0] == "Scope of services" || table.Columns[0] == "Stage / position" || (table.Columns[0] == "Stage" && len(table.Columns) > 1 && table.Columns[1] == "Scope") {
 						pad = 2
 					}
 				}
@@ -358,10 +358,14 @@ func columnWidths(t reports.Table, width float64) []float64 {
 	if len(t.Columns) == 5 && t.Columns[0] == "Scope of services" {
 		return []float64{width * .84, width * .04, width * .04, width * .04, width * .04}
 	}
-	// The consultant stage/fee schedule needs writable fee columns. Text
+	// The consultant stage/fee schedule needs a writable fee column. Text
 	// length alone would squeeze an empty pricing column to a few letters.
-	if len(t.Columns) == 5 && t.Columns[0] == "Stage / position" && t.Columns[1] == "Deliverable at sign-off" {
-		return []float64{width * .18, width * .51, width * .13, width * .09, width * .09}
+	if len(t.Columns) == 3 && t.Columns[0] == "Stage / position" && t.Columns[1] == "Deliverable at sign-off" {
+		return []float64{width * .3, width * .54, width * .16}
+	}
+	// Scope by stage: stage, scope line, Included or Excluded, fee.
+	if len(t.Columns) == 4 && t.Columns[0] == "Stage" && t.Columns[1] == "Scope" {
+		return []float64{width * .22, width * .52, width * .12, width * .14}
 	}
 	weights := make([]float64, len(t.Columns))
 	total := 0.0

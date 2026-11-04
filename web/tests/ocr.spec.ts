@@ -21,7 +21,7 @@ test("OCR stages stay clear in the register and on mobile", async ({ page }) => 
     await page.reload();
     const row = page.locator("tbody.reg-doc");
     await expect(row.locator(".ocr-summary")).toHaveText(title);
-    await row.getByRole("button", { name: /^Open document:/ }).click();
+    await row.locator("td.reg-no").dblclick();
   await page.getByRole("button", { name: "Filing details", exact: true }).click();
     await expect(page.locator(".document-workspace").getByRole("status", { name: "Text recovery" })).toBeVisible();
     await expect(page.locator('.document-workspace [aria-current="step"]')).toHaveCount(1);
@@ -40,7 +40,7 @@ test("OCR stages stay clear in the register and on mobile", async ({ page }) => 
   await expect(page.locator(".ocr-summary")).toHaveText("OCR complete · check fields");
   status = "not_filed"; reason = "ocr_failed";
   await page.reload();
-  await page.getByRole("button", { name: /^Open document:/ }).click();
+  await page.locator("tbody.reg-doc td.reg-no").dblclick();
   await page.getByRole("button", { name: "Filing details", exact: true }).click();
   await expect(page.getByRole("button", { name: "Retry OCR" })).toBeVisible();
   await expect(page.getByText(/OCR could not finish/)).toBeVisible();

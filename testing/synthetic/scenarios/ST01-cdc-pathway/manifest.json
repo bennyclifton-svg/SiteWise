@@ -1,0 +1,768 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST01-cdc-pathway",
+  "type_id": "T01",
+  "base": "ST01-base",
+  "triggers": [
+    "cdc-pathway"
+  ],
+  "project": {
+    "name": "Nguyen house, 27 Corella Rise",
+    "address": "27 Corella Rise, Denistone NSW 2114",
+    "lga": "Ryde",
+    "summary": "The base Nguyen house, but the design complies with the Housing Code, so it is approved by a complying development certificate from a registered certifier instead of a DA. Everything else is unchanged."
+  },
+  "invented": {
+    "lots": [],
+    "abns": [],
+    "firms": [],
+    "emails": []
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Owner brief - 27 Corella Rise.md",
+      "title": "Owner's brief: new house at 27 Corella Rise",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-03",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Date, Client, Site; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "A new two-storey detached family house"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "A new two-storey detached family house"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "New build on a vacant lot"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Complying development certificate under the Housing Code"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Architect-led traditional lump-sum tender to three or four residential builders"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "We want a high-quality, architect-designed home with durable, high-end finishes"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The lot is vacant and clear"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "We are the sole owners and the only decision makers"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "Two storeys"
+        },
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area about 650 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Target gross floor area about 300 m2"
+        },
+        {
+          "key": "hdr.scale.bedrooms",
+          "says": "4 bedrooms"
+        },
+        {
+          "key": "hdr.scale.bathrooms",
+          "says": "3 bathrooms plus a powder room"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage (2 spaces) under the main roof"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 27 Corella Rise, Denistone NSW 2114"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "All-electric home: induction cooktop and heat-pump hot water"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "HIA NSW Lump Sum Contract with the builder"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget: $1,450,000 excluding GST"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Dan and Mai Nguyen"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 27 Corella Rise, Denistone NSW 2114"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement; slab on ground at natural level"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No sustainability rating target beyond BASIX"
+        },
+        {
+          "key": "flag.staged",
+          "says": "Built in a single stage"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "One dwelling only; no secondary dwelling"
+        },
+        {
+          "key": "flag.country",
+          "says": "We do not need any Connecting with Country input for this lot"
+        }
+      ],
+      "traps": [],
+      "content": "The owners' brief to the architect. Sections: About us, The site, The house (rooms, garage, two storeys), Quality and budget, How we want to build (architect-led design, a complying development certificate under the Housing Code, select tender, HIA lump sum), Services (all-electric, rainwater tank, ducted air-conditioning). Written in plain first-person prose by the owners."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 14 DP 1302865.md",
+      "title": "Planning certificate under section 10.7",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-10",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-01187 | | Issue date | 10/02/2026 | | Applicant | Dan Nguyen |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "City of Ryde"
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 14 DP 1302865"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R2 Low Density Residential under Ryde Local Environmental Plan 2014"
+        },
+        {
+          "key": "proj.address",
+          "says": "27 Corella Rise, Denistone NSW 2114"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not in a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        },
+        {
+          "key": "det.state",
+          "says": "Denistone NSW 2114"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-land-eligible",
+          "what": "Item 4 says complying development under the Housing Code may be carried out on the land.",
+          "expect": "hdr.cond.planning comes from the documents that state the chosen pathway (brief, design statement), not from land eligibility; in the base that is da"
+        }
+      ],
+      "content": "A council s10.7(2) and (5) planning certificate, numbered items 1 to 20 in the usual order: zoning, LEP and DCP, complying development (may be carried out), heritage, bush fire, flood, acid sulfate soils, contamination, coastal, road widening (none). Fixed council wording; identity sits in a table, not label lines."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 27 Corella Rise.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Calder & Moss Surveyors Pty Ltd",
+      "date": "2026-02-24",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: CM-26-0412, Date: 24 February 2026, Prepared by",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 650.2 m2"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "No structures on site; the lot is vacant"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "No Sydney Water assets are within the property"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "The lot drains to the Sydney Water sewer main in the street; junction shown at the front boundary"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "Water main in Corella Rise; Sydney Water connection available"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Full-width street frontage of 16.5 m with unrestricted vehicle access"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "No existing stormwater detention or drainage structures on the lot"
+        }
+      ],
+      "traps": [
+        {
+          "id": "sewer-main-in-street",
+          "what": "Says 'connect to the sewer main in the street', which matches the authority_asset trigger (DOMAIN.md §10 trap 8).",
+          "expect": "flag.authority_asset stays no: the main is in the street, not in the lot, and the report says no Sydney Water assets are within the property"
+        },
+        {
+          "id": "trees-present-not-affected",
+          "what": "Lists a large blue gum near the rear boundary and a jacaranda on No. 25 next to the northern boundary.",
+          "expect": "d03 alone does not set either arborist flag: presence is not an impact"
+        }
+      ],
+      "content": "Surveyor's report accompanying the detail and contour survey on AHD: control, boundary identification against the DP, easements (none), levels (gentle 0.9 m fall from street to rear: generally level), trees over 5 m with spreads, street features, services from Dial Before You Dig and Sydney Water records."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Timing for the build.md",
+      "title": "RE: Timing for the build",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-03-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "We would really like the builder on site by early February next year, say 1 February 2027"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread between Dan Nguyen and the architect. Dan asks when building could start and states the target; the architect replies that it depends on how long the certifier takes to issue the CDC, and on the tender."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Architectural services - 27 Corella Rise.md",
+      "title": "Fee proposal: architectural services",
+      "author_role": "consultant.architect",
+      "firm": "Harbourline Architects Pty Ltd",
+      "date": "2026-03-09",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: HLA-FP-2611, Date: 9 March 2026, Client; one # heading 'Fee proposal: architectural services', identical to Title",
+      "carries": [
+        {
+          "key": "flag.architect_lodges",
+          "says": "The architect's services run from concept design through to lodgement of the application for a complying development certificate with the certifier on the NSW Planning Portal"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "This is a Class 1a house, so the Design and Building Practitioners Act registered-design obligations do not apply"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Stage 2: CDC documentation and lodgement with the certifier"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $80,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's fee proposal. Scope by stage, a fee table (concept $18,000; CDC documentation and lodgement $22,000; construction documentation $34,000; tender $6,000; total $80,000 ex GST), an optional contract administration stage at $15,000 ex GST, hourly rates for additional services, and exclusions (consultant fees, council fees)."
+    },
+    {
+      "id": "d06",
+      "filename": "Structural engineering fee proposal TCE-2603.md",
+      "title": "Structural engineering fee proposal",
+      "author_role": "consultant.structural",
+      "firm": "Tallow Consulting Engineers Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote no: TCE-2603, Date: 12 March 2026",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "No transfer structures are expected for a two-storey timber-framed house"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $8,000 + GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's quote for an AS 2870 slab, framing review and design certificate: concept and CDC advice $1,500; detailed design and construction documentation $6,500; design certificate for the certifier included; site inspections at $350 per visit. Dropped on the structural procurement row."
+    },
+    {
+      "id": "d07",
+      "filename": "Brennan Civil - stormwater fee - Corella Rise.md",
+      "title": "Fee proposal: civil and stormwater engineering",
+      "author_role": "consultant.civil",
+      "firm": "Brennan Civil Engineering Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | BCE-1407 | | Date | 13/03/2026 | | Attention | Priya Ramanathan |",
+      "carries": [
+        {
+          "key": "flag.osd_required",
+          "says": "The site is exempt from on-site detention under council's stormwater policy, so no OSD is required"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "No stormwater quality treatment or MUSIC modelling is required for a single dwelling"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "No NorBE assessment applies"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "No public road works are required"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing OSD system on the lot"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $9,900 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "osd-negated",
+          "what": "'No on-site detention required' matches the osd_required trigger and \\bosd\\b (DOMAIN.md §10 trap 10).",
+          "expect": "flag.osd_required is no"
+        }
+      ],
+      "content": "Civil engineer's fee proposal: stormwater concept plan for the CDC with gravity discharge to the kerb confirmed $3,300 inc GST; detailed stormwater, driveway long section and erosion and sediment control plan for construction $4,950 inc GST; works-as-executed review and stormwater certificate $1,650 inc GST. Every figure is GST-inclusive."
+    },
+    {
+      "id": "d08",
+      "filename": "Geotechnical investigation fee proposal - Ridgeback.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Ridgeback Geotechnics Pty Ltd",
+      "date": "2026-03-16",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal ref: RG-P-0388, Date: 16 March 2026",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $3,800 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical fee proposal for an AS 2870 site classification: investigation plan and fieldwork (three boreholes with DCP tests) $2,200; laboratory reactivity testing $600; report $1,000; total $3,800 ex GST; optional footing inspection at $440 per visit."
+    },
+    {
+      "id": "d09",
+      "filename": "BASIX and NatHERS fee proposal - Thermacheck.md",
+      "title": "Fee proposal: NatHERS assessment and BASIX certificate",
+      "author_role": "consultant.basix",
+      "firm": "Thermacheck Energy Assessments Pty Ltd",
+      "date": "2026-03-18",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote number: TEA-3391, Date: 18 March 2026",
+      "carries": [
+        {
+          "key": "det.climate_zone",
+          "says": "The site is in NCC climate zone 5"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $2,000 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Assessor's fee proposal: NatHERS thermal assessment with stamped plans and the BASIX certificate for the CDC $1,650; one revision for the construction design $350; total $2,000 ex GST."
+    },
+    {
+      "id": "d10",
+      "filename": "Geotechnical report RG-26-0388 - 27 Corella Rise.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Ridgeback Geotechnics Pty Ltd",
+      "date": "2026-04-21",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: RG-26-0388, Revision: 0, Report date: 21 April 2026",
+      "carries": [
+        {
+          "key": "det.site_class",
+          "says": "Site classification: Class M in accordance with AS 2870"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "No groundwater was encountered in the boreholes to 3.0 m"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "No excavation is proposed within the zone of influence of neighbouring footings"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement is proposed; the house is a slab on ground"
+        }
+      ],
+      "traps": [
+        {
+          "id": "excavate-to-depth",
+          "what": "Recommends: 'excavate to a depth of 300 mm to remove topsoil under the slab platform', which matches the basement trigger (DOMAIN.md §10 trap 9).",
+          "expect": "flag.basement stays no"
+        },
+        {
+          "id": "h2-timber",
+          "what": "Mentions 'H2 treated pine' for termite protection of framing next to the site classification.",
+          "expect": "det.site_class is M; H2 is a timber hazard class, not a site class (DOMAIN.md §10 trap 4)"
+        }
+      ],
+      "content": "Geotechnical report: fieldwork (three boreholes, DCP tests), subsurface profile (topsoil over stiff silty clay over shale), laboratory shrink-swell results, AS 2870 site classification Class M, footing and slab recommendations, earthworks and site drainage advice."
+    },
+    {
+      "id": "d11",
+      "filename": "Architectural design statement - 27 Corella Rise.md",
+      "title": "Architectural design statement",
+      "author_role": "consultant.architect",
+      "firm": "Harbourline Architects Pty Ltd",
+      "date": "2026-05-18",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Document number: HLA-DS-01, Revision: A, Date: 18 May 2026",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "Building classification: Class 1a dwelling with a Class 10a attached garage"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "Two storeys"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Gross floor area 298 m2"
+        },
+        {
+          "key": "hdr.scale.bedrooms",
+          "says": "Four bedrooms, the main with ensuite"
+        },
+        {
+          "key": "hdr.scale.bathrooms",
+          "says": "Three bathrooms (main, ensuite, upstairs family) and a ground-floor powder room"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "Climate zone 5"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The design complies with the Housing Code so the certifier can approve it in about 20 days"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "A standard suburban lot with no environmental sensitivities"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "No trees on or next to the site are affected by the works; a large blue gum near the rear boundary is retained outside the works"
+        },
+        {
+          "key": "flag.arborist_offsite_trees",
+          "says": "No neighbouring or street trees are affected by the works"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "As complying development, no clause 4.6 variation is sought or possible"
+        },
+        {
+          "key": "flag.panel",
+          "says": "As complying development, the application is not referred to the local planning panel"
+        },
+        {
+          "key": "flag.community",
+          "says": "No public exhibition or community consultation; the certifier gives the neighbour notice before work"
+        }
+      ],
+      "traps": [
+        {
+          "id": "garden-beds",
+          "what": "Describes 'raised garden beds along the side boundary' and 'a single-storey garage roof'.",
+          "expect": "hdr.scale.bedrooms stays 4 and hdr.scale.storeys stays 2 (DOMAIN.md §10 trap 13)"
+        },
+        {
+          "id": "no-demolition",
+          "what": "States 'No demolition is required'.",
+          "expect": "No site.demolition work item (DOMAIN.md §10 trap 1)"
+        }
+      ],
+      "content": "Architect's design statement for the application for a complying development certificate: site analysis, built form, room schedule, materials (brick veneer ground floor, lightweight cladding above, metal roof), BASIX approach, planning compliance, landscape and trees. The trees section must use the sentence 'No neighbouring or street trees are affected by the works.'"
+    },
+    {
+      "id": "d12",
+      "filename": "Site plan A-101 Rev A.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Harbourline Architects Pty Ltd",
+      "date": "2026-05-04",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: A, Title: Site plan, Date: 4 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 650.2 m2"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for setbacks, site area, landscaped area, driveway, rainwater tank location, tree to be retained."
+    },
+    {
+      "id": "d13",
+      "filename": "Site plan A-101 Rev B.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Harbourline Architects Pty Ltd",
+      "date": "2026-05-25",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: B, Title: Site plan, Date: 25 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 650.2 m2"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of the site plan: side setback amended and the rainwater tank moved; revision note says 'Amended for CDC lodgement'."
+    },
+    {
+      "id": "d15",
+      "filename": "Tax invoice RG-0418.md",
+      "title": "Tax invoice RG-0418",
+      "author_role": "consultant.geotechnical",
+      "firm": "Ridgeback Geotechnics Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice no: RG-0418, Date: 30 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $4,280.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $3,800.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $380.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "arithmetic",
+          "what": "The stated total $4,280.00 does not equal $3,800.00 + $380.00 = $4,180.00.",
+          "expect": "The ledger flags arithmetic"
+        }
+      ],
+      "content": "Geotechnical invoice for the investigation and report, 100% of the proposal. Totals line is wrong by $100."
+    },
+    {
+      "id": "d16",
+      "filename": "Tax invoice INV-2307 Harbourline.md",
+      "title": "Tax invoice INV-2307",
+      "author_role": "consultant.architect",
+      "firm": "Harbourline Architects Pty Ltd",
+      "date": "2026-05-29",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice number: INV-2307, Date: 29 May 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $19,800.00 incl GST"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$18,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$1,800.00"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's invoice for Stage 1 concept design, 100% complete."
+    },
+    {
+      "id": "d17",
+      "filename": "TCE invoice 5521.md",
+      "title": "Tax invoice 5521",
+      "author_role": "consultant.structural",
+      "firm": "Tallow Consulting Engineers Pty Ltd",
+      "date": "2026-06-05",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 5521 | | Date | 05/06/2026 | | ABN | 25 999 583 278 |",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $1,650.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$1,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$150.00"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's invoice for concept and CDC structural advice."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d01",
+      "change": "changed",
+      "why": "Brief states the CDC pathway instead of 'A development application will be lodged with council'"
+    },
+    {
+      "doc": "d03",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    },
+    {
+      "doc": "d04",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    },
+    {
+      "doc": "d05",
+      "change": "changed",
+      "why": "Architect's Stage 2 is CDC documentation and lodgement instead of DA; amounts unchanged"
+    },
+    {
+      "doc": "d06",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    },
+    {
+      "doc": "d08",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    },
+    {
+      "doc": "d09",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "Design statement carries the Housing Code compliance evidence instead of the side-setback negation"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    },
+    {
+      "doc": "d14",
+      "change": "removed",
+      "why": "No statement of environmental effects under a CDC"
+    },
+    {
+      "doc": "d17",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and construction certificate; amounts unchanged"
+    }
+  ]
+}

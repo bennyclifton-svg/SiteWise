@@ -188,6 +188,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"project_document_list":     {50_000, 150_000},
 		"field_correction":          {50_000, 150_000},
 		"project_invite_auth":       {100_000, 250_000},
+		"account_auth":              {500_000, 1_000_000},
 		"health_speed":              {25_000, 100_000},
 		"sse_reconnect":             {100_000, 250_000},
 		"project_profile_read":      {50_000, 150_000},

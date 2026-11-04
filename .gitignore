@@ -33,3 +33,10 @@ data/reference/classifications/*.pdf
 data/eval/invoice/private/
 # Real fee proposals and their recorded Jev answers.
 data/eval/proposal/private/
+
+# tsc -b emits stale .js beside the .ts sources; the .ts files are the source.
+web/tests/*.js
+web/vite.config.js
+web/vitest.config.js
+web/playwright.config.js
+web/tsconfig.tsbuildinfo

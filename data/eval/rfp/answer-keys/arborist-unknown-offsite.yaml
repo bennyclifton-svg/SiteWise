@@ -52,14 +52,10 @@ description: New residential development lacks offsite extent, tree-impact and p
   is not exclusion.
 expect:
   arborist:
-    stages_ask:
-    - s2_impact
-    - s3_protection
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      impacts: ask
-      offsite: ask
-      pruning: ask
-    blocking:
-    - fact:flag.arborist_tree_impacts
-    - fact:flag.arborist_offsite_trees
-    - fact:flag.arborist_pruning
+      impacts: I
+      offsite: I
+      pruning: I
+    blocking: ['fact:flag.arborist_tree_impacts', 'fact:flag.arborist_offsite_trees', 'fact:flag.arborist_pruning']
+    stages_include: [s2_impact, s3_protection]
