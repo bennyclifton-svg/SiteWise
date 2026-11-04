@@ -179,6 +179,27 @@ is embedded so the Sydney period is right on any host.
   confirmation teaches a wrong ABN (shown on the package; flags "ABN differs").
 - Odd date checks only "after today": no project start date exists.
 
+## Later fixes: synthetic corpus F5, F8, F13 (4 November 2026)
+
+Four rules, no new Jev call and no question change (`invoice-1` stands):
+
+- A Markdown table row `| Date | 05/05/2026 |` labels the invoice date.
+- F13: when the page prints no valid ABN and one value beside "ABN" fails
+  the checksum (not one printed for the client or customer), it is kept as
+  the issuer ABN, amber, and the ledger raises `abn_invalid`.
+- F5: when one ex-GST amount (subtotal / ex GST), one GST amount at 10 % of
+  it and one total are printed and the total is not their sum, all three are
+  kept as printed. The ex GST decision carries `question_version = printed`
+  so a recompute keeps it; the ledger raises `arithmetic`, not `gst_rate`.
+- F8: the supplier was never read because the supplier question has no
+  calibrated cut-off for 3 to 8 options and the options name only the
+  discipline, not the firm. The context now carries the firms whose
+  proposals are on each package (not unsuccessful, withdrawn or not a
+  proposal). An ABN on the page that matches one package's firm or supplier
+  ABN links it (green; amber when the page prints more than one ABN); else
+  the firm's name in the rows above the customer's details links it (amber).
+  A firm on two packages links neither.
+
 ## Open for the owner
 
 1. Review the answer key labels (`reviewed: false`) and the fit policy.
