@@ -37,9 +37,15 @@ var (
 	clientSuffixEnd = map[string]bool{"ltd": true, "inc": true, "co": true, "corp": true}
 	clientJoin      = map[string]bool{"and": true, "of": true, "the": true, "&": true}
 
-	lgaAreaRe   = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:\s+[A-Z][A-Za-z'’-]*){0,2})\s+(?i:local\s+government\s+area|LGA)\b`)
-	lgaCouncil  = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:\s+[A-Z][A-Za-z'’-]*){0,2})\s+Council\b`)
-	lgaCityOf   = regexp.MustCompile(`\b((?:City|Shire|Municipality|Town|Borough|Rural City|Regional Council) of\s+[A-Z][A-Za-z'’-]*(?:\s+[A-Z][A-Za-z'’-]*){0,2})`)
+	// A council name stays on one line: the next line of a signature block
+	// ("City of Ryde" over "Duty planner") is not part of it.
+	lgaAreaRe  = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:[ \t]+[A-Z][A-Za-z'’-]*){0,2})\s+(?i:local\s+government\s+area|LGA)\b`)
+	lgaCouncil = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:[ \t]+[A-Z][A-Za-z'’-]*){0,2})\s+Council\b`)
+	lgaCityOf  = regexp.MustCompile(`\b((?:City|Shire|Municipality|Town|Borough|Rural City|Regional Council) of[ \t]+[A-Z][A-Za-z'’-]*(?:[ \t]+[A-Z][A-Za-z'’-]*){0,2})`)
+	// lgaStop begin a plan title or a role after a council's name: "City of
+	// Ryde Section 7.11 Contributions Plan", "City of Ryde Duty planner".
+	lgaStop = map[string]bool{"Section": true, "Duty": true, "Development": true, "Contributions": true, "Local": true,
+		"Environmental": true, "Planning": true, "Plan": true, "Policy": true, "LEP": true, "DCP": true, "General": true}
 	lgaGeneric  = map[string]bool{"The": true, "Local": true, "Relevant": true, "Each": true, "Any": true, "This": true, "That": true, "Council": true, "Planning": true}
 	lgaTrailing = map[string]bool{"City": true, "Municipal": true, "Shire": true, "Regional": true, "Rural": true, "Town": true, "Council": true}
 
@@ -189,12 +195,18 @@ func addressCandidates(text string) []Candidate {
 		}
 		// Groups: 1 number, 2 street, 3 and 4 suburb words, 5 state, 6 postcode.
 		end := m[5]
-		if m[6] >= 0 && !notSuburb[group(3)] {
+		// A full stop after a written-out street type ends the sentence
+		// ("41 Tallowwood Avenue. We"); a word before a colon is the next
+		// line's label ("Date:"). Neither is a suburb.
+		street := strings.Fields(group(2))
+		_, abbreviated := streetTypeFull[street[len(street)-1]]
+		sentenceEnd := !abbreviated && end < len(titled) && titled[end] == '.'
+		if m[6] >= 0 && !notSuburb[group(3)] && !sentenceEnd && !labelAt(titled, m[7]) {
 			end = m[7]
 			// A second word is a suburb only after a word that starts two-word
 			// suburbs; otherwise it is the next sentence ("Petersham Principal").
 			if group(4) != "" {
-				if !suburbFirst[group(3)] {
+				if !suburbFirst[group(3)] || labelAt(titled, m[9]) {
 					spans = append(spans, span{m[0], end, writeOutStreetType(titled[m[0]:end], titled[m[4]:m[5]])})
 					continue
 				}
@@ -209,6 +221,13 @@ func addressCandidates(text string) []Candidate {
 		spans = append(spans, span{m[0], end, writeOutStreetType(titled[m[0]:end], titled[m[4]:m[5]])})
 	}
 	return collect(text, spans)
+}
+
+// labelAt reports whether the word ending at i is a label: a colon follows
+// it, past any Markdown bold.
+func labelAt(text string, i int) bool {
+	rest := strings.TrimLeft(text[i:], "*_")
+	return strings.HasPrefix(rest, ":")
 }
 
 // writeOutStreetType replaces the abbreviated street type at the end of the
@@ -320,8 +339,17 @@ func lgaCandidates(text string) []Candidate {
 		}
 	}
 	for _, m := range lgaCityOf.FindAllStringSubmatchIndex(text, -1) {
-		name := strings.TrimSuffix(text[m[2]:m[3]], " Council")
-		add(m[0], m[1], name)
+		end := m[3]
+		// The name ends before a stop word; "City of" and the first name
+		// word always stay.
+		for i, w := range wordRe.FindAllStringIndex(text[m[2]:m[3]], -1) {
+			if i > 2 && lgaStop[text[m[2]+w[0]:m[2]+w[1]]] {
+				end = strings.LastIndexFunc(text[:m[2]+w[0]], func(r rune) bool { return r != ' ' && r != '\t' }) + 1
+				break
+			}
+		}
+		name := strings.TrimSuffix(text[m[2]:end], " Council")
+		add(m[0], end, name)
 	}
 	return collect(text, spans)
 }

@@ -80,6 +80,7 @@ determinants:
   - 'rise in storeys'
   stated_in:
   - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  - {kind: report, discipline: consultant.building, label: Building defect or condition report}
   profile_group: classification
   status: draft
   sources:
@@ -94,6 +95,7 @@ determinants:
   - 'effective height'
   stated_in:
   - {kind: report, discipline: consultant.bca, label: BCA or NCC compliance report}
+  - {kind: report, discipline: consultant.building, label: Building defect or condition report}
   profile_group: classification
   systems: [fire-active, fire-passive, access-egress]
   status: draft

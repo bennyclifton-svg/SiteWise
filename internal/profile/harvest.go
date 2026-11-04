@@ -45,19 +45,26 @@ func (h Harvested) Has(key string) bool {
 }
 
 var (
-	lotAreaRe  = regexp.MustCompile(`(?i)\blot area\b`)
-	numberRe   = `(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)`
-	areaRe     = regexp.MustCompile(`(?i)` + numberRe + `\s*(m2\b|m²|sqm\b|sq\.?\s?m\b|square met(?:re|er)s\b)`)
-	metreRe    = regexp.MustCompile(`(?i)` + numberRe + `\s*m\b`)
-	monthsRe   = regexp.MustCompile(`(?i)(\d+)\s*\(?\w*\)?\s*months?`)
-	yearsRe    = regexp.MustCompile(`(?i)(\d+)\s*years?`)
-	storeyRe   = regexp.MustCompile(`(?i)\b(?:[a-z]+\s*\()?(\d+|single|double|two|three|four|five|six|seven|eight|nine|ten)\)?[ -]*stor(?:e)?y`)
-	consentRe  = regexp.MustCompile(`(?i)\b(?:DA|CDC|SSD)[- /]?\d[\w./-]*\d`)
-	dateRe     = regexp.MustCompile(`\b(\d{1,2})[./](\d{1,2})[./](\d{4})\b`)
-	longDateRe = regexp.MustCompile(`(?i)\b(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})\b`)
-	integerRe  = regexp.MustCompile(`\b(\d{1,4})\b`)
-	classRe    = regexp.MustCompile(`(?i)\bclass(?:ification)?\s*(1a|1b|10a|10b|10c|7a|7b|9a|9b|9c|[2-8])\b`)
-	basisRes   = []struct {
+	lotAreaRe = regexp.MustCompile(`(?i)\blot area\b`)
+	numberRe  = `(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)`
+	areaRe    = regexp.MustCompile(`(?i)` + numberRe + `\s*(m2\b|m²|sqm\b|sq\.?\s?m\b|square met(?:re|er)s\b)`)
+	metreRe   = regexp.MustCompile(`(?i)` + numberRe + `\s*m\b`)
+	monthsRe  = regexp.MustCompile(`(?i)(\d+)\s*\(?\w*\)?\s*months?`)
+	yearsRe   = regexp.MustCompile(`(?i)(\d+)\s*years?`)
+	storeyRe  = regexp.MustCompile(`(?i)\b(?:[a-z]+\s*\()?(\d+|single|double|two|three|four|five|six|seven|eight|nine|ten)\)?[ -]*stor(?:e)?y`)
+	consentRe = regexp.MustCompile(`(?i)\b(?:DA|CDC|SSD)[- /]?\d[\w./-]*\d`)
+	// riseRe and effectiveHeightRe take only the number the phrase itself
+	// states ("a rise in storeys of 6", "an effective height of 16.2 m"), so
+	// a defect report or building summary can state them without any other
+	// number in the passage becoming a candidate. A bound ("< 25 m", "less
+	// than 25 m in effective height") is not the building's value.
+	riseRe            = regexp.MustCompile(`(?i)\brise\s+in\s+storeys\s*(?:of|is|was|:|=)?[\s*]*(\d{1,2})\b`)
+	effectiveHeightRe = regexp.MustCompile(`(?i)\beffective\s+height\s*(?:of|is|was|:|=)?[\s*]*(?:approximately|approx\.|about)?\s*` + numberRe + `\s*m\b`)
+	dateRe            = regexp.MustCompile(`\b(\d{1,2})[./](\d{1,2})[./](\d{4})\b`)
+	longDateRe        = regexp.MustCompile(`(?i)\b(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})\b`)
+	integerRe         = regexp.MustCompile(`\b(\d{1,4})\b`)
+	classRe           = regexp.MustCompile(`(?i)\bclass(?:ification)?\s*(1a|1b|10a|10b|10c|7a|7b|9a|9b|9c|[2-8])\b`)
+	basisRes          = []struct {
 		re    *regexp.Regexp
 		basis string
 	}{
@@ -158,6 +165,10 @@ func candidatesFor(id, value, extraction, text string) []Candidate {
 		return verbatim(monthsRe, text, func(m []string) string { return m[1] })
 	case id == "design_life":
 		return verbatim(yearsRe, text, func(m []string) string { return m[1] })
+	case id == "rise_in_storeys":
+		return unitCandidates(riseRe, text, "", "")
+	case id == "effective_height":
+		return unitCandidates(effectiveHeightRe, text, "m", "")
 	case id == "storage_height":
 		return unitCandidates(metreRe, text, "m", "")
 	case value == "number" || value == "integer":
