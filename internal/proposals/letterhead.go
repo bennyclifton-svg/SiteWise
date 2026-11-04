@@ -53,13 +53,22 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 	if at < 0 || addressee(lines[at].Text) {
 		return nil
 	}
-	for j := max(0, at-3); j < at; j++ {
+	// A heading closes the block: a "Client:" line in the document header
+	// above the title is not part of the letterhead below it.
+	top := max(0, at-3)
+	for j := at - 1; j >= top; j-- {
+		if lines[j].Heading {
+			top = j
+			break
+		}
+	}
+	for j := top; j < at; j++ {
 		if addressee(lines[j].Text) {
 			return nil
 		}
 	}
 	name := ""
-	for j := at; j >= max(0, at-3) && name == ""; j-- {
+	for j := at; j >= top && name == ""; j-- {
 		t := stripEmphasis(lines[j].Text)
 		if j == at {
 			cut := strings.Index(strings.ToUpper(t), "ABN")
@@ -77,7 +86,7 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 		return nil
 	}
 	var addresses []string
-	for j := max(0, at-3); j <= min(len(lines)-1, at+3); j++ {
+	for j := top; j <= min(len(lines)-1, at+3); j++ {
 		t := stripEmphasis(lines[j].Text)
 		if j > at && (addressee(t) || isHeading(t) || strings.HasPrefix(t, "#")) {
 			break

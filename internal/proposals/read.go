@@ -424,13 +424,17 @@ func (d *Draft) settleTotal() {
 			return
 		}
 	}
+	// An inclusive total is the stated total only when the whole proposal is
+	// quoted inc GST; Finish takes the GST off. Beside ex-GST fees it is a
+	// copy with GST added.
+	incOK := d.by[FieldGSTBasis].Value == "inc"
 	var totals []Amount
 	var largest int64
 	for _, a := range d.ev.Amounts {
 		if a.PerHour || a.Kind != "" || a.Unit || a.GSTPart || a.IncTwin {
 			continue
 		}
-		if a.Total && a.GST != "inc" {
+		if a.Total && (a.GST != "inc" || incOK) {
 			totals = append(totals, a)
 		}
 		largest = max(largest, a.Cents)
@@ -907,8 +911,9 @@ func (d *Draft) Finish() Reading {
 			r.FirmFields[f] = v
 		}
 	}
+	// The stated total is stored ex GST, like every price.
 	if v := d.by[FieldStatedTotal].Value; v != "" {
-		if c, ok := d.centsOf(v); ok {
+		if c, ok := d.statedExGST(v, r.GSTBasis); ok {
 			r.StatedTotal = &c
 		}
 	}
@@ -1005,11 +1010,7 @@ func (d *Draft) Finish() Reading {
 		}
 	}
 	if r.StatedTotal != nil && baseKnown && len(d.items) > 0 {
-		total := *r.StatedTotal
-		if r.GSTBasis == "inc" {
-			total = exGST(total)
-		}
-		if gap := total - base; gap > 100 || gap < -100 {
+		if gap := *r.StatedTotal - base; gap > 100 || gap < -100 {
 			r.Flags = append(r.Flags, FlagTotalGap)
 		}
 	}
@@ -1110,6 +1111,22 @@ func (d *Draft) centsOf(v string) (int64, bool) {
 	}
 	c, err := strconv.ParseInt(strings.TrimPrefix(v, "cents:"), 10, 64)
 	return c, err == nil
+}
+
+// statedExGST reads a stated total decision as ex GST cents: an amount by
+// its own GST wording or the proposal's basis, a form cell by the basis.
+func (d *Draft) statedExGST(v, docBasis string) (int64, bool) {
+	for _, a := range d.ev.Amounts {
+		if a.ID == v && a.Kind == "" {
+			c, _, _ := d.amountExGST(a, docBasis)
+			return c, true
+		}
+	}
+	c, ok := d.centsOf(v)
+	if ok && docBasis == "inc" {
+		c = exGST(c)
+	}
+	return c, ok
 }
 
 // exGST removes 10 % GST from an inclusive amount, to the cent.
