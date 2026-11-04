@@ -20,7 +20,11 @@ type Config struct {
 	Env           string
 	MailFrom      string
 	SMTPAddr      string
-	PublicOrigin  string
+	// SMTPUser and SMTPPassword sign in to a mail provider such as Resend.
+	// Blank means an unauthenticated local relay.
+	SMTPUser     string
+	SMTPPassword string
+	PublicOrigin string
 }
 
 // Load reads required configuration. getenv is injected so tests can supply
@@ -67,6 +71,8 @@ func Load(getenv func(string) string) (Config, error) {
 		MailFrom:      strings.TrimSpace(getenv("SITEWISE_MAIL_FROM")),
 		SMTPAddr:      strings.TrimSpace(getenv("SITEWISE_SMTP_ADDR")),
 		PublicOrigin:  strings.TrimSpace(getenv("SITEWISE_PUBLIC_ORIGIN")),
+		SMTPUser:      strings.TrimSpace(getenv("SITEWISE_SMTP_USER")),
+		SMTPPassword:  getenv("SITEWISE_SMTP_PASSWORD"),
 	}
 	if env == "production" {
 		var missing []string

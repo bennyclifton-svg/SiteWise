@@ -104,11 +104,14 @@ moves: no database, no Supabase backup, no old files.
      runuser -u postgres -- pgbackrest --stanza=sitewise check
      runuser -u postgres -- pgbackrest --stanza=sitewise --type=full backup
      ```
-7. **Mail.** The app sends invites with SMTP and no AUTH to
-   `SITEWISE_SMTP_ADDR`. Run a local relay that holds the provider
-   credentials: a Postfix "null client" bound to `127.0.0.1:25`, relaying to
-   the provider on port 587 with SASL and TLS. Send a test message through it
-   before going further.
+7. **Mail.** The app sends password reset links. Point it straight at a
+   provider: `SITEWISE_SMTP_ADDR=smtp.resend.com:587`,
+   `SITEWISE_SMTP_USER=resend`, `SITEWISE_SMTP_PASSWORD=<API key>`, and a
+   `SITEWISE_MAIL_FROM` on a domain verified with the provider (SPF and DKIM
+   DNS records). The app signs in over STARTTLS. Test it: sign up, sign out,
+   use Forgot password, and confirm the mail arrives.
+   Existing users from the invite era sign in by password only after
+   `sitewise set-password -email <email>` (password on stdin).
 8. **Secrets.** `install -m 0600 /opt/sitewise/deploy/sitewise.env.example /etc/sitewise/sitewise.env`,
    then fill in the values. Session secret: `openssl rand -hex 32`. Never put
    a value in a shell history line: edit the file.
@@ -295,6 +298,6 @@ previous release reads.
 | Live latency gate on the VPS: `intake-bench -live -target <vps>` (copy the private corpus over temporarily and delete it after) | not run. The dev-host replay breaks the extraction, rules and list budgets (commit 5ac5e4d) |
 | Intake cut-offs fitted and baseline accepted by owner | not done: all thresholds unknown, so every Jev answer stays blank (5ac5e4d) |
 | Background Jev worker started by `serve` | not done, so health degrades after 15 min of filings |
-| Mail relay delivers an invite end to end | not done |
+| Mail provider delivers a password reset end to end | not done |
 | Off-site backup running, `last-success` fresh | not started |
 | Restore rehearsal on an isolated VPS (section 5) | not run; local rehearsal passed |

@@ -119,8 +119,9 @@ value is never overwritten.
 ## Operating Context
 
 A Go single binary serves the API, event stream (SSE) and embedded React SPA
-from one host with PostgreSQL 17 and content-addressed files. Access is
-invite-only per organisation; every project belongs to one org. Documents are
+from one host with PostgreSQL 17 and content-addressed files. Anyone can
+sign up with email and password; each account is its own org with one owner
+and many projects, and every project belongs to one org. No sharing yet. Documents are
 the working material: consultant drawings with title blocks, reports, specs,
 spreadsheets. Scanned PDFs without a text layer are stored but not filed.
 

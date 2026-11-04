@@ -114,6 +114,10 @@ export const api = {
   signOut: () => request<void>("DELETE", "/session"),
   checkSession: () => request<void>("GET", "/session"),
   signIn: (token: string) => request<void>("POST", "/session", { token }),
+  signInWithPassword: (email: string, password: string) => request<void>("POST", "/signin", { email, password }),
+  signUp: (email: string, password: string) => request<void>("POST", "/signup", { email, password }),
+  forgotPassword: (email: string) => request<void>("POST", "/password/forgot", { email }),
+  resetPassword: (token: string, password: string) => request<void>("POST", "/password/reset", { token, password }),
   projects: () => request<Project[]>("GET", "/projects"),
   createProject: (name: string) => request<{ id: string }>("POST", "/projects", { name }),
   /** Permanent. Removes the project, its rows and its files. */
