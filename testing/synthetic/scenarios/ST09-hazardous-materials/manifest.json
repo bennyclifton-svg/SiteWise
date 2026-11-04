@@ -100,7 +100,7 @@
         },
         {
           "key": "hdr.cond.procurement_route",
-          "says": "Under '## Scope of services': the consultant investigates and documents the works, which are then tendered to remedial builders for a lump sum contract that the consultant administers"
+          "says": "the consultant investigates and documents the works, which are then tendered to remedial builders for a lump sum contract that the consultant administers"
         },
         {
           "key": "fact.contract_basis",
@@ -573,7 +573,7 @@
       "carries": [
         {
           "key": "hdr.cond.procurement_route",
-          "says": "Under '## Contract and procurement': traditional procurement; the owners corporation's consultant has completed the design and the works are tendered to five remedial builders"
+          "says": "traditional procurement; the owners corporation's consultant has completed the design and the works are tendered to five remedial builders"
         },
         {
           "key": "fact.contract_form",

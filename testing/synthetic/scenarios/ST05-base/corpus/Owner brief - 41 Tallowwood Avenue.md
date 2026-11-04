@@ -11,20 +11,18 @@ The project comprises alterations and additions to our family house at 41 Tallow
 have lived here for nine years and want to stay in the street, so we would rather improve the house
 than move.
 
-The works are alterations and additions to an existing building (a single-storey brick dwelling).
-The house was built in 1958 and still has most of its original layout, with a skillion and a laundry
+The existing building is a single-storey brick house. It was built in 1958 and still has most of its original layout, with a skillion and a laundry
 lean-to added at the back in the 1980s.
 
 What we have in mind is a single-storey rear addition (new kitchen, living and dining) plus
-alterations to the existing house. The house stays single storey: a single-storey rear addition, with
-no change to the front of the house as seen from the street.
+alterations to the existing house. The house will stay single storey, with no change to the front of the house as seen from the street.
 
-We will move out of the house for the duration of the main works. The owners will vacate the house for the duration of the works.
+We will move out of the house for the whole of the works, so it will be empty from the day the builder starts until handover.
 We have family nearby and expect to rent for about six months, so the builder will have the whole
 house to work in.
 
 We are the sole owners and the only decision makers. Either of us can give instructions, and we will
-answer questions within a few days.
+reply to questions within a few days.
 
 ## What we want
 
@@ -50,8 +48,7 @@ Construction budget: $640,000 excluding GST.
 This is for the builder's contract only. Consultant fees, council fees, rent while we are out and
 furniture are budgeted separately.
 
-No basement or cellar. There are not multiple buildings: just the one house, with no granny flat or
-studio in the garden.
+No basement or cellar. We are not planning multiple buildings: just the one house.
 
 ## Contract and procurement
 

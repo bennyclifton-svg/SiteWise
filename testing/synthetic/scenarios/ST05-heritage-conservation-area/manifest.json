@@ -78,19 +78,19 @@
         },
         {
           "key": "det.existing_building",
-          "says": "The works are alterations and additions to an existing building (a single-storey brick dwelling)"
+          "says": "The existing building is a single-storey brick house"
         },
         {
           "key": "det.existing_building_year",
-          "says": "The house was built in 1958"
+          "says": "It was built in 1958"
         },
         {
           "key": "hdr.scale.storeys",
-          "says": "The house stays single storey: a single-storey rear addition"
+          "says": "The house will stay single storey"
         },
         {
           "key": "hdr.cond.operational_constraints",
-          "says": "We will move out of the house for the duration of the main works. The owners will vacate the house for the duration of the works."
+          "says": "We will move out of the house for the whole of the works, so it will be empty from the day the builder starts until handover."
         },
         {
           "key": "hdr.cond.stakeholder_complexity",
@@ -142,7 +142,7 @@
         },
         {
           "key": "flag.multi_building",
-          "says": "There are not multiple buildings: just the one house"
+          "says": "We are not planning multiple buildings: just the one house"
         },
         {
           "key": "flag.sustainability_target",
@@ -244,7 +244,7 @@
         },
         {
           "key": "hdr.cond.access_constraints",
-          "says": "Narrow 12.2 m frontage with street parking only, no rear lane, and side access to the rear yard along a 1.0 m path"
+          "says": "The lot has a narrow 12.2 m frontage with street parking only and no rear lane. Side access to the rear yard is along a 1.0 m path"
         },
         {
           "key": "flag.authority_asset",
@@ -449,7 +449,7 @@
         }
       ],
       "traps": [],
-      "content": "Hazardous materials surveyor's fee proposal: pre-demolition and refurbishment survey of every area affected by the works, including roof space, subfloor and eaves, with sampling $1,450; NATA-accredited laboratory analysis of up to six samples $480; register and report for the tender documents $370; total $2,300 ex GST. Option: clearance inspection and certificate after any removal $650 ex GST."
+      "content": "Hazardous materials surveyor's fee proposal: pre-demolition survey of every area affected by the works, including roof space, subfloor and eaves, with sampling $1,450; NATA-accredited laboratory analysis of up to six samples $480; register and report for the tender documents $370; total $2,300 ex GST. Option: clearance inspection and certificate after any removal $650 ex GST."
     },
     {
       "id": "d10",
@@ -629,7 +629,7 @@
           "expect": "flag.authority_asset stays no"
         }
       ],
-      "content": "Architect's design statement for the DA. Sections: '## Project description' (existing 140 m2, added 55 m2, proposed 195 m2; the single-storey negation sentence; Class 1a), '## Site description and context' (standard suburban lot; free-standing detached house with side setbacks on both boundaries; minimum side setback to the addition is 1.5 m), '## Design' (rear addition builds over the demolished skillion footprint; new paved terrace and rear deck to the garden; two internal walls removed on steel beams), '## Heritage' (neutral infill building within the HCA; the addition sits behind the existing ridge and is not visible from the street; the heritage officer's pre-DA advice that the Federation streetscape be kept intact; read with the heritage impact statement), '## Materials' (face brick to match, recessive dark roof sheeting), '## Wet areas' (flood test sentence), '## Trees' (the three tree sentences), '## Services' (the existing underground supply has the capacity for the new loads), '## Planning' (cl 4.6, delegation, notification). Climate zone 5 and BASIX approach."
+      "content": "Architect's design statement for the DA. Sections: '## Project description' (existing 140 m2, added 55 m2, proposed 195 m2; the single-storey negation sentence; Class 1a), '## Site description and context' (standard suburban lot; free-standing detached house with side setbacks on both boundaries; the addition is set 1.5 m from both side boundaries, inside the line of the existing eastern wall, so the 1.0 m eastern side path is kept), '## Design' (rear addition builds over the demolished skillion footprint; new paved terrace and rear deck to the garden; two internal walls removed on steel beams), '## Heritage' (neutral infill building within the HCA; the addition sits behind the existing ridge and is not visible from the street; the heritage officer's pre-DA advice that the Federation streetscape be kept intact; read with the heritage impact statement), '## Materials' (face brick to match, recessive dark roof sheeting), '## Wet areas' (flood test sentence), '## Trees' (the three tree sentences), '## Services' (the existing underground supply has the capacity for the new loads), '## Planning' (cl 4.6, delegation, notification). Climate zone 5 and BASIX approach."
     },
     {
       "id": "d14",
@@ -757,7 +757,7 @@
       "wave": 4,
       "drop": "invoices",
       "tier": "clean",
-      "title_block": "label lines: Tax invoice, Invoice number: KHA-INV-0412, Date: 30 April 2026, ABN",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: KHA-INV-0412, Date: 30 April 2026, ABN",
       "carries": [
         {
           "key": "invoice.total",
@@ -785,7 +785,7 @@
       "wave": 4,
       "drop": "invoices",
       "tier": "clean",
-      "title_block": "label lines: Tax invoice, Invoice no: CS-2291, Date: 24 April 2026, ABN",
+      "title_block": "label lines: Title: Tax invoice, Invoice no: CS-2291, Date: 24 April 2026, ABN",
       "carries": [
         {
           "key": "invoice.total",
