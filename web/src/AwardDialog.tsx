@@ -5,11 +5,12 @@ import { Pending } from "./Activity";
 // server previews. Nothing is written until the PM confirms, and every
 // figure, the running total included, is computed by the server. When the
 // server offers the letter's stages (they add to the confirmed fee), the PM
-// can write them as separate lines instead of the one total.
+// can write them as separate lines instead of the one total. A proposal
+// whose firm was not read asks for the firm first: the award appoints it.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ApiError } from "./api";
 import { fmt } from "./CostGrid";
-import { submissionApi, type Award, type AwardRequest, type PriceTable } from "./submissionApi";
+import { submissionApi, type Award, type AwardRequest, type Column, type FirmFields, type PriceTable } from "./submissionApi";
 
 const money = (m: string | null | undefined) => (m == null ? "—" : `$${fmt(m)}`);
 
@@ -17,8 +18,14 @@ interface Row { id: string; key: string; priceId: string; quoteId: string; appoi
 type Mode = "stages" | "total";
 interface Line { label: string; rows: string[] }
 
-export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded, onSignedOut }: {
-  projectId: string; table: PriceTable; submissionId: string; onClose: () => void; onAwarded: (t: PriceTable) => void; onSignedOut: () => void;
+// What the reading found about the firm, as a starting point the PM edits.
+const readFirm = (col: Column): FirmFields => {
+  const v = (f: string) => col.fields[`firm_${f}`]?.value ?? "";
+  return { name: v("name"), abn: v("abn"), address: v("address"), contact: v("contact"), email: v("email"), phone: v("phone") };
+};
+
+export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded, onTable, onSignedOut }: {
+  projectId: string; table: PriceTable; submissionId: string; onClose: () => void; onAwarded: (t: PriceTable) => void; onTable: (t: PriceTable) => void; onSignedOut: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const col = table.columns.find(c => c.submission.id === submissionId)!;
@@ -55,6 +62,8 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
   const [step, setStep] = useState<1 | 2>(1);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [firmFields, setFirmFields] = useState<FirmFields>(() => readFirm(col));
+  const needsFirm = !col.firm;
 
   useEffect(() => { const d = ref.current; if (d && !d.open) d.showModal(); return () => d?.close(); }, []);
 
@@ -70,14 +79,14 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
   useEffect(() => {
     let stopped = false;
     const req = request();
-    if (!req.lines.length || req.lines.some(l => !l.label)) { setPreview(null); return; }
+    if (needsFirm || !req.lines.length || req.lines.some(l => !l.label)) { setPreview(null); return; }
     const t = setTimeout(() => {
       submissionApi.previewAward(projectId, table.package_id, req).then(p => { if (!stopped) { setPreview(p); setError(""); } })
         .catch(e => { if (stopped) return; if (e instanceof ApiError && e.status === 401) onSignedOut(); else setError("These lines cannot be awarded as they are. Check each line has a name and priced items."); });
     }, 120);
     return () => { stopped = true; clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lines]);
+  }, [lines, needsFirm]);
 
   function switchMode(m: Mode) {
     if (m === mode) return;
@@ -103,6 +112,12 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
     kept.splice(Math.min(first, kept.length), 0, { label: combineName.trim(), rows: ids });
     setLines(kept); setPicked(new Set()); setCombineName("");
   }
+  async function saveFirm() {
+    setBusy(true); setError("");
+    try { onTable(await submissionApi.edit(projectId, submissionId, { firm: { ...firmFields, name: firmFields.name.trim() } })); }
+    catch (e) { if (e instanceof ApiError && e.status === 401) onSignedOut(); else setError("Could not save the firm. Check the name and ABN."); }
+    finally { setBusy(false); }
+  }
   function rename(i: number, label: string) { setLines(lines.map((l, n) => n === i ? { ...l, label } : l)); }
 
   async function confirm() {
@@ -118,7 +133,15 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
     <h2 id="award-title">Award {table.title} to {firm}</h2>
     {step === 2 && <p className="award-step">Confirm the cost plan lines</p>}
     {error && <p className="award-error" role="alert">{error}</p>}
-    {step === 1 ? <>
+    {needsFirm ? <form className="award-firm" onSubmit={e => { e.preventDefault(); void saveFirm(); }}>
+      <p>The firm was not read from this proposal. Name the appointed firm: the award appoints it, and its invoices are matched by ABN.</p>
+      <label>Firm name<input autoFocus required maxLength={200} value={firmFields.name} onChange={e => setFirmFields({ ...firmFields, name: e.target.value })} /></label>
+      <label>ABN <span className="award-muted">optional</span><input inputMode="numeric" maxLength={20} value={firmFields.abn} onChange={e => setFirmFields({ ...firmFields, abn: e.target.value })} /></label>
+      <div className="award-actions">
+        <button type="button" className="btn" disabled={busy} onClick={onClose}>Cancel</button>
+        <button className="btn btn-primary" disabled={busy || !firmFields.name.trim()}>{busy ? <Pending delayed>Saving…</Pending> : "Save firm and continue"}</button>
+      </div>
+    </form> : step === 1 ? <>
       {(appointment || stages.length > 0) && <fieldset className="award-mode" aria-label="Display in Cost Plan">
         <label><input type="radio" name="award-mode" checked={mode === "stages"} onChange={() => switchMode("stages")} /> By Stage</label>
         <label><input type="radio" name="award-mode" checked={mode === "total"} onChange={() => switchMode("total")} /> One total</label>

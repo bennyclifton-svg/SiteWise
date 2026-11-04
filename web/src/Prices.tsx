@@ -211,7 +211,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     {selected && <SubmissionPanel key={selected.submission.id} projectId={projectId} col={selected} busy={busy} error={error} onClose={() => setPanel("")}
       onReassign={destination => void reassign(selected.submission.id, destination)}
       onSave={edit => void run(() => submissionApi.edit(projectId, selected.submission.id, edit))} />}
-    {awardFor && table && <AwardDialog projectId={projectId} table={table} submissionId={awardFor} onClose={() => setAwardFor("")} onAwarded={t => { setTable(t); setAwardFor(""); }} onSignedOut={onSignedOut} />}
+    {awardFor && table && <AwardDialog projectId={projectId} table={table} submissionId={awardFor} onClose={() => setAwardFor("")} onAwarded={t => { setTable(t); setAwardFor(""); }} onTable={setTable} onSignedOut={onSignedOut} />}
   </section>;
 }
 

@@ -177,7 +177,7 @@ func NewDraft(ev Evidence, pc Context, users map[string]Decision) *Draft {
 	for f, u := range users {
 		d.by[f] = u
 	}
-	d.rule(FieldKind, kindRule(ev, pc.Discipline))
+	d.rule(FieldKind, kindRule(ev, kindDiscipline(pc)))
 	d.settlePackage()
 	d.settleFirm()
 	d.settleGST()
@@ -217,7 +217,7 @@ func kindRule(ev Evidence, discipline string) string {
 	for _, w := range ev.KindWords {
 		has[w] = true
 	}
-	strong := ev.Form != nil || has["fee proposal"] || has["fee submission"] || has["fee estimate"] || has["fee quote"] || has["fee schedule"] || has["quotation"] || has["quote"] || has["tender submission"]
+	strong := ev.Form != nil || ev.AppointmentFee || has["fee proposal"] || has["fee submission"] || has["fee estimate"] || has["fee quote"] || has["fee schedule"] || has["quotation"] || has["quote"] || has["tender submission"]
 	if !strong || (len(ev.Amounts) == 0 && ev.Form == nil) {
 		return ""
 	}
@@ -226,6 +226,20 @@ func kindRule(ev Evidence, discipline string) string {
 		return KindFeeProposal
 	case strings.HasPrefix(discipline, "trade.") || strings.HasPrefix(discipline, "supplier."):
 		return KindTender
+	}
+	return ""
+}
+
+// kindDiscipline is the filed discipline, or the discipline of the package
+// the user put the document on: that drop says whose fee it is.
+func kindDiscipline(pc Context) string {
+	if pc.Discipline != "" || pc.PackageID == "" {
+		return pc.Discipline
+	}
+	for _, p := range pc.Packages {
+		if p.ID == pc.PackageID {
+			return p.Discipline
+		}
 	}
 	return ""
 }
@@ -290,6 +304,11 @@ func (d *Draft) settleFirm() {
 	}
 	if len(d.ev.ABNs) == 1 {
 		d.rule(FieldFirmABN, d.ev.ABNs[0])
+	}
+	// "We have appointed X Pty Ltd" names the engaged firm even when the
+	// letter is the owner's, whose own letterhead is not the firm.
+	if len(d.ev.Appointed) == 1 {
+		d.rule(FieldFirmName, d.ev.Appointed[0])
 	}
 	// A response form names its firm in labelled cells; that rule follows.
 	if l := d.ev.Letterhead; l != nil && d.ev.FormFirm == nil {

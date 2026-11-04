@@ -91,6 +91,8 @@ dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
 .award-lines h3 { margin: 0 0 12px; font-size: var(--fs-lg); font-weight: 600; }
 .award-total { margin: 8px 0 0; }
 .award-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.award-firm label { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; font-size: 13px; font-weight: 600; }
+.award-firm input { padding: 5px 7px; font: inherit; font-weight: 400; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
 .award-preview ul { margin: 10px 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .award-preview li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0 6px 18px; border-bottom: 1px solid var(--line); }
 .award-preview .num { font-variant-numeric: tabular-nums; }
